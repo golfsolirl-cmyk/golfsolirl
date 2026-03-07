@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Golf Sol Ireland | Golf Holidays in Costa del Sol</title>
+  <meta name="description" content="Premium golf holidays in Costa del Sol for Irish golfers. Tailor-made packages, tee times, accommodation &amp; transfers. Costa del Sol only." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#f6f4ef',
+            sand: '#e8e4dc',
+            darkgreen: '#071E09',
+            primary: '#14591B',
+            orange: '#D9540A',
+            gold: '#DED281',
+            olive: '#869A35',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .img-zoom { transition: transform 0.7s ease-out; }
+    .img-zoom:hover { transform: scale(1.03); }
+    .card-hover .img-zoom { transition: transform 0.7s ease-out; }
+    .card-hover:hover .img-zoom { transform: scale(1.05); }
+  </style>
+</head>
+<body class="bg-cream text-darkgreen antialiased">
+
+  <!-- ========== NAV (Pa'lais style: logo left, links, CTA right) ========== -->
+  <header id="nav" class="fixed top-0 left-0 right-0 z-50 bg-white/40 backdrop-blur-md transition-all duration-300 ease-out">
+    <nav class="max-w-[1200px] mx-auto px-6 md:px-10 py-5 flex items-center justify-between" aria-label="Main navigation">
+      <a href="#hero" class="text-xl font-light tracking-tight text-darkgreen" aria-label="Golf Sol Ireland home">Golf Sol Ireland</a>
+      <button type="button" id="menu-toggle" class="md:hidden p-2 rounded-lg text-darkgreen hover:bg-white/50 transition-colors duration-300 ease-out" aria-expanded="false" aria-controls="nav-menu" aria-label="Toggle menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <ul id="nav-menu" class="hidden md:flex items-center gap-8 text-sm font-light tracking-wide max-md:absolute max-md:top-full max-md:left-0 max-md:right-0 max-md:bg-white/95 max-md:backdrop-blur-md max-md:py-6 max-md:px-6 max-md:flex-col max-md:gap-4 max-md:shadow-lg">
+        <li><a href="#hero" class="nav-link hover:text-primary transition-colors duration-300 ease-out">Home</a></li>
+        <li><a href="#packages" class="nav-link hover:text-primary transition-colors duration-300 ease-out">Golf Packages</a></li>
+        <li><a href="#courses" class="nav-link hover:text-primary transition-colors duration-300 ease-out">Golf Courses</a></li>
+        <li><a href="#accommodation" class="nav-link hover:text-primary transition-colors duration-300 ease-out">Accommodation</a></li>
+        <li><a href="#how-it-works" class="nav-link hover:text-primary transition-colors duration-300 ease-out">Plan Your Trip</a></li>
+        <li><a href="#contact" class="nav-link hover:text-primary transition-colors duration-300 ease-out">Contact</a></li>
+      </ul>
+      <a href="#contact" class="hidden md:inline-block rounded-full px-6 py-2.5 text-sm font-light tracking-wide bg-orange text-white hover:bg-darkgreen transition-all duration-300 ease-out" aria-label="Plan your golf trip">Plan your golf trip</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- ========== HERO (Pa'lais: two-line H1, H2 subhead, scroll down, one CTA) ========== -->
+    <section id="hero" class="min-h-screen flex items-center pt-20">
+      <div class="max-w-[1200px] mx-auto px-6 md:px-10 w-full py-28 md:py-32">
+        <div class="grid md:grid-cols-2 items-center gap-12 md:gap-16">
+          <div class="reveal">
+            <h1 class="text-[54px] md:text-[76px] font-light tracking-tight leading-[1.02] text-darkgreen">
+              Grow your<br />golf break.
+            </h1>
+            <h2 class="mt-4 text-2xl font-light text-darkgreen/90">The future of your golf trip — today</h2>
+            <a href="#packages" class="mt-8 inline-block text-sm font-light tracking-wide text-darkgreen/70 hover:text-primary transition-colors duration-300 ease-out">scroll down</a>
+            <p class="mt-8 text-lg leading-relaxed text-gray-700 max-w-xl">
+              Golf Sol Ireland exists because we wanted golf holidays that were simple and special. So we focus only on Costa del Sol — courses, accommodation, and transfers, designed for Irish golfers.
+            </p>
+            <a href="#contact" class="mt-10 inline-block rounded-full px-8 py-3 bg-primary text-white font-light tracking-wide hover:bg-darkgreen transition-all duration-300 ease-out" aria-label="Plan your golf trip">Meet us</a>
+          </div>
+          <div class="reveal relative overflow-hidden rounded-2xl aspect-[4/5] md:aspect-[3/4]">
+            <img src="https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=800&q=80" alt="Golf course in Costa del Sol with ocean view" class="w-full h-full object-cover img-zoom" width="800" height="1000" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== PACKAGES GRID (Pa'lais recipe-style: headline then image cards with overlay) ========== -->
+    <section id="packages" class="py-28 md:py-32 bg-cream">
+      <div class="max-w-[1200px] mx-auto px-6 md:px-10">
+        <h2 class="reveal text-4xl md:text-5xl font-light tracking-tight text-darkgreen">Golf packages that take you from home to the first tee</h2>
+        <div class="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+          <a href="#contact" class="reveal card-hover block rounded-2xl overflow-hidden aspect-[3/4] relative group">
+            <img src="https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=500&q=80" alt="Weekend golf escape" class="w-full h-full object-cover img-zoom" width="500" height="667" />
+            <span class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent text-white font-light">
+              <span class="block text-sm opacity-90">Weekend</span>
+              <span class="block text-xl mt-1">Golf Escape</span>
+            </span>
+          </a>
+          <a href="#contact" class="reveal card-hover block rounded-2xl overflow-hidden aspect-[3/4] relative group">
+            <img src="https://images.unsplash.com/photo-1593111774240-d529f12bb716?w=500&q=80" alt="4-day Costa del Sol golf trip" class="w-full h-full object-cover img-zoom" width="500" height="667" />
+            <span class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent text-white font-light">
+              <span class="block text-sm opacity-90">4 days</span>
+              <span class="block text-xl mt-1">Costa del Sol Golf Trip</span>
+            </span>
+          </a>
+          <a href="#contact" class="reveal card-hover block rounded-2xl overflow-hidden aspect-[3/4] relative group">
+            <img src="https://images.unsplash.com/photo-1514939775309-a8bb013b2f2d?w=500&q=80" alt="Luxury golf retreat" class="w-full h-full object-cover img-zoom" width="500" height="667" />
+            <span class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent text-white font-light">
+              <span class="block text-sm opacity-90">7 days</span>
+              <span class="block text-xl mt-1">Luxury Golf Retreat</span>
+            </span>
+          </a>
+          <a href="#contact" class="reveal card-hover block rounded-2xl overflow-hidden aspect-[3/4] relative group">
+            <img src="https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=500&q=80" alt="Custom golf holiday" class="w-full h-full object-cover img-zoom" width="500" height="667" />
+            <span class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent text-white font-light">
+              <span class="block text-sm opacity-90">Tailor-made</span>
+              <span class="block text-xl mt-1">Your itinerary</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== REPEAT HEADLINE BLOCK (Pa'lais: same headline + supporting text + CTA) ========== -->
+    <section class="py-20 md:py-24 bg-cream">
+      <div class="max-w-[1200px] mx-auto px-6 md:px-10">
+        <div class="reveal max-w-2xl">
+          <h2 class="text-4xl md:text-5xl font-light tracking-tight text-darkgreen">Golf packages that take you from home to the first tee</h2>
+          <p class="mt-8 text-lg text-gray-700 leading-relaxed">We handle courses, accommodation, and transfers. You choose your dates and we build your trip. Try one of our packages or ask for something custom.</p>
+          <a href="#contact" class="mt-8 inline-block text-primary font-light tracking-wide hover:underline transition-colors duration-300 ease-out">View golf packages</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== CENTRED STATEMENT (Pa'lais: "Spready, saucy..." style) ========== -->
+    <section class="py-28 md:py-32 bg-sand">
+      <div class="max-w-[1200px] mx-auto px-6 md:px-10 text-center">
+        <p class="reveal text-4xl md:text-5xl lg:text-6xl font-light leading-tight tracking-tight text-darkgreen max-w-3xl mx-auto">
+          Sun. Fairways.<br />No hassle.
+        </p>
+        <p class="reveal mt-10 text-lg text-gray-700 leading-relaxed max-w-xl mx-auto">We take organic care of your tee times, your hotel, and your transfers. You just play.</p>
+      </div>
+    </section>
+
+    <!-- ========== TWO EDITORIAL BLOCKS (Pa'lais: Spreads / Cuisine style — image + text + CTA) ========== -->
+    <section id="courses" class="py-28 md:py-32 bg-cream">
+      <div class="max-w-[1200px] mx-auto px-6 md:px-10">
+        <div class="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+          <div class="reveal overflow-hidden rounded-2xl aspect-[4/5]">
+            <img src="https://images.unsplash.com/photo-1593111774240-d529f12bb716?w=800&q=80" alt="Costa del Sol golf course" class="w-full h-full object-cover img-zoom" width="800" height="1000" />
+          </div>
+          <div class="reveal">
+            <h2 class="text-4xl md:text-5xl font-light tracking-tight text-darkgreen">Golf courses</h2>
+            <p class="mt-6 text-lg text-gray-700 leading-relaxed">We book tee times at Valderrama, Finca Cortesín, La Cala, Marbella Club and more. Championship layouts and coastal rounds — only on the Costa del Sol.</p>
+            <a href="#contact" class="mt-8 inline-block text-primary font-light tracking-wide hover:underline transition-colors duration-300 ease-out">Request a custom itinerary</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="accommodation" class="py-28 md:py-32 bg-sand">
+      <div class="max-w-[1200px] mx-auto px-6 md:px-10">
+        <div class="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+          <div class="reveal order-2 md:order-1">
+            <h2 class="text-4xl md:text-5xl font-light tracking-tight text-darkgreen">Accommodation</h2>
+            <p class="mt-6 text-lg text-gray-700 leading-relaxed">Golf resorts near Marbella, beachfront hotels, luxury villas. We match where you stay to your trip — and to your game.</p>
+            <a href="#contact" class="mt-8 inline-block text-primary font-light tracking-wide hover:underline transition-colors duration-300 ease-out">See where you'll stay</a>
+          </div>
+          <div class="reveal order-1 md:order-2 overflow-hidden rounded-2xl aspect-[4/5]">
+            <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80" alt="Golf resort Costa del Sol" class="w-full h-full object-cover img-zoom" width="800" height="1000" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== HOW IT WORKS (Pa'lais: short utility block feel) ========== -->
+    <section id="how-it-works" class="py-28 md:py-32 bg-cream">
+      <div class="max-w-[1200px] mx-auto px-6 md:px-10">
+        <div class="reveal text-center max-w-2xl mx-auto mb-16 md:mb-20">
+          <h2 class="text-4xl md:text-5xl font-light tracking-tight text-darkgreen">Plan your golf trip</h2>
+          <p class="mt-6 text-lg text-gray-700 leading-relaxed">Choose your dates. We suggest courses and accommodation. You receive a custom itinerary. Then you fly and play.</p>
+        </div>
+        <div class="grid md:grid-cols-4 gap-12 md:gap-16 text-center">
+          <div class="reveal">
+            <span class="inline-flex w-12 h-12 rounded-full bg-primary text-white items-center justify-center text-lg font-light">1</span>
+            <h3 class="mt-6 text-xl font-light text-darkgreen">Choose your dates</h3>
+          </div>
+          <div class="reveal">
+            <span class="inline-flex w-12 h-12 rounded-full bg-primary text-white items-center justify-center text-lg font-light">2</span>
+            <h3 class="mt-6 text-xl font-light text-darkgreen">Select courses</h3>
+          </div>
+          <div class="reveal">
+            <span class="inline-flex w-12 h-12 rounded-full bg-primary text-white items-center justify-center text-lg font-light">3</span>
+            <h3 class="mt-6 text-xl font-light text-darkgreen">Choose accommodation</h3>
+          </div>
+          <div class="reveal">
+            <span class="inline-flex w-12 h-12 rounded-full bg-primary text-white items-center justify-center text-lg font-light">4</span>
+            <h3 class="mt-6 text-xl font-light text-darkgreen">Receive your itinerary</h3>
+          </div>
+        </div>
+        <div class="reveal mt-16 text-center">
+          <a href="#contact" class="inline-block rounded-full px-8 py-3.5 bg-orange text-white text-sm font-light tracking-wide hover:bg-darkgreen transition-all duration-300 ease-out" aria-label="Send golf trip enquiry">Send us your golf trip enquiry</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== TESTIMONIALS (Pa'lais: "You are..." community feel) ========== -->
+    <section id="testimonials" class="py-28 md:py-32 bg-sand">
+      <div class="max-w-[1200px] mx-auto px-6 md:px-10">
+        <h2 class="reveal text-4xl md:text-5xl font-light tracking-tight text-darkgreen">What Irish golfers say</h2>
+        <div class="mt-16 grid md:grid-cols-3 gap-12 md:gap-16">
+          <blockquote class="reveal">
+            <p class="text-lg text-darkgreen leading-relaxed italic">“Perfectly organised golf trip to Marbella. Everything from transfers to tee times handled. Will book again.”</p>
+            <footer class="mt-6 text-gray-600 font-light">— David, Dublin</footer>
+          </blockquote>
+          <blockquote class="reveal">
+            <p class="text-lg text-darkgreen leading-relaxed italic">“Our society had a brilliant week. Great courses, smooth logistics. Martin made it stress-free.”</p>
+            <footer class="mt-6 text-gray-600 font-light">— Sarah, Cork</footer>
+          </blockquote>
+          <blockquote class="reveal">
+            <p class="text-lg text-darkgreen leading-relaxed italic">“Exactly what we wanted — sun, golf, and no hassle. Highly recommend Golf Sol Ireland.”</p>
+            <footer class="mt-6 text-gray-600 font-light">— Michael, Galway</footer>
+          </blockquote>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== NEWSLETTER (Pa'lais: same headline tone) ========== -->
+    <section id="newsletter" class="py-28 md:py-32 bg-cream">
+      <div class="max-w-[1200px] mx-auto px-6 md:px-10">
+        <div class="reveal max-w-xl mx-auto text-center">
+          <h2 class="text-4xl md:text-5xl font-light tracking-tight text-darkgreen">You probably don't want another newsletter in your mailbox, but then you'd miss our Costa del Sol golf deals and tips.</h2>
+          <form class="mt-10 flex flex-col sm:flex-row gap-3 max-w-md mx-auto" id="newsletter-form" aria-label="Newsletter signup">
+            <label for="newsletter-email" class="sr-only">Email address</label>
+            <input type="email" id="newsletter-email" name="email" placeholder="Your email" required class="flex-1 px-5 py-3.5 rounded-full border border-gray-300 bg-white text-darkgreen placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300" />
+            <button type="submit" class="px-8 py-3.5 rounded-full bg-primary text-white font-light tracking-wide hover:bg-darkgreen transition-all duration-300 ease-out">Submit</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== CONTACT ========== -->
+    <section id="contact" class="py-28 md:py-32 bg-sand">
+      <div class="max-w-[1200px] mx-auto px-6 md:px-10">
+        <div class="grid md:grid-cols-2 gap-12 md:gap-16 items-start">
+          <div class="reveal">
+            <h2 class="text-4xl md:text-5xl font-light tracking-tight text-darkgreen">Get in touch</h2>
+            <p class="mt-6 text-lg text-gray-700 leading-relaxed">Tell us your dates and preferences. We’ll put together a custom golf holiday for you.</p>
+            <div class="mt-10 space-y-4">
+              <p class="text-darkgreen font-light"><strong class="font-normal">Martin Kelly</strong></p>
+              <p class="text-gray-700">Phone: <a href="tel:+353866006202" class="text-primary hover:underline">086 600 6202</a></p>
+              <p class="text-gray-700">International: <a href="tel:+353866006202" class="text-primary hover:underline">+353 86 600 6202</a></p>
+            </div>
+          </div>
+          <div class="reveal">
+            <form id="contact-form" class="space-y-6" aria-label="Contact form">
+              <div>
+                <label for="contact-name" class="block text-sm font-light text-darkgreen mb-2">Name</label>
+                <input type="text" id="contact-name" name="name" required class="w-full px-5 py-3.5 rounded-xl border border-gray-300 bg-white text-darkgreen focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300" />
+              </div>
+              <div>
+                <label for="contact-email" class="block text-sm font-light text-darkgreen mb-2">Email</label>
+                <input type="email" id="contact-email" name="email" required class="w-full px-5 py-3.5 rounded-xl border border-gray-300 bg-white text-darkgreen focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300" />
+              </div>
+              <div>
+                <label for="contact-message" class="block text-sm font-light text-darkgreen mb-2">Your golf trip enquiry</label>
+                <textarea id="contact-message" name="message" rows="5" required class="w-full px-5 py-3.5 rounded-xl border border-gray-300 bg-white text-darkgreen focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 resize-y"></textarea>
+              </div>
+              <button type="submit" class="w-full sm:w-auto px-8 py-3.5 rounded-full bg-primary text-white font-light tracking-wide hover:bg-darkgreen transition-all duration-300 ease-out">Send enquiry</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========== FOOTER (Pa'lais: Menu, Store locator, Contact, Legal) ========== -->
+  <footer class="py-16 md:py-20 bg-darkgreen text-white">
+    <div class="max-w-[1200px] mx-auto px-6 md:px-10">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-16">
+        <div>
+          <h3 class="text-sm font-light tracking-wider uppercase text-gold mb-4">Menu</h3>
+          <ul class="space-y-2 text-white/90 font-light text-sm">
+            <li><a href="#packages" class="hover:text-gold transition-colors duration-300 ease-out">Golf Packages</a></li>
+            <li><a href="#courses" class="hover:text-gold transition-colors duration-300 ease-out">Golf Courses</a></li>
+            <li><a href="#accommodation" class="hover:text-gold transition-colors duration-300 ease-out">Accommodation</a></li>
+            <li><a href="#how-it-works" class="hover:text-gold transition-colors duration-300 ease-out">Plan your trip</a></li>
+            <li><a href="#contact" class="hover:text-gold transition-colors duration-300 ease-out">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-sm font-light tracking-wider uppercase text-gold mb-4">Plan your trip</h3>
+          <p class="text-white/90 font-light text-sm">We build your Costa del Sol golf holiday from start to finish.</p>
+        </div>
+        <div>
+          <h3 class="text-sm font-light tracking-wider uppercase text-gold mb-4">Contact Golf Sol Ireland</h3>
+          <p class="text-white/90 font-light text-sm">Do you have a question? Send it to us.</p>
+          <a href="tel:+353866006202" class="mt-2 inline-block text-gold font-light text-sm hover:underline">+353 86 600 6202</a>
+        </div>
+        <div>
+          <h3 class="text-sm font-light tracking-wider uppercase text-gold mb-4">Legal</h3>
+          <ul class="space-y-2 text-white/90 font-light text-sm">
+            <li><a href="#" class="hover:text-gold transition-colors duration-300 ease-out">Privacy policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="mt-16 pt-8 border-t border-white/20 text-white/70 text-sm font-light">© 2026 Golf Sol Ireland</p>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 60) nav.classList.add('bg-white/80', 'shadow-sm');
+      else nav.classList.remove('bg-white/80', 'shadow-sm');
+    }, { passive: true });
+
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { rootMargin: '0px 0px -60px 0px', threshold: 0.1 });
+    revealEls.forEach((el) => observer.observe(el));
+
+    const menuToggle = document.getElementById('menu-toggle');
+    const navMenu = document.getElementById('nav-menu');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const toggle = () => (navMenu.classList.contains('hidden') ? (navMenu.classList.remove('hidden'), navMenu.classList.add('flex'), menuToggle.setAttribute('aria-expanded', 'true')) : (navMenu.classList.add('hidden'), navMenu.classList.remove('flex'), menuToggle.setAttribute('aria-expanded', 'false')));
+    menuToggle.addEventListener('click', toggle);
+    navLinks.forEach((l) => l.addEventListener('click', () => { navMenu.classList.add('hidden'); navMenu.classList.remove('flex'); menuToggle.setAttribute('aria-expanded', 'false'); }));
+
+    document.getElementById('newsletter-form').addEventListener('submit', (e) => { e.preventDefault(); const email = document.getElementById('newsletter-email').value; if (email) alert('Thanks for subscribing. We\'ll send Costa del Sol golf updates to ' + email + '.'); });
+    document.getElementById('contact-form').addEventListener('submit', (e) => { e.preventDefault(); alert('Thank you. Martin will get back to you shortly.'); });
+  </script>
+</body>
+</html>

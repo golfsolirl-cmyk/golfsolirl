@@ -1,0 +1,530 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Golf Sol — design tokens */
+:root {
+  --color-primary: #123811;
+  --color-accent: #E07B39;
+  --color-navy: #123811;
+  --color-orange: #E07B39;
+  --color-orange-hover: #C96828;
+  --color-yellow: #F5C842;
+  --color-green: #6BAF7A;
+  --color-light-blue: #C8DCF0;
+  --color-cream: #F5F0E8;
+  --color-white: #FFFFFF;
+  --color-border: #D8D2C8;
+  --color-text-body: #0d2d0d;
+  --color-muted: #0d2d0d;
+  --container-max: 1280px;
+  --section-py: 96px;
+  --section-px: 24px;
+  --nav-height: 72px;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --transition: 0.25s ease;
+  --touch-min: 44px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-dm-sans), 'DM Sans', system-ui, sans-serif;
+  background: var(--color-cream);
+  color: #0d2d0d;
+  line-height: 1.65;
+  @apply antialiased;
+}
+
+/* Clearer body text — darker, readable on cream */
+.text-body-readable {
+  color: #0d2d0d;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+/* Section label — slightly larger, strong contrast */
+.section-label {
+  @apply text-sm font-bold tracking-widest uppercase block mb-2;
+  color: #b85c28;
+}
+
+/* Section title (Playfair, uppercase) — dark for clarity */
+.section-title {
+  @apply font-display font-black uppercase leading-tight;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  color: #0d2d0d;
+}
+
+/* Script subline — larger, darker for legibility */
+.section-script {
+  @apply font-script text-xl md:text-2xl block mb-5;
+  color: #0d2d0d;
+}
+
+/* Scroll reveal — smooth entrance on scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.08s; }
+.reveal-delay-2 { transition-delay: 0.16s; }
+.reveal-delay-3 { transition-delay: 0.24s; }
+
+/* Image zoom */
+.img-zoom {
+  transition: transform 0.4s ease;
+}
+
+.card-hover:hover .img-zoom,
+.img-zoom:hover {
+  transform: scale(1.03);
+}
+
+.card-hover:hover .img-zoom {
+  transform: scale(1.05);
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  @apply absolute -top-full left-6 z-[100] px-4 py-2 rounded transition-all duration-200;
+  background: var(--color-navy);
+  color: var(--color-white);
+}
+
+.skip-link:focus-visible {
+  top: 1rem;
+}
+
+/* Button/link that looks like a button: fancy hover + click animation on the element itself */
+button,
+input[type="submit"],
+.btn-animated {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.25s ease,
+    filter 0.2s ease;
+}
+
+/* Hover: lift, scale up, stronger shadow */
+button:hover:not(:disabled),
+input[type="submit"]:hover:not(:disabled),
+.btn-animated:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Click: press down (squish) */
+button:active:not(:disabled),
+input[type="submit"]:active:not(:disabled),
+.btn-animated:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition-duration: 0.1s;
+}
+
+/* Quick flash on click */
+button::after,
+input[type="submit"]::after,
+.btn-animated::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(255,255,255,0.35);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+button:active:not(:disabled)::after,
+input[type="submit"]:active:not(:disabled)::after,
+.btn-animated:active::after {
+  animation: btn-flash 0.35s ease-out forwards;
+}
+@keyframes btn-flash {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+button > *,
+.btn-animated > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Animated blobs — subtle morph + float (Pa'lais style) */
+/* Putting-green blobs: more noticeable motion + morph */
+@keyframes blob-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(4%, -5%) scale(1.06); }
+  50% { transform: translate(-3%, 4%) scale(0.96); }
+  75% { transform: translate(5%, 2%) scale(1.04); }
+}
+
+@keyframes blob-morph {
+  0%, 100% { border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%; }
+  33% { border-radius: 40% 60% 45% 55% / 62% 38% 62% 38%; }
+  66% { border-radius: 55% 45% 60% 40% / 45% 55% 40% 60%; }
+}
+
+@keyframes blob-breathe {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+
+.blob-animate {
+  animation:
+    blob-float 8s ease-in-out infinite,
+    blob-morph 10s ease-in-out infinite,
+    blob-breathe 6s ease-in-out infinite;
+}
+
+/* 3D logo — badge/emblem depth: perspective, tilt, layered shadows */
+.logo-3d {
+  display: inline-block;
+  perspective: 1200px;
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+.logo-3d-inner {
+  display: block;
+  transform-style: preserve-3d;
+  transform: rotateY(-8deg) rotateX(4deg);
+  transition: transform 0.4s ease;
+}
+
+.logo-3d:hover .logo-3d-inner {
+  transform: rotateY(-4deg) rotateX(6deg) translateZ(12px) scale(1.02);
+}
+
+/* Layered drop-shadows: deep shadow (ground), mid, highlight (top-left light) */
+.logo-3d img {
+  filter:
+    drop-shadow(0 2px 2px rgba(0, 0, 0, 0.15))
+    drop-shadow(0 6px 12px rgba(0, 0, 0, 0.2))
+    drop-shadow(0 14px 28px rgba(0, 0, 0, 0.18))
+    drop-shadow(-2px -2px 4px rgba(255, 255, 255, 0.25));
+  transition: filter 0.4s ease;
+}
+
+.logo-3d:hover img {
+  filter:
+    drop-shadow(0 4px 4px rgba(0, 0, 0, 0.2))
+    drop-shadow(0 12px 24px rgba(0, 0, 0, 0.25))
+    drop-shadow(0 24px 48px rgba(0, 0, 0, 0.22))
+    drop-shadow(-3px -3px 8px rgba(255, 255, 255, 0.35));
+}
+
+/* Footer: softer highlight on dark bg */
+.logo-3d--dark img {
+  filter:
+    drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3))
+    drop-shadow(0 6px 14px rgba(0, 0, 0, 0.4))
+    drop-shadow(0 14px 28px rgba(0, 0, 0, 0.35))
+    drop-shadow(-1px -1px 3px rgba(255, 255, 255, 0.12));
+}
+
+.logo-3d--dark:hover img {
+  filter:
+    drop-shadow(0 4px 6px rgba(0, 0, 0, 0.35))
+    drop-shadow(0 12px 26px rgba(0, 0, 0, 0.45))
+    drop-shadow(0 22px 44px rgba(0, 0, 0, 0.4))
+    drop-shadow(-2px -2px 6px rgba(255, 255, 255, 0.18));
+}
+
+/* Text logo — GolfSol + Ireland (shamrock) + tagline. Header = green, footer = white */
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  line-height: 1.15;
+  gap: 2px;
+}
+
+.logo-text-main {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: clamp(1.65rem, 4.2vw, 2.25rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #123811;
+}
+
+/* Ireland + shamrock — same weight as main, slightly smaller */
+.logo-text-ireland {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: clamp(0.85rem, 2.2vw, 1.1rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #123811;
+}
+
+.logo-text-ireland .logo-shamrock {
+  flex-shrink: 0;
+  width: 1em;
+  height: 1em;
+  color: currentColor;
+}
+
+.logo-text-sub {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: clamp(0.65rem, 1.6vw, 0.8rem);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #333;
+}
+
+/* Footer: all logo text white */
+.logo-text--dark .logo-text-main,
+.logo-text--dark .logo-text-ireland,
+.logo-text--dark .logo-text-sub {
+  color: #fff;
+}
+
+.logo-text--dark .logo-text-sub {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Links match logo text colour */
+a.link-logo {
+  color: #123811;
+}
+a.link-logo:hover {
+  color: #0d2d0d;
+}
+
+/* Hero headline — dark green for clarity, staggered word reveal */
+.hero-headline {
+  color: #0d2d0d;
+}
+.hero-headline-word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.4em);
+  animation: hero-word-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.hero-headline-word:nth-child(1) { animation-delay: 0.15s; }
+.hero-headline-word:nth-child(2) { animation-delay: 0.28s; }
+.hero-headline-word:nth-child(3) { animation-delay: 0.41s; }
+.hero-headline-word:nth-child(4) { animation-delay: 0.54s; }
+.hero-headline-word:nth-child(5) { animation-delay: 0.67s; }
+.hero-headline-word:nth-child(6) { animation-delay: 0.8s; }
+@keyframes hero-word-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.hero-subline {
+  color: #0d2d0d;
+  animation: hero-subline-in 0.6s ease 0.95s both;
+}
+@keyframes hero-subline-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* Subtle ongoing shimmer on subline to catch the eye */
+.hero-subline-shine {
+  background: linear-gradient(
+    90deg,
+    #0d2d0d 0%,
+    #0d2d0d 40%,
+    #14591b 50%,
+    #0d2d0d 60%,
+    #0d2d0d 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: hero-shine 4s ease-in-out 1.8s infinite;
+}
+@keyframes hero-shine {
+  0%, 100% { background-position: 100% 0; }
+  50% { background-position: 0% 0; }
+}
+
+/* Design Your Golf Package — step cards */
+.package-step-card {
+  @apply relative rounded-2xl bg-white p-6 md:p-8 shadow-card border-2 border-transparent overflow-hidden;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease, border-color 0.3s ease;
+}
+.package-step-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(18,56,17,0.03) 0%, transparent 50%, rgba(18,56,17,0.06) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.package-step-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(18,56,17,0.15), 0 8px 24px rgba(0,0,0,0.08);
+  border-color: rgba(18,56,17,0.25);
+}
+.package-step-card:hover::before {
+  opacity: 1;
+}
+.package-step-card .step-number {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s ease;
+}
+.package-step-card:hover .step-number {
+  transform: scale(1.05) rotate(-2deg);
+  background: #123811;
+  color: white;
+}
+.package-step-card:hover .step-number span {
+  color: white;
+}
+.package-step-card .step-arrow {
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.package-step-card:hover .step-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Step card icons — dark green (#123811), pulsating */
+.step-card-icon {
+  color: #123811;
+  animation: step-icon-pulse 2s ease-in-out infinite;
+}
+.step-card-icon svg {
+  fill: currentColor;
+}
+@keyframes step-icon-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.12); }
+}
+
+/* Hero badge bubble — pulsate */
+.hero-bubble-pulse {
+  animation: hero-bubble-pulse 2.2s ease-in-out infinite;
+}
+@keyframes hero-bubble-pulse {
+  0%, 100% { transform: scale(1) rotate(-12deg); }
+  50% { transform: scale(1.08) rotate(-12deg); }
+}
+
+/* Fancy line under hero — wavy divider animation */
+.hero-wave-svg {
+  animation: hero-wave-float 6s ease-in-out infinite;
+}
+.hero-wave-path {
+  transform-origin: center bottom;
+  animation: hero-wave-morph 5s ease-in-out infinite;
+}
+.hero-wave-path-2 {
+  animation-delay: -2.5s;
+  animation-duration: 6s;
+}
+@keyframes hero-wave-float {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  50% { transform: translateY(-4px) scaleY(1.02); }
+}
+@keyframes hero-wave-morph {
+  0%, 100% { opacity: 1; transform: scaleX(1); }
+  50% { opacity: 0.85; transform: scaleX(1.01); }
+}
+
+/* Newsletter — "Costa del Sol golf": yellow outline + glow + golden shimmer sweep */
+.newsletter-headline-outline {
+  display: inline-block;
+  background: linear-gradient(
+    90deg,
+    #fff 0%,
+    #fff 32%,
+    rgba(245, 200, 66, 0.95) 50%,
+    #fff 68%,
+    #fff 100%
+  );
+  background-size: 220% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--color-yellow);
+  paint-order: stroke fill;
+  animation:
+    newsletter-glow-pulse 2.2s ease-in-out infinite,
+    newsletter-shimmer 4s ease-in-out infinite;
+}
+@keyframes newsletter-glow-pulse {
+  0%, 100% {
+    -webkit-text-stroke-width: 2px;
+    filter: drop-shadow(0 0 6px rgba(245, 200, 66, 0.5))
+            drop-shadow(0 0 16px rgba(245, 200, 66, 0.35));
+  }
+  50% {
+    -webkit-text-stroke-width: 3px;
+    filter: drop-shadow(0 0 12px rgba(245, 200, 66, 0.8))
+            drop-shadow(0 0 28px rgba(245, 200, 66, 0.5))
+            drop-shadow(0 0 40px rgba(245, 200, 66, 0.25));
+  }
+}
+@keyframes newsletter-shimmer {
+  0%, 100% { background-position: 100% 0; }
+  50% { background-position: 0% 0; }
+}
+
+/* Contact — pop-in when scroll into view (re-runs every time) */
+.contact-pop-line {
+  opacity: 0;
+  transform: scale(0.5);
+}
+.contact-pop-in .contact-pop-line {
+  animation: contact-pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.contact-pop-in .contact-pop-line:nth-child(1) { animation-delay: 0s; }
+.contact-pop-in .contact-pop-line:nth-child(2) { animation-delay: 0.1s; }
+.contact-pop-in .contact-pop-line:nth-child(3) { animation-delay: 0.2s; }
+@keyframes contact-pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Section wavy dividers — static (add animation later in .section-wave-svg / .section-wave-path if needed) */
+.section-wave {
+  height: 5rem;
+}
