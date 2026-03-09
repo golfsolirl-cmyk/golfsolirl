@@ -8,7 +8,6 @@ import Image from 'next/image';
 import { submitNewsletter } from '@/lib/api';
 import { Container } from '@/components/layout/Container';
 import { SectionWave } from '@/components/ui/SectionWave';
-import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 
 const NEWSLETTER_IMAGE = '/golf-courses-overlap-1.jpg';
@@ -93,26 +92,32 @@ export function Newsletter() {
                 <span className="text-yellow" aria-hidden>✓</span> Useful info for your next trip
               </li>
             </ul>
-            <div className="mt-8 p-6 md:p-8 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20">
+            <div className="mt-8 p-6 md:p-8 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/15">
               <form
-                className="flex flex-col sm:flex-row gap-3 items-end sm:items-stretch"
+                className="flex flex-col sm:flex-row gap-4 sm:items-end"
                 onSubmit={handleSubmit(onSubmit)}
                 aria-label="Newsletter signup"
                 noValidate
               >
-                <div className="flex-1 min-w-0 space-y-0">
-                  <Input
+                <div className="flex-1 min-w-0 flex flex-col gap-2">
+                  <label htmlFor="newsletter-email" className="text-sm font-semibold text-white">
+                    Email address
+                  </label>
+                  <input
                     id="newsletter-email"
                     type="email"
-                    label="Email address"
-                    labelClassName="sr-only"
                     placeholder="Your email"
-                    error={errors.email?.message}
                     disabled={status === 'loading'}
-                    className="border-2 border-white/30 bg-white text-primary placeholder:text-neutral-500 focus:ring-yellow focus:border-yellow"
-                    errorClassName="text-yellow"
+                    aria-invalid={!!errors.email}
+                    aria-describedby={errors.email ? 'newsletter-email-error' : undefined}
+                    className="w-full rounded-lg border-2 border-white/30 bg-white px-4 py-3.5 text-[15px] text-primary placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-yellow focus:border-yellow transition-colors disabled:opacity-60"
                     {...register('email')}
                   />
+                  {errors.email?.message && (
+                    <p id="newsletter-email-error" className="text-sm text-yellow" role="alert">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
                 <Button
                   type="submit"
@@ -120,7 +125,7 @@ export function Newsletter() {
                   size="md"
                   disabled={status === 'loading'}
                   loading={status === 'loading'}
-                  className="flex-shrink-0 min-h-[48px]"
+                  className="flex-shrink-0 min-h-[48px] bg-yellow text-primary hover:bg-yellow/90 border-2 border-white shadow-md"
                 >
                   {status === 'loading' ? 'Submitting…' : 'Get deals'}
                 </Button>

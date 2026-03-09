@@ -19,11 +19,19 @@ const ShamrockIcon = ({ className }: { className?: string }) => (
 /** Premium header: strong logo lockup, clear nav hierarchy, Stripe/Linear-level polish. */
 export function Header() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const closeMenu = useCallback(() => {
     setOpen(false);
     menuButtonRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(typeof window !== 'undefined' && window.scrollY > 8);
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
@@ -58,18 +66,21 @@ export function Header() {
 
   return (
     <header
-      className="sticky top-0 z-[99] bg-white/98 dark:bg-black/20 backdrop-blur-md border-b border-border dark:border-white/10 min-h-[80px] flex items-center shadow-sm overflow-visible"
+      className={cn(
+        'sticky top-0 z-[99] backdrop-blur-md border-b border-border dark:border-white/10 min-h-[80px] flex items-center shadow-sm overflow-visible transition-colors duration-200 pt-4 pb-3',
+        scrolled ? 'bg-white dark:bg-[#1c2118]' : 'bg-white/98 dark:bg-black/20'
+      )}
       role="banner"
     >
       <nav
-        className="max-w-content mx-auto w-full px-4 sm:px-6 lg:px-10 flex items-center justify-between min-h-[80px] overflow-visible"
+        className="max-w-content mx-auto w-full pl-4 pr-3 sm:pl-6 sm:pr-5 lg:pl-10 lg:pr-12 flex items-center justify-between min-h-[72px] overflow-visible gap-3 max-md:gap-2"
         aria-label="Main navigation"
       >
-        {/* Logo + fixed spacer so menu never touches logo text */}
-        <div className="flex items-center min-w-0 flex-shrink-0">
+        {/* Logo + spacer (on mobile logo can shrink so burger stays visible) */}
+        <div className="flex items-center min-w-0 max-md:min-w-0 max-md:flex-shrink md:flex-shrink-0 overflow-hidden">
           <Link
             href="/"
-            className="flex items-center gap-1 py-2 min-w-0 flex-shrink-0 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary items-end"
+            className="flex items-center gap-1 py-2 min-w-0 max-md:flex-shrink rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary items-end"
             aria-label={`${SITE_NAME} home`}
             onClick={closeMenu}
           >
@@ -80,25 +91,25 @@ export function Header() {
                   alt=""
                   width={120}
                   height={120}
-                  className="h-16 w-16 sm:h-[72px] sm:w-[72px] md:h-[104px] md:w-[104px] object-contain block"
+                  className="max-md:h-24 max-md:w-24 md:h-[104px] md:w-[104px] object-contain block"
                 />
               </span>
             </span>
-            <span className="flex flex-col justify-center gap-0.5 min-w-0">
+            <span className="flex flex-col justify-center gap-0.5 min-w-0 max-md:min-w-0 max-md:truncate">
               <span className="flex items-baseline gap-2 flex-wrap">
-                <span className="font-display font-black text-xl sm:text-2xl md:text-3xl tracking-tight text-primary dark:text-white leading-none">
+                <span className="font-display font-black text-2xl max-md:text-3xl sm:text-2xl md:text-3xl tracking-tight text-primary dark:text-white leading-none">
                   GolfSol
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <ShamrockIcon className="w-4 h-4 sm:w-5 sm:h-5 md:w-5 md:h-5 text-primary dark:text-white flex-shrink-0" />
-                  <span className="font-display font-bold text-sm sm:text-base md:text-lg tracking-tight text-primary dark:text-white leading-none">
+                  <ShamrockIcon className="w-5 h-5 max-md:w-7 max-md:h-7 sm:w-5 sm:h-5 md:w-5 md:h-5 text-primary dark:text-white flex-shrink-0" />
+                  <span className="font-display font-black max-md:font-black max-md:text-xl text-sm sm:text-base md:text-lg tracking-tight text-primary dark:text-white leading-none">
                     Ireland
                   </span>
                 </span>
               </span>
-              <span className="hidden sm:block text-[11px] md:text-xs font-medium tracking-wide text-muted dark:text-white leading-tight">
-                The future of your golf trip
-              </span>
+<span className="block text-[11px] md:text-xs font-medium tracking-wide text-muted dark:text-white leading-tight mt-0.5">
+              The future of your golf trip
+            </span>
             </span>
           </Link>
           {/* Fixed-width gap on desktop: inline style so it always applies */}
@@ -112,14 +123,14 @@ export function Header() {
         <button
           ref={menuButtonRef}
           type="button"
-          className="md:hidden p-3 min-h-[44px] min-w-[44px] flex items-center justify-center text-primary dark:text-white hover:bg-neutral-100 dark:hover:bg-white/10 rounded-lg transition-colors"
+          className="md:hidden p-3 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg border-2 border-neutral-300 dark:border-white/30 bg-neutral-100 dark:bg-white/10 text-neutral-800 dark:text-white hover:bg-neutral-200 dark:hover:bg-white/20 transition-colors flex-shrink-0 order-last"
           aria-expanded={open}
           aria-controls="nav-menu"
           aria-label="Toggle menu"
           onClick={() => setOpen((o) => !o)}
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
 
@@ -131,7 +142,7 @@ export function Header() {
           aria-label="Main menu"
           className={cn(
             'hidden md:flex md:flex-1 md:items-center md:justify-end md:min-w-0 md:ml-auto md:pl-12 lg:pl-16 md:gap-8 lg:gap-10',
-            'max-md:absolute max-md:top-full max-md:left-0 max-md:right-0 max-md:bg-white dark:max-md:bg-black/30 dark:max-md:backdrop-blur-md max-md:py-8 max-md:px-6 max-md:flex-col max-md:gap-1 max-md:shadow-lg max-md:border-b max-md:border-border dark:max-md:border-white/10',
+            'max-md:absolute max-md:top-full max-md:left-0 max-md:right-0 max-md:bg-white dark:max-md:bg-[#1c2118] max-md:py-8 max-md:px-6 max-md:flex-col max-md:gap-1 max-md:shadow-lg max-md:border-b max-md:border-border dark:max-md:border-white/10',
             open && 'max-md:flex'
           )}
         >

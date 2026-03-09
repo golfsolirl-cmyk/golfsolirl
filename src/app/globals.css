@@ -188,6 +188,14 @@ button > *,
     blob-breathe 6s ease-in-out infinite;
 }
 
+/* Mobile: lighter blobs so they're softer and less heavy */
+@media (max-width: 767px) {
+  .blob-animate {
+    filter: brightness(1.4);
+    opacity: 0.7 !important;
+  }
+}
+
 /* 3D logo — badge/emblem depth: perspective, tilt, layered shadows */
 .logo-3d {
   display: inline-block;
