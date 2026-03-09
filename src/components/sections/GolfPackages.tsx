@@ -45,7 +45,7 @@ const DESIGN_STEPS = [
 /** Design Your Golf Package — 4 creative step cards with animation */
 export function GolfPackages() {
   return (
-    <section id="packages" className="py-24 md:py-32 pb-20 bg-cream relative overflow-hidden" aria-labelledby="packages-heading">
+    <section id="packages" className="py-24 md:py-32 pb-20 bg-background relative overflow-hidden" aria-labelledby="packages-heading">
       <div
         className="blob-animate absolute top-0 -right-20 w-[560px] h-[500px] bg-green-putting rounded-[40%_60%_55%_45%_/_50%_45%_55%_50%] opacity-90 z-0 pointer-events-none"
         aria-hidden
@@ -71,13 +71,13 @@ export function GolfPackages() {
             <p className="text-base text-muted leading-relaxed mb-7">
               Costa del Sol only. We handle tee times, hotels, and transfers. Pick one of our packages or tell us your dates and we’ll design an itinerary for you.
             </p>
-            <Button href="#contact" variant="white" size="md">
+            <Button href="#contact" variant="primary" size="md">
               Enquire now
             </Button>
           </div>
           {/* Design your golf package — simple cards, no step branding */}
           <div className="reveal reveal-delay-1">
-            <h3 className="text-h3 font-display font-bold text-primary tracking-tight mb-6 text-center md:text-left">
+            <h3 className="text-h3 font-display font-bold text-primary dark:text-[#2d6b3a] tracking-tight mb-6 text-center md:text-left">
               Design your golf package
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
@@ -105,7 +105,7 @@ export function GolfPackages() {
           </div>
         </div>
       </Container>
-      <SectionWave fill="#F5F0E8" />
+      <SectionWave variant="cream" />
     </section>
   );
 }

@@ -1,0 +1,11 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Disallow auth and account pages from indexing if desired (uncomment when ready)
+# Disallow: /login
+# Disallow: /signup
+# Disallow: /profile
+# Disallow: /forgot-password
+
+Sitemap: /sitemap.xml

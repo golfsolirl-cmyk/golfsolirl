@@ -1,0 +1,247 @@
+/**
+ * Golf Sol Ireland — Theme system (Steps 2–3)
+ * Light: warm off-white, green-tinted. Dark: near-black green-tinted, cream text.
+ * No-flash script sets data-theme before paint; this file defines both themes.
+ */
+
+/* ============== LIGHT THEME (default) ============== */
+:root {
+  /* ----- Surfaces ----- */
+  --color-bg: #f8f6f2;
+  --color-surface: #f2efe8;
+  --color-surface-raised: #ffffff;
+  --color-surface-overlay: rgba(0, 0, 0, 0.35);
+  --color-surface-subtle: #ebe8e2;
+
+  /* ----- Text ----- */
+  --color-text: #1a2418;
+  --color-text-secondary: #2d3829;
+  --color-text-muted: #5c6b5c;
+  --color-text-disabled: #9ca89c;
+  --color-text-inverse: #f8f6f2;
+
+  /* ----- Borders ----- */
+  --color-border: #e2dfd8;
+  --color-border-subtle: #ebe8e2;
+  --color-border-strong: #b5b0a6;
+  --color-focus-ring: #123811;
+
+  /* ----- Brand (accent = green) ----- */
+  --color-accent: #123811;
+  --color-accent-hover: #1e4a1a;
+  --color-accent-active: #0d2d0d;
+  --color-accent-foreground: #ffffff;
+  --color-accent-subtle: #e8f0e9;
+
+  /* ----- Secondary brand (Newsletter, badges) ----- */
+  --color-highlight: #e07b39;
+  --color-highlight-hover: #c96828;
+  --color-yellow: #f5c842;
+
+  /* ----- Status ----- */
+  --color-success: #15803d;
+  --color-success-subtle: #dcfce7;
+  --color-error: #b91c1c;
+  --color-error-subtle: #fee2e2;
+  --color-warning: #b45309;
+  --color-warning-subtle: #fef3c7;
+  --color-info: #1d4ed8;
+  --color-info-subtle: #dbeafe;
+
+  /* ----- Shadows (warm-tinted) ----- */
+  --shadow-sm: 0 1px 2px rgba(18, 56, 17, 0.06);
+  --shadow-md: 0 4px 12px rgba(18, 56, 17, 0.08);
+  --shadow-lg: 0 12px 32px rgba(18, 56, 17, 0.1);
+  --shadow-xl: 0 24px 48px rgba(18, 56, 17, 0.12);
+  --shadow-1: var(--shadow-sm);
+  --shadow-2: var(--shadow-md);
+  --shadow-3: var(--shadow-lg);
+  --shadow-4: var(--shadow-xl);
+  --shadow-5: 0 32px 64px rgba(18, 56, 17, 0.14);
+  --shadow-1-primary: 0 1px 3px rgba(18, 56, 17, 0.08);
+  --shadow-2-primary: 0 4px 24px rgba(18, 56, 17, 0.06);
+  --shadow-3-primary: 0 6px 24px rgba(18, 56, 17, 0.3);
+  --shadow-4-primary: 0 16px 48px rgba(18, 56, 17, 0.12);
+  --shadow-5-primary: 0 24px 64px rgba(18, 56, 17, 0.2);
+
+  /* ----- Legacy aliases (for existing Tailwind / tokens) ----- */
+  --color-background: var(--color-bg);
+  --color-background-elevated: var(--color-surface-raised);
+  --color-background-overlay: var(--color-surface-overlay);
+  --color-text-primary: var(--color-text);
+  --color-text-body: var(--color-text-secondary);
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: var(--color-bg);
+  --color-neutral-200: var(--color-surface);
+  --color-neutral-300: var(--color-border);
+  --color-neutral-400: var(--color-border-strong);
+  --color-neutral-500: var(--color-text-muted);
+  --color-neutral-600: #5a554e;
+  --color-neutral-700: #3d4a3d;
+  --color-neutral-800: #243324;
+  --color-neutral-900: var(--color-text);
+  --color-neutral-foreground: var(--color-text);
+  --color-primary-100: var(--color-accent-subtle);
+  --color-primary-200: #b8d4bc;
+  --color-primary-300: #6baf7a;
+  --color-primary-400: #2d6b3a;
+  --color-primary-500: var(--color-accent);
+  --color-primary-foreground: var(--color-accent-foreground);
+  --color-success-foreground: #ffffff;
+  --color-error-foreground: #ffffff;
+  --color-warning-foreground: #ffffff;
+  --color-info-foreground: #ffffff;
+  --wave-cream: var(--color-surface-raised);
+  --wave-primary: var(--color-accent);
+  --wave-surface-alt: #c8dcf0;
+  --logo-shadow-light: drop-shadow(0 2px 2px rgba(18,56,17,0.15)) drop-shadow(0 6px 12px rgba(18,56,17,0.2)) drop-shadow(0 14px 28px rgba(18,56,17,0.18)) drop-shadow(-2px -2px 4px rgba(255,255,255,0.25));
+  --logo-shadow-light-hover: drop-shadow(0 4px 4px rgba(18,56,17,0.2)) drop-shadow(0 12px 24px rgba(18,56,17,0.25)) drop-shadow(0 24px 48px rgba(18,56,17,0.22)) drop-shadow(-3px -3px 8px rgba(255,255,255,0.35));
+  --logo-shadow-dark: drop-shadow(0 2px 2px rgba(0,0,0,0.3)) drop-shadow(0 6px 14px rgba(0,0,0,0.4)) drop-shadow(0 14px 28px rgba(0,0,0,0.35)) drop-shadow(-1px -1px 3px rgba(255,255,255,0.12));
+  --logo-shadow-dark-hover: drop-shadow(0 4px 6px rgba(0,0,0,0.35)) drop-shadow(0 12px 26px rgba(0,0,0,0.45)) drop-shadow(0 22px 44px rgba(0,0,0,0.4)) drop-shadow(-2px -2px 6px rgba(255,255,255,0.18));
+}
+
+/* ============== DARK THEME ============== */
+[data-theme="dark"] {
+  --color-bg: #0f120e;
+  --color-surface: #161a14;
+  --color-surface-raised: #1c2118;
+  --color-surface-overlay: rgba(0, 0, 0, 0.6);
+  --color-surface-subtle: #1a1f16;
+
+  --color-text: #f0ede6;
+  --color-text-secondary: #d8d4cc;
+  --color-text-muted: #a8a89e;
+  --color-text-disabled: #6b6b62;
+  --color-text-inverse: #0f120e;
+
+  --color-border: rgba(240, 237, 230, 0.18);
+  --color-border-subtle: rgba(240, 237, 230, 0.1);
+  --color-border-strong: rgba(240, 237, 230, 0.35);
+  --color-focus-ring: #4a9e55;
+
+  --color-accent: #2d6b3a;
+  --color-accent-hover: #3d8b4a;
+  --color-accent-active: #1e4a1a;
+  --color-accent-foreground: #f0ede6;
+  --color-accent-subtle: rgba(45, 107, 58, 0.2);
+
+  --color-highlight: #e07b39;
+  --color-highlight-hover: #f59e4a;
+  --color-yellow: #f5c842;
+
+  --color-success: #22c55e;
+  --color-success-subtle: rgba(34, 197, 94, 0.15);
+  --color-error: #ef4444;
+  --color-error-subtle: rgba(239, 68, 68, 0.15);
+  --color-warning: #eab308;
+  --color-warning-subtle: rgba(234, 179, 8, 0.15);
+  --color-info: #3b82f6;
+  --color-info-subtle: rgba(59, 130, 246, 0.15);
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 24px 56px rgba(0, 0, 0, 0.5);
+  --shadow-1: var(--shadow-sm);
+  --shadow-2: var(--shadow-md);
+  --shadow-3: var(--shadow-lg);
+  --shadow-4: var(--shadow-xl);
+  --shadow-5: 0 32px 64px rgba(0, 0, 0, 0.55);
+  --shadow-1-primary: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-2-primary: 0 4px 24px rgba(45, 107, 58, 0.2);
+  --shadow-3-primary: 0 6px 24px rgba(45, 107, 58, 0.3);
+  --shadow-4-primary: 0 16px 48px rgba(45, 107, 58, 0.25);
+  --shadow-5-primary: 0 24px 64px rgba(45, 107, 58, 0.3);
+
+  /* Legacy aliases */
+  --color-background: var(--color-bg);
+  --color-background-elevated: var(--color-surface-raised);
+  --color-background-overlay: var(--color-surface-overlay);
+  --color-text-primary: var(--color-text);
+  --color-text-body: var(--color-text-secondary);
+  --color-neutral-50: #3d463f;
+  --color-neutral-100: var(--color-bg);
+  --color-neutral-200: var(--color-surface);
+  --color-neutral-300: #4a554e;
+  --color-neutral-400: #6b756d;
+  --color-neutral-500: #9aa89e;
+  --color-neutral-600: #b8c4b8;
+  --color-neutral-700: #d0dcd0;
+  --color-neutral-800: #e8ece8;
+  --color-neutral-900: var(--color-text);
+  --color-neutral-foreground: var(--color-text);
+  --color-primary-100: var(--color-accent-subtle);
+  --color-primary-200: #2d5c35;
+  --color-primary-300: #3d7a4a;
+  --color-primary-400: #5cb85c;
+  --color-primary-500: var(--color-accent);
+  --color-primary-foreground: var(--color-accent-foreground);
+  --wave-cream: var(--color-bg);
+  --wave-primary: var(--color-accent);
+  --wave-surface-alt: #2d3630;
+  --logo-shadow-light: drop-shadow(0 2px 2px rgba(0,0,0,0.3)) drop-shadow(0 6px 14px rgba(0,0,0,0.4)) drop-shadow(0 14px 28px rgba(0,0,0,0.35)) drop-shadow(-1px -1px 3px rgba(255,255,255,0.12));
+  --logo-shadow-light-hover: drop-shadow(0 4px 6px rgba(0,0,0,0.35)) drop-shadow(0 12px 26px rgba(0,0,0,0.45)) drop-shadow(0 22px 44px rgba(0,0,0,0.4)) drop-shadow(-2px -2px 6px rgba(255,255,255,0.18));
+  --logo-shadow-dark: var(--logo-shadow-light);
+  --logo-shadow-dark-hover: var(--logo-shadow-light-hover);
+}
+
+/* ============== TYPOGRAPHY (shared) ============== */
+:root {
+  --font-sans: var(--font-dm-sans), 'DM Sans', system-ui, sans-serif;
+  --font-display: var(--font-playfair), 'Playfair Display', Georgia, serif;
+  --font-script: var(--font-dancing), 'Dancing Script', cursive;
+  --font-mono: ui-monospace, monospace;
+
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-md: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+  --text-4xl: 36px;
+  --text-5xl: 48px;
+
+  --leading-tight: 1.15;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.7;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-full: 9999px;
+
+  --duration-fast: 100ms;
+  --duration-normal: 200ms;
+  --duration-slow: 350ms;
+  --ease-default: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Smooth theme switch — only themed properties */
+.theme-transition,
+.theme-transition * {
+  transition:
+    background-color var(--duration-normal) var(--ease-default),
+    border-color var(--duration-normal) var(--ease-default),
+    color var(--duration-fast) var(--ease-default),
+    box-shadow var(--duration-normal) var(--ease-default);
+}

@@ -8,6 +8,8 @@ import Image from 'next/image';
 import { submitNewsletter } from '@/lib/api';
 import { Container } from '@/components/layout/Container';
 import { SectionWave } from '@/components/ui/SectionWave';
+import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
 
 const NEWSLETTER_IMAGE = '/golf-courses-overlap-1.jpg';
 
@@ -27,14 +29,19 @@ export function Newsletter() {
   const onSubmit = async (data: NewsletterFormSchema) => {
     setStatus('loading');
     setErrorMessage(null);
-    const result = await submitNewsletter(data);
-    if (result.error) {
+    try {
+      const result = await submitNewsletter(data);
+      if (result.error) {
+        setStatus('error');
+        setErrorMessage(result.error.message);
+        return;
+      }
+      setStatus('success');
+      reset();
+    } catch {
       setStatus('error');
-      setErrorMessage(result.error.message);
-      return;
+      setErrorMessage('Something went wrong. Please try again.');
     }
-    setStatus('success');
-    reset();
   };
 
   return (
@@ -49,7 +56,7 @@ export function Newsletter() {
               <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border-4 border-white shadow-card rotate-[-2deg] transition-transform duration-slow hover:rotate-0">
                 <Image
                   src={NEWSLETTER_IMAGE}
-                  alt=""
+                  alt="Golf courses and deals for Irish golfers"
                   fill
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 50vw"
@@ -88,37 +95,35 @@ export function Newsletter() {
             </ul>
             <div className="mt-8 p-6 md:p-8 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20">
               <form
-                className="flex flex-col sm:flex-row gap-3"
+                className="flex flex-col sm:flex-row gap-3 items-end sm:items-stretch"
                 onSubmit={handleSubmit(onSubmit)}
                 aria-label="Newsletter signup"
                 noValidate
               >
-                <div className="flex-1 min-w-0">
-                  <label htmlFor="newsletter-email" className="sr-only">
-                    Email address
-                  </label>
-                  <input
+                <div className="flex-1 min-w-0 space-y-0">
+                  <Input
                     id="newsletter-email"
                     type="email"
+                    label="Email address"
+                    labelClassName="sr-only"
                     placeholder="Your email"
-                    className="w-full px-5 py-4 rounded-lg border-2 border-white/30 bg-white text-primary placeholder-placeholderGray focus:outline-none focus:ring-2 focus:ring-yellow focus:border-yellow"
+                    error={errors.email?.message}
                     disabled={status === 'loading'}
-                    aria-invalid={!!errors.email}
+                    className="border-2 border-white/30 bg-white text-primary placeholder:text-neutral-500 focus:ring-yellow focus:border-yellow"
+                    errorClassName="text-yellow"
                     {...register('email')}
                   />
-                  {errors.email && (
-                    <p className="mt-1 text-sm text-yellow font-medium" role="alert">
-                      {errors.email.message}
-                    </p>
-                  )}
                 </div>
-                <button
+                <Button
                   type="submit"
+                  variant="primary"
+                  size="md"
                   disabled={status === 'loading'}
-                  className="btn-animated flex-shrink-0 min-h-[48px] px-8 py-4 rounded-lg bg-yellow text-primary text-sm font-bold uppercase tracking-wider hover:bg-yellow/90 disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 shadow-card"
+                  loading={status === 'loading'}
+                  className="flex-shrink-0 min-h-[48px]"
                 >
-                  <span className="relative z-10">{status === 'loading' ? 'Submitting…' : 'Get deals'}</span>
-                </button>
+                  {status === 'loading' ? 'Submitting…' : 'Get deals'}
+                </Button>
               </form>
               {status === 'success' && (
                 <p className="mt-4 text-yellow font-semibold" role="status">
@@ -134,7 +139,7 @@ export function Newsletter() {
           </div>
         </div>
       </Container>
-      <SectionWave fill="#F5F0E8" />
+      <SectionWave variant="cream" />
     </section>
   );
 }

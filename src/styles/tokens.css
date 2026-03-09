@@ -1,0 +1,246 @@
+/**
+ * Golf Sol Ireland — Design Token System
+ * Single source of truth. Use semantic names only.
+ * Dark mode: [data-theme="dark"] on <html> (set by ThemeProvider).
+ */
+
+/* ============== LIGHT THEME — white, clear green, easy on the eye ============== */
+:root {
+  /* ----- Colors: Primary (brand green) ----- */
+  --color-primary-100: #e8f0e9;
+  --color-primary-200: #b8d4bc;
+  --color-primary-300: #6baf7a;
+  --color-primary-400: #2d6b3a;
+  --color-primary-500: #123811;
+  --color-primary-foreground: #ffffff;
+
+  /* ----- Colors: Neutral (white base, soft stone) ----- */
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: #ffffff;
+  --color-neutral-200: #f5f5f4;
+  --color-neutral-300: #e8e6e3;
+  --color-neutral-400: #b5aea3;
+  --color-neutral-500: #7a756d;
+  --color-neutral-600: #5a554e;
+  --color-neutral-700: #3d4a3d;
+  --color-neutral-800: #243324;
+  --color-neutral-900: #1a2e1a;
+  --color-neutral-foreground: #1a2e1a;
+
+  /* ----- Colors: Semantic ----- */
+  --color-success: #16a34a;
+  --color-success-foreground: #ffffff;
+  --color-warning: #d97706;
+  --color-warning-foreground: #ffffff;
+  --color-error: #dc2626;
+  --color-error-foreground: #ffffff;
+  --color-info: #2563eb;
+  --color-info-foreground: #ffffff;
+
+  /* ----- Colors: Background (semantic) ----- */
+  --color-background: var(--color-neutral-100);
+  --color-background-elevated: #ffffff;
+  --color-background-overlay: rgba(0, 0, 0, 0.4);
+  --color-surface: var(--color-neutral-100);
+  --color-surface-alt: #c8dcf0;
+
+  /* ----- Colors: Text — readable green, soft muted ----- */
+  --color-text-primary: #1a2e1a;
+  --color-text-body: #243324;
+  --color-text-muted: #5a6b5a;
+  --color-text-inverse: #ffffff;
+
+  /* ----- Colors: Border ----- */
+  --color-border: #e8e6e3;
+  --color-border-strong: #b5aea3;
+
+  /* ----- Colors: Brand aliases (for gradual migration) ----- */
+  --color-accent: #e07b39;
+  --color-accent-hover: #c96828;
+  --color-yellow: #f5c842;
+
+  /* ----- Section waves ----- */
+  --wave-cream: #ffffff;
+  --wave-primary: #123811;
+  --wave-surface-alt: #c8dcf0;
+  --wave-stroke-cream: rgba(26,46,26,0.18);
+  --wave-stroke-primary: rgba(255,255,255,0.5);
+  --wave-stroke-surface-alt: rgba(26,46,26,0.25);
+
+  /* ----- Typography: Scale ----- */
+  --font-size-xs: 0.6875rem;   /* 11px */
+  --font-size-sm: 0.75rem;     /* 12px */
+  --font-size-base: 0.9375rem; /* 15px */
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  --font-size-5xl: 3rem;
+
+  /* ----- Typography: Line height ----- */
+  --line-height-tight: 1.05;
+  --line-height-snug: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.65;
+  --line-height-loose: 1.75;
+
+  /* ----- Typography: Weight ----- */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ----- Typography: Letter spacing ----- */
+  --letter-spacing-tight: -0.02em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.08em;
+  --letter-spacing-wider: 0.1em;
+  --letter-spacing-widest: 0.15em;
+
+  /* ----- Spacing (4px base grid) ----- */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-20: 80px;
+  --spacing-24: 96px;
+  --spacing-32: 128px;
+
+  /* ----- Layout ----- */
+  --container-max: 1280px;
+  --nav-height: 72px;
+  --touch-min: 44px;
+
+  /* ----- Border radius ----- */
+  --radius-none: 0;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* ----- Border width ----- */
+  --border-width-1: 1px;
+  --border-width-2: 2px;
+  --border-width-4: 4px;
+
+  /* ----- Shadows (5 elevation levels) ----- */
+  --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-2: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-3: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --shadow-4: 0 16px 48px rgba(0, 0, 0, 0.12);
+  --shadow-5: 0 24px 64px rgba(0, 0, 0, 0.16);
+
+  /* ----- Shadows: Brand (primary-tinted) ----- */
+  --shadow-1-primary: 0 1px 3px rgba(18, 56, 17, 0.08);
+  --shadow-2-primary: 0 4px 24px rgba(18, 56, 17, 0.06);
+  --shadow-3-primary: 0 6px 24px rgba(18, 56, 17, 0.3);
+  --shadow-4-primary: 0 16px 48px rgba(18, 56, 17, 0.12);
+  --shadow-5-primary: 0 24px 64px rgba(18, 56, 17, 0.2);
+
+  /* ----- Motion ----- */
+  --duration-fast: 100ms;
+  --duration-normal: 200ms;
+  --duration-slow: 350ms;
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* ----- Legacy aliases (used by globals.css / existing components) ----- */
+  --color-primary: var(--color-primary-500);
+  --color-navy: var(--color-primary-500);
+  --color-cream: var(--color-neutral-100);
+  --color-white: #ffffff;
+  --section-py: var(--spacing-24);
+  --section-px: var(--spacing-6);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --transition: var(--duration-normal) var(--ease-in-out);
+}
+
+/* ============== DARK THEME — soft dark green, same brand, easy on the eye ============== */
+[data-theme="dark"] {
+  /* ----- Primary — green family for dark bg ----- */
+  --color-primary-100: #1e3d24;
+  --color-primary-200: #2d5c35;
+  --color-primary-300: #3d7a4a;
+  --color-primary-400: #5cb85c;
+  --color-primary-500: #2d6b3a;
+  --color-primary-foreground: #f0ebe3;
+
+  /* ----- Neutral — soft dark green-grey (no black) ----- */
+  --color-neutral-50: #3d463f;
+  --color-neutral-100: #2d3630;
+  --color-neutral-200: #37423b;
+  --color-neutral-300: #4a554e;
+  --color-neutral-400: #6b756d;
+  --color-neutral-500: #9aa89e;
+  --color-neutral-600: #b8c4b8;
+  --color-neutral-700: #d0dcd0;
+  --color-neutral-800: #e8ece8;
+  --color-neutral-900: #f0ebe3;
+  --color-neutral-foreground: #f0ebe3;
+
+  /* ----- Semantic ----- */
+  --color-success: #22c55e;
+  --color-success-foreground: #0d2d0d;
+  --color-warning: #eab308;
+  --color-warning-foreground: #0d2d0d;
+  --color-error: #ef4444;
+  --color-error-foreground: #ffffff;
+  --color-info: #3b82f6;
+  --color-info-foreground: #ffffff;
+
+  /* ----- Background — soft dark green ----- */
+  --color-background: #2d3630;
+  --color-background-elevated: #37423b;
+  --color-background-overlay: rgba(0, 0, 0, 0.4);
+  --color-surface: #2d3630;
+  --color-surface-alt: #354550;
+
+  /* ----- Text — cream, soft muted ----- */
+  --color-text-primary: #f0ebe3;
+  --color-text-body: #e8e4dc;
+  --color-text-muted: #b8c4b8;
+  --color-text-inverse: #2d3630;
+
+  /* ----- Border ----- */
+  --color-border: rgba(240, 235, 227, 0.2);
+  --color-border-strong: rgba(240, 235, 227, 0.35);
+
+  /* ----- Brand ----- */
+  --color-accent: #e07b39;
+  --color-accent-hover: #f59e4a;
+  --color-yellow: #f5c842;
+
+  /* ----- Section waves ----- */
+  --wave-cream: #2d3630;
+  --wave-primary: #2d6b3a;
+  --wave-surface-alt: #354550;
+  --wave-stroke-cream: rgba(240,235,227,0.15);
+  --wave-stroke-primary: rgba(255,255,255,0.45);
+  --wave-stroke-surface-alt: rgba(255,255,255,0.2);
+
+  /* ----- Shadows ----- */
+  --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.15);
+  --shadow-2: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --shadow-3: 0 8px 24px rgba(0, 0, 0, 0.25);
+  --shadow-4: 0 16px 48px rgba(0, 0, 0, 0.3);
+  --shadow-5: 0 24px 64px rgba(0, 0, 0, 0.35);
+  --shadow-1-primary: 0 1px 3px rgba(18, 56, 17, 0.25);
+  --shadow-2-primary: 0 4px 24px rgba(18, 56, 17, 0.2);
+  --shadow-3-primary: 0 6px 24px rgba(18, 56, 17, 0.3);
+  --shadow-4-primary: 0 16px 48px rgba(18, 56, 17, 0.25);
+  --shadow-5-primary: 0 24px 64px rgba(18, 56, 17, 0.3);
+}

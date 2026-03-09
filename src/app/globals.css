@@ -2,21 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Golf Sol — design tokens */
+/* Golf Sol — layout/spacing only; theme tokens in theme.css */
 :root {
-  --color-primary: #123811;
-  --color-accent: #E07B39;
-  --color-navy: #123811;
-  --color-orange: #E07B39;
-  --color-orange-hover: #C96828;
-  --color-yellow: #F5C842;
-  --color-green: #6BAF7A;
-  --color-light-blue: #C8DCF0;
-  --color-cream: #F5F0E8;
-  --color-white: #FFFFFF;
-  --color-border: #D8D2C8;
-  --color-text-body: #0d2d0d;
-  --color-muted: #0d2d0d;
   --container-max: 1280px;
   --section-py: 96px;
   --section-px: 24px;
@@ -35,15 +22,15 @@ html {
 
 body {
   font-family: var(--font-dm-sans), 'DM Sans', system-ui, sans-serif;
-  background: var(--color-cream);
-  color: #0d2d0d;
+  background: var(--color-background);
+  color: var(--color-text-body);
   line-height: 1.65;
   @apply antialiased;
 }
 
 /* Clearer body text — darker, readable on cream */
 .text-body-readable {
-  color: #0d2d0d;
+  color: var(--color-text-body);
   font-size: 1rem;
   line-height: 1.7;
 }
@@ -51,20 +38,24 @@ body {
 /* Section label — slightly larger, strong contrast */
 .section-label {
   @apply text-sm font-bold tracking-widest uppercase block mb-2;
-  color: #b85c28;
+  color: var(--color-accent);
 }
 
 /* Section title (Playfair, uppercase) — dark for clarity */
 .section-title {
   @apply font-display font-black uppercase leading-tight;
   font-size: clamp(2rem, 4vw, 3.25rem);
-  color: #0d2d0d;
+  color: var(--color-text-primary);
 }
 
 /* Script subline — larger, darker for legibility */
 .section-script {
   @apply font-script text-xl md:text-2xl block mb-5;
-  color: #0d2d0d;
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .section-label {
+  color: var(--color-yellow);
 }
 
 /* Scroll reveal — smooth entrance on scroll */
@@ -98,14 +89,14 @@ body {
 }
 
 *:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
 .skip-link {
   @apply absolute -top-full left-6 z-[100] px-4 py-2 rounded transition-all duration-200;
-  background: var(--color-navy);
-  color: var(--color-white);
+  background: var(--color-accent);
+  color: var(--color-accent-foreground);
 }
 
 .skip-link:focus-visible {
@@ -129,7 +120,7 @@ button:hover:not(:disabled),
 input[type="submit"]:hover:not(:disabled),
 .btn-animated:hover {
   transform: translateY(-3px) scale(1.03);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
 /* Click: press down (squish) */
@@ -137,7 +128,7 @@ button:active:not(:disabled),
 input[type="submit"]:active:not(:disabled),
 .btn-animated:active {
   transform: translateY(1px) scale(0.98);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-sm);
   transition-duration: 0.1s;
 }
 
@@ -149,7 +140,7 @@ input[type="submit"]::after,
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: rgba(255,255,255,0.35);
+  background: var(--color-text-inverse);
   opacity: 0;
   pointer-events: none;
   z-index: 0;
@@ -160,7 +151,7 @@ input[type="submit"]:active:not(:disabled)::after,
   animation: btn-flash 0.35s ease-out forwards;
 }
 @keyframes btn-flash {
-  0% { opacity: 1; }
+  0% { opacity: 0.35; }
   100% { opacity: 0; }
 }
 
@@ -217,37 +208,21 @@ button > *,
 
 /* Layered drop-shadows: deep shadow (ground), mid, highlight (top-left light) */
 .logo-3d img {
-  filter:
-    drop-shadow(0 2px 2px rgba(0, 0, 0, 0.15))
-    drop-shadow(0 6px 12px rgba(0, 0, 0, 0.2))
-    drop-shadow(0 14px 28px rgba(0, 0, 0, 0.18))
-    drop-shadow(-2px -2px 4px rgba(255, 255, 255, 0.25));
+  filter: var(--logo-shadow-light);
   transition: filter 0.4s ease;
 }
 
 .logo-3d:hover img {
-  filter:
-    drop-shadow(0 4px 4px rgba(0, 0, 0, 0.2))
-    drop-shadow(0 12px 24px rgba(0, 0, 0, 0.25))
-    drop-shadow(0 24px 48px rgba(0, 0, 0, 0.22))
-    drop-shadow(-3px -3px 8px rgba(255, 255, 255, 0.35));
+  filter: var(--logo-shadow-light-hover);
 }
 
 /* Footer: softer highlight on dark bg */
 .logo-3d--dark img {
-  filter:
-    drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3))
-    drop-shadow(0 6px 14px rgba(0, 0, 0, 0.4))
-    drop-shadow(0 14px 28px rgba(0, 0, 0, 0.35))
-    drop-shadow(-1px -1px 3px rgba(255, 255, 255, 0.12));
+  filter: var(--logo-shadow-dark);
 }
 
 .logo-3d--dark:hover img {
-  filter:
-    drop-shadow(0 4px 6px rgba(0, 0, 0, 0.35))
-    drop-shadow(0 12px 26px rgba(0, 0, 0, 0.45))
-    drop-shadow(0 22px 44px rgba(0, 0, 0, 0.4))
-    drop-shadow(-2px -2px 6px rgba(255, 255, 255, 0.18));
+  filter: var(--logo-shadow-dark-hover);
 }
 
 /* Text logo — GolfSol + Ireland (shamrock) + tagline. Header = green, footer = white */
@@ -266,7 +241,7 @@ button > *,
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #123811;
+  color: var(--color-accent);
 }
 
 /* Ireland + shamrock — same weight as main, slightly smaller */
@@ -278,7 +253,7 @@ button > *,
   font-size: clamp(0.85rem, 2.2vw, 1.1rem);
   font-weight: 700;
   letter-spacing: 0.04em;
-  color: #123811;
+  color: var(--color-accent);
 }
 
 .logo-text-ireland .logo-shamrock {
@@ -293,31 +268,32 @@ button > *,
   font-size: clamp(0.65rem, 1.6vw, 0.8rem);
   font-weight: 500;
   letter-spacing: 0.02em;
-  color: #333;
+  color: var(--color-text-secondary);
 }
 
-/* Footer: all logo text white */
+/* Footer: all logo text inverse */
 .logo-text--dark .logo-text-main,
 .logo-text--dark .logo-text-ireland,
 .logo-text--dark .logo-text-sub {
-  color: #fff;
+  color: var(--color-text-inverse);
 }
 
 .logo-text--dark .logo-text-sub {
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--color-text-inverse);
+  opacity: 0.9;
 }
 
 /* Links match logo text colour */
 a.link-logo {
-  color: #123811;
+  color: var(--color-accent);
 }
 a.link-logo:hover {
-  color: #0d2d0d;
+  color: var(--color-accent-active);
 }
 
 /* Hero headline — dark green for clarity, staggered word reveal */
 .hero-headline {
-  color: #0d2d0d;
+  color: var(--color-text-primary);
 }
 .hero-headline-word {
   display: inline-block;
@@ -338,7 +314,7 @@ a.link-logo:hover {
   }
 }
 .hero-subline {
-  color: #0d2d0d;
+  color: var(--color-text-primary);
   animation: hero-subline-in 0.6s ease 0.95s both;
 }
 @keyframes hero-subline-in {
@@ -351,23 +327,26 @@ a.link-logo:hover {
     transform: translateY(0);
   }
 }
-/* Subtle ongoing shimmer on subline to catch the eye */
+/* Hero subline: white text with green → white → orange animated shimmer */
 .hero-subline-shine {
   background: linear-gradient(
     90deg,
-    #0d2d0d 0%,
-    #0d2d0d 40%,
-    #14591b 50%,
-    #0d2d0d 60%,
-    #0d2d0d 100%
+    #fff 0%,
+    #fff 25%,
+    var(--color-accent) 35%,
+    #fff 45%,
+    var(--color-highlight) 55%,
+    #fff 65%,
+    #fff 100%
   );
   background-size: 200% 100%;
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
-  animation: hero-shine 4s ease-in-out 1.8s infinite;
+  -webkit-text-fill-color: transparent;
+  animation: hero-subline-shimmer 3.5s ease-in-out infinite;
 }
-@keyframes hero-shine {
+@keyframes hero-subline-shimmer {
   0%, 100% { background-position: 100% 0; }
   50% { background-position: 0% 0; }
 }
@@ -381,29 +360,29 @@ a.link-logo:hover {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(18,56,17,0.03) 0%, transparent 50%, rgba(18,56,17,0.06) 100%);
+  background: linear-gradient(135deg, var(--color-accent-subtle) 0%, transparent 50%, var(--color-accent-subtle) 100%);
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
 }
 .package-step-card:hover {
   transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(18,56,17,0.15), 0 8px 24px rgba(0,0,0,0.08);
-  border-color: rgba(18,56,17,0.25);
+  box-shadow: var(--shadow-2-primary);
+  border-color: var(--color-border-strong);
 }
 .package-step-card:hover::before {
-  opacity: 1;
+  opacity: 0.5;
 }
 .package-step-card .step-number {
   transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s ease;
 }
 .package-step-card:hover .step-number {
   transform: scale(1.05) rotate(-2deg);
-  background: #123811;
-  color: white;
+  background: var(--color-accent);
+  color: var(--color-accent-foreground);
 }
 .package-step-card:hover .step-number span {
-  color: white;
+  color: var(--color-accent-foreground);
 }
 .package-step-card .step-arrow {
   opacity: 0;
@@ -415,9 +394,9 @@ a.link-logo:hover {
   transform: translateX(0);
 }
 
-/* Step card icons — dark green (#123811), pulsating */
+/* Step card icons — accent, pulsating */
 .step-card-icon {
-  color: #123811;
+  color: var(--color-accent);
   animation: step-icon-pulse 2s ease-in-out infinite;
 }
 .step-card-icon svg {
@@ -463,11 +442,11 @@ a.link-logo:hover {
   display: inline-block;
   background: linear-gradient(
     90deg,
-    #fff 0%,
-    #fff 32%,
-    rgba(245, 200, 66, 0.95) 50%,
-    #fff 68%,
-    #fff 100%
+    var(--color-surface-raised) 0%,
+    var(--color-surface-raised) 32%,
+    var(--color-yellow) 50%,
+    var(--color-surface-raised) 68%,
+    var(--color-surface-raised) 100%
   );
   background-size: 220% 100%;
   background-position: 100% 0;
@@ -483,14 +462,11 @@ a.link-logo:hover {
 @keyframes newsletter-glow-pulse {
   0%, 100% {
     -webkit-text-stroke-width: 2px;
-    filter: drop-shadow(0 0 6px rgba(245, 200, 66, 0.5))
-            drop-shadow(0 0 16px rgba(245, 200, 66, 0.35));
+    filter: drop-shadow(0 0 6px var(--color-yellow));
   }
   50% {
     -webkit-text-stroke-width: 3px;
-    filter: drop-shadow(0 0 12px rgba(245, 200, 66, 0.8))
-            drop-shadow(0 0 28px rgba(245, 200, 66, 0.5))
-            drop-shadow(0 0 40px rgba(245, 200, 66, 0.25));
+    filter: drop-shadow(0 0 12px var(--color-yellow)) drop-shadow(0 0 28px var(--color-yellow));
   }
 }
 @keyframes newsletter-shimmer {
@@ -527,4 +503,40 @@ a.link-logo:hover {
 /* Section wavy dividers — static (add animation later in .section-wave-svg / .section-wave-path if needed) */
 .section-wave {
   height: 5rem;
+}
+
+/* Theme toggle — icon rotates on theme change */
+.theme-toggle-icon {
+  transition: transform 0.35s var(--ease-spring);
+}
+[data-theme="dark"] .theme-toggle-icon {
+  transform: rotate(180deg);
+}
+
+/* Dark mode: header and footer logo text and links white */
+[data-theme="dark"] header a,
+[data-theme="dark"] header button[aria-label="Toggle menu"],
+[data-theme="dark"] header .font-display,
+[data-theme="dark"] header .text-muted,
+[data-theme="dark"] header nav ul a {
+  color: #fff;
+}
+[data-theme="dark"] header nav ul a:hover {
+  color: var(--color-yellow);
+}
+[data-theme="dark"] header svg {
+  color: #fff;
+}
+[data-theme="dark"] footer svg {
+  color: #fff;
+}
+[data-theme="dark"] footer .font-display,
+[data-theme="dark"] footer a,
+[data-theme="dark"] footer h3,
+[data-theme="dark"] footer p,
+[data-theme="dark"] footer [aria-label*="home"] span {
+  color: #fff;
+}
+[data-theme="dark"] footer a:hover {
+  color: rgba(255, 255, 255, 0.85);
 }

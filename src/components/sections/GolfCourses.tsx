@@ -38,7 +38,7 @@ export function GolfCourses() {
               >
                 <Image
                   src={COURSE_IMAGE}
-                  alt=""
+                  alt="Costa del Sol golf course view"
                   fill
                   className="object-cover"
                   sizes="(max-width: 1024px) 85vw, 45vw"
@@ -51,7 +51,7 @@ export function GolfCourses() {
               >
                 <Image
                   src={COURSE_IMAGE_2}
-                  alt=""
+                  alt="Golf course and coastline, Costa del Sol"
                   fill
                   className="object-cover"
                   sizes="(max-width: 1024px) 45vw, 22vw"
@@ -64,7 +64,7 @@ export function GolfCourses() {
               >
                 <Image
                   src={COURSE_IMAGE_3}
-                  alt=""
+                  alt="Golf fairway and greens, Costa del Sol"
                   fill
                   className="object-cover"
                   sizes="(max-width: 1024px) 38vw, 18vw"
@@ -115,7 +115,7 @@ export function GolfCourses() {
           </div>
         </div>
       </Container>
-      <SectionWave fill="#F5F0E8" />
+      <SectionWave variant="cream" />
     </section>
   );
 }

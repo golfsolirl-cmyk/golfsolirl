@@ -1,11 +1,12 @@
 'use client';
 
+import { memo } from 'react';
 import { Container } from '@/components/layout/Container';
 import { SectionWave } from '@/components/ui/SectionWave';
 
-export function Statement() {
+export const Statement = memo(function Statement() {
   return (
-    <section className="py-20 md:py-24 pb-20 bg-cream relative overflow-hidden" aria-label="Brand statement">
+    <section className="py-20 md:py-24 pb-20 bg-background relative overflow-hidden" aria-label="Brand statement">
       <Container className="text-center relative">
         <div className="reveal max-w-[680px] mx-auto">
           <span className="section-label">Step 1 — Let&apos;s tee off</span>
@@ -15,7 +16,7 @@ export function Statement() {
           </p>
         </div>
       </Container>
-      <SectionWave fill="#C8DCF0" />
+      <SectionWave variant="surfaceAlt" />
     </section>
   );
-}
+});

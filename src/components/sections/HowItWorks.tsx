@@ -59,7 +59,7 @@ export function HowItWorks() {
           <div className="relative w-full aspect-[21/9] min-h-[200px] max-h-[280px] rounded-2xl overflow-hidden shadow-xl border-4 border-white">
             <Image
               src={HERO_IMAGE}
-              alt=""
+              alt="Golf and coast — plan your Costa del Sol trip"
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 1200px"
@@ -138,7 +138,7 @@ export function HowItWorks() {
           </Link>
         </div>
       </Container>
-      <SectionWave fill="#F5F0E8" />
+      <SectionWave variant="cream" />
     </section>
   );
 }

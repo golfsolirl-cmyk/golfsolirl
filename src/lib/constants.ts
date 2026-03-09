@@ -2,6 +2,8 @@ import type { NavItem, GolfPackage, Course, Accommodation, Testimonial, Step } f
 
 export const SITE_NAME = 'Golf Sol Ireland';
 export const SITE_DESCRIPTION = 'Premium golf holidays in Costa del Sol for Irish golfers. Tailor-made packages, tee times, accommodation & transfers. Costa del Sol only.';
+/** Set NEXT_PUBLIC_SITE_URL in production (e.g. https://golfsolireland.com) for OG and canonical. */
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? '';
 
 export const CONTACT = {
   name: 'Martin Kelly',

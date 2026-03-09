@@ -13,7 +13,7 @@ const SECOND_IMAGE =
 export function RepeatHeadline() {
   return (
     <section
-      className="py-24 md:py-32 pb-20 bg-cream relative overflow-hidden"
+      className="py-24 md:py-32 pb-20 bg-background relative overflow-hidden"
       aria-label="About packages"
     >
       {/* Bold decorative shape instead of tiny motifs — gives the section a focal anchor */}
@@ -28,7 +28,7 @@ export function RepeatHeadline() {
 
       <Container className="grid md:grid-cols-2 gap-12 md:gap-16 items-center relative z-10">
         <div className="reveal">
-          <span className="section-label">Design your golf package</span>
+          <span className="section-label dark:text-[#2d6b3a]">Design your golf package</span>
           <h2 className="section-title">Costa del Sol — only</h2>
           <span className="section-script">
             courses, accommodation & transfers for Irish golfers
@@ -44,7 +44,7 @@ export function RepeatHeadline() {
             Choose your dates. We suggest courses and accommodation. You
             receive a custom itinerary. Then you fly and play.
           </p>
-          <Button href="#contact" variant="outline" size="md">
+          <Button href="#contact" variant="primary" size="md">
             Enquire now
           </Button>
         </div>
@@ -59,7 +59,7 @@ export function RepeatHeadline() {
             <div className="relative w-full aspect-[4/3] max-h-[320px] md:max-h-[380px] rounded-2xl overflow-hidden shadow-xl border-4 border-white rotate-[-4deg] transition-transform duration-300 hover:rotate-[-2deg] hover:scale-[1.02]">
               <Image
                 src={MAIN_IMAGE}
-                alt=""
+                alt="Costa del Sol golf — courses and accommodation"
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 90vw, 420px"
@@ -69,7 +69,7 @@ export function RepeatHeadline() {
             <div className="absolute bottom-0 left-0 w-[42%] aspect-square rounded-xl overflow-hidden shadow-lg border-4 border-white rotate-[8deg] translate-x-2 -translate-y-4 transition-transform duration-300 hover:rotate-[10deg] hover:scale-105">
               <Image
                 src={SECOND_IMAGE}
-                alt=""
+                alt="Golf holiday in the sun"
                 fill
                 className="object-cover"
                 sizes="180px"
@@ -86,7 +86,7 @@ export function RepeatHeadline() {
         </div>
       </Container>
 
-      <SectionWave fill="#F5F0E8" />
+      <SectionWave variant="cream" />
     </section>
   );
 }

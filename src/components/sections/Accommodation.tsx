@@ -9,7 +9,7 @@ import { SectionWave } from '@/components/ui/SectionWave';
 
 export function Accommodation() {
   return (
-    <section id="accommodation" className="py-24 md:py-32 pb-20 bg-cream relative overflow-hidden" aria-labelledby="accommodation-heading">
+    <section id="accommodation" className="py-24 md:py-32 pb-20 bg-background relative overflow-hidden" aria-labelledby="accommodation-heading">
       {/* Soft gold / sand blobs for luxury feel */}
       <div className="blob-animate absolute w-[400px] h-[360px] -right-24 top-0 rounded-[55%_45%_60%_40%_/_50%_55%_45%_55%] bg-yellow/20 opacity-90 pointer-events-none z-0" aria-hidden style={{ animationDelay: '-6s' }} />
       <div className="blob-animate absolute w-[280px] h-[260px] bottom-20 left-0 rounded-[60%_40%_55%_45%_/_45%_55%_45%_55%] bg-green-pale/40 pointer-events-none z-0" aria-hidden style={{ animationDelay: '-2s' }} />
@@ -67,7 +67,7 @@ export function Accommodation() {
           </Button>
         </div>
       </Container>
-      <SectionWave fill="#C8DCF0" />
+      <SectionWave variant="surfaceAlt" />
     </section>
   );
 }

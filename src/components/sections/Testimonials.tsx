@@ -27,7 +27,7 @@ function StarRating({ stars = 5 }: { stars?: number }) {
 
 export function Testimonials() {
   return (
-    <section id="testimonials" className="py-24 md:py-32 pb-20 bg-cream relative overflow-hidden" aria-labelledby="testimonials-heading">
+    <section id="testimonials" className="py-24 md:py-32 pb-20 bg-background relative overflow-hidden" aria-labelledby="testimonials-heading">
       <Container className="relative">
         <div className="reveal text-center max-w-2xl mx-auto mb-14">
           <span className="section-label">Real stories</span>
@@ -39,9 +39,9 @@ export function Testimonials() {
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-8 md:gap-10">
-          {TESTIMONIALS.map((t, i) => (
+          {TESTIMONIALS.map((t) => (
             <blockquote
-              key={i}
+              key={`${t.author}-${t.location}`}
               className="reveal bg-white rounded-2xl p-8 shadow-card hover:shadow-cardHover transition-all duration-normal border border-border/50 flex flex-col"
             >
               <StarRating stars={t.stars} />
@@ -51,7 +51,7 @@ export function Testimonials() {
                   {t.avatar ? (
                     <Image
                       src={t.avatar}
-                      alt=""
+                      alt={`Avatar for ${t.author}, ${t.location}`}
                       fill
                       className="object-cover"
                       sizes="48px"
@@ -71,7 +71,7 @@ export function Testimonials() {
           ))}
         </div>
       </Container>
-      <SectionWave fill="#123811" />
+      <SectionWave variant="primary" />
     </section>
   );
 }

@@ -15,7 +15,7 @@ const HERO_BG_IMAGE = '/image.png';
 /** Pa'lais-style hero: script eyebrow, headline, circular image, animated blobs visible around/behind */
 export function Hero() {
   return (
-    <section className="relative min-h-[calc(100vh-72px)] flex items-center overflow-hidden bg-cream pb-20" aria-label="Hero">
+    <section className="relative min-h-[calc(100vh-72px)] flex items-center overflow-hidden bg-background pb-20" aria-label="Hero">
       {/* Background: hero golf ball image — behind everything */}
       <div className="absolute inset-0 z-[0]" aria-hidden>
         <Image
@@ -63,7 +63,7 @@ export function Hero() {
       <Container className="relative z-10 w-full py-16 md:py-20">
         <div className="grid md:grid-cols-2 items-center gap-12 md:gap-16">
           <div className="reveal">
-            <span className="font-script text-lg md:text-xl text-muted block mb-3">
+            <span className="font-script text-lg md:text-xl text-muted dark:text-[#2d6b3a] block mb-3">
               Design your golf package
             </span>
             <h1 className="hero-headline font-display text-[clamp(2.5rem,6vw,5rem)] font-black leading-[1.05] uppercase tracking-tighter mb-4">
@@ -80,7 +80,7 @@ export function Hero() {
               <Button href="#contact" variant="primary" size="md">
                 Enquire now
               </Button>
-              <Button href="#packages" variant="outline" size="md">
+              <Button href="#packages" variant="primary" size="md">
                 Design your package
               </Button>
             </div>
@@ -98,7 +98,7 @@ export function Hero() {
               />
             </div>
             <div
-              className="hero-bubble-pulse absolute -bottom-2 -left-4 z-10 bg-yellow rounded-full w-28 h-28 md:w-32 md:h-32 flex items-center justify-center font-script text-lg md:text-xl text-muted font-bold text-center leading-snug rotate-[-12deg] shadow-card py-3 px-3"
+              className="hero-bubble-pulse absolute -bottom-2 -left-4 z-10 bg-yellow rounded-full w-28 h-28 md:w-32 md:h-32 flex items-center justify-center font-script text-lg md:text-xl text-muted dark:text-black font-bold text-center leading-snug rotate-[-12deg] shadow-card py-3 px-3"
               aria-hidden
             >
               Play in the sun!
@@ -107,7 +107,7 @@ export function Hero() {
         </div>
       </Container>
 
-      <SectionWave fill="#F5F0E8" />
+      <SectionWave variant="cream" />
     </section>
   );
 }

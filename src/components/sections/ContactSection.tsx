@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -48,21 +48,29 @@ export function ContactSection() {
     resolver: zodResolver(contactFormSchema),
   });
 
-  const onSubmit = async (data: ContactFormSchema) => {
-    setStatus('loading');
-    setErrorMessage(null);
-    const result = await submitContact(data);
-    if (result.error) {
-      setStatus('error');
-      setErrorMessage(result.error.message);
-      return;
-    }
-    setStatus('success');
-    reset();
-  };
+  const onSubmit = useCallback(
+    async (data: ContactFormSchema) => {
+      setStatus('loading');
+      setErrorMessage(null);
+      try {
+        const result = await submitContact(data);
+        if (result.error) {
+          setStatus('error');
+          setErrorMessage(result.error.message);
+          return;
+        }
+        setStatus('success');
+        reset();
+      } catch {
+        setStatus('error');
+        setErrorMessage('Something went wrong. Please try again.');
+      }
+    },
+    [reset]
+  );
 
   return (
-    <section id="contact" className="py-24 md:py-32 pb-20 bg-cream relative overflow-hidden" aria-labelledby="contact-heading">
+    <section id="contact" className="py-24 md:py-32 pb-20 bg-background relative overflow-hidden" aria-labelledby="contact-heading">
       {/* Animated blob behind left column */}
       <div
         className="blob-animate absolute w-[420px] h-[400px] -left-32 top-1/2 -translate-y-1/2 rounded-[42%_58%_55%_45%_/_60%_44%_56%_40%] bg-green-mid opacity-75 pointer-events-none z-0"
@@ -146,7 +154,7 @@ export function ContactSection() {
           </div>
         </div>
       </Container>
-      <SectionWave fill="#123811" />
+      <SectionWave variant="primary" />
     </section>
   );
 }

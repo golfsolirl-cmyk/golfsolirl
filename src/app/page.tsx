@@ -1,13 +1,15 @@
+import dynamic from 'next/dynamic';
 import { Hero } from '@/components/sections/Hero';
-import { GolfPackages } from '@/components/sections/GolfPackages';
-import { RepeatHeadline } from '@/components/sections/RepeatHeadline';
-import { Statement } from '@/components/sections/Statement';
-import { GolfCourses } from '@/components/sections/GolfCourses';
-import { Accommodation } from '@/components/sections/Accommodation';
-import { HowItWorks } from '@/components/sections/HowItWorks';
-import { Testimonials } from '@/components/sections/Testimonials';
-import { Newsletter } from '@/components/sections/Newsletter';
-import { ContactSection } from '@/components/sections/ContactSection';
+
+const GolfPackages = dynamic(() => import('@/components/sections/GolfPackages').then((m) => ({ default: m.GolfPackages })), { ssr: true });
+const RepeatHeadline = dynamic(() => import('@/components/sections/RepeatHeadline').then((m) => ({ default: m.RepeatHeadline })), { ssr: true });
+const Statement = dynamic(() => import('@/components/sections/Statement').then((m) => ({ default: m.Statement })), { ssr: true });
+const GolfCourses = dynamic(() => import('@/components/sections/GolfCourses').then((m) => ({ default: m.GolfCourses })), { ssr: true });
+const Accommodation = dynamic(() => import('@/components/sections/Accommodation').then((m) => ({ default: m.Accommodation })), { ssr: true });
+const HowItWorks = dynamic(() => import('@/components/sections/HowItWorks').then((m) => ({ default: m.HowItWorks })), { ssr: true });
+const Testimonials = dynamic(() => import('@/components/sections/Testimonials').then((m) => ({ default: m.Testimonials })), { ssr: true });
+const Newsletter = dynamic(() => import('@/components/sections/Newsletter').then((m) => ({ default: m.Newsletter })), { ssr: true });
+const ContactSection = dynamic(() => import('@/components/sections/ContactSection').then((m) => ({ default: m.ContactSection })), { ssr: true });
 
 export default function HomePage() {
   return (
