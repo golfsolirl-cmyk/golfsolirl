@@ -1,15 +1,6 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { CONTACT, SITE_NAME, SOCIAL_LINKS } from '@/lib/constants';
-
-const ShamrockIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-    <ellipse cx="12" cy="6" rx="5" ry="7" transform="rotate(-10 12 6)" />
-    <ellipse cx="6.5" cy="14" rx="5" ry="7" transform="rotate(50 6.5 14)" />
-    <ellipse cx="17.5" cy="14" rx="5" ry="7" transform="rotate(-50 17.5 14)" />
-    <path d="M11 14v6c0 .5.4 1 1 1s1-.5 1-1v-6" stroke="currentColor" strokeWidth="1.2" fill="none" strokeLinecap="round" />
-  </svg>
-);
+import { Logo } from '@/components/ui/Logo';
 
 const SocialIcon = ({ icon }: { icon: string }) => {
   const className = 'w-5 h-5';
@@ -65,29 +56,9 @@ export function Footer() {
   return (
     <footer className="bg-primary text-white py-20 md:py-24" role="contentinfo">
       <div className="max-w-content mx-auto px-6 md:px-10">
-        <Link href="/" className="inline-flex items-center gap-1 mb-12 py-2" aria-label={`${SITE_NAME} home`}>
-          <span className="logo-3d logo-3d--dark flex-shrink-0">
-            <span className="logo-3d-inner block">
-              <Image src="/logo.svg" alt="" width={120} height={120} className="h-16 w-16 sm:h-[72px] sm:w-[72px] md:h-[104px] md:w-[104px] object-contain block" />
-            </span>
-          </span>
-          <span className="flex flex-col justify-center gap-0.5 min-w-0">
-            <span className="flex items-baseline gap-2 flex-wrap">
-              <span className="font-display font-black text-xl sm:text-2xl md:text-3xl tracking-tight text-white leading-none">
-                GolfSol
-              </span>
-              <span className="flex items-center gap-1.5">
-                <ShamrockIcon className="w-4 h-4 sm:w-5 sm:h-5 md:w-5 md:h-5 text-white flex-shrink-0" />
-                <span className="font-display font-bold text-sm sm:text-base md:text-lg tracking-tight text-white leading-none">
-                  Ireland
-                </span>
-              </span>
-            </span>
-            <span className="text-[11px] md:text-xs font-medium tracking-wide text-white/80 leading-tight">
-              The future of your golf trip
-            </span>
-          </span>
-        </Link>
+        <div className="mb-12">
+          <Logo variant="footer" concept="irish-script" />
+        </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-20">
           {footerLinks.map((block) => (
             <div key={block.heading}>

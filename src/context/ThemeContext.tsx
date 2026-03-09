@@ -23,13 +23,14 @@ function getSystemTheme(): Theme {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
+/** Default = light. Use stored preference only (no system preference) to avoid flicker. */
 function getInitialTheme(): Theme {
   if (typeof window === 'undefined') return 'light';
   const fromDom = document.documentElement.getAttribute('data-theme') as Theme | null;
   if (fromDom === 'dark' || fromDom === 'light') return fromDom;
   const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
   if (stored === 'dark' || stored === 'light') return stored;
-  return getSystemTheme();
+  return 'light';
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {

@@ -291,6 +291,349 @@ button > *,
   opacity: 0.9;
 }
 
+/* ============== Logo lockup — 3 concepts (Logo component) ============== */
+/* Concept 1: Clean SaaS — minimal, highly readable, tight spacing */
+.logo-lockup-saas .logo-wordmark-main,
+.logo-lockup-saas .logo-wordmark-ireland {
+  letter-spacing: 0.01em;
+  transition: letter-spacing 0.25s ease, opacity 0.25s ease;
+}
+.logo-link:hover .logo-lockup-saas .logo-wordmark-main,
+.logo-link:hover .logo-lockup-saas .logo-wordmark-ireland {
+  letter-spacing: 0.02em;
+}
+/* Light mode: use :root so styles apply even when data-theme isn't set; [data-theme="dark"] overrides below */
+:root .logo-lockup-saas .logo-wordmark-main,
+:root .logo-lockup-saas .logo-wordmark-ireland {
+  color: var(--color-accent);
+  filter: drop-shadow(0 1px 1px rgba(18, 56, 17, 0.15));
+}
+
+/* Concept 2: Bold Tech — gradient, glow, stronger typography */
+.logo-lockup-tech .logo-wordmark-main,
+.logo-lockup-tech .logo-wordmark-ireland {
+  letter-spacing: 0.04em;
+  transition: filter 0.3s ease, letter-spacing 0.25s ease;
+}
+:root .logo-lockup-tech .logo-wordmark-main,
+:root .logo-lockup-tech .logo-wordmark-ireland {
+  background: linear-gradient(135deg, #0d2d0d 0%, #123811 30%, #2d6b3a 60%, #3d8b4a 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(18, 56, 17, 0.3)) drop-shadow(0 0 12px rgba(45, 107, 58, 0.15));
+}
+.logo-link:hover .logo-lockup-tech .logo-wordmark-main,
+.logo-link:hover .logo-lockup-tech .logo-wordmark-ireland {
+  filter: drop-shadow(0 2px 6px rgba(18, 56, 17, 0.4)) drop-shadow(0 0 20px rgba(45, 107, 58, 0.2));
+  letter-spacing: 0.05em;
+}
+
+/* Concept 3: Premium — elegant serif, luxury spacing, subtle glow */
+.logo-lockup-premium .logo-wordmark-main,
+.logo-lockup-premium .logo-wordmark-ireland {
+  letter-spacing: 0.02em;
+  transition: filter 0.25s ease, letter-spacing 0.2s ease;
+}
+:root .logo-lockup-premium .logo-wordmark-main,
+:root .logo-lockup-premium .logo-wordmark-ireland {
+  background: linear-gradient(135deg, #0d2d0d 0%, #123811 35%, #1e4a1a 70%, #2d6b3a 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 2px rgba(18, 56, 17, 0.25));
+}
+.logo-link:hover .logo-lockup-premium .logo-wordmark-main,
+.logo-link:hover .logo-lockup-premium .logo-wordmark-ireland {
+  filter: drop-shadow(0 2px 4px rgba(18, 56, 17, 0.35));
+  letter-spacing: 0.03em;
+}
+
+/* Concept 4: Retro — 70s warmth, amber tint, rounded feel */
+.logo-lockup-retro .logo-wordmark-main,
+.logo-lockup-retro .logo-wordmark-ireland {
+  letter-spacing: 0.06em;
+  transition: filter 0.25s ease;
+}
+:root .logo-lockup-retro .logo-wordmark-main,
+:root .logo-lockup-retro .logo-wordmark-ireland {
+  color: #b45309;
+  filter: drop-shadow(0 2px 4px rgba(180, 83, 9, 0.25));
+}
+.logo-link:hover .logo-lockup-retro .logo-wordmark-main,
+.logo-link:hover .logo-lockup-retro .logo-wordmark-ireland {
+  filter: drop-shadow(0 3px 8px rgba(180, 83, 9, 0.35));
+}
+
+/* Concept 5: Neon — electric glow, high contrast */
+.logo-lockup-neon .logo-wordmark-main,
+.logo-lockup-neon .logo-wordmark-ireland {
+  letter-spacing: 0.05em;
+  transition: filter 0.2s ease, text-shadow 0.2s ease;
+}
+:root .logo-lockup-neon .logo-wordmark-main,
+:root .logo-lockup-neon .logo-wordmark-ireland {
+  color: #22c55e;
+  text-shadow: 0 0 10px #22c55e, 0 0 20px rgba(34, 197, 94, 0.6), 0 0 40px rgba(34, 197, 94, 0.3);
+  filter: none;
+}
+.logo-link:hover .logo-lockup-neon .logo-wordmark-main,
+.logo-link:hover .logo-lockup-neon .logo-wordmark-ireland {
+  text-shadow: 0 0 14px #22c55e, 0 0 28px rgba(34, 197, 94, 0.7), 0 0 56px rgba(34, 197, 94, 0.4);
+}
+
+/* Concept 6: Minimal — light weight, generous space */
+.logo-lockup-minimal .logo-wordmark-main,
+.logo-lockup-minimal .logo-wordmark-ireland {
+  letter-spacing: 0.12em;
+  transition: opacity 0.25s ease;
+}
+:root .logo-lockup-minimal .logo-wordmark-main,
+:root .logo-lockup-minimal .logo-wordmark-ireland {
+  color: #5a6b5a;
+  filter: none;
+}
+.logo-link:hover .logo-lockup-minimal .logo-wordmark-main,
+.logo-link:hover .logo-lockup-minimal .logo-wordmark-ireland {
+  color: #123811;
+  opacity: 1;
+}
+
+/* Concept 7: Script — flowing cursive */
+.logo-lockup-script .logo-wordmark-main,
+.logo-lockup-script .logo-wordmark-ireland {
+  letter-spacing: 0.02em;
+  transition: filter 0.25s ease;
+}
+:root .logo-lockup-script .logo-wordmark-main {
+  background: linear-gradient(180deg, #0d2d0d 0%, #2d6b3a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 2px rgba(18, 56, 17, 0.2));
+}
+:root .logo-lockup-script .logo-wordmark-ireland {
+  color: #1e4a1a;
+}
+
+/* Irish Heritage Script — clean SaaS spacing + Dancing Script, green gradient + gold (header/footer default) */
+.logo-lockup-irish-script .logo-wordmark-main,
+.logo-lockup-irish-script .logo-wordmark-ireland {
+  letter-spacing: 0.02em;
+  transition: filter 0.25s ease;
+}
+:root .logo-lockup-irish-script .logo-wordmark-main {
+  background: linear-gradient(180deg, #0d2d0d 0%, #2d6b3a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 2px rgba(18, 56, 17, 0.2));
+}
+:root .logo-lockup-irish-script .logo-wordmark-ireland {
+  color: #b8860b;
+}
+[data-theme="dark"] .logo-lockup-irish-script .logo-wordmark-main {
+  background: linear-gradient(180deg, #e8ece8 0%, #f5c842 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+}
+[data-theme="dark"] .logo-lockup-irish-script .logo-wordmark-ireland {
+  color: #f5c842 !important;
+  -webkit-text-fill-color: #f5c842 !important;
+}
+
+/* Footer: always on green bg — use cream/gold so logo is readable in light or dark theme */
+footer .logo-lockup-irish-script .logo-wordmark-main {
+  background: linear-gradient(180deg, #f0ede6 0%, #f5c842 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+}
+footer .logo-lockup-irish-script .logo-wordmark-ireland {
+  color: #f5c842 !important;
+  -webkit-text-fill-color: #f5c842 !important;
+}
+
+/* Concept 8: Badge — pill background, compact */
+.logo-badge-wrapper {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.logo-badge {
+  padding: 0.25em 0.6em;
+  border-radius: 9999px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+:root .logo-badge-wrapper .logo-badge {
+  background: linear-gradient(135deg, #123811 0%, #2d6b3a 100%);
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  box-shadow: 0 2px 8px rgba(18, 56, 17, 0.3);
+}
+.logo-link:hover .logo-badge-wrapper .logo-badge {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(18, 56, 17, 0.4);
+}
+
+/* Concept 9: Outline — stroked text, no fill */
+.logo-lockup-outline .logo-wordmark-main,
+.logo-lockup-outline .logo-wordmark-ireland {
+  letter-spacing: 0.06em;
+  transition: stroke 0.25s ease, filter 0.25s ease;
+}
+:root .logo-lockup-outline .logo-wordmark-main,
+:root .logo-lockup-outline .logo-wordmark-ireland {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  -webkit-text-stroke: 2px #123811;
+  paint-order: stroke fill;
+  filter: drop-shadow(0 1px 2px rgba(18, 56, 17, 0.15));
+}
+.logo-link:hover .logo-lockup-outline .logo-wordmark-main,
+.logo-link:hover .logo-lockup-outline .logo-wordmark-ireland {
+  -webkit-text-stroke-width: 2.5px;
+  filter: drop-shadow(0 2px 4px rgba(18, 56, 17, 0.25));
+}
+
+/* Concept 10: Stacked — vertical, icon on top */
+.logo-lockup-stacked .logo-wordmark-main,
+.logo-lockup-stacked .logo-wordmark-ireland {
+  letter-spacing: 0.03em;
+}
+:root .logo-lockup-stacked .logo-wordmark-main,
+:root .logo-lockup-stacked .logo-wordmark-ireland {
+  background: linear-gradient(135deg, #0d2d0d 0%, #123811 50%, #2d6b3a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 2px rgba(18, 56, 17, 0.2));
+}
+
+/* Concept 11: Brutalist — heavy, stark, uppercase */
+.logo-lockup-brutalist .logo-wordmark-main,
+.logo-lockup-brutalist .logo-wordmark-ireland {
+  letter-spacing: 0.08em;
+  transition: letter-spacing 0.2s ease, filter 0.2s ease;
+}
+:root .logo-lockup-brutalist .logo-wordmark-main,
+:root .logo-lockup-brutalist .logo-wordmark-ireland {
+  color: #0d120c;
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.1));
+}
+.logo-link:hover .logo-lockup-brutalist .logo-wordmark-main,
+.logo-link:hover .logo-lockup-brutalist .logo-wordmark-ireland {
+  letter-spacing: 0.1em;
+}
+
+/* Concept 12: Luxe — gold gradient, wide tracking */
+.logo-lockup-luxe .logo-wordmark-main,
+.logo-lockup-luxe .logo-wordmark-ireland {
+  letter-spacing: 0.2em;
+  transition: filter 0.3s ease;
+}
+:root .logo-lockup-luxe .logo-wordmark-main,
+:root .logo-lockup-luxe .logo-wordmark-ireland {
+  background: linear-gradient(135deg, #b8860b 0%, #f5c842 25%, #fef495 50%, #f5c842 75%, #8b6914 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(184, 134, 11, 0.3));
+}
+.logo-link:hover .logo-lockup-luxe .logo-wordmark-main,
+.logo-link:hover .logo-lockup-luxe .logo-wordmark-ireland {
+  filter: drop-shadow(0 4px 12px rgba(245, 200, 66, 0.4));
+}
+
+/* Concept 13: Gradient mesh — green → gold → green */
+.logo-lockup-gradient-mesh .logo-wordmark-main,
+.logo-lockup-gradient-mesh .logo-wordmark-ireland {
+  letter-spacing: 0.04em;
+  transition: filter 0.3s ease, background-position 0.5s ease;
+}
+:root .logo-lockup-gradient-mesh .logo-wordmark-main,
+:root .logo-lockup-gradient-mesh .logo-wordmark-ireland {
+  background: linear-gradient(90deg, #0d2d0d 0%, #123811 20%, #2d6b3a 40%, #f5c842 50%, #2d6b3a 60%, #1e4a1a 80%, #0d2d0d 100%);
+  background-size: 300% 100%;
+  background-position: 0% 0%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(18, 56, 17, 0.25));
+}
+.logo-link:hover .logo-lockup-gradient-mesh .logo-wordmark-main,
+.logo-link:hover .logo-lockup-gradient-mesh .logo-wordmark-ireland {
+  background-position: 100% 0%;
+  filter: drop-shadow(0 3px 8px rgba(45, 107, 58, 0.3));
+}
+
+/* Dark theme: all concepts solid colour, subtle glow */
+[data-theme="dark"] .logo-wordmark-main,
+[data-theme="dark"] .logo-wordmark-ireland {
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: inherit !important;
+  color: inherit !important;
+  text-shadow: 0 0 24px rgba(245, 200, 66, 0.06);
+}
+[data-theme="dark"] .logo-lockup-outline .logo-wordmark-main,
+[data-theme="dark"] .logo-lockup-outline .logo-wordmark-ireland {
+  -webkit-text-stroke: 2px #f0ede6 !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+}
+[data-theme="dark"] .logo-badge-wrapper .logo-badge {
+  background: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+[data-theme="dark"] .logo-lockup-neon .logo-wordmark-main,
+[data-theme="dark"] .logo-lockup-neon .logo-wordmark-ireland {
+  text-shadow: 0 0 12px rgba(74, 222, 128, 0.5), 0 0 24px rgba(74, 222, 128, 0.2) !important;
+}
+[data-theme="dark"] .logo-lockup-retro .logo-wordmark-main,
+[data-theme="dark"] .logo-lockup-retro .logo-wordmark-ireland {
+  color: #f5c842 !important;
+}
+[data-theme="dark"] .logo-lockup-brutalist .logo-wordmark-main,
+[data-theme="dark"] .logo-lockup-brutalist .logo-wordmark-ireland {
+  color: #f0ede6 !important;
+}
+[data-theme="dark"] .logo-lockup-minimal .logo-wordmark-main,
+[data-theme="dark"] .logo-lockup-minimal .logo-wordmark-ireland {
+  color: #d8d4cc !important;
+}
+
+.logo-tagline {
+  letter-spacing: 0.04em;
+  transition: opacity 0.2s ease;
+}
+.logo-link:hover .logo-tagline {
+  opacity: 0.95;
+}
+
+/* Micro: smooth transition on entire logo link */
+.logo-link {
+  transition: transform 0.2s ease;
+}
+.logo-link:active {
+  transform: scale(0.99);
+}
+
 /* Links match logo text colour */
 a.link-logo {
   color: var(--color-accent);
@@ -508,10 +851,257 @@ a.link-logo:hover {
   }
 }
 
-/* Section wavy dividers — static (add animation later in .section-wave-svg / .section-wave-path if needed) */
+/* Section wavy dividers — fill/stroke from theme variables so wave matches section and theme toggle doesn't flash */
 .section-wave {
   height: 5rem;
 }
+.section-wave--cream .section-wave-path {
+  fill: var(--section-wave-cream-fill);
+}
+.section-wave--cream .section-wave-stroke {
+  stroke: var(--section-wave-cream-stroke);
+}
+.section-wave--primary .section-wave-path {
+  fill: var(--section-wave-primary-fill);
+}
+.section-wave--primary .section-wave-stroke {
+  stroke: var(--section-wave-primary-stroke);
+}
+.section-wave--surfaceAlt .section-wave-path {
+  fill: var(--section-wave-surfaceAlt-fill);
+}
+.section-wave--surfaceAlt .section-wave-stroke {
+  stroke: var(--section-wave-surfaceAlt-stroke);
+}
+
+/* ============== 10 Logo Text Designs (Golf Sol Ireland) ============== */
+.logo-text-design {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
+.logo-text-design-ireland {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* 1. Classic Golf Club Serif */
+.logo-text-design--classic-serif .logo-text-design-main {
+  font-family: var(--font-playfair), 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  letter-spacing: 0.02em;
+  color: #0d2d0d;
+}
+.logo-text-design--classic-serif .logo-text-design-ireland {
+  font-family: var(--font-playfair), 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: clamp(1rem, 2.5vw, 1.35rem);
+  letter-spacing: 0.04em;
+  color: #123811;
+}
+[data-theme="dark"] .logo-text-design--classic-serif .logo-text-design-main,
+[data-theme="dark"] .logo-text-design--classic-serif .logo-text-design-ireland { color: #f0ede6; }
+
+/* 2. Luxury Gold Gradient */
+.logo-text-design--luxury-gold .logo-text-design-main,
+.logo-text-design--luxury-gold .logo-text-design-ireland {
+  font-family: var(--font-playfair), 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  letter-spacing: 0.08em;
+  background: linear-gradient(135deg, #b8860b 0%, #f5c842 40%, #fef495 60%, #c9a227 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(184, 134, 11, 0.3));
+}
+.logo-text-design--luxury-gold .logo-text-design-ireland { font-size: clamp(1rem, 2.5vw, 1.35rem); font-weight: 700; }
+
+/* 3. Modern Minimal Golf Brand */
+.logo-text-design--modern-minimal .logo-text-design-main {
+  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+  letter-spacing: -0.02em;
+  color: #123811;
+}
+.logo-text-design--modern-minimal .logo-text-design-ireland {
+  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: clamp(0.9rem, 2vw, 1.15rem);
+  letter-spacing: 0.02em;
+  color: #2d6b3a;
+}
+[data-theme="dark"] .logo-text-design--modern-minimal .logo-text-design-main { color: #e8ece8; }
+[data-theme="dark"] .logo-text-design--modern-minimal .logo-text-design-ireland { color: #b8c4b8; }
+
+/* 4. Irish Heritage Script */
+.logo-text-design--irish-script .logo-text-design-main {
+  font-family: var(--font-dancing), 'Dancing Script', cursive;
+  font-weight: 700;
+  font-size: clamp(2rem, 5vw, 3rem);
+  background: linear-gradient(180deg, #0d2d0d 0%, #2d6b3a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+.logo-text-design--irish-script .logo-text-design-ireland {
+  font-family: var(--font-dancing), 'Dancing Script', cursive;
+  font-weight: 600;
+  font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+  color: #b8860b;
+}
+[data-theme="dark"] .logo-text-design--irish-script .logo-text-design-main {
+  background: linear-gradient(180deg, #e8ece8 0%, #f5c842 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+[data-theme="dark"] .logo-text-design--irish-script .logo-text-design-ireland { color: #f5c842; }
+
+/* 5. Championship Badge */
+.logo-text-design--championship-badge {
+  background: linear-gradient(135deg, #0d2d0d 0%, #123811 50%, #1e4a1a 100%);
+  color: #fff;
+  padding: 0.5rem 1.25rem;
+  border-radius: 9999px;
+  box-shadow: 0 4px 20px rgba(18, 56, 17, 0.4);
+}
+.logo-text-design--championship-badge .logo-text-design-main {
+  font-family: var(--font-outfit), 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  letter-spacing: 0.12em;
+}
+.logo-text-design--championship-badge .logo-text-design-ireland {
+  font-family: var(--font-outfit), 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: clamp(0.85rem, 2vw, 1.1rem);
+  letter-spacing: 0.1em;
+  color: #fff;
+}
+
+/* 6. Crest Emblem */
+.logo-text-design--crest-emblem {
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+.logo-text-design--crest-emblem .logo-text-design-main {
+  font-family: var(--font-playfair), 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: clamp(1.35rem, 3vw, 1.85rem);
+  letter-spacing: 0.2em;
+  color: #0d2d0d;
+}
+.logo-text-design--crest-emblem .logo-text-design-ireland {
+  font-family: var(--font-dancing), 'Dancing Script', cursive;
+  font-weight: 600;
+  font-size: clamp(1.25rem, 2.8vw, 1.6rem);
+  background: linear-gradient(90deg, #b8860b, #f5c842);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+[data-theme="dark"] .logo-text-design--crest-emblem .logo-text-design-main { color: #f0ede6; }
+
+/* 7. Sport Premium */
+.logo-text-design--sport-premium .logo-text-design-main,
+.logo-text-design--sport-premium .logo-text-design-ireland {
+  font-family: var(--font-outfit), 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.6rem, 4vw, 2.25rem);
+  letter-spacing: 0.04em;
+  background: linear-gradient(135deg, #0d2d0d 0%, #123811 40%, #2d6b3a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(18, 56, 17, 0.25));
+}
+.logo-text-design--sport-premium .logo-text-design-ireland { font-size: clamp(1rem, 2.5vw, 1.35rem); font-weight: 700; }
+[data-theme="dark"] .logo-text-design--sport-premium .logo-text-design-main,
+[data-theme="dark"] .logo-text-design--sport-premium .logo-text-design-ireland {
+  background: linear-gradient(135deg, #e8ece8 0%, #b8c4b8 60%, #f5c842 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 8. Traditional Double Line */
+.logo-text-design--traditional-double .logo-text-design-main,
+.logo-text-design--traditional-double .logo-text-design-ireland {
+  font-family: var(--font-playfair), 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  letter-spacing: 0.03em;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1.5px #123811;
+  paint-order: stroke fill;
+}
+.logo-text-design--traditional-double .logo-text-design-ireland { font-size: clamp(1rem, 2.5vw, 1.35rem); font-weight: 700; }
+[data-theme="dark"] .logo-text-design--traditional-double .logo-text-design-main,
+[data-theme="dark"] .logo-text-design--traditional-double .logo-text-design-ireland {
+  -webkit-text-stroke: 1.5px #f0ede6;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 9. Celtic Gold */
+.logo-text-design--celtic-gold .logo-text-design-main,
+.logo-text-design--celtic-gold .logo-text-design-ireland {
+  font-family: var(--font-playfair), 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  letter-spacing: 0.04em;
+  color: #c9a227;
+  -webkit-text-stroke: 2px #0d2d0d;
+  paint-order: stroke fill;
+  filter: drop-shadow(0 2px 6px rgba(201, 162, 39, 0.4));
+}
+.logo-text-design--celtic-gold .logo-text-design-ireland { font-size: clamp(1rem, 2.5vw, 1.35rem); font-weight: 700; }
+[data-theme="dark"] .logo-text-design--celtic-gold .logo-text-design-main,
+[data-theme="dark"] .logo-text-design--celtic-gold .logo-text-design-ireland {
+  color: #f5c842;
+  -webkit-text-stroke: 2px #141a12;
+}
+
+/* 10. Fairway Fresh */
+.logo-text-design--fairway-fresh .logo-text-design-main {
+  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.6rem, 4vw, 2.25rem);
+  letter-spacing: 0.06em;
+  background: linear-gradient(180deg, #2d6b3a 0%, #5cb85c 50%, #8a9a8a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+.logo-text-design--fairway-fresh .logo-text-design-ireland {
+  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  font-weight: 500;
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  letter-spacing: 0.08em;
+  color: #5cb85c;
+}
+[data-theme="dark"] .logo-text-design--fairway-fresh .logo-text-design-main {
+  background: linear-gradient(180deg, #b8c4b8 0%, #5cb85c 50%, #3d8b4a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+[data-theme="dark"] .logo-text-design--fairway-fresh .logo-text-design-ireland { color: #7cb87c; }
 
 /* Theme toggle — icon rotates on theme change */
 .theme-toggle-icon {

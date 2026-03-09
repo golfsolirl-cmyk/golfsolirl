@@ -94,36 +94,45 @@
   --wave-cream: var(--color-surface-raised);
   --wave-primary: var(--color-accent);
   --wave-surface-alt: #c8dcf0;
+  /* Section wave SVG — same as section bg so wave blends in (cream = bg-background, surfaceAlt = bg-surface-alt) */
+  --section-wave-cream-fill: var(--color-bg);
+  --section-wave-cream-stroke: rgba(26, 46, 26, 0.18);
+  --section-wave-primary-fill: var(--color-accent);
+  --section-wave-primary-stroke: rgba(255, 255, 255, 0.5);
+  --section-wave-surfaceAlt-fill: var(--color-surface-alt);
+  --section-wave-surfaceAlt-stroke: rgba(26, 46, 26, 0.25);
   --logo-shadow-light: drop-shadow(0 2px 2px rgba(18,56,17,0.15)) drop-shadow(0 6px 12px rgba(18,56,17,0.2)) drop-shadow(0 14px 28px rgba(18,56,17,0.18)) drop-shadow(-2px -2px 4px rgba(255,255,255,0.25));
   --logo-shadow-light-hover: drop-shadow(0 4px 4px rgba(18,56,17,0.2)) drop-shadow(0 12px 24px rgba(18,56,17,0.25)) drop-shadow(0 24px 48px rgba(18,56,17,0.22)) drop-shadow(-3px -3px 8px rgba(255,255,255,0.35));
   --logo-shadow-dark: drop-shadow(0 2px 2px rgba(0,0,0,0.3)) drop-shadow(0 6px 14px rgba(0,0,0,0.4)) drop-shadow(0 14px 28px rgba(0,0,0,0.35)) drop-shadow(-1px -1px 3px rgba(255,255,255,0.12));
   --logo-shadow-dark-hover: drop-shadow(0 4px 6px rgba(0,0,0,0.35)) drop-shadow(0 12px 26px rgba(0,0,0,0.45)) drop-shadow(0 22px 44px rgba(0,0,0,0.4)) drop-shadow(-2px -2px 6px rgba(255,255,255,0.18));
 }
 
-/* ============== DARK THEME ============== */
+/* ============== DARK THEME — layered dark green, no pure black, high readability ============== */
 [data-theme="dark"] {
-  --color-bg: #0f120e;
-  --color-surface: #161a14;
-  --color-surface-raised: #1c2118;
-  --color-surface-overlay: rgba(0, 0, 0, 0.6);
-  --color-surface-subtle: #1a1f16;
+  /* Layered dark green (forest / bottle green) */
+  --color-bg: #0d120c;
+  --color-surface: #141a12;
+  --color-surface-raised: #1c2319;
+  --color-surface-overlay: rgba(13, 18, 12, 0.88);
+  --color-surface-subtle: #161d14;
 
   --color-text: #f0ede6;
   --color-text-secondary: #d8d4cc;
-  --color-text-muted: #a8a89e;
-  --color-text-disabled: #6b6b62;
-  --color-text-inverse: #0f120e;
+  --color-text-muted: #9ca89c;
+  --color-text-disabled: #6b7568;
+  --color-text-inverse: #0d120c;
 
-  --color-border: rgba(240, 237, 230, 0.18);
-  --color-border-subtle: rgba(240, 237, 230, 0.1);
-  --color-border-strong: rgba(240, 237, 230, 0.35);
+  --color-border: rgba(240, 237, 230, 0.14);
+  --color-border-subtle: rgba(240, 237, 230, 0.08);
+  --color-border-strong: rgba(240, 237, 230, 0.28);
   --color-focus-ring: #4a9e55;
 
+  /* Brand green + warm accent for dark */
   --color-accent: #2d6b3a;
   --color-accent-hover: #3d8b4a;
   --color-accent-active: #1e4a1a;
-  --color-accent-foreground: #f0ede6;
-  --color-accent-subtle: rgba(45, 107, 58, 0.2);
+  --color-accent-foreground: #f0fdf4;
+  --color-accent-subtle: rgba(45, 107, 58, 0.28);
 
   --color-highlight: #e07b39;
   --color-highlight-hover: #f59e4a;
@@ -159,12 +168,12 @@
   --color-background-overlay: var(--color-surface-overlay);
   --color-text-primary: var(--color-text);
   --color-text-body: var(--color-text-secondary);
-  --color-neutral-50: #3d463f;
+  --color-neutral-50: #2d3630;
   --color-neutral-100: var(--color-bg);
   --color-neutral-200: var(--color-surface);
-  --color-neutral-300: #4a554e;
-  --color-neutral-400: #6b756d;
-  --color-neutral-500: #9aa89e;
+  --color-neutral-300: #3d4a3d;
+  --color-neutral-400: #5a6b5a;
+  --color-neutral-500: #8a9a8a;
   --color-neutral-600: #b8c4b8;
   --color-neutral-700: #d0dcd0;
   --color-neutral-800: #e8ece8;
@@ -178,7 +187,14 @@
   --color-primary-foreground: var(--color-accent-foreground);
   --wave-cream: var(--color-bg);
   --wave-primary: var(--color-accent);
-  --wave-surface-alt: #2d3630;
+  --wave-surface-alt: #232d24;
+  /* Section wave SVG — match section bg so wave is same colour in dark */
+  --section-wave-cream-fill: var(--color-bg);
+  --section-wave-cream-stroke: rgba(240, 237, 230, 0.12);
+  --section-wave-primary-fill: var(--color-accent);
+  --section-wave-primary-stroke: rgba(255, 255, 255, 0.4);
+  --section-wave-surfaceAlt-fill: var(--wave-surface-alt);
+  --section-wave-surfaceAlt-stroke: rgba(240, 237, 230, 0.15);
   --logo-shadow-light: drop-shadow(0 2px 2px rgba(0,0,0,0.3)) drop-shadow(0 6px 14px rgba(0,0,0,0.4)) drop-shadow(0 14px 28px rgba(0,0,0,0.35)) drop-shadow(-1px -1px 3px rgba(255,255,255,0.12));
   --logo-shadow-light-hover: drop-shadow(0 4px 6px rgba(0,0,0,0.35)) drop-shadow(0 12px 26px rgba(0,0,0,0.45)) drop-shadow(0 22px 44px rgba(0,0,0,0.4)) drop-shadow(-2px -2px 6px rgba(255,255,255,0.18));
   --logo-shadow-dark: var(--logo-shadow-light);

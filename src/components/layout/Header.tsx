@@ -1,20 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { NAV_ITEMS, SITE_NAME } from '@/lib/constants';
+import { NAV_ITEMS } from '@/lib/constants';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { Logo } from '@/components/ui/Logo';
 import { cn } from '@/lib/utils';
-
-const ShamrockIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-    <ellipse cx="12" cy="6" rx="5" ry="7" transform="rotate(-10 12 6)" />
-    <ellipse cx="6.5" cy="14" rx="5" ry="7" transform="rotate(50 6.5 14)" />
-    <ellipse cx="17.5" cy="14" rx="5" ry="7" transform="rotate(-50 17.5 14)" />
-    <path d="M11 14v6c0 .5.4 1 1 1s1-.5 1-1v-6" stroke="currentColor" strokeWidth="1.2" fill="none" strokeLinecap="round" />
-  </svg>
-);
 
 /** Premium header: strong logo lockup, clear nav hierarchy, Stripe/Linear-level polish. */
 export function Header() {
@@ -68,7 +59,7 @@ export function Header() {
     <header
       className={cn(
         'sticky top-0 z-[99] backdrop-blur-md border-b border-border dark:border-white/10 min-h-[80px] flex items-center shadow-sm overflow-visible transition-colors duration-200 pt-4 pb-3',
-        scrolled ? 'bg-white dark:bg-[#1c2118]' : 'bg-white/98 dark:bg-black/20'
+        scrolled ? 'bg-white dark:bg-surface-raised' : 'bg-white/98 dark:bg-bg/80'
       )}
       role="banner"
     >
@@ -78,40 +69,7 @@ export function Header() {
       >
         {/* Logo + spacer (on mobile logo can shrink so burger stays visible) */}
         <div className="flex items-center min-w-0 max-md:min-w-0 max-md:flex-shrink md:flex-shrink-0 overflow-hidden">
-          <Link
-            href="/"
-            className="flex items-center gap-1 py-2 min-w-0 max-md:flex-shrink rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary items-end"
-            aria-label={`${SITE_NAME} home`}
-            onClick={closeMenu}
-          >
-            <span className="logo-3d flex-shrink-0 -mb-4 sm:-mb-5 md:-mb-6">
-              <span className="logo-3d-inner block">
-                <Image
-                  src="/logo.svg"
-                  alt=""
-                  width={120}
-                  height={120}
-                  className="max-md:h-24 max-md:w-24 md:h-[104px] md:w-[104px] object-contain block"
-                />
-              </span>
-            </span>
-            <span className="flex flex-col justify-center gap-0.5 min-w-0 max-md:min-w-0 max-md:truncate">
-              <span className="flex items-baseline gap-2 flex-wrap">
-                <span className="font-display font-black text-2xl max-md:text-3xl sm:text-2xl md:text-3xl tracking-tight text-primary dark:text-white leading-none">
-                  GolfSol
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <ShamrockIcon className="w-5 h-5 max-md:w-7 max-md:h-7 sm:w-5 sm:h-5 md:w-5 md:h-5 text-primary dark:text-white flex-shrink-0" />
-                  <span className="font-display font-black max-md:font-black max-md:text-xl text-sm sm:text-base md:text-lg tracking-tight text-primary dark:text-white leading-none">
-                    Ireland
-                  </span>
-                </span>
-              </span>
-<span className="block text-[11px] md:text-xs font-medium tracking-wide text-muted dark:text-white leading-tight mt-0.5">
-              The future of your golf trip
-            </span>
-            </span>
-          </Link>
+          <Logo variant="header" concept="irish-script" className="min-w-0" onClick={closeMenu} />
           {/* Fixed-width gap on desktop: inline style so it always applies */}
           <span
             className="hidden md:inline-block flex-shrink-0"
@@ -142,7 +100,7 @@ export function Header() {
           aria-label="Main menu"
           className={cn(
             'hidden md:flex md:flex-1 md:items-center md:justify-end md:min-w-0 md:ml-auto md:pl-12 lg:pl-16 md:gap-8 lg:gap-10',
-            'max-md:absolute max-md:top-full max-md:left-0 max-md:right-0 max-md:bg-white dark:max-md:bg-[#1c2118] max-md:py-8 max-md:px-6 max-md:flex-col max-md:gap-1 max-md:shadow-lg max-md:border-b max-md:border-border dark:max-md:border-white/10',
+            'max-md:absolute max-md:top-full max-md:left-0 max-md:right-0 max-md:bg-white dark:max-md:bg-surface-raised max-md:py-8 max-md:px-6 max-md:flex-col max-md:gap-1 max-md:shadow-lg max-md:border-b max-md:border-border dark:max-md:border-border',
             open && 'max-md:flex'
           )}
         >

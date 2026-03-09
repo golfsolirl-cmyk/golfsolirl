@@ -19,6 +19,7 @@ const config: Config = {
         surface: 'var(--color-surface)',
         'surface-raised': 'var(--color-surface-raised)',
         'surface-overlay': 'var(--color-surface-overlay)',
+        'surface-alt': 'var(--color-surface-alt)',
         text: 'var(--color-text)',
         'text-secondary': 'var(--color-text-secondary)',
         'text-muted': 'var(--color-text-muted)',
@@ -96,6 +97,7 @@ const config: Config = {
         display: ['var(--font-playfair)', 'Playfair Display', 'Georgia', 'serif'],
         script: ['var(--font-dancing)', 'Dancing Script', 'cursive'],
         body: ['var(--font-dm-sans)', 'DM Sans', 'system-ui', 'sans-serif'],
+        outfit: ['var(--font-outfit)', 'Outfit', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         xs: '11px',
