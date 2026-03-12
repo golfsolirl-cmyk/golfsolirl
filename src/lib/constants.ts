@@ -8,25 +8,27 @@ export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? '';
 export const CONTACT = {
   name: 'Martin Kelly',
   companyName: 'Golf Sol Ireland',
-  phone: '086 600 6202',
-  phoneE164: '+353 86 600 6202',
+  phone: '087 446 4766',
+  phoneE164: '+353874464766',
 };
 
-/** Social links — replace with real URLs when available. WhatsApp uses CONTACT.phoneE164. */
+/** Social links — update hrefs when client confirms (Master Plan §12). */
 export const SOCIAL_LINKS = [
-  { label: 'Facebook', href: 'https://www.facebook.com/', icon: 'facebook' },
-  { label: 'Instagram', href: 'https://www.instagram.com/', icon: 'instagram' },
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/', icon: 'linkedin' },
-  { label: 'WhatsApp', href: `https://wa.me/${CONTACT.phoneE164.replace(/\D/g, '')}`, icon: 'whatsapp' },
+  { label: 'Facebook', href: 'https://facebook.com/golfsolireland', icon: 'facebook' },
+  { label: 'Instagram', href: 'https://instagram.com/golfsolireland', icon: 'instagram' },
+  { label: 'LinkedIn', href: 'https://linkedin.com/company/golfsolireland', icon: 'linkedin' },
+  { label: 'Bluesky', href: 'https://bsky.app/profile/golfsolireland.com', icon: 'bluesky' },
+  { label: 'WhatsApp', href: 'https://wa.me/353874464766', icon: 'whatsapp' },
 ] as const;
 
 export const NAV_ITEMS: NavItem[] = [
-  { label: 'Home', href: '/#hero' },
-  { label: 'Golf Packages', href: '/#packages' },
-  { label: 'Golf Courses', href: '/#courses' },
-  { label: 'Accommodation', href: '/#accommodation' },
-  { label: 'Plan Your Trip', href: '/#how-it-works' },
-  { label: 'Contact', href: '/#contact' },
+  { label: 'Home', href: '/' },
+  { label: 'Packages', href: '/packages' },
+  { label: 'Golf Courses', href: '/courses' },
+  { label: 'Transfers', href: '/transfers' },
+  { label: 'About Us', href: '/about' },
+  { label: 'Book Now', href: '/booking' },
+  { label: 'Contact', href: '/contact' },
 ];
 
 /* Golf Experience–style packages: Costa del Sol only, Irish audience. Images: Unsplash. */
@@ -79,19 +81,19 @@ export const ACCOMMODATIONS: Accommodation[] = [
     title: 'Golf & beach resorts',
     description: 'Stay and play at the best resorts on the Costa del Sol. Pools, spa, dining — we have preferential rates and better cancellation terms.',
     image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80',
-    imageAlt: 'Golf resort Costa del Sol',
+    imageAlt: 'Golf and beach resort, Costa del Sol, pool and sea view.',
   },
   {
     title: 'Beachfront hotels',
     description: 'Wake up to the Med. We arrange transfers to your chosen courses so you can combine beach and golf.',
     image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&q=80',
-    imageAlt: 'Beachfront hotel Costa del Sol',
+    imageAlt: 'Beachfront hotel, Costa del Sol, sea view.',
   },
   {
     title: 'Luxury golf resorts',
     description: 'Five-star stays with direct access to championship courses. Popular with Irish groups and societies.',
     image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&q=80',
-    imageAlt: 'Luxury golf resort Costa del Sol',
+    imageAlt: 'Luxury golf resort, Costa del Sol.',
   },
 ];
 

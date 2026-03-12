@@ -32,6 +32,13 @@ const SocialIcon = ({ icon }: { icon: string }) => {
       </svg>
     );
   }
+  if (icon === 'bluesky') {
+    return (
+      <svg className={className} fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+        <path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65 0 9.55.126 1.238 1.17 2.254 2.421 2.254 1.227 0 4.965-2.06 6.453-2.06 1.487 0 4.226 2.06 6.453 2.06 1.25 0 2.294-1.016 2.42-2.254-.378-3.9 0-8.86 0-9.55 0-.688-.139-1.86-.902-2.203-.659-.299-1.664-.621-4.302 1.24C16.046 4.747 13.087 8.686 12 10.8zm0 0c1.087 2.114 4.046 6.053 6.798 7.995 2.636 1.861 3.641 1.539 4.3 1.24.763-.343.902-1.515.902-2.203 0-.69-.378-5.65 0-9.55-.126-1.238-1.17-2.254-2.421-2.254-1.227 0-4.965 2.06-6.453 2.06C13.514 8.06 10.775 6 8.548 6 7.298 6 6.254 7.016 6.128 8.254c-.378 3.9 0 8.86 0 9.55 0 .688.139 1.86.902 2.203.659.299 1.664.621 4.302-1.24 2.752-1.942 5.711-5.881 6.798-7.995z" />
+      </svg>
+    );
+  }
   return null;
 };
 
@@ -40,11 +47,13 @@ const footerLinks = [
   {
     heading: 'Menu',
     links: [
-      { label: 'Golf Packages', href: '/#packages' },
-      { label: 'Golf Courses', href: '/#courses' },
-      { label: 'Accommodation', href: '/#accommodation' },
-      { label: 'Plan your trip', href: '/#how-it-works' },
-      { label: 'Contact', href: '/#contact' },
+      { label: 'Packages', href: '/packages' },
+      { label: 'Golf Courses', href: '/courses' },
+      { label: 'Transfers', href: '/transfers' },
+      { label: 'About Us', href: '/about' },
+      { label: 'Book Now', href: '/booking' },
+      { label: 'Contact', href: '/contact' },
+      { label: 'Complaint', href: '/complaint' },
     ],
   },
   { heading: 'Plan your trip', content: 'We build your Costa del Sol golf holiday from start to finish.' },

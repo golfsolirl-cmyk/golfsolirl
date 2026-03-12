@@ -29,8 +29,10 @@ const sizeStyles: Record<ModalSize, string> = {
 };
 
 /**
- * Modal — dialog with backdrop, close on ESC/backdrop, focus trap, entry animation.
+ * Modal — dialog with backdrop, close on ESC/backdrop, focus trap.
  * Sizes: sm (400px) | md (560px) | lg (720px) | xl (960px) | full.
+ * Provide aria-labelledby (and optionally aria-describedby). Close button 44px touch target.
+ * See docs/COMPONENT-LIBRARY.md.
  */
 export function Modal({
   open,
@@ -146,7 +148,7 @@ export function ModalHeader({ children, onClose, className }: ModalHeaderProps) 
         <button
           type="button"
           onClick={onClose}
-          className="shrink-0 p-2 rounded-lg text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)]"
+          className="shrink-0 min-h-[var(--touch-min)] min-w-[var(--touch-min)] flex items-center justify-center rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-neutral-200)] dark:hover:bg-[var(--color-neutral-600)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)] focus-visible:ring-offset-2"
           aria-label="Close"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

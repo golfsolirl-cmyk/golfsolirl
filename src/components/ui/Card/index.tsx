@@ -15,12 +15,13 @@ const variantStyles: Record<CardVariant, string> = {
   outlined: 'bg-transparent rounded-xl border-2 border-neutral-300 dark:border-neutral-600',
   ghost: 'bg-transparent rounded-xl',
   interactive:
-    'bg-background-elevated rounded-xl border border-neutral-300 dark:border-neutral-600 shadow-1 hover:shadow-3 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-normal cursor-pointer',
+    'bg-[var(--color-background-elevated)] rounded-xl border border-[var(--color-border)] shadow-[var(--shadow-1)] hover:shadow-[var(--shadow-3)] hover:-translate-y-0.5 active:translate-y-0 focus-within:ring-2 focus-within:ring-[var(--color-focus-ring)] focus-within:ring-offset-2 transition-all duration-[var(--duration-normal)] cursor-pointer',
 };
 
 /**
  * Card — container with optional Header, Body, Footer, Media.
- * Variants: default | elevated | outlined | ghost | interactive (hover lift).
+ * Variants: default | elevated | outlined | ghost | interactive (hover lift + focus-within ring).
+ * Padding 8pt (24px). See docs/COMPONENT-LIBRARY.md.
  */
 export function Card({ children, variant = 'default', className, as: Component = 'div' }: CardProps) {
   return (

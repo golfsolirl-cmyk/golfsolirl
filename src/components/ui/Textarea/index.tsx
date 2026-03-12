@@ -16,8 +16,8 @@ export type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & 
 };
 
 /**
- * Textarea — multi-line text. Optional auto-resize and character count.
- * Validation: error, helperText, validationState. forwardRef for form libraries.
+ * Textarea — multi-line text. Min height 88px. Optional maxLength + showCount.
+ * States: default, focus, disabled, error, valid, warning. See docs/COMPONENT-LIBRARY.md.
  */
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   (
@@ -51,7 +51,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           ? 'focus:ring-warning border-warning'
           : validationState === 'valid'
             ? 'focus:ring-success border-success'
-            : 'focus:ring-primary border-neutral-300 dark:border-neutral-600';
+            : 'focus:ring-2 focus:ring-[var(--color-focus-ring)] focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)] border-[var(--color-border)]';
 
     const setRef = (el: HTMLTextAreaElement | null) => {
       (textareaRef as React.MutableRefObject<HTMLTextAreaElement | null>).current = el;
@@ -89,8 +89,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           defaultValue={defaultValue}
           maxLength={maxLength}
           className={cn(
-            'w-full px-4 py-3 rounded-lg border bg-background-elevated text-neutral-900 dark:text-neutral-100 placeholder-neutral-500 resize-y min-h-[88px]',
-            'focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-normal',
+            'w-full px-4 py-3 rounded-lg border bg-[var(--color-surface-raised)] text-[var(--color-text)] placeholder-[var(--color-text-muted)] resize-y min-h-[88px]',
+            'focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-[var(--duration-normal)]',
             'disabled:opacity-50 disabled:cursor-not-allowed',
             ringColor,
             error && 'border-error focus:ring-error',

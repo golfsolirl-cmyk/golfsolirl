@@ -54,10 +54,7 @@
   --color-border: #e8e6e3;
   --color-border-strong: #b5aea3;
 
-  /* ----- Colors: Brand aliases (for gradual migration) ----- */
-  --color-accent: #e07b39;
-  --color-accent-hover: #c96828;
-  --color-yellow: #f5c842;
+  /* Brand colours come from theme.css (which uses brand.css). Do not override --color-accent here. */
 
   /* ----- Section waves ----- */
   --wave-cream: #ffffff;
@@ -118,6 +115,20 @@
   --container-max: 1280px;
   --nav-height: 72px;
   --touch-min: 44px;
+  /* Section vertical rhythm (UX-ARCHITECTURE.md) */
+  --section-py: var(--spacing-24);   /* 96px default */
+  --section-py-lg: var(--spacing-32); /* 128px for key sections */
+  /* Breakpoints: 640 / 768 / 1024 / 1280 (sm / md / lg / xl) */
+  /* Header (design system: 8pt grid, 44px touch) */
+  --header-min-height: 72px;
+  --header-padding-y: 16px;
+  --header-padding-x: 24px;
+  --header-z: 99;
+  --header-bg: rgba(255, 255, 255, 0.98);
+  --header-bg-scrolled: #ffffff;
+  --header-border: var(--color-border);
+  --nav-link-gap: 32px;
+  --nav-link-gap-lg: 40px;
 
   /* ----- Border radius ----- */
   --radius-none: 0;
@@ -160,7 +171,6 @@
   --color-navy: var(--color-primary-500);
   --color-cream: var(--color-neutral-100);
   --color-white: #ffffff;
-  --section-py: var(--spacing-24);
   --section-px: var(--spacing-6);
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius-md);
@@ -219,10 +229,12 @@
   --color-border: rgba(240, 237, 230, 0.14);
   --color-border-strong: rgba(240, 237, 230, 0.28);
 
-  /* ----- Brand ----- */
-  --color-accent: #e07b39;
-  --color-accent-hover: #f59e4a;
-  --color-yellow: #f5c842;
+  /* ----- Header ----- */
+  --header-bg: rgba(13, 18, 12, 0.85);
+  --header-bg-scrolled: var(--color-background-elevated);
+  --header-border: rgba(240, 237, 230, 0.12);
+
+  /* Brand (accent, highlight, yellow) set by theme.css from brand.css */
 
   /* ----- Section waves ----- */
   --wave-cream: #0d120c;

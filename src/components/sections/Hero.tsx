@@ -12,11 +12,16 @@ const HERO_IMAGE = '/hero-golf-ball.png';
 /** Hero background: same golf ball on lip of hole as circular image */
 const HERO_BG_IMAGE = '/image.png';
 
-/** Pa'lais-style hero: script eyebrow, headline, circular image, animated blobs visible around/behind */
+/**
+ * Hero — Visual Storyteller: emotion first (desire + ease).
+ * Narrative: "This is for me — and it's simple." One visual moment = circular image + bubble.
+ * Hierarchy: eyebrow (script) → h1 (display, word stagger) → subline (shimmer) → CTAs. Image right = focal reward.
+ * See docs/VISUAL-NARRATIVE.md.
+ */
 export function Hero() {
   return (
-    <section className="relative min-h-[calc(100vh-72px)] flex items-center overflow-hidden bg-background pb-20" aria-label="Hero">
-      {/* Background: hero golf ball image — behind everything */}
+    <section id="hero" className="relative min-h-[calc(100vh-72px)] flex items-center overflow-hidden bg-background pb-20" aria-label="Hero">
+      {/* Background: full-bleed decorative (IMAGE-AND-UI-RULES.md). 16:9 or viewport; alt="" */}
       <div className="absolute inset-0 z-[0]" aria-hidden>
         <Image
           src={HERO_BG_IMAGE}
@@ -74,7 +79,8 @@ export function Hero() {
               <span className="hero-headline-word">holiday</span>
             </h1>
             <span className="hero-subline hero-subline-shine font-script text-2xl md:text-[28px] block mb-9">
-              Costa del Sol only · Irish golfers · No hassle
+              <span className="animate-bubble relative inline-block">Costa del Sol</span>
+              {' only · Irish golfers · No hassle'}
             </span>
             <div className="flex flex-wrap gap-4">
               <Button href="#contact" variant="primary" size="md">
@@ -87,10 +93,11 @@ export function Hero() {
           </div>
 
           <div className="reveal visible reveal-delay-1 flex justify-center items-center relative">
-            <div className="w-[320px] h-[320px] md:w-[420px] md:h-[420px] rounded-full overflow-hidden border-[6px] border-white shadow-hero relative z-10">
+            {/* Focal: 1:1 circular crop (IMAGE-AND-UI-RULES.md). Alt = place + mood. */}
+            <div className="hero-focal w-[320px] h-[320px] md:w-[420px] md:h-[420px] rounded-full overflow-hidden border-[6px] border-white shadow-hero relative z-10">
               <Image
                 src={HERO_IMAGE}
-                alt="Golf ball on the lip of the hole, Costa del Sol"
+                alt="Golf ball on the lip of the hole, Costa del Sol, golden hour."
                 fill
                 className="object-cover object-center"
                 sizes="(max-width: 768px) 320px, 420px"

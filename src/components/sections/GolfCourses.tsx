@@ -38,7 +38,7 @@ export function GolfCourses() {
               >
                 <Image
                   src={COURSE_IMAGE}
-                  alt="Costa del Sol golf course view"
+                  alt="Costa del Sol golf course, coastal fairway, golden hour."
                   fill
                   className="object-cover"
                   sizes="(max-width: 1024px) 85vw, 45vw"
@@ -51,7 +51,7 @@ export function GolfCourses() {
               >
                 <Image
                   src={COURSE_IMAGE_2}
-                  alt="Golf course and coastline, Costa del Sol"
+                  alt="Costa del Sol golf course, coastline and sea view, golden hour."
                   fill
                   className="object-cover"
                   sizes="(max-width: 1024px) 45vw, 22vw"
@@ -64,7 +64,7 @@ export function GolfCourses() {
               >
                 <Image
                   src={COURSE_IMAGE_3}
-                  alt="Golf fairway and greens, Costa del Sol"
+                  alt="Costa del Sol golf course, fairway and greens, golden hour."
                   fill
                   className="object-cover"
                   sizes="(max-width: 1024px) 38vw, 18vw"

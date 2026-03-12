@@ -12,8 +12,8 @@ export type PageWrapperProps = {
 };
 
 /**
- * PageWrapper — wraps page content with max-width and responsive padding.
- * Use for inner page layout; Header/Footer sit outside.
+ * PageWrapper — full-page content (e.g. login, signup, profile). Header/Footer sit outside.
+ * For homepage sections use Container instead. See docs/UX-ARCHITECTURE.md.
  */
 export function PageWrapper({
   children,

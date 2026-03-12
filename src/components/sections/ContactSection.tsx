@@ -111,7 +111,7 @@ export function ContactSection() {
               <div className="relative w-full max-w-[320px] aspect-[4/5] rounded-2xl overflow-hidden shadow-card border-2 border-white">
                 <Image
                   src={CONTACT_IMAGE}
-                  alt="Golf course Costa del Sol — tailor-made holidays for Irish golfers"
+                  alt="Golf course Costa del Sol — tailor-made holidays for Irish golfers."
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 320px"

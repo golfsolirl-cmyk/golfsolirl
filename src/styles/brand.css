@@ -1,0 +1,61 @@
+/**
+ * Golf Sol Ireland — Brand Token System (Step 1: Brand Guardian)
+ * Single source of truth for brand colours, typography, and spacing.
+ * Theme-agnostic: theme.css maps these to semantic --color-* for light/dark.
+ * Import order: brand.css → theme.css → tokens.css → globals.css
+ */
+
+:root {
+  /* ============== BRAND COLOUR PALETTE ============== */
+  /* Primary: deep green — trust, fairways, Irish landscape. Main CTAs, nav, links. */
+  --brand-primary: #123811;
+  --brand-primary-hover: #1e4a1a;
+  --brand-primary-active: #0d2d0d;
+  --brand-primary-foreground: #ffffff;
+  --brand-primary-subtle: #e8f0e9;
+  /* Scale for charts, gradients (optional) */
+  --brand-primary-100: #e8f0e9;
+  --brand-primary-200: #b8d4bc;
+  --brand-primary-300: #6baf7a;
+  --brand-primary-400: #2d6b3a;
+  --brand-primary-500: #123811;
+
+  /* Secondary: warm orange — warmth, secondary CTAs, newsletter, badges. */
+  --brand-secondary: #e07b39;
+  --brand-secondary-hover: #c96828;
+  --brand-secondary-active: #b45309;
+
+  /* Gold: heritage, premium accents, Ireland, script/secondary type. */
+  --brand-gold: #f5c842;
+  --brand-gold-muted: #b8860b;
+
+  /* Neutrals: warm base for backgrounds and text (light theme). */
+  --brand-neutral-cream: #f8f6f2;
+  --brand-neutral-surface: #f2efe8;
+  --brand-neutral-raised: #ffffff;
+  --brand-neutral-ink: #1a2418;
+  --brand-neutral-ink-secondary: #2d3829;
+  --brand-neutral-muted: #5c6b5c;
+  --brand-neutral-border: #e2dfd8;
+  --brand-neutral-border-strong: #b5b0a6;
+
+  /* Dark theme brand base (dark green, cream text). */
+  --brand-dark-bg: #0d120c;
+  --brand-dark-surface: #141a12;
+  --brand-dark-raised: #1c2319;
+  --brand-dark-ink: #f0ede6;
+  --brand-dark-ink-secondary: #d8d4cc;
+  --brand-dark-muted: #9ca89c;
+  --brand-dark-border: rgba(240, 237, 230, 0.14);
+  --brand-dark-border-strong: rgba(240, 237, 230, 0.28);
+  --brand-primary-on-dark: #2d6b3a;
+  --brand-primary-on-dark-hover: #3d8b4a;
+}
+
+/* Typography: font family names (actual --font-* vars set in layout.tsx) */
+:root {
+  --brand-font-display: var(--font-playfair), 'Playfair Display', Georgia, serif;
+  --brand-font-body: var(--font-dm-sans), 'DM Sans', system-ui, sans-serif;
+  --brand-font-script: var(--font-dancing), 'Dancing Script', cursive;
+  --brand-font-accent: var(--font-outfit), 'Outfit', system-ui, sans-serif;
+}

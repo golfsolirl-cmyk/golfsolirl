@@ -10,11 +10,17 @@ const MAIN_IMAGE =
 const SECOND_IMAGE =
   'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=320&q=85';
 
+/**
+ * Costa del Sol only — Visual Storyteller: expertise + place.
+ * Narrative: "They know this region." Editorial collage = crafted; badge "We do the rest!" = confidence.
+ * See docs/VISUAL-NARRATIVE.md.
+ */
 export function RepeatHeadline() {
   return (
     <section
+      id="costa-del-sol"
       className="py-24 md:py-32 pb-20 bg-background relative overflow-hidden"
-      aria-label="About packages"
+      aria-labelledby="costa-del-sol-heading"
     >
       {/* Bold decorative shape instead of tiny motifs — gives the section a focal anchor */}
       <div
@@ -29,7 +35,7 @@ export function RepeatHeadline() {
       <Container className="grid md:grid-cols-2 gap-12 md:gap-16 items-center relative z-10">
         <div className="reveal">
           <span className="section-label dark:text-[#2d6b3a]">Design your golf package</span>
-          <h2 className="section-title">Costa del Sol — only</h2>
+          <h2 id="costa-del-sol-heading" className="section-title">Costa del Sol — only</h2>
           <span className="section-script">
             courses, accommodation & transfers for Irish golfers
           </span>
@@ -59,7 +65,7 @@ export function RepeatHeadline() {
             <div className="relative w-full aspect-[4/3] max-h-[320px] md:max-h-[380px] rounded-2xl overflow-hidden shadow-xl border-4 border-white rotate-[-4deg] transition-transform duration-300 hover:rotate-[-2deg] hover:scale-[1.02]">
               <Image
                 src={MAIN_IMAGE}
-                alt="Costa del Sol golf — courses and accommodation"
+                alt="Costa del Sol golf course at golden hour, fairway and sea view."
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 90vw, 420px"
@@ -69,7 +75,7 @@ export function RepeatHeadline() {
             <div className="absolute bottom-0 left-0 w-[42%] aspect-square rounded-xl overflow-hidden shadow-lg border-4 border-white rotate-[8deg] translate-x-2 -translate-y-4 transition-transform duration-300 hover:rotate-[10deg] hover:scale-105">
               <Image
                 src={SECOND_IMAGE}
-                alt="Golf holiday in the sun"
+                alt="Golf holiday in the sun, Mediterranean coast."
                 fill
                 className="object-cover"
                 sizes="180px"

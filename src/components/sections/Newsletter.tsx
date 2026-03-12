@@ -55,7 +55,7 @@ export function Newsletter() {
               <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border-4 border-white shadow-card rotate-[-2deg] transition-transform duration-slow hover:rotate-0">
                 <Image
                   src={NEWSLETTER_IMAGE}
-                  alt="Golf courses and deals for Irish golfers"
+                  alt="Golf courses and deals for Irish golfers."
                   fill
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 50vw"

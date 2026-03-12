@@ -15,22 +15,10 @@ const STEP_SUBTITLES: Record<number, string> = {
 };
 
 const STEP_IMAGES: Record<number, { src: string; alt: string }> = {
-  1: {
-    src: '/images/choose-your-dates.jpg',
-    alt: 'Beach and sun — choose your dates',
-  },
-  2: {
-    src: '/images/choose-costa-del-sol-courses.jpg',
-    alt: 'Golf course — choose your Costa del Sol courses',
-  },
-  3: {
-    src: '/images/accommodation-step.jpg',
-    alt: 'Resort — choose your accommodation',
-  },
-  4: {
-    src: 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=400&q=80',
-    alt: 'Golf and coast — you fly and play',
-  },
+  1: { src: '/images/choose-your-dates.jpg', alt: 'Beach and sun, Costa del Sol — choose your dates.' },
+  2: { src: '/images/choose-costa-del-sol-courses.jpg', alt: 'Costa del Sol golf course, coastal fairway, golden hour.' },
+  3: { src: '/images/accommodation-step.jpg', alt: 'Golf resort terrace, Costa del Sol, sea view.' },
+  4: { src: 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=400&q=80', alt: 'Golf and coast, Costa del Sol — you fly and play.' },
 };
 
 const HERO_IMAGE =
@@ -59,7 +47,7 @@ export function HowItWorks() {
           <div className="relative w-full aspect-[21/9] min-h-[200px] max-h-[280px] rounded-2xl overflow-hidden shadow-xl border-4 border-white">
             <Image
               src={HERO_IMAGE}
-              alt="Golf and coast — plan your Costa del Sol trip"
+              alt="Golf and coast — plan your Costa del Sol trip."
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 1200px"

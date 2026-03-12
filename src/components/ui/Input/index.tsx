@@ -18,9 +18,8 @@ export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
 };
 
 /**
- * Input — text, email, number, search. Use with react-hook-form via forwardRef.
- * Validation: error message (role=alert), helperText, validationState (valid | error | warning).
- * Optional password type with show/hide toggle when type="password".
+ * Input — text, email, number, search. Min height 44px (--touch-min). Use with react-hook-form via forwardRef.
+ * States: default, focus, disabled, error, valid, warning. See docs/COMPONENT-LIBRARY.md.
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
@@ -62,11 +61,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
     const inputClasses = cn(
       'w-full rounded-lg border bg-[var(--color-surface-raised)] text-[var(--color-text)] placeholder-[var(--color-text-muted)]',
-      'focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-normal',
+      'focus:outline-none focus:ring-2 focus:border-transparent focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)] transition-all duration-[var(--duration-normal)]',
       'disabled:opacity-50 disabled:cursor-not-allowed',
       leftAdornment ? 'pl-10' : 'px-4',
       (rightAdornment || isPassword) ? 'pr-10' : 'px-4',
-      'py-3 min-h-[44px]',
+      'py-3 min-h-[var(--touch-min)]',
       ringColor,
       error && 'border-error focus:ring-error',
       className
@@ -108,7 +107,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             <button
               type="button"
               onClick={() => setShowPassword((p) => !p)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded p-1"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)] focus-visible:ring-offset-2 rounded min-h-[var(--touch-min)] min-w-[var(--touch-min)] flex items-center justify-center"
               tabIndex={-1}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >

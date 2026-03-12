@@ -51,7 +51,7 @@ export function Testimonials() {
                   {t.avatar ? (
                     <Image
                       src={t.avatar}
-                      alt={`Avatar for ${t.author}, ${t.location}`}
+                      alt={`Avatar for ${t.author}, ${t.location}.`}
                       fill
                       className="object-cover"
                       sizes="48px"

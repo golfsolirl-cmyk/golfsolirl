@@ -73,9 +73,9 @@ function Spinner({ className }: { className?: string }) {
 
 /**
  * Button — primary actions, links that look like buttons, form submit.
- * Variants: primary | secondary | ghost | danger | success | outline (+ submit, white, green for backward compat).
- * Sizes: xs | sm | md | lg | xl. Use iconLeading/iconTrailing or iconOnly with aria-label.
- * Loading state shows spinner + "Loading…" and preserves dimensions.
+ * States: default, hover, active, focus-visible, disabled, loading.
+ * Use size md (44px) or larger for primary CTAs (WCAG touch target). xs/sm for dense UI only.
+ * See docs/COMPONENT-LIBRARY.md.
  */
 export function Button({
   children,
