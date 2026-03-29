@@ -32,9 +32,11 @@ const missingConfigMessage =
 const currentFilePath = fileURLToPath(import.meta.url)
 const currentDirectory = path.dirname(currentFilePath)
 const brandLockupAssetPath = path.resolve(currentDirectory, '../src/gsol-brand-lockup-exact.png')
+const logoSvgPath = path.resolve(currentDirectory, '../src/golf-sol-ireland-logo.svg')
 const landingEmailTemplatePath = path.resolve(currentDirectory, '../public/landing-email-template.html')
 
-const brandLockupContentId = 'gsol-brand-lockup'
+const logoBallContentId = 'gsol-logo-ball'
+const shamrockInlineContentId = 'gsol-shamrock-inline'
 const socialContentIds = {
   linkedin: 'gsol-social-linkedin',
   facebook: 'gsol-social-facebook',
@@ -43,6 +45,8 @@ const socialContentIds = {
 }
 
 let brandLockupPngBufferPromise
+let emailLogoBallPngPromise
+let emailShamrockInlinePngPromise
 let landingEmailTemplateCache
 const socialPngPromises = {}
 
@@ -234,15 +238,22 @@ ${cell('https://www.whatsapp.com/', 'WhatsApp', socialContentIds.whatsapp)}
                           </table>`
 }
 
+const shamrockHeroSvgPattern =
+  /<svg class="logo-shamrock-email"[^>]*>[\s\S]*?<\/svg>/
+
+const shamrockFooterSvgPattern =
+  /<svg width="24" height="24" viewBox="0 0 24 24"[^>]*>[\s\S]*?<\/svg>/
+
 const prepareLandingEmailHtmlForSend = (html) => {
-  const heroImg = `<img src="cid:${brandLockupContentId}" width="300" alt="Golf Sol Ireland" style="display:block;border:0;outline:none;width:300px;max-width:100%;height:auto;filter:drop-shadow(0 8px 24px rgba(10,32,8,0.22));-webkit-filter:drop-shadow(0 8px 24px rgba(10,32,8,0.22));" />`
-  const footImg = `<img src="cid:${brandLockupContentId}" width="168" alt="" style="display:block;border:0;outline:none;width:168px;max-width:100%;height:auto;" />`
   const socialBlock = buildEmailSocialRowWithCidImages()
+  const shamrockHeroImg = `<img src="cid:${shamrockInlineContentId}" width="32" height="32" alt="" aria-hidden="true" style="display:block;width:32px;height:32px;border:0;" />`
+  const shamrockFootImg = `<img src="cid:${shamrockInlineContentId}" width="24" height="24" alt="" aria-hidden="true" style="display:block;width:24px;height:24px;border:0;" />`
 
   return html
-    .replace(/<!--\s*GSOL-BRAND-LOCKUP\s*-->[\s\S]*?<!--\s*\/GSOL-BRAND-LOCKUP\s*-->/, heroImg)
-    .replace(/<!--\s*GSOL-FOOT-LOCKUP\s*-->[\s\S]*?<!--\s*\/GSOL-FOOT-LOCKUP\s*-->/, footImg)
     .replace(/<!--\s*GSOL-SOCIAL-ICONS\s*-->[\s\S]*?<!--\s*\/GSOL-SOCIAL-ICONS\s*-->/, socialBlock)
+    .replace(shamrockHeroSvgPattern, shamrockHeroImg)
+    .replace(shamrockFooterSvgPattern, shamrockFootImg)
+    .replaceAll('src="/golf-sol-ireland-logo.svg"', `src="cid:${logoBallContentId}"`)
     .replaceAll('href="/terms-and-conditions"', 'href="https://golfsolirl.com/terms-and-conditions"')
 }
 
@@ -743,8 +754,9 @@ export const handleEnquirySubmission = async (payload, env = process.env) => {
   }
 
   const resend = new Resend(resendApiKey)
-  const brandBuf = await getBrandLockupPngBuffer()
-  const [li, fb, wa, bk] = await Promise.all([
+  const [logoBallBuf, shamrockBuf, li, fb, wa, bk] = await Promise.all([
+    getEmailLogoBallPngBuffer(),
+    getEmailShamrockInlinePngBuffer(),
     getSocialIconPng('linkedin', iconPaths.linkedin.vb, iconPaths.linkedin.d),
     getSocialIconPng('facebook', iconPaths.facebook.vb, iconPaths.facebook.d),
     getSocialIconPng('whatsapp', iconPaths.whatsapp.vb, iconPaths.whatsapp.d),
@@ -752,7 +764,8 @@ export const handleEnquirySubmission = async (payload, env = process.env) => {
   ])
 
   const imageAttachments = [
-    attachmentFromBuffer('golf-sol-brand-lockup.png', brandBuf, 'image/png', brandLockupContentId),
+    attachmentFromBuffer('golf-sol-logo-ball.png', logoBallBuf, 'image/png', logoBallContentId),
+    attachmentFromBuffer('golf-sol-shamrock.png', shamrockBuf, 'image/png', shamrockInlineContentId),
     attachmentFromBuffer('social-linkedin.png', li, 'image/png', socialContentIds.linkedin),
     attachmentFromBuffer('social-facebook.png', fb, 'image/png', socialContentIds.facebook),
     attachmentFromBuffer('social-whatsapp.png', wa, 'image/png', socialContentIds.whatsapp),
