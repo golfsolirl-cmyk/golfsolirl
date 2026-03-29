@@ -1,0 +1,749 @@
+{
+  "_meta": {
+    "project": "Golf Sol Ireland",
+    "version": "1.0.0",
+    "description": "Design system derived from visual analysis of the Golf Sol Ireland website. This file is the single source of truth for all AI-generated UI in this project. Every design decision must trace back to a token or principle defined here.",
+    "aesthetic": "Organic Luxury Golf — a nature-forward, Irish-warmth editorial identity that feels premium without pretension. Think: Condé Nast Traveller meets an Irish golf club brochure. Fluid organic shapes, serious typography, warm gold accents, genuine photography. Never corporate, never generic, never cold.",
+    "tailwindVersion": "3",
+    "framework": "React + Vite"
+  },
+
+  "brand": {
+    "name": "Golf Sol Ireland",
+    "tagline": "Your Tailor-Made Golf Holiday",
+    "subTagline": "Costa del Sol — Only. Flights, Accommodation & Transfers for Irish Golfers.",
+    "voice": "Warm, confident, expert. Written as if a trusted Irish friend who has played every course in Andalusia is personally recommending your trip. Never salesy. Always knowledgeable.",
+    "audience": "Irish recreational golfers (35–65), group trips, couples, societies. They want premium experiences without the hassle of planning.",
+    "usp": "Costa del Sol exclusivity. Irish-owned expertise. Preferential tee times. Full-service (courses + hotels + transfers)."
+  },
+
+  "colors": {
+    "_principle": "The palette is rooted in the golf landscape: deep forest greens, sunlit fairway greens, sky blue skies, golden morning light. Every color must feel like it belongs on a Costa del Sol morning.",
+
+    "primary": {
+      "forest": {
+        "_note": "The anchor dark green. Used for nav (scrolled state), footer, dark sections, strong headings on light.",
+        "950": "#0a2008",
+        "900": "#163a13",
+        "800": "#1a4516",
+        "700": "#1f571a",
+        "600": "#2a7020",
+        "500": "#3a8d2e",
+        "400": "#52a844",
+        "300": "#7dc470",
+        "200": "#b3dfaa",
+        "100": "#d9efd3",
+        "50": "#f0f7ee"
+      },
+      "fairway": {
+        "_note": "The vibrant action green. Used for buttons, section labels, icons, hover states, blob fills. Lighter and more saturated than forest.",
+        "900": "#234516",
+        "800": "#295217",
+        "700": "#316619",
+        "600": "#3d8120",
+        "500": "#50a32d",
+        "400": "#6ebf47",
+        "300": "#97d673",
+        "200": "#c3e9a8",
+        "100": "#e3f5d3",
+        "50": "#f5fbf0"
+      },
+      "sage": {
+        "_note": "Muted mid-tone green used exclusively for large decorative blob shapes and hover states. Semi-transparent at 20–40% opacity.",
+        "DEFAULT": "#8db87a",
+        "light": "#b8d4a8",
+        "muted": "#c8dfc0"
+      }
+    },
+
+    "accent": {
+      "gold": {
+        "_note": "Warm amber-gold. The HERO accent. Used for primary CTA buttons, star ratings, badge text, highlight numbers. Think morning sunlight on a fairway. Never overused — maximum 1–2 elements per section.",
+        "600": "#d97706",
+        "500": "#f59e0b",
+        "400": "#fbbf24",
+        "300": "#fde68a",
+        "glow": "rgba(251,191,36,0.25)"
+      },
+      "sky": {
+        "_note": "Soft blue used as an alternative section background — specifically for the 'Sun, Fairways, No Hassle' and 'Choose Your Courses' sections. Evokes Costa del Sol sky.",
+        "light": "#dbeafe",
+        "section": "#cce8f4",
+        "muted": "#e8f4fb"
+      }
+    },
+
+    "neutral": {
+      "white": "#ffffff",
+      "offwhite": "#f7f9f5",
+      "cream": "#f2f5ef",
+      "text": {
+        "primary": "#163a13",
+        "secondary": "#3d5c35",
+        "muted": "#6b8a60",
+        "subtle": "#9ab090",
+        "onDark": "#ffffff",
+        "onDarkMuted": "rgba(255,255,255,0.65)",
+        "onDarkSubtle": "rgba(255,255,255,0.4)"
+      }
+    },
+
+    "sections": {
+      "_note": "Each page section uses one of these background tokens. They alternate to create visual rhythm and prevent monotony.",
+      "hero": "forest.900 (with photography overlay)",
+      "packages": "neutral.white",
+      "costaDelSol": "neutral.cream (#f2f5ef)",
+      "sunFairways": "sky.section gradient",
+      "courses": "sky.muted (#e8f4fb)",
+      "accommodation": "forest.50 (#f0f7ee)",
+      "transfers": "forest.900 (dark section)",
+      "planTrip": "neutral.white",
+      "testimonials": "neutral.white",
+      "newsletter": "forest.900 (dark section)",
+      "footer": "forest.950 (#0a2008)"
+    },
+
+    "semantic": {
+      "success": "#50a32d",
+      "warning": "#f59e0b",
+      "error": "#dc2626",
+      "info": "#0ea5e9"
+    }
+  },
+
+  "typography": {
+    "_principle": "Three-font system. Each font has a specific job and must NOT be substituted. The contrast between the massive serif display and the restrained sans-serif body IS the design. Italic accent serif provides editorial warmth.",
+
+    "families": {
+      "display": {
+        "name": "Playfair Display",
+        "fallback": "Georgia, serif",
+        "googleFonts": "Playfair+Display:wght@700;900;ital",
+        "_usage": "ALL section headings, hero headline, major callouts. NEVER for body copy or UI labels.",
+        "_character": "Authoritative, classic, premium. The 700 and 900 weights are used. The contrast between thick and thin strokes gives the site its editorial quality.",
+        "_rule": "Headings using this font are always large (min 2rem), often uppercase or title case. Tight line-height (1.0–1.1 for hero, 1.15–1.25 for section heads)."
+      },
+      "body": {
+        "name": "DM Sans",
+        "fallback": "system-ui, sans-serif",
+        "googleFonts": "DM+Sans:wght@300;400;500;600",
+        "_usage": "ALL body copy, UI labels, navigation, buttons, badges, captions, metadata. The workhorse font.",
+        "_character": "Clean, modern, slightly geometric. Very readable at small sizes. 300 (light) for body copy, 400 for default, 500 for labels/metadata, 600 for button text and semibold emphasis.",
+        "_rule": "Never below 11px. Line-height 1.5–1.65 for paragraphs. Letter-spacing: normal for body, tracking-wide (0.05em) for uppercase labels."
+      },
+      "accent": {
+        "name": "Cormorant Garamond",
+        "fallback": "Georgia, serif",
+        "googleFonts": "Cormorant+Garamond:ital,wght@0,500;1,400",
+        "_usage": "Section kicker labels (the small line above a heading), pull quotes, decorative captions, the 'We do the tee!' badge text, footer taglines.",
+        "_character": "Delicate, refined, editorial. Almost always used in italic. Creates warmth and humanity against the bold display font.",
+        "_rule": "Always small (12–18px). Often italic. Color is always fairway.600 on light backgrounds or gold.400 on dark. Never bold."
+      }
+    },
+
+    "scale": {
+      "_note": "Tailwind class names mapped to their semantic roles",
+      "heroHeadline": {
+        "class": "text-6xl md:text-7xl lg:text-8xl",
+        "weight": "font-black",
+        "family": "font-display",
+        "lineHeight": "leading-none",
+        "tracking": "tracking-tight",
+        "_note": "The big hero title. 'YOUR TAILOR-MADE GOLF HOLIDAY'. ALL CAPS or Title Case. Tight tracking."
+      },
+      "sectionHeadline": {
+        "class": "text-4xl md:text-5xl",
+        "weight": "font-bold",
+        "family": "font-display",
+        "lineHeight": "leading-tight",
+        "_note": "Main heading of each page section. Often 2 lines. Mix of all-caps and Title Case."
+      },
+      "sectionKicker": {
+        "class": "text-sm md:text-base",
+        "weight": "font-normal",
+        "family": "font-accent italic",
+        "color": "text-fairway-600 (light bg) or text-fairway-400 (dark bg)",
+        "tracking": "tracking-wide",
+        "_note": "The small label that appears ABOVE a section headline. e.g. 'Design your golf package', 'Step 1 — Let's Tee Off'. Always italic accent font."
+      },
+      "cardTitle": {
+        "class": "text-base md:text-lg",
+        "weight": "font-semibold",
+        "family": "font-body",
+        "_note": "Card headings — course names, hotel names. Body font semibold, never display font."
+      },
+      "bodyLarge": {
+        "class": "text-base md:text-lg",
+        "weight": "font-normal",
+        "family": "font-body",
+        "lineHeight": "leading-relaxed",
+        "_note": "Lead paragraphs under section headlines. Max-width constrained (~28–36rem)."
+      },
+      "body": {
+        "class": "text-sm",
+        "weight": "font-normal",
+        "family": "font-body",
+        "lineHeight": "leading-relaxed",
+        "_note": "Standard body copy in cards and secondary sections."
+      },
+      "small": {
+        "class": "text-xs",
+        "weight": "font-normal",
+        "family": "font-body",
+        "lineHeight": "leading-relaxed",
+        "_note": "Captions, metadata, location labels, amenity tags, pricing notes."
+      },
+      "buttonText": {
+        "class": "text-sm",
+        "weight": "font-semibold",
+        "family": "font-body",
+        "tracking": "tracking-normal"
+      },
+      "heroNumber": {
+        "class": "text-2xl md:text-3xl",
+        "weight": "font-bold",
+        "family": "font-display",
+        "color": "text-gold-400",
+        "_note": "Trust bar statistics — '70+', '500+', '10+'"
+      }
+    }
+  },
+
+  "spacing": {
+    "_principle": "Generous. White space is used confidently. Sections breathe. Cards have comfortable internal padding. The layout never feels cramped.",
+    "sectionPaddingY": "py-20 md:py-28",
+    "sectionPaddingX": "px-6",
+    "maxWidth": "max-w-7xl mx-auto",
+    "cardPadding": "p-5 md:p-6",
+    "cardGap": "gap-5 md:gap-6",
+    "gridGap": "gap-6 md:gap-8",
+    "componentGap": "gap-4",
+    "inlineGap": "gap-2 md:gap-3",
+    "headingToBody": "mb-4 md:mb-6",
+    "bodyToCTA": "mb-6 md:mb-8",
+    "kickerToHeadline": "mb-3",
+    "headlineGroup": "mb-10 md:mb-14",
+    "sectionHeaderMaxWidth": "max-w-2xl mx-auto (centered) or max-w-lg (left-aligned)"
+  },
+
+  "borderRadius": {
+    "_principle": "Everything is rounded. Sharp corners are forbidden. The level of rounding signals the hierarchy of the element.",
+    "card": "rounded-3xl (24px) — primary content cards",
+    "cardInner": "rounded-2xl (16px) — inner elements, image containers within cards",
+    "button": "rounded-full — ALL buttons are pill-shaped",
+    "badge": "rounded-full — all tags and badges",
+    "icon": "rounded-xl (12px) — icon containers/backgrounds",
+    "imageOverflow": "rounded-3xl — images that stand alone",
+    "glassPanel": "rounded-3xl — glassmorphism panels",
+    "input": "rounded-full — form inputs",
+    "step": "rounded-2xl — step indicator cards"
+  },
+
+  "shadows": {
+    "_principle": "Shadows are soft and diffuse. Never hard or offset. Used to lift cards and CTAs above the surface, not to create drama.",
+    "cardDefault": "shadow-sm",
+    "cardHover": "shadow-xl (on hover transition)",
+    "buttonPrimary": "shadow-lg shadow-fairway-600/20",
+    "buttonGold": "shadow-xl shadow-gold-400/30",
+    "glassPanel": "shadow-2xl",
+    "floatingBadge": "shadow-xl",
+    "navbar": "shadow-lg (scrolled state only)"
+  },
+
+  "components": {
+    "navbar": {
+      "_description": "Fixed top nav. Two states: transparent (over hero) and solid (on scroll). Logo is icon + wordmark. Links are restrained. Two CTAs at right.",
+      "transparent": {
+        "background": "bg-transparent",
+        "padding": "py-5",
+        "textColor": "text-white/80",
+        "textHover": "hover:text-gold-400"
+      },
+      "scrolled": {
+        "background": "bg-forest-900/95 backdrop-blur-md",
+        "padding": "py-2",
+        "shadow": "shadow-lg"
+      },
+      "logo": {
+        "mark": "w-9 h-9 rounded-full bg-fairway-500 — contains 'GS' initials in white font-display",
+        "wordmark": "font-display text-white text-base font-bold leading-tight",
+        "subtext": "font-accent italic text-gold-400 text-xs"
+      },
+      "links": "font-body text-sm text-white/80 hover:text-gold-400 transition-colors tracking-wide",
+      "ctaOutline": "px-5 py-2 text-sm font-body font-medium text-white border border-white/30 rounded-full hover:border-gold-400 hover:text-gold-400",
+      "ctaPrimary": "px-5 py-2 text-sm font-body font-medium text-forest-900 bg-gold-400 rounded-full hover:bg-gold-300 shadow-md"
+    },
+
+    "hero": {
+      "_description": "Full-viewport-height. Photography background with layered gradient overlays. Left-column content, right-column glass card. Decorative floating circles.",
+      "layout": "min-h-screen grid md:grid-cols-2 gap-12 items-center",
+      "backgroundTreatment": {
+        "image": "absolute inset-0 bg-cover bg-center",
+        "overlayLeft": "bg-gradient-to-r from-forest-900/90 via-forest-900/60 to-forest-900/30",
+        "overlayBottom": "bg-gradient-to-t from-forest-900/80 via-transparent to-transparent"
+      },
+      "decorativeBlobs": {
+        "_note": "Three to four absolutely-positioned circles. They bleed off-screen edges and are semi-transparent. CRITICAL to the brand identity.",
+        "large": "absolute top-[-80px] right-[-80px] w-96 h-96 rounded-full bg-fairway-500/20 blur-3xl",
+        "outline": "absolute bottom-[80px] right-[10%] w-72 h-72 rounded-full border-4 border-fairway-400/30 animate-float",
+        "glow": "absolute top-[20%] right-[15%] w-44 h-44 rounded-full bg-gold-400/15 blur-2xl",
+        "ring": "absolute top-[15%] right-[8%] w-56 h-56 rounded-full border-2 border-white/20 animate-float"
+      },
+      "kicker": "font-accent italic text-fairway-400 text-base tracking-wide mb-4",
+      "headline": "font-display font-black text-white text-6xl md:text-7xl lg:text-8xl leading-none tracking-tight text-shadow-lg",
+      "headlineAccent": "text-gold-400 (on specific word like 'GOLF')",
+      "subline": "font-accent italic text-white/70 text-xl",
+      "body": "font-body text-white/60 text-sm max-w-md leading-relaxed",
+      "ctaGroup": "flex flex-wrap gap-4",
+      "ctaPrimary": "px-7 py-3.5 bg-gold-400 text-forest-900 font-body font-semibold text-sm rounded-full hover:bg-gold-300 shadow-xl hover:shadow-gold-400/30 hover:-translate-y-0.5 transition-all",
+      "ctaSecondary": "px-7 py-3.5 bg-white/10 border border-white/30 text-white font-body font-medium text-sm rounded-full hover:bg-white/20 backdrop-blur-sm transition-all",
+      "trustBar": {
+        "wrapper": "flex items-center gap-6 mt-10",
+        "number": "font-display font-bold text-gold-400 text-2xl",
+        "label": "font-body text-white/50 text-xs"
+      },
+      "glassCard": {
+        "_note": "Floats on the right side of the hero on desktop. Glass morphism. Contains a teaser image and destination details.",
+        "base": "bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-6 shadow-2xl max-w-xs",
+        "image": "rounded-2xl overflow-hidden h-40 object-cover mb-4",
+        "title": "font-display text-white text-xl font-bold",
+        "meta": "font-body text-white/60 text-xs",
+        "footer": "flex justify-between text-xs text-white/50 border-t border-white/10 pt-3"
+      },
+      "waveDivider": {
+        "_note": "SVG wave at the very bottom, white fill, rotated 180deg to cut up into the hero from the white section below.",
+        "color": "#ffffff",
+        "style": "absolute bottom-0 left-0 right-0"
+      }
+    },
+
+    "sectionHeader": {
+      "_description": "Reusable pattern: kicker line + large headline + optional body copy. Used at the top of every major section.",
+      "_centeredVariant": "text-center — used for courses, accommodation, testimonials, planTrip",
+      "_leftVariant": "text-left — used for packages, costaDelSol, transfers",
+      "kicker": "font-accent italic text-fairway-600 text-sm md:text-base tracking-wide mb-3",
+      "kickerOnDark": "font-accent italic text-fairway-400 text-sm md:text-base tracking-wide mb-3",
+      "headline": "font-display font-bold text-4xl md:text-5xl text-forest-900 leading-tight mb-4",
+      "headlineOnDark": "font-display font-bold text-4xl md:text-5xl text-white leading-tight mb-4",
+      "headlineAccent": "text-fairway-600 (light bg) or text-gold-400 (dark bg)",
+      "body": "font-body text-forest-600/70 text-sm md:text-base leading-relaxed",
+      "bodyOnDark": "font-body text-white/60 text-sm md:text-base leading-relaxed"
+    },
+
+    "card": {
+      "_description": "The primary content display unit. Used for courses, hotels, steps, testimonials.",
+      "base": "rounded-3xl overflow-hidden border border-forest-100 shadow-sm bg-white transition-all duration-300",
+      "hover": "hover:-translate-y-1 hover:shadow-xl",
+      "imageContainer": {
+        "ratio": "h-48 to h-52 (12–13rem)",
+        "overflow": "overflow-hidden relative",
+        "innerHover": "group-hover:scale-105 transition-transform duration-500",
+        "gradient": "absolute inset-0 bg-gradient-to-t from-forest-900/70 via-transparent to-transparent"
+      },
+      "imageBadge": {
+        "position": "absolute top-3 left-3",
+        "style": "bg-gold-400 text-forest-900 text-xs font-body font-semibold px-3 py-1 rounded-full"
+      },
+      "imageStars": {
+        "position": "absolute top-3 right-3",
+        "icon": "Star size-12 text-gold-400 fill-gold-400"
+      },
+      "imageTitle": {
+        "position": "absolute bottom-3 left-3 right-3",
+        "style": "font-display text-white font-bold text-lg leading-tight"
+      },
+      "body": "p-5",
+      "categoryPill": "text-xs font-body text-fairway-600 bg-fairway-50 border border-fairway-100 px-2 py-0.5 rounded-full",
+      "meta": "text-xs font-body text-forest-500",
+      "description": "font-body text-forest-600/70 text-xs leading-relaxed mb-3",
+      "tagGroup": "flex flex-wrap gap-1.5",
+      "tag": "text-xs font-body text-forest-600 bg-forest-50 border border-forest-100 px-2 py-0.5 rounded-full",
+      "footer": "flex items-center justify-between pt-3 border-t border-forest-100",
+      "price": "font-body font-semibold text-forest-900 text-sm",
+      "cta": "text-xs font-body font-semibold text-fairway-700 hover:text-fairway-900 transition-colors",
+      "fullWidthCTA": "w-full py-2.5 text-sm font-body font-semibold text-fairway-700 border border-fairway-200 rounded-xl hover:bg-fairway-50 hover:border-fairway-400 transition-all"
+    },
+
+    "button": {
+      "_principle": "All buttons are pill-shaped (rounded-full). Three variants: Primary (gold), Secondary (forest), Outline (border). Hover states always include a very subtle lift (-translate-y-0.5) on primaries.",
+      "primary": {
+        "base": "inline-flex items-center gap-2 px-7 py-3.5 bg-gold-400 text-forest-900 font-body font-semibold text-sm rounded-full",
+        "hover": "hover:bg-gold-300 hover:-translate-y-0.5",
+        "shadow": "shadow-xl hover:shadow-gold-400/30",
+        "transition": "transition-all"
+      },
+      "secondary": {
+        "base": "inline-flex items-center gap-2 px-7 py-3.5 bg-fairway-600 text-white font-body font-semibold text-sm rounded-full",
+        "hover": "hover:bg-fairway-700",
+        "shadow": "shadow-lg shadow-fairway-600/20",
+        "transition": "transition-all"
+      },
+      "dark": {
+        "base": "inline-flex items-center gap-2 px-7 py-3.5 bg-forest-900 text-white font-body font-semibold text-sm rounded-full",
+        "hover": "hover:bg-forest-800",
+        "shadow": "shadow-lg",
+        "transition": "transition-all"
+      },
+      "outlineLight": {
+        "base": "inline-flex items-center gap-2 px-7 py-3.5 bg-white/10 border border-white/30 text-white font-body font-medium text-sm rounded-full",
+        "hover": "hover:bg-white/20 hover:border-white/50",
+        "backdrop": "backdrop-blur-sm",
+        "transition": "transition-all"
+      },
+      "outlineDark": {
+        "base": "inline-flex items-center gap-2 px-5 py-2 text-sm font-body font-medium text-white border border-white/30 rounded-full",
+        "hover": "hover:border-gold-400 hover:text-gold-400",
+        "transition": "transition-all"
+      },
+      "white": {
+        "base": "inline-flex items-center gap-2 px-7 py-3.5 bg-white text-forest-900 font-body font-semibold text-sm rounded-full border border-forest-200",
+        "hover": "hover:bg-forest-50",
+        "shadow": "shadow-sm",
+        "transition": "transition-all"
+      },
+      "small": {
+        "modifier": "px-5 py-2 text-sm (instead of px-7 py-3.5)"
+      },
+      "large": {
+        "modifier": "px-9 py-4 text-base (for hero-level CTAs)"
+      }
+    },
+
+    "badge": {
+      "gold": "bg-gold-400 text-forest-900 text-xs font-body font-semibold px-3 py-1 rounded-full",
+      "fairway": "text-xs font-body text-fairway-600 bg-fairway-50 border border-fairway-100 px-2 py-0.5 rounded-full",
+      "forest": "text-xs font-body text-forest-600 bg-forest-50 border border-forest-100 px-2 py-0.5 rounded-full",
+      "white": "text-xs font-body text-white bg-white/10 border border-white/20 px-2 py-0.5 rounded-full",
+      "tier3": "text-xs font-body font-semibold text-fairway-700 bg-fairway-50 border border-fairway-100 px-2 py-0.5 rounded-full",
+      "tier4": "text-xs font-body font-semibold text-forest-700 bg-forest-100 border border-forest-200 px-2 py-0.5 rounded-full",
+      "tier5": "text-xs font-body font-semibold text-gold-600 bg-gold-50 border border-gold-200 px-2 py-0.5 rounded-full"
+    },
+
+    "iconContainer": {
+      "fairway": "w-10 h-10 md:w-11 md:h-11 rounded-xl bg-fairway-600 flex items-center justify-center flex-shrink-0",
+      "fairwayLight": "w-10 h-10 rounded-xl bg-fairway-600/10 flex items-center justify-center flex-shrink-0",
+      "fairwayLightHover": "group-hover:bg-fairway-600/20 transition-colors",
+      "glass": "w-10 h-10 rounded-xl bg-fairway-500/20 flex items-center justify-center",
+      "goldMark": "w-9 h-9 rounded-full bg-fairway-500 flex items-center justify-center"
+    },
+
+    "glassPanel": {
+      "_description": "Used in hero right column and dark sections. Frosted glass effect.",
+      "base": "bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl shadow-2xl"
+    },
+
+    "starRating": {
+      "star": "Star size={12} text-gold-400 fill-gold-400",
+      "container": "flex gap-0.5"
+    },
+
+    "filterTab": {
+      "active": "px-5 py-2 text-sm font-body font-medium rounded-full bg-forest-900 text-white border border-forest-900 shadow-md",
+      "inactive": "px-5 py-2 text-sm font-body font-medium rounded-full bg-white text-forest-700 border border-forest-200 hover:border-forest-400 transition-all",
+      "group": "flex justify-center gap-2 flex-wrap"
+    },
+
+    "stepCard": {
+      "_description": "Numbered step cards used in 'Plan Your Golf Trip' and 'Design Your Package' sections.",
+      "card": "rounded-3xl overflow-hidden border border-forest-100 shadow-sm bg-white card-hover",
+      "imageContainer": "h-40 overflow-hidden relative",
+      "number": "absolute top-3 left-3 font-display text-gold-400 font-bold text-3xl leading-none",
+      "imageLabel": "absolute bottom-3 left-3 right-3 font-body text-white text-xs font-medium leading-tight",
+      "body": "p-5",
+      "title": "font-body font-semibold text-forest-900 text-sm mb-2",
+      "desc": "font-body text-forest-600/70 text-xs leading-relaxed"
+    },
+
+    "testimonialCard": {
+      "wrapper": "bg-white rounded-3xl p-6 border border-forest-100 shadow-sm",
+      "stars": "flex gap-0.5 mb-3",
+      "quote": "font-body text-forest-700/80 text-sm leading-relaxed mb-4 italic",
+      "author": {
+        "name": "font-body font-semibold text-forest-900 text-sm",
+        "meta": "font-body text-forest-500 text-xs"
+      }
+    },
+
+    "featureRow": {
+      "_description": "Icon + title + description in a horizontal row. Used inside the design-your-package panel.",
+      "wrapper": "flex gap-4 items-start group",
+      "iconContainer": "flex-shrink-0 w-11 h-11 rounded-2xl bg-fairway-600/10 flex items-center justify-center group-hover:bg-fairway-600/20 transition-colors",
+      "stepBadge": "font-body text-xs font-semibold text-fairway-500 bg-fairway-50 px-2 py-0.5 rounded-full",
+      "title": "font-body font-semibold text-forest-900 text-sm mb-1",
+      "desc": "font-body text-forest-600/70 text-xs leading-relaxed"
+    },
+
+    "newsletterSection": {
+      "_description": "Dark footer-adjacent section with gold CTA and email input.",
+      "background": "bg-forest-900",
+      "kicker": "font-accent italic text-gold-400 text-sm",
+      "headline": "font-display font-bold text-white text-3xl md:text-4xl",
+      "body": "font-body text-white/60 text-sm",
+      "input": "flex-1 px-5 py-3 rounded-full bg-white/10 border border-white/20 text-white placeholder:text-white/40 font-body text-sm focus:outline-none focus:border-gold-400",
+      "submitButton": "px-6 py-3 bg-gold-400 text-forest-900 font-body font-semibold text-sm rounded-full hover:bg-gold-300 transition-all"
+    },
+
+    "navbar_mobile": {
+      "menu": "bg-forest-900/98 backdrop-blur-md px-6 pt-4 pb-6 flex flex-col gap-4 border-t border-white/10",
+      "link": "font-body text-white/80 hover:text-gold-400 transition-colors py-2 border-b border-white/10",
+      "cta": "mt-2 px-5 py-3 text-center text-sm font-body font-medium text-forest-900 bg-gold-400 rounded-full hover:bg-gold-300 transition-all"
+    }
+  },
+
+  "decorative": {
+    "_principle": "Organic shapes are the SOUL of this brand. The floating circles and SVG wave dividers are non-negotiable. Every section must have its wave transition. Dark sections must have blob decorations.",
+
+    "blobs": {
+      "_description": "Large abstract circles used as decorative backgrounds. They are ALWAYS absolutely positioned, often partially off-screen, never have borders except the 'outline' variant.",
+      "large": {
+        "size": "w-80 h-80 to w-96 h-96",
+        "shape": "rounded-full",
+        "fill": "bg-fairway-200/40 or bg-fairway-500/20 or bg-fairway-600/10",
+        "blur": "blur-3xl",
+        "position": "absolute, corner-positioned, often -80px to -120px outside viewport edge",
+        "animation": "none (static, blurred)"
+      },
+      "medium": {
+        "size": "w-56 h-56 to w-72 h-72",
+        "shape": "rounded-full",
+        "fill": "bg-fairway-600/40 or bg-gold-300/20",
+        "blur": "blur-2xl or none",
+        "animation": "animate-float (slow bob up/down 4s infinite)"
+      },
+      "outline": {
+        "size": "w-56 h-56 to w-72 h-72",
+        "shape": "rounded-full",
+        "fill": "transparent",
+        "border": "border-4 border-fairway-400/30 or border-2 border-white/20",
+        "animation": "animate-float (different delay than solid blob)"
+      },
+      "small": {
+        "size": "w-36 h-36 to w-44 h-44",
+        "shape": "rounded-full",
+        "fill": "bg-gold-400/15 or bg-fairway-600/40",
+        "blur": "blur-2xl or none",
+        "animation": "animate-float (staggered delay)"
+      },
+      "_rule": "Use 2–4 blobs per dark section. Use 1–2 per light section. Never let blobs interfere with text readability. They live in the background plane (z-index 0 or negative, pointer-events-none)."
+    },
+
+    "waveDividers": {
+      "_description": "SVG path waves that transition between sections. The wave's fill color MATCHES the background of the section it visually 'bleeds into'.",
+      "_rule": "Every section transition MUST have a wave divider. The wave sits at the bottom of the upper section OR the top of the lower section.",
+      "topOfSection": "SVG at the very top of the section, with fill matching the CURRENT section's background (pushes into the section above)",
+      "bottomOfSection": "SVG rotated 180deg at the very bottom, with fill matching the NEXT section's background",
+      "height": "60–80px SVG viewBox height",
+      "style": "Organic, S-curve wave — not a simple sine wave. Has 6–8 control points for a natural, flowing shape.",
+      "colorMapping": {
+        "white section → sage section": "fill: #f0f7ee",
+        "sage section → white section": "fill: #ffffff",
+        "white section → sky section": "fill: #e8f4fb",
+        "sky section → white section": "fill: #ffffff",
+        "sage section → dark section": "fill: #163a13",
+        "dark section → white section": "fill: #ffffff"
+      },
+      "implementation": "Inline SVG, w-full block, overflow-hidden on parent, leading-none to remove gap"
+    },
+
+    "imageMosaics": {
+      "_description": "Multi-image grid compositions used in the CostaDelSol section. Not a simple grid — has a dominant top image spanning full width with two smaller below.",
+      "pattern1": "col-span-2 tall image + 2 equal images below (2/3 + 1/3 height ratio)",
+      "treatment": "rounded-3xl overflow-hidden, hover:scale-105 transition-transform duration-500",
+      "floatingBadge": "Absolute positioned dark glass badge over the bottom-right image — shows key stat (70+ courses)"
+    }
+  },
+
+  "layout": {
+    "_principle": "Alternating two-column and full-width layouts. No section uses the same layout as the one before it. This creates visual rhythm and prevents monotony.",
+
+    "pageFlow": [
+      "Hero — full viewport, photography, left/right split",
+      "Packages — white, left text / right step-panel (2-col)",
+      "Costa del Sol — sage bg, left image mosaic / right text (2-col)",
+      "Sun Fairways Banner — sky bg, centered text only (full-width statement)",
+      "Golf Courses — sky-muted bg, centered header + 3-col card grid",
+      "Accommodation — sage bg, centered header + filter tabs + 3-col cards",
+      "Transfers — dark bg, left text / right 2x2 glass features (2-col)",
+      "Plan Your Trip — white, centered header + 4-col step cards",
+      "Testimonials — white, centered header + 3-col testimonial cards",
+      "Newsletter/Footer — dark bg, split layout + form"
+    ],
+
+    "grid": {
+      "2col": "grid md:grid-cols-2 gap-12 md:gap-16 items-center",
+      "3col": "grid sm:grid-cols-2 lg:grid-cols-3 gap-6",
+      "4col": "grid sm:grid-cols-2 lg:grid-cols-4 gap-6",
+      "2x2": "grid sm:grid-cols-2 gap-5"
+    },
+
+    "sectionPadding": "py-20 md:py-28 px-6",
+    "maxWidthWrapper": "max-w-7xl mx-auto",
+
+    "darkSections": {
+      "_note": "Transfers and Newsletter sections use forest-900 background. They always have: blob decorations, top/bottom waves, reversed text colors (white/gold), glassmorphism feature panels.",
+      "background": "bg-forest-900",
+      "blobColor": "bg-fairway-600/10 and bg-gold-400/10",
+      "textColor": "text-white (headings) text-white/60 (body) text-fairway-400 (kickers) text-gold-400 (accents)"
+    }
+  },
+
+  "animation": {
+    "_principle": "Animations are restrained and purposeful. Motion should feel like physics — natural easing, never bouncy or cartoonish.",
+
+    "pageLoad": {
+      "fadeUp": {
+        "keyframe": "opacity 0→1, translateY 30px→0",
+        "duration": "0.7s",
+        "easing": "ease",
+        "stagger": "Each hero element delays by 0.15s increments starting at 0.1s",
+        "fill": "forwards",
+        "_usage": "Hero section only — kicker, headline, subline, body, CTAs, trust bar"
+      }
+    },
+
+    "continuous": {
+      "float": {
+        "keyframe": "translateY 0px → -12px → 0px",
+        "duration": "4s",
+        "easing": "ease-in-out",
+        "iteration": "infinite",
+        "_usage": "Decorative blob circles and hero glass card. Use different animation-delay values (0.5s, 1s) so blobs are out of phase."
+      },
+      "pulseSlow": {
+        "keyframe": "opacity 0.6 → 1 → 0.6",
+        "duration": "3s",
+        "easing": "ease-in-out",
+        "iteration": "infinite",
+        "_usage": "Subtle text glows or decorative elements when needed"
+      }
+    },
+
+    "interaction": {
+      "cardHover": "transition-all duration-300, -translate-y-1, shadow-xl — applied to all card components",
+      "imageZoom": "group-hover:scale-105 transition-transform duration-500 — inside card image containers",
+      "buttonLift": "hover:-translate-y-0.5 transition-all — primary gold buttons only",
+      "navLinkColor": "hover:text-gold-400 transition-colors",
+      "iconContainerFill": "group-hover:bg-fairway-600/20 transition-colors — feature row icon bg"
+    }
+  },
+
+  "photography": {
+    "_principle": "Photography is the hero. Images are always full-bleed within their containers. Always has a gradient overlay on cards to ensure text legibility. Never use stock-looking business photography — must feel like real golf courses.",
+
+    "treatment": {
+      "cardImage": "w-full h-full object-cover, with dark-to-transparent gradient overlay from bottom",
+      "heroBackground": "object-cover bg-center, with left-to-right + bottom-to-top gradient overlays",
+      "mosaicImage": "w-full h-full object-cover, hover:scale-105 transition"
+    },
+
+    "ratios": {
+      "heroBackground": "full viewport height",
+      "cardLarge": "h-52 (13rem)",
+      "cardMedium": "h-48 (12rem)",
+      "cardSmall": "h-40 (10rem)",
+      "stepCard": "h-40 (10rem)",
+      "mosaicFeature": "h-64 (16rem) — the dominant top image",
+      "mosaicThumb": "h-44 (11rem) — the two smaller images"
+    },
+
+    "overlays": {
+      "cardGradient": "bg-gradient-to-t from-forest-900/70 via-transparent to-transparent",
+      "heroLeft": "bg-gradient-to-r from-forest-900/90 via-forest-900/60 to-forest-900/30",
+      "heroBottom": "bg-gradient-to-t from-forest-900/80 via-transparent to-transparent"
+    },
+
+    "imageTopics": [
+      "Golf fairways and greens — wide landscape shots, not close-up ball shots",
+      "Aerial views of courses with blue sky and Mediterranean coast in background",
+      "Luxury hotel pools and exteriors in Andalusian architecture style",
+      "Golf groups (actual people playing, not posed stiff shots)",
+      "Costa del Sol coastline visible in the background behind fairways",
+      "Sunset/golden-hour shots preferred — matches the gold accent color"
+    ]
+  },
+
+  "forms": {
+    "_principle": "Forms are minimal — just what's needed. Inputs are pill-shaped to match the button language. Always on dark backgrounds in this design.",
+    "input": "px-5 py-3 rounded-full bg-white/10 border border-white/20 text-white placeholder:text-white/40 font-body text-sm focus:outline-none focus:border-gold-400 focus:ring-0",
+    "label": "font-body text-white/70 text-xs mb-1.5 block",
+    "helpText": "font-body text-white/40 text-xs mt-1",
+    "group": "flex gap-2 items-center",
+    "submit": "button.primary or button.secondary variant"
+  },
+
+  "responsive": {
+    "_principle": "Mobile-first. The mobile version is a vertically-stacked, single-column layout. Decorative blobs are smaller on mobile. Wave dividers remain but at reduced height.",
+    "breakpoints": {
+      "sm": "640px — cards switch from 1-col to 2-col",
+      "md": "768px — 2-col section layouts activate, hero shows glass card",
+      "lg": "1024px — 3/4-col grids activate, full typography scale",
+      "xl": "1280px — max-width container hits limit"
+    },
+    "mobilePriorities": [
+      "Nav collapses to hamburger, mobile sheet opens from top",
+      "Hero is single column, glass card hidden on mobile",
+      "Section kickers and headlines scale down (text-4xl on mobile vs 5xl desktop)",
+      "CTA buttons stack vertically if they don't fit in a row",
+      "Card grids: 1col → 2col → 3col at sm/lg breakpoints",
+      "Trust bar items reduce spacing on mobile",
+      "Blob decorations reduce in size (scale down by ~40%)"
+    ]
+  },
+
+  "tailwindTokens": {
+    "_note": "Direct mapping from design tokens to Tailwind v3 class names for quick reference when building components",
+    "primaryGreen": "bg-fairway-600 text-fairway-600 border-fairway-600",
+    "darkGreen": "bg-forest-900 text-forest-900",
+    "lightGreenBg": "bg-forest-50",
+    "sageBg": "bg-forest-50 (or inline style for #f2f5ef)",
+    "skyBg": "bg-sky-50 (or inline style for #e8f4fb)",
+    "goldAccent": "bg-gold-400 text-gold-400 shadow-gold-400/30",
+    "displayFont": "font-display",
+    "bodyFont": "font-body",
+    "accentFont": "font-accent italic",
+    "pillButton": "rounded-full",
+    "cardRadius": "rounded-3xl",
+    "innerRadius": "rounded-2xl",
+    "iconRadius": "rounded-xl",
+    "cardShadow": "shadow-sm hover:shadow-xl",
+    "textMuted": "text-forest-600/70",
+    "textSubtle": "text-forest-500",
+    "textOnDark": "text-white",
+    "textOnDarkMuted": "text-white/60",
+    "sectionMaxWidth": "max-w-7xl mx-auto px-6"
+  },
+
+  "doAndDont": {
+    "do": [
+      "Always use wave SVG dividers between every section",
+      "Always include decorative blob circles on dark sections and hero",
+      "Use the gold accent color for the PRIMARY CTA only (1 per section max)",
+      "Use font-accent italic for all section kicker labels",
+      "Use font-display for all headings",
+      "Round everything — buttons are pill, cards are rounded-3xl",
+      "Overlap and float elements (glass card over hero, badge over mosaic)",
+      "Include a trust/stats bar in the hero",
+      "Use staggered animation delays on hero elements",
+      "Give images a gradient overlay so text always legible on top",
+      "Use 'Costa del Sol' in headings — it's the destination brand",
+      "Write section kickers in the format 'Step X — Short Description'",
+      "Keep body copy under max-w-lg on left-aligned layouts",
+      "Use the filterTab pattern (pill tabs) for filtering hotels by star tier"
+    ],
+    "dont": [
+      "Don't use hard/sharp corners on any UI element",
+      "Don't use Inter, Roboto, or Arial — DM Sans is the ONLY sans-serif",
+      "Don't use purple, pink, or any non-palette colors",
+      "Don't put gold on green backgrounds (contrast issue)",
+      "Don't omit the wave divider between sections",
+      "Don't center-align text in 2-column sections (left-align the text column)",
+      "Don't use more than 1 gold CTA per section — it loses impact",
+      "Don't make blobs smaller than 150px or larger than 400px",
+      "Don't animate more than 2 blobs simultaneously",
+      "Don't stack two dark sections without a light section between them",
+      "Don't use stock photo business imagery — must feel like real golf",
+      "Don't use bold weight on font-accent — it defeats its delicate character",
+      "Don't underline links — use color changes or arrow icons instead"
+    ]
+  }
+}

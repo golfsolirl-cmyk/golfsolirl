@@ -1,0 +1,323 @@
+import { motion } from 'framer-motion'
+import { ArrowUpRight, CalendarDays, CheckCircle2, Star } from 'lucide-react'
+import type {
+  CourseItem,
+  HotelItem,
+  PackageItem,
+  PlanningStep,
+  StatItem,
+  TestimonialItem,
+  TransferFeature
+} from '../../data/site-content'
+import { cx } from '../../lib/utils'
+
+const fadeUpProps = {
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.2 },
+  transition: { duration: 0.55, ease: 'easeOut' }
+} as const
+
+export function TrustStat({ value, label }: StatItem) {
+  return (
+    <div className="min-w-[88px]">
+      <p className="font-display text-2xl font-bold text-gold-400 md:text-3xl">{value}</p>
+      <p className="text-xs text-white/55">{label}</p>
+    </div>
+  )
+}
+
+export function PackageCard({ name, description, price, duration, highlight, includes }: PackageItem) {
+  const isFeaturedPackage = highlight === 'Most requested itinerary'
+
+  return (
+    <motion.article
+      className={cx(
+        'group relative overflow-hidden rounded-[2rem] border p-7 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl',
+        isFeaturedPackage && 'md:col-span-2',
+        isFeaturedPackage
+          ? 'border-gold-300 bg-gradient-to-br from-forest-950 via-forest-900 to-forest-800 text-white'
+          : 'border-forest-100 bg-gradient-to-br from-white via-white to-gold-50/60'
+      )}
+      {...fadeUpProps}
+    >
+      <div
+        aria-hidden="true"
+        className={cx(
+          'absolute inset-x-0 top-0 h-24',
+          isFeaturedPackage
+            ? 'bg-[radial-gradient(circle_at_top,rgba(253,186,116,0.28),transparent_68%)]'
+            : 'bg-[radial-gradient(circle_at_top,rgba(220,88,1,0.12),transparent_68%)]'
+        )}
+      />
+      <div
+        aria-hidden="true"
+        className={cx(
+          'absolute -right-10 top-14 h-28 w-28 rounded-full blur-3xl transition-transform duration-500 group-hover:scale-110',
+          isFeaturedPackage ? 'bg-gold-400/20' : 'bg-gold-400/10'
+        )}
+      />
+
+      <div className="relative z-10 flex h-full flex-col">
+        <div className="mb-7 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+          <div className="space-y-3">
+            <span
+              className={cx(
+                'inline-flex rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em]',
+                isFeaturedPackage
+                  ? 'border-gold-300/40 bg-gold-400/15 text-gold-300'
+                  : 'border-fairway-100 bg-fairway-50 text-fairway-700'
+              )}
+            >
+              {highlight}
+            </span>
+
+            <div
+              className={cx(
+                'inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs',
+                isFeaturedPackage
+                  ? 'border-white/10 bg-white/8 text-white/75'
+                  : 'border-forest-100 bg-white/80 text-forest-900/55'
+              )}
+            >
+              <CalendarDays className="h-3.5 w-3.5" aria-hidden="true" />
+              <span>{duration}</span>
+            </div>
+          </div>
+
+          <div className="sm:text-right">
+            <p
+              className={cx(
+                'text-[11px] font-semibold uppercase tracking-[0.14em]',
+                isFeaturedPackage ? 'text-white/45' : 'text-forest-900/40'
+              )}
+            >
+              Starting from
+            </p>
+            <p
+              className={cx(
+                'mt-2 font-display text-3xl font-bold leading-tight md:text-[2rem]',
+                isFeaturedPackage ? 'text-white' : 'text-forest-900'
+              )}
+            >
+              {price.replace('From ', '')}
+            </p>
+          </div>
+        </div>
+
+        <div className="mb-6">
+          <h3 className={cx('text-2xl font-semibold tracking-tight', isFeaturedPackage ? 'text-white' : 'text-forest-900')}>{name}</h3>
+          <p className={cx('mt-3 text-sm leading-relaxed', isFeaturedPackage ? 'text-white/72' : 'text-forest-900/65')}>{description}</p>
+        </div>
+
+        <div
+          className={cx(
+            'mb-6 space-y-3 rounded-[1.5rem] border p-4',
+            isFeaturedPackage ? 'border-white/10 bg-white/6 backdrop-blur-sm' : 'border-forest-100 bg-white/80'
+          )}
+        >
+          {includes.map((item) => (
+            <div
+              key={item}
+              className={cx(
+                'flex items-center gap-3 text-sm',
+                isFeaturedPackage ? 'text-white/82' : 'text-forest-900/72'
+              )}
+            >
+              <CheckCircle2
+                className={cx('h-4 w-4 shrink-0', isFeaturedPackage ? 'text-gold-300' : 'text-fairway-600')}
+                aria-hidden="true"
+              />
+              <span>{item}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-auto flex flex-col gap-4 border-t border-current/10 pt-5 sm:flex-row sm:items-center sm:justify-between">
+          <p className={cx('text-xs uppercase tracking-[0.14em]', isFeaturedPackage ? 'text-white/45' : 'text-forest-900/40')}>
+            Tailored for your group
+          </p>
+          <a
+            aria-label={`Tailor the ${name} trip`}
+            className={cx(
+              'inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-300 sm:min-w-[170px]',
+              isFeaturedPackage
+                ? 'bg-white text-forest-900 hover:bg-gold-300 hover:text-forest-950'
+                : 'bg-forest-900 text-white hover:bg-gold-500'
+            )}
+            href="/packages"
+          >
+            <span>Tailor this trip</span>
+            <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+          </a>
+        </div>
+      </div>
+    </motion.article>
+  )
+}
+
+export function CourseCard({ name, location, distance, badge, description, rate, image, tags }: CourseItem) {
+  return (
+    <motion.article
+      className="group overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+      {...fadeUpProps}
+    >
+      <div className="relative h-56 overflow-hidden">
+        <img
+          alt={`${name} golf course in ${location}`}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          src={image}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-forest-900/75 via-transparent to-transparent" />
+        <span className="absolute left-4 top-4 rounded-full bg-gold-400 px-3 py-1 text-xs font-semibold text-forest-900">
+          {badge}
+        </span>
+        <div className="absolute bottom-4 left-4 right-4">
+          <p className="font-display text-2xl font-bold text-white">{name}</p>
+        </div>
+      </div>
+
+      <div className="p-6">
+        <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-forest-900/50">
+          <span>{location}</span>
+          <span className="h-1 w-1 rounded-full bg-forest-900/20" />
+          <span>{distance}</span>
+        </div>
+        <p className="mb-4 text-sm leading-relaxed text-forest-900/65">{description}</p>
+        <div className="mb-5 flex flex-wrap gap-2">
+          {tags.map((tag) => (
+            <span
+              key={tag}
+              className="rounded-full border border-fairway-100 bg-fairway-50 px-3 py-1 text-xs text-fairway-700"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+        <div className="flex items-center justify-between border-t border-forest-100 pt-4">
+          <p className="text-sm font-semibold text-forest-900">{rate}</p>
+          <a className="text-xs font-semibold text-fairway-700 transition-colors hover:text-fairway-900" href="/packages">
+            Request details
+          </a>
+        </div>
+      </div>
+    </motion.article>
+  )
+}
+
+export function HotelCard({ name, tier, area, image, description, perks, price }: HotelItem) {
+  const tierClassName =
+    tier === 5
+      ? 'border-gold-200 bg-gold-50 text-gold-600'
+      : tier === 4
+        ? 'border-forest-200 bg-forest-100 text-forest-700'
+        : 'border-fairway-100 bg-fairway-50 text-fairway-700'
+
+  return (
+    <motion.article
+      className="group overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+      {...fadeUpProps}
+    >
+      <div className="relative h-56 overflow-hidden">
+        <img
+          alt={`${name} hotel exterior in ${area}`}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          src={image}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-forest-900/65 via-transparent to-transparent" />
+        <div className="absolute left-4 right-4 top-4 flex items-center justify-between gap-3">
+          <span className={cx('rounded-full border px-3 py-1 text-xs font-semibold', tierClassName)}>
+            {tier}-star stay
+          </span>
+          <div className="flex gap-0.5">
+            {Array.from({ length: tier }).map((_, index) => (
+              <Star key={index} className="h-4 w-4 fill-gold-400 text-gold-400" aria-hidden="true" />
+            ))}
+          </div>
+        </div>
+        <div className="absolute bottom-4 left-4 right-4">
+          <p className="font-display text-2xl font-bold text-white">{name}</p>
+          <p className="text-sm text-white/75">{area}</p>
+        </div>
+      </div>
+
+      <div className="p-6">
+        <p className="mb-4 text-sm leading-relaxed text-forest-900/65">{description}</p>
+        <div className="mb-5 flex flex-wrap gap-2">
+          {perks.map((perk) => (
+            <span
+              key={perk}
+              className="rounded-full border border-forest-100 bg-forest-50 px-3 py-1 text-xs text-forest-900/70"
+            >
+              {perk}
+            </span>
+          ))}
+        </div>
+        <div className="flex items-center justify-between border-t border-forest-100 pt-4">
+          <p className="text-sm font-semibold text-forest-900">{price}</p>
+          <a className="text-xs font-semibold text-fairway-700 transition-colors hover:text-fairway-900" href={`/packages?stay=${tier}`}>
+            Match with package
+          </a>
+        </div>
+      </div>
+    </motion.article>
+  )
+}
+
+export function FeatureTile({ title, description, icon: Icon }: TransferFeature) {
+  return (
+    <motion.article
+      className="rounded-[2rem] border border-white/15 bg-white/10 p-6 backdrop-blur-md"
+      {...fadeUpProps}
+    >
+      <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-fairway-500/15 text-fairway-400">
+        <Icon className="h-5 w-5" aria-hidden="true" />
+      </div>
+      <h3 className="mb-2 text-sm font-semibold text-white">{title}</h3>
+      <p className="text-sm leading-relaxed text-white/65">{description}</p>
+    </motion.article>
+  )
+}
+
+export function StepCard({ step, title, description, image }: PlanningStep) {
+  return (
+    <motion.article
+      className="group overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+      {...fadeUpProps}
+    >
+      <div className="relative h-44 overflow-hidden">
+        <img
+          alt={`${title} planning step illustration`}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          src={image}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-forest-900/70 via-transparent to-transparent" />
+        <span className="absolute left-4 top-4 font-display text-3xl font-bold leading-none text-gold-400">{step}</span>
+      </div>
+      <div className="p-6">
+        <h3 className="mb-2 text-sm font-semibold text-forest-900">{title}</h3>
+        <p className="text-sm leading-relaxed text-forest-900/65">{description}</p>
+      </div>
+    </motion.article>
+  )
+}
+
+export function TestimonialCard({ quote, name, meta }: TestimonialItem) {
+  return (
+    <motion.article
+      className="rounded-[2rem] border border-forest-100 bg-white p-6 shadow-sm"
+      {...fadeUpProps}
+    >
+      <div className="mb-4 flex gap-1">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <Star key={index} className="h-4 w-4 fill-gold-400 text-gold-400" aria-hidden="true" />
+        ))}
+      </div>
+      <p className="mb-5 text-sm italic leading-relaxed text-forest-900/75">"{quote}"</p>
+      <div>
+        <p className="text-sm font-semibold text-forest-900">{name}</p>
+        <p className="text-xs text-forest-900/50">{meta}</p>
+      </div>
+    </motion.article>
+  )
+}
