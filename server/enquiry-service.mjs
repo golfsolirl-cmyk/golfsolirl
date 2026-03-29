@@ -72,6 +72,27 @@ const getBrandLockupPngBuffer = async () => {
   return brandLockupPngBufferPromise
 }
 
+const getEmailLogoBallPngBuffer = async () => {
+  if (!emailLogoBallPngPromise) {
+    emailLogoBallPngPromise = sharp(readFileSync(logoSvgPath))
+      .resize({ width: 420, kernel: sharp.kernel.lanczos3 })
+      .png({ compressionLevel: 9 })
+      .toBuffer()
+  }
+  return emailLogoBallPngPromise
+}
+
+const getEmailShamrockInlinePngBuffer = async () => {
+  if (!emailShamrockInlinePngPromise) {
+    const shamrockSvg = `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="5" ry="7" transform="rotate(-10 12 6)" fill="#1f571a"/><ellipse cx="6.5" cy="14" rx="5" ry="7" transform="rotate(50 6.5 14)" fill="#1f571a"/><ellipse cx="17.5" cy="14" rx="5" ry="7" transform="rotate(-50 17.5 14)" fill="#1f571a"/><path d="M11 14v6c0 .5.4 1 1 1s1-.5 1-1v-6" fill="none" stroke="#1f571a" stroke-linecap="round" stroke-width="1.2"/></svg>`
+    emailShamrockInlinePngPromise = sharp(Buffer.from(shamrockSvg))
+      .resize(96, 96, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+      .png()
+      .toBuffer()
+  }
+  return emailShamrockInlinePngPromise
+}
+
 const rasterizeFaIcon = async (viewBox, pathD) => {
   const svg = `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}"><path fill="#dc5801" d="${pathD}"/></svg>`
   return sharp(Buffer.from(svg))
