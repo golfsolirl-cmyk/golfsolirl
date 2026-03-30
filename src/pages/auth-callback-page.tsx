@@ -26,6 +26,8 @@ export function AuthCallbackPage() {
       return
     }
 
+    let cancelled = false
+
     const search = new URLSearchParams(window.location.search)
     const oauthError = search.get('error')
     const oauthDescription = search.get('error_description')
@@ -36,14 +38,22 @@ export function AuthCallbackPage() {
       return
     }
 
-    const finish = async () => {
-      await supabase.auth.initialize()
+    const replaceIfActive = (path: string) => {
+      if (!cancelled) {
+        window.location.replace(path)
+      }
+    }
 
+    const finish = async () => {
       const readSession = async () => (await supabase.auth.getSession()).data.session
 
       let session = await readSession()
+      if (cancelled) {
+        return
+      }
+
       if (session) {
-        window.location.replace('/dashboard')
+        replaceIfActive('/dashboard')
         return
       }
 
@@ -53,9 +63,12 @@ export function AuthCallbackPage() {
         if (exchangeError) {
           console.error('[auth-callback] exchangeCodeForSession:', exchangeError.message)
         }
+        if (cancelled) {
+          return
+        }
         session = await readSession()
         if (session) {
-          window.location.replace('/dashboard')
+          replaceIfActive('/dashboard')
           return
         }
       }
@@ -70,9 +83,12 @@ export function AuthCallbackPage() {
         if (verifyError) {
           console.error('[auth-callback] verifyOtp:', verifyError.message)
         }
+        if (cancelled) {
+          return
+        }
         session = await readSession()
         if (session) {
-          window.location.replace('/dashboard')
+          replaceIfActive('/dashboard')
           return
         }
       }
@@ -88,37 +104,35 @@ export function AuthCallbackPage() {
         if (setError) {
           console.error('[auth-callback] setSession:', setError.message)
         }
+        if (cancelled) {
+          return
+        }
         window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
         session = await readSession()
         if (session) {
-          window.location.replace('/dashboard')
+          replaceIfActive('/dashboard')
           return
         }
       }
 
       setMessage('Still checking…')
       await new Promise((r) => setTimeout(r, 500))
+      if (cancelled) {
+        return
+      }
       session = await readSession()
       if (session) {
-        window.location.replace('/dashboard')
+        replaceIfActive('/dashboard')
         return
       }
 
-      window.location.replace('/login?error=no_session')
+      replaceIfActive('/login?error=no_session')
     }
 
     void finish()
 
-    const {
-      data: { subscription }
-    } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN') {
-        window.location.replace('/dashboard')
-      }
-    })
-
     return () => {
-      subscription.unsubscribe()
+      cancelled = true
     }
   }, [])
 

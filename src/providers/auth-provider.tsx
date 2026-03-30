@@ -26,6 +26,15 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
+const isAuthCallbackPath = () => {
+  if (typeof window === 'undefined') {
+    return false
+  }
+
+  const path = window.location.pathname.replace(/\/+$/, '') || '/'
+  return path === '/auth/callback'
+}
+
 export function AuthProvider({ children }: { readonly children: ReactNode }) {
   const supabase = useMemo(() => getSupabaseBrowserClient(), [])
   const [session, setSession] = useState<Session | null>(null)
@@ -62,6 +71,10 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   useEffect(() => {
     if (!supabase) {
       setIsLoading(false)
+      return
+    }
+
+    if (isAuthCallbackPath()) {
       return
     }
 
