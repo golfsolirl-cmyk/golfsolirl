@@ -88,3 +88,119 @@ export const parsePackageBuildConfig = (raw: unknown): PackageBuildConfig | null
 
   return o as PackageBuildConfig
 }
+
+export const formatPackageEuro = (value: number): string =>
+  new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value)
+
+/** Mirrors proposal-template URL-style fields; stored in package_builds.client_details */
+export interface PackageTripDetailsForm {
+  readonly packageName: string
+  readonly stayName: string
+  readonly transferName: string
+  readonly groupSize: string
+  readonly nights: string
+  readonly rounds: string
+  readonly perPersonPrice: string
+  readonly groupTotal: string
+  readonly depositAmount: string
+  readonly remainingBalance: string
+  readonly leadGuestName: string
+  readonly contactPhone: string
+  readonly preferredTravelDates: string
+  readonly notesForGsol: string
+}
+
+export const emptyTripDetailsForm = (): PackageTripDetailsForm => ({
+  packageName: '',
+  stayName: '',
+  transferName: '',
+  groupSize: '',
+  nights: '',
+  rounds: '',
+  perPersonPrice: '',
+  groupTotal: '',
+  depositAmount: '',
+  remainingBalance: '',
+  leadGuestName: '',
+  contactPhone: '',
+  preferredTravelDates: '',
+  notesForGsol: ''
+})
+
+export const tripDetailsFromConfig = (config: PackageBuildConfig): PackageTripDetailsForm => ({
+  packageName: config.packageStyle,
+  stayName: config.stayName,
+  transferName: config.transferName,
+  groupSize: String(config.groupSize),
+  nights: String(config.nights),
+  rounds: String(config.rounds),
+  perPersonPrice: formatPackageEuro(config.totals.estimatedPerPerson),
+  groupTotal: formatPackageEuro(config.totals.estimatedGroupTotal),
+  depositAmount: formatPackageEuro(config.totals.depositAmount),
+  remainingBalance: formatPackageEuro(config.totals.remainingBalance),
+  leadGuestName: '',
+  contactPhone: '',
+  preferredTravelDates: '',
+  notesForGsol: ''
+})
+
+const tripDetailKeys: readonly (keyof PackageTripDetailsForm)[] = [
+  'packageName',
+  'stayName',
+  'transferName',
+  'groupSize',
+  'nights',
+  'rounds',
+  'perPersonPrice',
+  'groupTotal',
+  'depositAmount',
+  'remainingBalance',
+  'leadGuestName',
+  'contactPhone',
+  'preferredTravelDates',
+  'notesForGsol'
+]
+
+export const mergeTripDetailsWithSaved = (
+  saved: unknown,
+  defaults: PackageTripDetailsForm
+): PackageTripDetailsForm => {
+  if (!saved || typeof saved !== 'object') {
+    return defaults
+  }
+
+  const s = saved as Record<string, unknown>
+  let next = { ...defaults }
+
+  for (const key of tripDetailKeys) {
+    const v = s[key]
+    if (typeof v === 'string') {
+      next = { ...next, [key]: v }
+    } else if (typeof v === 'number' && (key === 'groupSize' || key === 'nights' || key === 'rounds')) {
+      next = { ...next, [key]: String(v) }
+    }
+  }
+
+  return next
+}
+
+export const serializeTripDetailsForDb = (form: PackageTripDetailsForm): Record<string, unknown> => ({
+  version: 1,
+  ...form
+})
+
+export const hasMeaningfulTripDetails = (raw: unknown): boolean => {
+  if (!raw || typeof raw !== 'object') {
+    return false
+  }
+
+  const o = raw as Record<string, unknown>
+  const nonEmpty = (k: string) => typeof o[k] === 'string' && (o[k] as string).trim() !== ''
+
+  return (
+    nonEmpty('leadGuestName') ||
+    nonEmpty('contactPhone') ||
+    nonEmpty('preferredTravelDates') ||
+    nonEmpty('notesForGsol')
+  )
+}

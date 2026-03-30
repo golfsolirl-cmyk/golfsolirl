@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
-import { parsePackageBuildConfig } from '../lib/package-build'
+import { hasMeaningfulTripDetails, parsePackageBuildConfig } from '../lib/package-build'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { useAuth } from '../providers/auth-provider'
 import { cx } from '../lib/utils'
@@ -35,6 +35,7 @@ interface PackageBuildAdminRow {
   label: string | null
   source: string
   config: unknown
+  client_details: unknown
   created_at: string
   profiles: ProfileEmbed | ProfileEmbed[] | null
 }
@@ -104,7 +105,7 @@ export function AdminDashboardPage() {
         supabase.from('proposals').select('id, proposal_id, title, status, created_at').order('created_at', { ascending: false }).limit(100),
         supabase
           .from('package_builds')
-          .select('id, owner_id, label, source, config, created_at, profiles(email, full_name)')
+          .select('id, owner_id, label, source, config, client_details, created_at, profiles(email, full_name)')
           .order('created_at', { ascending: false })
           .limit(100)
       ])
@@ -245,6 +246,7 @@ export function AdminDashboardPage() {
                       <th className="whitespace-nowrap px-4 py-4 md:px-6">Customer</th>
                       <th className="px-4 py-4 md:px-6">Build</th>
                       <th className="whitespace-nowrap px-4 py-4 md:px-6">Source</th>
+                      <th className="whitespace-nowrap px-4 py-4 md:px-6">Trip form</th>
                       <th className="whitespace-nowrap px-4 py-4 md:px-6">Group total</th>
                     </tr>
                   </thead>
@@ -285,6 +287,9 @@ export function AdminDashboardPage() {
                           </td>
                           <td className="whitespace-nowrap px-4 py-4 text-xs capitalize text-forest-600 md:px-6">
                             {row.source === 'landing' ? 'Homepage' : 'Packages'}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-4 text-xs font-medium text-forest-700 md:px-6">
+                            {hasMeaningfulTripDetails(row.client_details) ? 'Yes' : '—'}
                           </td>
                           <td className="whitespace-nowrap px-4 py-4 font-medium text-forest-900 md:px-6">
                             {typeof total === 'number' ? formatEur(total) : '—'}
