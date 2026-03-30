@@ -92,24 +92,27 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       }
     }
 
-    void (async () => {
-      const { data } = await supabase.auth.getSession()
-      if (cancelled) {
-        return
-      }
-
-      const initialSession = data.session ?? null
-      setSession(initialSession)
-      await settleProfile(initialSession)
-      if (!cancelled) {
-        setIsLoading(false)
-      }
-    })()
-
     const {
       data: { subscription }
     } = supabase.auth.onAuthStateChange(async (event, nextSession) => {
       if (event === 'INITIAL_SESSION') {
+        if (cancelled) {
+          return
+        }
+
+        setSession(nextSession)
+
+        if (!nextSession?.user) {
+          setProfile(null)
+          setIsLoading(false)
+          return
+        }
+
+        await settleProfile(nextSession)
+        if (!cancelled) {
+          setIsLoading(false)
+        }
+
         return
       }
 
