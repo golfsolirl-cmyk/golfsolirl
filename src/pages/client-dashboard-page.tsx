@@ -71,6 +71,10 @@ export function ClientDashboardPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [removeError, setRemoveError] = useState<string | null>(null)
   const [proposalPdfLoadingId, setProposalPdfLoadingId] = useState<string | null>(null)
+  const [documentAccess, setDocumentAccess] = useState<{ terms: boolean; welcome: boolean }>({
+    terms: false,
+    welcome: false
+  })
 
   const loadData = useCallback(async () => {
     if (!session?.user) {
@@ -86,10 +90,18 @@ export function ClientDashboardPage() {
     }
 
     setListLoading(true)
-    const [propRes, buildRes] = await Promise.all([
+    const [propRes, buildRes, docRes] = await Promise.all([
       supabase.from('proposals').select('id, proposal_id, title, status, created_at, payload').order('created_at', { ascending: false }),
-      fetchPackageBuildsClientList(supabase, 40)
+      fetchPackageBuildsClientList(supabase, 40),
+      supabase.from('client_document_access').select('document_kind').eq('owner_id', session.user.id)
     ])
+
+    if (docRes.error) {
+      setDocumentAccess({ terms: false, welcome: false })
+    } else {
+      const kinds = new Set((docRes.data ?? []).map((r) => r.document_kind))
+      setDocumentAccess({ terms: kinds.has('terms'), welcome: kinds.has('welcome') })
+    }
 
     if (propRes.error) {
       setProposalsError(propRes.error.message)
@@ -531,28 +543,34 @@ export function ClientDashboardPage() {
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Proposals</p>
                 <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Documents from Golf Sol Ireland</h2>
                 <p className="mt-2 max-w-2xl text-sm text-forest-600">
-                  Formal proposals we send appear below with a PDF download. Standard documents use the same site header and
-                  footer as the main website.
+                  Formal proposals we send appear below with a PDF download. Terms and thank-you pages only show here after
+                  Golf Sol Ireland enables them for your account.
                 </p>
               </div>
             </div>
 
-            <div className="mb-8 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Your PDF library</p>
-              <h3 className="font-display mt-2 text-lg font-semibold text-forest-950">Terms &amp; thank-you</h3>
-              <p className="mt-2 max-w-xl text-sm text-forest-600">
-                Open a page, then use <strong className="font-medium text-forest-800">Save PDF</strong> for a print-ready copy
-                with Golf Sol Ireland branding.
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <LuxuryButton href="/documents/terms" variant="outline">
-                  Terms &amp; conditions
-                </LuxuryButton>
-                <LuxuryButton href="/documents/welcome" variant="white">
-                  Thank you — Golf Sol Ireland
-                </LuxuryButton>
+            {documentAccess.terms || documentAccess.welcome ? (
+              <div className="mb-8 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Your PDF library</p>
+                <h3 className="font-display mt-2 text-lg font-semibold text-forest-950">Terms and thank-you</h3>
+                <p className="mt-2 max-w-xl text-sm text-forest-600">
+                  Open a page, then use <strong className="font-medium text-forest-800">Save PDF</strong> for a print-ready copy
+                  with the same header and footer as our main website.
+                </p>
+                <div className="mt-5 flex flex-wrap gap-3">
+                  {documentAccess.terms ? (
+                    <LuxuryButton href="/documents/terms" variant="outline">
+                      Terms and conditions
+                    </LuxuryButton>
+                  ) : null}
+                  {documentAccess.welcome ? (
+                    <LuxuryButton href="/documents/welcome" variant="white">
+                      Thank you — Golf Sol Ireland
+                    </LuxuryButton>
+                  ) : null}
+                </div>
               </div>
-            </div>
+            ) : null}
 
             {proposalsError ? (
               <div className="rounded-3xl border border-red-200/80 bg-red-50/90 px-6 py-4 text-sm text-red-900 shadow-soft">
@@ -567,9 +585,9 @@ export function ClientDashboardPage() {
                 <div className="px-6 py-10 md:px-10 md:py-12">
                   <h3 className="font-display text-xl font-semibold text-forest-950">No formal proposals yet</h3>
                   <p className="mt-4 max-w-lg text-forest-600">
-                    When we email you a proposal from our admin tools, it will show up here with a download button. Use{' '}
-                    <strong className="font-medium text-forest-800">Your PDF library</strong> above for terms and our thank-you
-                    note. Your calculator saves stay in the section above.
+                    When we email you a proposal from our admin tools, it will show up here with a download button. If we send
+                    you terms or our thank-you document, those links will appear above this box. Your calculator saves stay in
+                    the section above.
                   </p>
                 </div>
               </div>

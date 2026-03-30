@@ -14,6 +14,7 @@ import {
   type PackageTripDetailsForm,
   type TripDetailsFieldKey
 } from '../lib/package-build'
+import { integrationRegistry } from '../config/integrations'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { useAuth } from '../providers/auth-provider'
 import { cx } from '../lib/utils'
@@ -79,6 +80,9 @@ const adminTripInputClass =
 
 export function AdminDashboardPage() {
   const { session, profile, isLoading } = useAuth()
+  const [crmDocEmail, setCrmDocEmail] = useState('')
+  const [crmDocSending, setCrmDocSending] = useState<'idle' | 'terms' | 'welcome'>('idle')
+  const [crmDocMessage, setCrmDocMessage] = useState<string | null>(null)
   const [enquiries, setEnquiries] = useState<EnquiryRow[]>([])
   const [proposals, setProposals] = useState<ProposalRow[]>([])
   const [packageBuilds, setPackageBuilds] = useState<PackageBuildAdminRow[]>([])
@@ -247,6 +251,57 @@ export function AdminDashboardPage() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [detailBuildId, handleCloseBuildDetail])
 
+  const handleSendCrmDocument = async (documentKind: 'terms' | 'welcome') => {
+    if (!integrationRegistry.supabase.enabled) {
+      setCrmDocMessage('Supabase is not configured.')
+      return
+    }
+
+    if (!session?.access_token) {
+      setCrmDocMessage('Session expired. Sign in again.')
+      return
+    }
+
+    const email = crmDocEmail.trim().toLowerCase()
+
+    if (!email.includes('@')) {
+      setCrmDocMessage('Enter the client account email (same as their magic-link login).')
+      return
+    }
+
+    try {
+      setCrmDocSending(documentKind)
+      setCrmDocMessage(null)
+
+      const res = await fetch('/api/send-client-document', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ clientEmail: email, documentKind })
+      })
+
+      const data = (await res.json().catch(() => ({}))) as { message?: string; alreadyHadAccess?: boolean }
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Send failed.')
+      }
+
+      const label = documentKind === 'terms' ? 'Terms and conditions' : 'Thank-you'
+
+      setCrmDocMessage(
+        data.alreadyHadAccess
+          ? `${label}: email sent again (they already had access).`
+          : `${label}: access granted and email sent. They will see it on their dashboard after sign-in.`
+      )
+    } catch (e) {
+      setCrmDocMessage(e instanceof Error ? e.message : 'Send failed.')
+    } finally {
+      setCrmDocSending('idle')
+    }
+  }
+
   if (isLoading || !session || profile?.role !== 'admin') {
     return <DashboardLoadingShell label="Loading admin dashboard…" />
   }
@@ -323,6 +378,62 @@ export function AdminDashboardPage() {
                 </table>
               </div>
             )}
+          </section>
+
+          <section>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">CRM — client PDFs</p>
+            <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Terms and thank-you documents</h2>
+            <p className="mt-2 max-w-2xl text-sm text-forest-600">
+              Send branded terms or the thank-you page to a client&apos;s login email. They only see these links on their
+              dashboard after you send. Requires table{' '}
+              <code className="rounded-md bg-forest-100 px-1.5 py-0.5 text-xs text-forest-800">client_document_access</code>{' '}
+              — run <code className="rounded-md bg-forest-100 px-1.5 py-0.5 text-xs text-forest-800">supabase/run-in-sql-editor-client-document-access.sql</code> if needed.
+            </p>
+
+            <div className="mt-6 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="crm-doc-email">
+                Client account email
+              </label>
+              <input
+                autoComplete="email"
+                className="mb-6 w-full max-w-md rounded-2xl border border-forest-200 bg-forest-50/40 px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
+                id="crm-doc-email"
+                onChange={(e) => {
+                  setCrmDocEmail(e.target.value)
+                  setCrmDocMessage(null)
+                }}
+                placeholder="client@example.com"
+                type="email"
+                value={crmDocEmail}
+              />
+
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <button
+                  aria-label="Send terms and conditions to client email"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-forest-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-forest-800 disabled:opacity-60"
+                  disabled={crmDocSending !== 'idle'}
+                  onClick={() => handleSendCrmDocument('terms')}
+                  type="button"
+                >
+                  {crmDocSending === 'terms' ? 'Sending…' : 'Email terms PDF access'}
+                </button>
+                <button
+                  aria-label="Send thank you document to client email"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border-2 border-[#dc5801] bg-white px-6 py-3 text-sm font-semibold text-[#b34701] transition-colors hover:bg-[#dc5801]/10 disabled:opacity-60"
+                  disabled={crmDocSending !== 'idle'}
+                  onClick={() => handleSendCrmDocument('welcome')}
+                  type="button"
+                >
+                  {crmDocSending === 'welcome' ? 'Sending…' : 'Email thank-you PDF access'}
+                </button>
+              </div>
+
+              {crmDocMessage ? (
+                <p className="mt-4 text-sm font-medium text-forest-800" role="status">
+                  {crmDocMessage}
+                </p>
+              ) : null}
+            </div>
           </section>
 
           <section>

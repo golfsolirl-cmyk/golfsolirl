@@ -1,7 +1,9 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Download, LoaderCircle } from 'lucide-react'
 import { PdfSiteShell } from '../components/pdf-site-shell'
+import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { saveElementAsPdf } from '../lib/save-element-as-pdf'
+import { useAuth } from '../providers/auth-provider'
 
 type DocumentVariant = 'terms' | 'welcome'
 
@@ -15,10 +17,51 @@ const resolveVariant = (): DocumentVariant => {
 }
 
 export function ClientDocumentPage() {
+  const { session, isLoading: authLoading } = useAuth()
   const variant = useMemo(() => resolveVariant(), [])
   const rootRef = useRef<HTMLDivElement | null>(null)
   const [pdfStatus, setPdfStatus] = useState<'idle' | 'saving' | 'error'>('idle')
   const [pdfMessage, setPdfMessage] = useState<string | null>(null)
+  const [accessGate, setAccessGate] = useState<'loading' | 'denied' | 'ok'>('loading')
+
+  useEffect(() => {
+    if (authLoading) {
+      return
+    }
+
+    if (!session?.user) {
+      const next = encodeURIComponent(window.location.pathname)
+      window.location.replace(`/login?next=${next}`)
+      return
+    }
+
+    const kind = variant === 'welcome' ? 'welcome' : 'terms'
+
+    const run = async () => {
+      const supabase = getSupabaseBrowserClient()
+
+      if (!supabase) {
+        setAccessGate('denied')
+        return
+      }
+
+      const { data, error } = await supabase
+        .from('client_document_access')
+        .select('id')
+        .eq('owner_id', session.user.id)
+        .eq('document_kind', kind)
+        .maybeSingle()
+
+      if (error || !data) {
+        setAccessGate('denied')
+        return
+      }
+
+      setAccessGate('ok')
+    }
+
+    void run()
+  }, [authLoading, session?.user?.id, variant])
 
   const meta = useMemo(() => {
     if (variant === 'welcome') {
@@ -52,6 +95,34 @@ export function ClientDocumentPage() {
       setPdfMessage(e instanceof Error ? e.message : 'Could not create PDF.')
       setPdfStatus('error')
     }
+  }
+
+  if (authLoading || accessGate === 'loading') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-offwhite px-6">
+        <p className="text-sm font-medium text-forest-700">Checking access…</p>
+      </div>
+    )
+  }
+
+  if (accessGate === 'denied') {
+    return (
+      <div className="min-h-screen bg-offwhite px-6 py-16 text-forest-900">
+        <div className="mx-auto max-w-lg text-center">
+          <h1 className="font-display text-2xl font-semibold text-forest-950">This document is not shared with your account</h1>
+          <p className="mt-4 text-sm leading-relaxed text-forest-600">
+            Golf Sol Ireland enables the terms and thank-you PDFs from the admin dashboard. Once we email you access, the link
+            will appear on your client dashboard after you sign in.
+          </p>
+          <a
+            className="mt-8 inline-flex text-sm font-semibold text-fairway-700 underline-offset-2 hover:underline"
+            href="/dashboard"
+          >
+            Back to your dashboard
+          </a>
+        </div>
+      </div>
+    )
   }
 
   return (
