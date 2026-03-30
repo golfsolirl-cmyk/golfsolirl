@@ -62,7 +62,7 @@ export function DashboardLayout({ title, subtitle, kicker, variant, children }: 
                 {title}
               </h1>
               {subtitle ? (
-                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/88 md:text-base">{subtitle}</p>
+                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white md:text-base">{subtitle}</p>
               ) : null}
               {user?.email ? (
                 <p className="mt-4 truncate text-xs font-medium tracking-wide text-white/55 md:text-sm">{user.email}</p>

@@ -1,10 +1,16 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { LuxuryButton } from '../components/ui/button'
 import { Logo } from '../components/ui/logo'
+import { SiteFooter } from '../components/site-footer'
 import { WaveDivider } from '../components/ui/wave-divider'
 import { integrationRegistry } from '../config/integrations'
 import { AUTH_NEXT_STORAGE_KEY, isSafeInternalPath } from '../lib/internal-redirect'
 import { useAuth } from '../providers/auth-provider'
+
+const loginFooterIntro =
+  'Golf Sol Ireland exists for golfers who want the Costa del Sol done properly: better courses, smarter stays, and a smoother trip from first enquiry to final round.'
+
+const loginFooterCopyrightNote = 'Golf travel planning for Irish groups heading to the Costa del Sol.'
 
 const LoginHeroBackdrop = () => (
   <>
@@ -24,6 +30,7 @@ const LoginHeroBackdrop = () => (
 )
 
 export function LoginPage() {
+  const footerRef = useRef<HTMLElement | null>(null)
   const { signInWithMagicLink, session, profile, isLoading, isSupabaseConfigured } = useAuth()
   const [email, setEmail] = useState('')
   const [formError, setFormError] = useState<string | null>(null)
@@ -90,7 +97,7 @@ export function LoginPage() {
 
   if (!integrationRegistry.supabase.enabled || !isSupabaseConfigured) {
     return (
-      <div className="min-h-screen bg-offwhite font-body text-forest-900">
+      <div className="flex min-h-screen flex-col bg-offwhite font-body text-forest-900">
         <section className="relative overflow-hidden bg-forest-950 pb-0">
           <LoginHeroBackdrop />
           <div className="relative z-10 mx-auto max-w-7xl px-4 pb-16 pt-10 md:px-6 md:pb-20 md:pt-14">
@@ -107,7 +114,7 @@ export function LoginPage() {
             <WaveDivider fill="#f7f9f5" />
           </div>
         </section>
-        <main className="relative z-[1] mx-auto max-w-lg px-4 pb-20 pt-8 md:px-6 md:pb-28">
+        <main className="relative z-[1] mx-auto w-full max-w-lg flex-1 px-4 pb-20 pt-8 md:px-6 md:pb-28">
           <div className="rounded-[2rem] border border-forest-100 bg-white p-8 shadow-soft md:p-10">
             <p className="text-sm leading-relaxed text-forest-700">
               Add <code className="rounded-md bg-forest-50 px-1.5 py-0.5 text-xs text-forest-900">VITE_SUPABASE_URL</code>{' '}
@@ -120,23 +127,27 @@ export function LoginPage() {
             </LuxuryButton>
           </div>
         </main>
+        <SiteFooter copyrightNote={loginFooterCopyrightNote} footerRef={footerRef} intro={loginFooterIntro} />
       </div>
     )
   }
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-forest-950 px-6">
-        <div className="mb-10 scale-90">
-          <Logo size="large" tone="scrolled" />
+      <div className="flex min-h-screen flex-col bg-forest-950">
+        <div className="flex flex-1 flex-col items-center justify-center px-6">
+          <div className="mb-10 scale-90">
+            <Logo size="large" tone="scrolled" />
+          </div>
+          <p className="text-sm font-medium tracking-wide text-white/55">Loading…</p>
         </div>
-        <p className="text-sm font-medium tracking-wide text-white/55">Loading…</p>
+        <SiteFooter copyrightNote={loginFooterCopyrightNote} footerRef={footerRef} intro={loginFooterIntro} />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-offwhite font-body text-forest-900">
+    <div className="flex min-h-screen flex-col bg-offwhite font-body text-forest-900">
       <section className="relative overflow-hidden bg-forest-950 pb-0">
         <LoginHeroBackdrop />
         <div className="relative z-10 mx-auto max-w-7xl px-4 pb-16 pt-10 md:px-6 md:pb-20 md:pt-14">
@@ -162,7 +173,7 @@ export function LoginPage() {
         </div>
       </section>
 
-      <main className="relative z-[1] mx-auto max-w-lg px-4 pb-20 pt-4 md:px-6 md:pb-28 md:pt-6">
+      <main className="relative z-[1] mx-auto w-full max-w-lg flex-1 px-4 pb-20 pt-4 md:px-6 md:pb-28 md:pt-6">
         <div className="relative overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-soft">
           <div
             aria-hidden="true"
@@ -241,6 +252,8 @@ export function LoginPage() {
           </div>
         </div>
       </main>
+
+      <SiteFooter copyrightNote={loginFooterCopyrightNote} footerRef={footerRef} intro={loginFooterIntro} />
     </div>
   )
 }
