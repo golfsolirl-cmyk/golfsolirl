@@ -5,7 +5,7 @@ import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import { Resend } from 'resend'
 import sharp from 'sharp'
 import { createEnquiryReferenceId, formatDocumentDate } from '../shared/document-templates.mjs'
-import { gsolEmailBrand, logoBallContentId, shamrockInlineContentId, socialContentIds } from './email-constants.mjs'
+import { gsolEmailBrand, logoLockupEmailContentId, shamrockInlineContentId, socialContentIds } from './email-constants.mjs'
 import { buildGsolTransactionalEmail, finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
 
 const pageWidth = 595.28
@@ -34,10 +34,9 @@ const missingConfigMessage =
 const currentFilePath = fileURLToPath(import.meta.url)
 const currentDirectory = path.dirname(currentFilePath)
 const brandLockupAssetPath = path.resolve(currentDirectory, '../src/gsol-brand-lockup-exact.png')
-const logoSvgPath = path.resolve(currentDirectory, '../src/golf-sol-ireland-logo.svg')
 
 let brandLockupPngBufferPromise
-let emailLogoBallPngPromise
+let emailTransactionalLockupPngPromise
 let emailShamrockInlinePngPromise
 const socialPngPromises = {}
 
@@ -63,14 +62,15 @@ const getBrandLockupPngBuffer = async () => {
   return brandLockupPngBufferPromise
 }
 
-const getEmailLogoBallPngBuffer = async () => {
-  if (!emailLogoBallPngPromise) {
-    emailLogoBallPngPromise = sharp(readFileSync(logoSvgPath))
-      .resize({ width: 420, kernel: sharp.kernel.lanczos3 })
+/** Raster of `gsol-brand-lockup-exact.png` for CID embedding (matches site Logo / PDF lockup). */
+const getEmailBrandLockupForTransactionalMail = async () => {
+  if (!emailTransactionalLockupPngPromise) {
+    emailTransactionalLockupPngPromise = sharp(readFileSync(brandLockupAssetPath))
+      .resize({ width: 760, withoutEnlargement: true, kernel: sharp.kernel.lanczos3 })
       .png({ compressionLevel: 9 })
       .toBuffer()
   }
-  return emailLogoBallPngPromise
+  return emailTransactionalLockupPngPromise
 }
 
 const getEmailShamrockInlinePngBuffer = async () => {
@@ -744,8 +744,8 @@ const attachmentFromBuffer = (filename, buffer, contentType, contentId) => ({
 
 /** CID image attachments for branded transactional mail (enquiry, magic link, etc.). */
 export const getTransactionalEmailImageAttachments = async () => {
-  const [logoBallBuf, shamrockBuf, li, fb, wa, bk] = await Promise.all([
-    getEmailLogoBallPngBuffer(),
+  const [lockupBuf, shamrockBuf, li, fb, wa, bk] = await Promise.all([
+    getEmailBrandLockupForTransactionalMail(),
     getEmailShamrockInlinePngBuffer(),
     getSocialIconPng('linkedin', iconPaths.linkedin.vb, iconPaths.linkedin.d),
     getSocialIconPng('facebook', iconPaths.facebook.vb, iconPaths.facebook.d),
@@ -754,7 +754,7 @@ export const getTransactionalEmailImageAttachments = async () => {
   ])
 
   return [
-    attachmentFromBuffer('golf-sol-logo-ball.png', logoBallBuf, 'image/png', logoBallContentId),
+    attachmentFromBuffer('gsol-brand-lockup-email.png', lockupBuf, 'image/png', logoLockupEmailContentId),
     attachmentFromBuffer('golf-sol-shamrock.png', shamrockBuf, 'image/png', shamrockInlineContentId),
     attachmentFromBuffer('social-linkedin.png', li, 'image/png', socialContentIds.linkedin),
     attachmentFromBuffer('social-facebook.png', fb, 'image/png', socialContentIds.facebook),

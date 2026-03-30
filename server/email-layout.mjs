@@ -2,7 +2,7 @@
  * Unified Golf Sol Ireland transactional email shell (proposal / landing visual family).
  * Hero + white card + dark footer band; CID images finalized via finalizeGsolEmailHtml().
  */
-import { gsolEmailBrand, logoBallContentId, shamrockInlineContentId, socialContentIds } from './email-constants.mjs'
+import { gsolEmailBrand, logoLockupEmailContentId, shamrockInlineContentId, socialContentIds } from './email-constants.mjs'
 
 export const getGsolSiteUrl = () => {
   const explicit = process.env.SITE_URL?.trim()
@@ -72,7 +72,7 @@ export const finalizeGsolEmailHtml = (html) => {
     .replace(/<!--\s*GSOL-SOCIAL-ICONS\s*-->[\s\S]*?<!--\s*\/GSOL-SOCIAL-ICONS\s*-->/, socialBlock)
     .replace(shamrockHeroSvgPattern, shamrockHeroImg)
     .replace(shamrockFooterSvgPattern, shamrockFootImg)
-    .replaceAll('src="/golf-sol-ireland-logo.svg"', `src="cid:${logoBallContentId}"`)
+    .replaceAll('src="/gsol-brand-lockup-email.png"', `src="cid:${logoLockupEmailContentId}"`)
     .replaceAll('href="/terms-and-conditions"', `href="${site}/terms-and-conditions"`)
 }
 
@@ -128,16 +128,12 @@ export const buildGsolTransactionalEmail = ({
       .stack { display: block !important; width: 100% !important; max-width: 100% !important; }
       .footer-contact-col { padding: 22px 0 0 0 !important; padding-left: 0 !important; }
       .p-m { padding-left: 16px !important; padding-right: 16px !important; }
-      .logo-img-email { width: 101px !important; height: 101px !important; }
-      .logo-golfsol-email { font-size: 38px !important; }
-      .logo-ireland-email { font-size: 20px !important; }
-      .logo-shamrock-email { width: 28px !important; height: 28px !important; }
+      .logo-lockup-email { width: 300px !important; max-width: 92vw !important; height: auto !important; }
+      .logo-lockup-email-footer { width: 200px !important; max-width: 72vw !important; height: auto !important; }
     }
     @media only screen and (min-width: 621px) {
-      .logo-img-email { width: 112px !important; height: 112px !important; }
-      .logo-golfsol-email { font-size: 44px !important; }
-      .logo-ireland-email { font-size: 23px !important; }
-      .logo-shamrock-email { width: 32px !important; height: 32px !important; }
+      .logo-lockup-email { width: 380px !important; max-width: 100% !important; height: auto !important; }
+      .logo-lockup-email-footer { width: 240px !important; max-width: 100% !important; height: auto !important; }
     }
   </style>
 </head>
@@ -159,38 +155,9 @@ export const buildGsolTransactionalEmail = ({
                           <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin:0 0 20px 0;">
                             <tr>
                               <td style="vertical-align:middle;padding:0;" valign="middle">
-                                <a aria-label="Go to Golf Sol Ireland homepage" href="${site}/" style="text-decoration:none;color:inherit;display:inline-block;max-width:calc(100% - 4.5rem);">
+                                <a aria-label="Go to Golf Sol Ireland homepage" href="${site}/" style="text-decoration:none;color:inherit;display:inline-block;max-width:100%;">
                                   <span style="display:inline-block;filter:drop-shadow(0 8px 24px rgba(10,32,8,0.22));-webkit-filter:drop-shadow(0 8px 24px rgba(10,32,8,0.22));">
-                                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
-                                      <tr>
-                                        <td style="vertical-align:middle;padding:0 16px 0 0;" valign="middle">
-                                          <img alt="" aria-hidden="true" class="logo-img-email" src="/golf-sol-ireland-logo.svg" width="112" height="112" style="display:block;width:112px;height:112px;transform:scale(1.2);transform-origin:left center;-ms-interpolation-mode:bicubic;" />
-                                        </td>
-                                        <td style="vertical-align:middle;padding:0;" valign="middle">
-                                          <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
-                                            <tr>
-                                              <td style="padding:0;vertical-align:baseline;" valign="baseline">
-                                                <span class="logo-golfsol-email" style="font-family:'Dancing Script','Brush Script MT',cursive;font-size:44px;font-weight:700;line-height:1;color:#003805;text-shadow:-1px -1px 0 rgba(255,255,255,0.95),1px -1px 0 rgba(255,255,255,0.95),-1px 1px 0 rgba(255,255,255,0.95),1px 1px 0 rgba(255,255,255,0.95),0 6px 18px rgba(10,32,8,0.28);">GolfSol</span>
-                                              </td>
-                                              <td style="padding:0 6px;vertical-align:middle;width:36px;" valign="middle" aria-hidden="true">
-                                                <svg class="logo-shamrock-email" aria-hidden="true" width="32" height="32" viewBox="0 0 24 24" fill="#1f571a" xmlns="http://www.w3.org/2000/svg" style="display:block;width:32px;height:32px;">
-                                                  <ellipse cx="12" cy="6" rx="5" ry="7" transform="rotate(-10 12 6)" />
-                                                  <ellipse cx="6.5" cy="14" rx="5" ry="7" transform="rotate(50 6.5 14)" />
-                                                  <ellipse cx="17.5" cy="14" rx="5" ry="7" transform="rotate(-50 17.5 14)" />
-                                                  <path d="M11 14v6c0 .5.4 1 1 1s1-.5 1-1v-6" fill="none" stroke="#1f571a" stroke-linecap="round" stroke-width="1.2" />
-                                                </svg>
-                                              </td>
-                                              <td style="padding:0;vertical-align:baseline;" valign="baseline">
-                                                <span class="logo-ireland-email" style="font-family:'Dancing Script','Brush Script MT',cursive;font-size:23px;font-weight:600;line-height:1;color:#dc5801;text-shadow:0 4px 16px rgba(10,32,8,0.45);">Ireland</span>
-                                              </td>
-                                            </tr>
-                                            <tr>
-                                              <td colspan="3" style="padding:4px 0 0 2px;font-family:'DM Sans',Arial,sans-serif;font-size:12px;font-weight:500;letter-spacing:0.04em;line-height:1.35;color:rgba(255,255,255,0.9);text-shadow:0 4px 16px rgba(10,32,8,0.45);">The future of your golf trip</td>
-                                            </tr>
-                                          </table>
-                                        </td>
-                                      </tr>
-                                    </table>
+                                    <img class="logo-lockup-email" src="/gsol-brand-lockup-email.png" alt="Golf Sol Ireland" width="380" style="display:block;width:380px;max-width:100%;height:auto;border:0;-ms-interpolation-mode:bicubic;" />
                                   </span>
                                 </a>
                               </td>
@@ -231,36 +198,7 @@ export const buildGsolTransactionalEmail = ({
                             </tr>
                           </table>
                           <a href="${site}/" aria-label="Golf Sol Ireland — home" style="text-decoration:none;color:inherit;display:inline-block;">
-                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
-                              <tr>
-                                <td style="vertical-align:middle;padding:0 18px 0 0;" valign="middle">
-                                  <img alt="" src="/golf-sol-ireland-logo.svg" width="72" height="72" style="display:block;width:72px;height:72px;border:0;" />
-                                </td>
-                                <td style="vertical-align:middle;padding:0;" valign="middle">
-                                  <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
-                                    <tr>
-                                      <td style="padding:0;vertical-align:baseline;" valign="baseline">
-                                        <span style="font-family:'Dancing Script','Brush Script MT',cursive;font-size:36px;font-weight:700;line-height:1;color:#003805;text-shadow:-1px -1px 0 rgba(255,255,255,0.92),1px -1px 0 rgba(255,255,255,0.92),-1px 1px 0 rgba(255,255,255,0.92),1px 1px 0 rgba(255,255,255,0.92),0 4px 14px rgba(10,32,8,0.35);">GolfSol</span>
-                                      </td>
-                                      <td style="padding:0 5px;vertical-align:middle;" valign="middle" aria-hidden="true">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#1f571a" xmlns="http://www.w3.org/2000/svg" style="display:block;">
-                                          <ellipse cx="12" cy="6" rx="5" ry="7" transform="rotate(-10 12 6)" />
-                                          <ellipse cx="6.5" cy="14" rx="5" ry="7" transform="rotate(50 6.5 14)" />
-                                          <ellipse cx="17.5" cy="14" rx="5" ry="7" transform="rotate(-50 17.5 14)" />
-                                          <path d="M11 14v6c0 .5.4 1 1 1s1-.5 1-1v-6" fill="none" stroke="#1f571a" stroke-linecap="round" stroke-width="1.2" />
-                                        </svg>
-                                      </td>
-                                      <td style="padding:0;vertical-align:baseline;" valign="baseline">
-                                        <span style="font-family:'Dancing Script','Brush Script MT',cursive;font-size:20px;font-weight:600;line-height:1;color:#dc5801;text-shadow:0 3px 12px rgba(10,32,8,0.5);">Ireland</span>
-                                      </td>
-                                    </tr>
-                                    <tr>
-                                      <td colspan="3" style="padding:6px 0 0 1px;font-family:'DM Sans',Arial,sans-serif;font-size:11px;font-weight:500;letter-spacing:0.04em;line-height:1.35;color:rgba(255,255,255,0.72);">The future of your golf trip</td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                            </table>
+                            <img class="logo-lockup-email-footer" src="/gsol-brand-lockup-email.png" alt="" width="240" style="display:block;width:240px;max-width:100%;height:auto;border:0;-ms-interpolation-mode:bicubic;" />
                           </a>
                           <p style="margin:18px 0 0 0;font-family:'DM Sans',Arial,sans-serif;font-size:14px;line-height:1.65;color:rgba(255,255,255,0.78);max-width:520px;">Premium Costa del Sol golf trips for Irish groups — courses, stays, and transfers planned together.</p>
                           <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;border-collapse:collapse;margin:26px 0 0 0;">

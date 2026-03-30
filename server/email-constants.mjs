@@ -1,5 +1,6 @@
 /** Resend inline attachment content-ids — keep in sync with rasterized assets in enquiry-service. */
-export const logoBallContentId = 'gsol-logo-ball'
+/** Full horizontal lockup PNG (`src/gsol-brand-lockup-exact.png`); same asset as PDF / print. */
+export const logoLockupEmailContentId = 'gsol-brand-lockup-email'
 export const shamrockInlineContentId = 'gsol-shamrock-inline'
 export const socialContentIds = {
   linkedin: 'gsol-social-linkedin',
