@@ -18,9 +18,7 @@ export const getSupabaseBrowserClient = (): SupabaseClient | null => {
         flowType: 'implicit',
         detectSessionInUrl: true,
         persistSession: true,
-        storage: localStorage,
-        // Default 5s is tight when React StrictMode or multiple listeners run close together
-        lockAcquireTimeout: 20000
+        storage: localStorage
       }
     })
   }
