@@ -85,6 +85,9 @@ export function AdminDashboardPage() {
   const [crmDocMessage, setCrmDocMessage] = useState<string | null>(null)
   const [enquiries, setEnquiries] = useState<EnquiryRow[]>([])
   const [enquiriesSectionVisible, setEnquiriesSectionVisible] = useState(true)
+  const [enquiryDeletingId, setEnquiryDeletingId] = useState<string | null>(null)
+  const [enquiryDeletingAll, setEnquiryDeletingAll] = useState(false)
+  const [enquiryDeleteMessage, setEnquiryDeleteMessage] = useState<string | null>(null)
   const [proposals, setProposals] = useState<ProposalRow[]>([])
   const [packageBuilds, setPackageBuilds] = useState<PackageBuildAdminRow[]>([])
   const [loadError, setLoadError] = useState<string | null>(null)
@@ -303,6 +306,79 @@ export function AdminDashboardPage() {
     }
   }
 
+  const handleRemoveEnquiry = async (row: EnquiryRow) => {
+    if (
+      !window.confirm(
+        `Remove enquiry ${row.reference_id} for ${row.full_name}? This cannot be undone.`
+      )
+    ) {
+      return
+    }
+
+    const supabase = getSupabaseBrowserClient()
+    if (!supabase) {
+      setEnquiryDeleteMessage('Supabase is not configured.')
+      return
+    }
+
+    setEnquiryDeletingId(row.id)
+    setEnquiryDeleteMessage(null)
+
+    const { error } = await supabase.from('enquiries').delete().eq('id', row.id)
+
+    setEnquiryDeletingId(null)
+
+    if (error) {
+      setEnquiryDeleteMessage(
+        error.message.includes('policy') || error.code === '42501'
+          ? 'Delete blocked by database policy. Run supabase/run-in-sql-editor-enquiries-delete-admin.sql (or apply the latest migration) in Supabase.'
+          : error.message
+      )
+      return
+    }
+
+    setEnquiries((prev) => prev.filter((e) => e.id !== row.id))
+  }
+
+  const handleRemoveAllEnquiries = async () => {
+    if (enquiries.length === 0) {
+      return
+    }
+
+    if (
+      !window.confirm(
+        `Delete all ${enquiries.length} enquiry row(s) in this list? This cannot be undone.`
+      )
+    ) {
+      return
+    }
+
+    const supabase = getSupabaseBrowserClient()
+    if (!supabase) {
+      setEnquiryDeleteMessage('Supabase is not configured.')
+      return
+    }
+
+    setEnquiryDeletingAll(true)
+    setEnquiryDeleteMessage(null)
+
+    const ids = enquiries.map((e) => e.id)
+    const { error } = await supabase.from('enquiries').delete().in('id', ids)
+
+    setEnquiryDeletingAll(false)
+
+    if (error) {
+      setEnquiryDeleteMessage(
+        error.message.includes('policy') || error.code === '42501'
+          ? 'Delete blocked by database policy. Run supabase/run-in-sql-editor-enquiries-delete-admin.sql (or apply the latest migration) in Supabase.'
+          : error.message
+      )
+      return
+    }
+
+    setEnquiries([])
+  }
+
   if (isLoading || !session || profile?.role !== 'admin') {
     return <DashboardLoadingShell label="Loading admin dashboard…" />
   }
@@ -338,16 +414,36 @@ export function AdminDashboardPage() {
                 </p>
               </div>
               {enquiries.length > 0 ? (
-                <LuxuryButton
-                  className="shrink-0 self-start !px-5 !py-2.5 !text-xs"
-                  onClick={() => setEnquiriesSectionVisible((v) => !v)}
-                  type="button"
-                  variant="outline"
-                >
-                  {enquiriesSectionVisible ? 'Hide table' : 'Show table'}
-                </LuxuryButton>
+                <div className="flex shrink-0 flex-col gap-2 self-start sm:flex-row sm:items-center">
+                  <LuxuryButton
+                    className="!px-5 !py-2.5 !text-xs"
+                    onClick={() => setEnquiriesSectionVisible((v) => !v)}
+                    type="button"
+                    variant="outline"
+                  >
+                    {enquiriesSectionVisible ? 'Hide table' : 'Show table'}
+                  </LuxuryButton>
+                  <LuxuryButton
+                    className="!border-red-300 !px-5 !py-2.5 !text-xs !text-red-800 hover:!bg-red-50"
+                    disabled={enquiryDeletingAll || enquiryDeletingId !== null}
+                    onClick={() => void handleRemoveAllEnquiries()}
+                    type="button"
+                    variant="outline"
+                  >
+                    {enquiryDeletingAll ? 'Removing…' : 'Remove all enquiries'}
+                  </LuxuryButton>
+                </div>
               ) : null}
             </div>
+
+            {enquiryDeleteMessage ? (
+              <div
+                className="mt-4 rounded-2xl border border-red-200/90 bg-red-50/90 px-4 py-3 text-sm text-red-900"
+                role="alert"
+              >
+                {enquiryDeleteMessage}
+              </div>
+            ) : null}
 
             {!enquiriesSectionVisible ? (
               <div className="mt-6 rounded-[2rem] border border-forest-200 bg-forest-50/60 px-6 py-8 text-center text-sm text-forest-700 md:px-10">
@@ -367,6 +463,7 @@ export function AdminDashboardPage() {
                       <th className="whitespace-nowrap px-4 py-4 md:px-6">Email</th>
                       <th className="hidden px-4 py-4 md:table-cell md:px-6 lg:table-cell">Interest</th>
                       <th className="whitespace-nowrap px-4 py-4 md:px-6">When</th>
+                      <th className="whitespace-nowrap px-4 py-4 text-right md:px-6">Remove</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-forest-100">
@@ -392,6 +489,17 @@ export function AdminDashboardPage() {
                         </td>
                         <td className="whitespace-nowrap px-4 py-4 text-xs text-forest-500 md:px-6">
                           {new Date(row.created_at).toLocaleString()}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-4 text-right md:px-6">
+                          <button
+                            aria-label={`Remove enquiry ${row.reference_id}`}
+                            className="inline-flex min-h-11 items-center justify-center rounded-full border border-red-200 bg-white px-4 py-2 text-xs font-semibold text-red-800 transition-colors hover:bg-red-50 disabled:opacity-50"
+                            disabled={enquiryDeletingId !== null || enquiryDeletingAll}
+                            onClick={() => void handleRemoveEnquiry(row)}
+                            type="button"
+                          >
+                            {enquiryDeletingId === row.id ? 'Removing…' : 'Remove'}
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -484,7 +592,7 @@ export function AdminDashboardPage() {
               <div className="mt-6 overflow-x-auto rounded-[2rem] border border-forest-100 bg-white shadow-soft">
                 <table className="min-w-full text-left text-sm">
                   <thead>
-                    <tr className="bg-forest-950 text-xs font-semibold uppercase tracking-[0.12em] text-gold-200">
+                    <tr className="bg-forest-950 text-xs font-semibold uppercase tracking-[0.12em] text-white">
                       <th className="whitespace-nowrap px-4 py-4 md:px-6">When</th>
                       <th className="whitespace-nowrap px-4 py-4 md:px-6">Customer</th>
                       <th className="px-4 py-4 md:px-6">Build</th>
