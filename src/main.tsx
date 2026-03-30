@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import { AuthProvider } from './providers/auth-provider'
@@ -74,9 +73,7 @@ function resolvePage() {
 const ActivePage = resolvePage()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <AuthProvider>
-      <ActivePage />
-    </AuthProvider>
-  </React.StrictMode>
+  <AuthProvider>
+    <ActivePage />
+  </AuthProvider>
 )

@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
-import { getSupabaseBrowserClient } from '../lib/supabase-client'
+import { clearSupabaseBrowserAuthStorage, getSupabaseBrowserClient } from '../lib/supabase-client'
 
 export type ProfileRole = 'client' | 'admin'
 
@@ -174,9 +174,17 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     if (supabase) {
-      await supabase.auth.signOut()
+      try {
+        const { error } = await supabase.auth.signOut()
+        if (error) {
+          console.warn('[auth] signOut:', error.message)
+        }
+      } catch (err) {
+        console.warn('[auth] signOut failed:', err)
+      }
     }
 
+    clearSupabaseBrowserAuthStorage()
     setProfile(null)
 
     if (typeof window !== 'undefined') {
