@@ -32,21 +32,32 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
+  const fetchProfileRow = useCallback(
+    async (userId: string) => {
+      if (!supabase) {
+        return null
+      }
+
+      const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single()
+
+      if (error || !data) {
+        return null
+      }
+
+      return data as Profile
+    },
+    [supabase]
+  )
+
   const refreshProfile = useCallback(async () => {
     if (!supabase || !session?.user) {
       setProfile(null)
       return
     }
 
-    const { data, error } = await supabase.from('profiles').select('*').eq('id', session.user.id).single()
-
-    if (error || !data) {
-      setProfile(null)
-      return
-    }
-
-    setProfile(data as Profile)
-  }, [session?.user, supabase])
+    const row = await fetchProfileRow(session.user.id)
+    setProfile(row)
+  }, [session?.user, supabase, fetchProfileRow])
 
   useEffect(() => {
     if (!supabase) {
@@ -56,31 +67,68 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
 
     let cancelled = false
 
-    const init = async () => {
-      const { data } = await supabase.auth.getSession()
+    const settleProfile = async (nextSession: Session | null) => {
+      if (!nextSession?.user) {
+        setProfile(null)
+        return
+      }
+
+      const row = await fetchProfileRow(nextSession.user.id)
       if (!cancelled) {
-        setSession(data.session ?? null)
-        setIsLoading(false)
+        setProfile(row)
       }
     }
 
-    void init()
+    void (async () => {
+      const { data } = await supabase.auth.getSession()
+      if (cancelled) {
+        return
+      }
+
+      const initialSession = data.session ?? null
+      setSession(initialSession)
+      await settleProfile(initialSession)
+      if (!cancelled) {
+        setIsLoading(false)
+      }
+    })()
 
     const {
       data: { subscription }
-    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    } = supabase.auth.onAuthStateChange(async (event, nextSession) => {
+      if (event === 'INITIAL_SESSION') {
+        return
+      }
+
+      if (event === 'TOKEN_REFRESHED') {
+        setSession(nextSession)
+        return
+      }
+
+      setIsLoading(true)
       setSession(nextSession)
+
+      if (cancelled) {
+        return
+      }
+
+      if (!nextSession?.user) {
+        setProfile(null)
+        setIsLoading(false)
+        return
+      }
+
+      await settleProfile(nextSession)
+      if (!cancelled) {
+        setIsLoading(false)
+      }
     })
 
     return () => {
       cancelled = true
       subscription.unsubscribe()
     }
-  }, [supabase])
-
-  useEffect(() => {
-    void refreshProfile()
-  }, [refreshProfile])
+  }, [supabase, fetchProfileRow])
 
   const signInWithMagicLink = useCallback(async (email: string) => {
     if (!supabase) {
