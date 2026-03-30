@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
+import { fetchPackageBuildsAdminList } from '../lib/fetch-package-builds'
 import { hasMeaningfulTripDetails, parsePackageBuildConfig } from '../lib/package-build'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { useAuth } from '../providers/auth-provider'
@@ -103,11 +104,7 @@ export function AdminDashboardPage() {
       const [enqRes, propRes, buildRes] = await Promise.all([
         supabase.from('enquiries').select('*').order('created_at', { ascending: false }).limit(100),
         supabase.from('proposals').select('id, proposal_id, title, status, created_at').order('created_at', { ascending: false }).limit(100),
-        supabase
-          .from('package_builds')
-          .select('id, owner_id, label, source, config, client_details, created_at, profiles(email, full_name)')
-          .order('created_at', { ascending: false })
-          .limit(100)
+        fetchPackageBuildsAdminList(supabase, 100)
       ])
 
       if (cancelled) {
@@ -228,9 +225,10 @@ export function AdminDashboardPage() {
                 <p className="font-medium">Package builds could not be loaded.</p>
                 <p className="mt-2 text-amber-900/85">{buildsLoadError}</p>
                 <p className="mt-2 text-xs text-amber-900/70">
-                  Run the <code className="rounded bg-white/80 px-1">package_builds</code> migration, or fix the{' '}
-                  <code className="rounded bg-white/80 px-1">profiles</code> relationship in the select if PostgREST reports
-                  ambiguity.
+                  If the error mentions <code className="rounded bg-white/80 px-1">client_details</code>, run{' '}
+                  <code className="rounded bg-white/80 px-1">supabase/run-in-sql-editor-add-client-details.sql</code> in Supabase
+                  SQL. Otherwise check the <code className="rounded bg-white/80 px-1">package_builds</code> migration and the{' '}
+                  <code className="rounded bg-white/80 px-1">profiles</code> join if PostgREST reports ambiguity.
                 </p>
               </div>
             ) : packageBuilds.length === 0 ? (

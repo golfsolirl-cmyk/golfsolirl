@@ -10,6 +10,7 @@ import {
   tripDetailsFromConfig,
   type PackageTripDetailsForm
 } from '../lib/package-build'
+import { fetchPackageBuildsClientList, isMissingClientDetailsColumnError } from '../lib/fetch-package-builds'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { useAuth } from '../providers/auth-provider'
 import { cx } from '../lib/utils'
@@ -75,11 +76,7 @@ export function ClientDashboardPage() {
     setListLoading(true)
     const [propRes, buildRes] = await Promise.all([
       supabase.from('proposals').select('id, proposal_id, title, status, created_at').order('created_at', { ascending: false }),
-      supabase
-        .from('package_builds')
-        .select('id, label, source, config, client_details, created_at')
-        .order('created_at', { ascending: false })
-        .limit(40)
+      fetchPackageBuildsClientList(supabase, 40)
     ])
 
     if (propRes.error) {
@@ -172,7 +169,11 @@ export function ClientDashboardPage() {
       .eq('id', selectedBuildId)
 
     if (error) {
-      setDetailsMessage(error.message)
+      setDetailsMessage(
+        isMissingClientDetailsColumnError(error)
+          ? 'Database is missing client_details. Run supabase/run-in-sql-editor-add-client-details.sql in Supabase SQL Editor, then try again.'
+          : error.message
+      )
       setDetailsStatus('error')
       return
     }
@@ -243,8 +244,9 @@ export function ClientDashboardPage() {
                 <p className="font-medium">Could not load saved packages.</p>
                 <p className="mt-2 text-amber-900/85">{buildsError}</p>
                 <p className="mt-2 text-xs text-amber-900/70">
-                  Run migrations through <code className="rounded bg-white/80 px-1">package_builds</code> including{' '}
-                  <code className="rounded bg-white/80 px-1">client_details</code> and delete policy if you see permission errors.
+                  Open <code className="rounded bg-white/80 px-1">supabase/run-in-sql-editor-add-client-details.sql</code> in this
+                  repo, copy it into Supabase → SQL → Run. That adds <code className="rounded bg-white/80 px-1">client_details</code>{' '}
+                  and the delete policy.
                 </p>
               </div>
             ) : packageBuilds.length === 0 ? (
