@@ -1,15 +1,18 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react'
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
 import { LuxuryButton } from '../components/ui/button'
-import { fetchPackageBuildsAdminList } from '../lib/fetch-package-builds'
+import { fetchPackageBuildsAdminList, isMissingClientDetailsColumnError } from '../lib/fetch-package-builds'
 import {
   emptyTripDetailsForm,
   hasMeaningfulTripDetails,
   mergeTripDetailsWithSaved,
   parsePackageBuildConfig,
+  serializeTripDetailsForDb,
   TRIP_DETAILS_MULTILINE_KEYS,
   TRIP_DETAILS_SECTIONS,
-  tripDetailsFromConfig
+  tripDetailsFromConfig,
+  type PackageTripDetailsForm,
+  type TripDetailsFieldKey
 } from '../lib/package-build'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { useAuth } from '../providers/auth-provider'
@@ -69,6 +72,11 @@ const proposalStatusStyles: Record<string, string> = {
   archived: 'bg-forest-50 text-forest-600'
 }
 
+const adminTripLabelClass = 'mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600'
+
+const adminTripInputClass =
+  'w-full rounded-xl border border-forest-200 bg-white px-3 py-2.5 text-sm text-forest-900 outline-none transition-[border-color,box-shadow] focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/70'
+
 export function AdminDashboardPage() {
   const { session, profile, isLoading } = useAuth()
   const [enquiries, setEnquiries] = useState<EnquiryRow[]>([])
@@ -78,6 +86,9 @@ export function AdminDashboardPage() {
   const [buildsLoadError, setBuildsLoadError] = useState<string | null>(null)
   const [listLoading, setListLoading] = useState(true)
   const [detailBuildId, setDetailBuildId] = useState<string | null>(null)
+  const [adminTripForm, setAdminTripForm] = useState<PackageTripDetailsForm>(() => emptyTripDetailsForm())
+  const [adminSaveStatus, setAdminSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const [adminSaveMessage, setAdminSaveMessage] = useState<string | null>(null)
 
   useEffect(() => {
     if (isLoading) {
@@ -144,6 +155,83 @@ export function AdminDashboardPage() {
     }
   }, [session?.user?.id, profile?.role])
 
+  const detailRow = detailBuildId ? packageBuilds.find((b) => b.id === detailBuildId) ?? null : null
+  const detailParsed = detailRow ? parsePackageBuildConfig(detailRow.config) : null
+
+  const detailMergedTrip = useMemo(() => {
+    if (!detailRow) {
+      return emptyTripDetailsForm()
+    }
+
+    const parsed = parsePackageBuildConfig(detailRow.config)
+    const defaults = parsed ? tripDetailsFromConfig(parsed) : emptyTripDetailsForm()
+    return mergeTripDetailsWithSaved(detailRow.client_details, defaults)
+  }, [detailRow])
+
+  useEffect(() => {
+    if (!detailRow) {
+      return
+    }
+
+    setAdminTripForm(detailMergedTrip)
+    setAdminSaveStatus('idle')
+    setAdminSaveMessage(null)
+  }, [detailMergedTrip, detailRow])
+
+  const handleAdminTripFieldChange = (field: TripDetailsFieldKey) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setAdminTripForm((prev) => ({ ...prev, [field]: event.target.value }))
+    setAdminSaveStatus('idle')
+    setAdminSaveMessage(null)
+  }
+
+  const handleAdminSaveBuildDetails = async (event: FormEvent) => {
+    event.preventDefault()
+    if (!detailRow) {
+      return
+    }
+
+    const supabase = getSupabaseBrowserClient()
+    if (!supabase) {
+      setAdminSaveMessage('Supabase is not configured.')
+      setAdminSaveStatus('error')
+      return
+    }
+
+    setAdminSaveStatus('saving')
+    setAdminSaveMessage(null)
+
+    const payload = serializeTripDetailsForDb(adminTripForm)
+    const { error } = await supabase
+      .from('package_builds')
+      .update({
+        client_details: payload,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', detailRow.id)
+
+    if (error) {
+      setAdminSaveStatus('error')
+      setAdminSaveMessage(
+        isMissingClientDetailsColumnError(error)
+          ? 'Database is missing client_details. Run supabase/run-in-sql-editor-add-client-details.sql in Supabase SQL.'
+          : error.message
+      )
+      return
+    }
+
+    setAdminSaveStatus('saved')
+    setAdminSaveMessage('Trip details saved.')
+    setPackageBuilds((prev) =>
+      prev.map((b) => (b.id === detailRow.id ? { ...b, client_details: payload } : b))
+    )
+  }
+
+  const handleCloseBuildDetail = useCallback(() => {
+    setDetailBuildId(null)
+    setAdminSaveStatus('idle')
+    setAdminSaveMessage(null)
+  }, [])
+
   useEffect(() => {
     if (!detailBuildId) {
       return
@@ -151,18 +239,13 @@ export function AdminDashboardPage() {
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setDetailBuildId(null)
+        handleCloseBuildDetail()
       }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [detailBuildId])
-
-  const detailRow = detailBuildId ? packageBuilds.find((b) => b.id === detailBuildId) ?? null : null
-  const detailParsed = detailRow ? parsePackageBuildConfig(detailRow.config) : null
-  const detailTripDefaults = detailParsed ? tripDetailsFromConfig(detailParsed) : emptyTripDetailsForm()
-  const detailTrip = detailRow ? mergeTripDetailsWithSaved(detailRow.client_details, detailTripDefaults) : emptyTripDetailsForm()
+  }, [detailBuildId, handleCloseBuildDetail])
 
   if (isLoading || !session || profile?.role !== 'admin') {
     return <DashboardLoadingShell label="Loading admin dashboard…" />
@@ -395,13 +478,14 @@ export function AdminDashboardPage() {
           <button
             aria-label="Close build details"
             className="absolute inset-0 bg-forest-950/55 backdrop-blur-[2px]"
-            onClick={() => setDetailBuildId(null)}
+            onClick={handleCloseBuildDetail}
             type="button"
           />
           <div
             aria-labelledby="admin-build-detail-title"
             aria-modal="true"
             className="relative z-10 flex max-h-[min(90vh,920px)] w-full max-w-2xl flex-col overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
             role="dialog"
           >
             <div className="border-b border-forest-100 bg-forest-50/80 px-6 py-5 md:px-8">
@@ -430,64 +514,98 @@ export function AdminDashboardPage() {
               })()}
             </div>
 
-            <div className="flex-1 overflow-y-auto px-6 py-6 md:px-8 md:py-8">
-              {detailParsed ? (
-                <div className="mb-8 rounded-2xl border border-forest-100 bg-forest-50/40 px-4 py-4 text-sm text-forest-800">
-                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">Calculator config</p>
-                  <p className="mt-2 font-medium">
-                    {detailParsed.packageStyle} · {detailParsed.groupSize} golfers · {detailParsed.nights} nights /{' '}
-                    {detailParsed.rounds} rounds
-                  </p>
-                  <p className="mt-1 text-xs text-forest-600">
-                    Stay: {detailParsed.stayName} · Transfer: {detailParsed.transferName}
-                  </p>
-                  <p className="mt-2 text-xs text-forest-600">
-                    Source: {detailRow.source === 'landing' ? 'Homepage' : 'Packages page'}
-                  </p>
-                </div>
-              ) : null}
-
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Trip form (client input)</p>
-              <p className="mt-1 text-sm text-forest-600">
-                {hasMeaningfulTripDetails(detailRow.client_details)
-                  ? 'All fields below; empty lines mean the client left them blank.'
-                  : 'No extra trip-form text yet — values shown are calculator defaults only.'}
-              </p>
-
-              <div className="mt-6 space-y-8">
-                {TRIP_DETAILS_SECTIONS.map((section) => (
-                  <div className="space-y-3" key={section.title}>
-                    <h3 className="border-b border-orange-200/90 pb-2 font-display text-base font-semibold text-forest-900">
-                      {section.title}
-                    </h3>
-                    {section.title === 'Trip shape' ? (
-                      <p className="text-sm text-forest-700">
-                        Trip shape: {detailTrip.nights.trim() || '0'} nights / {detailTrip.rounds.trim() || '0'} rounds
-                      </p>
-                    ) : null}
-                    <dl className="grid gap-4 sm:grid-cols-2">
-                      {section.fields.map((field) => {
-                        const raw = detailTrip[field.key].trim()
-                        const isLong = TRIP_DETAILS_MULTILINE_KEYS.has(field.key)
-
-                        return (
-                          <div className={isLong ? 'sm:col-span-2' : ''} key={field.key}>
-                            <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-gold-600">{field.label}</dt>
-                            <dd className="mt-1 whitespace-pre-wrap text-sm text-forest-900">{raw || '—'}</dd>
-                          </div>
-                        )
-                      })}
-                    </dl>
+            <form className="flex min-h-0 flex-1 flex-col" noValidate onSubmit={handleAdminSaveBuildDetails}>
+              <div className="flex-1 overflow-y-auto px-6 py-6 md:px-8 md:py-8">
+                {detailParsed ? (
+                  <div className="mb-8 rounded-2xl border border-forest-100 bg-forest-50/40 px-4 py-4 text-sm text-forest-800">
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">Calculator config (reference)</p>
+                    <p className="mt-2 font-medium">
+                      {detailParsed.packageStyle} · {detailParsed.groupSize} golfers · {detailParsed.nights} nights /{' '}
+                      {detailParsed.rounds} rounds
+                    </p>
+                    <p className="mt-1 text-xs text-forest-600">
+                      Stay: {detailParsed.stayName} · Transfer: {detailParsed.transferName}
+                    </p>
+                    <p className="mt-2 text-xs text-forest-600">
+                      Source: {detailRow.source === 'landing' ? 'Homepage' : 'Packages page'}
+                    </p>
                   </div>
-                ))}
-              </div>
-            </div>
+                ) : null}
 
-            <div className="border-t border-forest-100 bg-white px-6 py-4 md:px-8">
-              <LuxuryButton onClick={() => setDetailBuildId(null)} type="button" variant="primary">
-                Close
-              </LuxuryButton>
-            </div>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Trip details (editable)</p>
+                <p className="mt-1 text-sm text-forest-600">
+                  Clients cannot edit calculator-sourced package, stay, group size, nights, rounds, or pricing on their dashboard
+                  — update those here.{' '}
+                  {hasMeaningfulTripDetails(serializeTripDetailsForDb(adminTripForm))
+                    ? 'Extra client-entered fields are included below.'
+                    : 'Most lines are still calculator defaults until the client adds trip notes.'}
+                </p>
+
+                <div className="mt-6 space-y-8">
+                  {TRIP_DETAILS_SECTIONS.map((section) => (
+                    <div className="space-y-4" key={section.title}>
+                      <h3 className="border-b border-orange-200/90 pb-2 font-display text-base font-semibold text-forest-900">
+                        {section.title}
+                      </h3>
+                      {section.title === 'Trip shape' ? (
+                        <p className="text-sm text-forest-700">
+                          Trip shape: {adminTripForm.nights.trim() || '0'} nights / {adminTripForm.rounds.trim() || '0'} rounds
+                        </p>
+                      ) : null}
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        {section.fields.map((field) => {
+                          const id = `adm-td-${field.key}`
+                          const isLong = TRIP_DETAILS_MULTILINE_KEYS.has(field.key)
+
+                          return (
+                            <div className={field.key === 'notesForGsol' ? 'sm:col-span-2' : ''} key={field.key}>
+                              <label className={adminTripLabelClass} htmlFor={id}>
+                                {field.label}
+                              </label>
+                              {isLong ? (
+                                <textarea
+                                  className={cx(adminTripInputClass, 'min-h-[100px] resize-y')}
+                                  id={id}
+                                  onChange={handleAdminTripFieldChange(field.key)}
+                                  value={adminTripForm[field.key]}
+                                />
+                              ) : (
+                                <input
+                                  className={adminTripInputClass}
+                                  id={id}
+                                  onChange={handleAdminTripFieldChange(field.key)}
+                                  value={adminTripForm[field.key]}
+                                />
+                              )}
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3 border-t border-forest-100 bg-white px-6 py-4 md:flex-row md:flex-wrap md:items-center md:px-8">
+                <LuxuryButton disabled={adminSaveStatus === 'saving'} type="submit" variant="primary">
+                  {adminSaveStatus === 'saving' ? 'Saving…' : 'Save trip details'}
+                </LuxuryButton>
+                <LuxuryButton onClick={handleCloseBuildDetail} type="button" variant="white">
+                  Close
+                </LuxuryButton>
+                {adminSaveMessage ? (
+                  <p
+                    className={cx(
+                      'text-sm font-medium',
+                      adminSaveStatus === 'error' ? 'text-red-700' : 'text-fairway-800'
+                    )}
+                    role={adminSaveStatus === 'error' ? 'alert' : 'status'}
+                  >
+                    {adminSaveMessage}
+                  </p>
+                ) : null}
+              </div>
+            </form>
           </div>
         </div>
       ) : null}

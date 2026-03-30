@@ -201,6 +201,23 @@ export const TRIP_DETAILS_MULTILINE_KEYS: ReadonlySet<TripDetailsFieldKey> = new
   'upgradeNotes'
 ])
 
+/** Filled from the saved calculator; not editable on the client dashboard (admin can edit in CRM modal). */
+export const TRIP_DETAILS_CALCULATOR_LOCKED_KEYS: ReadonlySet<TripDetailsFieldKey> = new Set([
+  'packageName',
+  'stayName',
+  'transferName',
+  'groupSize',
+  'nights',
+  'rounds',
+  'perPersonPrice',
+  'groupTotal',
+  'depositAmount',
+  'remainingBalance'
+])
+
+export const isCalculatorLockedTripField = (key: TripDetailsFieldKey): boolean =>
+  TRIP_DETAILS_CALCULATOR_LOCKED_KEYS.has(key)
+
 export const emptyTripDetailsForm = (): PackageTripDetailsForm => ({
   packageName: '',
   stayName: '',

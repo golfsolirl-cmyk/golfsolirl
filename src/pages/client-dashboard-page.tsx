@@ -3,6 +3,7 @@ import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-
 import { LuxuryButton } from '../components/ui/button'
 import {
   emptyTripDetailsForm,
+  isCalculatorLockedTripField,
   mergeTripDetailsWithSaved,
   packagesPagePathFromConfig,
   parsePackageBuildConfig,
@@ -24,6 +25,7 @@ interface ProposalRow {
   title: string | null
   status: string
   created_at: string
+  payload: unknown | null
 }
 
 interface PackageBuildRow {
@@ -50,6 +52,11 @@ const inputClass =
 
 const labelClass = 'mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-gold-600'
 
+const readOnlyCalcClass =
+  'w-full rounded-2xl border-2 border-forest-200/90 bg-forest-50/70 px-4 py-3 text-sm text-forest-800'
+
+const readOnlyCalcHintClass = 'mt-1 text-xs text-forest-500'
+
 export function ClientDashboardPage() {
   const { session, isLoading } = useAuth()
   const [proposals, setProposals] = useState<ProposalRow[]>([])
@@ -63,6 +70,7 @@ export function ClientDashboardPage() {
   const [detailsMessage, setDetailsMessage] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [removeError, setRemoveError] = useState<string | null>(null)
+  const [proposalPdfLoadingId, setProposalPdfLoadingId] = useState<string | null>(null)
 
   const loadData = useCallback(async () => {
     if (!session?.user) {
@@ -79,7 +87,7 @@ export function ClientDashboardPage() {
 
     setListLoading(true)
     const [propRes, buildRes] = await Promise.all([
-      supabase.from('proposals').select('id, proposal_id, title, status, created_at').order('created_at', { ascending: false }),
+      supabase.from('proposals').select('id, proposal_id, title, status, created_at, payload').order('created_at', { ascending: false }),
       fetchPackageBuildsClientList(supabase, 40)
     ])
 
@@ -185,6 +193,51 @@ export function ClientDashboardPage() {
     setDetailsStatus('saved')
     setDetailsMessage('Your trip details are saved.')
     await loadData()
+  }
+
+  const handleDownloadProposalPdf = async (row: ProposalRow) => {
+    if (!row.payload || typeof row.payload !== 'object') {
+      window.alert('This proposal has no saved PDF data. Ask Golf Sol to re-send from the admin proposal tool.')
+      return
+    }
+
+    try {
+      setProposalPdfLoadingId(row.id)
+      const res = await fetch('/api/proposal-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(row.payload)
+      })
+
+      if (!res.ok) {
+        const errText = await res.text()
+        let msg = 'Could not generate PDF.'
+        try {
+          const j = JSON.parse(errText) as { message?: string }
+          if (j.message) {
+            msg = j.message
+          }
+        } catch {
+          if (errText.trim()) {
+            msg = errText
+          }
+        }
+
+        throw new Error(msg)
+      }
+
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const anchor = document.createElement('a')
+      anchor.href = url
+      anchor.download = `golf-sol-ireland-${row.proposal_id.replace(/[^\w.-]+/g, '-')}.pdf`
+      anchor.click()
+      URL.revokeObjectURL(url)
+    } catch (e) {
+      window.alert(e instanceof Error ? e.message : 'Download failed.')
+    } finally {
+      setProposalPdfLoadingId(null)
+    }
   }
 
   const handleRemoveBuild = async (id: string) => {
@@ -333,7 +386,8 @@ export function ClientDashboardPage() {
                     Proposal-style information (saved to your account)
                   </h3>
                   <p className="mt-2 max-w-2xl text-sm text-forest-600">
-                    Matches the fields used on the printable proposal. Values start from your calculator; edit and save anytime.
+                    Package, stay, group size, nights, rounds, and pricing come from your saved calculator — those are read-only
+                    here. Everything else you can edit and save; Golf Sol Ireland can adjust calculator fields if needed.
                   </p>
 
                   <form className="mt-8 space-y-6" noValidate onSubmit={handleSaveTripDetails}>
@@ -376,20 +430,35 @@ export function ClientDashboardPage() {
                               {section.title === 'Trip shape' ? (
                                 <p className="text-sm font-medium text-forest-700">
                                   Trip shape: {tripForm.nights.trim() || '0'} nights / {tripForm.rounds.trim() || '0'} rounds
-                                  <span className="ml-2 font-normal text-forest-500">(edit nights and rounds below)</span>
+                                  <span className="ml-2 font-normal text-forest-500">(from calculator — read-only)</span>
                                 </p>
                               ) : null}
                               <div className="grid gap-5 md:grid-cols-2">
                                 {section.fields.map((field) => {
                                   const id = `td-${field.key}`
                                   const isMultiline = TRIP_DETAILS_MULTILINE_KEYS.has(field.key)
+                                  const locked = isCalculatorLockedTripField(field.key)
+                                  const displayValue = tripForm[field.key].trim() || '—'
+
                                   return (
                                     <div className={field.key === 'notesForGsol' ? 'md:col-span-2' : ''} key={field.key}>
-                                      <label className={labelClass} htmlFor={id}>
+                                      <span className={labelClass} id={`${id}-label`}>
                                         {field.label}
-                                      </label>
-                                      {isMultiline ? (
+                                      </span>
+                                      {locked ? (
+                                        <div>
+                                          <div
+                                            aria-labelledby={`${id}-label`}
+                                            className={readOnlyCalcClass}
+                                            role="group"
+                                          >
+                                            {displayValue}
+                                          </div>
+                                          <p className={readOnlyCalcHintClass}>From calculator — admin can change if required.</p>
+                                        </div>
+                                      ) : isMultiline ? (
                                         <textarea
+                                          aria-labelledby={`${id}-label`}
                                           className={cx(inputClass, 'min-h-[100px] resize-y')}
                                           id={id}
                                           onChange={handleTripFieldChange(field.key)}
@@ -397,6 +466,7 @@ export function ClientDashboardPage() {
                                         />
                                       ) : (
                                         <input
+                                          aria-labelledby={`${id}-label`}
                                           autoComplete={
                                             field.key === 'leadGuestName'
                                               ? 'name'
@@ -406,11 +476,6 @@ export function ClientDashboardPage() {
                                           }
                                           className={inputClass}
                                           id={id}
-                                          inputMode={
-                                            field.key === 'groupSize' || field.key === 'nights' || field.key === 'rounds'
-                                              ? 'numeric'
-                                              : undefined
-                                          }
                                           onChange={handleTripFieldChange(field.key)}
                                           value={tripForm[field.key]}
                                         />
@@ -465,6 +530,27 @@ export function ClientDashboardPage() {
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Proposals</p>
                 <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Documents from Golf Sol Ireland</h2>
+                <p className="mt-2 max-w-2xl text-sm text-forest-600">
+                  Formal proposals we send appear below with a PDF download. Standard documents use the same site header and
+                  footer as the main website.
+                </p>
+              </div>
+            </div>
+
+            <div className="mb-8 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Your PDF library</p>
+              <h3 className="font-display mt-2 text-lg font-semibold text-forest-950">Terms &amp; thank-you</h3>
+              <p className="mt-2 max-w-xl text-sm text-forest-600">
+                Open a page, then use <strong className="font-medium text-forest-800">Save PDF</strong> for a print-ready copy
+                with Golf Sol Ireland branding.
+              </p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <LuxuryButton href="/documents/terms" variant="outline">
+                  Terms &amp; conditions
+                </LuxuryButton>
+                <LuxuryButton href="/documents/welcome" variant="white">
+                  Thank you — Golf Sol Ireland
+                </LuxuryButton>
               </div>
             </div>
 
@@ -481,8 +567,9 @@ export function ClientDashboardPage() {
                 <div className="px-6 py-10 md:px-10 md:py-12">
                   <h3 className="font-display text-xl font-semibold text-forest-950">No formal proposals yet</h3>
                   <p className="mt-4 max-w-lg text-forest-600">
-                    When we issue a proposal for your group, it will appear here. Your own saved calculator builds stay in
-                    the section above.
+                    When we email you a proposal from our admin tools, it will show up here with a download button. Use{' '}
+                    <strong className="font-medium text-forest-800">Your PDF library</strong> above for terms and our thank-you
+                    note. Your calculator saves stay in the section above.
                   </p>
                 </div>
               </div>
@@ -503,6 +590,17 @@ export function ClientDashboardPage() {
                       <p className="mt-1 font-mono text-xs text-forest-500">{row.proposal_id}</p>
                     </div>
                     <div className="flex flex-wrap items-center gap-3">
+                      {row.payload ? (
+                        <LuxuryButton
+                          className="!px-5 !py-2.5 !text-xs"
+                          disabled={proposalPdfLoadingId === row.id}
+                          onClick={() => handleDownloadProposalPdf(row)}
+                          type="button"
+                          variant="primary"
+                        >
+                          {proposalPdfLoadingId === row.id ? 'Preparing…' : 'Download PDF'}
+                        </LuxuryButton>
+                      ) : null}
                       <span
                         className={cx(
                           'inline-flex rounded-full px-3 py-1 text-xs font-semibold capitalize',

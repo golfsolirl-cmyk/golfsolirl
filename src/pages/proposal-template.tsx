@@ -1,15 +1,22 @@
 import { useMemo, useRef, useState } from 'react'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
-import { Download, CheckCircle2, MapPinned, CalendarRange, BedDouble, Bus, Users, Printer, Share2, LoaderCircle } from 'lucide-react'
+import { Download, CheckCircle2, MapPinned, CalendarRange, BedDouble, Bus, Users, Printer, Share2, LoaderCircle, Send } from 'lucide-react'
 import { LuxuryButton } from '../components/ui/button'
 import { Logo } from '../components/ui/logo'
+import { integrationRegistry } from '../config/integrations'
 import { buildProposalDocument, createProposalId, formatDocumentDate, parseNumberParam } from '../lib/document-templates'
+import { useAuth } from '../providers/auth-provider'
 
 function ProposalTemplatePage() {
+  const { session } = useAuth()
   const [isSavingPdf, setIsSavingPdf] = useState(false)
   const [isSharing, setIsSharing] = useState(false)
   const [actionMessage, setActionMessage] = useState<string | null>(null)
+  const [clientEmail, setClientEmail] = useState('')
+  const [sendTitle, setSendTitle] = useState('')
+  const [sendStatus, setSendStatus] = useState<'idle' | 'sending' | 'ok' | 'error'>('idle')
+  const [sendMessage, setSendMessage] = useState<string | null>(null)
   const proposalCardRef = useRef<HTMLDivElement | null>(null)
 
   const isAdminProposal = useMemo(() => {
@@ -67,6 +74,75 @@ function ProposalTemplatePage() {
       }),
     [proposalPayload]
   )
+
+  const persistProposalPayload = useMemo(
+    () => ({
+      packageName: proposalPayload.packageName,
+      stayName: proposalPayload.stayName,
+      transferName: proposalPayload.transferName,
+      proposalDate: proposalPayload.proposalDate,
+      proposalId: proposalPayload.proposalId,
+      perPersonPrice: proposalPayload.perPersonPrice,
+      groupTotal: proposalPayload.groupTotal,
+      depositAmount: proposalPayload.depositAmount,
+      remainingBalance: proposalPayload.remainingBalance,
+      groupSize: proposalPayload.groupSize,
+      nights: proposalPayload.nights,
+      rounds: proposalPayload.rounds
+    }),
+    [proposalPayload]
+  )
+
+  const handleSendToClient = async () => {
+    if (!integrationRegistry.supabase.enabled) {
+      setSendMessage('Sign-in is not configured.')
+      setSendStatus('error')
+      return
+    }
+
+    if (!session?.access_token) {
+      setSendMessage('Sign in as admin to send this proposal.')
+      setSendStatus('error')
+      return
+    }
+
+    const trimmed = clientEmail.trim().toLowerCase()
+    if (!trimmed.includes('@')) {
+      setSendMessage('Enter the client account email (same as their login).')
+      setSendStatus('error')
+      return
+    }
+
+    try {
+      setSendStatus('sending')
+      setSendMessage(null)
+
+      const res = await fetch('/api/send-proposal-to-client', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          clientEmail: trimmed,
+          title: sendTitle.trim() || undefined,
+          proposalPayload: persistProposalPayload
+        })
+      })
+
+      const data = (await res.json().catch(() => ({}))) as { message?: string; proposalId?: string }
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Send failed.')
+      }
+
+      setSendStatus('ok')
+      setSendMessage(`Sent to ${trimmed}. Proposal ${data.proposalId ?? ''} is on their dashboard.`.trim())
+    } catch (e) {
+      setSendStatus('error')
+      setSendMessage(e instanceof Error ? e.message : 'Unable to send.')
+    }
+  }
 
   const handleSavePdf = async () => {
     try {
@@ -241,6 +317,81 @@ function ProposalTemplatePage() {
             ) : null}
           </div>
         </div>
+
+        {isAdminProposal ? (
+          <div
+            className="mt-6 rounded-[1.75rem] border border-forest-200 bg-white p-5 shadow-sm md:p-6"
+            data-html2canvas-ignore="true"
+          >
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-600">Send to client</p>
+            <p className="mt-2 text-sm text-forest-600">
+              Emails the PDF, saves a <strong className="font-semibold text-forest-800">sent</strong> proposal row linked to
+              the client&apos;s account (they need an existing login). Uses the same PDF as{' '}
+              <span className="font-medium text-forest-800">/api/proposal-pdf</span>.
+            </p>
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-500" htmlFor="send-client-email">
+                  Client account email
+                </label>
+                <input
+                  autoComplete="email"
+                  className="w-full rounded-2xl border border-forest-200 bg-forest-50/40 px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
+                  id="send-client-email"
+                  onChange={(e) => {
+                    setClientEmail(e.target.value)
+                    setSendStatus('idle')
+                    setSendMessage(null)
+                  }}
+                  placeholder="client@example.com"
+                  type="email"
+                  value={clientEmail}
+                />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-500" htmlFor="send-proposal-title">
+                  Dashboard title (optional)
+                </label>
+                <input
+                  className="w-full rounded-2xl border border-forest-200 bg-forest-50/40 px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
+                  id="send-proposal-title"
+                  onChange={(e) => {
+                    setSendTitle(e.target.value)
+                    setSendStatus('idle')
+                    setSendMessage(null)
+                  }}
+                  placeholder="e.g. Costa del Sol — April 2026"
+                  type="text"
+                  value={sendTitle}
+                />
+              </div>
+            </div>
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <button
+                aria-label="Send proposal PDF to client email"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#dc5801] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#c24f01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 disabled:cursor-not-allowed disabled:opacity-65"
+                disabled={sendStatus === 'sending'}
+                onClick={handleSendToClient}
+                type="button"
+              >
+                {sendStatus === 'sending' ? (
+                  <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  <Send className="h-4 w-4" aria-hidden="true" />
+                )}
+                {sendStatus === 'sending' ? 'Sending…' : 'Email PDF & add to client dashboard'}
+              </button>
+              {sendMessage ? (
+                <p
+                  className={`text-sm font-medium ${sendStatus === 'error' ? 'text-red-700' : 'text-fairway-800'}`}
+                  role={sendStatus === 'error' ? 'alert' : 'status'}
+                >
+                  {sendMessage}
+                </p>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
       </div>
 
       <div ref={proposalCardRef} className="mx-auto max-w-[1100px] overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-[0_22px_70px_rgba(10,32,8,0.12)] print:shadow-none">

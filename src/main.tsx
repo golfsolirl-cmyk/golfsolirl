@@ -12,6 +12,7 @@ import { LoginPage } from './pages/login-page'
 import { AuthCallbackPage } from './pages/auth-callback-page'
 import { ClientDashboardPage } from './pages/client-dashboard-page'
 import { AdminDashboardPage } from './pages/admin-dashboard-page'
+import { ClientDocumentPage } from './pages/client-document-page'
 import { isFooterArticlePath } from './data/footer-article-pages'
 import './index.css'
 
@@ -36,6 +37,10 @@ function resolvePage() {
 
   if (normalizedPath === '/dashboard/admin') {
     return AdminDashboardPage
+  }
+
+  if (normalizedPath === '/documents/terms' || normalizedPath === '/documents/welcome') {
+    return ClientDocumentPage
   }
 
   if (normalizedPath === '/packages' || normalizedPath === '/package') {
