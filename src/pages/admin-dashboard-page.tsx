@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
+import { parsePackageBuildConfig } from '../lib/package-build'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { useAuth } from '../providers/auth-provider'
 import { cx } from '../lib/utils'
@@ -23,6 +24,33 @@ interface ProposalRow {
   created_at: string
 }
 
+interface ProfileEmbed {
+  email: string | null
+  full_name: string | null
+}
+
+interface PackageBuildAdminRow {
+  id: string
+  owner_id: string
+  label: string | null
+  source: string
+  config: unknown
+  created_at: string
+  profiles: ProfileEmbed | ProfileEmbed[] | null
+}
+
+const profileFromRow = (row: PackageBuildAdminRow): ProfileEmbed | null => {
+  const p = row.profiles
+  if (!p) {
+    return null
+  }
+
+  return Array.isArray(p) ? p[0] ?? null : p
+}
+
+const formatEur = (value: number) =>
+  new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value)
+
 const proposalStatusStyles: Record<string, string> = {
   draft: 'bg-forest-100 text-forest-800',
   sent: 'bg-fairway-100 text-fairway-800',
@@ -34,7 +62,9 @@ export function AdminDashboardPage() {
   const { session, profile, isLoading } = useAuth()
   const [enquiries, setEnquiries] = useState<EnquiryRow[]>([])
   const [proposals, setProposals] = useState<ProposalRow[]>([])
+  const [packageBuilds, setPackageBuilds] = useState<PackageBuildAdminRow[]>([])
   const [loadError, setLoadError] = useState<string | null>(null)
+  const [buildsLoadError, setBuildsLoadError] = useState<string | null>(null)
   const [listLoading, setListLoading] = useState(true)
 
   useEffect(() => {
@@ -69,9 +99,14 @@ export function AdminDashboardPage() {
 
     const load = async () => {
       setListLoading(true)
-      const [enqRes, propRes] = await Promise.all([
+      const [enqRes, propRes, buildRes] = await Promise.all([
         supabase.from('enquiries').select('*').order('created_at', { ascending: false }).limit(100),
-        supabase.from('proposals').select('id, proposal_id, title, status, created_at').order('created_at', { ascending: false }).limit(100)
+        supabase.from('proposals').select('id, proposal_id, title, status, created_at').order('created_at', { ascending: false }).limit(100),
+        supabase
+          .from('package_builds')
+          .select('id, owner_id, label, source, config, created_at, profiles(email, full_name)')
+          .order('created_at', { ascending: false })
+          .limit(100)
       ])
 
       if (cancelled) {
@@ -82,6 +117,15 @@ export function AdminDashboardPage() {
       setLoadError(errMsg)
       setEnquiries((enqRes.data ?? []) as EnquiryRow[])
       setProposals((propRes.data ?? []) as ProposalRow[])
+
+      if (buildRes.error) {
+        setBuildsLoadError(buildRes.error.message)
+        setPackageBuilds([])
+      } else {
+        setBuildsLoadError(null)
+        setPackageBuilds((buildRes.data ?? []) as PackageBuildAdminRow[])
+      }
+
       setListLoading(false)
     }
 
@@ -99,7 +143,7 @@ export function AdminDashboardPage() {
   return (
     <DashboardLayout
       kicker="Operations"
-      subtitle="Website enquiries and proposal records stored in Supabase. Use the same brand experience as the public site."
+      subtitle="Enquiries, client-saved package builds from the live calculator, and CRM proposal rows — all in Supabase."
       title="Admin dashboard"
       variant="admin"
     >
@@ -164,6 +208,90 @@ export function AdminDashboardPage() {
                         </td>
                       </tr>
                     ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
+
+          <section>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Client package builds</p>
+            <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Calculator saves</h2>
+            <p className="mt-2 max-w-2xl text-sm text-forest-600">
+              Customers save builds from the packages page (or homepage flow). Use this to see who priced what before they
+              enquire.
+            </p>
+
+            {buildsLoadError ? (
+              <div className="mt-6 rounded-3xl border border-amber-200/90 bg-amber-50/90 px-6 py-4 text-sm text-amber-950 shadow-soft">
+                <p className="font-medium">Package builds could not be loaded.</p>
+                <p className="mt-2 text-amber-900/85">{buildsLoadError}</p>
+                <p className="mt-2 text-xs text-amber-900/70">
+                  Run the <code className="rounded bg-white/80 px-1">package_builds</code> migration, or fix the{' '}
+                  <code className="rounded bg-white/80 px-1">profiles</code> relationship in the select if PostgREST reports
+                  ambiguity.
+                </p>
+              </div>
+            ) : packageBuilds.length === 0 ? (
+              <div className="mt-6 rounded-[2rem] border border-dashed border-forest-200 bg-forest-50/50 px-6 py-10 text-center text-sm text-forest-600 md:px-10">
+                No client-saved package builds yet.
+              </div>
+            ) : (
+              <div className="mt-6 overflow-x-auto rounded-[2rem] border border-forest-100 bg-white shadow-soft">
+                <table className="min-w-full text-left text-sm">
+                  <thead>
+                    <tr className="bg-forest-950 text-xs font-semibold uppercase tracking-[0.12em] text-gold-200">
+                      <th className="whitespace-nowrap px-4 py-4 md:px-6">When</th>
+                      <th className="whitespace-nowrap px-4 py-4 md:px-6">Customer</th>
+                      <th className="px-4 py-4 md:px-6">Build</th>
+                      <th className="whitespace-nowrap px-4 py-4 md:px-6">Source</th>
+                      <th className="whitespace-nowrap px-4 py-4 md:px-6">Group total</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-forest-100">
+                    {packageBuilds.map((row, index) => {
+                      const prof = profileFromRow(row)
+                      const parsed = parsePackageBuildConfig(row.config)
+                      const total = parsed?.totals.estimatedGroupTotal
+
+                      return (
+                        <tr
+                          className={cx('text-forest-800', index % 2 === 1 ? 'bg-forest-50/35' : 'bg-white')}
+                          key={row.id}
+                        >
+                          <td className="whitespace-nowrap px-4 py-4 text-xs text-forest-500 md:px-6">
+                            {new Date(row.created_at).toLocaleString()}
+                          </td>
+                          <td className="px-4 py-4 md:px-6">
+                            <p className="font-medium text-forest-900">{prof?.full_name?.trim() || '—'}</p>
+                            {prof?.email ? (
+                              <a
+                                className="text-xs font-medium text-fairway-700 underline-offset-2 hover:underline"
+                                href={`mailto:${prof.email}`}
+                              >
+                                {prof.email}
+                              </a>
+                            ) : (
+                              <p className="mt-1 font-mono text-[11px] text-forest-400">{row.owner_id.slice(0, 8)}…</p>
+                            )}
+                          </td>
+                          <td className="max-w-xs px-4 py-4 md:max-w-md md:px-6">
+                            <p className="font-medium text-forest-900">{row.label ?? 'Package build'}</p>
+                            {parsed ? (
+                              <p className="mt-1 text-xs text-forest-600">
+                                {parsed.packageStyle} · {parsed.groupSize} pax · {parsed.nights}n / {parsed.rounds} rounds
+                              </p>
+                            ) : null}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-4 text-xs capitalize text-forest-600 md:px-6">
+                            {row.source === 'landing' ? 'Homepage' : 'Packages'}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-4 font-medium text-forest-900 md:px-6">
+                            {typeof total === 'number' ? formatEur(total) : '—'}
+                          </td>
+                        </tr>
+                      )
+                    })}
                   </tbody>
                 </table>
               </div>

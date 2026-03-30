@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import {
   BedDouble,
@@ -16,8 +16,12 @@ import { AmbientGolfBall } from '../components/ui/ambient-golf-ball'
 import { Logo, ShamrockIcon } from '../components/ui/logo'
 import { AnimatedStepKicker, SectionHeader } from '../components/ui/section-header'
 import { WaveDivider } from '../components/ui/wave-divider'
+import { integrationRegistry } from '../config/integrations'
 import { footerSocialLinks, heroBackgroundImage } from '../data/site-content'
+import { getSupabaseBrowserClient } from '../lib/supabase-client'
+import { buildPackageConfig, defaultLabelForBuild } from '../lib/package-build'
 import { cx } from '../lib/utils'
+import { useAuth } from '../providers/auth-provider'
 import { CookieBanner, FloatingWhatsAppButton, formatEuro } from './packages'
 
 const packagePageLinks = ['Packages', 'Stays', 'Calculator', 'Enquire'] as const
@@ -119,6 +123,17 @@ const stayNameByTier = {
   5: 'Luxury 5-star'
 } as const
 
+const getInitialSelectedPackageName = () => {
+  const searchParams = new URLSearchParams(window.location.search)
+  const raw = searchParams.get('package')
+
+  if (raw && packageStyles.some((item) => item.name === raw)) {
+    return raw
+  }
+
+  return packageStyles[1].name
+}
+
 const getInitialSelectedStayName = () => {
   const searchParams = new URLSearchParams(window.location.search)
   const stayTierParam = searchParams.get('stay')
@@ -169,7 +184,8 @@ const getInitialNumberParam = ({
 }
 
 function CustomerPackagePage() {
-  const [selectedPackageName, setSelectedPackageName] = useState<string>(packageStyles[1].name)
+  const { session, isLoading: authLoading } = useAuth()
+  const [selectedPackageName, setSelectedPackageName] = useState<string>(getInitialSelectedPackageName)
   const [selectedStayName, setSelectedStayName] = useState<string>(getInitialSelectedStayName)
   const [selectedTransferName, setSelectedTransferName] = useState<string>(getInitialSelectedTransferName)
   const [groupSize, setGroupSize] = useState(() => getInitialNumberParam({ paramName: 'groupSize', min: 1, max: 8, fallback: 4 }))
@@ -177,12 +193,25 @@ function CustomerPackagePage() {
   const [rounds, setRounds] = useState(() => getInitialNumberParam({ paramName: 'rounds', min: 2, max: 5, fallback: 3 }))
   const [hasAcceptedCookies, setHasAcceptedCookies] = useState(true)
   const [isFooterInView, setIsFooterInView] = useState(false)
+  const [isSavingBuild, setIsSavingBuild] = useState(false)
+  const [saveBuildError, setSaveBuildError] = useState<string | null>(null)
+  const [saveBuildOk, setSaveBuildOk] = useState(false)
   const footerRef = useRef<HTMLElement | null>(null)
   const whatsAppHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
 
   const selectedPackage = packageStyles.find((item) => item.name === selectedPackageName) ?? packageStyles[1]
   const selectedStay = stayOptions.find((item) => item.name === selectedStayName) ?? stayOptions[1]
   const selectedTransfer = transferOptions.find((item) => item.name === selectedTransferName) ?? transferOptions[1]
+
+  const fromLanding = useMemo(
+    () => new URLSearchParams(window.location.search).get('from') === 'landing',
+    []
+  )
+
+  const loginHrefForSave = useMemo(
+    () => `/login?next=${encodeURIComponent(`${window.location.pathname}${window.location.search}`)}`,
+    []
+  )
 
   const pricingSummary = useMemo(() => {
     const accommodationPerPerson = selectedStay.pricePerNight * nights
@@ -244,6 +273,78 @@ function CustomerPackagePage() {
     selectedStay.name,
     selectedTransfer.name
   ])
+
+  const handleSavePackageToAccount = useCallback(async () => {
+    setSaveBuildError(null)
+    setSaveBuildOk(false)
+
+    if (!integrationRegistry.supabase.enabled) {
+      setSaveBuildError('Account sign-in is not available on this deployment yet.')
+      return
+    }
+
+    if (!session?.user) {
+      window.location.href = loginHrefForSave
+      return
+    }
+
+    const supabase = getSupabaseBrowserClient()
+    if (!supabase) {
+      setSaveBuildError('Could not connect to your account.')
+      return
+    }
+
+    setIsSavingBuild(true)
+    const config = buildPackageConfig({
+      source: fromLanding ? 'landing' : 'packages',
+      packageStyle: selectedPackage.name,
+      stayName: selectedStay.name,
+      transferName: selectedTransfer.name,
+      groupSize,
+      nights,
+      rounds,
+      totals: {
+        estimatedPerPerson: pricingSummary.estimatedPerPerson,
+        estimatedGroupTotal: pricingSummary.estimatedGroupTotal,
+        depositAmount: pricingSummary.depositAmount,
+        remainingBalance: pricingSummary.remainingBalance
+      }
+    })
+
+    const { error } = await supabase.from('package_builds').insert({
+      owner_id: session.user.id,
+      source: fromLanding ? 'landing' : 'packages',
+      label: defaultLabelForBuild(config),
+      config
+    })
+
+    setIsSavingBuild(false)
+
+    if (error) {
+      setSaveBuildError(error.message)
+      return
+    }
+
+    setSaveBuildOk(true)
+  }, [
+    fromLanding,
+    loginHrefForSave,
+    session?.user,
+    groupSize,
+    nights,
+    rounds,
+    selectedPackage.name,
+    selectedStay.name,
+    selectedTransfer.name,
+    pricingSummary.depositAmount,
+    pricingSummary.estimatedGroupTotal,
+    pricingSummary.estimatedPerPerson,
+    pricingSummary.remainingBalance
+  ])
+
+  useEffect(() => {
+    setSaveBuildOk(false)
+  }, [selectedPackageName, selectedStayName, selectedTransferName, groupSize, nights, rounds])
 
   const handleAcceptCookies = () => {
     localStorage.setItem('gsol-cookie-banner-dismissed', 'true')
@@ -452,6 +553,18 @@ function CustomerPackagePage() {
               title="Build the trip and see the package estimate"
             />
 
+            {fromLanding ? (
+              <div
+                className="mb-8 rounded-[1.75rem] border border-fairway-200 bg-fairway-50/90 px-5 py-4 text-sm text-forest-800 shadow-sm"
+                role="status"
+              >
+                <p className="font-semibold text-forest-950">Started from the homepage calculator</p>
+                <p className="mt-2 text-forest-700">
+                  Adjust anything below, then save the build to your account or open it as a printable proposal for your group.
+                </p>
+              </div>
+            ) : null}
+
             <div className="grid gap-8 xl:grid-cols-[1.05fr_0.95fr]">
               <motion.div className="rounded-[2rem] border border-forest-100 bg-[#f7f4ed] p-6 shadow-sm md:p-7" {...revealUp}>
                 <div className="rounded-[1.6rem] border border-white/80 bg-white p-5 shadow-sm">
@@ -590,11 +703,37 @@ function CustomerPackagePage() {
                 <p className="mt-5 text-sm leading-relaxed text-white/62">
                   Indicative pricing only. Final package price depends on live hotel rates, golf availability, and the transfer route across your dates.
                 </p>
-                <div className="mt-4">
-                  <LuxuryButton href={proposalTemplateHref} variant="white">
-                    Open proposal PDF
+                <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                  <LuxuryButton href={proposalTemplateHref} showArrow variant="white">
+                    View as proposal (print / PDF)
                   </LuxuryButton>
+                  {integrationRegistry.supabase.enabled ? (
+                    <LuxuryButton
+                      className="border-white/25 bg-white/10 text-white hover:bg-white/15"
+                      disabled={authLoading || isSavingBuild}
+                      onClick={handleSavePackageToAccount}
+                      type="button"
+                      variant="outline"
+                    >
+                      {isSavingBuild ? 'Saving…' : session ? 'Save to my account' : 'Sign in to save this package'}
+                    </LuxuryButton>
+                  ) : null}
+                  {integrationRegistry.supabase.enabled && session ? (
+                    <LuxuryButton className="border-white/20 text-white/90" href="/dashboard" variant="outline">
+                      My saved packages
+                    </LuxuryButton>
+                  ) : null}
                 </div>
+                {saveBuildError ? (
+                  <p className="mt-3 text-sm font-medium text-red-300" role="alert">
+                    {saveBuildError}
+                  </p>
+                ) : null}
+                {saveBuildOk ? (
+                  <p className="mt-3 text-sm font-medium text-fairway-300" role="status">
+                    Saved. You can review it anytime under your dashboard.
+                  </p>
+                ) : null}
               </motion.div>
             </div>
           </div>
@@ -620,7 +759,7 @@ function CustomerPackagePage() {
                     WhatsApp enquiry
                   </LuxuryButton>
                   <LuxuryButton href={proposalTemplateHref} variant="white">
-                    Open proposal PDF
+                    View proposal (print / PDF)
                   </LuxuryButton>
                   <LuxuryButton href="mailto:hello@golfsolireland.com" variant="outline">
                     Email package request

@@ -113,7 +113,8 @@ function App() {
       groupSize: String(quickGroupSize),
       nights: String(quickNights),
       rounds: String(quickRounds),
-      transfer: quickTransfer
+      transfer: quickTransfer,
+      from: 'landing'
     })
 
     if (selectedHotelTier !== 'all') {
@@ -496,6 +497,9 @@ function App() {
                       {quickGroupSize} golfers • {quickNights} nights • {quickRounds} rounds
                     </div>
                   </div>
+                  <p className="mt-4 text-xs leading-relaxed text-forest-900/55">
+                    Continue on the packages page to save this build to your account (magic-link sign-in) or open a printable proposal for your group.
+                  </p>
                 </motion.div>
               </div>
             </motion.div>

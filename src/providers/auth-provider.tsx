@@ -19,7 +19,10 @@ interface AuthContextValue {
   readonly profile: Profile | null
   readonly isLoading: boolean
   readonly isSupabaseConfigured: boolean
-  readonly signInWithMagicLink: (email: string) => Promise<{ error: Error | null }>
+  readonly signInWithMagicLink: (
+    email: string,
+    options?: { readonly redirectTo?: string }
+  ) => Promise<{ error: Error | null }>
   readonly signOut: () => Promise<void>
   readonly refreshProfile: () => Promise<void>
 }
@@ -146,12 +149,16 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     }
   }, [supabase, fetchProfileRow])
 
-  const signInWithMagicLink = useCallback(async (email: string) => {
+  const signInWithMagicLink = useCallback(async (email: string, options?: { readonly redirectTo?: string }) => {
     if (!supabase) {
       return { error: new Error('Supabase is not configured (missing VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY).') }
     }
 
-    const redirectTo = `${window.location.origin}/auth/callback`
+    const fallback = `${window.location.origin}/auth/callback`
+    const redirectTo =
+      typeof options?.redirectTo === 'string' && options.redirectTo.trim() !== ''
+        ? options.redirectTo.trim()
+        : fallback
 
     try {
       const response = await fetch('/api/auth/magic-link', {

@@ -3,6 +3,7 @@ import { LuxuryButton } from '../components/ui/button'
 import { Logo } from '../components/ui/logo'
 import { WaveDivider } from '../components/ui/wave-divider'
 import { integrationRegistry } from '../config/integrations'
+import { AUTH_NEXT_STORAGE_KEY, isSafeInternalPath } from '../lib/internal-redirect'
 import { useAuth } from '../providers/auth-provider'
 
 const LoginHeroBackdrop = () => (
@@ -32,6 +33,8 @@ export function LoginPage() {
   const params = new URLSearchParams(window.location.search)
   const queryError = params.get('error')
   const queryHint = params.get('hint')
+  const nextRaw = params.get('next') ?? ''
+  const safeReturnPath = nextRaw && isSafeInternalPath(nextRaw) ? nextRaw : null
 
   useEffect(() => {
     if (isLoading || !session) {
@@ -43,8 +46,8 @@ export function LoginPage() {
       return
     }
 
-    window.location.replace('/dashboard')
-  }, [isLoading, session, profile?.role])
+    window.location.replace(safeReturnPath ?? '/dashboard')
+  }, [isLoading, session, profile?.role, safeReturnPath])
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
@@ -55,8 +58,21 @@ export function LoginPage() {
       return
     }
 
+    const callbackBase = `${window.location.origin}/auth/callback`
+    const redirectTo = safeReturnPath
+      ? `${callbackBase}?next=${encodeURIComponent(safeReturnPath)}`
+      : callbackBase
+
+    if (safeReturnPath) {
+      try {
+        sessionStorage.setItem(AUTH_NEXT_STORAGE_KEY, safeReturnPath)
+      } catch {
+        /* private mode */
+      }
+    }
+
     setIsSending(true)
-    const { error } = await signInWithMagicLink(email)
+    const { error } = await signInWithMagicLink(email, { redirectTo })
     setIsSending(false)
 
     if (error) {
@@ -130,6 +146,11 @@ export function LoginPage() {
             We&apos;ll email you a secure magic link — the same premium Golf Sol Ireland experience as the rest of the
             site. No password to remember.
           </p>
+          {safeReturnPath ? (
+            <p className="mt-3 max-w-xl rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/80">
+              After you sign in, we&apos;ll bring you back to your package so you can save it to your account.
+            </p>
+          ) : null}
         </div>
         <div className="relative z-[2] -mb-px">
           <WaveDivider fill="#f7f9f5" />

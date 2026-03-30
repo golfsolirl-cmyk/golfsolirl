@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { AUTH_NEXT_STORAGE_KEY, isSafeInternalPath } from '../lib/internal-redirect'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 
 const emailOtpTypes = ['signup', 'invite', 'magiclink', 'recovery', 'email_change', 'email'] as const
@@ -15,6 +16,24 @@ const parseHashParams = (): Record<string, string> => {
   return Object.fromEntries(new URLSearchParams(raw))
 }
 
+const resolvePostLoginPath = (search: URLSearchParams): string => {
+  const fromQuery = search.get('next') ?? ''
+  let fromStorage = ''
+  try {
+    fromStorage = sessionStorage.getItem(AUTH_NEXT_STORAGE_KEY) ?? ''
+    sessionStorage.removeItem(AUTH_NEXT_STORAGE_KEY)
+  } catch {
+    /* private mode */
+  }
+
+  const candidate = fromQuery || fromStorage
+  if (candidate && isSafeInternalPath(candidate)) {
+    return candidate
+  }
+
+  return '/dashboard'
+}
+
 export function AuthCallbackPage() {
   const [message, setMessage] = useState('Completing sign-in…')
 
@@ -29,6 +48,7 @@ export function AuthCallbackPage() {
     let cancelled = false
 
     const search = new URLSearchParams(window.location.search)
+    const postLoginPath = resolvePostLoginPath(search)
     const oauthError = search.get('error')
     const oauthDescription = search.get('error_description')
 
@@ -53,7 +73,7 @@ export function AuthCallbackPage() {
       }
 
       if (session) {
-        replaceIfActive('/dashboard')
+        replaceIfActive(postLoginPath)
         return
       }
 
@@ -68,7 +88,7 @@ export function AuthCallbackPage() {
         }
         session = await readSession()
         if (session) {
-          replaceIfActive('/dashboard')
+          replaceIfActive(postLoginPath)
           return
         }
       }
@@ -88,7 +108,7 @@ export function AuthCallbackPage() {
         }
         session = await readSession()
         if (session) {
-          replaceIfActive('/dashboard')
+          replaceIfActive(postLoginPath)
           return
         }
       }
@@ -110,7 +130,7 @@ export function AuthCallbackPage() {
         window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
         session = await readSession()
         if (session) {
-          replaceIfActive('/dashboard')
+          replaceIfActive(postLoginPath)
           return
         }
       }
@@ -122,7 +142,7 @@ export function AuthCallbackPage() {
       }
       session = await readSession()
       if (session) {
-        replaceIfActive('/dashboard')
+        replaceIfActive(postLoginPath)
         return
       }
 
