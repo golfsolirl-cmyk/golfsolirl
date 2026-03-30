@@ -33,7 +33,7 @@ const formatEur = (value: number) =>
   new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value)
 
 export function ClientDashboardPage() {
-  const { session, profile, isLoading } = useAuth()
+  const { session, isLoading } = useAuth()
   const [proposals, setProposals] = useState<ProposalRow[]>([])
   const [packageBuilds, setPackageBuilds] = useState<PackageBuildRow[]>([])
   const [proposalsError, setProposalsError] = useState<string | null>(null)
@@ -49,14 +49,10 @@ export function ClientDashboardPage() {
       window.location.replace('/login')
       return
     }
-
-    if (profile?.role === 'admin') {
-      window.location.replace('/dashboard/admin')
-    }
-  }, [isLoading, session, profile?.role])
+  }, [isLoading, session])
 
   useEffect(() => {
-    if (!session?.user || profile?.role === 'admin') {
+    if (!session?.user) {
       return
     }
 
@@ -110,7 +106,7 @@ export function ClientDashboardPage() {
     return () => {
       cancelled = true
     }
-  }, [session?.user?.id, profile?.role])
+  }, [session?.user?.id])
 
   if (isLoading || !session) {
     return <DashboardLoadingShell label="Loading your dashboard…" />

@@ -41,12 +41,17 @@ export function LoginPage() {
       return
     }
 
+    if (safeReturnPath) {
+      window.location.replace(safeReturnPath)
+      return
+    }
+
     if (profile?.role === 'admin') {
       window.location.replace('/dashboard/admin')
       return
     }
 
-    window.location.replace(safeReturnPath ?? '/dashboard')
+    window.location.replace('/dashboard')
   }, [isLoading, session, profile?.role, safeReturnPath])
 
   const handleSubmit = async (event: FormEvent) => {
