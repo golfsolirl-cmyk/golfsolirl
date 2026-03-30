@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
+import { gsolEmailBrand } from './email-constants.mjs'
 import { buildGsolTransactionalEmail, finalizeGsolEmailHtml } from './email-layout.mjs'
 import { getTransactionalEmailImageAttachments } from './enquiry-service.mjs'
 
@@ -93,20 +94,71 @@ const isAllowedRedirectTo = (redirectTo, env) => {
   }
 }
 
-const buildMagicLinkBodyHtml = (actionLink) => {
-  const safe = escapeHtml(actionLink)
+const buildMagicLinkFieldRowsHtml = (rows) =>
+  rows
+    .map(
+      ([label, valueHtml], idx) => `
+                            <tr style="background-color:${idx % 2 === 1 ? '#f9fbf7' : '#ffffff'};">
+                              <td style="padding:12px 16px;font-family:'DM Sans',Arial,sans-serif;font-size:11px;font-weight:700;color:#6b7280;width:34%;vertical-align:top;border-bottom:1px solid #dfe7db;">${escapeHtml(label)}</td>
+                              <td style="padding:12px 16px;font-family:'DM Sans',Arial,sans-serif;font-size:14px;line-height:1.5;color:#374151;vertical-align:top;border-bottom:1px solid #dfe7db;">${valueHtml}</td>
+                            </tr>`
+    )
+    .join('')
+
+/**
+ * Same white-card structure as enquiry transactional mail: summary table, CTA, security + help panels.
+ * @param {string} actionLink
+ * @param {string} email
+ * @param {string} requestedAtDisplay
+ */
+const buildMagicLinkBodyHtml = (actionLink, email, requestedAtDisplay) => {
+  const safeLink = escapeHtml(actionLink)
+  const emailCell = `<span style="color:#163a13;font-weight:600;">${escapeHtml(email)}</span>`
+  const rowsHtml = buildMagicLinkFieldRowsHtml([
+    ['Signing in as', emailCell],
+    ['Sign-in method', escapeHtml('Secure magic link (no password)')],
+    ['Requested', escapeHtml(requestedAtDisplay)]
+  ])
+
+  const securityParagraphs = [
+    'This link is unique to you, expires after a short time, and is intended for a single sign-in. Do not forward it.',
+    'If you did not ask for this email, you can ignore it — your password is not stored or changed by this flow.'
+  ]
+  const securityHtml = securityParagraphs
+    .map(
+      (p, i) =>
+        `<p style="margin:${i === securityParagraphs.length - 1 ? '0' : '0 0 10px 0'};font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.65;color:#374151;">${escapeHtml(p)}</p>`
+    )
+    .join('')
+
+  const helpHtml = `<p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.65;color:#374151;">Questions? Email <a href="mailto:${escapeHtml(gsolEmailBrand.email)}" style="color:#dc5801;font-weight:600;text-decoration:none;">${escapeHtml(gsolEmailBrand.email)}</a> or call <a href="tel:${escapeHtml(gsolEmailBrand.phoneTel)}" style="color:#dc5801;font-weight:600;text-decoration:none;">${escapeHtml(gsolEmailBrand.phoneDisplay)}</a>.</p>`
+
   return `<tr>
                   <td style="padding:32px 36px 40px 36px;background-color:#ffffff;" class="p-m">
-                    <p style="margin:0 0 16px 0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.65;color:#374151;">Use the button below to complete sign-in. The link expires after a short time for your security.</p>
-                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 0 0;border-collapse:collapse;">
+                    <p style="margin:0 0 14px 0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.65;color:#374151;">Someone (hopefully you) just asked to open your Golf Sol Ireland account. Tap the button once on this device to finish signing in — the same polished experience as the rest of our site, without a password to remember.</p>
+                    <p style="margin:0 0 18px 0;font-family:'DM Sans',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#dc5801;">Request summary</p>
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;border-collapse:collapse;border:1px solid #dfe7db;border-radius:8px;overflow:hidden;">
+                      <tbody>
+                        ${rowsHtml}
+                      </tbody>
+                    </table>
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:28px 0 0 0;border-collapse:collapse;">
                       <tr>
                         <td style="border-radius:999px;background-color:#dc5801;">
-                          <a href="${safe}" style="display:inline-block;padding:16px 32px;font-family:'DM Sans',Arial,sans-serif;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;">Sign in to Golf Sol Ireland</a>
+                          <a href="${safeLink}" style="display:inline-block;padding:16px 32px;font-family:'DM Sans',Arial,sans-serif;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;">Sign in to Golf Sol Ireland</a>
                         </td>
                       </tr>
                     </table>
-                    <p style="margin:28px 0 0 0;font-family:'DM Sans',Arial,sans-serif;font-size:12px;line-height:1.55;color:#6b7280;">If the button does not work, copy and paste this URL into your browser:</p>
-                    <p style="margin:8px 0 0 0;font-family:'DM Sans',Arial,sans-serif;font-size:11px;line-height:1.45;word-break:break-all;color:#163a13;">${safe}</p>
+                    <p style="margin:24px 0 0 0;font-family:'DM Sans',Arial,sans-serif;font-size:12px;line-height:1.55;color:#6b7280;">If the button does not work, copy and paste this URL into your browser:</p>
+                    <p style="margin:8px 0 0 0;font-family:'DM Sans',Arial,sans-serif;font-size:11px;line-height:1.45;word-break:break-all;color:#163a13;">${safeLink}</p>
+                    <div style="margin-top:28px;padding:20px 22px;border:1px solid #dc5801;border-radius:12px;background-color:#fffdfb;">
+                      <p style="margin:0 0 12px 0;font-family:'DM Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#dc5801;">Security</p>
+                      ${securityHtml}
+                    </div>
+                    <div style="margin-top:24px;padding:20px 22px;border:1px solid #163a13;border-radius:12px;background-color:#f7f9f5;">
+                      <p style="margin:0 0 12px 0;font-family:'DM Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#163a13;">We are here to help</p>
+                      ${helpHtml}
+                    </div>
                   </td>
                 </tr>`
 }
@@ -172,15 +224,25 @@ export const handleMagicLinkRequest = async (payload, env = process.env, meta = 
     throw error
   }
 
+  const requestedAtDisplay = new Intl.DateTimeFormat('en-IE', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(new Date())
+
   const raw = buildGsolTransactionalEmail({
-    documentTitle: 'Sign in to Golf Sol Ireland',
-    preheader: 'Your secure Golf Sol Ireland sign-in link.',
-    heroKicker: 'Secure sign-in',
-    heroTitle: 'Your magic link',
+    documentTitle: 'Sign in — Golf Sol Ireland',
+    preheader: `Passwordless sign-in for ${email}. Link expires shortly — use the button in this email.`,
+    heroKicker: 'Account access',
+    heroTitle: 'Complete your sign-in',
     heroLead:
-      'Tap the button below once to open your account. If you did not request this email, you can safely ignore it.',
-    heroMetaHtml: `<p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.88);"><strong>Email:</strong> ${escapeHtml(email)}</p>`,
-    bodyHtml: buildMagicLinkBodyHtml(actionLink)
+      'Use the secure magic link below to open your dashboard, saved package builds, and documents from Golf Sol Ireland. Same trusted brand as our enquiry confirmations — built for clarity and peace of mind.',
+    heroMetaHtml: `<p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.88);"><strong style="font-weight:700;">Email:</strong> ${escapeHtml(email)}</p>
+                                      <p style="margin:8px 0 0 0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.82);"><strong style="font-weight:700;">Requested:</strong> ${escapeHtml(requestedAtDisplay)}</p>
+                                      <p style="margin:8px 0 0 0;font-family:'DM Sans',Arial,sans-serif;font-size:12px;line-height:1.5;color:rgba(255,255,255,0.68);">Source: Magic link sign-in</p>`,
+    bodyHtml: buildMagicLinkBodyHtml(actionLink, email, requestedAtDisplay)
   })
 
   const html = finalizeGsolEmailHtml(raw)
@@ -190,7 +252,7 @@ export const handleMagicLinkRequest = async (payload, env = process.env, meta = 
   const { error: sendError } = await resend.emails.send({
     from: fromEmail,
     to: [email],
-    subject: 'Your Golf Sol Ireland sign-in link',
+    subject: 'Sign in to Golf Sol Ireland — your secure link',
     html,
     attachments
   })

@@ -27,7 +27,6 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
   const isArticlePage = isFooterArticlePath(normalizedPath)
   const homeHref = isPackagesRoute || isArticlePage ? '/' : isHome ? '#home' : '/'
   const navHrefForLink = (link: string) => (isHome ? `#${link.toLowerCase()}` : `/#${link.toLowerCase()}`)
-  const packagesHref = isPublicPackagePage ? '#packages' : '/packages'
   const primaryHref = isPackagesRoute ? '#plan-trip' : '/packages'
 
   useEffect(() => {
@@ -116,9 +115,6 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
                 </LuxuryButton>
               )
             ) : null}
-            <LuxuryButton href={packagesHref} variant="outline">
-              View Packages
-            </LuxuryButton>
             <LuxuryButton href={primaryHref}>{primaryCta}</LuxuryButton>
           </div>
 

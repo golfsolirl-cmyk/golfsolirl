@@ -94,12 +94,12 @@ export function LoginPage() {
         <section className="relative overflow-hidden bg-forest-950 pb-0">
           <LoginHeroBackdrop />
           <div className="relative z-10 mx-auto max-w-7xl px-4 pb-16 pt-10 md:px-6 md:pb-20 md:pt-14">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gold-300">Account access</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gold-200">Account access</p>
             <a aria-label="Golf Sol Ireland — home" className="mt-5 inline-block" href="/">
-              <Logo size="large" tone="hero" />
+              <Logo size="large" tone="scrolled" />
             </a>
             <h1 className="font-display mt-6 text-3xl font-bold tracking-tight text-white md:text-4xl">Sign in</h1>
-            <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/72">
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/88">
               Connect Supabase to enable secure magic-link sign-in.
             </p>
           </div>
@@ -128,7 +128,7 @@ export function LoginPage() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-forest-950 px-6">
         <div className="mb-10 scale-90">
-          <Logo size="large" tone="hero" />
+          <Logo size="large" tone="scrolled" />
         </div>
         <p className="text-sm font-medium tracking-wide text-white/55">Loading…</p>
       </div>
@@ -140,19 +140,19 @@ export function LoginPage() {
       <section className="relative overflow-hidden bg-forest-950 pb-0">
         <LoginHeroBackdrop />
         <div className="relative z-10 mx-auto max-w-7xl px-4 pb-16 pt-10 md:px-6 md:pb-20 md:pt-14">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gold-300">Account access</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gold-200">Account access</p>
           <a aria-label="Golf Sol Ireland — home" className="mt-5 inline-block transition-opacity hover:opacity-95" href="/">
-            <Logo size="large" tone="hero" />
+            <Logo size="large" tone="scrolled" />
           </a>
           <h1 className="font-display mt-6 text-3xl font-bold tracking-tight text-white md:text-[2.35rem] md:leading-tight">
             Sign in
           </h1>
-          <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/72 md:text-base">
+          <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/88 md:text-base">
             We&apos;ll email you a secure magic link — the same premium Golf Sol Ireland experience as the rest of the
             site. No password to remember.
           </p>
           {safeReturnPath ? (
-            <p className="mt-3 max-w-xl rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/80">
+            <p className="mt-3 max-w-xl rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm text-white/90">
               After you sign in, we&apos;ll bring you back to your package so you can save it to your account.
             </p>
           ) : null}

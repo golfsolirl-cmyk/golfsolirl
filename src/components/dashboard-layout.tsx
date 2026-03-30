@@ -1,8 +1,15 @@
 import type { ReactNode } from 'react'
+import { useRef } from 'react'
+import { SiteFooter } from './site-footer'
 import { LuxuryButton } from './ui/button'
 import { Logo } from './ui/logo'
 import { WaveDivider } from './ui/wave-divider'
 import { useAuth } from '../providers/auth-provider'
+
+const dashboardFooterIntro =
+  'Golf Sol Ireland exists for golfers who want the Costa del Sol done properly: better courses, smarter stays, and a smoother trip from first enquiry to final round.'
+
+const dashboardFooterCopyrightNote = 'Golf travel planning for Irish groups heading to the Costa del Sol.'
 
 export type DashboardVariant = 'client' | 'admin'
 
@@ -16,6 +23,7 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ title, subtitle, kicker, variant, children }: DashboardLayoutProps) {
   const { signOut, user, profile } = useAuth()
+  const footerRef = useRef<HTMLElement | null>(null)
 
   const handleSignOut = async () => {
     await signOut()
@@ -24,7 +32,7 @@ export function DashboardLayout({ title, subtitle, kicker, variant, children }: 
   const showAdminNavLink = variant === 'admin' || profile?.role === 'admin'
 
   return (
-    <div className="min-h-screen bg-offwhite font-body text-forest-900">
+    <div className="flex min-h-screen flex-col bg-offwhite font-body text-forest-900">
       <section className="relative overflow-hidden bg-forest-950 pb-0">
         <div
           aria-hidden="true"
@@ -42,19 +50,19 @@ export function DashboardLayout({ title, subtitle, kicker, variant, children }: 
         <div className="relative z-10 mx-auto max-w-7xl px-4 pb-20 pt-10 md:px-6 md:pb-24 md:pt-14">
           <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gold-300 shadow-sm">{kicker}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gold-200 shadow-sm">{kicker}</p>
               <a
                 aria-label="Golf Sol Ireland — home"
                 className="mt-5 inline-block max-w-full transition-opacity hover:opacity-95"
                 href="/"
               >
-                <Logo size="large" tone="hero" />
+                <Logo size="large" tone="scrolled" />
               </a>
               <h1 className="font-display mt-6 text-3xl font-bold tracking-tight text-white md:text-[2.35rem] md:leading-tight">
                 {title}
               </h1>
               {subtitle ? (
-                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/72 md:text-base">{subtitle}</p>
+                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/88 md:text-base">{subtitle}</p>
               ) : null}
               {user?.email ? (
                 <p className="mt-4 truncate text-xs font-medium tracking-wide text-white/55 md:text-sm">{user.email}</p>
@@ -91,7 +99,15 @@ export function DashboardLayout({ title, subtitle, kicker, variant, children }: 
         </div>
       </section>
 
-      <main className="relative z-[1] mx-auto max-w-7xl px-4 pb-20 pt-10 md:px-6 md:pb-28 md:pt-12">{children}</main>
+      <main className="relative z-[1] mx-auto w-full max-w-7xl flex-1 px-4 pb-20 pt-10 md:px-6 md:pb-28 md:pt-12">
+        {children}
+      </main>
+
+      <SiteFooter
+        copyrightNote={dashboardFooterCopyrightNote}
+        footerRef={footerRef}
+        intro={dashboardFooterIntro}
+      />
     </div>
   )
 }
@@ -100,7 +116,7 @@ export function DashboardLoadingShell({ label }: { readonly label: string }) {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-forest-950 px-6 text-center">
       <div className="mb-10 scale-90">
-        <Logo size="large" tone="hero" />
+        <Logo size="large" tone="scrolled" />
       </div>
       <p className="text-sm font-medium tracking-wide text-white/55">{label}</p>
     </div>

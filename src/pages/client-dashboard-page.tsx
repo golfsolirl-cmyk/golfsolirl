@@ -559,7 +559,7 @@ export function ClientDashboardPage() {
                 </p>
                 <div className="mt-5 flex flex-wrap gap-3">
                   {documentAccess.terms ? (
-                    <LuxuryButton href="/documents/terms" variant="outline">
+                    <LuxuryButton href="/documents/terms" variant="white">
                       Terms and conditions
                     </LuxuryButton>
                   ) : null}
