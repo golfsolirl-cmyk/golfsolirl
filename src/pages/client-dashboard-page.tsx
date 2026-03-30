@@ -7,8 +7,11 @@ import {
   packagesPagePathFromConfig,
   parsePackageBuildConfig,
   serializeTripDetailsForDb,
+  TRIP_DETAILS_MULTILINE_KEYS,
+  TRIP_DETAILS_SECTIONS,
   tripDetailsFromConfig,
-  type PackageTripDetailsForm
+  type PackageTripDetailsForm,
+  type TripDetailsFieldKey
 } from '../lib/package-build'
 import { fetchPackageBuildsClientList, isMissingClientDetailsColumnError } from '../lib/fetch-package-builds'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
@@ -43,7 +46,7 @@ const formatEur = (value: number) =>
   new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value)
 
 const inputClass =
-  'w-full rounded-2xl border border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 placeholder:text-forest-400 outline-none ring-gold-400/30 focus:border-fairway-500 focus:ring-2'
+  'w-full rounded-2xl border-2 border-orange-400 bg-white px-4 py-3 text-sm text-forest-900 placeholder:text-forest-400 outline-none transition-[border-color,box-shadow] focus:border-orange-500 focus:ring-2 focus:ring-orange-300/70'
 
 const labelClass = 'mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-gold-600'
 
@@ -59,6 +62,7 @@ export function ClientDashboardPage() {
   const [detailsStatus, setDetailsStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [detailsMessage, setDetailsMessage] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [removeError, setRemoveError] = useState<string | null>(null)
 
   const loadData = useCallback(async () => {
     if (!session?.user) {
@@ -136,7 +140,7 @@ export function ClientDashboardPage() {
     }
   }, [packageBuilds, selectedBuildId])
 
-  const handleTripFieldChange = (field: keyof PackageTripDetailsForm) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleTripFieldChange = (field: TripDetailsFieldKey) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setTripForm((prev) => ({ ...prev, [field]: event.target.value }))
     setDetailsStatus('idle')
     setDetailsMessage(null)
@@ -193,12 +197,18 @@ export function ClientDashboardPage() {
       return
     }
 
+    setRemoveError(null)
     setDeletingId(id)
     const { error } = await supabase.from('package_builds').delete().eq('id', id)
     setDeletingId(null)
 
     if (error) {
-      window.alert(error.message)
+      const msg = error.message
+      const hint =
+        /permission|policy|rls|42501/i.test(msg) || msg.toLowerCase().includes('row-level security')
+          ? ' Ask your admin to run supabase/run-in-sql-editor-add-client-details.sql (delete policy) in Supabase SQL.'
+          : ''
+      setRemoveError(`${msg}${hint}`)
       return
     }
 
@@ -255,6 +265,16 @@ export function ClientDashboardPage() {
               </div>
             ) : (
               <>
+                {removeError ? (
+                  <div
+                    className="mb-6 rounded-2xl border-2 border-red-300 bg-red-50/95 px-5 py-4 text-sm text-red-900"
+                    role="alert"
+                  >
+                    <p className="font-semibold">Could not remove package</p>
+                    <p className="mt-1">{removeError}</p>
+                  </div>
+                ) : null}
+
                 <ul className="mb-8 overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-soft">
                   {packageBuilds.map((row, index) => {
                     const parsed = parsePackageBuildConfig(row.config)
@@ -292,13 +312,14 @@ export function ClientDashboardPage() {
                             Open in calculator
                           </LuxuryButton>
                           <LuxuryButton
-                            className="border-red-200/80 text-red-800 hover:bg-red-50"
+                            aria-label={`Remove saved package ${row.label?.trim() || 'build'}`}
+                            className="!border-2 !border-red-600 !bg-white !text-red-800 hover:!bg-red-50"
                             disabled={deletingId === row.id}
                             onClick={() => handleRemoveBuild(row.id)}
                             type="button"
                             variant="outline"
                           >
-                            {deletingId === row.id ? 'Removing…' : 'Remove'}
+                            {deletingId === row.id ? 'Removing…' : 'Remove from account'}
                           </LuxuryButton>
                         </div>
                       </li>
@@ -346,103 +367,76 @@ export function ClientDashboardPage() {
 
                     {selectedBuildId ? (
                       <>
-                        <div className="grid gap-5 md:grid-cols-2">
-                          <div>
-                            <label className={labelClass} htmlFor="td-package">
-                              Package style
-                            </label>
-                            <input className={inputClass} id="td-package" onChange={handleTripFieldChange('packageName')} value={tripForm.packageName} />
-                          </div>
-                          <div>
-                            <label className={labelClass} htmlFor="td-stay">
-                              Stay level
-                            </label>
-                            <input className={inputClass} id="td-stay" onChange={handleTripFieldChange('stayName')} value={tripForm.stayName} />
-                          </div>
-                          <div className="md:col-span-2">
-                            <label className={labelClass} htmlFor="td-transfer">
-                              Transfer style
-                            </label>
-                            <input className={inputClass} id="td-transfer" onChange={handleTripFieldChange('transferName')} value={tripForm.transferName} />
-                          </div>
-                          <div>
-                            <label className={labelClass} htmlFor="td-group">
-                              Group size
-                            </label>
-                            <input className={inputClass} id="td-group" inputMode="numeric" onChange={handleTripFieldChange('groupSize')} value={tripForm.groupSize} />
-                          </div>
-                          <div>
-                            <label className={labelClass} htmlFor="td-nights">
-                              Nights
-                            </label>
-                            <input className={inputClass} id="td-nights" inputMode="numeric" onChange={handleTripFieldChange('nights')} value={tripForm.nights} />
-                          </div>
-                          <div>
-                            <label className={labelClass} htmlFor="td-rounds">
-                              Rounds
-                            </label>
-                            <input className={inputClass} id="td-rounds" inputMode="numeric" onChange={handleTripFieldChange('rounds')} value={tripForm.rounds} />
-                          </div>
-                          <div>
-                            <label className={labelClass} htmlFor="td-pp">
-                              Est. per person
-                            </label>
-                            <input className={inputClass} id="td-pp" onChange={handleTripFieldChange('perPersonPrice')} value={tripForm.perPersonPrice} />
-                          </div>
-                          <div>
-                            <label className={labelClass} htmlFor="td-total">
-                              Est. group total
-                            </label>
-                            <input className={inputClass} id="td-total" onChange={handleTripFieldChange('groupTotal')} value={tripForm.groupTotal} />
-                          </div>
-                          <div>
-                            <label className={labelClass} htmlFor="td-dep">
-                              Deposit
-                            </label>
-                            <input className={inputClass} id="td-dep" onChange={handleTripFieldChange('depositAmount')} value={tripForm.depositAmount} />
-                          </div>
-                          <div>
-                            <label className={labelClass} htmlFor="td-rem">
-                              Remaining balance
-                            </label>
-                            <input className={inputClass} id="td-rem" onChange={handleTripFieldChange('remainingBalance')} value={tripForm.remainingBalance} />
-                          </div>
-                          <div>
-                            <label className={labelClass} htmlFor="td-lead">
-                              Lead guest name
-                            </label>
-                            <input
-                              autoComplete="name"
-                              className={inputClass}
-                              id="td-lead"
-                              onChange={handleTripFieldChange('leadGuestName')}
-                              value={tripForm.leadGuestName}
-                            />
-                          </div>
-                          <div>
-                            <label className={labelClass} htmlFor="td-phone">
-                              Phone / WhatsApp
-                            </label>
-                            <input
-                              autoComplete="tel"
-                              className={inputClass}
-                              id="td-phone"
-                              onChange={handleTripFieldChange('contactPhone')}
-                              value={tripForm.contactPhone}
-                            />
-                          </div>
-                          <div className="md:col-span-2">
-                            <label className={labelClass} htmlFor="td-dates">
-                              Preferred travel dates
-                            </label>
-                            <input className={inputClass} id="td-dates" onChange={handleTripFieldChange('preferredTravelDates')} value={tripForm.preferredTravelDates} />
-                          </div>
-                          <div className="md:col-span-2">
-                            <label className={labelClass} htmlFor="td-notes">
-                              Notes for Golf Sol Ireland
-                            </label>
-                            <textarea className={cx(inputClass, 'min-h-[120px] resize-y')} id="td-notes" onChange={handleTripFieldChange('notesForGsol')} value={tripForm.notesForGsol} />
-                          </div>
+                        <div className="space-y-10">
+                          {TRIP_DETAILS_SECTIONS.map((section) => (
+                            <div className="space-y-4" key={section.title}>
+                              <h4 className="border-b border-orange-200/80 pb-2 font-display text-base font-semibold text-forest-900">
+                                {section.title}
+                              </h4>
+                              {section.title === 'Trip shape' ? (
+                                <p className="text-sm font-medium text-forest-700">
+                                  Trip shape: {tripForm.nights.trim() || '0'} nights / {tripForm.rounds.trim() || '0'} rounds
+                                  <span className="ml-2 font-normal text-forest-500">(edit nights and rounds below)</span>
+                                </p>
+                              ) : null}
+                              <div className="grid gap-5 md:grid-cols-2">
+                                {section.fields.map((field) => {
+                                  const id = `td-${field.key}`
+                                  const isMultiline = TRIP_DETAILS_MULTILINE_KEYS.has(field.key)
+                                  return (
+                                    <div className={field.key === 'notesForGsol' ? 'md:col-span-2' : ''} key={field.key}>
+                                      <label className={labelClass} htmlFor={id}>
+                                        {field.label}
+                                      </label>
+                                      {isMultiline ? (
+                                        <textarea
+                                          className={cx(inputClass, 'min-h-[100px] resize-y')}
+                                          id={id}
+                                          onChange={handleTripFieldChange(field.key)}
+                                          value={tripForm[field.key]}
+                                        />
+                                      ) : (
+                                        <input
+                                          autoComplete={
+                                            field.key === 'leadGuestName'
+                                              ? 'name'
+                                              : field.key === 'contactPhone'
+                                                ? 'tel'
+                                                : undefined
+                                          }
+                                          className={inputClass}
+                                          id={id}
+                                          inputMode={
+                                            field.key === 'groupSize' || field.key === 'nights' || field.key === 'rounds'
+                                              ? 'numeric'
+                                              : undefined
+                                          }
+                                          onChange={handleTripFieldChange(field.key)}
+                                          value={tripForm[field.key]}
+                                        />
+                                      )}
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="mt-8 flex flex-col gap-4 border-t border-forest-100 pt-8 sm:flex-row sm:flex-wrap sm:items-center">
+                          <LuxuryButton disabled={detailsStatus === 'saving'} type="submit" variant="primary">
+                            {detailsStatus === 'saving' ? 'Saving…' : 'Save trip details'}
+                          </LuxuryButton>
+                          <LuxuryButton
+                            aria-label="Remove the selected saved package"
+                            className="!border-2 !border-red-600 !bg-white !text-red-800 hover:!bg-red-50"
+                            disabled={deletingId === selectedBuildId}
+                            onClick={() => handleRemoveBuild(selectedBuildId)}
+                            type="button"
+                            variant="outline"
+                          >
+                            {deletingId === selectedBuildId ? 'Removing…' : 'Remove this package'}
+                          </LuxuryButton>
                         </div>
 
                         {detailsMessage ? (
@@ -456,10 +450,6 @@ export function ClientDashboardPage() {
                             {detailsMessage}
                           </p>
                         ) : null}
-
-                        <LuxuryButton disabled={detailsStatus === 'saving'} type="submit" variant="primary">
-                          {detailsStatus === 'saving' ? 'Saving…' : 'Save trip details'}
-                        </LuxuryButton>
                       </>
                     ) : (
                       <p className="mt-4 text-sm text-forest-600">Select a trip above to edit and save details.</p>

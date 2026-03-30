@@ -1,7 +1,16 @@
 import { useEffect, useState } from 'react'
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
+import { LuxuryButton } from '../components/ui/button'
 import { fetchPackageBuildsAdminList } from '../lib/fetch-package-builds'
-import { hasMeaningfulTripDetails, parsePackageBuildConfig } from '../lib/package-build'
+import {
+  emptyTripDetailsForm,
+  hasMeaningfulTripDetails,
+  mergeTripDetailsWithSaved,
+  parsePackageBuildConfig,
+  TRIP_DETAILS_MULTILINE_KEYS,
+  TRIP_DETAILS_SECTIONS,
+  tripDetailsFromConfig
+} from '../lib/package-build'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { useAuth } from '../providers/auth-provider'
 import { cx } from '../lib/utils'
@@ -68,6 +77,7 @@ export function AdminDashboardPage() {
   const [loadError, setLoadError] = useState<string | null>(null)
   const [buildsLoadError, setBuildsLoadError] = useState<string | null>(null)
   const [listLoading, setListLoading] = useState(true)
+  const [detailBuildId, setDetailBuildId] = useState<string | null>(null)
 
   useEffect(() => {
     if (isLoading) {
@@ -133,6 +143,26 @@ export function AdminDashboardPage() {
       cancelled = true
     }
   }, [session?.user?.id, profile?.role])
+
+  useEffect(() => {
+    if (!detailBuildId) {
+      return
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setDetailBuildId(null)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [detailBuildId])
+
+  const detailRow = detailBuildId ? packageBuilds.find((b) => b.id === detailBuildId) ?? null : null
+  const detailParsed = detailRow ? parsePackageBuildConfig(detailRow.config) : null
+  const detailTripDefaults = detailParsed ? tripDetailsFromConfig(detailParsed) : emptyTripDetailsForm()
+  const detailTrip = detailRow ? mergeTripDetailsWithSaved(detailRow.client_details, detailTripDefaults) : emptyTripDetailsForm()
 
   if (isLoading || !session || profile?.role !== 'admin') {
     return <DashboardLoadingShell label="Loading admin dashboard…" />
@@ -246,6 +276,7 @@ export function AdminDashboardPage() {
                       <th className="whitespace-nowrap px-4 py-4 md:px-6">Source</th>
                       <th className="whitespace-nowrap px-4 py-4 md:px-6">Trip form</th>
                       <th className="whitespace-nowrap px-4 py-4 md:px-6">Group total</th>
+                      <th className="whitespace-nowrap px-4 py-4 md:px-6">Details</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-forest-100">
@@ -291,6 +322,16 @@ export function AdminDashboardPage() {
                           </td>
                           <td className="whitespace-nowrap px-4 py-4 font-medium text-forest-900 md:px-6">
                             {typeof total === 'number' ? formatEur(total) : '—'}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-4 md:px-6">
+                            <LuxuryButton
+                              className="!px-5 !py-2.5 !text-xs"
+                              onClick={() => setDetailBuildId(row.id)}
+                              type="button"
+                              variant="white"
+                            >
+                              View
+                            </LuxuryButton>
                           </td>
                         </tr>
                       )
@@ -348,6 +389,108 @@ export function AdminDashboardPage() {
           </section>
         </div>
       )}
+
+      {detailRow ? (
+        <div className="fixed inset-0 z-[90] flex items-end justify-center p-4 sm:items-center sm:p-6">
+          <button
+            aria-label="Close build details"
+            className="absolute inset-0 bg-forest-950/55 backdrop-blur-[2px]"
+            onClick={() => setDetailBuildId(null)}
+            type="button"
+          />
+          <div
+            aria-labelledby="admin-build-detail-title"
+            aria-modal="true"
+            className="relative z-10 flex max-h-[min(90vh,920px)] w-full max-w-2xl flex-col overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-2xl"
+            role="dialog"
+          >
+            <div className="border-b border-forest-100 bg-forest-50/80 px-6 py-5 md:px-8">
+              <h2 className="font-display text-xl font-semibold text-forest-950 md:text-2xl" id="admin-build-detail-title">
+                Client build and trip form
+              </h2>
+              <p className="mt-1 text-sm text-forest-600">
+                {detailRow.label?.trim() || 'Package build'} · saved{' '}
+                {new Date(detailRow.created_at).toLocaleString()}
+              </p>
+              {(() => {
+                const prof = profileFromRow(detailRow)
+                return prof?.email || prof?.full_name ? (
+                  <p className="mt-2 text-sm font-medium text-forest-800">
+                    {prof.full_name?.trim() ? <span>{prof.full_name.trim()}</span> : null}
+                    {prof.full_name?.trim() && prof.email ? <span className="text-forest-400"> · </span> : null}
+                    {prof.email ? (
+                      <a className="text-fairway-700 underline-offset-2 hover:underline" href={`mailto:${prof.email}`}>
+                        {prof.email}
+                      </a>
+                    ) : null}
+                  </p>
+                ) : (
+                  <p className="mt-2 font-mono text-xs text-forest-500">Owner {detailRow.owner_id}</p>
+                )
+              })()}
+            </div>
+
+            <div className="flex-1 overflow-y-auto px-6 py-6 md:px-8 md:py-8">
+              {detailParsed ? (
+                <div className="mb-8 rounded-2xl border border-forest-100 bg-forest-50/40 px-4 py-4 text-sm text-forest-800">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">Calculator config</p>
+                  <p className="mt-2 font-medium">
+                    {detailParsed.packageStyle} · {detailParsed.groupSize} golfers · {detailParsed.nights} nights /{' '}
+                    {detailParsed.rounds} rounds
+                  </p>
+                  <p className="mt-1 text-xs text-forest-600">
+                    Stay: {detailParsed.stayName} · Transfer: {detailParsed.transferName}
+                  </p>
+                  <p className="mt-2 text-xs text-forest-600">
+                    Source: {detailRow.source === 'landing' ? 'Homepage' : 'Packages page'}
+                  </p>
+                </div>
+              ) : null}
+
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Trip form (client input)</p>
+              <p className="mt-1 text-sm text-forest-600">
+                {hasMeaningfulTripDetails(detailRow.client_details)
+                  ? 'All fields below; empty lines mean the client left them blank.'
+                  : 'No extra trip-form text yet — values shown are calculator defaults only.'}
+              </p>
+
+              <div className="mt-6 space-y-8">
+                {TRIP_DETAILS_SECTIONS.map((section) => (
+                  <div className="space-y-3" key={section.title}>
+                    <h3 className="border-b border-orange-200/90 pb-2 font-display text-base font-semibold text-forest-900">
+                      {section.title}
+                    </h3>
+                    {section.title === 'Trip shape' ? (
+                      <p className="text-sm text-forest-700">
+                        Trip shape: {detailTrip.nights.trim() || '0'} nights / {detailTrip.rounds.trim() || '0'} rounds
+                      </p>
+                    ) : null}
+                    <dl className="grid gap-4 sm:grid-cols-2">
+                      {section.fields.map((field) => {
+                        const raw = detailTrip[field.key].trim()
+                        const isLong = TRIP_DETAILS_MULTILINE_KEYS.has(field.key)
+
+                        return (
+                          <div className={isLong ? 'sm:col-span-2' : ''} key={field.key}>
+                            <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-gold-600">{field.label}</dt>
+                            <dd className="mt-1 whitespace-pre-wrap text-sm text-forest-900">{raw || '—'}</dd>
+                          </div>
+                        )
+                      })}
+                    </dl>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="border-t border-forest-100 bg-white px-6 py-4 md:px-8">
+              <LuxuryButton onClick={() => setDetailBuildId(null)} type="button" variant="primary">
+                Close
+              </LuxuryButton>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </DashboardLayout>
   )
 }

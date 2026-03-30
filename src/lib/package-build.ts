@@ -92,7 +92,7 @@ export const parsePackageBuildConfig = (raw: unknown): PackageBuildConfig | null
 export const formatPackageEuro = (value: number): string =>
   new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value)
 
-/** Mirrors proposal-template URL-style fields; stored in package_builds.client_details */
+/** Mirrors proposal-style fields; stored in package_builds.client_details */
 export interface PackageTripDetailsForm {
   readonly packageName: string
   readonly stayName: string
@@ -104,11 +104,102 @@ export interface PackageTripDetailsForm {
   readonly groupTotal: string
   readonly depositAmount: string
   readonly remainingBalance: string
+  readonly preferredTravelDates: string
+  readonly departureAirportRoute: string
   readonly leadGuestName: string
   readonly contactPhone: string
-  readonly preferredTravelDates: string
+  readonly hotelNameArea: string
+  readonly courseList: string
+  readonly resortArea: string
+  readonly specialRequests: string
+  readonly airportTransfers: string
+  readonly golfDayTransport: string
+  readonly boardBasis: string
+  readonly upgradeNotes: string
   readonly notesForGsol: string
 }
+
+export type TripDetailsFieldKey = keyof PackageTripDetailsForm
+
+export interface TripDetailsSectionMeta {
+  readonly title: string
+  readonly fields: readonly { readonly key: TripDetailsFieldKey; readonly label: string }[]
+}
+
+/** Order and labels for client form + admin detail view */
+export const TRIP_DETAILS_SECTIONS: readonly TripDetailsSectionMeta[] = [
+  {
+    title: 'Trip overview',
+    fields: [
+      { key: 'packageName', label: 'Package style' },
+      { key: 'stayName', label: 'Stay level' },
+      { key: 'transferName', label: 'Transfer style' },
+      { key: 'groupSize', label: 'Group size (golfers)' }
+    ]
+  },
+  {
+    title: 'Trip shape',
+    fields: [
+      { key: 'nights', label: 'Nights' },
+      { key: 'rounds', label: 'Rounds' },
+      { key: 'preferredTravelDates', label: 'Travel dates' },
+      { key: 'departureAirportRoute', label: 'Departure airport / route' },
+      { key: 'leadGuestName', label: 'Lead traveller name' },
+      { key: 'contactPhone', label: 'Lead contact (phone / email)' }
+    ]
+  },
+  {
+    title: 'Pricing (from calculator)',
+    fields: [
+      { key: 'perPersonPrice', label: 'Est. per person' },
+      { key: 'groupTotal', label: 'Est. group total' },
+      { key: 'depositAmount', label: 'Deposit' },
+      { key: 'remainingBalance', label: 'Remaining balance' }
+    ]
+  },
+  {
+    title: 'Proposal details',
+    fields: [
+      { key: 'hotelNameArea', label: 'Hotel name / area' },
+      { key: 'courseList', label: 'Course list' },
+      { key: 'resortArea', label: 'Resort area' },
+      { key: 'specialRequests', label: 'Special requests' }
+    ]
+  },
+  {
+    title: 'Logistics and inclusions',
+    fields: [
+      { key: 'airportTransfers', label: 'Airport transfers' },
+      { key: 'golfDayTransport', label: 'Golf-day transport' },
+      { key: 'boardBasis', label: 'Board basis' },
+      { key: 'upgradeNotes', label: 'Upgrade notes' }
+    ]
+  },
+  {
+    title: 'Notes',
+    fields: [{ key: 'notesForGsol', label: 'Other notes for Golf Sol Ireland' }]
+  }
+] as const
+
+const tripDetailKeys: readonly TripDetailsFieldKey[] = TRIP_DETAILS_SECTIONS.flatMap((s) => s.fields.map((f) => f.key))
+
+export const TRIP_DETAILS_LABEL_BY_KEY: Record<TripDetailsFieldKey, string> = (() => {
+  const m = {} as Record<TripDetailsFieldKey, string>
+  for (const section of TRIP_DETAILS_SECTIONS) {
+    for (const f of section.fields) {
+      m[f.key] = f.label
+    }
+  }
+
+  return m
+})()
+
+export const TRIP_DETAILS_MULTILINE_KEYS: ReadonlySet<TripDetailsFieldKey> = new Set([
+  'courseList',
+  'specialRequests',
+  'notesForGsol',
+  'upgradeNotes'
+])
 
 export const emptyTripDetailsForm = (): PackageTripDetailsForm => ({
   packageName: '',
@@ -121,9 +212,18 @@ export const emptyTripDetailsForm = (): PackageTripDetailsForm => ({
   groupTotal: '',
   depositAmount: '',
   remainingBalance: '',
+  preferredTravelDates: '',
+  departureAirportRoute: '',
   leadGuestName: '',
   contactPhone: '',
-  preferredTravelDates: '',
+  hotelNameArea: '',
+  courseList: '',
+  resortArea: '',
+  specialRequests: '',
+  airportTransfers: '',
+  golfDayTransport: '',
+  boardBasis: '',
+  upgradeNotes: '',
   notesForGsol: ''
 })
 
@@ -141,25 +241,17 @@ export const tripDetailsFromConfig = (config: PackageBuildConfig): PackageTripDe
   leadGuestName: '',
   contactPhone: '',
   preferredTravelDates: '',
+  departureAirportRoute: '',
+  hotelNameArea: '',
+  courseList: '',
+  resortArea: '',
+  specialRequests: '',
+  airportTransfers: '',
+  golfDayTransport: '',
+  boardBasis: '',
+  upgradeNotes: '',
   notesForGsol: ''
 })
-
-const tripDetailKeys: readonly (keyof PackageTripDetailsForm)[] = [
-  'packageName',
-  'stayName',
-  'transferName',
-  'groupSize',
-  'nights',
-  'rounds',
-  'perPersonPrice',
-  'groupTotal',
-  'depositAmount',
-  'remainingBalance',
-  'leadGuestName',
-  'contactPhone',
-  'preferredTravelDates',
-  'notesForGsol'
-]
 
 export const mergeTripDetailsWithSaved = (
   saved: unknown,
@@ -185,9 +277,25 @@ export const mergeTripDetailsWithSaved = (
 }
 
 export const serializeTripDetailsForDb = (form: PackageTripDetailsForm): Record<string, unknown> => ({
-  version: 1,
+  version: 2,
   ...form
 })
+
+const meaningfulTripDetailKeys: readonly TripDetailsFieldKey[] = [
+  'preferredTravelDates',
+  'departureAirportRoute',
+  'leadGuestName',
+  'contactPhone',
+  'hotelNameArea',
+  'courseList',
+  'resortArea',
+  'specialRequests',
+  'airportTransfers',
+  'golfDayTransport',
+  'boardBasis',
+  'upgradeNotes',
+  'notesForGsol'
+]
 
 export const hasMeaningfulTripDetails = (raw: unknown): boolean => {
   if (!raw || typeof raw !== 'object') {
@@ -197,10 +305,24 @@ export const hasMeaningfulTripDetails = (raw: unknown): boolean => {
   const o = raw as Record<string, unknown>
   const nonEmpty = (k: string) => typeof o[k] === 'string' && (o[k] as string).trim() !== ''
 
-  return (
-    nonEmpty('leadGuestName') ||
-    nonEmpty('contactPhone') ||
-    nonEmpty('preferredTravelDates') ||
-    nonEmpty('notesForGsol')
-  )
+  return meaningfulTripDetailKeys.some((k) => nonEmpty(k))
+}
+
+export const parseClientDetailsToFormShape = (raw: unknown): Partial<PackageTripDetailsForm> => {
+  if (!raw || typeof raw !== 'object') {
+    return {}
+  }
+
+  const o = raw as Record<string, unknown>
+  const out: Record<string, string> = {}
+  for (const key of tripDetailKeys) {
+    const v = o[key]
+    if (typeof v === 'string') {
+      out[key] = v
+    } else if (typeof v === 'number' && (key === 'groupSize' || key === 'nights' || key === 'rounds')) {
+      out[key] = String(v)
+    }
+  }
+
+  return out as Partial<PackageTripDetailsForm>
 }
