@@ -282,7 +282,7 @@ function App() {
               </motion.p>
 
               <motion.p
-                className="mt-6 max-w-lg text-sm leading-relaxed text-white/65 md:text-base"
+                className="mt-6 max-w-lg text-base leading-relaxed text-white/65 md:text-lg"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.44, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -334,9 +334,9 @@ function App() {
                 />
               </div>
               <div className="mt-5">
-                <p className="text-xs uppercase tracking-[0.28em] text-white/45">Signature route</p>
+                <p className="text-sm uppercase tracking-[0.28em] text-white/45 md:text-xs">Signature route</p>
                 <h2 className="mt-2 font-display text-3xl font-bold text-white">Marbella to Sotogrande</h2>
-                <p className="mt-3 text-sm leading-relaxed text-white/65">
+                <p className="mt-3 text-base leading-relaxed text-white/65 md:text-sm">
                   Championship golf, polished stays, and transfer rhythm designed for Irish golfers who want the trip to feel effortless.
                 </p>
                 <motion.p
@@ -362,7 +362,7 @@ function App() {
                   </div>
                 ))}
               </div>
-              <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4 text-xs text-white/55">
+              <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4 text-sm text-white/55 md:text-xs">
                 <span>Irish-owned planning</span>
                 <span>Luxury, not generic</span>
               </div>
@@ -383,16 +383,16 @@ function App() {
             >
               <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-500">Departing from Ireland</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.3em] text-gold-500 md:text-xs">Departing from Ireland</p>
                   <h2 className="mt-3 max-w-2xl font-display text-3xl font-bold leading-tight text-forest-900 md:text-4xl">
                     Quick package start for Irish golfers heading to the Costa del Sol
                   </h2>
-                  <p className="mt-3 max-w-2xl text-sm leading-relaxed text-forest-900/62 md:text-base">
+                  <p className="mt-3 max-w-2xl text-base leading-relaxed text-forest-900/62 md:text-base">
                     Set the group size, trip length, rounds, and transfer style here, then jump straight into the full package page with those choices already selected.
                   </p>
                 </div>
 
-                <div className="flex items-center gap-3 rounded-full border border-gold-300/35 bg-white/80 px-4 py-2 text-xs uppercase tracking-[0.22em] text-forest-900/62">
+                <div className="flex items-center gap-3 rounded-full border border-gold-300/35 bg-white/80 px-4 py-2 text-sm uppercase tracking-[0.22em] text-forest-900/62 md:text-xs">
                   <span className="h-2 w-2 rounded-full bg-fairway-500" />
                   <span>Quick calculator</span>
                 </div>
@@ -458,7 +458,7 @@ function App() {
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-forest-900">Transfer style</p>
-                      <p className="text-xs leading-relaxed text-forest-900/52">
+                      <p className="text-sm leading-relaxed text-forest-900/52 md:text-xs">
                         Choose the level of transport support that suits the trip
                       </p>
                     </div>
@@ -481,7 +481,7 @@ function App() {
                           type="button"
                         >
                           <p className="text-sm font-semibold">{option.label}</p>
-                          <p className={cx('mt-1 text-xs leading-relaxed', isActive ? 'text-white/72' : 'text-forest-900/58')}>
+                          <p className={cx('mt-1 text-sm leading-relaxed md:text-xs', isActive ? 'text-white/72' : 'text-forest-900/58')}>
                             {option.description}
                           </p>
                         </button>
@@ -493,11 +493,11 @@ function App() {
                     <LuxuryButton href={quickPackagesHref} showArrow>
                       Open full package page
                     </LuxuryButton>
-                    <div className="rounded-full border border-forest-100 bg-offwhite px-4 py-2 text-xs uppercase tracking-[0.18em] text-forest-900/55">
+                    <div className="rounded-full border border-forest-100 bg-offwhite px-4 py-2 text-sm uppercase tracking-[0.18em] text-forest-900/55 md:text-xs">
                       {quickGroupSize} golfers • {quickNights} nights • {quickRounds} rounds
                     </div>
                   </div>
-                  <p className="mt-4 text-xs leading-relaxed text-forest-900/55">
+                  <p className="mt-4 text-sm leading-relaxed text-forest-900/55 md:text-base">
                     Continue on the packages page to save this build to your account (magic-link sign-in) or open a printable proposal for your group.
                   </p>
                 </motion.div>
@@ -518,7 +518,7 @@ function App() {
             >
               <div className="flex justify-center">
                 <h2 className="flex flex-col items-center gap-1 text-center">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.34em] text-gold-500 md:text-xs">
+                  <span className="text-sm font-semibold uppercase tracking-[0.34em] text-gold-500 md:text-xs">
                     Why groups trust
                   </span>
                   <span className="flex flex-wrap items-center justify-center gap-2 leading-none">
@@ -532,7 +532,7 @@ function App() {
                   </span>
                 </h2>
               </div>
-              <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-forest-900/58 md:text-base">
+              <p className="mx-auto mt-3 max-w-2xl text-base leading-relaxed text-forest-900/58 md:text-base">
                 Because the best Irish golf trips are not held together by guesswork. GolfSol Ireland gives Irish golfers smarter course picks, cleaner
                 logistics, and the kind of local judgement that makes the whole week feel effortless before you ever board the flight.
               </p>
@@ -550,7 +550,7 @@ function App() {
               <div className="relative z-10 grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10">
                 <div>
                   <motion.div
-                    className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.26em]"
+                    className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold uppercase tracking-[0.26em] md:text-xs"
                     initial={{ opacity: 0, x: -16, scale: 0.96 }}
                     transition={{
                       opacity: { delay: 0.08, duration: 0.5, ease: 'easeOut' },
@@ -606,7 +606,7 @@ function App() {
                   </motion.h2>
 
                   <motion.p
-                    className="mt-4 max-w-xl text-sm leading-relaxed text-forest-900/65 md:text-base"
+                    className="mt-4 max-w-xl text-base leading-relaxed text-forest-900/65 md:text-base"
                     initial={{ opacity: 0, y: 20 }}
                     transition={{ delay: 0.2, duration: 0.6, ease: 'easeOut' }}
                     viewport={{ once: true }}
@@ -630,7 +630,7 @@ function App() {
                         <p className="text-base leading-relaxed text-forest-900/82 md:text-lg">
                           For Irish golfers who want every detail to feel considered, every transfer to make sense, and every round to land exactly where it should.
                         </p>
-                        <p className="mt-3 text-xs uppercase tracking-[0.2em] text-forest-900/42">Smarter planning. Better golf. Zero noise.</p>
+                        <p className="mt-3 text-sm uppercase tracking-[0.2em] text-forest-900/42 md:text-xs">Smarter planning. Better golf. Zero noise.</p>
                       </div>
                     </div>
                   </motion.div>
@@ -645,7 +645,7 @@ function App() {
                     {heroStats.map((item) => (
                       <div key={item.label} className="rounded-[1.75rem] border border-forest-100 bg-white/80 p-4 shadow-sm">
                         <p className="font-display text-3xl font-bold text-gold-300">{item.value}</p>
-                        <p className="mt-2 text-xs leading-relaxed text-forest-900/58">{item.label}</p>
+                        <p className="mt-2 text-sm leading-relaxed text-forest-900/58 md:text-xs">{item.label}</p>
                       </div>
                     ))}
                   </motion.div>
@@ -1324,8 +1324,8 @@ function CookieBanner({
     >
       <div aria-hidden="true" className="absolute inset-0 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(255,255,255,0.06),rgba(220,88,1,0.06),rgba(80,163,45,0.06))]" />
       <div className="relative z-10">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-gold-300">Cookie notice</p>
-        <p className="mt-2 text-sm leading-relaxed text-white/72">
+        <p className="text-sm font-semibold uppercase tracking-[0.26em] text-gold-300 md:text-xs">Cookie notice</p>
+        <p className="mt-2 text-base leading-relaxed text-white/72 md:text-sm">
           We use cookies to improve the browsing experience, understand site traffic, and keep the journey smooth.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">

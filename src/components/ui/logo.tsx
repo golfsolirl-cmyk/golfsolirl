@@ -110,7 +110,7 @@ export function Logo({ className, size = 'default', tone = 'light' }: LogoProps)
         <span
           className={cx(
             'logo-tagline block pl-0.5 font-body font-medium tracking-wide leading-tight',
-            isLarge ? 'text-sm md:text-sm' : 'text-xs',
+            isLarge ? 'text-base md:text-sm' : 'text-sm md:text-xs',
             taglineClassName
           )}
           style={heroTextStyle}

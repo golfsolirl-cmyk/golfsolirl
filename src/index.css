@@ -7,6 +7,13 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    font-size: 16.25px;
+  }
+
+  @media (max-width: 767px) {
+    html {
+      font-size: 17px;
+    }
   }
 
   body {

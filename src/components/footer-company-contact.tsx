@@ -14,22 +14,22 @@ export function FooterCompanyContact() {
         />
         <div className="relative z-10 grid gap-8 md:grid-cols-2 md:items-start md:gap-12 lg:gap-20">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-gold-300/95">Dublin office</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.26em] text-gold-300/95 md:text-[11px]">Dublin office</p>
             <div className="mt-4 flex gap-4">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white/[0.06] text-gold-300">
                 <MapPin className="h-5 w-5" aria-hidden="true" />
               </div>
               <div className="min-w-0">
-                <address className="not-italic text-sm font-medium leading-relaxed text-white/88">
+                <address className="not-italic text-base font-medium leading-relaxed text-white/88 md:text-sm">
                   {companyContact.addressLines.map((line) => (
                     <span key={line} className="block">
                       {line}
                     </span>
                   ))}
-                  <span className="mt-1 block text-[13px] font-semibold tracking-[0.12em] text-white/55">{companyContact.eircode}</span>
+                  <span className="mt-1 block text-sm font-semibold tracking-[0.12em] text-white/55 md:text-[13px]">{companyContact.eircode}</span>
                 </address>
                 <a
-                  className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-gold-400/90 transition-colors hover:text-gold-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold uppercase tracking-[0.14em] text-gold-400/90 transition-colors hover:text-gold-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950 md:text-xs"
                   href={mapsHref}
                   rel="noreferrer"
                   target="_blank"
@@ -42,7 +42,7 @@ export function FooterCompanyContact() {
           </div>
 
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-gold-300/95">Phone &amp; WhatsApp</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.26em] text-gold-300/95 md:text-[11px]">Phone &amp; WhatsApp</p>
             <div className="mt-4 flex gap-4">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white/[0.06] text-gold-300">
                 <Phone className="h-5 w-5" aria-hidden="true" />
@@ -54,10 +54,10 @@ export function FooterCompanyContact() {
                 >
                   {companyContact.phoneDisplay}
                 </a>
-                <p className="text-sm leading-relaxed text-white/58">Irish mobile — same number on WhatsApp for quick trip questions.</p>
+                <p className="text-base leading-relaxed text-white/58 md:text-sm">Irish mobile — same number on WhatsApp for quick trip questions.</p>
                 <a
                   aria-label={`Message Golf Sol Ireland on WhatsApp at ${companyContact.phoneDisplay}`}
-                  className="group inline-flex min-h-11 items-center gap-2.5 rounded-full border border-[#25D366]/35 bg-[#25D366]/10 px-5 py-2.5 text-sm font-semibold text-[#b8f5c8] transition-all hover:border-[#25D366]/60 hover:bg-[#25D366]/18 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                  className="group inline-flex min-h-11 items-center gap-2.5 rounded-full border border-[#25D366]/35 bg-[#25D366]/10 px-5 py-2.5 text-base font-semibold text-[#b8f5c8] transition-all hover:border-[#25D366]/60 hover:bg-[#25D366]/18 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950 md:text-sm"
                   href={companyContact.whatsappHref}
                   rel="noreferrer"
                   target="_blank"

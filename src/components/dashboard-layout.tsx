@@ -50,7 +50,7 @@ export function DashboardLayout({ title, subtitle, kicker, variant, children }: 
         <div className="relative z-10 mx-auto max-w-7xl px-4 pb-20 pt-10 md:px-6 md:pb-24 md:pt-14">
           <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gold-200 shadow-sm">{kicker}</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-gold-200 shadow-sm md:text-xs">{kicker}</p>
               <a
                 aria-label="Golf Sol Ireland — home"
                 className="mt-5 inline-block max-w-full transition-opacity hover:opacity-95"
@@ -62,28 +62,28 @@ export function DashboardLayout({ title, subtitle, kicker, variant, children }: 
                 {title}
               </h1>
               {subtitle ? (
-                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white md:text-base">{subtitle}</p>
+                <p className="mt-4 max-w-2xl text-base leading-relaxed text-white md:text-base">{subtitle}</p>
               ) : null}
               {user?.email ? (
-                <p className="mt-4 truncate text-xs font-medium tracking-wide text-white/55 md:text-sm">{user.email}</p>
+                <p className="mt-4 truncate text-sm font-medium tracking-wide text-white/55">{user.email}</p>
               ) : null}
             </div>
 
             <div className="flex flex-wrap items-center gap-3 lg:shrink-0 lg:pb-1">
               {showAdminNavLink ? (
                 <LuxuryButton
-                  className="!px-5 !py-2.5 !text-xs"
+                  className="!px-5 !py-2.5 md:!text-sm"
                   href={variant === 'admin' ? '/dashboard' : '/dashboard/admin'}
                   variant="outline"
                 >
                   {variant === 'admin' ? 'Client dashboard' : 'Admin dashboard'}
                 </LuxuryButton>
               ) : null}
-              <LuxuryButton className="!px-5 !py-2.5 !text-xs" href="/" variant="outline">
+              <LuxuryButton className="!px-5 !py-2.5 md:!text-sm" href="/" variant="outline">
                 Home
               </LuxuryButton>
               <LuxuryButton
-                className="!px-5 !py-2.5 !text-xs"
+                className="!px-5 !py-2.5 md:!text-sm"
                 type="button"
                 variant="primary"
                 onClick={handleSignOut}
