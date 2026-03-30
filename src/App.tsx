@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { FaBluesky, FaFacebookF, FaLinkedinIn, FaWhatsapp } from 'react-icons/fa6'
+import { FaWhatsapp } from 'react-icons/fa6'
 import {
   BedDouble,
   Bus,
   CalendarRange,
   CheckCircle2,
-  ChevronRight,
   Mail,
   MapPinned,
   Phone,
@@ -25,6 +24,7 @@ import {
   TrustStat
 } from './components/home/cards'
 import { LuxuryButton } from './components/ui/button'
+import { SiteFooter } from './components/site-footer'
 import { AmbientGolfBall } from './components/ui/ambient-golf-ball'
 import { Logo, ShamrockIcon } from './components/ui/logo'
 import { AnimatedStepKicker, SectionHeader } from './components/ui/section-header'
@@ -33,7 +33,6 @@ import { integrationRegistry } from './config/integrations'
 import {
   costaMetrics,
   featuredCourses,
-  footerGroups,
   footerSocialLinks,
   heroBackgroundImage,
   heroCardHighlights,
@@ -80,13 +79,6 @@ const quickTransferOptions: readonly {
     description: 'The smoothest premium option, with driver support across the trip rather than just the airport runs.'
   }
 ]
-
-const footerSocialIconMap = {
-  LinkedIn: FaLinkedinIn,
-  Facebook: FaFacebookF,
-  WhatsApp: FaWhatsapp,
-  Bluesky: FaBluesky
-} as const
 
 const revealUp = {
   initial: { opacity: 0, y: 26 },
@@ -1167,59 +1159,11 @@ function App() {
         </section>
       </main>
 
-      <footer ref={footerRef} className="relative overflow-hidden border-t border-white/10 bg-forest-950 px-6 py-8 text-white">
-        <AmbientGolfBall className="right-[3%] top-2 opacity-75 xl:right-[6%]" size="sm" tone="footer" />
-        <div className="mx-auto flex max-w-7xl flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-md">
-            <Logo tone="hero" />
-            <p className="mt-4 text-sm leading-relaxed text-white/60">
-              Golf Sol Ireland exists for golfers who want the Costa del Sol done properly: better courses, smarter stays, and a smoother trip from first enquiry to final round.
-            </p>
-            <div className="mt-6">
-              <p className="text-xs uppercase tracking-[0.24em] text-white/35">Stay connected</p>
-              <div className="mt-4 flex flex-wrap gap-3">
-                {footerSocialLinks.map(({ label, href }) => {
-                  const Icon = footerSocialIconMap[label]
-
-                  return (
-                    <a
-                      key={label}
-                      aria-label={`Visit our ${label} page`}
-                      className="group inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#dc5801]/25 bg-white/5 text-[#dc5801] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#dc5801]/65 hover:bg-[#dc5801] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dc5801] focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
-                      href={href}
-                      rel="noreferrer"
-                      target="_blank"
-                    >
-                      <Icon className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" aria-hidden="true" />
-                    </a>
-                  )
-                })}
-              </div>
-            </div>
-          </div>
-
-          <div className="grid gap-8 sm:grid-cols-2 xl:grid-cols-4">
-            {footerGroups.map((group) => (
-              <div key={group.title}>
-                <p className="text-xs uppercase tracking-[0.24em] text-white/35">{group.title}</p>
-                <ul className="mt-4 space-y-2 text-sm text-white/65">
-                  {group.links.map((link) => (
-                    <li key={link} className="flex items-center gap-2">
-                      <ChevronRight className="h-4 w-4 text-gold-400" aria-hidden="true" />
-                      <span>{link}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mx-auto mt-8 flex max-w-7xl flex-col gap-3 border-t border-white/10 pt-5 text-xs text-white/42 md:flex-row md:items-center md:justify-between">
-          <p>Copyright {new Date().getFullYear()} Golf Sol Ireland. All rights reserved.</p>
-          <p>Golf travel planning for Irish groups heading to the Costa del Sol.</p>
-        </div>
-      </footer>
+      <SiteFooter
+        copyrightNote="Golf travel planning for Irish groups heading to the Costa del Sol."
+        footerRef={footerRef}
+        intro="Golf Sol Ireland exists for golfers who want the Costa del Sol done properly: better courses, smarter stays, and a smoother trip from first enquiry to final round."
+      />
     </div>
   )
 }

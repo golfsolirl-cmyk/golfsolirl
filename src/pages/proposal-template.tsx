@@ -12,6 +12,22 @@ function ProposalTemplatePage() {
   const [actionMessage, setActionMessage] = useState<string | null>(null)
   const proposalCardRef = useRef<HTMLDivElement | null>(null)
 
+  const isAdminProposal = useMemo(() => {
+    const path = window.location.pathname.replace(/\/+$/, '')
+    const params = new URLSearchParams(window.location.search)
+    const variant = params.get('variant')
+
+    if (path === '/proposal-template/admin' || path === '/package-proposal/admin') {
+      return true
+    }
+
+    if (variant === 'admin' || variant === 'internal') {
+      return true
+    }
+
+    return false
+  }, [])
+
   const proposalPayload = useMemo(() => {
     const searchParams = new URLSearchParams(window.location.search)
 
@@ -27,9 +43,10 @@ function ProposalTemplatePage() {
       remainingBalance: searchParams.get('remainingBalance') ?? '________________',
       groupSize: parseNumberParam(searchParams.get('groupSize'), 4),
       nights: parseNumberParam(searchParams.get('nights'), 4),
-      rounds: parseNumberParam(searchParams.get('rounds'), 3)
+      rounds: parseNumberParam(searchParams.get('rounds'), 3),
+      variant: isAdminProposal ? 'admin' : 'public'
     }
-  }, [])
+  }, [isAdminProposal])
 
   const documentTemplate = useMemo(
     () =>
@@ -45,7 +62,8 @@ function ProposalTemplatePage() {
         remainingBalance: proposalPayload.remainingBalance,
         groupSize: proposalPayload.groupSize,
         nights: proposalPayload.nights,
-        rounds: proposalPayload.rounds
+        rounds: proposalPayload.rounds,
+        variant: proposalPayload.variant
       }),
     [proposalPayload]
   )
@@ -212,11 +230,16 @@ function ProposalTemplatePage() {
             </button>
           </div>
 
-          {actionMessage ? (
-            <p aria-live="polite" className="text-sm text-forest-900/68">
-              {actionMessage}
-            </p>
-          ) : null}
+          <div className="flex flex-col items-end gap-2 text-right">
+            {isAdminProposal ? (
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-forest-900/45">Internal worksheet</p>
+            ) : null}
+            {actionMessage ? (
+              <p aria-live="polite" className="text-sm text-forest-900/68">
+                {actionMessage}
+              </p>
+            ) : null}
+          </div>
         </div>
       </div>
 
@@ -324,15 +347,17 @@ function ProposalTemplatePage() {
             </div>
           </section>
 
-          <section className="rounded-[1.8rem] border border-dashed border-gold-300/70 bg-gold-50/40 p-6">
-            <div className="flex items-start gap-3">
-              <BedDouble className="mt-1 h-5 w-5 shrink-0 text-gold-500" aria-hidden="true" />
-              <div>
-                <p className="text-sm font-semibold text-forest-900">{documentTemplate.messageBlock.title}</p>
-                <p className="mt-2 text-sm leading-relaxed text-forest-900/68">{documentTemplate.messageBlock.body}</p>
+          {documentTemplate.messageBlock ? (
+            <section className="rounded-[1.8rem] border border-dashed border-gold-300/70 bg-gold-50/40 p-6">
+              <div className="flex items-start gap-3">
+                <BedDouble className="mt-1 h-5 w-5 shrink-0 text-gold-500" aria-hidden="true" />
+                <div>
+                  <p className="text-sm font-semibold text-forest-900">{documentTemplate.messageBlock.title}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-forest-900/68">{documentTemplate.messageBlock.body}</p>
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          ) : null}
 
           <section className="rounded-[1.8rem] border border-[#dc5801]/25 bg-[linear-gradient(135deg,rgba(220,88,1,0.08),rgba(255,255,255,0.94))] p-6">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#dc5801]">{documentTemplate.disclaimer.title}</p>

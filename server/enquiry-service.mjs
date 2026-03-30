@@ -5,6 +5,8 @@ import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import { Resend } from 'resend'
 import sharp from 'sharp'
 import { createEnquiryReferenceId, formatDocumentDate } from '../shared/document-templates.mjs'
+import { gsolEmailBrand, logoBallContentId, shamrockInlineContentId, socialContentIds } from './email-constants.mjs'
+import { buildGsolTransactionalEmail, finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
 
 const pageWidth = 595.28
 const pageHeight = 841.89
@@ -33,21 +35,10 @@ const currentFilePath = fileURLToPath(import.meta.url)
 const currentDirectory = path.dirname(currentFilePath)
 const brandLockupAssetPath = path.resolve(currentDirectory, '../src/gsol-brand-lockup-exact.png')
 const logoSvgPath = path.resolve(currentDirectory, '../src/golf-sol-ireland-logo.svg')
-const landingEmailTemplatePath = path.resolve(currentDirectory, '../public/landing-email-template.html')
-
-const logoBallContentId = 'gsol-logo-ball'
-const shamrockInlineContentId = 'gsol-shamrock-inline'
-const socialContentIds = {
-  linkedin: 'gsol-social-linkedin',
-  facebook: 'gsol-social-facebook',
-  whatsapp: 'gsol-social-whatsapp',
-  bsky: 'gsol-social-bsky'
-}
 
 let brandLockupPngBufferPromise
 let emailLogoBallPngPromise
 let emailShamrockInlinePngPromise
-let landingEmailTemplateCache
 const socialPngPromises = {}
 
 const escapeHtml = (value) =>
@@ -106,13 +97,6 @@ const getSocialIconPng = (key, viewBox, pathD) => {
     socialPngPromises[key] = rasterizeFaIcon(viewBox, pathD)
   }
   return socialPngPromises[key]
-}
-
-const getLandingEmailTemplateRaw = () => {
-  if (!landingEmailTemplateCache) {
-    landingEmailTemplateCache = readFileSync(landingEmailTemplatePath, 'utf8')
-  }
-  return landingEmailTemplateCache
 }
 
 const wrapText = ({ text, font, fontSize, maxWidth }) => {
@@ -191,18 +175,69 @@ const termsSummaryParagraphs = [
   'By submitting the form you agree we may contact you by email, phone, or WhatsApp regarding your trip. You can ask us to stop at any time.'
 ]
 
-const samplePreheader =
-  'Website enquiry — Golf Sol Ireland. Sample from golfsolirl.com including phone and best time to call.'
+const buildEnquiryFieldRowsHtml = (rows) =>
+  rows
+    .map(
+      ([label, valueHtml], idx) => `
+                            <tr style="background-color:${idx % 2 === 1 ? '#f9fbf7' : '#ffffff'};">
+                              <td style="padding:12px 16px;font-family:'DM Sans',Arial,sans-serif;font-size:11px;font-weight:700;color:#6b7280;width:34%;vertical-align:top;border-bottom:1px solid #dfe7db;">${escapeHtml(label)}</td>
+                              <td style="padding:12px 16px;font-family:'DM Sans',Arial,sans-serif;font-size:14px;line-height:1.5;color:#374151;vertical-align:top;border-bottom:1px solid #dfe7db;">${valueHtml}</td>
+                            </tr>`
+    )
+    .join('')
 
-const sampleCustomerHeroTitle = 'Thanks — we received your Costa del Sol enquiry'
+const buildEnquiryBodyHtmlRow = (payload, telHref) => {
+  const { fullName, email, interest, phoneWhatsApp, bestTimeToCall, enquiryId, enquiryDate } = payload
+  const site = getGsolSiteUrl()
+  const phoneCell =
+    telHref && telHref !== '#'
+      ? `<a href="${escapeHtml(telHref)}" style="color:#163a13;font-weight:600;text-decoration:none;">${escapeHtml(phoneWhatsApp)}</a>`
+      : escapeHtml(phoneWhatsApp)
+  const emailCell = `<a href="mailto:${escapeHtml(email)}" style="color:#163a13;font-weight:600;text-decoration:none;">${escapeHtml(email)}</a>`
+  const rowsHtml = buildEnquiryFieldRowsHtml([
+    ['Full name', escapeHtml(fullName)],
+    ['Email', emailCell],
+    ['Phone / WhatsApp', phoneCell],
+    ['Best time to call', escapeHtml(bestTimeToCall)],
+    ['Enquiry ID', escapeHtml(enquiryId)],
+    ['Submitted', escapeHtml(enquiryDate)],
+    ['Trip interest', escapeHtml(interest)]
+  ])
+  const discHtml = disclaimerParagraphs
+    .map(
+      (p, i) =>
+        `<p style="margin:${i === disclaimerParagraphs.length - 1 ? '0' : '0 0 10px 0'};font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.65;color:#374151;">${escapeHtml(p)}</p>`
+    )
+    .join('')
+  const termsParasHtml = termsSummaryParagraphs
+    .map(
+      (p, i) =>
+        `<p style="margin:${i === termsSummaryParagraphs.length - 1 ? '0 0 12px 0' : '0 0 10px 0'};font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.65;color:#374151;">${escapeHtml(p)}</p>`
+    )
+    .join('')
+  const termsLink = `${site}/terms-and-conditions`
+  const termsFooter = `<p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:12px;line-height:1.6;color:#6b7280;"><a href="${escapeHtml(termsLink)}" style="color:#dc5801;font-weight:600;text-decoration:underline;">Read full terms and conditions</a></p>`
 
-const sampleCustomerHeroLead =
-  'Below is what you submitted from the get-in-touch form on golfsolirl.com. We’ll use your phone or WhatsApp and your preferred call window when we reach out.'
-
-const sampleCustomerHeroLeadAsciiApostrophe =
-  'Below is what you submitted from the get-in-touch form on golfsolirl.com. We\'ll use your phone or WhatsApp and your preferred call window when we reach out.'
-
-const sampleSidebarSource = 'Source: golfsolirl.com'
+  return `<tr>
+                  <td style="padding:32px 36px 40px 36px;background-color:#ffffff;" class="p-m">
+                    <p style="margin:0 0 16px 0;font-family:'DM Sans',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#dc5801;">Your submitted details</p>
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;border-collapse:collapse;border:1px solid #dfe7db;border-radius:8px;overflow:hidden;">
+                      <tbody>
+                        ${rowsHtml}
+                      </tbody>
+                    </table>
+                    <div style="margin-top:28px;padding:20px 22px;border:1px solid #dc5801;border-radius:12px;background-color:#fffdfb;">
+                      <p style="margin:0 0 12px 0;font-family:'DM Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#dc5801;">Important disclaimer</p>
+                      ${discHtml}
+                    </div>
+                    <div style="margin-top:24px;padding:20px 22px;border:1px solid #163a13;border-radius:12px;background-color:#f7f9f5;">
+                      <p style="margin:0 0 12px 0;font-family:'DM Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#163a13;">Terms summary</p>
+                      ${termsParasHtml}
+                      ${termsFooter}
+                    </div>
+                  </td>
+                </tr>`
+}
 
 const iconPaths = {
   linkedin: {
@@ -221,61 +256,6 @@ const iconPaths = {
     vb: '0 0 512 512',
     d: 'M111.8 62.2C170.2 105.9 233 194.7 256 242.4c23-47.6 85.8-136.4 144.2-180.2c42.1-31.6 110.3-56 110.3 21.8c0 15.5-8.9 130.5-14.1 149.2C478.2 298 412 314.6 353.1 304.5c102.9 17.5 129.1 75.5 72.5 133.5c-107.4 110.2-154.3-27.6-166.3-62.9l0 0c-1.7-4.9-2.6-7.8-3.3-7.8s-1.6 3-3.3 7.8l0 0c-12 35.3-59 173.1-166.3 62.9c-56.5-58-30.4-116 72.5-133.5C100 314.6 33.8 298 15.7 233.1C10.4 214.4 1.5 99.4 1.5 83.9c0-77.8 68.2-53.4 110.3-21.8z'
   }
-}
-
-const buildEmailSocialRowWithCidImages = () => {
-  const cell = (href, label, cid) => `
-                              <td style="padding:0 12px 0 0;vertical-align:middle;">
-                                <a href="${href}" aria-label="${label}" style="display:block;text-decoration:none;">
-                                  <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:48px;height:48px;border-collapse:collapse;border-radius:50%;background-color:rgba(255,255,255,0.08);border:1px solid rgba(220,88,1,0.45);">
-                                    <tr>
-                                      <td align="center" valign="middle" style="width:48px;height:48px;padding:0;line-height:0;">
-                                        <img src="cid:${cid}" width="24" height="24" alt="" style="display:block;border:0;outline:none;margin:0 auto;" />
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </a>
-                              </td>`
-
-  return `
-                          <p style="margin:24px 0 14px 0;font-family:'DM Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.24em;text-transform:uppercase;color:rgba(255,255,255,0.45);">Stay connected</p>
-                          <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
-                            <tr>
-${cell('https://www.linkedin.com/', 'LinkedIn', socialContentIds.linkedin)}
-${cell('https://www.facebook.com/', 'Facebook', socialContentIds.facebook)}
-${cell('https://www.whatsapp.com/', 'WhatsApp', socialContentIds.whatsapp)}
-                              <td style="padding:0;vertical-align:middle;">
-                                <a href="https://bsky.app/" aria-label="Bluesky" style="display:block;text-decoration:none;">
-                                  <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:48px;height:48px;border-collapse:collapse;border-radius:50%;background-color:rgba(255,255,255,0.08);border:1px solid rgba(220,88,1,0.45);">
-                                    <tr>
-                                      <td align="center" valign="middle" style="width:48px;height:48px;padding:0;line-height:0;">
-                                        <img src="cid:${socialContentIds.bsky}" width="24" height="24" alt="" style="display:block;border:0;outline:none;margin:0 auto;" />
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </a>
-                              </td>
-                            </tr>
-                          </table>`
-}
-
-const shamrockHeroSvgPattern =
-  /<svg class="logo-shamrock-email"[^>]*>[\s\S]*?<\/svg>/
-
-const shamrockFooterSvgPattern =
-  /<svg width="24" height="24" viewBox="0 0 24 24"[^>]*>[\s\S]*?<\/svg>/
-
-const prepareLandingEmailHtmlForSend = (html) => {
-  const socialBlock = buildEmailSocialRowWithCidImages()
-  const shamrockHeroImg = `<img src="cid:${shamrockInlineContentId}" width="32" height="32" alt="" aria-hidden="true" style="display:block;width:32px;height:32px;border:0;" />`
-  const shamrockFootImg = `<img src="cid:${shamrockInlineContentId}" width="24" height="24" alt="" aria-hidden="true" style="display:block;width:24px;height:24px;border:0;" />`
-
-  return html
-    .replace(/<!--\s*GSOL-SOCIAL-ICONS\s*-->[\s\S]*?<!--\s*\/GSOL-SOCIAL-ICONS\s*-->/, socialBlock)
-    .replace(shamrockHeroSvgPattern, shamrockHeroImg)
-    .replace(shamrockFooterSvgPattern, shamrockFootImg)
-    .replaceAll('src="/golf-sol-ireland-logo.svg"', `src="cid:${logoBallContentId}"`)
-    .replaceAll('href="/terms-and-conditions"', 'href="https://golfsolirl.com/terms-and-conditions"')
 }
 
 export const validateEnquiryPayload = (payload) => {
@@ -404,7 +384,7 @@ export const createEnquiryPdf = async ({
     size: 9,
     color: colors.white
   })
-  page.drawText(sampleSidebarSource, {
+  page.drawText('Source: golfsolirl.com', {
     x: metaX + metaPad,
     y: innerTop - 76,
     font: regularFont,
@@ -658,7 +638,7 @@ export const createEnquiryPdf = async ({
   fy -= 14
   const fyLeft = drawTextBlock({
     page: footerPage,
-    text: '8 Richmond Road\nDrumcondra, Dublin 3\nD03C434',
+    text: `${gsolEmailBrand.addressLines[0]}\n${gsolEmailBrand.addressLines[1]}\n${gsolEmailBrand.eircode}`,
     x: col1X,
     y: fy,
     font: regularFont,
@@ -711,47 +691,49 @@ export const createEnquiryPdf = async ({
   return pdfDocument.save()
 }
 
-const buildEnquiryLandingEmailHtml = (payload, variant) => {
-  let html = getLandingEmailTemplateRaw()
+const buildEnquiryTransactionalEmailHtml = (payload, variant) => {
   const { fullName, email, interest, phoneWhatsApp, bestTimeToCall, enquiryId, enquiryDate } = payload
   const telDigits = phoneWhatsApp.replace(/[^\d+]/g, '')
   const telHref = telDigits ? `tel:${telDigits}` : '#'
+  const isAdmin = variant === 'admin'
 
   const customerPreheader = `We received your Costa del Sol enquiry (${enquiryId}). Golf Sol Ireland will use your phone, WhatsApp, and preferred call window.`
   const adminPreheader = `New website enquiry ${enquiryId} from ${fullName}. Submitted via golfsolirl.com.`
 
-  if (variant === 'admin') {
-    html = html.replace(sampleCustomerHeroTitle, escapeHtml(`New enquiry — ${fullName}`))
-    const adminLead = `Internal copy: lead submitted via golfsolirl.com get-in-touch form. Reply to this email reaches the customer at ${email}.`
-    html = html.replace(sampleCustomerHeroLead, escapeHtml(adminLead))
-    html = html.replace(sampleCustomerHeroLeadAsciiApostrophe, escapeHtml(adminLead))
-    html = html.replace(sampleSidebarSource, 'Source: Website form (internal notify)')
-  }
+  const documentTitle = isAdmin
+    ? `New enquiry ${enquiryId} — Golf Sol Ireland`
+    : `Your enquiry ${enquiryId} — Golf Sol Ireland`
+  const preheader = escapeHtml(isAdmin ? adminPreheader : customerPreheader)
+  const heroKicker = escapeHtml(isAdmin ? 'Internal' : 'Website enquiry')
+  const heroTitle = escapeHtml(
+    isAdmin ? `New enquiry — ${fullName}` : 'Thanks — we received your Costa del Sol enquiry'
+  )
+  const heroLead = escapeHtml(
+    isAdmin
+      ? `Internal copy: lead submitted via golfsolirl.com get-in-touch form. Reply to this email reaches the customer at ${email}.`
+      : 'Below is what you submitted from the get-in-touch form on golfsolirl.com. We will use your phone or WhatsApp and your preferred call window when we reach out.'
+  )
+  const sourceLine = isAdmin ? 'Source: Website form (internal)' : 'Source: golfsolirl.com'
+  const heroMetaHtml = `
+                                      <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.88);"><strong style="font-weight:700;">Enquiry ID:</strong> ${escapeHtml(enquiryId)}</p>
+                                      <p style="margin:8px 0 0 0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.82);"><strong style="font-weight:700;">Submitted:</strong> ${escapeHtml(enquiryDate)}</p>
+                                      <p style="margin:8px 0 0 0;font-family:'DM Sans',Arial,sans-serif;font-size:12px;line-height:1.5;color:rgba(255,255,255,0.68);">${escapeHtml(sourceLine)}</p>`
 
-  html = html.replace(samplePreheader, escapeHtml(variant === 'customer' ? customerPreheader : adminPreheader))
+  const raw = buildGsolTransactionalEmail({
+    documentTitle: escapeHtml(documentTitle),
+    preheader,
+    heroKicker,
+    heroTitle,
+    heroLead,
+    heroMetaHtml,
+    bodyHtml: buildEnquiryBodyHtmlRow(payload, telHref)
+  })
 
-  const replacements = [
-    ['mailto:jordan.kelly@example.com', `mailto:${email}`],
-    ['Jordan Kelly', escapeHtml(fullName)],
-    ['jordan.kelly@example.com', escapeHtml(email)],
-    ['+353 87 000 0000', escapeHtml(phoneWhatsApp)],
-    ['tel:+353870000000', escapeHtml(telHref)],
-    ['Weekday mornings (9:00–12:00)', escapeHtml(bestTimeToCall)],
-    ['GSI-L4ND-9206', escapeHtml(enquiryId)],
-    ['29 Mar 2026', escapeHtml(enquiryDate)],
-    ['5-star week in Marbella for 8 golfers, April 2026', escapeHtml(interest)],
-    ['© 2026 Golf Sol Ireland', `© ${new Date().getFullYear()} Golf Sol Ireland`]
-  ]
-
-  for (const [from, to] of replacements) {
-    html = html.split(from).join(to)
-  }
-
-  return prepareLandingEmailHtmlForSend(html)
+  return finalizeGsolEmailHtml(raw)
 }
 
-const buildCustomerHtml = (payload) => buildEnquiryLandingEmailHtml(payload, 'customer')
-const buildOwnerHtml = (payload) => buildEnquiryLandingEmailHtml(payload, 'admin')
+const buildCustomerHtml = (payload) => buildEnquiryTransactionalEmailHtml(payload, 'customer')
+const buildOwnerHtml = (payload) => buildEnquiryTransactionalEmailHtml(payload, 'admin')
 
 const attachmentFromBuffer = (filename, buffer, contentType, contentId) => ({
   filename,
@@ -759,6 +741,57 @@ const attachmentFromBuffer = (filename, buffer, contentType, contentId) => ({
   contentType,
   contentId
 })
+
+/** CID image attachments for branded transactional mail (enquiry, magic link, etc.). */
+export const getTransactionalEmailImageAttachments = async () => {
+  const [logoBallBuf, shamrockBuf, li, fb, wa, bk] = await Promise.all([
+    getEmailLogoBallPngBuffer(),
+    getEmailShamrockInlinePngBuffer(),
+    getSocialIconPng('linkedin', iconPaths.linkedin.vb, iconPaths.linkedin.d),
+    getSocialIconPng('facebook', iconPaths.facebook.vb, iconPaths.facebook.d),
+    getSocialIconPng('whatsapp', iconPaths.whatsapp.vb, iconPaths.whatsapp.d),
+    getSocialIconPng('bsky', iconPaths.bsky.vb, iconPaths.bsky.d)
+  ])
+
+  return [
+    attachmentFromBuffer('golf-sol-logo-ball.png', logoBallBuf, 'image/png', logoBallContentId),
+    attachmentFromBuffer('golf-sol-shamrock.png', shamrockBuf, 'image/png', shamrockInlineContentId),
+    attachmentFromBuffer('social-linkedin.png', li, 'image/png', socialContentIds.linkedin),
+    attachmentFromBuffer('social-facebook.png', fb, 'image/png', socialContentIds.facebook),
+    attachmentFromBuffer('social-whatsapp.png', wa, 'image/png', socialContentIds.whatsapp),
+    attachmentFromBuffer('social-bluesky.png', bk, 'image/png', socialContentIds.bsky)
+  ]
+}
+
+const recordEnquiryToSupabase = async (enquiry, enquiryId, env) => {
+  const url = typeof env.SUPABASE_URL === 'string' ? env.SUPABASE_URL.trim() : ''
+  const key = typeof env.SUPABASE_SERVICE_ROLE_KEY === 'string' ? env.SUPABASE_SERVICE_ROLE_KEY.trim() : ''
+
+  if (!url || !key) {
+    return
+  }
+
+  try {
+    const { createClient } = await import('@supabase/supabase-js')
+    const sb = createClient(url, key, {
+      auth: { persistSession: false, autoRefreshToken: false }
+    })
+    const { error } = await sb.from('enquiries').insert({
+      reference_id: enquiryId,
+      email: enquiry.email,
+      full_name: enquiry.fullName,
+      interest: enquiry.interest,
+      phone_whatsapp: enquiry.phoneWhatsApp,
+      best_time_to_call: enquiry.bestTimeToCall
+    })
+
+    if (error) {
+      console.error('[enquiry-service] Supabase enquiries insert failed:', error.message)
+    }
+  } catch (err) {
+    console.error('[enquiry-service] Supabase enquiries insert error:', err)
+  }
+}
 
 export const handleEnquirySubmission = async (payload, env = process.env) => {
   const enquiry = validateEnquiryPayload(payload)
@@ -775,23 +808,7 @@ export const handleEnquirySubmission = async (payload, env = process.env) => {
   }
 
   const resend = new Resend(resendApiKey)
-  const [logoBallBuf, shamrockBuf, li, fb, wa, bk] = await Promise.all([
-    getEmailLogoBallPngBuffer(),
-    getEmailShamrockInlinePngBuffer(),
-    getSocialIconPng('linkedin', iconPaths.linkedin.vb, iconPaths.linkedin.d),
-    getSocialIconPng('facebook', iconPaths.facebook.vb, iconPaths.facebook.d),
-    getSocialIconPng('whatsapp', iconPaths.whatsapp.vb, iconPaths.whatsapp.d),
-    getSocialIconPng('bsky', iconPaths.bsky.vb, iconPaths.bsky.d)
-  ])
-
-  const imageAttachments = [
-    attachmentFromBuffer('golf-sol-logo-ball.png', logoBallBuf, 'image/png', logoBallContentId),
-    attachmentFromBuffer('golf-sol-shamrock.png', shamrockBuf, 'image/png', shamrockInlineContentId),
-    attachmentFromBuffer('social-linkedin.png', li, 'image/png', socialContentIds.linkedin),
-    attachmentFromBuffer('social-facebook.png', fb, 'image/png', socialContentIds.facebook),
-    attachmentFromBuffer('social-whatsapp.png', wa, 'image/png', socialContentIds.whatsapp),
-    attachmentFromBuffer('social-bluesky.png', bk, 'image/png', socialContentIds.bsky)
-  ]
+  const imageAttachments = await getTransactionalEmailImageAttachments()
 
   const pdfBytes = await createEnquiryPdf({ ...enquiry, enquiryId, enquiryDate })
   const pdfAttachment = {
@@ -819,6 +836,8 @@ export const handleEnquirySubmission = async (payload, env = process.env) => {
       attachments: allAttachments
     })
   ])
+
+  await recordEnquiryToSupabase(enquiry, enquiryId, env)
 
   return {
     success: true,

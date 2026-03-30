@@ -46,6 +46,22 @@ export const parseNumberParam = (value, fallback) => {
   return numericValue
 }
 
+const resolveProposalVariant = (payload = {}) => {
+  const raw = payload.variant ?? payload.proposalVariant
+
+  if (typeof raw !== 'string') {
+    return 'public'
+  }
+
+  const normalized = raw.trim().toLowerCase()
+
+  if (normalized === 'admin' || normalized === 'internal') {
+    return 'admin'
+  }
+
+  return 'public'
+}
+
 export const normalizeProposalPayload = (payload = {}) => {
   const groupSize = sanitizeNumber(payload.groupSize, 4)
   const nights = sanitizeNumber(payload.nights, 4)
@@ -78,17 +94,31 @@ export const normalizeEnquiryPayload = (payload = {}) => ({
 })
 
 export const buildProposalDocument = (rawPayload = {}) => {
+  const variant = resolveProposalVariant(rawPayload)
   const proposal = normalizeProposalPayload(rawPayload)
+
+  const heroPublic = {
+    kicker: 'Costa del Sol Proposal',
+    title: 'Your Costa del Sol golf proposal',
+    description:
+      'Everything in one place: how we have shaped your trip, what is included, indicative pricing, and practical next steps — prepared by Golf Sol Ireland for your group.'
+  }
+
+  const heroAdmin = {
+    kicker: 'Costa del Sol Proposal',
+    title: 'Premium trip proposal ready to tailor, confirm, and send',
+    description:
+      'A branded Golf Sol Ireland proposal document designed to turn a selected package into a cleaner, more professional client-facing trip outline.'
+  }
+
+  const clientMessageBody =
+    'Hi ________________________, attached is your Golf Sol Ireland proposal for the Costa del Sol trip. Have a look through the package outline, pricing, and notes, and let us know what you would like adjusted.'
+
+  const metaCard = [`Proposal ID: ${proposal.proposalId}`, `Prepared date: ${proposal.proposalDate}`]
 
   return {
     meta: proposal,
-    hero: {
-      kicker: 'Costa del Sol Proposal',
-      title: 'Premium trip proposal ready to tailor, confirm, and send',
-      description:
-        'A branded Golf Sol Ireland proposal document designed to turn a selected package into a cleaner, more professional client-facing trip outline.',
-      metaCard: [`Proposal ID: ${proposal.proposalId}`, `Prepared date: ${proposal.proposalDate}`]
-    },
+    hero: { ...(variant === 'admin' ? heroAdmin : heroPublic), metaCard },
     infoCards: [
       {
         icon: 'users',
@@ -173,11 +203,13 @@ export const buildProposalDocument = (rawPayload = {}) => {
         signoffLines: ['Prepared by', 'Approved by', 'Date sent to client']
       }
     },
-    messageBlock: {
-      title: 'Client message block',
-      body:
-        'Hi ________________________, attached is your Golf Sol Ireland proposal for the Costa del Sol trip. Have a look through the package outline, pricing, and notes, and let us know what you would like adjusted.'
-    },
+    messageBlock:
+      variant === 'admin'
+        ? {
+            title: 'Client message block',
+            body: clientMessageBody
+          }
+        : null,
     disclaimer: {
       title: 'Important disclaimer',
       paragraphs: [

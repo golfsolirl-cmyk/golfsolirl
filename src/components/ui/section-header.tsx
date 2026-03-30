@@ -47,7 +47,15 @@ export function AnimatedStepKicker({
 
   if (!stepNumber) {
     return (
-      <p className={cx('mb-3 font-accent text-base italic tracking-wide', dark ? 'text-fairway-400' : 'text-fairway-600', className)}>
+      <p
+        className={cx(
+          'mb-3 font-accent text-base italic tracking-wide',
+          dark
+            ? 'text-gold-200 drop-shadow-[0_2px_16px_rgba(8,27,8,0.65)]'
+            : 'text-fairway-600',
+          className
+        )}
+      >
         {label}
       </p>
     )

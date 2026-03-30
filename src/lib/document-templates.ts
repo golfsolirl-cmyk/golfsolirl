@@ -48,7 +48,7 @@ export interface DocumentTemplate {
   readonly messageBlock: {
     readonly title: string
     readonly body: string
-  }
+  } | null
   readonly disclaimer: {
     readonly title: string
     readonly paragraphs: readonly string[]

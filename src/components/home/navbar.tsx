@@ -3,7 +3,10 @@ import { Menu, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LuxuryButton } from '../ui/button'
 import { Logo } from '../ui/logo'
+import { integrationRegistry } from '../../config/integrations'
+import { isFooterArticlePath } from '../../data/footer-article-pages'
 import { cx } from '../../lib/utils'
+import { useAuth } from '../../providers/auth-provider'
 
 interface NavbarProps {
   readonly links: readonly string[]
@@ -11,13 +14,19 @@ interface NavbarProps {
 }
 
 export function Navbar({ links, primaryCta }: NavbarProps) {
+  const { session, profile, isLoading: authLoading } = useAuth()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const showAuthNav = integrationRegistry.supabase.enabled
+  const dashboardHref = profile?.role === 'admin' ? '/dashboard/admin' : '/dashboard'
   const normalizedPath = window.location.pathname === '/' ? '/' : window.location.pathname.replace(/\/+$/, '')
+  const isHome = normalizedPath === '/'
   const isPublicPackagePage = normalizedPath === '/packages' || normalizedPath === '/package'
   const isAdminPackagePage = normalizedPath === '/packages-admin' || normalizedPath === '/package-admin'
   const isPackagesRoute = isPublicPackagePage || isAdminPackagePage
-  const homeHref = isPackagesRoute ? '/' : '#home'
+  const isArticlePage = isFooterArticlePath(normalizedPath)
+  const homeHref = isPackagesRoute || isArticlePage ? '/' : isHome ? '#home' : '/'
+  const navHrefForLink = (link: string) => (isHome ? `#${link.toLowerCase()}` : `/#${link.toLowerCase()}`)
   const packagesHref = isPublicPackagePage ? '#packages' : '/packages'
   const primaryHref = isPackagesRoute ? '#plan-trip' : '/packages'
 
@@ -88,7 +97,7 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
               <a
                 key={link}
                 className="text-sm tracking-wide text-white/80 transition-colors hover:text-gold-400"
-                href={`#${link.toLowerCase()}`}
+                href={navHrefForLink(link)}
               >
                 {link}
               </a>
@@ -96,6 +105,17 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
           </nav>
 
           <div className="hidden items-center gap-3 md:flex">
+            {showAuthNav && !authLoading ? (
+              session ? (
+                <LuxuryButton className="!px-5 !py-2.5 !text-xs" href={dashboardHref} variant="outline">
+                  Dashboard
+                </LuxuryButton>
+              ) : (
+                <LuxuryButton className="!px-5 !py-2.5 !text-xs" href="/login" variant="outline">
+                  Sign in
+                </LuxuryButton>
+              )
+            ) : null}
             <LuxuryButton href={packagesHref} variant="outline">
               View Packages
             </LuxuryButton>
@@ -126,12 +146,23 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
                 <a
                   key={link}
                   className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white/80 transition-colors hover:border-gold-400/40 hover:text-gold-400"
-                  href={`#${link.toLowerCase()}`}
+                  href={navHrefForLink(link)}
                   onClick={handleCloseMenu}
                 >
                   {link}
                 </a>
               ))}
+              {showAuthNav && !authLoading ? (
+                session ? (
+                  <LuxuryButton className="w-full justify-center !py-3" href={dashboardHref} onClick={handleCloseMenu} variant="outline">
+                    Dashboard
+                  </LuxuryButton>
+                ) : (
+                  <LuxuryButton className="w-full justify-center !py-3" href="/login" onClick={handleCloseMenu} variant="outline">
+                    Sign in
+                  </LuxuryButton>
+                )
+              ) : null}
               <LuxuryButton href={primaryHref} onClick={handleCloseMenu}>
                 {primaryCta}
               </LuxuryButton>

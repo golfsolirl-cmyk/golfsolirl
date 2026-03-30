@@ -1,12 +1,19 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
+import { AuthProvider } from './providers/auth-provider'
 import { LogoPreviewPage } from './pages/logo-preview'
 import { CustomerPackagePage } from './pages/customer-packages'
 import { PackageAdminPage } from './pages/packages'
 import { EnquiryPdfTemplatePage } from './pages/enquiry-pdf-template'
 import { ProposalTemplatePage } from './pages/proposal-template'
 import { LogoCapturePage } from './pages/logo-capture'
+import { FooterArticlePage } from './pages/footer-article-page'
+import { LoginPage } from './pages/login-page'
+import { AuthCallbackPage } from './pages/auth-callback-page'
+import { ClientDashboardPage } from './pages/client-dashboard-page'
+import { AdminDashboardPage } from './pages/admin-dashboard-page'
+import { isFooterArticlePath } from './data/footer-article-pages'
 import './index.css'
 
 function resolvePage() {
@@ -14,6 +21,22 @@ function resolvePage() {
 
   if (normalizedPath === '/logo-preview') {
     return LogoPreviewPage
+  }
+
+  if (normalizedPath === '/login') {
+    return LoginPage
+  }
+
+  if (normalizedPath === '/auth/callback') {
+    return AuthCallbackPage
+  }
+
+  if (normalizedPath === '/dashboard') {
+    return ClientDashboardPage
+  }
+
+  if (normalizedPath === '/dashboard/admin') {
+    return AdminDashboardPage
   }
 
   if (normalizedPath === '/packages' || normalizedPath === '/package') {
@@ -24,7 +47,12 @@ function resolvePage() {
     return PackageAdminPage
   }
 
-  if (normalizedPath === '/proposal-template' || normalizedPath === '/package-proposal') {
+  if (
+    normalizedPath === '/proposal-template' ||
+    normalizedPath === '/package-proposal' ||
+    normalizedPath === '/proposal-template/admin' ||
+    normalizedPath === '/package-proposal/admin'
+  ) {
     return ProposalTemplatePage
   }
 
@@ -36,6 +64,10 @@ function resolvePage() {
     return EnquiryPdfTemplatePage
   }
 
+  if (isFooterArticlePath(normalizedPath)) {
+    return FooterArticlePage
+  }
+
   return App
 }
 
@@ -43,6 +75,8 @@ const ActivePage = resolvePage()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ActivePage />
+    <AuthProvider>
+      <ActivePage />
+    </AuthProvider>
   </React.StrictMode>
 )

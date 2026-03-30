@@ -143,15 +143,17 @@ function EnquiryPdfTemplatePage() {
             </div>
           </section>
 
-          <section className="rounded-[1.8rem] border border-dashed border-gold-300/70 bg-gold-50/40 p-6">
-            <div className="flex items-start gap-3">
-              <BedDouble className="mt-1 h-5 w-5 shrink-0 text-gold-500" aria-hidden="true" />
-              <div>
-                <p className="text-sm font-semibold text-forest-900">{documentTemplate.messageBlock.title}</p>
-                <p className="mt-2 text-sm leading-relaxed text-forest-900/68">{documentTemplate.messageBlock.body}</p>
+          {documentTemplate.messageBlock ? (
+            <section className="rounded-[1.8rem] border border-dashed border-gold-300/70 bg-gold-50/40 p-6">
+              <div className="flex items-start gap-3">
+                <BedDouble className="mt-1 h-5 w-5 shrink-0 text-gold-500" aria-hidden="true" />
+                <div>
+                  <p className="text-sm font-semibold text-forest-900">{documentTemplate.messageBlock.title}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-forest-900/68">{documentTemplate.messageBlock.body}</p>
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          ) : null}
 
           <section className="rounded-[1.8rem] border border-[#dc5801]/25 bg-[linear-gradient(135deg,rgba(220,88,1,0.08),rgba(255,255,255,0.94))] p-6">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#dc5801]">{documentTemplate.disclaimer.title}</p>

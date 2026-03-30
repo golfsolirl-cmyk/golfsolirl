@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { handleEnquirySubmission } from './server/enquiry-service.mjs'
+import { handleMagicLinkRequest } from './server/magic-link-service.mjs'
 import { createProposalFilename, createProposalPdf } from './server/proposal-service.mjs'
 
 const readRequestBody = (request: NodeJS.ReadableStream) =>
@@ -17,6 +18,15 @@ const readRequestBody = (request: NodeJS.ReadableStream) =>
 
     request.on('error', reject)
   })
+
+const getClientIp = (request: import('http').IncomingMessage) => {
+  const forwarded = request.headers['x-forwarded-for']
+  if (typeof forwarded === 'string' && forwarded.trim() !== '') {
+    return forwarded.split(',')[0]?.trim() ?? ''
+  }
+
+  return request.socket?.remoteAddress ?? 'unknown'
+}
 
 const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
   name: 'dev-enquiry-api',
@@ -42,6 +52,37 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
         response.end(JSON.stringify(result))
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Unable to send enquiry right now.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/auth/magic-link', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const rawBody = await readRequestBody(request)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const result = await handleMagicLinkRequest(payload, { ...process.env, ...serverEnv }, {
+          clientIp: getClientIp(request)
+        })
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unable to send sign-in email right now.'
         const statusCode =
           error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
             ? error.statusCode

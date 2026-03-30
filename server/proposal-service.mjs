@@ -530,41 +530,48 @@ export const createProposalPdf = async (rawPayload = {}) => {
 
   const lowerBlockBottom = lowerCardsTopY - Math.max(lowerLeftH, lowerRightH)
   const sectionGap = 18
-  const messageCardH = 56
-  const messageTopY = lowerBlockBottom - sectionGap - messageCardH
-
-  drawCard({
-    page: page2,
-    x: 44,
-    topY: messageTopY,
-    width: pageWidth - 88,
-    height: messageCardH,
-    fillColor: colors.cream,
-    borderColor: colors.gold300
-  })
-
-  page2.drawText(documentTemplate.messageBlock.title, {
-    x: 58,
-    y: messageTopY - 18,
-    font: boldFont,
-    size: 10,
-    color: colors.forest900
-  })
-
-  drawTextBlock({
-    page: page2,
-    text: documentTemplate.messageBlock.body,
-    x: 58,
-    y: messageTopY - 34,
-    font: regularFont,
-    fontSize: 9,
-    color: colors.slate700,
-    maxWidth: pageWidth - 116,
-    lineHeight: 11
-  })
-
   const disclaimerCardH = 86
-  const disclaimerTopY = messageTopY - sectionGap - disclaimerCardH
+
+  let disclaimerAnchorTopY = lowerBlockBottom
+
+  if (documentTemplate.messageBlock) {
+    const messageCardH = 56
+    const messageTopY = lowerBlockBottom - sectionGap - messageCardH
+
+    disclaimerAnchorTopY = messageTopY
+
+    drawCard({
+      page: page2,
+      x: 44,
+      topY: messageTopY,
+      width: pageWidth - 88,
+      height: messageCardH,
+      fillColor: colors.cream,
+      borderColor: colors.gold300
+    })
+
+    page2.drawText(documentTemplate.messageBlock.title, {
+      x: 58,
+      y: messageTopY - 18,
+      font: boldFont,
+      size: 10,
+      color: colors.forest900
+    })
+
+    drawTextBlock({
+      page: page2,
+      text: documentTemplate.messageBlock.body,
+      x: 58,
+      y: messageTopY - 34,
+      font: regularFont,
+      fontSize: 9,
+      color: colors.slate700,
+      maxWidth: pageWidth - 116,
+      lineHeight: 11
+    })
+  }
+
+  const disclaimerTopY = disclaimerAnchorTopY - sectionGap - disclaimerCardH
 
   drawCard({
     page: page2,

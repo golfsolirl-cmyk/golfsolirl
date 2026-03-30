@@ -82,15 +82,38 @@ export interface IrishDepartureRoute {
   readonly note: string
 }
 
+export interface FooterLinkItem {
+  readonly label: string
+  readonly href: string
+}
+
 export interface FooterLinkGroup {
   readonly title: string
-  readonly links: readonly string[]
+  readonly links: readonly FooterLinkItem[]
 }
 
 export interface FooterSocialLink {
   readonly label: 'LinkedIn' | 'Facebook' | 'WhatsApp' | 'Bluesky'
   readonly href: string
 }
+
+export interface CompanyContact {
+  readonly addressLines: readonly string[]
+  readonly eircode: string
+  readonly phoneDisplay: string
+  readonly phoneTel: string
+  readonly whatsappHref: string
+  readonly mapsQuery: string
+}
+
+export const companyContact = {
+  addressLines: ['6 Richmond Road', 'Drumcondra', 'Dublin 3'],
+  eircode: 'D03 C434',
+  phoneDisplay: '087 446 4766',
+  phoneTel: '+353874464766',
+  whatsappHref: 'https://wa.me/353874464766',
+  mapsQuery: '6 Richmond Road, Drumcondra, Dublin 3, D03 C434, Ireland'
+} as const satisfies CompanyContact
 
 export const navLinks = [
   'Packages',
@@ -322,19 +345,39 @@ export const trustMarkers = [
 export const footerGroups: readonly FooterLinkGroup[] = [
   {
     title: 'Explore',
-    links: ['Golf packages', 'Featured courses', 'Accommodation tiers', 'Airport transfers']
+    links: [
+      { label: 'Golf packages', href: '/golf-packages' },
+      { label: 'Featured courses', href: '/featured-courses' },
+      { label: 'Accommodation tiers', href: '/accommodation-tiers' },
+      { label: 'Airport transfers', href: '/airport-transfers' }
+    ]
   },
   {
     title: 'Plan your trip',
-    links: ['Tailored itinerary', 'Course shortlist', 'Hotel matching', 'Group preferences']
+    links: [
+      { label: 'Tailored itinerary', href: '/tailored-itinerary' },
+      { label: 'Course shortlist', href: '/course-shortlist' },
+      { label: 'Hotel matching', href: '/hotel-matching' },
+      { label: 'Group preferences', href: '/group-preferences' }
+    ]
   },
   {
     title: 'Travel support',
-    links: ['Irish group planning', 'Costa del Sol routing', 'Transfer coordination', 'Booking follow-up']
+    links: [
+      { label: 'Irish group planning', href: '/irish-group-planning' },
+      { label: 'Costa del Sol routing', href: '/costa-del-sol-routing' },
+      { label: 'Transfer coordination', href: '/transfer-coordination' },
+      { label: 'Booking follow-up', href: '/booking-follow-up' }
+    ]
   },
   {
     title: 'Booking details',
-    links: ['20% deposit upfront', 'Final balance terms', 'No-obligation enquiry', 'T&Cs apply']
+    links: [
+      { label: '20% deposit upfront', href: '/deposit-upfront' },
+      { label: 'Final balance terms', href: '/final-balance-terms' },
+      { label: 'No-obligation enquiry', href: '/no-obligation-enquiry' },
+      { label: 'T&Cs apply', href: '/terms-and-conditions' }
+    ]
   }
 ] as const
 
@@ -349,7 +392,7 @@ export const footerSocialLinks: readonly FooterSocialLink[] = [
   },
   {
     label: 'WhatsApp',
-    href: 'https://www.whatsapp.com/'
+    href: companyContact.whatsappHref
   },
   {
     label: 'Bluesky',

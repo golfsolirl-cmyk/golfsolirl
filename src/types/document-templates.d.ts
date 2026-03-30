@@ -46,7 +46,7 @@ declare module '../../shared/document-templates.mjs' {
     readonly messageBlock: {
       readonly title: string
       readonly body: string
-    }
+    } | null
     readonly disclaimer: {
       readonly title: string
       readonly paragraphs: readonly string[]
