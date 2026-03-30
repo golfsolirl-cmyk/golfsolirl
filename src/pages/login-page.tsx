@@ -158,7 +158,7 @@ export function LoginPage() {
           <h1 className="font-display mt-6 text-3xl font-bold tracking-tight text-white md:text-[2.35rem] md:leading-tight">
             Sign in
           </h1>
-          <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/88 md:text-base">
+          <p className="mt-4 max-w-xl text-sm leading-relaxed text-white md:text-base">
             We&apos;ll email you a secure magic link — the same premium Golf Sol Ireland experience as the rest of the
             site. No password to remember.
           </p>
