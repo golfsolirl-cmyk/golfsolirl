@@ -282,7 +282,7 @@ function App() {
               </motion.p>
 
               <motion.p
-                className="mt-6 max-w-lg text-base leading-relaxed text-white/65 md:text-lg"
+                className="mt-6 max-w-lg text-lg leading-8 text-white/72 md:text-lg"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.44, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -334,9 +334,9 @@ function App() {
                 />
               </div>
               <div className="mt-5">
-                <p className="text-sm uppercase tracking-[0.28em] text-white/45 md:text-xs">Signature route</p>
+                <p className="text-sm font-medium uppercase tracking-[0.28em] text-white/52 md:text-xs">Signature route</p>
                 <h2 className="mt-2 font-display text-3xl font-bold text-white">Marbella to Sotogrande</h2>
-                <p className="mt-3 text-base leading-relaxed text-white/65 md:text-sm">
+                <p className="mt-3 text-base leading-8 text-white/72 md:text-sm">
                   Championship golf, polished stays, and transfer rhythm designed for Irish golfers who want the trip to feel effortless.
                 </p>
                 <motion.p
@@ -356,13 +356,13 @@ function App() {
               </div>
               <div className="mt-5 space-y-3">
                 {heroCardHighlights.map((item) => (
-                  <div key={item} className="flex items-center gap-3 text-sm text-white/75">
+                  <div key={item} className="flex items-center gap-3 text-base text-white/80 md:text-sm">
                     <CheckCircle2 className="h-4 w-4 text-fairway-400" aria-hidden="true" />
                     <span>{item}</span>
                   </div>
                 ))}
               </div>
-              <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4 text-sm text-white/55 md:text-xs">
+              <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4 text-sm text-white/62 md:text-xs">
                 <span>Irish-owned planning</span>
                 <span>Luxury, not generic</span>
               </div>
@@ -383,16 +383,16 @@ function App() {
             >
               <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.3em] text-gold-500 md:text-xs">Departing from Ireland</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.3em] text-gold-500/95 md:text-xs">Departing from Ireland</p>
                   <h2 className="mt-3 max-w-2xl font-display text-3xl font-bold leading-tight text-forest-900 md:text-4xl">
                     Quick package start for Irish golfers heading to the Costa del Sol
                   </h2>
-                  <p className="mt-3 max-w-2xl text-base leading-relaxed text-forest-900/62 md:text-base">
+                  <p className="mt-3 max-w-2xl text-lg leading-8 text-forest-900/68 md:text-base">
                     Set the group size, trip length, rounds, and transfer style here, then jump straight into the full package page with those choices already selected.
                   </p>
                 </div>
 
-                <div className="flex items-center gap-3 rounded-full border border-gold-300/35 bg-white/80 px-4 py-2 text-sm uppercase tracking-[0.22em] text-forest-900/62 md:text-xs">
+                <div className="flex items-center gap-3 rounded-full border border-gold-300/35 bg-white/80 px-4 py-2 text-sm uppercase tracking-[0.22em] text-forest-900/68 md:text-xs">
                   <span className="h-2 w-2 rounded-full bg-fairway-500" />
                   <span>Quick calculator</span>
                 </div>
@@ -458,7 +458,7 @@ function App() {
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-forest-900">Transfer style</p>
-                      <p className="text-sm leading-relaxed text-forest-900/52 md:text-xs">
+                      <p className="text-base leading-7 text-forest-900/58 md:text-xs">
                         Choose the level of transport support that suits the trip
                       </p>
                     </div>
@@ -481,7 +481,7 @@ function App() {
                           type="button"
                         >
                           <p className="text-sm font-semibold">{option.label}</p>
-                          <p className={cx('mt-1 text-sm leading-relaxed md:text-xs', isActive ? 'text-white/72' : 'text-forest-900/58')}>
+                          <p className={cx('mt-1 text-base leading-7 md:text-xs', isActive ? 'text-white/78' : 'text-forest-900/64')}>
                             {option.description}
                           </p>
                         </button>
@@ -493,11 +493,11 @@ function App() {
                     <LuxuryButton href={quickPackagesHref} showArrow>
                       Open full package page
                     </LuxuryButton>
-                    <div className="rounded-full border border-forest-100 bg-offwhite px-4 py-2 text-sm uppercase tracking-[0.18em] text-forest-900/55 md:text-xs">
+                    <div className="rounded-full border border-forest-100 bg-offwhite px-4 py-2 text-sm uppercase tracking-[0.18em] text-forest-900/62 md:text-xs">
                       {quickGroupSize} golfers • {quickNights} nights • {quickRounds} rounds
                     </div>
                   </div>
-                  <p className="mt-4 text-sm leading-relaxed text-forest-900/55 md:text-base">
+                  <p className="mt-4 text-base leading-8 text-forest-900/62 md:text-base">
                     Continue on the packages page to save this build to your account (magic-link sign-in) or open a printable proposal for your group.
                   </p>
                 </motion.div>
@@ -532,7 +532,7 @@ function App() {
                   </span>
                 </h2>
               </div>
-              <p className="mx-auto mt-3 max-w-2xl text-base leading-relaxed text-forest-900/58 md:text-base">
+              <p className="mx-auto mt-3 max-w-2xl text-lg leading-8 text-forest-900/64 md:text-base">
                 Because the best Irish golf trips are not held together by guesswork. GolfSol Ireland gives Irish golfers smarter course picks, cleaner
                 logistics, and the kind of local judgement that makes the whole week feel effortless before you ever board the flight.
               </p>
@@ -606,7 +606,7 @@ function App() {
                   </motion.h2>
 
                   <motion.p
-                    className="mt-4 max-w-xl text-base leading-relaxed text-forest-900/65 md:text-base"
+                    className="mt-4 max-w-xl text-lg leading-8 text-forest-900/70 md:text-base"
                     initial={{ opacity: 0, y: 20 }}
                     transition={{ delay: 0.2, duration: 0.6, ease: 'easeOut' }}
                     viewport={{ once: true }}
@@ -630,7 +630,7 @@ function App() {
                         <p className="text-base leading-relaxed text-forest-900/82 md:text-lg">
                           For Irish golfers who want every detail to feel considered, every transfer to make sense, and every round to land exactly where it should.
                         </p>
-                        <p className="mt-3 text-sm uppercase tracking-[0.2em] text-forest-900/42 md:text-xs">Smarter planning. Better golf. Zero noise.</p>
+                        <p className="mt-3 text-sm uppercase tracking-[0.2em] text-forest-900/48 md:text-xs">Smarter planning. Better golf. Zero noise.</p>
                       </div>
                     </div>
                   </motion.div>
@@ -645,7 +645,7 @@ function App() {
                     {heroStats.map((item) => (
                       <div key={item.label} className="rounded-[1.75rem] border border-forest-100 bg-white/80 p-4 shadow-sm">
                         <p className="font-display text-3xl font-bold text-gold-300">{item.value}</p>
-                        <p className="mt-2 text-sm leading-relaxed text-forest-900/58 md:text-xs">{item.label}</p>
+                        <p className="mt-2 text-base leading-7 text-forest-900/62 md:text-xs">{item.label}</p>
                       </div>
                     ))}
                   </motion.div>
@@ -667,7 +667,7 @@ function App() {
                         </div>
                         <div>
                           <h3 className="text-base font-semibold text-forest-900">{title}</h3>
-                          <p className="mt-2 text-sm leading-relaxed text-forest-900/62">{description}</p>
+                          <p className="mt-2 text-base leading-7 text-forest-900/66 md:text-sm">{description}</p>
                         </div>
                       </div>
                     </motion.article>
@@ -687,7 +687,7 @@ function App() {
                     {trustMarkers.map((marker) => (
                       <div
                         key={marker}
-                        className="inline-flex items-center gap-2 rounded-full border border-forest-100 bg-white/80 px-4 py-2 text-xs text-forest-900/68"
+                        className="inline-flex items-center gap-2 rounded-full border border-forest-100 bg-white/80 px-4 py-2 text-sm text-forest-900/72 md:text-xs"
                       >
                         <CheckCircle2 className="h-4 w-4 text-gold-300" aria-hidden="true" />
                         <span>{marker}</span>
@@ -745,8 +745,8 @@ function App() {
                       <Icon className="h-5 w-5" aria-hidden="true" />
                     </motion.div>
                     <div>
-                      <h3 className="mb-1 text-sm font-semibold text-forest-900">{title}</h3>
-                      <p className="text-sm leading-relaxed text-forest-900/65">{description}</p>
+                      <h3 className="mb-1 text-base font-semibold text-forest-900 md:text-sm">{title}</h3>
+                      <p className="text-base leading-7 text-forest-900/68 md:text-sm">{description}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -791,7 +791,7 @@ function App() {
                   />
                   <div className="absolute bottom-4 right-4 rounded-[1.5rem] border border-white/10 bg-forest-900/85 px-4 py-3 text-white shadow-soft backdrop-blur-md">
                     <p className="font-display text-2xl font-bold text-gold-400">70+</p>
-                    <p className="text-xs text-white/65">Courses across the coast</p>
+                    <p className="text-sm text-white/72 md:text-xs">Courses across the coast</p>
                   </div>
                 </div>
               </div>
@@ -808,7 +808,7 @@ function App() {
                 {costaMetrics.map((metric) => (
                   <div key={metric.label} className="rounded-[2rem] border border-white/60 bg-white/70 p-5 backdrop-blur-sm">
                     <p className="font-display text-3xl font-bold text-forest-900">{metric.value}</p>
-                    <p className="mt-2 text-sm leading-relaxed text-forest-900/60">{metric.label}</p>
+                    <p className="mt-2 text-base leading-7 text-forest-900/64 md:text-sm">{metric.label}</p>
                   </div>
                 ))}
               </motion.div>
@@ -833,7 +833,7 @@ function App() {
             <h2 className="mx-auto mt-3 max-w-4xl font-display text-4xl font-bold leading-tight text-forest-900 md:text-5xl">
               Costa del Sol golf should feel effortless, elegant, and worth talking about on the flight home
             </h2>
-            <p className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-forest-900/65 md:text-base">
+            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-forest-900/70 md:text-base">
               Sun on your back, great golf ahead, and none of the usual trip friction in the middle. This is the kind of break that feels easy to say yes to and even better to talk about on the flight home.
             </p>
           </motion.div>
@@ -920,16 +920,16 @@ function App() {
 
               <motion.div className="space-y-4" {...revealUp}>
                 <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-sm">
-                  <p className="mb-2 text-xs uppercase tracking-[0.24em] text-white/45">From enquiry to confirmed itinerary</p>
+                  <p className="mb-2 text-sm uppercase tracking-[0.24em] text-white/52 md:text-xs">From enquiry to confirmed itinerary</p>
                   <div className="mb-4 max-w-lg rounded-[1.4rem] border border-gold-300/18 bg-[linear-gradient(135deg,rgba(255,255,255,0.12),rgba(253,186,116,0.08))] px-4 py-3 shadow-[0_12px_28px_rgba(10,32,8,0.16)]">
-                    <p className="text-sm leading-relaxed text-white">
+                    <p className="text-base leading-8 text-white/92 md:text-sm">
                       The goal is simple: once a group enquires, everything from transfers and stay details to payment and confirmations should feel joined-up,
                       calm, and easy to trust.
                     </p>
                   </div>
                   <div className="space-y-3">
                     {Object.values(integrationRegistry).map((integration) => (
-                      <div key={integration.label} className="flex items-start gap-3 text-sm text-white/70">
+                      <div key={integration.label} className="flex items-start gap-3 text-base text-white/78 md:text-sm">
                         <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
                         <span>{integration.label}</span>
                       </div>
@@ -1004,7 +1004,7 @@ function App() {
               <h2 className="mt-3 max-w-xl font-display text-4xl font-bold leading-tight text-white md:text-5xl">
                 Tell us about your trip — we’ll come back with a clear, tailored next step
               </h2>
-              <p className="mt-5 max-w-lg text-sm leading-relaxed text-white/65 md:text-base">
+              <p className="mt-5 max-w-lg text-lg leading-8 text-white/72 md:text-base">
                 This is your enquiry form, not a newsletter. Share who you are, how to reach you, and what you’re planning for the Costa del Sol. We use that to respond with real advice and a sensible follow-up — usually by email, phone, or WhatsApp.
               </p>
 
@@ -1018,7 +1018,7 @@ function App() {
                     <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-fairway-500/15 text-fairway-400">
                       <Icon className="h-5 w-5" aria-hidden="true" />
                     </div>
-                    <p className="text-sm text-white/75">{title}</p>
+                    <p className="text-base text-white/80 md:text-sm">{title}</p>
                   </motion.div>
                 ))}
               </div>
@@ -1030,11 +1030,11 @@ function App() {
             >
               <form className="space-y-5" onSubmit={handleNewsletterSubmit}>
                 <div>
-                  <label className="mb-1.5 block text-xs text-white/70" htmlFor="full-name">
+                  <label className="mb-1.5 block text-sm font-medium text-white/78 md:text-xs" htmlFor="full-name">
                     Full name
                   </label>
                   <input
-                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm text-white placeholder:text-white/40 focus:border-gold-400 focus:outline-none"
+                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3.5 text-base text-white placeholder:text-white/45 focus:border-gold-400 focus:outline-none md:text-sm"
                     id="full-name"
                     name="fullName"
                     placeholder="Patrick Murphy"
@@ -1044,11 +1044,11 @@ function App() {
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block text-xs text-white/70" htmlFor="email">
+                  <label className="mb-1.5 block text-sm font-medium text-white/78 md:text-xs" htmlFor="email">
                     Email address
                   </label>
                   <input
-                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm text-white placeholder:text-white/40 focus:border-gold-400 focus:outline-none"
+                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3.5 text-base text-white placeholder:text-white/45 focus:border-gold-400 focus:outline-none md:text-sm"
                     id="email"
                     name="email"
                     placeholder="patrick@example.ie"
@@ -1058,11 +1058,11 @@ function App() {
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block text-xs text-white/70" htmlFor="phone-whatsapp">
+                  <label className="mb-1.5 block text-sm font-medium text-white/78 md:text-xs" htmlFor="phone-whatsapp">
                     Phone / WhatsApp
                   </label>
                   <input
-                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm text-white placeholder:text-white/40 focus:border-gold-400 focus:outline-none"
+                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3.5 text-base text-white placeholder:text-white/45 focus:border-gold-400 focus:outline-none md:text-sm"
                     id="phone-whatsapp"
                     name="phoneWhatsApp"
                     placeholder="+353 87 000 0000"
@@ -1073,11 +1073,11 @@ function App() {
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block text-xs text-white/70" htmlFor="best-time-to-call">
+                  <label className="mb-1.5 block text-sm font-medium text-white/78 md:text-xs" htmlFor="best-time-to-call">
                     Best time to call
                   </label>
                   <select
-                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm text-white focus:border-gold-400 focus:outline-none"
+                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3.5 text-base text-white focus:border-gold-400 focus:outline-none md:text-sm"
                     id="best-time-to-call"
                     name="bestTimeToCall"
                     required
@@ -1105,11 +1105,11 @@ function App() {
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block text-xs text-white/70" htmlFor="interest">
+                  <label className="mb-1.5 block text-sm font-medium text-white/78 md:text-xs" htmlFor="interest">
                     Trip interest
                   </label>
                   <input
-                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm text-white placeholder:text-white/40 focus:border-gold-400 focus:outline-none"
+                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3.5 text-base text-white placeholder:text-white/45 focus:border-gold-400 focus:outline-none md:text-sm"
                     id="interest"
                     name="interest"
                     placeholder="5-star week in Marbella for 8 golfers"
@@ -1126,7 +1126,7 @@ function App() {
                   <div
                     aria-live="polite"
                     className={cx(
-                      'rounded-[1.4rem] border px-4 py-3 text-sm leading-relaxed',
+                      'rounded-[1.4rem] border px-4 py-3 text-base leading-7 md:text-sm',
                       enquiryFormStatus === 'success'
                         ? 'border-fairway-300/30 bg-fairway-500/12 text-white'
                         : 'border-[#f7a24f]/35 bg-[#dc5801]/12 text-white'
@@ -1137,8 +1137,8 @@ function App() {
                 ) : null}
 
                 <div className="rounded-[1.5rem] border border-white/10 bg-black/10 p-4">
-                  <p className="text-xs uppercase tracking-[0.24em] text-white/40">What happens next</p>
-                  <div className="mt-3 space-y-3 text-sm text-white/70">
+                  <p className="text-sm uppercase tracking-[0.24em] text-white/48 md:text-xs">What happens next</p>
+                  <div className="mt-3 space-y-3 text-base text-white/76 md:text-sm">
                     <div className="flex items-center gap-3">
                       <Phone className="h-4 w-4 text-gold-400" aria-hidden="true" />
                       <span>We’ll use your phone or WhatsApp and your preferred call window when we reach out.</span>
@@ -1197,7 +1197,7 @@ function QuickSelectorCard({
         </div>
         <div>
           <p className="text-sm font-semibold text-forest-900">{label}</p>
-          {description ? <p className="text-xs leading-relaxed text-forest-900/52">{description}</p> : null}
+          {description ? <p className="text-sm leading-7 text-forest-900/58 md:text-xs">{description}</p> : null}
         </div>
       </div>
 

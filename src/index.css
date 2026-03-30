@@ -7,17 +7,20 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    font-size: 16.25px;
+    font-size: 16.5px;
+    -webkit-text-size-adjust: 100%;
   }
 
   @media (max-width: 767px) {
     html {
-      font-size: 17px;
+      font-size: 17.5px;
     }
   }
 
   body {
     @apply bg-offwhite font-body text-forest-900 antialiased;
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
   }
 
   * {

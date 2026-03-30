@@ -49,7 +49,7 @@ export function AnimatedStepKicker({
     return (
       <p
         className={cx(
-          'mb-3 font-accent text-base italic tracking-wide',
+          'mb-3 font-accent text-lg italic tracking-wide md:text-base',
           dark
             ? 'text-gold-200 drop-shadow-[0_2px_16px_rgba(8,27,8,0.65)]'
             : 'text-fairway-600',
@@ -125,7 +125,7 @@ export function SectionHeader({
       <h2 className={cx('mb-4 font-display text-4xl font-bold leading-tight md:text-5xl', dark && 'text-white')}>
         {title}
       </h2>
-      <p className={cx('text-sm leading-relaxed md:text-base', dark ? 'text-white/65' : 'text-forest-900/65')}>
+      <p className={cx('text-base leading-8 md:text-base md:leading-relaxed', dark ? 'text-white/72' : 'text-forest-900/68')}>
         {body}
       </p>
     </motion.div>
