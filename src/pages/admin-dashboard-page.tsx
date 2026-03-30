@@ -84,6 +84,7 @@ export function AdminDashboardPage() {
   const [crmDocSending, setCrmDocSending] = useState<'idle' | 'terms' | 'welcome'>('idle')
   const [crmDocMessage, setCrmDocMessage] = useState<string | null>(null)
   const [enquiries, setEnquiries] = useState<EnquiryRow[]>([])
+  const [enquiriesSectionVisible, setEnquiriesSectionVisible] = useState(true)
   const [proposals, setProposals] = useState<ProposalRow[]>([])
   const [packageBuilds, setPackageBuilds] = useState<PackageBuildAdminRow[]>([])
   const [loadError, setLoadError] = useState<string | null>(null)
@@ -324,15 +325,35 @@ export function AdminDashboardPage() {
       ) : (
         <div className="space-y-14 md:space-y-16">
           <section>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Enquiries</p>
-            <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Recent form submissions</h2>
-            <p className="mt-2 max-w-2xl text-sm text-forest-600">
-              Rows appear after the SQL migration and when the dev server has{' '}
-              <code className="rounded-md bg-forest-100 px-1.5 py-0.5 text-xs text-forest-800">SUPABASE_SERVICE_ROLE_KEY</code>{' '}
-              set for <code className="rounded-md bg-forest-100 px-1.5 py-0.5 text-xs text-forest-800">/api/enquiry</code>.
-            </p>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Enquiries</p>
+                <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Recent form submissions</h2>
+                <p className="mt-2 max-w-2xl text-sm text-forest-600">
+                  Rows appear after the SQL migration and when the dev server has{' '}
+                  <code className="rounded-md bg-forest-100 px-1.5 py-0.5 text-xs text-forest-800">SUPABASE_SERVICE_ROLE_KEY</code>{' '}
+                  set for <code className="rounded-md bg-forest-100 px-1.5 py-0.5 text-xs text-forest-800">/api/enquiry</code>.
+                  Each submitter also gets a confirmation email with their enquiry PDF at the address they entered (Resend, same
+                  run as your internal notification).
+                </p>
+              </div>
+              {enquiries.length > 0 ? (
+                <LuxuryButton
+                  className="shrink-0 self-start !px-5 !py-2.5 !text-xs"
+                  onClick={() => setEnquiriesSectionVisible((v) => !v)}
+                  type="button"
+                  variant="outline"
+                >
+                  {enquiriesSectionVisible ? 'Hide table' : 'Show table'}
+                </LuxuryButton>
+              ) : null}
+            </div>
 
-            {enquiries.length === 0 ? (
+            {!enquiriesSectionVisible ? (
+              <div className="mt-6 rounded-[2rem] border border-forest-200 bg-forest-50/60 px-6 py-8 text-center text-sm text-forest-700 md:px-10">
+                <p>Recent form submissions are hidden. Use <span className="font-medium text-forest-900">Show table</span> to view them again.</p>
+              </div>
+            ) : enquiries.length === 0 ? (
               <div className="mt-6 rounded-[2rem] border border-dashed border-forest-200 bg-forest-50/50 px-6 py-10 text-center text-sm text-forest-600 md:px-10">
                 No enquiries yet — submit the get-in-touch form locally to test the pipeline.
               </div>
@@ -340,7 +361,7 @@ export function AdminDashboardPage() {
               <div className="mt-6 overflow-x-auto rounded-[2rem] border border-forest-100 bg-white shadow-soft">
                 <table className="min-w-full text-left text-sm">
                   <thead>
-                    <tr className="bg-forest-950 text-xs font-semibold uppercase tracking-[0.12em] text-gold-200">
+                    <tr className="bg-forest-950 text-xs font-semibold uppercase tracking-[0.12em] text-white">
                       <th className="whitespace-nowrap px-4 py-4 md:px-6">Ref</th>
                       <th className="whitespace-nowrap px-4 py-4 md:px-6">Name</th>
                       <th className="whitespace-nowrap px-4 py-4 md:px-6">Email</th>
