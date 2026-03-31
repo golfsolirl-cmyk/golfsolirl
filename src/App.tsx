@@ -451,19 +451,39 @@ function App() {
                     From Malaga airport arrivals to hotel check-in runs and every golf-course movement in between, the transport side of the trip is handled for you by Irish drivers who understand the pace, the luggage, and the group dynamic.
                   </p>
 
-                  <div className="mt-6 flex flex-wrap gap-3">
-                    {[
-                      'Golf Sol Ireland Mercedes Fleet',
-                      'Irish-driver operated',
-                      'Premium Costa del Sol transfer routing'
-                    ].map((item) => (
-                      <span
-                        key={item}
-                        className="inline-flex min-h-11 items-center rounded-full border border-forest-100 bg-white px-4 py-2 text-sm font-semibold text-forest-950 shadow-sm"
-                      >
-                        {item}
-                      </span>
-                    ))}
+                  <div className="mt-6 overflow-hidden rounded-[1.8rem] border border-forest-900 bg-forest-950 shadow-[0_18px_42px_rgba(10,32,8,0.12)]">
+                    <div className="flex flex-col gap-3 px-4 py-4 md:px-5">
+                      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white text-forest-950 shadow-sm">
+                            <img alt="" aria-hidden="true" className="h-9 w-9 object-contain" src={logoIcon} />
+                          </div>
+                          <div>
+                            <p className="text-[0.76rem] font-semibold uppercase tracking-[0.22em] text-gold-300">Golf Sol Ireland</p>
+                            <p className="font-display text-[1.35rem] font-black uppercase tracking-[-0.03em] text-white">Mercedes Fleet</p>
+                          </div>
+                        </div>
+                        <div className="inline-flex items-center gap-2 self-start rounded-full border border-gold-300/30 bg-gold-400/12 px-4 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-gold-200">
+                          <span className="h-2 w-2 rounded-full bg-gold-300" />
+                          Branded transfer service
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-3 border-t border-white/10 pt-3">
+                        {[
+                          'Irish-driver operated',
+                          'Premium Costa del Sol routing',
+                          'Airport, hotel, and golf-course coverage'
+                        ].map((item) => (
+                          <span
+                            key={item}
+                            className="inline-flex min-h-11 items-center rounded-full border border-white/10 bg-white/8 px-4 py-2 text-sm font-semibold text-white/92"
+                          >
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   </div>
 
                   <div className="mt-6 grid gap-3 sm:grid-cols-3">
