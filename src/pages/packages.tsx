@@ -228,7 +228,9 @@ function PackageAdminPage() {
         <Navbar links={packagePageLinks} primaryCta="Admin access" />
         <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[0.95fr_1.05fr]">
           <div>
-            <p className="font-accent text-lg italic tracking-wide text-gold-200 drop-shadow-[0_4px_18px_rgba(8,27,8,0.35)]">Protected pricing studio</p>
+            <p className="text-base font-semibold uppercase tracking-[0.18em] text-gold-200 drop-shadow-[0_4px_18px_rgba(8,27,8,0.35)] md:text-lg">
+              Protected pricing studio
+            </p>
             <h1 className="mt-4 max-w-2xl font-display text-5xl font-black leading-none tracking-tight text-white md:text-7xl">
               Admin package calculator for internal pricing and margin checks
             </h1>
@@ -243,18 +245,18 @@ function PackageAdminPage() {
             initial={{ opacity: 0, y: 30 }}
             transition={{ duration: 0.7, ease: 'easeOut' }}
           >
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gold-300">Admin login</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gold-300">Admin login</p>
             <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-white">Unlock the internal package page</h2>
-            <p className="mt-3 text-sm leading-relaxed text-white/68">
+            <p className="mt-3 text-base leading-7 text-white/72">
               Enter your admin access code to open the private pricing studio.
             </p>
 
             <form className="mt-6 space-y-4" onSubmit={handleUnlockAdminPage}>
               <label className="block">
-                <span className="mb-2 block text-sm font-medium text-white/78">Access code</span>
+                <span className="mb-2 block text-base font-medium text-white/80">Access code</span>
                 <input
                   autoComplete="current-password"
-                  className="w-full rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-base text-white outline-none transition focus:border-gold-400 focus:ring-2 focus:ring-gold-300/30"
+                  className="w-full rounded-2xl border border-white/10 bg-white/8 px-4 py-3.5 text-lg text-white outline-none transition focus:border-gold-400 focus:ring-2 focus:ring-gold-300/30"
                   onChange={(event) => {
                     setAdminAccessCode(event.target.value)
                     if (loginError) {
@@ -267,17 +269,17 @@ function PackageAdminPage() {
                 />
               </label>
 
-              {loginError ? <p className="text-sm text-[#f7a24f]">{loginError}</p> : null}
+              {loginError ? <p className="text-base text-[#f7a24f]">{loginError}</p> : null}
 
               <div className="flex flex-wrap gap-3">
                 <button
-                  className="inline-flex items-center justify-center rounded-full bg-gold-400 px-6 py-3 text-sm font-semibold text-forest-950 transition-colors hover:bg-gold-300"
+                  className="inline-flex items-center justify-center rounded-full bg-gold-400 px-6 py-3.5 text-base font-semibold text-forest-950 transition-colors hover:bg-gold-300"
                   type="submit"
                 >
                   Unlock admin page
                 </button>
                 <a
-                  className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-white/82 transition-colors hover:bg-white/10"
+                  className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-3.5 text-base font-semibold text-white/82 transition-colors hover:bg-white/10"
                   href="/packages"
                 >
                   Go to customer packages
@@ -315,16 +317,16 @@ function PackageAdminPage() {
               initial={{ opacity: 0, y: 30 }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
             >
-              <p className="mb-4 font-accent text-lg italic tracking-wide text-fairway-400">
+              <p className="mb-4 text-base font-semibold uppercase tracking-[0.18em] text-fairway-300 md:text-lg">
                 Costa del Sol package pricing for Irish golf groups
               </p>
               <h1 className="max-w-3xl font-display text-5xl font-black leading-none tracking-tight text-white md:text-7xl lg:text-[5.4rem]">
                 Build packages that feel premium and still protect your margin
               </h1>
-              <p className="mt-5 max-w-xl font-accent text-xl italic text-white/75">
+              <p className="mt-5 max-w-2xl text-[1.3rem] font-medium leading-relaxed text-white/82 md:text-[1.45rem]">
                 Price the stay, the golf, the driver, the diesel, and the profit properly before you ever send the quote.
               </p>
-              <p className="mt-6 max-w-xl text-sm leading-relaxed text-white/68 md:text-base">
+              <p className="mt-6 max-w-2xl text-base leading-8 text-white/72 md:text-lg">
                 This package page is built for smaller Irish groups heading to the Costa del Sol. It keeps the visual tone of the main site, but gives you a cleaner way to shape real packages and quote with confidence.
               </p>
 
@@ -367,27 +369,27 @@ function PackageAdminPage() {
                   <div className="relative z-10 flex h-full flex-col">
                     <div className="mb-5 flex items-start justify-between gap-4">
                       <div>
-                        <span className="inline-flex rounded-full border border-fairway-100 bg-fairway-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-fairway-700">
+                        <span className="inline-flex rounded-full border border-fairway-100 bg-fairway-50 px-3 py-1.5 text-sm font-semibold uppercase tracking-[0.14em] text-fairway-700">
                           {option.label}
                         </span>
                         <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-forest-900">{option.name}</h2>
                       </div>
                       <div className="text-right">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-forest-900/38">From</p>
+                        <p className="text-sm font-semibold uppercase tracking-[0.14em] text-forest-900/40">From</p>
                         <p className="mt-2 font-display text-3xl font-bold text-forest-900">{formatEuro(option.price)} pp</p>
                       </div>
                     </div>
 
-                    <div className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-forest-100 bg-white/85 px-3 py-1 text-xs text-forest-900/62">
+                    <div className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-forest-100 bg-white/85 px-3 py-1.5 text-sm text-forest-900/64">
                       <CalendarRange className="h-3.5 w-3.5 text-gold-500" aria-hidden="true" />
                       <span>{option.duration}</span>
                     </div>
 
-                    <p className="text-sm leading-relaxed text-forest-900/66">{option.summary}</p>
+                    <p className="text-base leading-relaxed text-forest-900/68">{option.summary}</p>
 
                     <div className="mt-6 space-y-3 rounded-[1.5rem] border border-forest-100 bg-white/72 p-4">
                       {option.includes.map((item) => (
-                        <div key={item} className="flex items-center gap-3 text-sm text-forest-900/72">
+                        <div key={item} className="flex items-center gap-3 text-[0.98rem] text-forest-900/74">
                           <CheckCircle2 className="h-4 w-4 shrink-0 text-fairway-600" aria-hidden="true" />
                           <span>{item}</span>
                         </div>
@@ -434,7 +436,7 @@ function PackageAdminPage() {
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <p className={cx('text-[11px] font-semibold uppercase tracking-[0.18em]', isSelected ? 'text-gold-300' : 'text-fairway-700')}>
+                        <p className={cx('text-sm font-semibold uppercase tracking-[0.14em]', isSelected ? 'text-gold-300' : 'text-fairway-700')}>
                           {option.area}
                         </p>
                         <h3 className="mt-3 font-display text-3xl font-bold tracking-tight">{option.name}</h3>
@@ -443,20 +445,20 @@ function PackageAdminPage() {
                     </div>
 
                     <div className="mt-6 rounded-[1.5rem] border border-current/10 bg-current/5 p-4">
-                      <p className={cx('text-[11px] font-semibold uppercase tracking-[0.16em]', isSelected ? 'text-white/55' : 'text-forest-900/40')}>
+                      <p className={cx('text-sm font-semibold uppercase tracking-[0.14em]', isSelected ? 'text-white/58' : 'text-forest-900/42')}>
                         Per person / per night
                       </p>
                       <p className="mt-2 font-display text-4xl font-bold">{formatEuro(option.pricePerPersonPerNight)}</p>
                     </div>
 
-                    <p className={cx('mt-5 text-sm leading-relaxed', isSelected ? 'text-white/74' : 'text-forest-900/65')}>{option.summary}</p>
+                    <p className={cx('mt-5 text-base leading-relaxed', isSelected ? 'text-white/76' : 'text-forest-900/68')}>{option.summary}</p>
 
                     <div className="mt-5 flex flex-wrap gap-2">
                       {option.perks.map((perk) => (
                         <span
                           key={perk}
                           className={cx(
-                            'rounded-full border px-3 py-1 text-xs',
+                            'rounded-full border px-3 py-1.5 text-sm',
                             isSelected ? 'border-white/12 bg-white/8 text-white/74' : 'border-forest-100 bg-forest-50 text-forest-900/65'
                           )}
                         >
@@ -483,7 +485,7 @@ function PackageAdminPage() {
               <motion.div className="rounded-[2rem] border border-forest-100 bg-[#f7f4ed] p-6 shadow-sm md:p-7" {...revealUp}>
                 <div className="mb-6 flex flex-wrap gap-3">
                   {planningPoints.map((item) => (
-                    <span key={item} className="rounded-full border border-white/80 bg-white px-3 py-1 text-xs text-forest-900/66 shadow-sm">
+                    <span key={item} className="rounded-full border border-white/80 bg-white px-3 py-1.5 text-sm text-forest-900/68 shadow-sm">
                       {item}
                     </span>
                   ))}
@@ -586,10 +588,10 @@ function PackageAdminPage() {
               <motion.div className="rounded-[2rem] border border-white/10 bg-forest-950 p-6 text-white shadow-soft md:p-7" {...revealUp}>
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gold-300">Live quote view</p>
+                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gold-300">Live quote view</p>
                     <h3 className="mt-3 font-display text-4xl font-bold tracking-tight">Simple, detailed, margin-safe</h3>
                   </div>
-                  <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/72">
+                  <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-base text-white/76">
                     {selectedAccommodation.name}
                   </div>
                 </div>
@@ -615,13 +617,13 @@ function PackageAdminPage() {
 
                 <div className="mt-6 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(220,88,1,0.18),rgba(253,186,116,0.1),rgba(80,163,45,0.12))] p-[1px]">
                   <div className="rounded-[1.7rem] bg-forest-950/96 p-5">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/45">Recommended sell price</p>
+                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/45">Recommended sell price</p>
                     <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
                       <div>
                         <p className="font-display text-5xl font-black leading-none text-white">{formatEuro(pricingSummary.sellPricePerPerson)}</p>
-                        <p className="mt-2 text-sm text-white/68">per person for the quote</p>
+                        <p className="mt-2 text-base text-white/70">per person for the quote</p>
                       </div>
-                      <div className="rounded-[1.3rem] border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/74">
+                      <div className="rounded-[1.3rem] border border-white/10 bg-white/5 px-4 py-3 text-base text-white/76">
                         Margin {pricingSummary.marginPercent.toFixed(1)}%
                       </div>
                     </div>
@@ -651,7 +653,7 @@ function PackageAdminPage() {
                 <h2 className="max-w-2xl font-display text-4xl font-bold leading-tight text-white md:text-5xl">
                   Use the calculator to protect the margin, then send a package enquiry with confidence
                 </h2>
-                <p className="mt-5 max-w-xl text-sm leading-relaxed text-white/68 md:text-base">
+                <p className="mt-5 max-w-xl text-base leading-8 text-white/72 md:text-lg">
                   Flights are not included. The page is focused on the parts you control: accommodation, golf, driver support, diesel, routing, and the number you need to make the trip worthwhile.
                 </p>
 
@@ -669,7 +671,7 @@ function PackageAdminPage() {
                 className="rounded-[2rem] border border-white/10 bg-white/6 p-6 text-white backdrop-blur-sm"
                 {...revealUp}
               >
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gold-300">What this page already solves</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gold-300">What this page already solves</p>
                 <div className="mt-5 space-y-4">
                   {[
                     'Gives you a clean starting price per person',
@@ -677,7 +679,7 @@ function PackageAdminPage() {
                     'Shows the profit before the quote is sent',
                     'Keeps the package looking premium instead of cheap or patchy'
                   ].map((item) => (
-                    <div key={item} className="flex items-start gap-3 text-sm text-white/78">
+                    <div key={item} className="flex items-start gap-3 text-base text-white/80">
                       <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-fairway-400" aria-hidden="true" />
                       <span>{item}</span>
                     </div>
@@ -726,8 +728,8 @@ function RouteMapShowcase() {
                     <ShamrockIcon className="h-6 w-6" dark />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold">{route.title}</p>
-                    <p className="text-xs leading-relaxed text-white/58">{route.note}</p>
+                    <p className="text-base font-semibold">{route.title}</p>
+                    <p className="text-sm leading-relaxed text-white/62">{route.note}</p>
                   </div>
                 </div>
               </motion.div>
@@ -784,22 +786,22 @@ function RouteMapShowcase() {
             </motion.div>
 
             <div className="absolute left-[8%] top-[9%] rounded-[1.4rem] border border-fairway-300/22 bg-fairway-500/10 px-4 py-3 text-white backdrop-blur-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-fairway-300">Departing from Ireland</p>
-              <p className="mt-2 text-sm font-semibold">Smaller golf groups</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-fairway-300">Departing from Ireland</p>
+              <p className="mt-2 text-base font-semibold">Smaller golf groups</p>
             </div>
 
             <div className="absolute bottom-[11%] right-[8%] rounded-[1.5rem] border border-[#dc5801]/26 bg-forest-950/62 px-4 py-4 text-white backdrop-blur-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#f7a24f]">Costa del Sol arrival</p>
-              <p className="mt-2 text-sm font-semibold">Hotel, golf, driver, quote</p>
-              <p className="mt-1 text-xs text-white/56">All costed before you sell it</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#f7a24f]">Costa del Sol arrival</p>
+              <p className="mt-2 text-base font-semibold">Hotel, golf, driver, quote</p>
+              <p className="mt-1 text-sm text-white/60">All costed before you sell it</p>
             </div>
 
             <div className="absolute right-[12%] top-[12%] rounded-[1.25rem] border border-white/10 bg-white/8 px-4 py-3 text-white backdrop-blur-sm">
-              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-gold-300">
+              <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-gold-300">
                 <BadgeEuro className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>Profit protected</span>
               </div>
-              <p className="mt-2 text-sm text-white/74">Quote the full trip, not just the obvious bits</p>
+              <p className="mt-2 text-base text-white/76">Quote the full trip, not just the obvious bits</p>
             </div>
           </div>
         </div>
@@ -811,8 +813,8 @@ function RouteMapShowcase() {
 function HeroStat({ value, label }: { readonly value: string; readonly label: string }) {
   return (
     <div className="min-w-[110px] rounded-[1.6rem] border border-white/10 bg-white/6 px-4 py-4 backdrop-blur-sm">
-      <p className="font-display text-3xl font-bold text-gold-300">{value}</p>
-      <p className="mt-1 text-xs leading-relaxed text-white/56">{label}</p>
+      <p className="font-display text-[2rem] font-bold text-gold-300">{value}</p>
+      <p className="mt-1 text-sm leading-relaxed text-white/62">{label}</p>
     </div>
   )
 }
@@ -850,10 +852,10 @@ function PricingInput({
     <label className="rounded-[1.5rem] border border-forest-100 bg-white p-4 shadow-sm">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold text-forest-900">{label}</p>
-          <p className="mt-1 text-xs leading-relaxed text-forest-900/52">{description}</p>
+          <p className="text-base font-semibold text-forest-900">{label}</p>
+          <p className="mt-1 text-sm leading-relaxed text-forest-900/56">{description}</p>
         </div>
-        {prefix ? <span className="rounded-full bg-fairway-50 px-2.5 py-1 text-[11px] font-semibold uppercase text-fairway-700">{prefix}</span> : null}
+        {prefix ? <span className="rounded-full bg-fairway-50 px-2.5 py-1 text-sm font-semibold uppercase text-fairway-700">{prefix}</span> : null}
       </div>
       <input
         className="mt-4 w-full rounded-2xl border border-forest-100 bg-offwhite px-4 py-3 text-base font-semibold text-forest-900 outline-none transition focus:border-gold-400 focus:ring-2 focus:ring-gold-200"
@@ -884,8 +886,8 @@ function SummaryTile({
           <Icon className="h-5 w-5" aria-hidden="true" />
         </div>
         <div>
-          <p className="text-xs uppercase tracking-[0.15em] text-white/45">{label}</p>
-          <p className="mt-1 text-lg font-semibold text-white">{value}</p>
+          <p className="text-sm uppercase tracking-[0.14em] text-white/48">{label}</p>
+          <p className="mt-1 text-xl font-semibold text-white">{value}</p>
         </div>
       </div>
     </div>
@@ -902,7 +904,7 @@ function BreakdownRow({
   readonly strong?: boolean
 }) {
   return (
-    <div className={cx('flex items-center justify-between gap-4 border-b border-white/8 pb-3 text-sm', strong && 'pt-2')}>
+    <div className={cx('flex items-center justify-between gap-4 border-b border-white/8 pb-3 text-base', strong && 'pt-2')}>
       <span className={cx(strong ? 'font-semibold text-white' : 'text-white/68')}>{label}</span>
       <span className={cx('text-right', strong ? 'font-semibold text-gold-300' : 'text-white')}>{value}</span>
     </div>
@@ -912,8 +914,8 @@ function BreakdownRow({
 function MiniSummaryCard({ label, value }: { readonly label: string; readonly value: string }) {
   return (
     <div className="rounded-[1.3rem] border border-white/10 bg-white/5 p-4">
-      <p className="text-xs uppercase tracking-[0.15em] text-white/42">{label}</p>
-      <p className="mt-2 text-lg font-semibold text-white">{value}</p>
+      <p className="text-sm uppercase tracking-[0.14em] text-white/46">{label}</p>
+      <p className="mt-2 text-xl font-semibold text-white">{value}</p>
     </div>
   )
 }

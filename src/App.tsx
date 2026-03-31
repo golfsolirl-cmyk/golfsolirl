@@ -252,7 +252,7 @@ function App() {
               transition={{ duration: 0.8, ease: 'easeOut' }}
             >
               <motion.p
-                className="mb-4 font-accent text-xl font-medium tracking-[0.02em] text-fairway-300 md:text-[1.45rem]"
+                className="mb-4 text-[1.05rem] font-semibold uppercase tracking-[0.18em] text-fairway-300 md:text-[1.12rem]"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.1, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -272,7 +272,7 @@ function App() {
               </motion.h1>
 
               <motion.p
-                className="mt-5 max-w-2xl font-accent text-[1.35rem] font-medium leading-relaxed text-white/82 md:text-[1.5rem]"
+                className="mt-5 max-w-2xl text-[1.22rem] font-medium leading-8 text-white/82 md:text-[1.38rem]"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.32, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -282,7 +282,7 @@ function App() {
               </motion.p>
 
               <motion.p
-                className="mt-6 max-w-xl text-base leading-8 text-white/72 md:text-lg"
+                className="mt-6 max-w-xl text-lg leading-8 text-white/72 md:text-[1.12rem]"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.44, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -518,21 +518,21 @@ function App() {
             >
               <div className="flex justify-center">
                 <h2 className="flex flex-col items-center gap-1 text-center">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.34em] text-gold-500 md:text-xs">
+                  <span className="text-sm font-semibold uppercase tracking-[0.28em] text-gold-500">
                     Why groups trust
                   </span>
                   <span className="flex flex-wrap items-center justify-center gap-2 leading-none">
-                    <span className="font-brand-script text-[3.15rem] font-bold tracking-tight text-[#003805] md:text-[4rem]">
+                    <span className="font-display text-[2.9rem] font-black tracking-[-0.05em] text-[#003805] md:text-[3.8rem]">
                       GolfSol
                     </span>
                     <ShamrockIcon className="h-7 w-7 self-center md:h-9 md:w-9" />
-                    <span className="pb-1 font-brand-script text-[1.9rem] font-semibold text-gold-500 md:pb-1.5 md:text-[2.35rem]">
+                    <span className="pb-1 font-display text-[1.55rem] font-bold uppercase tracking-[0.12em] text-gold-500 md:pb-1.5 md:text-[1.95rem]">
                       Ireland
                     </span>
                   </span>
                 </h2>
               </div>
-              <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-forest-900/58 md:text-base">
+              <p className="mx-auto mt-3 max-w-2xl text-base leading-8 text-forest-900/60 md:text-lg">
                 Because the best Irish golf trips are not held together by guesswork. GolfSol Ireland gives Irish golfers smarter course picks, cleaner
                 logistics, and the kind of local judgement that makes the whole week feel effortless before you ever board the flight.
               </p>
@@ -1004,7 +1004,7 @@ function App() {
               <h2 className="mt-3 max-w-xl font-display text-4xl font-bold leading-tight text-white md:text-5xl">
                 Tell us about your trip — we’ll come back with a clear, tailored next step
               </h2>
-              <p className="mt-5 max-w-lg text-sm leading-relaxed text-white/65 md:text-base">
+              <p className="mt-5 max-w-lg text-lg leading-8 text-white/68 md:text-[1.08rem]">
                 This is your enquiry form, not a newsletter. Share who you are, how to reach you, and what you’re planning for the Costa del Sol. We use that to respond with real advice and a sensible follow-up — usually by email, phone, or WhatsApp.
               </p>
 
@@ -1018,7 +1018,7 @@ function App() {
                     <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-fairway-500/15 text-fairway-400">
                       <Icon className="h-5 w-5" aria-hidden="true" />
                     </div>
-                    <p className="text-sm text-white/75">{title}</p>
+                    <p className="text-base text-white/78">{title}</p>
                   </motion.div>
                 ))}
               </div>
@@ -1030,11 +1030,11 @@ function App() {
             >
               <form className="space-y-5" onSubmit={handleNewsletterSubmit}>
                 <div>
-                  <label className="mb-1.5 block text-xs text-white/70" htmlFor="full-name">
+                  <label className="mb-2 block text-sm font-medium tracking-[0.02em] text-white/76" htmlFor="full-name">
                     Full name
                   </label>
                   <input
-                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm text-white placeholder:text-white/40 focus:border-gold-400 focus:outline-none"
+                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3.5 text-base text-white placeholder:text-white/40 focus:border-gold-400 focus:outline-none"
                     id="full-name"
                     name="fullName"
                     placeholder="Patrick Murphy"
@@ -1044,11 +1044,11 @@ function App() {
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block text-xs text-white/70" htmlFor="email">
+                  <label className="mb-2 block text-sm font-medium tracking-[0.02em] text-white/76" htmlFor="email">
                     Email address
                   </label>
                   <input
-                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm text-white placeholder:text-white/40 focus:border-gold-400 focus:outline-none"
+                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3.5 text-base text-white placeholder:text-white/40 focus:border-gold-400 focus:outline-none"
                     id="email"
                     name="email"
                     placeholder="patrick@example.ie"
@@ -1058,11 +1058,11 @@ function App() {
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block text-xs text-white/70" htmlFor="phone-whatsapp">
+                  <label className="mb-2 block text-sm font-medium tracking-[0.02em] text-white/76" htmlFor="phone-whatsapp">
                     Phone / WhatsApp
                   </label>
                   <input
-                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm text-white placeholder:text-white/40 focus:border-gold-400 focus:outline-none"
+                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3.5 text-base text-white placeholder:text-white/40 focus:border-gold-400 focus:outline-none"
                     id="phone-whatsapp"
                     name="phoneWhatsApp"
                     placeholder="+353 87 000 0000"
@@ -1073,11 +1073,11 @@ function App() {
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block text-xs text-white/70" htmlFor="best-time-to-call">
+                  <label className="mb-2 block text-sm font-medium tracking-[0.02em] text-white/76" htmlFor="best-time-to-call">
                     Best time to call
                   </label>
                   <select
-                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm text-white focus:border-gold-400 focus:outline-none"
+                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3.5 text-base text-white focus:border-gold-400 focus:outline-none"
                     id="best-time-to-call"
                     name="bestTimeToCall"
                     required
@@ -1105,11 +1105,11 @@ function App() {
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block text-xs text-white/70" htmlFor="interest">
+                  <label className="mb-2 block text-sm font-medium tracking-[0.02em] text-white/76" htmlFor="interest">
                     Trip interest
                   </label>
                   <input
-                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm text-white placeholder:text-white/40 focus:border-gold-400 focus:outline-none"
+                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3.5 text-base text-white placeholder:text-white/40 focus:border-gold-400 focus:outline-none"
                     id="interest"
                     name="interest"
                     placeholder="5-star week in Marbella for 8 golfers"
@@ -1126,7 +1126,7 @@ function App() {
                   <div
                     aria-live="polite"
                     className={cx(
-                      'rounded-[1.4rem] border px-4 py-3 text-sm leading-relaxed',
+                      'rounded-[1.4rem] border px-4 py-3 text-base leading-relaxed',
                       enquiryFormStatus === 'success'
                         ? 'border-fairway-300/30 bg-fairway-500/12 text-white'
                         : 'border-[#f7a24f]/35 bg-[#dc5801]/12 text-white'
@@ -1137,8 +1137,8 @@ function App() {
                 ) : null}
 
                 <div className="rounded-[1.5rem] border border-white/10 bg-black/10 p-4">
-                  <p className="text-xs uppercase tracking-[0.24em] text-white/40">What happens next</p>
-                  <div className="mt-3 space-y-3 text-sm text-white/70">
+                  <p className="text-sm uppercase tracking-[0.2em] text-white/42">What happens next</p>
+                  <div className="mt-3 space-y-3 text-base text-white/72">
                     <div className="flex items-center gap-3">
                       <Phone className="h-4 w-4 text-gold-400" aria-hidden="true" />
                       <span>We’ll use your phone or WhatsApp and your preferred call window when we reach out.</span>

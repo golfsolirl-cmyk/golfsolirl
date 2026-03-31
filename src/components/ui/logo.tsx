@@ -80,8 +80,8 @@ export function Logo({ className, size = 'default', tone = 'light' }: LogoProps)
         <span className="flex flex-wrap items-baseline gap-2">
           <span
             className={cx(
-              'logo-wordmark logo-wordmark-main min-w-0 font-brand-script font-bold leading-none',
-              isLarge ? 'text-[3rem] sm:text-[3.2rem] md:text-[3.5rem]' : 'text-[2.4rem] md:text-[2.75rem]',
+              'logo-wordmark logo-wordmark-main min-w-0 font-display font-black uppercase leading-none tracking-[-0.05em]',
+              isLarge ? 'text-[2.45rem] sm:text-[2.7rem] md:text-[3rem]' : 'text-[1.95rem] md:text-[2.25rem]',
               primaryClassName
             )}
             style={heroWordmarkStyle}
@@ -97,8 +97,8 @@ export function Logo({ className, size = 'default', tone = 'light' }: LogoProps)
           />
           <span
             className={cx(
-              'logo-wordmark logo-wordmark-ireland font-brand-script font-semibold leading-none',
-              isLarge ? 'text-2xl sm:text-[1.9rem] md:text-[2.15rem]' : 'text-xl md:text-[1.45rem]',
+              'logo-wordmark logo-wordmark-ireland font-display font-semibold uppercase leading-none tracking-[0.16em]',
+              isLarge ? 'text-[1rem] sm:text-[1.05rem] md:text-[1.15rem]' : 'text-[0.82rem] md:text-[0.95rem]',
               secondaryClassName
             )}
             style={heroTextStyle}
@@ -109,8 +109,8 @@ export function Logo({ className, size = 'default', tone = 'light' }: LogoProps)
 
         <span
           className={cx(
-            'logo-tagline block pl-0.5 font-body font-medium tracking-wide leading-tight',
-            isLarge ? 'text-sm md:text-sm' : 'text-xs',
+            'logo-tagline block pl-0.5 font-body font-medium uppercase tracking-[0.18em] leading-tight',
+            isLarge ? 'text-[0.82rem] md:text-[0.84rem]' : 'text-[0.72rem]',
             taglineClassName
           )}
           style={heroTextStyle}

@@ -246,20 +246,20 @@ function WelcomeBody({ kicker, title }: { readonly kicker: string; readonly titl
   return (
     <article className="overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-soft">
       <div className="bg-gradient-to-br from-forest-950 via-forest-900 to-[#0f2a0c] px-8 py-10 text-white md:px-12 md:py-12">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gold-300">{kicker}</p>
-        <h1 className="font-display mt-4 max-w-xl text-3xl font-bold leading-tight md:text-4xl">{title}</h1>
-        <p className="mt-5 max-w-lg text-sm leading-relaxed text-white/75">
+        <p className="text-sm font-semibold uppercase tracking-[0.22em] text-gold-300">{kicker}</p>
+        <h1 className="font-display mt-4 max-w-xl text-[2.35rem] font-bold leading-[1.02] tracking-[-0.03em] md:text-[3rem]">{title}</h1>
+        <p className="mt-5 max-w-lg text-base leading-8 text-white/78">
           You did not choose the nearest brochure — you chose a crew who lose sleep over tee sheets so you do not have to.
         </p>
       </div>
 
       <div className="space-y-8 px-8 py-10 md:px-12 md:py-12">
-        <p className="font-display text-lg italic leading-relaxed text-forest-800">
+        <p className="font-display text-[1.25rem] font-semibold leading-8 text-forest-800 md:text-[1.4rem]">
           “From the first handshake in Ireland to the last putt in the Spanish sun — thank you for trusting us with your
           trip.”
         </p>
 
-        <div className="space-y-4 text-sm leading-relaxed text-forest-700">
+        <div className="space-y-4 text-base leading-8 text-forest-700">
           <p>
             Your dashboard is now home base: saved builds, formal proposals when we issue them, and the documents you need
             along the way.
@@ -281,14 +281,14 @@ function WelcomeBody({ kicker, title }: { readonly kicker: string; readonly titl
             { t: 'Calm', d: 'One thread, one team — fewer spreadsheets, more fairways.' }
           ].map((item) => (
             <div key={item.t}>
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">{item.t}</p>
-              <p className="mt-2 text-sm text-forest-700">{item.d}</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-600">{item.t}</p>
+              <p className="mt-2 text-base leading-7 text-forest-700">{item.d}</p>
             </div>
           ))}
         </div>
 
-        <p className="text-center font-display text-lg font-semibold text-forest-900">See you on the Costa del Sol.</p>
-        <p className="text-center text-sm text-forest-600">— The Golf Sol Ireland team</p>
+        <p className="text-center font-display text-[1.25rem] font-semibold text-forest-900">See you on the Costa del Sol.</p>
+        <p className="text-center text-base text-forest-600">— The Golf Sol Ireland team</p>
       </div>
     </article>
   )

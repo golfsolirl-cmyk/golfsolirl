@@ -138,13 +138,13 @@ function FooterArticlePage() {
                 viewport={{ once: true, amount: 0.25 }}
                 whileInView={{ opacity: 1, y: 0 }}
               >
-                <p className="mb-3 font-accent text-base italic tracking-wide text-fairway-600">Golf Sol Ireland</p>
-                <h2 className="font-display text-3xl font-bold leading-tight text-forest-900 md:text-4xl">{section.title}</h2>
-                <p className="mt-4 text-sm leading-relaxed text-forest-900/68 md:text-base">{section.body}</p>
+                <p className="mb-3 text-base font-semibold uppercase tracking-[0.18em] text-fairway-700">Golf Sol Ireland</p>
+                <h2 className="font-display text-3xl font-bold leading-tight tracking-[-0.03em] text-forest-900 md:text-4xl">{section.title}</h2>
+                <p className="mt-4 text-base leading-8 text-forest-900/70 md:text-lg">{section.body}</p>
                 {section.bullets && section.bullets.length > 0 ? (
                   <ul className="mt-6 space-y-3">
                     {section.bullets.map((line) => (
-                      <li key={line} className="flex items-start gap-3 text-sm text-forest-900/72 md:text-base">
+                      <li key={line} className="flex items-start gap-3 text-base text-forest-900/74 md:text-lg">
                         <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-fairway-600" aria-hidden="true" />
                         <span>{line}</span>
                       </li>
@@ -169,7 +169,7 @@ function FooterArticlePage() {
               >
                 <Quote className="mx-auto h-10 w-10 text-gold-300/80" aria-hidden="true" />
                 <p className="mt-6 font-display text-2xl font-semibold leading-snug text-white md:text-3xl">{page.asideQuote.text}</p>
-                <p className="mt-4 text-sm font-medium uppercase tracking-[0.2em] text-white/45">{page.asideQuote.attribution}</p>
+                <p className="mt-4 text-base font-medium uppercase tracking-[0.2em] text-white/52">{page.asideQuote.attribution}</p>
               </motion.div>
             </div>
           </section>
@@ -184,7 +184,7 @@ function FooterArticlePage() {
               whileInView={{ opacity: 1, y: 0 }}
             >
               <h2 className="font-display text-3xl font-bold text-forest-900 md:text-4xl">Ready when you are</h2>
-              <p className="mx-auto mt-4 max-w-xl text-sm text-forest-900/65 md:text-base">
+              <p className="mx-auto mt-4 max-w-xl text-base leading-8 text-forest-900/68 md:text-lg">
                 Tell us your dates and group — we will come back with a sensible next step, usually by email, phone, or WhatsApp.
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-4">

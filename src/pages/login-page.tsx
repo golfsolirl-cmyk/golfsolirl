@@ -155,15 +155,15 @@ export function LoginPage() {
           <a aria-label="Golf Sol Ireland — home" className="mt-5 inline-block transition-opacity hover:opacity-95" href="/">
             <Logo size="large" tone="scrolled" />
           </a>
-          <h1 className="font-display mt-6 text-3xl font-bold tracking-tight text-white md:text-[2.35rem] md:leading-tight">
+          <h1 className="font-display mt-6 text-[2.2rem] font-bold tracking-[-0.03em] text-white md:text-[2.85rem] md:leading-tight">
             Sign in
           </h1>
-          <p className="mt-4 max-w-xl text-sm leading-relaxed text-white md:text-base">
+          <p className="mt-4 max-w-xl text-base leading-8 text-white/78 md:text-lg">
             We&apos;ll email you a secure magic link — the same premium Golf Sol Ireland experience as the rest of the
             site. No password to remember.
           </p>
           {safeReturnPath ? (
-            <p className="mt-3 max-w-xl rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm text-white/90">
+            <p className="mt-3 max-w-xl rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-base text-white/90">
               After you sign in, we&apos;ll bring you back to your package so you can save it to your account.
             </p>
           ) : null}
@@ -182,7 +182,7 @@ export function LoginPage() {
 
           <div className="px-6 py-9 md:px-10 md:py-11">
             {queryError ? (
-              <div className="mb-6 space-y-2 rounded-2xl border border-gold-200/90 bg-gold-50/90 px-4 py-3 text-sm text-forest-900">
+              <div className="mb-6 space-y-2 rounded-2xl border border-gold-200/90 bg-gold-50/90 px-4 py-3 text-base text-forest-900">
                 <p className="font-medium text-forest-950">
                   {queryError === 'no_session'
                     ? 'We could not complete sign-in from that link. Request a new magic link below.'
@@ -190,11 +190,11 @@ export function LoginPage() {
                       ? 'Supabase returned an error for this sign-in attempt.'
                       : 'Something went wrong. Try again.'}
                 </p>
-                {queryHint ? <p className="text-xs text-forest-700">{decodeURIComponent(queryHint)}</p> : null}
+                {queryHint ? <p className="text-sm text-forest-700">{decodeURIComponent(queryHint)}</p> : null}
                 {queryError === 'no_session' ? (
-                  <p className="text-xs text-forest-600">
+                  <p className="text-sm text-forest-600">
                     Check Supabase → Authentication → URL configuration: add{' '}
-                    <code className="rounded bg-white/80 px-1 py-0.5 text-[0.7rem] text-forest-900 ring-1 ring-forest-100">
+                    <code className="rounded bg-white/80 px-1 py-0.5 text-xs text-forest-900 ring-1 ring-forest-100">
                       {`${window.location.origin}/auth/callback`}
                     </code>{' '}
                     under Redirect URLs, then try again.
@@ -204,7 +204,7 @@ export function LoginPage() {
             ) : null}
 
             {sent ? (
-              <div className="rounded-2xl border border-fairway-200 bg-fairway-50/80 px-4 py-4 text-sm leading-relaxed text-forest-800">
+              <div className="rounded-2xl border border-fairway-200 bg-fairway-50/80 px-4 py-4 text-base leading-8 text-forest-800">
                 <p className="font-semibold text-forest-950">Check your inbox</p>
                 <p className="mt-2 text-forest-700">
                   Open the link from Golf Sol Ireland to finish signing in. You can close this tab — the link opens in
@@ -215,14 +215,14 @@ export function LoginPage() {
               <form className="space-y-6" noValidate onSubmit={handleSubmit}>
                 <div>
                   <label
-                    className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-gold-600"
+                    className="mb-2 block text-sm font-semibold uppercase tracking-[0.16em] text-gold-600"
                     htmlFor="login-email"
                   >
                     Email
                   </label>
                   <input
                     autoComplete="email"
-                    className="w-full rounded-2xl border border-forest-200 bg-offwhite/90 px-4 py-3.5 text-sm text-forest-900 placeholder:text-forest-400 outline-none ring-gold-400/40 transition-shadow focus:border-fairway-500 focus:ring-2"
+                    className="w-full rounded-2xl border border-forest-200 bg-offwhite/90 px-4 py-4 text-base text-forest-900 placeholder:text-forest-400 outline-none ring-gold-400/40 transition-shadow focus:border-fairway-500 focus:ring-2"
                     id="login-email"
                     name="email"
                     onChange={(event) => setEmail(event.target.value)}
@@ -232,7 +232,7 @@ export function LoginPage() {
                     value={email}
                   />
                 </div>
-                {formError ? <p className="text-sm font-medium text-red-700">{formError}</p> : null}
+                {formError ? <p className="text-base font-medium text-red-700">{formError}</p> : null}
                 <LuxuryButton
                   className="w-full justify-center"
                   disabled={isSending}

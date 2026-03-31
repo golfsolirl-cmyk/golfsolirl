@@ -27,20 +27,20 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
   const dashboardHref = profile?.role === 'admin' ? '/dashboard/admin' : '/dashboard'
 
   return (
-    <footer ref={footerRef} className="relative overflow-hidden border-t border-white/10 bg-forest-950 px-6 py-8 text-white">
+    <footer ref={footerRef} className="relative overflow-hidden border-t border-white/10 bg-forest-950 px-6 py-10 text-white">
       <AmbientGolfBall className="right-[3%] top-2 opacity-75 xl:right-[6%]" size="sm" tone="footer" />
       <div className="mx-auto flex max-w-7xl flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-md">
           <Logo tone="hero" />
-          <p className="mt-4 text-sm leading-relaxed text-white/60">{intro}</p>
+          <p className="mt-4 text-base leading-8 text-white/66">{intro}</p>
           {showAuthFooter && !authLoading ? (
             <div className="mt-6 border-t border-white/10 pt-6">
-              <p className="text-xs uppercase tracking-[0.24em] text-white/35">Client area</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-white/42">Client area</p>
               <ul className="mt-3">
                 <li className="flex items-center gap-2">
                   <ChevronRight className="h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
                   <a
-                    className="text-sm text-white/65 transition-colors hover:text-gold-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                    className="text-base font-medium text-white/72 transition-colors hover:text-gold-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
                     href={session ? dashboardHref : '/login'}
                   >
                     {session ? 'My dashboard' : 'Sign in'}
@@ -50,7 +50,7 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
             </div>
           ) : null}
           <div className="mt-6">
-            <p className="text-xs uppercase tracking-[0.24em] text-white/35">Stay connected</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-white/42">Stay connected</p>
             <div className="mt-4 flex flex-wrap gap-3">
               {footerSocialLinks.map(({ label, href }) => {
                 const Icon = footerSocialIconMap[label]
@@ -75,13 +75,13 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
         <div className="grid gap-8 sm:grid-cols-2 xl:grid-cols-4">
           {footerGroups.map((group) => (
             <div key={group.title}>
-              <p className="text-xs uppercase tracking-[0.24em] text-white/35">{group.title}</p>
-              <ul className="mt-4 space-y-2 text-sm">
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-white/42">{group.title}</p>
+              <ul className="mt-4 space-y-2.5">
                 {group.links.map((item) => (
                   <li key={item.href} className="flex items-center gap-2">
                     <ChevronRight className="h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
                     <a
-                      className="text-white/65 transition-colors hover:text-gold-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                      className="text-base font-medium text-white/72 transition-colors hover:text-gold-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
                       href={item.href}
                     >
                       {item.label}
@@ -96,7 +96,7 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
 
       <FooterCompanyContact />
 
-      <div className="mx-auto mt-8 flex max-w-7xl flex-col gap-3 border-t border-white/10 pt-5 text-xs text-white/42 md:flex-row md:items-center md:justify-between">
+      <div className="mx-auto mt-8 flex max-w-7xl flex-col gap-3 border-t border-white/10 pt-5 text-sm text-white/46 md:flex-row md:items-center md:justify-between">
         <p>Copyright {new Date().getFullYear()} Golf Sol Ireland. All rights reserved.</p>
         <p>{copyrightNote}</p>
       </div>
