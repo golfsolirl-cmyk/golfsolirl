@@ -20,7 +20,7 @@ type LinkProps = SharedButtonProps &
   }
 
 const baseClasses =
-  'inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent'
+  'inline-flex items-center justify-center gap-2 rounded-full px-7 py-4 text-base font-semibold tracking-[0.01em] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent'
 
 const variantClasses = {
   primary: 'bg-gold-400 text-white shadow-glow hover:-translate-y-0.5 hover:bg-gold-500',

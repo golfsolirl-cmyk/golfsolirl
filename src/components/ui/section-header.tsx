@@ -49,7 +49,7 @@ export function AnimatedStepKicker({
     return (
       <p
         className={cx(
-          'mb-3 font-accent text-base italic tracking-wide',
+          'mb-3 text-base font-medium tracking-[0.08em] md:text-[1.05rem]',
           dark
             ? 'text-gold-200 drop-shadow-[0_2px_16px_rgba(8,27,8,0.65)]'
             : 'text-fairway-600',
@@ -71,7 +71,7 @@ export function AnimatedStepKicker({
     >
       <motion.div
         className={cx(
-          'flex items-center gap-3 rounded-full border px-4 py-2',
+          'flex items-center gap-3 rounded-full border px-4 py-2.5',
           centered && 'justify-center',
           dark ? 'border-white/10 bg-white/5 backdrop-blur-sm' : 'border-forest-100 bg-white/85 shadow-sm'
         )}
@@ -91,7 +91,7 @@ export function AnimatedStepKicker({
         </span>
         <span
           className={cx(
-            'font-display text-xl font-black tracking-[0.03em] md:text-[1.65rem]',
+            'font-display text-xl font-black tracking-[0.01em] md:text-[1.65rem]',
             dark ? 'text-white' : 'text-forest-900'
           )}
         >
@@ -112,7 +112,7 @@ export function SectionHeader({
   return (
     <motion.div
       className={cx(
-        'mb-10 max-w-2xl md:mb-14',
+        'mb-10 max-w-3xl md:mb-14',
         centered && 'mx-auto text-center',
         dark ? 'text-white' : 'text-forest-900'
       )}
@@ -122,10 +122,10 @@ export function SectionHeader({
       transition={{ duration: 0.7, ease: 'easeOut' }}
     >
       <AnimatedStepKicker centered={centered} dark={dark} kicker={kicker} />
-      <h2 className={cx('mb-4 font-display text-4xl font-bold leading-tight md:text-5xl', dark && 'text-white')}>
+      <h2 className={cx('mb-4 font-display text-[2.65rem] font-bold leading-[1.02] tracking-[-0.03em] md:text-[3.6rem]', dark && 'text-white')}>
         {title}
       </h2>
-      <p className={cx('text-sm leading-relaxed md:text-base', dark ? 'text-white/65' : 'text-forest-900/65')}>
+      <p className={cx('max-w-2xl text-base leading-8 md:text-lg', dark ? 'text-white/68' : 'text-forest-900/68', centered && 'mx-auto')}>
         {body}
       </p>
     </motion.div>

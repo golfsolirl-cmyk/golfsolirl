@@ -21,8 +21,8 @@ const fadeUpProps = {
 export function TrustStat({ value, label }: StatItem) {
   return (
     <div className="min-w-[88px]">
-      <p className="font-display text-2xl font-bold text-gold-400 md:text-3xl">{value}</p>
-      <p className="text-xs text-white/55">{label}</p>
+      <p className="font-display text-[1.85rem] font-bold text-gold-400 md:text-[2.2rem]">{value}</p>
+      <p className="text-sm text-white/60">{label}</p>
     </div>
   )
 }
@@ -96,7 +96,7 @@ export function PackageCard({ name, description, price, duration, highlight, inc
             </p>
             <p
               className={cx(
-                'mt-2 font-display text-3xl font-bold leading-tight md:text-[2rem]',
+                'mt-2 font-display text-[2.1rem] font-bold leading-tight md:text-[2.35rem]',
                 isFeaturedPackage ? 'text-white' : 'text-forest-900'
               )}
             >
@@ -106,8 +106,10 @@ export function PackageCard({ name, description, price, duration, highlight, inc
         </div>
 
         <div className="mb-6">
-          <h3 className={cx('text-2xl font-semibold tracking-tight', isFeaturedPackage ? 'text-white' : 'text-forest-900')}>{name}</h3>
-          <p className={cx('mt-3 text-sm leading-relaxed', isFeaturedPackage ? 'text-white/72' : 'text-forest-900/65')}>{description}</p>
+          <h3 className={cx('text-[1.75rem] font-semibold tracking-tight md:text-[1.95rem]', isFeaturedPackage ? 'text-white' : 'text-forest-900')}>
+            {name}
+          </h3>
+          <p className={cx('mt-3 text-base leading-relaxed', isFeaturedPackage ? 'text-white/74' : 'text-forest-900/68')}>{description}</p>
         </div>
 
         <div
@@ -120,7 +122,7 @@ export function PackageCard({ name, description, price, duration, highlight, inc
             <div
               key={item}
               className={cx(
-                'flex items-center gap-3 text-sm',
+                'flex items-center gap-3 text-[0.98rem]',
                 isFeaturedPackage ? 'text-white/82' : 'text-forest-900/72'
               )}
             >
@@ -140,7 +142,7 @@ export function PackageCard({ name, description, price, duration, highlight, inc
           <a
             aria-label={`Tailor the ${name} trip`}
             className={cx(
-              'inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-300 sm:min-w-[170px]',
+              'inline-flex items-center justify-center gap-2 rounded-full px-4 py-3 text-base font-semibold transition-all duration-300 sm:min-w-[170px]',
               isFeaturedPackage
                 ? 'bg-white text-forest-900 hover:bg-gold-300 hover:text-forest-950'
                 : 'bg-forest-900 text-white hover:bg-gold-500'
@@ -169,34 +171,34 @@ export function CourseCard({ name, location, distance, badge, description, rate,
           src={image}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-forest-900/75 via-transparent to-transparent" />
-        <span className="absolute left-4 top-4 rounded-full bg-gold-400 px-3 py-1 text-xs font-semibold text-forest-900">
+        <span className="absolute left-4 top-4 rounded-full bg-gold-400 px-3 py-1.5 text-sm font-semibold text-forest-900">
           {badge}
         </span>
         <div className="absolute bottom-4 left-4 right-4">
-          <p className="font-display text-2xl font-bold text-white">{name}</p>
+          <p className="font-display text-[1.85rem] font-bold text-white">{name}</p>
         </div>
       </div>
 
       <div className="p-6">
-        <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-forest-900/50">
+        <div className="mb-3 flex flex-wrap items-center gap-2 text-sm text-forest-900/52">
           <span>{location}</span>
           <span className="h-1 w-1 rounded-full bg-forest-900/20" />
           <span>{distance}</span>
         </div>
-        <p className="mb-4 text-sm leading-relaxed text-forest-900/65">{description}</p>
+        <p className="mb-4 text-base leading-relaxed text-forest-900/68">{description}</p>
         <div className="mb-5 flex flex-wrap gap-2">
           {tags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full border border-fairway-100 bg-fairway-50 px-3 py-1 text-xs text-fairway-700"
+              className="rounded-full border border-fairway-100 bg-fairway-50 px-3 py-1.5 text-sm text-fairway-700"
             >
               {tag}
             </span>
           ))}
         </div>
         <div className="flex items-center justify-between border-t border-forest-100 pt-4">
-          <p className="text-sm font-semibold text-forest-900">{rate}</p>
-          <a className="text-xs font-semibold text-fairway-700 transition-colors hover:text-fairway-900" href="/packages">
+          <p className="text-base font-semibold text-forest-900">{rate}</p>
+          <a className="text-sm font-semibold text-fairway-700 transition-colors hover:text-fairway-900" href="/packages">
             Request details
           </a>
         </div>
@@ -226,7 +228,7 @@ export function HotelCard({ name, tier, area, image, description, perks, price }
         />
         <div className="absolute inset-0 bg-gradient-to-t from-forest-900/65 via-transparent to-transparent" />
         <div className="absolute left-4 right-4 top-4 flex items-center justify-between gap-3">
-          <span className={cx('rounded-full border px-3 py-1 text-xs font-semibold', tierClassName)}>
+          <span className={cx('rounded-full border px-3 py-1.5 text-sm font-semibold', tierClassName)}>
             {tier}-star stay
           </span>
           <div className="flex gap-0.5">
@@ -236,26 +238,26 @@ export function HotelCard({ name, tier, area, image, description, perks, price }
           </div>
         </div>
         <div className="absolute bottom-4 left-4 right-4">
-          <p className="font-display text-2xl font-bold text-white">{name}</p>
-          <p className="text-sm text-white/75">{area}</p>
+          <p className="font-display text-[1.85rem] font-bold text-white">{name}</p>
+          <p className="text-base text-white/78">{area}</p>
         </div>
       </div>
 
       <div className="p-6">
-        <p className="mb-4 text-sm leading-relaxed text-forest-900/65">{description}</p>
+        <p className="mb-4 text-base leading-relaxed text-forest-900/68">{description}</p>
         <div className="mb-5 flex flex-wrap gap-2">
           {perks.map((perk) => (
             <span
               key={perk}
-              className="rounded-full border border-forest-100 bg-forest-50 px-3 py-1 text-xs text-forest-900/70"
+              className="rounded-full border border-forest-100 bg-forest-50 px-3 py-1.5 text-sm text-forest-900/72"
             >
               {perk}
             </span>
           ))}
         </div>
         <div className="flex items-center justify-between border-t border-forest-100 pt-4">
-          <p className="text-sm font-semibold text-forest-900">{price}</p>
-          <a className="text-xs font-semibold text-fairway-700 transition-colors hover:text-fairway-900" href={`/packages?stay=${tier}`}>
+          <p className="text-base font-semibold text-forest-900">{price}</p>
+          <a className="text-sm font-semibold text-fairway-700 transition-colors hover:text-fairway-900" href={`/packages?stay=${tier}`}>
             Match with package
           </a>
         </div>
@@ -273,8 +275,8 @@ export function FeatureTile({ title, description, icon: Icon }: TransferFeature)
       <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-fairway-500/15 text-fairway-400">
         <Icon className="h-5 w-5" aria-hidden="true" />
       </div>
-      <h3 className="mb-2 text-sm font-semibold text-white">{title}</h3>
-      <p className="text-sm leading-relaxed text-white/65">{description}</p>
+      <h3 className="mb-2 text-base font-semibold text-white">{title}</h3>
+      <p className="text-base leading-relaxed text-white/68">{description}</p>
     </motion.article>
   )
 }
@@ -295,8 +297,8 @@ export function StepCard({ step, title, description, image }: PlanningStep) {
         <span className="absolute left-4 top-4 font-display text-3xl font-bold leading-none text-gold-400">{step}</span>
       </div>
       <div className="p-6">
-        <h3 className="mb-2 text-sm font-semibold text-forest-900">{title}</h3>
-        <p className="text-sm leading-relaxed text-forest-900/65">{description}</p>
+        <h3 className="mb-2 text-base font-semibold text-forest-900">{title}</h3>
+        <p className="text-base leading-relaxed text-forest-900/68">{description}</p>
       </div>
     </motion.article>
   )
@@ -313,10 +315,10 @@ export function TestimonialCard({ quote, name, meta }: TestimonialItem) {
           <Star key={index} className="h-4 w-4 fill-gold-400 text-gold-400" aria-hidden="true" />
         ))}
       </div>
-      <p className="mb-5 text-sm italic leading-relaxed text-forest-900/75">"{quote}"</p>
+      <p className="mb-5 text-base italic leading-relaxed text-forest-900/78">"{quote}"</p>
       <div>
-        <p className="text-sm font-semibold text-forest-900">{name}</p>
-        <p className="text-xs text-forest-900/50">{meta}</p>
+        <p className="text-base font-semibold text-forest-900">{name}</p>
+        <p className="text-sm text-forest-900/52">{meta}</p>
       </div>
     </motion.article>
   )

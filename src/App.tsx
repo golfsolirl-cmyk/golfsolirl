@@ -252,7 +252,7 @@ function App() {
               transition={{ duration: 0.8, ease: 'easeOut' }}
             >
               <motion.p
-                className="mb-4 font-accent text-lg italic tracking-wide text-fairway-400"
+                className="mb-4 font-accent text-xl font-medium tracking-[0.02em] text-fairway-300 md:text-[1.45rem]"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.1, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -262,7 +262,7 @@ function App() {
               </motion.p>
 
               <motion.h1
-                className="max-w-3xl font-display text-5xl font-black leading-none tracking-tight text-white md:text-7xl lg:text-8xl"
+                className="max-w-3xl font-display text-5xl font-black leading-[0.94] tracking-[-0.04em] text-white md:text-7xl lg:text-[5.6rem]"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.2, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -272,7 +272,7 @@ function App() {
               </motion.h1>
 
               <motion.p
-                className="mt-5 max-w-xl font-accent text-xl italic text-white/75"
+                className="mt-5 max-w-2xl font-accent text-[1.35rem] font-medium leading-relaxed text-white/82 md:text-[1.5rem]"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.32, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -282,7 +282,7 @@ function App() {
               </motion.p>
 
               <motion.p
-                className="mt-6 max-w-lg text-sm leading-relaxed text-white/65 md:text-base"
+                className="mt-6 max-w-xl text-base leading-8 text-white/72 md:text-lg"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.44, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -334,13 +334,13 @@ function App() {
                 />
               </div>
               <div className="mt-5">
-                <p className="text-xs uppercase tracking-[0.28em] text-white/45">Signature route</p>
-                <h2 className="mt-2 font-display text-3xl font-bold text-white">Marbella to Sotogrande</h2>
-                <p className="mt-3 text-sm leading-relaxed text-white/65">
+                <p className="text-sm font-medium uppercase tracking-[0.24em] text-white/50">Signature route</p>
+                <h2 className="mt-2 font-display text-[2rem] font-bold leading-tight text-white md:text-[2.2rem]">Marbella to Sotogrande</h2>
+                <p className="mt-3 text-base leading-7 text-white/72">
                   Championship golf, polished stays, and transfer rhythm designed for Irish golfers who want the trip to feel effortless.
                 </p>
                 <motion.p
-                  className="mt-5 max-w-sm bg-[linear-gradient(90deg,#2a7020_0%,#ffffff_42%,#dc5801_74%,#2a7020_100%)] bg-[length:220%_100%] bg-clip-text font-display text-4xl font-black leading-none tracking-tight text-transparent md:text-[2.85rem]"
+                  className="mt-5 max-w-sm bg-[linear-gradient(90deg,#2a7020_0%,#ffffff_42%,#dc5801_74%,#2a7020_100%)] bg-[length:220%_100%] bg-clip-text font-display text-[2.85rem] font-black leading-[0.96] tracking-[-0.04em] text-transparent md:text-[3.15rem]"
                   animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
                   initial={{ opacity: 0, y: 16 }}
                   transition={{
@@ -356,13 +356,13 @@ function App() {
               </div>
               <div className="mt-5 space-y-3">
                 {heroCardHighlights.map((item) => (
-                  <div key={item} className="flex items-center gap-3 text-sm text-white/75">
+                  <div key={item} className="flex items-center gap-3 text-base text-white/78">
                     <CheckCircle2 className="h-4 w-4 text-fairway-400" aria-hidden="true" />
                     <span>{item}</span>
                   </div>
                 ))}
               </div>
-              <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4 text-xs text-white/55">
+              <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4 text-sm text-white/58">
                 <span>Irish-owned planning</span>
                 <span>Luxury, not generic</span>
               </div>

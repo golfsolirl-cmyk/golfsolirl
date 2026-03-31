@@ -39,12 +39,12 @@ export default {
         offwhite: '#f7f9f5'
       },
       fontFamily: {
-        display: ['"Playfair Display"', 'Georgia', 'serif'],
-        body: ['"DM Sans"', 'system-ui', 'sans-serif'],
-        accent: ['"Cormorant Garamond"', 'Georgia', 'serif'],
-        script: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        display: ['"Rubik"', 'system-ui', 'sans-serif'],
+        body: ['"Rubik"', 'system-ui', 'sans-serif'],
+        accent: ['"Rubik"', 'system-ui', 'sans-serif'],
+        script: ['"Rubik"', 'system-ui', 'sans-serif'],
         'brand-script': ['"Dancing Script"', 'cursive'],
-        'brand-serif': ['"Playfair Display"', 'Georgia', 'serif']
+        'brand-serif': ['"Rubik"', 'system-ui', 'sans-serif']
       },
       boxShadow: {
         glow: '0 24px 80px rgba(220, 88, 1, 0.18)',

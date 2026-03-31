@@ -74,7 +74,7 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
     <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4 md:px-6">
       <div
         className={cx(
-          'mx-auto max-w-7xl border px-4 py-2.5 transition-all duration-300 md:rounded-full md:px-6',
+          'mx-auto max-w-7xl border px-4 py-3 transition-all duration-300 md:rounded-full md:px-6',
           isMenuOpen
             ? 'rounded-[2rem] border-white/10 bg-forest-900/98 shadow-soft backdrop-blur-md'
             : isScrolled
@@ -95,7 +95,7 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
             {links.map((link) => (
               <a
                 key={link}
-                className="text-sm tracking-wide text-white/80 transition-colors hover:text-gold-400"
+                className="text-[0.95rem] font-medium tracking-[0.02em] text-white/82 transition-colors hover:text-gold-400"
                 href={navHrefForLink(link)}
               >
                 {link}
@@ -106,11 +106,11 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
           <div className="hidden items-center gap-3 md:flex">
             {showAuthNav && !authLoading ? (
               session ? (
-                <LuxuryButton className="!px-5 !py-2.5 !text-xs" href={dashboardHref} variant="outline">
+                <LuxuryButton className="!px-5 !py-2.5 !text-sm" href={dashboardHref} variant="outline">
                   Dashboard
                 </LuxuryButton>
               ) : (
-                <LuxuryButton className="!px-5 !py-2.5 !text-xs" href="/login" variant="outline">
+                <LuxuryButton className="!px-5 !py-2.5 !text-sm" href="/login" variant="outline">
                   Sign in
                 </LuxuryButton>
               )
