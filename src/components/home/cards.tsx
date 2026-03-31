@@ -275,8 +275,8 @@ export function FeatureTile({ title, description, icon: Icon }: TransferFeature)
       <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-forest-950 shadow-[0_12px_24px_rgba(0,0,0,0.16)]">
         <Icon className="h-5 w-5" aria-hidden="true" />
       </div>
-      <h3 className="mb-2 text-[1.02rem] font-semibold text-white">{title}</h3>
-      <p className="text-[1.02rem] leading-8 text-white/74">{description}</p>
+      <h3 className="mb-3 text-[1.18rem] font-semibold leading-7 text-white md:text-[1.24rem]">{title}</h3>
+      <p className="text-[1.08rem] leading-8 text-white/84">{description}</p>
     </motion.article>
   )
 }
