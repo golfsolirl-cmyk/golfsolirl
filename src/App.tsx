@@ -435,11 +435,11 @@ function App() {
               <div className="grid gap-8 xl:grid-cols-[1.05fr_0.95fr] xl:items-center">
                 <div>
                   <div className="flex flex-wrap items-center gap-3">
-                    <span className="inline-flex items-center gap-2 rounded-full border border-gold-300/35 bg-gold-50 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-gold-600">
-                      <span className="h-2 w-2 rounded-full bg-fairway-500" />
+                    <span className="inline-flex items-center gap-2 rounded-full border border-forest-900 bg-forest-950 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-white shadow-[0_14px_30px_rgba(10,32,8,0.14)]">
+                      <span className="h-2 w-2 rounded-full bg-gold-300" />
                       Irish driver transfer service
                     </span>
-                    <span className="rounded-full border border-forest-100 bg-white px-4 py-2 text-sm font-medium text-forest-900/62">
+                    <span className="rounded-full border border-gold-300/45 bg-gold-50 px-4 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-gold-700">
                       Airport, hotel, and golf-course lines covered
                     </span>
                   </div>
@@ -451,10 +451,25 @@ function App() {
                     From Malaga airport arrivals to hotel check-in runs and every golf-course movement in between, the transport side of the trip is handled for you by Irish drivers who understand the pace, the luggage, and the group dynamic.
                   </p>
 
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    {[
+                      'Golf Sol Ireland Mercedes Fleet',
+                      'Irish-driver operated',
+                      'Premium Costa del Sol transfer routing'
+                    ].map((item) => (
+                      <span
+                        key={item}
+                        className="inline-flex min-h-11 items-center rounded-full border border-forest-100 bg-white px-4 py-2 text-sm font-semibold text-forest-950 shadow-sm"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+
                   <div className="mt-6 grid gap-3 sm:grid-cols-3">
                     {transferServiceMoments.map(({ title, description, icon: Icon }) => (
                       <div key={title} className="rounded-[1.6rem] border border-forest-100 bg-white/88 p-4 shadow-sm">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-fairway-50 text-fairway-700">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-forest-950 text-gold-300">
                           <Icon className="h-5 w-5" aria-hidden="true" />
                         </div>
                         <p className="mt-4 text-base font-semibold text-forest-900">{title}</p>
@@ -465,7 +480,7 @@ function App() {
                 </div>
 
                 <div className="relative overflow-hidden rounded-[2rem] border border-forest-100 bg-forest-950 p-4 text-white shadow-[0_28px_80px_rgba(22,58,19,0.16)]">
-                  <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(80,163,45,0.22),transparent_24%),radial-gradient(circle_at_80%_12%,rgba(220,88,1,0.22),transparent_20%)]" />
+                  <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(255,255,255,0.08),transparent_20%),radial-gradient(circle_at_82%_12%,rgba(220,88,1,0.22),transparent_20%)]" />
                   <div className="relative z-10">
                     <div className="overflow-hidden rounded-[1.5rem]">
                       <img
@@ -475,23 +490,49 @@ function App() {
                       />
                     </div>
 
-                    <div className="mt-4 rounded-[1.5rem] border border-white/10 bg-white/6 p-4 backdrop-blur-sm">
-                      <div className="flex flex-wrap items-center gap-3">
-                        <div className="rounded-[1.2rem] border border-white/10 bg-white px-4 py-3 text-forest-950">
-                          <div className="flex items-center gap-3">
-                            <img alt="" aria-hidden="true" className="h-10 w-10 object-contain" src={logoIcon} />
-                            <div>
-                              <p className="font-display text-lg font-black uppercase tracking-[-0.04em] text-[#003805]">GolfSol</p>
-                              <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[#dc5801]">Ireland transfers</p>
+                    <div className="mt-4 space-y-4 rounded-[1.5rem] border border-white/10 bg-white/6 p-4 backdrop-blur-sm">
+                      <div className="rounded-[1.45rem] border border-white/12 bg-[linear-gradient(135deg,#ffffff_0%,#f7f9f5_100%)] p-4 text-forest-950 shadow-[0_18px_40px_rgba(0,0,0,0.2)]">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-700">Mock vehicle livery</p>
+                            <div className="mt-4 overflow-hidden rounded-[1.35rem] border border-slate-200 bg-white shadow-inner">
+                              <div className="relative flex min-h-[8.4rem] items-center justify-between gap-4 bg-[linear-gradient(90deg,#ffffff_0%,#ffffff_56%,#0a2008_56%,#0a2008_100%)] px-5 py-4">
+                                <div aria-hidden="true" className="absolute inset-y-0 left-[54%] w-[3px] bg-gold-400/90" />
+                                <div className="relative z-10 flex items-center gap-3">
+                                  <img alt="" aria-hidden="true" className="h-11 w-11 object-contain" src={logoIcon} />
+                                  <div>
+                                    <p className="font-display text-[1.2rem] font-black uppercase tracking-[-0.05em] text-[#003805]">GolfSol</p>
+                                    <p className="text-[0.72rem] font-bold uppercase tracking-[0.22em] text-[#dc5801]">Ireland</p>
+                                  </div>
+                                </div>
+                                <div className="relative z-10 max-w-[11rem] text-right">
+                                  <p className="text-[0.72rem] font-semibold uppercase tracking-[0.24em] text-gold-300">Mercedes fleet</p>
+                                  <p className="mt-2 text-sm font-semibold leading-6 text-white">
+                                    Airport, hotel, and golf-course transfers handled by Irish drivers
+                                  </p>
+                                </div>
+                              </div>
                             </div>
                           </div>
+                          <span className="rounded-full border border-forest-900 bg-forest-950 px-4 py-2 text-sm font-semibold uppercase tracking-[0.16em] text-white">
+                            Fleet spec
+                          </span>
                         </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-3">
                         <span className="rounded-full border border-gold-300/35 bg-gold-400/12 px-4 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-gold-200">
                           Mercedes van service
                         </span>
+                        <span className="rounded-full border border-white/10 bg-white/8 px-4 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-white/88">
+                          Golf bag and luggage ready
+                        </span>
+                        <span className="rounded-full border border-white/10 bg-white/8 px-4 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-white/88">
+                          Irish-driver coordinated
+                        </span>
                       </div>
 
-                      <div className="mt-4 space-y-3">
+                      <div className="space-y-3">
                         {[
                           'Airport pickups from Malaga timed around Irish arrivals',
                           'Hotel shuttles and golf-course runs coordinated by Irish drivers',
