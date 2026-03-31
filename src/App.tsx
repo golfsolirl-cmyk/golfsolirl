@@ -1,15 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { FaWhatsapp } from 'react-icons/fa6'
+import logoIcon from './golf-sol-ireland-logo.svg'
 import {
   BedDouble,
   Bus,
   CalendarRange,
   CheckCircle2,
+  CreditCard,
   Mail,
   MapPinned,
   Phone,
+  Plane,
   Quote,
+  ShieldCheck,
   Sparkles,
   Users
 } from 'lucide-react'
@@ -79,6 +83,24 @@ const quickTransferOptions: readonly {
     description: 'The smoothest premium option, with driver support across the trip rather than just the airport runs.'
   }
 ]
+
+const transferServiceMoments = [
+  {
+    title: 'Airport pickups and drop-offs',
+    description: 'Malaga arrivals, luggage handling, and direct hotel routing are all organised around your Irish flight times.',
+    icon: Plane
+  },
+  {
+    title: 'Hotel-to-course movements',
+    description: 'From morning tee times to dinner transfers, the full week moves on one joined-up Irish-led plan.',
+    icon: Bus
+  },
+  {
+    title: 'Irish drivers throughout',
+    description: 'Airport transfers, hotel runs, and golf-course transport are handled by Irish drivers who know the trip rhythm.',
+    icon: ShieldCheck
+  }
+] as const
 
 const revealUp = {
   initial: { opacity: 0, y: 26 },
@@ -292,6 +314,33 @@ function App() {
               </motion.p>
 
               <motion.div
+                className="mt-7 max-w-2xl rounded-[1.8rem] border border-[#fdba74]/35 bg-[linear-gradient(135deg,rgba(8,27,8,0.68),rgba(22,58,19,0.84),rgba(220,88,1,0.16))] p-[1px] shadow-[0_20px_60px_rgba(10,32,8,0.24)]"
+                initial={{ opacity: 0, y: 30 }}
+                transition={{ delay: 0.5, duration: 0.7 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+              >
+                <div className="rounded-[1.72rem] bg-forest-950/92 px-5 py-5 backdrop-blur-md md:px-6">
+                  <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                    <div className="max-w-xl">
+                      <p className="text-sm font-semibold uppercase tracking-[0.24em] text-gold-300">Payments handled properly</p>
+                      <p className="mt-3 text-[1.12rem] font-semibold leading-8 text-white md:text-[1.2rem]">
+                        <span className="text-white">All customer payments are made in Ireland</span>{' '}
+                        <span className="text-gold-300">directly to Golf Sol Ireland</span> — not to a Spanish middleman, not to a mystery operator, and not offshore.
+                      </p>
+                      <p className="mt-3 text-base leading-7 text-white/68">
+                        It keeps the booking cleaner, more familiar, and easier to trust from the first deposit onwards.
+                      </p>
+                    </div>
+                    <div className="inline-flex min-h-12 items-center gap-3 self-start rounded-full border border-white/10 bg-white/6 px-4 py-2.5 text-sm font-semibold text-white/84">
+                      <CreditCard className="h-4 w-4 text-gold-300" aria-hidden="true" />
+                      <span>Ireland-based payment flow</span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div
                 className="mt-8 flex flex-wrap gap-4"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.56, duration: 0.7 }}
@@ -372,10 +421,96 @@ function App() {
           <WaveDivider fill="#ffffff" />
         </section>
 
-        <section className="relative border-b border-forest-100 bg-white px-6 py-8 md:py-10">
+        <section className="relative overflow-hidden border-b border-forest-100 bg-white px-6 py-14 md:py-18">
+          <div aria-hidden="true" className="absolute left-[-80px] top-10 h-56 w-56 rounded-full bg-fairway-400/12 blur-3xl" />
+          <div aria-hidden="true" className="absolute right-[-40px] top-[-30px] h-64 w-64 rounded-full bg-gold-300/12 blur-3xl" />
           <div className="section-inner">
             <motion.div
-              className="overflow-hidden rounded-[2rem] border border-forest-100 bg-[linear-gradient(135deg,#ffffff_0%,#f7f9f5_36%,#eef5e7_70%,#fff7ef_100%)] p-5 shadow-sm md:p-6"
+              className="overflow-hidden rounded-[2.25rem] border border-forest-100 bg-[linear-gradient(135deg,#ffffff_0%,#f6faf3_42%,#fff8ef_100%)] p-5 shadow-soft md:p-7"
+              initial={{ opacity: 0, y: 24 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+              viewport={{ once: true, amount: 0.25 }}
+              whileInView={{ opacity: 1, y: 0 }}
+            >
+              <div className="grid gap-8 xl:grid-cols-[1.05fr_0.95fr] xl:items-center">
+                <div>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-gold-300/35 bg-gold-50 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-gold-600">
+                      <span className="h-2 w-2 rounded-full bg-fairway-500" />
+                      Irish driver transfer service
+                    </span>
+                    <span className="rounded-full border border-forest-100 bg-white px-4 py-2 text-sm font-medium text-forest-900/62">
+                      Airport, hotel, and golf-course lines covered
+                    </span>
+                  </div>
+
+                  <h2 className="mt-5 max-w-3xl font-display text-[2.6rem] font-black leading-[0.98] tracking-[-0.04em] text-forest-900 md:text-[3.5rem]">
+                    New Mercedes transfer vans, Golf Sol branding on the side, and Irish drivers handling the full route
+                  </h2>
+                  <p className="mt-4 max-w-3xl text-lg leading-8 text-forest-900/68">
+                    From Malaga airport arrivals to hotel check-in runs and every golf-course movement in between, the transport side of the trip is handled for you by Irish drivers who understand the pace, the luggage, and the group dynamic.
+                  </p>
+
+                  <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                    {transferServiceMoments.map(({ title, description, icon: Icon }) => (
+                      <div key={title} className="rounded-[1.6rem] border border-forest-100 bg-white/88 p-4 shadow-sm">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-fairway-50 text-fairway-700">
+                          <Icon className="h-5 w-5" aria-hidden="true" />
+                        </div>
+                        <p className="mt-4 text-base font-semibold text-forest-900">{title}</p>
+                        <p className="mt-2 text-sm leading-7 text-forest-900/60">{description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="relative overflow-hidden rounded-[2rem] border border-forest-100 bg-forest-950 p-4 text-white shadow-[0_28px_80px_rgba(22,58,19,0.16)]">
+                  <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(80,163,45,0.22),transparent_24%),radial-gradient(circle_at_80%_12%,rgba(220,88,1,0.22),transparent_20%)]" />
+                  <div className="relative z-10">
+                    <div className="overflow-hidden rounded-[1.5rem]">
+                      <img
+                        alt="Premium Golf Sol Ireland Mercedes transfer van ready for Costa del Sol airport and golf transfers"
+                        className="h-[19rem] w-full object-cover"
+                        src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=1600&q=80"
+                      />
+                    </div>
+
+                    <div className="mt-4 rounded-[1.5rem] border border-white/10 bg-white/6 p-4 backdrop-blur-sm">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <div className="rounded-[1.2rem] border border-white/10 bg-white px-4 py-3 text-forest-950">
+                          <div className="flex items-center gap-3">
+                            <img alt="" aria-hidden="true" className="h-10 w-10 object-contain" src={logoIcon} />
+                            <div>
+                              <p className="font-display text-lg font-black uppercase tracking-[-0.04em] text-[#003805]">GolfSol</p>
+                              <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[#dc5801]">Ireland transfers</p>
+                            </div>
+                          </div>
+                        </div>
+                        <span className="rounded-full border border-gold-300/35 bg-gold-400/12 px-4 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-gold-200">
+                          Mercedes van service
+                        </span>
+                      </div>
+
+                      <div className="mt-4 space-y-3">
+                        {[
+                          'Airport pickups from Malaga timed around Irish arrivals',
+                          'Hotel shuttles and golf-course runs coordinated by Irish drivers',
+                          'Golf bags, luggage, and group timing all handled as one joined-up service'
+                        ].map((item) => (
+                          <div key={item} className="flex items-start gap-3 text-base text-white/82">
+                            <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-gold-300" aria-hidden="true" />
+                            <span>{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              className="mt-6 overflow-hidden rounded-[2rem] border border-forest-100 bg-[linear-gradient(135deg,#ffffff_0%,#f7f9f5_36%,#eef5e7_70%,#fff7ef_100%)] p-5 shadow-sm md:p-6"
               initial={{ opacity: 0, y: 24 }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
               viewport={{ once: true, amount: 0.3 }}
