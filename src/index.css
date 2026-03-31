@@ -7,12 +7,12 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    font-size: clamp(17px, 0.28vw + 16.1px, 19px);
+    font-size: clamp(16px, 0.2vw + 15.4px, 18px);
   }
 
   body {
     @apply bg-offwhite font-body text-forest-900 antialiased;
-    line-height: 1.68;
+    line-height: 1.6;
     text-rendering: optimizeLegibility;
   }
 

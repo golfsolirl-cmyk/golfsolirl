@@ -317,10 +317,10 @@ function PackageAdminPage() {
               initial={{ opacity: 0, y: 30 }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
             >
-              <p className="mb-4 text-[1.02rem] font-semibold uppercase tracking-[0.14em] text-gold-200 md:text-[1.12rem]">
+              <p className="mb-4 text-base font-semibold uppercase tracking-[0.18em] text-fairway-300 md:text-lg">
                 Costa del Sol package pricing for Irish golf groups
               </p>
-              <h1 className="max-w-3xl font-display text-5xl font-black leading-[1.02] tracking-[-0.015em] text-white md:text-7xl lg:text-[5.25rem]">
+              <h1 className="max-w-3xl font-display text-5xl font-black leading-none tracking-tight text-white md:text-7xl lg:text-[5.4rem]">
                 Build packages that feel premium and still protect your margin
               </h1>
               <p className="mt-5 max-w-2xl text-[1.3rem] font-medium leading-relaxed text-white/82 md:text-[1.45rem]">
@@ -369,7 +369,7 @@ function PackageAdminPage() {
                   <div className="relative z-10 flex h-full flex-col">
                     <div className="mb-5 flex items-start justify-between gap-4">
                       <div>
-                        <span className="inline-flex rounded-full border border-gold-200 bg-gold-50 px-3 py-1.5 text-sm font-semibold uppercase tracking-[0.12em] text-forest-950">
+                        <span className="inline-flex rounded-full border border-fairway-100 bg-fairway-50 px-3 py-1.5 text-sm font-semibold uppercase tracking-[0.14em] text-fairway-700">
                           {option.label}
                         </span>
                         <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-forest-900">{option.name}</h2>
@@ -436,7 +436,7 @@ function PackageAdminPage() {
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <p className={cx('text-sm font-semibold uppercase tracking-[0.12em]', isSelected ? 'text-gold-300' : 'text-forest-900')}>
+                        <p className={cx('text-sm font-semibold uppercase tracking-[0.14em]', isSelected ? 'text-gold-300' : 'text-fairway-700')}>
                           {option.area}
                         </p>
                         <h3 className="mt-3 font-display text-3xl font-bold tracking-tight">{option.name}</h3>
@@ -588,7 +588,7 @@ function PackageAdminPage() {
               <motion.div className="rounded-[2rem] border border-white/10 bg-forest-950 p-6 text-white shadow-soft md:p-7" {...revealUp}>
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
-                    <p className="text-[1.02rem] font-semibold uppercase tracking-[0.14em] text-gold-300">Live quote view</p>
+                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gold-300">Live quote view</p>
                     <h3 className="mt-3 font-display text-4xl font-bold tracking-tight">Simple, detailed, margin-safe</h3>
                   </div>
                   <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-base text-white/76">
@@ -617,7 +617,7 @@ function PackageAdminPage() {
 
                 <div className="mt-6 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(220,88,1,0.18),rgba(253,186,116,0.1),rgba(80,163,45,0.12))] p-[1px]">
                   <div className="rounded-[1.7rem] bg-forest-950/96 p-5">
-                    <p className="text-[1.02rem] font-semibold uppercase tracking-[0.14em] text-white/70">Recommended sell price</p>
+                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/45">Recommended sell price</p>
                     <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
                       <div>
                         <p className="font-display text-5xl font-black leading-none text-white">{formatEuro(pricingSummary.sellPricePerPerson)}</p>
@@ -680,7 +680,7 @@ function PackageAdminPage() {
                     'Keeps the package looking premium instead of cheap or patchy'
                   ].map((item) => (
                     <div key={item} className="flex items-start gap-3 text-base text-white/80">
-                      <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-gold-300" aria-hidden="true" />
+                      <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-fairway-400" aria-hidden="true" />
                       <span>{item}</span>
                     </div>
                   ))}
@@ -724,7 +724,7 @@ function RouteMapShowcase() {
                 transition={{ delay: index * 0.24, duration: 4.4, ease: 'easeInOut', repeat: Infinity }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-forest-950 shadow-[0_12px_24px_rgba(0,0,0,0.18)]">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-fairway-500/14 text-fairway-300">
                     <ShamrockIcon className="h-6 w-6" dark />
                   </div>
                   <div>
@@ -785,8 +785,8 @@ function RouteMapShowcase() {
               <div className="absolute inset-[35%] rounded-full border border-slate-300/22" />
             </motion.div>
 
-            <div className="absolute left-[8%] top-[9%] rounded-[1.4rem] border border-gold-300/26 bg-forest-950/76 px-4 py-3 text-white backdrop-blur-sm">
-              <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">Departing from Ireland</p>
+            <div className="absolute left-[8%] top-[9%] rounded-[1.4rem] border border-fairway-300/22 bg-fairway-500/10 px-4 py-3 text-white backdrop-blur-sm">
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-fairway-300">Departing from Ireland</p>
               <p className="mt-2 text-base font-semibold">Smaller golf groups</p>
             </div>
 
@@ -882,11 +882,11 @@ function SummaryTile({
   return (
     <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-forest-950 shadow-[0_12px_24px_rgba(0,0,0,0.18)]">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-fairway-500/12 text-fairway-300">
           <Icon className="h-5 w-5" aria-hidden="true" />
         </div>
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.1em] text-white/76">{label}</p>
+          <p className="text-sm uppercase tracking-[0.14em] text-white/48">{label}</p>
           <p className="mt-1 text-xl font-semibold text-white">{value}</p>
         </div>
       </div>
@@ -914,7 +914,7 @@ function BreakdownRow({
 function MiniSummaryCard({ label, value }: { readonly label: string; readonly value: string }) {
   return (
     <div className="rounded-[1.3rem] border border-white/10 bg-white/5 p-4">
-      <p className="text-sm font-semibold uppercase tracking-[0.1em] text-white/74">{label}</p>
+      <p className="text-sm uppercase tracking-[0.14em] text-white/46">{label}</p>
       <p className="mt-2 text-xl font-semibold text-white">{value}</p>
     </div>
   )

@@ -402,10 +402,10 @@ function CustomerPackagePage() {
               initial={{ opacity: 0, y: 30 }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
             >
-              <p className="mb-4 text-[1.02rem] font-semibold uppercase tracking-[0.14em] text-gold-200 drop-shadow-[0_4px_18px_rgba(8,27,8,0.35)] md:text-[1.14rem]">
+              <p className="mb-4 text-lg font-semibold uppercase tracking-[0.16em] text-gold-200 drop-shadow-[0_4px_18px_rgba(8,27,8,0.35)] md:text-xl">
                 Costa del Sol golf packages for Irish travellers
               </p>
-              <h1 className="max-w-3xl font-display text-5xl font-black leading-[1.02] tracking-[-0.015em] text-white md:text-7xl lg:text-[5.1rem]">
+              <h1 className="max-w-3xl font-display text-5xl font-black leading-none tracking-tight text-white md:text-7xl lg:text-[5.2rem]">
                 Choose the package style, size the group, and see the trip cost live
               </h1>
               <p className="mt-5 max-w-2xl text-[1.35rem] font-medium leading-relaxed text-white/82 md:text-[1.5rem]">
@@ -465,7 +465,7 @@ function CustomerPackagePage() {
                       <div>
                         <span
                           className={cx(
-                            'inline-flex rounded-full border px-3 py-1.5 text-sm font-semibold uppercase tracking-[0.12em]',
+                            'inline-flex rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.14em]',
                             isSelected
                               ? 'border-gold-300/30 bg-gold-400/15 text-gold-300'
                               : 'border-fairway-100 bg-fairway-50 text-fairway-700'
@@ -521,7 +521,7 @@ function CustomerPackagePage() {
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <p className={cx('text-sm font-semibold uppercase tracking-[0.12em]', isSelected ? 'text-gold-300' : 'text-forest-900')}>
+                        <p className={cx('text-xs font-semibold uppercase tracking-[0.14em]', isSelected ? 'text-gold-300' : 'text-fairway-700')}>
                           {item.area}
                         </p>
                         <h3 className="mt-3 font-display text-3xl font-bold tracking-tight">{item.name}</h3>
@@ -530,7 +530,7 @@ function CustomerPackagePage() {
                     </div>
 
                     <div className="mt-6 rounded-[1.5rem] border border-current/10 bg-current/5 p-4">
-                      <p className={cx('text-sm font-semibold uppercase tracking-[0.12em]', isSelected ? 'text-white/72' : 'text-forest-900/62')}>
+                      <p className={cx('text-[11px] font-semibold uppercase tracking-[0.16em]', isSelected ? 'text-white/55' : 'text-forest-900/42')}>
                         Per person / per night
                       </p>
                       <p className="mt-2 font-display text-4xl font-bold">{formatEuro(item.pricePerNight)}</p>
@@ -654,7 +654,7 @@ function CustomerPackagePage() {
               <motion.div className="rounded-[2rem] border border-white/10 bg-forest-950 p-6 text-white shadow-soft md:p-7" {...revealUp}>
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
-                    <p className="text-[1.02rem] font-semibold uppercase tracking-[0.14em] text-gold-300">Your live estimate</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gold-300">Your live estimate</p>
                     <h3 className="mt-3 font-display text-4xl font-bold tracking-tight">Built from a customer point of view</h3>
                   </div>
                   <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-base text-white/76">
@@ -682,7 +682,7 @@ function CustomerPackagePage() {
 
                 <div className="mt-6 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(220,88,1,0.18),rgba(253,186,116,0.1),rgba(80,163,45,0.12))] p-[1px]">
                   <div className="rounded-[1.7rem] bg-forest-950/96 p-5">
-                    <p className="text-[1.02rem] font-semibold uppercase tracking-[0.14em] text-white/72">Estimated group total</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/48">Estimated group total</p>
                     <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
                       <div>
                         <p className="font-display text-5xl font-black leading-none text-white">{formatEuro(pricingSummary.estimatedGroupTotal)}</p>
@@ -730,7 +730,7 @@ function CustomerPackagePage() {
                   </p>
                 ) : null}
                 {saveBuildOk ? (
-                  <p className="mt-3 text-base font-medium text-gold-200" role="status">
+                  <p className="mt-3 text-base font-medium text-fairway-300" role="status">
                     Saved. You can review it anytime under your dashboard.
                   </p>
                 ) : null}
@@ -768,7 +768,7 @@ function CustomerPackagePage() {
               </div>
 
               <motion.div className="rounded-[2rem] border border-white/10 bg-white/6 p-6 text-white backdrop-blur-sm" {...revealUp}>
-                <p className="text-[1.02rem] font-semibold uppercase tracking-[0.14em] text-gold-300">What customers can do here</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gold-300">What customers can do here</p>
                 <div className="mt-5 space-y-4">
                   {[
                     'Price the trip from 1 to 8 golfers',
@@ -776,8 +776,8 @@ function CustomerPackagePage() {
                     'See a deposit estimate before enquiring',
                     'Understand the package before speaking to you'
                   ].map((item) => (
-                    <div key={item} className="flex items-start gap-3 text-base text-white/82">
-                      <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-gold-300" aria-hidden="true" />
+                    <div key={item} className="flex items-start gap-3 text-base text-white/8៨">
+                      <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-fairway-400" aria-hidden="true" />
                       <span>{item}</span>
                     </div>
                   ))}
@@ -819,10 +819,10 @@ function CustomerRouteMapShowcase() {
                 transition={{ delay: index * 0.24, duration: 4.4, ease: 'easeInOut', repeat: Infinity }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-forest-950 shadow-[0_12px_24px_rgba(0,0,0,0.18)]">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-fairway-500/14 text-fairway-300">
                     <ShamrockIcon className="h-6 w-6" dark />
                   </div>
-                  <p className="text-base font-semibold">{item}</p>
+                  <p className="text-sm font-semibold">{item}</p>
                 </div>
               </motion.div>
             ))}
@@ -871,13 +871,13 @@ function CustomerRouteMapShowcase() {
               <div className="absolute inset-[35%] rounded-full border border-slate-300/22" />
             </motion.div>
 
-            <div className="absolute left-[8%] top-[9%] rounded-[1.4rem] border border-gold-300/26 bg-forest-950/76 px-4 py-3 text-white backdrop-blur-sm">
-              <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">Choose your group</p>
+            <div className="absolute left-[8%] top-[9%] rounded-[1.4rem] border border-fairway-300/22 bg-fairway-500/10 px-4 py-3 text-white backdrop-blur-sm">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-fairway-300">Choose your group</p>
               <p className="mt-2 text-base font-semibold">1 to 8 golfers</p>
             </div>
 
             <div className="absolute bottom-[11%] right-[8%] rounded-[1.5rem] border border-[#dc5801]/26 bg-forest-950/62 px-4 py-4 text-white backdrop-blur-sm">
-              <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#f7a24f]">Live package view</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#f7a24f]">Live package view</p>
               <p className="mt-2 text-base font-semibold">Stay, golf, transfers</p>
               <p className="mt-1 text-sm text-white/60">A clearer way to price the trip</p>
             </div>
@@ -941,7 +941,7 @@ function SelectorCard({
 function SummaryTile({ label, value }: { readonly label: string; readonly value: string }) {
   return (
     <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
-      <p className="text-sm font-semibold uppercase tracking-[0.1em] text-white/76">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/48">{label}</p>
       <p className="mt-2 text-[1.15rem] font-semibold text-white">{value}</p>
     </div>
   )
@@ -967,7 +967,7 @@ function BreakdownRow({
 function MiniSummaryCard({ label, value }: { readonly label: string; readonly value: string }) {
   return (
     <div className="rounded-[1.3rem] border border-white/10 bg-white/5 p-4">
-      <p className="text-sm font-semibold uppercase tracking-[0.1em] text-white/74">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/46">{label}</p>
       <p className="mt-2 text-[1.15rem] font-semibold text-white">{value}</p>
     </div>
   )
