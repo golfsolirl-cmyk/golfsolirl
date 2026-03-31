@@ -274,7 +274,7 @@ function App() {
               transition={{ duration: 0.8, ease: 'easeOut' }}
             >
               <motion.p
-                className="mb-4 text-[1.05rem] font-semibold uppercase tracking-[0.18em] text-fairway-300 md:text-[1.12rem]"
+                className="mb-4 text-base font-semibold uppercase tracking-[0.16em] text-gold-200 md:text-lg"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.1, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -284,7 +284,7 @@ function App() {
               </motion.p>
 
               <motion.h1
-                className="max-w-3xl font-display text-5xl font-black leading-[0.94] tracking-[-0.04em] text-white md:text-7xl lg:text-[5.6rem]"
+                className="max-w-3xl font-display text-5xl font-black leading-tight tracking-tight text-white md:text-7xl lg:text-[5.1rem]"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.2, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -294,7 +294,7 @@ function App() {
               </motion.h1>
 
               <motion.p
-                className="mt-5 max-w-2xl text-[1.22rem] font-medium leading-8 text-white/82 md:text-[1.38rem]"
+                className="mt-5 max-w-2xl text-[1.22rem] font-medium leading-relaxed text-white/82 md:text-[1.35rem]"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.32, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -304,7 +304,7 @@ function App() {
               </motion.p>
 
               <motion.p
-                className="mt-6 max-w-xl text-lg leading-8 text-white/72 md:text-[1.12rem]"
+                className="mt-6 max-w-xl text-base leading-relaxed text-white/75 md:text-lg"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.44, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -383,13 +383,13 @@ function App() {
                 />
               </div>
               <div className="mt-5">
-                <p className="text-sm font-medium uppercase tracking-[0.24em] text-white/50">Signature route</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-gold-200">Signature route</p>
                 <h2 className="mt-2 font-display text-[2rem] font-bold leading-tight text-white md:text-[2.2rem]">Marbella to Sotogrande</h2>
-                <p className="mt-3 text-base leading-7 text-white/72">
+                <p className="mt-3 text-base leading-relaxed text-white/78">
                   Championship golf, polished stays, and transfer rhythm designed for Irish golfers who want the trip to feel effortless.
                 </p>
                 <motion.p
-                  className="mt-5 max-w-sm bg-[linear-gradient(90deg,#2a7020_0%,#ffffff_42%,#dc5801_74%,#2a7020_100%)] bg-[length:220%_100%] bg-clip-text font-display text-[2.85rem] font-black leading-[0.96] tracking-[-0.04em] text-transparent md:text-[3.15rem]"
+                  className="mt-5 max-w-sm font-display text-[2.75rem] font-black leading-tight text-white md:text-[3rem]"
                   animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
                   initial={{ opacity: 0, y: 16 }}
                   transition={{
@@ -406,7 +406,7 @@ function App() {
               <div className="mt-5 space-y-3">
                 {heroCardHighlights.map((item) => (
                   <div key={item} className="flex items-center gap-3 text-base text-white/78">
-                    <CheckCircle2 className="h-4 w-4 text-fairway-400" aria-hidden="true" />
+                    <CheckCircle2 className="h-4 w-4 text-gold-300" aria-hidden="true" />
                     <span>{item}</span>
                   </div>
                 ))}
@@ -579,16 +579,16 @@ function App() {
             >
               <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-500">Departing from Ireland</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.16em] text-gold-600">Departing from Ireland</p>
                   <h2 className="mt-3 max-w-2xl font-display text-3xl font-bold leading-tight text-forest-900 md:text-4xl">
                     Quick package start for Irish golfers heading to the Costa del Sol
                   </h2>
-                  <p className="mt-3 max-w-2xl text-sm leading-relaxed text-forest-900/62 md:text-base">
+                  <p className="mt-3 max-w-2xl text-base leading-8 text-forest-900/68 md:text-lg">
                     Set the group size, trip length, rounds, and transfer style here, then jump straight into the full package page with those choices already selected.
                   </p>
                 </div>
 
-                <div className="flex items-center gap-3 rounded-full border border-gold-300/35 bg-white/80 px-4 py-2 text-xs uppercase tracking-[0.22em] text-forest-900/62">
+                <div className="flex items-center gap-3 rounded-full border border-gold-300/35 bg-white/80 px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.14em] text-forest-900/72">
                   <span className="h-2 w-2 rounded-full bg-fairway-500" />
                   <span>Quick calculator</span>
                 </div>
@@ -654,7 +654,7 @@ function App() {
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-forest-900">Transfer style</p>
-                      <p className="text-xs leading-relaxed text-forest-900/52">
+                      <p className="text-sm leading-relaxed text-forest-900/58">
                         Choose the level of transport support that suits the trip
                       </p>
                     </div>
@@ -677,7 +677,7 @@ function App() {
                           type="button"
                         >
                           <p className="text-sm font-semibold">{option.label}</p>
-                          <p className={cx('mt-1 text-xs leading-relaxed', isActive ? 'text-white/72' : 'text-forest-900/58')}>
+                          <p className={cx('mt-1 text-sm leading-relaxed', isActive ? 'text-white/76' : 'text-forest-900/62')}>
                             {option.description}
                           </p>
                         </button>
@@ -689,11 +689,11 @@ function App() {
                     <LuxuryButton href={quickPackagesHref} showArrow>
                       Open full package page
                     </LuxuryButton>
-                    <div className="rounded-full border border-forest-100 bg-offwhite px-4 py-2 text-xs uppercase tracking-[0.18em] text-forest-900/55">
+                    <div className="rounded-full border border-forest-100 bg-offwhite px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-forest-900/68">
                       {quickGroupSize} golfers • {quickNights} nights • {quickRounds} rounds
                     </div>
                   </div>
-                  <p className="mt-4 text-xs leading-relaxed text-forest-900/55">
+                  <p className="mt-4 text-sm leading-relaxed text-forest-900/62">
                     Continue on the packages page to save this build to your account (magic-link sign-in) or open a printable proposal for your group.
                   </p>
                 </motion.div>
