@@ -95,7 +95,7 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
             {links.map((link) => (
               <a
                 key={link}
-                className="text-[0.95rem] font-medium tracking-[0.02em] text-white/82 transition-colors hover:text-gold-400"
+                className="text-base font-medium tracking-[0.01em] text-white/84 transition-colors hover:text-gold-300"
                 href={navHrefForLink(link)}
               >
                 {link}
@@ -106,11 +106,11 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
           <div className="hidden items-center gap-3 md:flex">
             {showAuthNav && !authLoading ? (
               session ? (
-                <LuxuryButton className="!px-5 !py-2.5 !text-sm" href={dashboardHref} variant="outline">
+                <LuxuryButton className="!px-5 !py-2.5 !text-base" href={dashboardHref} variant="outline">
                   Dashboard
                 </LuxuryButton>
               ) : (
-                <LuxuryButton className="!px-5 !py-2.5 !text-sm" href="/login" variant="outline">
+                <LuxuryButton className="!px-5 !py-2.5 !text-base" href="/login" variant="outline">
                   Sign in
                 </LuxuryButton>
               )

@@ -32,10 +32,10 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
       <div className="mx-auto flex max-w-7xl flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-md">
           <Logo tone="hero" />
-          <p className="mt-4 text-base leading-8 text-white/66">{intro}</p>
+          <p className="mt-4 text-[1.02rem] leading-8 text-white/72">{intro}</p>
           {showAuthFooter && !authLoading ? (
             <div className="mt-6 border-t border-white/10 pt-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-white/42">Client area</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.14em] text-white/72">Client area</p>
               <ul className="mt-3">
                 <li className="flex items-center gap-2">
                   <ChevronRight className="h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
@@ -50,7 +50,7 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
             </div>
           ) : null}
           <div className="mt-6">
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-white/42">Stay connected</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-white/72">Stay connected</p>
             <div className="mt-4 flex flex-wrap gap-3">
               {footerSocialLinks.map(({ label, href }) => {
                 const Icon = footerSocialIconMap[label]
@@ -75,7 +75,7 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
         <div className="grid gap-8 sm:grid-cols-2 xl:grid-cols-4">
           {footerGroups.map((group) => (
             <div key={group.title}>
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-white/42">{group.title}</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.14em] text-white/72">{group.title}</p>
               <ul className="mt-4 space-y-2.5">
                 {group.links.map((item) => (
                   <li key={item.href} className="flex items-center gap-2">
@@ -96,7 +96,7 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
 
       <FooterCompanyContact />
 
-      <div className="mx-auto mt-8 flex max-w-7xl flex-col gap-3 border-t border-white/10 pt-5 text-sm text-white/46 md:flex-row md:items-center md:justify-between">
+      <div className="mx-auto mt-8 flex max-w-7xl flex-col gap-3 border-t border-white/10 pt-5 text-base text-white/62 md:flex-row md:items-center md:justify-between">
         <p>Copyright {new Date().getFullYear()} Golf Sol Ireland. All rights reserved.</p>
         <p>{copyrightNote}</p>
       </div>
