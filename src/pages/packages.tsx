@@ -317,16 +317,16 @@ function PackageAdminPage() {
               initial={{ opacity: 0, y: 30 }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
             >
-              <p className="mb-4 text-base font-semibold uppercase tracking-[0.18em] text-fairway-300 md:text-lg">
+              <p className="mb-4 text-[1.05rem] font-semibold uppercase tracking-[0.12em] text-gold-200 md:text-[1.16rem]">
                 Costa del Sol package pricing for Irish golf groups
               </p>
-              <h1 className="max-w-3xl font-display text-5xl font-black leading-none tracking-tight text-white md:text-7xl lg:text-[5.4rem]">
+              <h1 className="max-w-3xl font-display text-5xl font-black leading-[1.02] tracking-[-0.015em] text-white md:text-7xl lg:text-[5.2rem]">
                 Build packages that feel premium and still protect your margin
               </h1>
-              <p className="mt-5 max-w-2xl text-[1.3rem] font-medium leading-relaxed text-white/82 md:text-[1.45rem]">
+              <p className="mt-5 max-w-2xl text-[1.32rem] font-medium leading-9 text-white/86 md:text-[1.48rem]">
                 Price the stay, the golf, the driver, the diesel, and the profit properly before you ever send the quote.
               </p>
-              <p className="mt-6 max-w-2xl text-base leading-8 text-white/72 md:text-lg">
+              <p className="mt-6 max-w-2xl text-base leading-8 text-white/78 md:text-[1.08rem]">
                 This package page is built for smaller Irish groups heading to the Costa del Sol. It keeps the visual tone of the main site, but gives you a cleaner way to shape real packages and quote with confidence.
               </p>
 
@@ -369,7 +369,7 @@ function PackageAdminPage() {
                   <div className="relative z-10 flex h-full flex-col">
                     <div className="mb-5 flex items-start justify-between gap-4">
                       <div>
-                        <span className="inline-flex rounded-full border border-fairway-100 bg-fairway-50 px-3 py-1.5 text-sm font-semibold uppercase tracking-[0.14em] text-fairway-700">
+                        <span className="inline-flex rounded-full border border-gold-200 bg-gold-50 px-3 py-1.5 text-sm font-semibold uppercase tracking-[0.12em] text-forest-950">
                           {option.label}
                         </span>
                         <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-forest-900">{option.name}</h2>
@@ -390,7 +390,7 @@ function PackageAdminPage() {
                     <div className="mt-6 space-y-3 rounded-[1.5rem] border border-forest-100 bg-white/72 p-4">
                       {option.includes.map((item) => (
                         <div key={item} className="flex items-center gap-3 text-[0.98rem] text-forest-900/74">
-                          <CheckCircle2 className="h-4 w-4 shrink-0 text-fairway-600" aria-hidden="true" />
+                          <CheckCircle2 className="h-4 w-4 shrink-0 text-gold-500" aria-hidden="true" />
                           <span>{item}</span>
                         </div>
                       ))}
@@ -436,7 +436,7 @@ function PackageAdminPage() {
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <p className={cx('text-sm font-semibold uppercase tracking-[0.14em]', isSelected ? 'text-gold-300' : 'text-fairway-700')}>
+                        <p className={cx('text-sm font-semibold uppercase tracking-[0.12em]', isSelected ? 'text-gold-300' : 'text-forest-900')}>
                           {option.area}
                         </p>
                         <h3 className="mt-3 font-display text-3xl font-bold tracking-tight">{option.name}</h3>
@@ -445,7 +445,7 @@ function PackageAdminPage() {
                     </div>
 
                     <div className="mt-6 rounded-[1.5rem] border border-current/10 bg-current/5 p-4">
-                      <p className={cx('text-sm font-semibold uppercase tracking-[0.14em]', isSelected ? 'text-white/58' : 'text-forest-900/42')}>
+                      <p className={cx('text-sm font-semibold uppercase tracking-[0.12em]', isSelected ? 'text-white/72' : 'text-forest-900/62')}>
                         Per person / per night
                       </p>
                       <p className="mt-2 font-display text-4xl font-bold">{formatEuro(option.pricePerPersonPerNight)}</p>
@@ -643,7 +643,7 @@ function PackageAdminPage() {
 
         <section className="section-shell bg-forest-900 py-24" id="enquire">
           <div className="absolute top-0" id="plan-trip" />
-          <div aria-hidden="true" className="absolute left-[-80px] top-[10%] h-72 w-72 rounded-full bg-fairway-500/12 blur-3xl" />
+          <div aria-hidden="true" className="absolute left-[-80px] top-[10%] h-72 w-72 rounded-full bg-gold-300/12 blur-3xl" />
           <div aria-hidden="true" className="absolute bottom-[-60px] right-[-30px] h-72 w-72 rounded-full bg-gold-400/12 blur-3xl" />
 
           <div className="section-inner">
@@ -680,7 +680,7 @@ function PackageAdminPage() {
                     'Keeps the package looking premium instead of cheap or patchy'
                   ].map((item) => (
                     <div key={item} className="flex items-start gap-3 text-base text-white/80">
-                      <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-fairway-400" aria-hidden="true" />
+                      <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-gold-300" aria-hidden="true" />
                       <span>{item}</span>
                     </div>
                   ))}
@@ -724,7 +724,7 @@ function RouteMapShowcase() {
                 transition={{ delay: index * 0.24, duration: 4.4, ease: 'easeInOut', repeat: Infinity }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-fairway-500/14 text-fairway-300">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-forest-950 shadow-[0_12px_24px_rgba(0,0,0,0.18)]">
                     <ShamrockIcon className="h-6 w-6" dark />
                   </div>
                   <div>
@@ -785,8 +785,8 @@ function RouteMapShowcase() {
               <div className="absolute inset-[35%] rounded-full border border-slate-300/22" />
             </motion.div>
 
-            <div className="absolute left-[8%] top-[9%] rounded-[1.4rem] border border-fairway-300/22 bg-fairway-500/10 px-4 py-3 text-white backdrop-blur-sm">
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-fairway-300">Departing from Ireland</p>
+            <div className="absolute left-[8%] top-[9%] rounded-[1.4rem] border border-gold-300/26 bg-forest-950/76 px-4 py-3 text-white backdrop-blur-sm">
+              <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">Departing from Ireland</p>
               <p className="mt-2 text-base font-semibold">Smaller golf groups</p>
             </div>
 
@@ -855,7 +855,7 @@ function PricingInput({
           <p className="text-base font-semibold text-forest-900">{label}</p>
           <p className="mt-1 text-sm leading-relaxed text-forest-900/56">{description}</p>
         </div>
-        {prefix ? <span className="rounded-full bg-fairway-50 px-2.5 py-1 text-sm font-semibold uppercase text-fairway-700">{prefix}</span> : null}
+        {prefix ? <span className="rounded-full bg-gold-50 px-2.5 py-1 text-sm font-semibold uppercase text-forest-950">{prefix}</span> : null}
       </div>
       <input
         className="mt-4 w-full rounded-2xl border border-forest-100 bg-offwhite px-4 py-3 text-base font-semibold text-forest-900 outline-none transition focus:border-gold-400 focus:ring-2 focus:ring-gold-200"
@@ -882,11 +882,11 @@ function SummaryTile({
   return (
     <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-fairway-500/12 text-fairway-300">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-forest-950 shadow-[0_12px_24px_rgba(0,0,0,0.18)]">
           <Icon className="h-5 w-5" aria-hidden="true" />
         </div>
         <div>
-          <p className="text-sm uppercase tracking-[0.14em] text-white/48">{label}</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.1em] text-white/76">{label}</p>
           <p className="mt-1 text-xl font-semibold text-white">{value}</p>
         </div>
       </div>
@@ -914,7 +914,7 @@ function BreakdownRow({
 function MiniSummaryCard({ label, value }: { readonly label: string; readonly value: string }) {
   return (
     <div className="rounded-[1.3rem] border border-white/10 bg-white/5 p-4">
-      <p className="text-sm uppercase tracking-[0.14em] text-white/46">{label}</p>
+      <p className="text-sm font-semibold uppercase tracking-[0.1em] text-white/74">{label}</p>
       <p className="mt-2 text-xl font-semibold text-white">{value}</p>
     </div>
   )
