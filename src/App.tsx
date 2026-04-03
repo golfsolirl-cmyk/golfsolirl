@@ -430,7 +430,7 @@ function App() {
               className="overflow-hidden rounded-[2.25rem] border border-forest-100 bg-[linear-gradient(135deg,#ffffff_0%,#f6faf3_42%,#fff8ef_100%)] p-5 shadow-soft md:p-7"
               initial={{ opacity: 0, y: 24 }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
-              viewport={{ once: true, amount: 0.25 }}
+              viewport={{ once: true, amount: 'some', margin: '0px 0px 80px 0px' }}
               whileInView={{ opacity: 1, y: 0 }}
             >
               <div className="grid gap-8 xl:grid-cols-[1.05fr_0.95fr] xl:items-center">
@@ -520,19 +520,19 @@ function App() {
                           </span>
                         </div>
                         <div className="mt-5 w-full overflow-hidden rounded-[1.35rem] border border-slate-200 bg-white shadow-inner">
-                          <div className="grid min-h-[11rem] w-full grid-cols-1 items-center gap-5 bg-white px-6 py-6 sm:min-h-[12rem] sm:grid-cols-[minmax(12.5rem,42%)_minmax(0,1fr)] sm:gap-0 sm:px-0 sm:py-0">
-                            <div className="flex min-w-0 items-center gap-3 sm:gap-4 sm:px-7 sm:py-7">
-                              <img alt="" aria-hidden="true" className="h-11 w-11 shrink-0 object-contain sm:h-12 sm:w-12" src={logoIcon} />
-                              <div className="min-w-0">
-                                <p className="font-display text-[1.2rem] font-black uppercase tracking-[-0.05em] text-[#003805] sm:text-[1.35rem]">GolfSol</p>
-                                <p className="text-[0.72rem] font-bold uppercase tracking-[0.22em] text-[#dc5801] sm:text-[0.8rem]">Ireland</p>
+                          <div className="grid w-full grid-cols-1 items-stretch gap-6 bg-white px-5 py-7 sm:min-h-[12rem] sm:grid-cols-[minmax(12.5rem,42%)_minmax(0,1fr)] sm:items-center sm:gap-0 sm:px-0 sm:py-0">
+                            <div className="flex min-w-0 items-center justify-center gap-3 sm:justify-start sm:gap-4 sm:px-7 sm:py-7">
+                              <img alt="" aria-hidden="true" className="h-12 w-12 shrink-0 object-contain sm:h-12 sm:w-12" src={logoIcon} />
+                              <div className="min-w-0 text-left">
+                                <p className="font-display text-[1.35rem] font-black uppercase tracking-[-0.05em] text-[#003805] sm:text-[1.35rem]">GolfSol</p>
+                                <p className="text-[0.8rem] font-bold uppercase tracking-[0.2em] text-[#dc5801] sm:text-[0.8rem]">Ireland</p>
                               </div>
                             </div>
-                            <div className="min-w-0 rounded-xl bg-[#0a2008] px-5 py-5 sm:rounded-none sm:border-l-[3px] sm:border-gold-400/90 sm:px-8 sm:py-7 sm:pl-7">
-                              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-300 sm:text-[0.8rem] sm:tracking-[0.2em]">
+                            <div className="min-w-0 rounded-xl bg-[#0a2008] px-5 py-6 text-left sm:rounded-none sm:border-l-[3px] sm:border-gold-400/90 sm:px-8 sm:py-7 sm:pl-7">
+                              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-gold-300 sm:text-[0.8rem] sm:tracking-[0.2em]">
                                 Mercedes fleet
                               </p>
-                              <p className="mt-3 text-sm font-semibold leading-7 text-white sm:mt-4 sm:text-base sm:leading-8">
+                              <p className="mt-3 text-base font-semibold leading-8 text-white sm:mt-4 sm:text-base sm:leading-8">
                                 Airport, hotel, and golf-course transfers handled by Irish drivers
                               </p>
                             </div>
@@ -574,7 +574,7 @@ function App() {
               className="mt-6 overflow-hidden rounded-[2rem] border border-forest-100 bg-[linear-gradient(135deg,#ffffff_0%,#f7f9f5_36%,#eef5e7_70%,#fff7ef_100%)] p-5 shadow-sm md:p-6"
               initial={{ opacity: 0, y: 24 }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
-              viewport={{ once: true, amount: 0.3 }}
+              viewport={{ once: true, amount: 'some', margin: '0px 0px 80px 0px' }}
               whileInView={{ opacity: 1, y: 0 }}
             >
               <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
@@ -599,7 +599,7 @@ function App() {
                   className="grid gap-4"
                   initial={{ opacity: 0, y: 18 }}
                   transition={{ duration: 0.5, ease: 'easeOut' }}
-                  viewport={{ once: true, amount: 0.25 }}
+                  viewport={{ once: true, amount: 'some' }}
                   whileInView={{ opacity: 1, y: 0 }}
                 >
                   <QuickSelectorCard
@@ -645,7 +645,7 @@ function App() {
                   className="rounded-[1.75rem] border border-forest-100 bg-white/88 p-5 shadow-sm backdrop-blur-sm"
                   initial={{ opacity: 0, y: 18 }}
                   transition={{ delay: 0.08, duration: 0.5, ease: 'easeOut' }}
-                  viewport={{ once: true, amount: 0.25 }}
+                  viewport={{ once: true, amount: 'some' }}
                   whileInView={{ opacity: 1, y: 0 }}
                 >
                   <div className="flex items-center gap-3">
@@ -709,7 +709,7 @@ function App() {
               className="mb-8 text-center"
               initial={{ opacity: 0, y: 24 }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
-              viewport={{ once: true, amount: 0.35 }}
+              viewport={{ once: true, amount: 'some' }}
               whileInView={{ opacity: 1, y: 0 }}
             >
               <div className="flex justify-center">
