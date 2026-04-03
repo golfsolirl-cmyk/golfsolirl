@@ -555,7 +555,7 @@ function CustomerPackagePage() {
 
             {fromLanding ? (
               <div
-                className="mb-8 rounded-[1.75rem] border border-fairway-200 bg-fairway-50/90 px-5 py-4 text-base text-forest-800 shadow-sm"
+                className="mb-8 rounded-[1.75rem] border border-forest-200 bg-white px-5 py-4 text-base text-forest-900 shadow-sm"
                 role="status"
               >
                 <p className="font-semibold text-forest-950">Started from the homepage calculator</p>
@@ -569,7 +569,7 @@ function CustomerPackagePage() {
               <motion.div className="rounded-[2rem] border border-forest-100 bg-[#f7f4ed] p-6 shadow-sm md:p-7" {...revealUp}>
                 <div className="rounded-[1.6rem] border border-white/80 bg-white p-5 shadow-sm">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-fairway-50 text-fairway-700">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-forest-900 text-white">
                       <Users className="h-5 w-5" aria-hidden="true" />
                     </div>
                     <div>
@@ -820,7 +820,7 @@ function CustomerRouteMapShowcase() {
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-forest-950 shadow-[0_12px_24px_rgba(0,0,0,0.18)]">
-                    <ShamrockIcon className="h-6 w-6" dark />
+                    <ShamrockIcon className="h-6 w-6" />
                   </div>
                   <p className="text-base font-semibold">{item}</p>
                 </div>

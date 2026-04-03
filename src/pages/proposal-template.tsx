@@ -336,7 +336,7 @@ function ProposalTemplatePage() {
                 </label>
                 <input
                   autoComplete="email"
-                  className="w-full rounded-2xl border border-forest-200 bg-forest-50/40 px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
+                  className="w-full rounded-2xl border border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
                   id="send-client-email"
                   onChange={(e) => {
                     setClientEmail(e.target.value)
@@ -353,7 +353,7 @@ function ProposalTemplatePage() {
                   Dashboard title (optional)
                 </label>
                 <input
-                  className="w-full rounded-2xl border border-forest-200 bg-forest-50/40 px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
+                  className="w-full rounded-2xl border border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
                   id="send-proposal-title"
                   onChange={(e) => {
                     setSendTitle(e.target.value)
@@ -549,7 +549,7 @@ function InfoCard({
   return (
     <div className="rounded-[1.8rem] border border-forest-100 bg-white p-6">
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-fairway-50 text-fairway-700">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-forest-900 text-white">
           <Icon className="h-5 w-5" aria-hidden="true" />
         </div>
         <p className="text-sm font-semibold text-forest-900">{title}</p>

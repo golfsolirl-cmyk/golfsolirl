@@ -7,17 +7,14 @@ interface LogoProps {
   readonly tone?: 'hero' | 'scrolled' | 'light'
 }
 
-export function ShamrockIcon({
-  className,
-  dark = false
-}: {
-  readonly className?: string
-  readonly dark?: boolean
-}) {
+/** Brand shamrock fill — matches “Why groups trust” and all inline shamrocks site-wide */
+export const shamrockIconColorClassName = 'text-fairway-600'
+
+export function ShamrockIcon({ className }: { readonly className?: string }) {
   return (
     <svg
       aria-hidden="true"
-      className={cx(className, dark ? 'text-white' : 'text-forest-700')}
+      className={cx(className, shamrockIconColorClassName)}
       fill="currentColor"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
@@ -41,18 +38,17 @@ export function Logo({ className, size = 'default', tone = 'light' }: LogoProps)
   const isHero = tone === 'hero'
   const isScrolled = tone === 'scrolled'
 
-  const primaryClassName = isHero ? 'text-[#003805]' : isScrolled ? 'text-white/85' : 'text-[#003805]'
-  const secondaryClassName = isScrolled ? 'text-[#f18e4c]' : 'text-[#dc5801]'
-  const taglineClassName = isHero ? 'text-white/90' : isScrolled ? 'text-white/50' : 'text-[#4B5563]'
+  const primaryClassName = isHero ? 'text-white' : isScrolled ? 'text-white' : 'text-[#003805]'
+  const secondaryClassName = isHero || isScrolled ? 'text-orange-500' : 'text-orange-900'
+  const taglineClassName = isHero ? 'text-white' : isScrolled ? 'text-white' : 'text-[#4B5563]'
   const heroWordmarkStyle = isHero
     ? {
-        textShadow:
-          '-1px -1px 0 rgba(255,255,255,0.95), 1px -1px 0 rgba(255,255,255,0.95), -1px 1px 0 rgba(255,255,255,0.95), 1px 1px 0 rgba(255,255,255,0.95), 0 6px 18px rgba(10,32,8,0.28)'
+        textShadow: '0 2px 28px rgba(0,0,0,0.35)'
       }
     : undefined
   const heroTextStyle = isHero
     ? {
-        textShadow: '0 4px 16px rgba(10,32,8,0.45)'
+        textShadow: '0 2px 20px rgba(0,0,0,0.25)'
       }
     : undefined
 
@@ -89,11 +85,7 @@ export function Logo({ className, size = 'default', tone = 'light' }: LogoProps)
             GolfSol
           </span>
           <ShamrockIcon
-            className={cx(
-              'shrink-0 self-center',
-              isLarge ? 'h-9 w-9 md:h-10 md:w-10' : 'h-7 w-7 md:h-8 md:w-8'
-            )}
-            dark={isScrolled}
+            className={cx('shrink-0 self-center', isLarge ? 'h-9 w-9 md:h-10 md:w-10' : 'h-7 w-7 md:h-8 md:w-8')}
           />
           <span
             className={cx(

@@ -95,7 +95,7 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
             {links.map((link) => (
               <a
                 key={link}
-                className="text-base font-medium tracking-[0.01em] text-white/84 transition-colors hover:text-gold-300"
+                className="text-base font-medium tracking-[0.01em] text-white transition-colors hover:text-white"
                 href={navHrefForLink(link)}
               >
                 {link}
@@ -141,7 +141,7 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
               {links.map((link) => (
                 <a
                   key={link}
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white/80 transition-colors hover:border-gold-400/40 hover:text-gold-400"
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white transition-colors hover:border-gold-400/40 hover:text-white"
                   href={navHrefForLink(link)}
                   onClick={handleCloseMenu}
                 >

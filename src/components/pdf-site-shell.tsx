@@ -30,7 +30,7 @@ export function PdfSiteShell({ children }: PdfSiteShellProps) {
             {navLinks.map((link) => (
               <a
                 key={link}
-                className="text-sm tracking-wide text-white/80 transition-colors hover:text-gold-400"
+                className="text-sm tracking-wide text-white transition-colors hover:text-white"
                 href={`/#${link.toLowerCase()}`}
               >
                 {link}

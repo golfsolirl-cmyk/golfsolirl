@@ -194,7 +194,7 @@ function InfoCard({
   return (
     <div className="rounded-[1.8rem] border border-forest-100 bg-white p-6">
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-fairway-50 text-fairway-700">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-forest-900 text-white">
           <Icon className="h-5 w-5" aria-hidden="true" />
         </div>
         <p className="text-sm font-semibold text-forest-900">{title}</p>

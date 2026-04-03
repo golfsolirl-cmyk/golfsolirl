@@ -22,7 +22,7 @@ export function TrustStat({ value, label }: StatItem) {
   return (
     <div className="min-w-[88px]">
       <p className="font-display text-[1.95rem] font-bold text-gold-300 md:text-[2.25rem]">{value}</p>
-      <p className="mt-1 text-base leading-7 text-white/74">{label}</p>
+      <p className="mt-1 text-base leading-7 text-white">{label}</p>
     </div>
   )
 }
@@ -212,8 +212,8 @@ export function HotelCard({ name, tier, area, image, description, perks, price }
     tier === 5
       ? 'border-gold-200 bg-gold-50 text-gold-600'
       : tier === 4
-        ? 'border-forest-200 bg-forest-100 text-forest-700'
-        : 'border-fairway-100 bg-fairway-50 text-fairway-700'
+        ? 'border-white/15 bg-forest-800 text-white'
+        : 'border-white/15 bg-fairway-700 text-white'
 
   return (
     <motion.article
@@ -249,7 +249,7 @@ export function HotelCard({ name, tier, area, image, description, perks, price }
           {perks.map((perk) => (
             <span
               key={perk}
-              className="rounded-full border border-forest-100 bg-forest-50 px-3 py-1.5 text-sm font-medium text-forest-900"
+              className="rounded-full border border-white/12 bg-forest-900 px-3 py-1.5 text-sm font-medium text-white"
             >
               {perk}
             </span>
@@ -276,7 +276,7 @@ export function FeatureTile({ title, description, icon: Icon }: TransferFeature)
         <Icon className="h-5 w-5" aria-hidden="true" />
       </div>
       <h3 className="mb-3 text-[1.18rem] font-semibold leading-7 text-white md:text-[1.24rem]">{title}</h3>
-      <p className="text-[1.08rem] leading-8 text-white/84">{description}</p>
+      <p className="text-[1.08rem] leading-8 text-white">{description}</p>
     </motion.article>
   )
 }

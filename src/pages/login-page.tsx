@@ -117,9 +117,9 @@ export function LoginPage() {
         <main className="relative z-[1] mx-auto w-full max-w-lg flex-1 px-4 pb-20 pt-8 md:px-6 md:pb-28">
           <div className="rounded-[2rem] border border-forest-100 bg-white p-8 shadow-soft md:p-10">
             <p className="text-sm leading-relaxed text-forest-700">
-              Add <code className="rounded-md bg-forest-50 px-1.5 py-0.5 text-xs text-forest-900">VITE_SUPABASE_URL</code>{' '}
+              Add <code className="rounded-md border border-forest-200 bg-white px-1.5 py-0.5 text-xs text-forest-900">VITE_SUPABASE_URL</code>{' '}
               and{' '}
-              <code className="rounded-md bg-forest-50 px-1.5 py-0.5 text-xs text-forest-900">VITE_SUPABASE_ANON_KEY</code>{' '}
+              <code className="rounded-md border border-forest-200 bg-white px-1.5 py-0.5 text-xs text-forest-900">VITE_SUPABASE_ANON_KEY</code>{' '}
               to your environment, then restart the dev server.
             </p>
             <LuxuryButton className="mt-8" href="/" variant="primary">
@@ -204,7 +204,7 @@ export function LoginPage() {
             ) : null}
 
             {sent ? (
-              <div className="rounded-2xl border border-fairway-200 bg-fairway-50/80 px-4 py-4 text-base leading-8 text-forest-800">
+              <div className="rounded-2xl border border-forest-200 bg-white px-4 py-4 text-base leading-8 text-forest-900">
                 <p className="font-semibold text-forest-950">Check your inbox</p>
                 <p className="mt-2 text-forest-700">
                   Open the link from Golf Sol Ireland to finish signing in. You can close this tab — the link opens in

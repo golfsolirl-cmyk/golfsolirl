@@ -5,9 +5,9 @@ import { cx } from '../lib/utils'
 
 const wordmarkToneMap = {
   forest: {
-    golfSol: 'text-[#003805]',
+    golfSol: 'text-neutral-950',
     ireland: 'text-[#dc5801]',
-    tagline: 'text-forest-900/65',
+    tagline: 'text-neutral-700',
     shamrockDark: false
   },
   light: {
@@ -29,9 +29,9 @@ const wordmarkToneMap = {
     shamrockDark: true
   },
   neon: {
-    golfSol: 'text-[#e7ffd9]',
-    ireland: 'text-[#8bf564]',
-    tagline: 'text-[#d5f9cb]/72',
+    golfSol: 'text-white',
+    ireland: 'text-white',
+    tagline: 'text-white/90',
     shamrockDark: true
   },
   ink: {
@@ -66,14 +66,14 @@ export function LogoPreviewPage() {
         <header className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
           <a
             aria-label="Return to the main GolfSol Ireland landing page"
-            className="inline-flex items-center gap-3 self-start rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-white/82 transition-all duration-300 hover:-translate-y-0.5 hover:border-gold-300/60 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#051006]"
+            className="inline-flex items-center gap-3 self-start rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-gold-300/60 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#051006]"
             href="/"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             Back to landing page
           </a>
 
-          <div className="inline-flex items-center gap-2 self-start rounded-full border border-fairway-400/20 bg-fairway-500/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.32em] text-fairway-100">
+          <div className="inline-flex items-center gap-2 self-start rounded-full border border-white/15 bg-white/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.32em] text-white">
             <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
             {logoStudies.length} artistic directions
           </div>
@@ -341,7 +341,7 @@ function PreviewShamrock({ className, dark = false, variant = 'classic' }: Previ
   return (
     <svg
       aria-hidden="true"
-      className={cx(className, dark ? 'text-white' : 'text-forest-700')}
+      className={cx(className, dark ? 'text-white' : 'text-fairway-600')}
       fill="currentColor"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"

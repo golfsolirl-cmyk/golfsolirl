@@ -274,7 +274,7 @@ function App() {
               transition={{ duration: 0.8, ease: 'easeOut' }}
             >
               <motion.p
-                className="mb-4 text-[1.02rem] font-semibold uppercase tracking-[0.14em] text-gold-200 md:text-[1.14rem]"
+                className="mb-4 text-[1.02rem] font-semibold uppercase tracking-[0.14em] text-gold-300 md:text-[1.14rem]"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.1, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -294,7 +294,7 @@ function App() {
               </motion.h1>
 
               <motion.p
-                className="mt-5 max-w-2xl text-[1.28rem] font-medium leading-8 text-white/82 md:text-[1.42rem]"
+                className="mt-5 max-w-2xl text-[1.28rem] font-medium leading-8 text-white md:text-[1.42rem]"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.32, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -304,13 +304,14 @@ function App() {
               </motion.p>
 
               <motion.p
-                className="mt-6 max-w-xl text-base leading-8 text-white/74 md:text-lg"
+                className="mt-6 max-w-xl text-base leading-8 text-white md:text-lg"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.44, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                Golf Sol Ireland is the premium shortcut for Irish golfers heading south: no generic package feel, no piecing things together, just a cleaner route from Irish departure lounge to Spanish fairway.
+                <span className="text-gold-300">Golf Sol Ireland</span> is the premium shortcut for Irish golfers heading south: no generic package feel, no piecing things together, just a cleaner route from Irish departure lounge to{' '}
+                <span className="text-gold-300">Spanish fairway</span>.
               </motion.p>
 
               <motion.div
@@ -325,15 +326,15 @@ function App() {
                     <div className="max-w-xl">
                       <p className="text-sm font-semibold uppercase tracking-[0.24em] text-gold-300">Payments handled properly</p>
                       <p className="mt-3 text-[1.12rem] font-semibold leading-8 text-white md:text-[1.2rem]">
-                        <span className="text-white">All customer payments are made in Ireland</span>{' '}
+                        All customer payments are made in Ireland{' '}
                         <span className="text-gold-300">directly to Golf Sol Ireland</span> — not to a Spanish middleman, not to a mystery operator, and not offshore.
                       </p>
-                      <p className="mt-3 text-base leading-7 text-white/68">
+                      <p className="mt-3 text-base leading-7 text-white">
                         It keeps the booking cleaner, more familiar, and easier to trust from the first deposit onwards.
                       </p>
                     </div>
-                    <div className="inline-flex min-h-12 items-center gap-3 self-start rounded-full border border-white/10 bg-white/6 px-4 py-2.5 text-sm font-semibold text-white/84">
-                      <CreditCard className="h-4 w-4 text-gold-300" aria-hidden="true" />
+                    <div className="inline-flex min-h-12 items-center gap-3 self-start rounded-full border border-white/20 bg-white/8 px-4 py-2.5 text-sm font-semibold text-white">
+                      <CreditCard className="h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
                       <span>Ireland-based payment flow</span>
                     </div>
                   </div>
@@ -369,7 +370,7 @@ function App() {
             </motion.div>
 
             <motion.aside
-              className="relative hidden max-w-md justify-self-end rounded-[2rem] border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-md md:block"
+              className="relative hidden max-w-md justify-self-end rounded-[2rem] border border-white/20 bg-forest-950/75 p-6 shadow-2xl backdrop-blur-md md:block"
               initial={{ opacity: 0, y: 24 }}
               transition={{ delay: 0.25, duration: 0.8 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -383,13 +384,13 @@ function App() {
                 />
               </div>
               <div className="mt-5">
-                <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-200">Signature route</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">Signature route</p>
                 <h2 className="mt-2 font-display text-[2rem] font-bold leading-tight text-white md:text-[2.2rem]">Marbella to Sotogrande</h2>
-                <p className="mt-3 text-[1.02rem] leading-8 text-white/76">
+                <p className="mt-3 text-[1.02rem] leading-8 text-white">
                   Championship golf, polished stays, and transfer rhythm designed for Irish golfers who want the trip to feel effortless.
                 </p>
                 <motion.p
-                  className="mt-5 max-w-sm font-display text-[2.85rem] font-black leading-[1] tracking-[-0.02em] text-white md:text-[3.1rem]"
+                  className="mt-5 max-w-sm font-display text-[2.85rem] font-black leading-[1] tracking-[-0.02em] text-gold-300 md:text-[3.1rem]"
                   animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
                   initial={{ opacity: 0, y: 16 }}
                   transition={{
@@ -405,15 +406,15 @@ function App() {
               </div>
               <div className="mt-5 space-y-3">
                 {heroCardHighlights.map((item) => (
-                  <div key={item} className="flex items-center gap-3 text-base text-white/78">
-                    <CheckCircle2 className="h-4 w-4 text-gold-300" aria-hidden="true" />
+                  <div key={item} className="flex items-center gap-3 text-base text-white">
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
                     <span>{item}</span>
                   </div>
                 ))}
               </div>
-              <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4 text-sm text-white/58">
-                <span>Irish-owned planning</span>
-                <span>Luxury, not generic</span>
+              <div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-white/20 pt-4 text-sm">
+                <span className="text-white">Irish-owned planning</span>
+                <span className="text-gold-300">Luxury, not generic</span>
               </div>
             </motion.aside>
           </div>
@@ -463,8 +464,8 @@ function App() {
                             <p className="font-display text-[1.35rem] font-black uppercase tracking-[-0.03em] text-white">Mercedes Fleet</p>
                           </div>
                         </div>
-                        <div className="inline-flex items-center gap-2 self-start rounded-full border border-gold-300/30 bg-gold-400/12 px-4 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-gold-200">
-                          <span className="h-2 w-2 rounded-full bg-gold-300" />
+                        <div className="inline-flex items-center gap-2 self-start rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-white">
+                          <span className="h-2 w-2 shrink-0 rounded-full bg-gold-300" />
                           Branded transfer service
                         </div>
                       </div>
@@ -477,7 +478,7 @@ function App() {
                         ].map((item) => (
                           <span
                             key={item}
-                            className="inline-flex min-h-11 items-center rounded-full border border-white/10 bg-white/8 px-4 py-2 text-sm font-semibold text-white/92"
+                            className="inline-flex min-h-11 items-center rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white"
                           >
                             {item}
                           </span>
@@ -499,7 +500,7 @@ function App() {
                   </div>
                 </div>
 
-                <div className="relative overflow-hidden rounded-[2rem] border border-forest-100 bg-forest-950 p-4 text-white shadow-[0_28px_80px_rgba(22,58,19,0.16)]">
+                <div className="relative overflow-hidden rounded-[2rem] border border-forest-100 bg-forest-950 p-5 text-white shadow-[0_28px_80px_rgba(22,58,19,0.16)] md:p-6">
                   <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(255,255,255,0.08),transparent_20%),radial-gradient(circle_at_82%_12%,rgba(220,88,1,0.22),transparent_20%)]" />
                   <div className="relative z-10">
                     <div className="overflow-hidden rounded-[1.5rem]">
@@ -510,49 +511,48 @@ function App() {
                       />
                     </div>
 
-                    <div className="mt-4 space-y-4 rounded-[1.5rem] border border-white/10 bg-white/6 p-4 backdrop-blur-sm">
-                      <div className="rounded-[1.45rem] border border-white/12 bg-[linear-gradient(135deg,#ffffff_0%,#f7f9f5_100%)] p-4 text-forest-950 shadow-[0_18px_40px_rgba(0,0,0,0.2)]">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-700">Mock vehicle livery</p>
-                            <div className="mt-4 overflow-hidden rounded-[1.35rem] border border-slate-200 bg-white shadow-inner">
-                              <div className="relative flex min-h-[8.4rem] items-center justify-between gap-4 bg-[linear-gradient(90deg,#ffffff_0%,#ffffff_56%,#0a2008_56%,#0a2008_100%)] px-5 py-4">
-                                <div aria-hidden="true" className="absolute inset-y-0 left-[54%] w-[3px] bg-gold-400/90" />
-                                <div className="relative z-10 flex items-center gap-3">
-                                  <img alt="" aria-hidden="true" className="h-11 w-11 object-contain" src={logoIcon} />
-                                  <div>
-                                    <p className="font-display text-[1.2rem] font-black uppercase tracking-[-0.05em] text-[#003805]">GolfSol</p>
-                                    <p className="text-[0.72rem] font-bold uppercase tracking-[0.22em] text-[#dc5801]">Ireland</p>
-                                  </div>
-                                </div>
-                                <div className="relative z-10 max-w-[11rem] text-right">
-                                  <p className="text-[0.72rem] font-semibold uppercase tracking-[0.24em] text-gold-300">Mercedes fleet</p>
-                                  <p className="mt-2 text-sm font-semibold leading-6 text-white">
-                                    Airport, hotel, and golf-course transfers handled by Irish drivers
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <span className="rounded-full border border-forest-900 bg-forest-950 px-4 py-2 text-sm font-semibold uppercase tracking-[0.16em] text-white">
+                    <div className="mt-5 space-y-5 rounded-[1.5rem] border border-white/10 bg-white/6 p-5 backdrop-blur-sm md:p-6">
+                      <div className="rounded-[1.45rem] border border-white/12 bg-[linear-gradient(135deg,#ffffff_0%,#f7f9f5_100%)] p-5 text-forest-950 shadow-[0_18px_40px_rgba(0,0,0,0.2)] md:p-6">
+                        <div className="flex flex-wrap items-start justify-between gap-3 gap-y-2">
+                          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-700">Mock vehicle livery</p>
+                          <span className="shrink-0 rounded-full border border-forest-900 bg-forest-950 px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.16em] text-white sm:px-5">
                             Fleet spec
                           </span>
                         </div>
+                        <div className="mt-5 w-full overflow-hidden rounded-[1.35rem] border border-slate-200 bg-white shadow-inner">
+                          <div className="grid min-h-[11rem] w-full grid-cols-1 items-center gap-5 bg-white px-6 py-6 sm:min-h-[12rem] sm:grid-cols-[minmax(12.5rem,42%)_minmax(0,1fr)] sm:gap-0 sm:px-0 sm:py-0">
+                            <div className="flex min-w-0 items-center gap-3 sm:gap-4 sm:px-7 sm:py-7">
+                              <img alt="" aria-hidden="true" className="h-11 w-11 shrink-0 object-contain sm:h-12 sm:w-12" src={logoIcon} />
+                              <div className="min-w-0">
+                                <p className="font-display text-[1.2rem] font-black uppercase tracking-[-0.05em] text-[#003805] sm:text-[1.35rem]">GolfSol</p>
+                                <p className="text-[0.72rem] font-bold uppercase tracking-[0.22em] text-[#dc5801] sm:text-[0.8rem]">Ireland</p>
+                              </div>
+                            </div>
+                            <div className="min-w-0 rounded-xl bg-[#0a2008] px-5 py-5 sm:rounded-none sm:border-l-[3px] sm:border-gold-400/90 sm:px-8 sm:py-7 sm:pl-7">
+                              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-300 sm:text-[0.8rem] sm:tracking-[0.2em]">
+                                Mercedes fleet
+                              </p>
+                              <p className="mt-3 text-sm font-semibold leading-7 text-white sm:mt-4 sm:text-base sm:leading-8">
+                                Airport, hotel, and golf-course transfers handled by Irish drivers
+                              </p>
+                            </div>
+                          </div>
+                        </div>
                       </div>
 
-                      <div className="flex flex-wrap gap-3">
-                        <span className="rounded-full border border-gold-300/35 bg-gold-400/12 px-4 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-gold-200">
+                      <div className="flex flex-wrap gap-3 md:gap-4">
+                        <span className="rounded-full border border-gold-300/35 bg-gold-400/12 px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.18em] text-gold-200 md:px-5">
                           Mercedes van service
                         </span>
-                        <span className="rounded-full border border-white/10 bg-white/8 px-4 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-white/88">
+                        <span className="rounded-full border border-white/10 bg-white/8 px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.18em] text-white/88 md:px-5">
                           Golf bag and luggage ready
                         </span>
-                        <span className="rounded-full border border-white/10 bg-white/8 px-4 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-white/88">
+                        <span className="rounded-full border border-white/10 bg-white/8 px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.18em] text-white/88 md:px-5">
                           Irish-driver coordinated
                         </span>
                       </div>
 
-                      <div className="space-y-3">
+                      <div className="space-y-4 pt-1">
                         {[
                           'Airport pickups from Malaga timed around Irish arrivals',
                           'Hotel shuttles and golf-course runs coordinated by Irish drivers',
@@ -649,7 +649,7 @@ function App() {
                   whileInView={{ opacity: 1, y: 0 }}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-fairway-50 text-fairway-700">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-forest-900 text-white">
                       <Bus className="h-5 w-5" aria-hidden="true" />
                     </div>
                     <div>
@@ -677,7 +677,7 @@ function App() {
                           type="button"
                         >
                           <p className="text-sm font-semibold">{option.label}</p>
-                          <p className={cx('mt-1 text-sm leading-relaxed', isActive ? 'text-white/76' : 'text-forest-900/62')}>
+                          <p className={cx('mt-1 text-sm leading-relaxed', isActive ? 'text-white' : 'text-forest-900/62')}>
                             {option.description}
                           </p>
                         </button>
@@ -1116,7 +1116,7 @@ function App() {
 
               <motion.div className="space-y-4" {...revealUp}>
                 <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-sm">
-                  <p className="mb-2 text-sm font-semibold uppercase tracking-[0.14em] text-white/72">From enquiry to confirmed itinerary</p>
+                  <p className="mb-2 text-sm font-semibold uppercase tracking-[0.14em] text-orange-700">From enquiry to confirmed itinerary</p>
                   <div className="mb-4 max-w-lg rounded-[1.4rem] border border-gold-300/18 bg-[linear-gradient(135deg,rgba(255,255,255,0.12),rgba(253,186,116,0.08))] px-4 py-3 shadow-[0_12px_28px_rgba(10,32,8,0.16)]">
                     <p className="text-[1.02rem] leading-8 text-white">
                       The goal is simple: once a group enquires, everything from transfers and stay details to payment and confirmations should feel joined-up,
@@ -1200,7 +1200,7 @@ function App() {
               <h2 className="mt-3 max-w-xl font-display text-4xl font-bold leading-tight text-white md:text-5xl">
                 Tell us about your trip — we’ll come back with a clear, tailored next step
               </h2>
-              <p className="mt-5 max-w-lg text-lg leading-8 text-white/68 md:text-[1.08rem]">
+              <p className="mt-5 max-w-lg text-lg leading-8 text-white/75 md:text-xl md:leading-9">
                 This is your enquiry form, not a newsletter. Share who you are, how to reach you, and what you’re planning for the Costa del Sol. We use that to respond with real advice and a sensible follow-up — usually by email, phone, or WhatsApp.
               </p>
 
@@ -1208,29 +1208,29 @@ function App() {
                 {landingEnquiryHighlights.map(({ title, icon: Icon }) => (
                   <motion.div
                     key={title}
-                    className="rounded-[2rem] border border-white/10 bg-white/5 p-4 backdrop-blur-sm"
+                    className="rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-sm"
                     {...revealUp}
                   >
-                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/12 text-gold-300">
-                      <Icon className="h-5 w-5" aria-hidden="true" />
+                    <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-white/12 text-gold-300">
+                      <Icon className="h-5 w-5 md:h-6 md:w-6" aria-hidden="true" />
                     </div>
-                    <p className="text-base text-white/78">{title}</p>
+                    <p className="text-base leading-relaxed text-white md:text-lg">{title}</p>
                   </motion.div>
                 ))}
               </div>
             </div>
 
             <motion.div
-              className="rounded-[2rem] border border-white/10 bg-white/10 p-6 shadow-2xl backdrop-blur-md"
+              className="rounded-[2rem] border border-white/10 bg-white/10 p-7 shadow-2xl backdrop-blur-md md:p-8"
               {...revealUp}
             >
-              <form className="space-y-5" onSubmit={handleNewsletterSubmit}>
+              <form className="space-y-6 md:space-y-7" onSubmit={handleNewsletterSubmit}>
                 <div>
-                  <label className="mb-2 block text-sm font-medium tracking-[0.02em] text-white/76" htmlFor="full-name">
+                  <label className="mb-2.5 block text-base font-medium tracking-wide text-white/85 md:text-lg" htmlFor="full-name">
                     Full name
                   </label>
                   <input
-                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3.5 text-base text-white placeholder:text-white/40 focus:border-gold-400 focus:outline-none"
+                    className="w-full rounded-full border border-white/20 bg-white/10 px-6 py-4 text-lg text-white placeholder:text-white/45 focus:border-gold-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/40 md:py-[1.15rem] md:text-xl"
                     id="full-name"
                     name="fullName"
                     placeholder="Patrick Murphy"
@@ -1240,11 +1240,11 @@ function App() {
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-medium tracking-[0.02em] text-white/76" htmlFor="email">
+                  <label className="mb-2.5 block text-base font-medium tracking-wide text-white/85 md:text-lg" htmlFor="email">
                     Email address
                   </label>
                   <input
-                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3.5 text-base text-white placeholder:text-white/40 focus:border-gold-400 focus:outline-none"
+                    className="w-full rounded-full border border-white/20 bg-white/10 px-6 py-4 text-lg text-white placeholder:text-white/45 focus:border-gold-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/40 md:py-[1.15rem] md:text-xl"
                     id="email"
                     name="email"
                     placeholder="patrick@example.ie"
@@ -1254,11 +1254,11 @@ function App() {
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-medium tracking-[0.02em] text-white/76" htmlFor="phone-whatsapp">
+                  <label className="mb-2.5 block text-base font-medium tracking-wide text-white/85 md:text-lg" htmlFor="phone-whatsapp">
                     Phone / WhatsApp
                   </label>
                   <input
-                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3.5 text-base text-white placeholder:text-white/40 focus:border-gold-400 focus:outline-none"
+                    className="w-full rounded-full border border-white/20 bg-white/10 px-6 py-4 text-lg text-white placeholder:text-white/45 focus:border-gold-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/40 md:py-[1.15rem] md:text-xl"
                     id="phone-whatsapp"
                     name="phoneWhatsApp"
                     placeholder="+353 87 000 0000"
@@ -1269,11 +1269,11 @@ function App() {
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-medium tracking-[0.02em] text-white/76" htmlFor="best-time-to-call">
+                  <label className="mb-2.5 block text-base font-medium tracking-wide text-white/85 md:text-lg" htmlFor="best-time-to-call">
                     Best time to call
                   </label>
                   <select
-                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3.5 text-base text-white focus:border-gold-400 focus:outline-none"
+                    className="w-full rounded-full border border-white/20 bg-white/10 px-6 py-4 text-lg text-white focus:border-gold-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/40 md:py-[1.15rem] md:text-xl"
                     id="best-time-to-call"
                     name="bestTimeToCall"
                     required
@@ -1301,11 +1301,11 @@ function App() {
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-medium tracking-[0.02em] text-white/76" htmlFor="interest">
+                  <label className="mb-2.5 block text-base font-medium tracking-wide text-white/85 md:text-lg" htmlFor="interest">
                     Trip interest
                   </label>
                   <input
-                    className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-3.5 text-base text-white placeholder:text-white/40 focus:border-gold-400 focus:outline-none"
+                    className="w-full rounded-full border border-white/20 bg-white/10 px-6 py-4 text-lg text-white placeholder:text-white/45 focus:border-gold-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/40 md:py-[1.15rem] md:text-xl"
                     id="interest"
                     name="interest"
                     placeholder="5-star week in Marbella for 8 golfers"
@@ -1314,7 +1314,7 @@ function App() {
                   />
                 </div>
 
-                <LuxuryButton className="w-full justify-center" disabled={enquiryFormStatus === 'submitting'} type="submit">
+                <LuxuryButton className="w-full justify-center !py-4 !text-lg" disabled={enquiryFormStatus === 'submitting'} type="submit">
                   {enquiryFormStatus === 'submitting' ? 'Sending enquiry...' : 'Register Interest'}
                 </LuxuryButton>
 
@@ -1322,7 +1322,7 @@ function App() {
                   <div
                     aria-live="polite"
                     className={cx(
-                      'rounded-[1.4rem] border px-4 py-3 text-base leading-relaxed',
+                      'rounded-[1.4rem] border px-5 py-4 text-lg leading-relaxed md:text-xl',
                       enquiryFormStatus === 'success'
                         ? 'border-gold-300/30 bg-gold-400/12 text-white'
                         : 'border-[#f7a24f]/35 bg-[#dc5801]/12 text-white'
@@ -1332,23 +1332,23 @@ function App() {
                   </div>
                 ) : null}
 
-                <div className="rounded-[1.5rem] border border-white/10 bg-black/10 p-4">
-                  <p className="text-sm uppercase tracking-[0.2em] text-white/42">What happens next</p>
-                  <div className="mt-3 space-y-3 text-base text-white/72">
+                <div className="rounded-[1.5rem] border border-white/10 bg-black/10 p-5 md:p-6">
+                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-white md:text-base">What happens next</p>
+                  <div className="mt-4 space-y-4 text-base leading-relaxed text-white md:text-lg">
                     <div className="flex items-center gap-3">
-                      <Phone className="h-4 w-4 text-gold-400" aria-hidden="true" />
+                      <Phone className="h-5 w-5 shrink-0 text-gold-400" aria-hidden="true" />
                       <span>We’ll use your phone or WhatsApp and your preferred call window when we reach out.</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <Mail className="h-4 w-4 text-gold-400" aria-hidden="true" />
+                      <Mail className="h-5 w-5 shrink-0 text-gold-400" aria-hidden="true" />
                       <span>We review your enquiry and come back with the right course, stay, and transfer fit for your group.</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <BedDouble className="h-4 w-4 text-gold-400" aria-hidden="true" />
+                      <BedDouble className="h-5 w-5 shrink-0 text-gold-400" aria-hidden="true" />
                       <span>You get a clear, tailored trip outline instead of a generic off-the-shelf package.</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <MapPinned className="h-4 w-4 text-gold-400" aria-hidden="true" />
+                      <MapPinned className="h-5 w-5 shrink-0 text-gold-400" aria-hidden="true" />
                       <span>No obligation, no hard sell, just a cleaner route to planning the trip properly.</span>
                     </div>
                   </div>
@@ -1388,7 +1388,7 @@ function QuickSelectorCard({
   return (
     <div className="rounded-[1.75rem] border border-forest-100 bg-white/88 p-5 shadow-sm backdrop-blur-sm">
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-fairway-50 text-fairway-700">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-forest-900 text-white">
           <Icon className="h-5 w-5" aria-hidden="true" />
         </div>
         <div>
@@ -1482,7 +1482,7 @@ function FloatingWhatsAppButton({
           aria-hidden="true"
           className="absolute inset-[8%] rounded-full bg-[radial-gradient(circle_at_30%_28%,rgba(255,255,255,0.9),rgba(255,255,255,0.14)_34%,rgba(37,211,102,0.18)_62%,transparent)] blur-[6px]"
         />
-        <ShamrockIcon className="h-[3.8rem] w-[3.8rem] text-[#25d366] drop-shadow-[0_10px_18px_rgba(18,140,74,0.34)] transition-all duration-300 group-hover:scale-[1.08] group-hover:drop-shadow-[0_16px_24px_rgba(18,140,74,0.42)] sm:h-[4.1rem] sm:w-[4.1rem]" />
+        <ShamrockIcon className="h-[3.8rem] w-[3.8rem] drop-shadow-[0_10px_18px_rgba(61,129,32,0.34)] transition-all duration-300 group-hover:scale-[1.08] group-hover:drop-shadow-[0_16px_24px_rgba(61,129,32,0.42)] sm:h-[4.1rem] sm:w-[4.1rem]" />
         <span
           aria-hidden="true"
           className="absolute left-[17%] top-[13%] h-[28%] w-[26%] rounded-full bg-white/70 blur-[7px]"
@@ -1521,7 +1521,7 @@ function CookieBanner({
       <div aria-hidden="true" className="absolute inset-0 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(255,255,255,0.06),rgba(220,88,1,0.06),rgba(80,163,45,0.06))]" />
       <div className="relative z-10">
         <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-gold-300">Cookie notice</p>
-        <p className="mt-2 text-sm leading-relaxed text-white/72">
+        <p className="mt-2 text-sm leading-relaxed text-white">
           We use cookies to improve the browsing experience, understand site traffic, and keep the journey smooth.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
@@ -1533,7 +1533,7 @@ function CookieBanner({
             Accept cookies
           </button>
           <button
-            className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white/72 transition-colors hover:bg-white/10"
+            className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10"
             onClick={onAccept}
             type="button"
           >

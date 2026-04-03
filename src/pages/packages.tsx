@@ -445,7 +445,7 @@ function PackageAdminPage() {
                     </div>
 
                     <div className="mt-6 rounded-[1.5rem] border border-current/10 bg-current/5 p-4">
-                      <p className={cx('text-sm font-semibold uppercase tracking-[0.12em]', isSelected ? 'text-white/72' : 'text-forest-900/62')}>
+                        <p className={cx('text-sm font-semibold uppercase tracking-[0.12em]', isSelected ? 'text-white' : 'text-forest-900/62')}>
                         Per person / per night
                       </p>
                       <p className="mt-2 font-display text-4xl font-bold">{formatEuro(option.pricePerPersonPerNight)}</p>
@@ -459,7 +459,7 @@ function PackageAdminPage() {
                           key={perk}
                           className={cx(
                             'rounded-full border px-3 py-1.5 text-sm',
-                            isSelected ? 'border-white/12 bg-white/8 text-white/74' : 'border-forest-100 bg-forest-50 text-forest-900/65'
+                            isSelected ? 'border-white/12 bg-white/8 text-white' : 'border-forest-200 bg-forest-900 text-white'
                           )}
                         >
                           {perk}
@@ -725,7 +725,7 @@ function RouteMapShowcase() {
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-forest-950 shadow-[0_12px_24px_rgba(0,0,0,0.18)]">
-                    <ShamrockIcon className="h-6 w-6" dark />
+                    <ShamrockIcon className="h-6 w-6" />
                   </div>
                   <div>
                     <p className="text-base font-semibold">{route.title}</p>
@@ -980,7 +980,7 @@ export function FloatingWhatsAppButton({
           aria-hidden="true"
           className="absolute inset-[8%] rounded-full bg-[radial-gradient(circle_at_30%_28%,rgba(255,255,255,0.9),rgba(255,255,255,0.14)_34%,rgba(37,211,102,0.18)_62%,transparent)] blur-[6px]"
         />
-        <ShamrockIcon className="h-[3.8rem] w-[3.8rem] text-[#25d366] drop-shadow-[0_10px_18px_rgba(18,140,74,0.34)] transition-all duration-300 group-hover:scale-[1.08] group-hover:drop-shadow-[0_16px_24px_rgba(18,140,74,0.42)] sm:h-[4.1rem] sm:w-[4.1rem]" />
+        <ShamrockIcon className="h-[3.8rem] w-[3.8rem] drop-shadow-[0_10px_18px_rgba(61,129,32,0.34)] transition-all duration-300 group-hover:scale-[1.08] group-hover:drop-shadow-[0_16px_24px_rgba(61,129,32,0.42)] sm:h-[4.1rem] sm:w-[4.1rem]" />
         <span
           aria-hidden="true"
           className="absolute left-[17%] top-[13%] h-[28%] w-[26%] rounded-full bg-white/70 blur-[7px]"
@@ -1019,7 +1019,7 @@ export function CookieBanner({
       <div aria-hidden="true" className="absolute inset-0 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(255,255,255,0.06),rgba(220,88,1,0.06),rgba(80,163,45,0.06))]" />
       <div className="relative z-10">
         <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-gold-300">Cookie notice</p>
-        <p className="mt-2 text-sm leading-relaxed text-white/72">
+        <p className="mt-2 text-sm leading-relaxed text-white">
           We use cookies to improve the browsing experience, understand site traffic, and keep the journey smooth.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
@@ -1031,7 +1031,7 @@ export function CookieBanner({
             Accept cookies
           </button>
           <button
-            className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white/72 transition-colors hover:bg-white/10"
+            className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10"
             onClick={onAccept}
             type="button"
           >

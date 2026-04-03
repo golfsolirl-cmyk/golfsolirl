@@ -38,10 +38,10 @@ interface PackageBuildRow {
 }
 
 const statusStyles: Record<string, string> = {
-  draft: 'bg-forest-100 text-forest-800 ring-1 ring-forest-200/80',
-  sent: 'bg-fairway-50 text-fairway-800 ring-1 ring-fairway-200/80',
+  draft: 'bg-forest-800 text-white ring-1 ring-forest-600/80',
+  sent: 'bg-fairway-700 text-white ring-1 ring-fairway-500/80',
   accepted: 'bg-gold-50 text-gold-700 ring-1 ring-gold-200/80',
-  archived: 'bg-forest-50 text-forest-600 ring-1 ring-forest-100'
+  archived: 'bg-forest-800 text-white ring-1 ring-forest-600/80'
 }
 
 const formatEur = (value: number) =>
@@ -53,7 +53,7 @@ const inputClass =
 const labelClass = 'mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-gold-600'
 
 const readOnlyCalcClass =
-  'w-full rounded-2xl border-2 border-forest-200/90 bg-forest-50/70 px-4 py-3 text-sm text-forest-800'
+  'w-full rounded-2xl border-2 border-forest-200/90 bg-offwhite px-4 py-3 text-sm text-forest-900'
 
 const readOnlyCalcHintClass = 'mt-1 text-xs text-forest-500'
 
@@ -325,7 +325,7 @@ export function ClientDashboardPage() {
                 </p>
               </div>
             ) : packageBuilds.length === 0 ? (
-              <div className="rounded-[2rem] border border-dashed border-forest-200 bg-forest-50/50 px-6 py-10 text-center text-sm text-forest-600 md:px-10">
+              <div className="rounded-[2rem] border border-dashed border-forest-200 bg-offwhite px-6 py-10 text-center text-sm text-forest-900 md:px-10">
                 No saved builds yet — use the live calculator on the packages page and choose &quot;Save to my account&quot;.
               </div>
             ) : (
@@ -350,7 +350,7 @@ export function ClientDashboardPage() {
                       <li
                         className={cx(
                           'flex flex-col gap-4 border-b border-forest-100/80 px-5 py-5 last:border-b-0 lg:flex-row lg:items-center lg:justify-between md:px-7',
-                          index % 2 === 1 ? 'bg-forest-50/40' : 'bg-white'
+                          index % 2 === 1 ? 'bg-offwhite/90' : 'bg-white'
                         )}
                         key={row.id}
                       >
@@ -597,7 +597,7 @@ export function ClientDashboardPage() {
                   <li
                     className={cx(
                       'flex flex-col gap-3 border-b border-forest-100/80 px-5 py-5 last:border-b-0 sm:flex-row sm:items-center sm:justify-between md:px-7',
-                      index % 2 === 1 ? 'bg-forest-50/40' : 'bg-white'
+                      index % 2 === 1 ? 'bg-offwhite/90' : 'bg-white'
                     )}
                     key={row.id}
                   >
@@ -622,7 +622,7 @@ export function ClientDashboardPage() {
                       <span
                         className={cx(
                           'inline-flex rounded-full px-3 py-1 text-xs font-semibold capitalize',
-                          statusStyles[row.status] ?? 'bg-forest-50 text-forest-700 ring-1 ring-forest-100'
+                          statusStyles[row.status] ?? 'bg-forest-800 text-white ring-1 ring-forest-600/80'
                         )}
                       >
                         {row.status}

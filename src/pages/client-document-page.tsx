@@ -274,7 +274,7 @@ function WelcomeBody({ kicker, title }: { readonly kicker: string; readonly titl
           </p>
         </div>
 
-        <div className="grid gap-4 rounded-2xl border border-fairway-200/80 bg-fairway-50/50 p-6 md:grid-cols-3">
+        <div className="grid gap-4 rounded-2xl border border-forest-200 bg-white p-6 md:grid-cols-3">
           {[
             { t: 'Courses', d: 'Hand-picked for pace, condition, and the craic in the clubhouse.' },
             { t: 'Stays', d: 'Hotels that understand golfers — early breakfast, club storage, late arrivals.' },

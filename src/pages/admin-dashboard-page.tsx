@@ -67,10 +67,10 @@ const formatEur = (value: number) =>
   new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value)
 
 const proposalStatusStyles: Record<string, string> = {
-  draft: 'bg-forest-100 text-forest-800',
-  sent: 'bg-fairway-100 text-fairway-800',
+  draft: 'bg-forest-800 text-white',
+  sent: 'bg-fairway-700 text-white',
   accepted: 'bg-gold-50 text-gold-700',
-  archived: 'bg-forest-50 text-forest-600'
+  archived: 'bg-forest-800 text-white'
 }
 
 const adminTripLabelClass = 'mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600'
@@ -407,8 +407,8 @@ export function AdminDashboardPage() {
                 <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Recent form submissions</h2>
                 <p className="mt-2 max-w-2xl text-sm text-forest-600">
                   Rows appear after the SQL migration and when the dev server has{' '}
-                  <code className="rounded-md bg-forest-100 px-1.5 py-0.5 text-xs text-forest-800">SUPABASE_SERVICE_ROLE_KEY</code>{' '}
-                  set for <code className="rounded-md bg-forest-100 px-1.5 py-0.5 text-xs text-forest-800">/api/enquiry</code>.
+                  <code className="rounded-md bg-forest-900 px-1.5 py-0.5 text-xs text-white">SUPABASE_SERVICE_ROLE_KEY</code>{' '}
+                  set for <code className="rounded-md bg-forest-900 px-1.5 py-0.5 text-xs text-white">/api/enquiry</code>.
                   Each submitter also gets a confirmation email with their enquiry PDF at the address they entered (Resend, same
                   run as your internal notification).
                 </p>
@@ -446,11 +446,11 @@ export function AdminDashboardPage() {
             ) : null}
 
             {!enquiriesSectionVisible ? (
-              <div className="mt-6 rounded-[2rem] border border-forest-200 bg-forest-50/60 px-6 py-8 text-center text-sm text-forest-700 md:px-10">
+              <div className="mt-6 rounded-[2rem] border border-forest-200 bg-offwhite px-6 py-8 text-center text-sm text-forest-900 md:px-10">
                 <p>Recent form submissions are hidden. Use <span className="font-medium text-forest-900">Show table</span> to view them again.</p>
               </div>
             ) : enquiries.length === 0 ? (
-              <div className="mt-6 rounded-[2rem] border border-dashed border-forest-200 bg-forest-50/50 px-6 py-10 text-center text-sm text-forest-600 md:px-10">
+              <div className="mt-6 rounded-[2rem] border border-dashed border-forest-200 bg-offwhite px-6 py-10 text-center text-sm text-forest-900 md:px-10">
                 No enquiries yet — submit the get-in-touch form locally to test the pipeline.
               </div>
             ) : (
@@ -469,7 +469,7 @@ export function AdminDashboardPage() {
                   <tbody className="divide-y divide-forest-100">
                     {enquiries.map((row, index) => (
                       <tr
-                        className={cx('text-forest-800', index % 2 === 1 ? 'bg-forest-50/35' : 'bg-white')}
+                        className={cx('text-forest-900', index % 2 === 1 ? 'bg-offwhite/90' : 'bg-white')}
                         key={row.id}
                       >
                         <td className="whitespace-nowrap px-4 py-4 font-mono text-xs text-forest-700 md:px-6">
@@ -515,8 +515,8 @@ export function AdminDashboardPage() {
             <p className="mt-2 max-w-2xl text-sm text-forest-600">
               Send branded terms or the thank-you page to a client&apos;s login email. They only see these links on their
               dashboard after you send. Requires table{' '}
-              <code className="rounded-md bg-forest-100 px-1.5 py-0.5 text-xs text-forest-800">client_document_access</code>{' '}
-              — run <code className="rounded-md bg-forest-100 px-1.5 py-0.5 text-xs text-forest-800">supabase/run-in-sql-editor-client-document-access.sql</code> if needed.
+              <code className="rounded-md bg-forest-900 px-1.5 py-0.5 text-xs text-white">client_document_access</code>{' '}
+              — run <code className="rounded-md bg-forest-900 px-1.5 py-0.5 text-xs text-white">supabase/run-in-sql-editor-client-document-access.sql</code> if needed.
             </p>
 
             <div className="mt-6 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
@@ -525,7 +525,7 @@ export function AdminDashboardPage() {
               </label>
               <input
                 autoComplete="email"
-                className="mb-6 w-full max-w-md rounded-2xl border border-forest-200 bg-forest-50/40 px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
+                className="mb-6 w-full max-w-md rounded-2xl border border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
                 id="crm-doc-email"
                 onChange={(e) => {
                   setCrmDocEmail(e.target.value)
@@ -585,7 +585,7 @@ export function AdminDashboardPage() {
                 </p>
               </div>
             ) : packageBuilds.length === 0 ? (
-              <div className="mt-6 rounded-[2rem] border border-dashed border-forest-200 bg-forest-50/50 px-6 py-10 text-center text-sm text-forest-600 md:px-10">
+              <div className="mt-6 rounded-[2rem] border border-dashed border-forest-200 bg-offwhite px-6 py-10 text-center text-sm text-forest-900 md:px-10">
                 No client-saved package builds yet.
               </div>
             ) : (
@@ -610,7 +610,7 @@ export function AdminDashboardPage() {
 
                       return (
                         <tr
-                          className={cx('text-forest-800', index % 2 === 1 ? 'bg-forest-50/35' : 'bg-white')}
+                          className={cx('text-forest-900', index % 2 === 1 ? 'bg-offwhite/90' : 'bg-white')}
                           key={row.id}
                         >
                           <td className="whitespace-nowrap px-4 py-4 text-xs text-forest-500 md:px-6">
@@ -673,7 +673,7 @@ export function AdminDashboardPage() {
             </p>
 
             {proposals.length === 0 ? (
-              <div className="mt-6 rounded-[2rem] border border-dashed border-forest-200 bg-forest-50/50 px-6 py-10 text-center text-sm text-forest-600 md:px-10">
+              <div className="mt-6 rounded-[2rem] border border-dashed border-forest-200 bg-offwhite px-6 py-10 text-center text-sm text-forest-900 md:px-10">
                 No proposal rows in the database yet.
               </div>
             ) : (
@@ -682,7 +682,7 @@ export function AdminDashboardPage() {
                   <li
                     className={cx(
                       'flex flex-col gap-3 border-b border-forest-100/80 px-5 py-5 last:border-b-0 sm:flex-row sm:items-center sm:justify-between md:px-7',
-                      index % 2 === 1 ? 'bg-forest-50/40' : 'bg-white'
+                      index % 2 === 1 ? 'bg-offwhite/90' : 'bg-white'
                     )}
                     key={row.id}
                   >
@@ -696,7 +696,7 @@ export function AdminDashboardPage() {
                       <span
                         className={cx(
                           'inline-flex rounded-full px-3 py-1 text-xs font-semibold capitalize ring-1 ring-black/5',
-                          proposalStatusStyles[row.status] ?? 'bg-forest-50 text-forest-700'
+                          proposalStatusStyles[row.status] ?? 'bg-forest-800 text-white'
                         )}
                       >
                         {row.status}
@@ -728,7 +728,7 @@ export function AdminDashboardPage() {
             onClick={(e) => e.stopPropagation()}
             role="dialog"
           >
-            <div className="border-b border-forest-100 bg-forest-50/80 px-6 py-5 md:px-8">
+            <div className="border-b border-forest-100 bg-offwhite px-6 py-5 md:px-8">
               <h2 className="font-display text-xl font-semibold text-forest-950 md:text-2xl" id="admin-build-detail-title">
                 Client build and trip form
               </h2>
@@ -757,7 +757,7 @@ export function AdminDashboardPage() {
             <form className="flex min-h-0 flex-1 flex-col" noValidate onSubmit={handleAdminSaveBuildDetails}>
               <div className="flex-1 overflow-y-auto px-6 py-6 md:px-8 md:py-8">
                 {detailParsed ? (
-                  <div className="mb-8 rounded-2xl border border-forest-100 bg-forest-50/40 px-4 py-4 text-sm text-forest-800">
+                  <div className="mb-8 rounded-2xl border border-forest-100 bg-white px-4 py-4 text-sm text-forest-900">
                     <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">Calculator config (reference)</p>
                     <p className="mt-2 font-medium">
                       {detailParsed.packageStyle} · {detailParsed.groupSize} golfers · {detailParsed.nights} nights /{' '}

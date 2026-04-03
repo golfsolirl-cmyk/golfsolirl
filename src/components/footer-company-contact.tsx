@@ -29,7 +29,7 @@ export function FooterCompanyContact() {
                   <span className="mt-1 block text-sm font-semibold tracking-[0.12em] text-white/58">{companyContact.eircode}</span>
                 </address>
                 <a
-                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold uppercase tracking-[0.12em] text-gold-400/90 transition-colors hover:text-gold-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
                   href={mapsHref}
                   rel="noreferrer"
                   target="_blank"
@@ -57,12 +57,12 @@ export function FooterCompanyContact() {
                 <p className="text-base leading-7 text-white/64">Irish mobile — same number on WhatsApp for quick trip questions.</p>
                 <a
                   aria-label={`Message Golf Sol Ireland on WhatsApp at ${companyContact.phoneDisplay}`}
-                  className="group inline-flex min-h-11 items-center gap-2.5 rounded-full border border-[#25D366]/35 bg-[#25D366]/10 px-5 py-3 text-base font-semibold text-[#b8f5c8] transition-all hover:border-[#25D366]/60 hover:bg-[#25D366]/18 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                  className="group inline-flex min-h-11 items-center gap-2.5 rounded-full border border-white/25 bg-white/10 px-5 py-3 text-base font-semibold text-white transition-all hover:border-white/40 hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
                   href={companyContact.whatsappHref}
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <FaWhatsapp className="h-5 w-5 text-[#25D366] transition-transform group-hover:scale-110" aria-hidden="true" />
+                  <FaWhatsapp className="h-5 w-5 text-white transition-transform group-hover:scale-110" aria-hidden="true" />
                   Chat on WhatsApp
                 </a>
               </div>

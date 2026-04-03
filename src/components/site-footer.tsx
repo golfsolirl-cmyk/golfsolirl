@@ -40,7 +40,7 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
                 <li className="flex items-center gap-2">
                   <ChevronRight className="h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
                   <a
-                    className="text-base font-medium text-white/72 transition-colors hover:text-gold-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                    className="text-base font-medium text-white transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
                     href={session ? dashboardHref : '/login'}
                   >
                     {session ? 'My dashboard' : 'Sign in'}
@@ -81,7 +81,7 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
                   <li key={item.href} className="flex items-center gap-2">
                     <ChevronRight className="h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
                     <a
-                      className="text-base font-medium text-white/72 transition-colors hover:text-gold-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                      className="text-base font-medium text-white transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
                       href={item.href}
                     >
                       {item.label}
