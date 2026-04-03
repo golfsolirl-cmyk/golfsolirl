@@ -15,6 +15,29 @@ const sanitizeText = (value, fallback = proposalPlaceholder) => {
   return normalizedValue
 }
 
+const sanitizeOptionalText = (value) => {
+  if (typeof value !== 'string') {
+    return ''
+  }
+
+  return value.trim()
+}
+
+const parseOptionalHotelStars = (value) => {
+  if (typeof value === 'number' && !Number.isNaN(value)) {
+    return value
+  }
+
+  if (typeof value === 'string' && value.trim()) {
+    const n = Number(value.trim())
+    if (!Number.isNaN(n)) {
+      return n
+    }
+  }
+
+  return null
+}
+
 const sanitizeNumber = (value, fallback) => {
   const numericValue = Number(value)
 
@@ -79,7 +102,11 @@ export const normalizeProposalPayload = (payload = {}) => {
     remainingBalance: sanitizeText(payload.remainingBalance, proposalPricePlaceholder),
     groupSize,
     nights,
-    rounds
+    rounds,
+    courseName: sanitizeOptionalText(typeof payload.courseName === 'string' ? payload.courseName : ''),
+    hotelName: sanitizeOptionalText(typeof payload.hotelName === 'string' ? payload.hotelName : ''),
+    hotelStars: parseOptionalHotelStars(payload.hotelStars),
+    hotelDist: sanitizeOptionalText(typeof payload.hotelDist === 'string' ? payload.hotelDist : '')
   }
 }
 
@@ -96,6 +123,22 @@ export const normalizeEnquiryPayload = (payload = {}) => ({
 export const buildProposalDocument = (rawPayload = {}) => {
   const variant = resolveProposalVariant(rawPayload)
   const proposal = normalizeProposalPayload(rawPayload)
+
+  const hotelAreaLine = proposal.hotelName
+    ? `Hotel name / area: ${proposal.hotelName}${
+        typeof proposal.hotelStars === 'number' && proposal.hotelStars > 0
+          ? ` ${'★'.repeat(Math.min(5, Math.max(1, Math.floor(proposal.hotelStars))))}`
+          : ''
+      }${proposal.hotelDist ? ` · ${proposal.hotelDist} from course` : ''}`
+    : 'Hotel name / area: ________________________'
+
+  const courseListLine = proposal.courseName
+    ? `Course list: ${proposal.courseName}`
+    : 'Course list: ________________________'
+
+  const golfCourseOverviewLine = proposal.courseName
+    ? `Golf course: ${proposal.courseName}`
+    : `Golf course: ${proposalPlaceholder}`
 
   const heroPublic = {
     kicker: 'Costa del Sol Proposal',
@@ -127,7 +170,8 @@ export const buildProposalDocument = (rawPayload = {}) => {
           `Package style: ${proposal.packageName}`,
           `Stay level: ${proposal.stayName}`,
           `Transfer style: ${proposal.transferName}`,
-          `Group size: ${proposal.groupSize} golfer${proposal.groupSize > 1 ? 's' : ''}`
+          `Group size: ${proposal.groupSize} golfer${proposal.groupSize > 1 ? 's' : ''}`,
+          golfCourseOverviewLine
         ]
       },
       {
@@ -144,8 +188,8 @@ export const buildProposalDocument = (rawPayload = {}) => {
         icon: 'map',
         title: 'Proposal details',
         items: [
-          'Hotel name / area: ________________________',
-          'Course list: ________________________',
+          hotelAreaLine,
+          courseListLine,
           'Resort area: ________________________',
           'Special requests: ________________________'
         ]

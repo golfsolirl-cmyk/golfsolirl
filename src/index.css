@@ -26,6 +26,15 @@
   }
 }
 
+/* Leaflet map tiles + divIcon markers (CourseHotelMapPicker) */
+.leaflet-container {
+  font-family: inherit;
+}
+.gsol-leaflet-dot {
+  background: transparent !important;
+  border: none !important;
+}
+
 @layer components {
   .section-shell {
     @apply relative overflow-hidden px-6 py-20 md:py-28;

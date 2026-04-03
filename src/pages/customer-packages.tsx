@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import {
   BedDouble,
@@ -17,12 +17,22 @@ import { Logo, ShamrockIcon } from '../components/ui/logo'
 import { AnimatedStepKicker, SectionHeader } from '../components/ui/section-header'
 import { WaveDivider } from '../components/ui/wave-divider'
 import { integrationRegistry } from '../config/integrations'
+import {
+  COURSES,
+  parseCourseHotelSearch,
+  type CourseHotelPickerValue
+} from '../data/coastal-golf-data'
 import { footerSocialLinks, heroBackgroundImage } from '../data/site-content'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { buildPackageConfig, defaultLabelForBuild } from '../lib/package-build'
 import { cx } from '../lib/utils'
 import { useAuth } from '../providers/auth-provider'
 import { CookieBanner, FloatingWhatsAppButton, formatEuro } from './packages'
+
+const CourseHotelMapPicker = lazy(async () => {
+  const m = await import('../components/course-hotel-map-picker')
+  return { default: m.CourseHotelMapPicker }
+})
 
 const packagePageLinks = ['Packages', 'Stays', 'Calculator', 'Enquire'] as const
 
@@ -191,6 +201,9 @@ function CustomerPackagePage() {
   const [groupSize, setGroupSize] = useState(() => getInitialNumberParam({ paramName: 'groupSize', min: 1, max: 8, fallback: 4 }))
   const [nights, setNights] = useState(() => getInitialNumberParam({ paramName: 'nights', min: 3, max: 7, fallback: 4 }))
   const [rounds, setRounds] = useState(() => getInitialNumberParam({ paramName: 'rounds', min: 2, max: 5, fallback: 3 }))
+  const [courseHotelPick, setCourseHotelPick] = useState<CourseHotelPickerValue>(() =>
+    parseCourseHotelSearch(window.location.search)
+  )
   const [hasAcceptedCookies, setHasAcceptedCookies] = useState(true)
   const [isFooterInView, setIsFooterInView] = useState(false)
   const [isSavingBuild, setIsSavingBuild] = useState(false)
@@ -260,8 +273,23 @@ function CustomerPackagePage() {
       remainingBalance: formatEuro(pricingSummary.remainingBalance)
     })
 
+    const { selectedCourse, selectedHotel } = courseHotelPick
+    if (selectedCourse) {
+      searchParams.set('courseId', selectedCourse)
+      const course = COURSES.find((c) => c.id === selectedCourse)
+      if (course) {
+        searchParams.set('courseName', course.name)
+      }
+    }
+    if (selectedHotel) {
+      searchParams.set('hotelName', selectedHotel.name)
+      searchParams.set('hotelStars', String(selectedHotel.stars))
+      searchParams.set('hotelDist', selectedHotel.dist)
+    }
+
     return `/proposal-template?${searchParams.toString()}`
   }, [
+    courseHotelPick,
     groupSize,
     nights,
     pricingSummary.depositAmount,
@@ -295,6 +323,9 @@ function CustomerPackagePage() {
     }
 
     setIsSavingBuild(true)
+    const courseId = courseHotelPick.selectedCourse
+    const courseName = courseId ? (COURSES.find((c) => c.id === courseId)?.name ?? null) : null
+
     const config = buildPackageConfig({
       source: fromLanding ? 'landing' : 'packages',
       packageStyle: selectedPackage.name,
@@ -308,7 +339,12 @@ function CustomerPackagePage() {
         estimatedGroupTotal: pricingSummary.estimatedGroupTotal,
         depositAmount: pricingSummary.depositAmount,
         remainingBalance: pricingSummary.remainingBalance
-      }
+      },
+      courseId,
+      courseName,
+      hotelName: courseHotelPick.selectedHotel?.name ?? null,
+      hotelStars: courseHotelPick.selectedHotel?.stars ?? null,
+      hotelDist: courseHotelPick.selectedHotel?.dist ?? null
     })
 
     const { error } = await supabase.from('package_builds').insert({
@@ -327,6 +363,8 @@ function CustomerPackagePage() {
 
     setSaveBuildOk(true)
   }, [
+    courseHotelPick.selectedCourse,
+    courseHotelPick.selectedHotel,
     fromLanding,
     loginHrefForSave,
     session?.user,
@@ -342,9 +380,29 @@ function CustomerPackagePage() {
     pricingSummary.remainingBalance
   ])
 
+  const handleCourseHotelMapChange = useCallback((value: CourseHotelPickerValue) => {
+    setCourseHotelPick(value)
+  }, [])
+
+  useEffect(() => {
+    const stars = courseHotelPick.selectedHotel?.stars
+    if (stars === 3 || stars === 4 || stars === 5) {
+      setSelectedStayName(stayNameByTier[stars])
+    }
+  }, [courseHotelPick.selectedHotel])
+
   useEffect(() => {
     setSaveBuildOk(false)
-  }, [selectedPackageName, selectedStayName, selectedTransferName, groupSize, nights, rounds])
+  }, [
+    selectedPackageName,
+    selectedStayName,
+    selectedTransferName,
+    groupSize,
+    nights,
+    rounds,
+    courseHotelPick.selectedCourse,
+    courseHotelPick.selectedHotel?.name
+  ])
 
   const handleAcceptCookies = () => {
     localStorage.setItem('gsol-cookie-banner-dismissed', 'true')
@@ -619,6 +677,28 @@ function CustomerPackagePage() {
                 </div>
 
                 <div className="mt-5 rounded-[1.6rem] border border-white/80 bg-white p-5 shadow-sm">
+                  <p className="text-base font-semibold text-forest-900">Choose a golf course & hotel</p>
+                  <p className="mt-1 text-sm text-forest-900/56">
+                    Optional — same map as the homepage. Your picks stay with this estimate and are included when you save or open the proposal.
+                  </p>
+                  <div className="mt-4">
+                    <Suspense
+                      fallback={
+                        <div className="flex h-[400px] items-center justify-center rounded-[0.625rem] border border-forest-200 bg-offwhite text-sm text-forest-600">
+                          Loading map…
+                        </div>
+                      }
+                    >
+                      <CourseHotelMapPicker
+                        initialCourseId={courseHotelPick.selectedCourse}
+                        initialHotel={courseHotelPick.selectedHotel}
+                        onSelectionChange={handleCourseHotelMapChange}
+                      />
+                    </Suspense>
+                  </div>
+                </div>
+
+                <div className="mt-5 rounded-[1.6rem] border border-white/80 bg-white p-5 shadow-sm">
                   <p className="text-base font-semibold text-forest-900">Transfer style</p>
                   <p className="mt-1 text-sm text-forest-900/56">Choose the level of transport support that suits the trip</p>
 
@@ -667,6 +747,18 @@ function CustomerPackagePage() {
                   <SummaryTile label="Stay level" value={selectedStay.name} />
                   <SummaryTile label="Trip shape" value={`${nights} nights / ${rounds} rounds`} />
                   <SummaryTile label="Transfer style" value={selectedTransfer.name} />
+                  {courseHotelPick.selectedCourse ? (
+                    <SummaryTile
+                      label="Golf course"
+                      value={COURSES.find((c) => c.id === courseHotelPick.selectedCourse)?.name ?? courseHotelPick.selectedCourse}
+                    />
+                  ) : null}
+                  {courseHotelPick.selectedHotel ? (
+                    <SummaryTile
+                      label="Hotel pick"
+                      value={`${courseHotelPick.selectedHotel.name} · ${'★'.repeat(courseHotelPick.selectedHotel.stars)} · ${courseHotelPick.selectedHotel.dist}`}
+                    />
+                  ) : null}
                 </div>
 
                 <div className="mt-6 space-y-3 rounded-[1.75rem] border border-white/10 bg-white/5 p-5">
@@ -703,6 +795,13 @@ function CustomerPackagePage() {
                 <p className="mt-5 text-base leading-8 text-white/66">
                   Indicative pricing only. Final package price depends on live hotel rates, golf availability, and the transfer route across your dates.
                 </p>
+                {courseHotelPick.selectedCourse || courseHotelPick.selectedHotel ? (
+                  <p className="mt-4 rounded-[1.25rem] border border-white/10 bg-white/5 px-4 py-3 text-sm leading-7 text-white/78">
+                    <span className="font-semibold text-gold-200">Course & hotel:</span> Shown on the proposal PDF / print view and saved with your package when you sign in and use{' '}
+                    <span className="font-medium text-white">Save to my account</span>. After saving, they appear in your dashboard trip details and stay attached when you reopen this build in
+                    the calculator.
+                  </p>
+                ) : null}
                 <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                   <LuxuryButton href={proposalTemplateHref} showArrow variant="white">
                     View as proposal (print / PDF)

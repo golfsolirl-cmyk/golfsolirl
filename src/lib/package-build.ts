@@ -17,6 +17,11 @@ export interface PackageBuildConfig {
   readonly nights: number
   readonly rounds: number
   readonly totals: PackageBuildTotals
+  readonly courseId?: string | null
+  readonly courseName?: string | null
+  readonly hotelName?: string | null
+  readonly hotelStars?: number | null
+  readonly hotelDist?: string | null
 }
 
 const stayTierByName: Record<string, 3 | 4 | 5> = {
@@ -40,6 +45,11 @@ export const buildPackageConfig = (input: {
   readonly nights: number
   readonly rounds: number
   readonly totals: PackageBuildTotals
+  readonly courseId?: string | null
+  readonly courseName?: string | null
+  readonly hotelName?: string | null
+  readonly hotelStars?: number | null
+  readonly hotelDist?: string | null
 }): PackageBuildConfig => ({
   version: 1,
   source: input.source,
@@ -49,7 +59,12 @@ export const buildPackageConfig = (input: {
   groupSize: input.groupSize,
   nights: input.nights,
   rounds: input.rounds,
-  totals: input.totals
+  totals: input.totals,
+  courseId: input.courseId ?? null,
+  courseName: input.courseName ?? null,
+  hotelName: input.hotelName ?? null,
+  hotelStars: input.hotelStars ?? null,
+  hotelDist: input.hotelDist ?? null
 })
 
 /** Re-open the public packages calculator with the same selections. */
@@ -68,6 +83,22 @@ export const packagesPagePathFromConfig = (config: PackageBuildConfig): string =
 
   if (config.source === 'landing') {
     search.set('from', 'landing')
+  }
+
+  if (config.courseId) {
+    search.set('courseId', config.courseId)
+  }
+  if (config.courseName) {
+    search.set('courseName', config.courseName)
+  }
+  if (config.hotelName) {
+    search.set('hotelName', config.hotelName)
+  }
+  if (config.hotelStars != null) {
+    search.set('hotelStars', String(config.hotelStars))
+  }
+  if (config.hotelDist) {
+    search.set('hotelDist', config.hotelDist)
   }
 
   return `/packages?${search.toString()}`
@@ -259,8 +290,11 @@ export const tripDetailsFromConfig = (config: PackageBuildConfig): PackageTripDe
   contactPhone: '',
   preferredTravelDates: '',
   departureAirportRoute: '',
-  hotelNameArea: '',
-  courseList: '',
+  hotelNameArea:
+    config.hotelName != null && config.hotelName !== ''
+      ? `${config.hotelName}${config.hotelStars != null ? ` (${config.hotelStars}★)` : ''}${config.hotelDist ? ` · ${config.hotelDist}` : ''}`
+      : '',
+  courseList: config.courseName ?? '',
   resortArea: '',
   specialRequests: '',
   airportTransfers: '',
@@ -284,6 +318,15 @@ export const mergeTripDetailsWithSaved = (
   for (const key of tripDetailKeys) {
     const v = s[key]
     if (typeof v === 'string') {
+      const trimmed = v.trim()
+      if (
+        trimmed === '' &&
+        (key === 'hotelNameArea' || key === 'courseList') &&
+        typeof defaults[key] === 'string' &&
+        defaults[key].trim() !== ''
+      ) {
+        continue
+      }
       next = { ...next, [key]: v }
     } else if (typeof v === 'number' && (key === 'groupSize' || key === 'nights' || key === 'rounds')) {
       next = { ...next, [key]: String(v) }

@@ -38,6 +38,15 @@ function ProposalTemplatePage() {
   const proposalPayload = useMemo(() => {
     const searchParams = new URLSearchParams(window.location.search)
 
+    const hotelStarsRaw = searchParams.get('hotelStars')
+    let hotelStars: number | null = null
+    if (hotelStarsRaw != null && hotelStarsRaw !== '') {
+      const n = Number(hotelStarsRaw)
+      if (!Number.isNaN(n)) {
+        hotelStars = n
+      }
+    }
+
     return {
       packageName: searchParams.get('package') ?? '________________________',
       stayName: searchParams.get('stayName') ?? '________________________',
@@ -51,6 +60,10 @@ function ProposalTemplatePage() {
       groupSize: parseNumberParam(searchParams.get('groupSize'), 4),
       nights: parseNumberParam(searchParams.get('nights'), 4),
       rounds: parseNumberParam(searchParams.get('rounds'), 3),
+      courseName: searchParams.get('courseName') ?? '',
+      hotelName: searchParams.get('hotelName') ?? '',
+      hotelStars,
+      hotelDist: searchParams.get('hotelDist') ?? '',
       variant: isAdminProposal ? 'admin' : 'public'
     }
   }, [isAdminProposal])
@@ -70,6 +83,10 @@ function ProposalTemplatePage() {
         groupSize: proposalPayload.groupSize,
         nights: proposalPayload.nights,
         rounds: proposalPayload.rounds,
+        courseName: proposalPayload.courseName,
+        hotelName: proposalPayload.hotelName,
+        hotelStars: proposalPayload.hotelStars,
+        hotelDist: proposalPayload.hotelDist,
         variant: proposalPayload.variant
       }),
     [proposalPayload]
@@ -88,7 +105,11 @@ function ProposalTemplatePage() {
       remainingBalance: proposalPayload.remainingBalance,
       groupSize: proposalPayload.groupSize,
       nights: proposalPayload.nights,
-      rounds: proposalPayload.rounds
+      rounds: proposalPayload.rounds,
+      courseName: proposalPayload.courseName,
+      hotelName: proposalPayload.hotelName,
+      hotelStars: proposalPayload.hotelStars,
+      hotelDist: proposalPayload.hotelDist
     }),
     [proposalPayload]
   )

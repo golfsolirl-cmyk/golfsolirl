@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { FaWhatsapp } from 'react-icons/fa6'
 import logoIcon from './golf-sol-ireland-logo.svg'
@@ -54,6 +54,17 @@ import {
   transferFeatures
 } from './data/site-content'
 import { cx } from './lib/utils'
+import {
+  COURSES,
+  readLandingMapFromSessionStorage,
+  writeLandingMapToSessionStorage,
+  type CourseHotelPickerValue
+} from './data/coastal-golf-data'
+
+const CourseHotelMapPicker = lazy(async () => {
+  const m = await import('./components/course-hotel-map-picker')
+  return { default: m.CourseHotelMapPicker }
+})
 
 type HotelFilter = 'all' | 3 | 4 | 5
 
@@ -115,6 +126,7 @@ function App() {
   const [quickNights, setQuickNights] = useState(4)
   const [quickRounds, setQuickRounds] = useState(3)
   const [quickTransfer, setQuickTransfer] = useState<TransferParamOption>('private')
+  const [courseHotelSelection, setCourseHotelSelection] = useState<CourseHotelPickerValue>(() => readLandingMapFromSessionStorage())
   const [enquiryFormStatus, setEnquiryFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [enquiryFormMessage, setEnquiryFormMessage] = useState('')
   const [hasAcceptedCookies, setHasAcceptedCookies] = useState(true)
@@ -143,8 +155,38 @@ function App() {
       searchParams.set('stay', String(selectedHotelTier))
     }
 
+    const { selectedCourse, selectedHotel } = courseHotelSelection
+    if (selectedCourse) {
+      searchParams.set('courseId', selectedCourse)
+      const course = COURSES.find((c) => c.id === selectedCourse)
+      if (course) {
+        searchParams.set('courseName', course.name)
+      }
+    }
+    if (selectedHotel) {
+      searchParams.set('hotelName', selectedHotel.name)
+      searchParams.set('hotelStars', String(selectedHotel.stars))
+      searchParams.set('hotelDist', selectedHotel.dist)
+    }
+
     return `/packages?${searchParams.toString()}`
-  }, [quickGroupSize, quickNights, quickRounds, quickTransfer, selectedHotelTier])
+  }, [courseHotelSelection, quickGroupSize, quickNights, quickRounds, quickTransfer, selectedHotelTier])
+
+  const handleCourseHotelMapChange = useCallback((value: CourseHotelPickerValue) => {
+    setCourseHotelSelection(value)
+  }, [])
+
+  useEffect(() => {
+    writeLandingMapToSessionStorage(courseHotelSelection)
+  }, [courseHotelSelection])
+
+  useEffect(() => {
+    const stars = courseHotelSelection.selectedHotel?.stars
+    if (stars === 3 || stars === 4 || stars === 5) {
+      setSelectedHotelTier(stars)
+      sessionStorage.setItem(selectedHotelTierStorageKey, String(stars))
+    }
+  }, [courseHotelSelection.selectedHotel])
 
   const handleHotelFilterChange = (tier: HotelFilter) => {
     setSelectedHotelTier(tier)
@@ -638,6 +680,29 @@ function App() {
                       selectedValue={quickRounds}
                       onSelect={setQuickRounds}
                     />
+                  </div>
+
+                  <div className="mt-5 rounded-[1.6rem] border border-white/80 bg-white p-5 shadow-sm">
+                    <p className="text-base font-semibold text-forest-900">Choose a golf course & hotel</p>
+                    <p className="mt-1 text-sm text-forest-900/56">
+                      Optional — tap a course on the map, filter by hotel stars, then pick a nearby stay. Selections carry through to the package page and
+                      can align your stay tier with the hotel you chose.
+                    </p>
+                    <div className="mt-4">
+                      <Suspense
+                        fallback={
+                          <div className="flex h-[400px] items-center justify-center rounded-[0.625rem] border border-forest-200 bg-offwhite text-sm text-forest-600">
+                            Loading map…
+                          </div>
+                        }
+                      >
+                        <CourseHotelMapPicker
+                          initialCourseId={courseHotelSelection.selectedCourse}
+                          initialHotel={courseHotelSelection.selectedHotel}
+                          onSelectionChange={handleCourseHotelMapChange}
+                        />
+                      </Suspense>
+                    </div>
                   </div>
                 </motion.div>
 
