@@ -111,7 +111,7 @@ function EnquiryPdfTemplatePage() {
               <div className="mt-5 space-y-4">
                 {documentTemplate.lower.left.items.map((item) => (
                   <div key={item} className="flex items-start gap-3 text-sm text-forest-900/72">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-fairway-600" aria-hidden="true" />
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" aria-hidden="true" />
                     <span>{item}</span>
                   </div>
                 ))}

@@ -309,14 +309,14 @@ export function CourseHotelMapPicker({ onSelectionChange, initialCourseId, initi
       )}
 
       {selectedCourse && selectedHotel && activeCourse ? (
-        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-lg bg-fairway-50 px-3 py-2.5 text-sm text-forest-900">
+        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-lg border border-gold-200/60 bg-offwhite px-3 py-2.5 text-sm text-forest-900">
           <span>
             <strong>{activeCourse.name}</strong> + <strong>{selectedHotel.name}</strong> {`${'★'.repeat(selectedHotel.stars)}`}
           </span>
-          <span className="text-xs text-fairway-800">{selectedHotel.dist} from course</span>
+          <span className="text-xs font-medium text-gold-600">{selectedHotel.dist} from course</span>
           <button
             type="button"
-            className="ml-auto text-xs font-semibold text-fairway-800 underline decoration-fairway-600/50 hover:text-fairway-950"
+            className="ml-auto text-xs font-semibold text-gold-700 underline decoration-gold-500/50 hover:text-gold-800"
             onClick={() => setSelectedHotel(null)}
           >
             Change hotel

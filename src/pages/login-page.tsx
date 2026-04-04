@@ -158,7 +158,7 @@ export function LoginPage() {
           <h1 className="font-display mt-6 text-[2.2rem] font-bold tracking-[-0.03em] text-white md:text-[2.85rem] md:leading-tight">
             Sign in
           </h1>
-          <p className="mt-4 max-w-xl text-base leading-8 text-white/78 md:text-lg">
+          <p className="mt-4 max-w-xl text-base leading-8 text-white md:text-lg">
             We&apos;ll email you a secure magic link — the same premium Golf Sol Ireland experience as the rest of the
             site. No password to remember.
           </p>
@@ -215,7 +215,7 @@ export function LoginPage() {
               <form className="space-y-6" noValidate onSubmit={handleSubmit}>
                 <div>
                   <label
-                    className="mb-2 block text-sm font-semibold uppercase tracking-[0.16em] text-gold-600"
+                    className="mb-2 block text-sm font-semibold uppercase tracking-[0.16em] text-forest-900"
                     htmlFor="login-email"
                   >
                     Email

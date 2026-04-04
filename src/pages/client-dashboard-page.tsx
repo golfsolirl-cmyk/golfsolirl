@@ -520,7 +520,7 @@ export function ClientDashboardPage() {
                           <p
                             className={cx(
                               'text-sm font-medium',
-                              detailsStatus === 'error' ? 'text-red-700' : 'text-fairway-800'
+                              detailsStatus === 'error' ? 'text-red-700' : 'text-forest-800'
                             )}
                             role={detailsStatus === 'error' ? 'alert' : 'status'}
                           >

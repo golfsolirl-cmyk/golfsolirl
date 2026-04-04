@@ -115,7 +115,7 @@ export function ClientDocumentPage() {
             will appear on your client dashboard after you sign in.
           </p>
           <a
-            className="mt-8 inline-flex text-sm font-semibold text-fairway-700 underline-offset-2 hover:underline"
+            className="mt-8 inline-flex text-sm font-semibold text-gold-600 underline-offset-2 hover:text-gold-700 hover:underline"
             href="/dashboard"
           >
             Back to your dashboard
@@ -147,7 +147,7 @@ export function ClientDocumentPage() {
             {pdfStatus === 'saving' ? 'Preparing PDF…' : 'Save PDF'}
           </button>
           <a
-            className="text-sm font-semibold text-fairway-700 underline-offset-2 hover:underline"
+            className="text-sm font-semibold text-gold-600 underline-offset-2 hover:text-gold-700 hover:underline"
             href="/dashboard"
           >
             Back to dashboard

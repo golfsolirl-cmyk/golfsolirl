@@ -478,7 +478,7 @@ export function AdminDashboardPage() {
                         <td className="whitespace-nowrap px-4 py-4 font-medium md:px-6">{row.full_name}</td>
                         <td className="px-4 py-4 md:px-6">
                           <a
-                            className="font-medium text-fairway-700 underline-offset-2 transition-colors hover:text-fairway-800 hover:underline"
+                            className="font-medium text-gold-600 underline-offset-2 transition-colors hover:text-gold-700 hover:underline"
                             href={`mailto:${row.email}`}
                           >
                             {row.email}
@@ -620,7 +620,7 @@ export function AdminDashboardPage() {
                             <p className="font-medium text-forest-900">{prof?.full_name?.trim() || '—'}</p>
                             {prof?.email ? (
                               <a
-                                className="text-xs font-medium text-fairway-700 underline-offset-2 hover:underline"
+                                className="text-xs font-medium text-gold-600 underline-offset-2 hover:text-gold-700 hover:underline"
                                 href={`mailto:${prof.email}`}
                               >
                                 {prof.email}
@@ -743,7 +743,7 @@ export function AdminDashboardPage() {
                     {prof.full_name?.trim() ? <span>{prof.full_name.trim()}</span> : null}
                     {prof.full_name?.trim() && prof.email ? <span className="text-forest-400"> · </span> : null}
                     {prof.email ? (
-                      <a className="text-fairway-700 underline-offset-2 hover:underline" href={`mailto:${prof.email}`}>
+                      <a className="text-gold-600 underline-offset-2 hover:text-gold-700 hover:underline" href={`mailto:${prof.email}`}>
                         {prof.email}
                       </a>
                     ) : null}
@@ -837,7 +837,7 @@ export function AdminDashboardPage() {
                   <p
                     className={cx(
                       'text-sm font-medium',
-                      adminSaveStatus === 'error' ? 'text-red-700' : 'text-fairway-800'
+                      adminSaveStatus === 'error' ? 'text-red-700' : 'text-forest-800'
                     )}
                     role={adminSaveStatus === 'error' ? 'alert' : 'status'}
                   >

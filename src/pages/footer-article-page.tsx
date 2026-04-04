@@ -138,14 +138,14 @@ function FooterArticlePage() {
                 viewport={{ once: true, amount: 0.25 }}
                 whileInView={{ opacity: 1, y: 0 }}
               >
-                <p className="mb-3 text-base font-semibold uppercase tracking-[0.18em] text-fairway-700">Golf Sol Ireland</p>
+                <p className="mb-3 text-base font-semibold uppercase tracking-[0.18em] text-gold-600">Golf Sol Ireland</p>
                 <h2 className="font-display text-3xl font-bold leading-tight tracking-[-0.03em] text-forest-900 md:text-4xl">{section.title}</h2>
                 <p className="mt-4 text-base leading-8 text-forest-900/70 md:text-lg">{section.body}</p>
                 {section.bullets && section.bullets.length > 0 ? (
                   <ul className="mt-6 space-y-3">
                     {section.bullets.map((line) => (
                       <li key={line} className="flex items-start gap-3 text-base text-forest-900/74 md:text-lg">
-                        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-fairway-600" aria-hidden="true" />
+                        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-gold-500" aria-hidden="true" />
                         <span>{line}</span>
                       </li>
                     ))}

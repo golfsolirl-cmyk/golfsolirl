@@ -556,9 +556,9 @@ function App() {
                     <div className="mt-5 space-y-5 rounded-[1.5rem] border border-white/10 bg-white/6 p-5 backdrop-blur-sm md:p-6">
                       <div className="rounded-[1.45rem] border border-white/12 bg-[linear-gradient(135deg,#ffffff_0%,#f7f9f5_100%)] p-5 text-forest-950 shadow-[0_18px_40px_rgba(0,0,0,0.2)] md:p-6">
                         <div className="flex flex-wrap items-start justify-between gap-3 gap-y-2">
-                          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-700">Mock vehicle livery</p>
+                          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-700">Golf Sol Ireland transfer branding</p>
                           <span className="shrink-0 rounded-full border border-forest-900 bg-forest-950 px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.16em] text-white sm:px-5">
-                            Fleet spec
+                            Mercedes fleet spec
                           </span>
                         </div>
                         <div className="mt-5 w-full overflow-hidden rounded-[1.35rem] border border-slate-200 bg-white shadow-inner">

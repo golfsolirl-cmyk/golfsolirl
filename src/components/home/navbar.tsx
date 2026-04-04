@@ -76,7 +76,7 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
         className={cx(
           'mx-auto max-w-7xl border px-4 py-3 transition-all duration-300 md:rounded-full md:px-6',
           isMenuOpen
-            ? 'rounded-[2rem] border-white/10 bg-forest-900/98 shadow-soft backdrop-blur-md'
+            ? 'rounded-[2rem] border-white/10 bg-forest-950/[0.97] shadow-soft backdrop-blur-xl'
             : isScrolled
               ? 'rounded-full border-white/10 bg-forest-900/95 shadow-soft backdrop-blur-md'
               : 'rounded-full border-white/10 bg-white/5 backdrop-blur-sm'
@@ -121,7 +121,10 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
           <button
             aria-expanded={isMenuOpen}
             aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-colors hover:border-gold-400 hover:text-gold-400 md:hidden"
+            className={cx(
+              'inline-flex h-11 w-11 items-center justify-center rounded-full border text-white transition-colors hover:border-gold-400 hover:text-gold-400 md:hidden',
+              isMenuOpen ? 'border-white/20 bg-black/30' : 'border-white/20 bg-white/10'
+            )}
             onClick={handleToggleMenu}
             type="button"
           >
@@ -133,7 +136,7 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
           {isMenuOpen ? (
             <motion.div
               animate={{ opacity: 1, y: 0 }}
-              className="mt-4 flex flex-col gap-4 rounded-[1.5rem] border border-white/10 bg-forest-900/95 px-4 pb-4 pt-4 shadow-soft backdrop-blur-md md:hidden"
+              className="mt-4 flex flex-col gap-4 rounded-[1.5rem] border border-white/12 bg-forest-950/[0.94] px-4 pb-4 pt-4 shadow-soft backdrop-blur-xl md:hidden"
               exit={{ opacity: 0, y: -12 }}
               initial={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.25, ease: 'easeOut' }}

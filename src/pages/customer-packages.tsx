@@ -302,6 +302,71 @@ function CustomerPackagePage() {
     selectedTransfer.name
   ])
 
+  const packageEnquirySummary = useMemo(() => {
+    const lines = [
+      'Hi Golf Sol Ireland,',
+      '',
+      "I'm interested in a Costa del Sol golf package. Here's my calculator selection:",
+      '',
+      `Package style: ${selectedPackage.name}`,
+      `Stay level: ${selectedStay.name}`,
+      `Transfer: ${selectedTransfer.name}`,
+      `Group size: ${groupSize} golfers`,
+      `Trip: ${nights} nights / ${rounds} rounds`,
+      `Indicative per person: ${formatEuro(pricingSummary.estimatedPerPerson)}`,
+      `Indicative group total: ${formatEuro(pricingSummary.estimatedGroupTotal)}`,
+      `Deposit (20%): ${formatEuro(pricingSummary.depositAmount)}`
+    ]
+
+    const { selectedCourse, selectedHotel } = courseHotelPick
+    if (selectedCourse) {
+      const courseName = COURSES.find((c) => c.id === selectedCourse)?.name
+      lines.push(`Preferred course: ${courseName ?? selectedCourse}`)
+    }
+    if (selectedHotel) {
+      lines.push(`Preferred hotel: ${selectedHotel.name} (${selectedHotel.stars}★) · ${selectedHotel.dist}`)
+    }
+
+    lines.push('', 'Please get in touch to tailor this.')
+    return lines.join('\n')
+  }, [
+    courseHotelPick,
+    groupSize,
+    nights,
+    pricingSummary.depositAmount,
+    pricingSummary.estimatedGroupTotal,
+    pricingSummary.estimatedPerPerson,
+    rounds,
+    selectedPackage.name,
+    selectedStay.name,
+    selectedTransfer.name
+  ])
+
+  const packageEnquiryWhatsAppHref = useMemo(() => {
+    const WHATSAPP_TEXT_LIMIT = 1800
+    let text = packageEnquirySummary
+    if (text.length > WHATSAPP_TEXT_LIMIT) {
+      text = `${text.slice(0, WHATSAPP_TEXT_LIMIT - 3)}...`
+    }
+    try {
+      const u = new URL(whatsAppHref)
+      u.searchParams.set('text', text)
+      return u.toString()
+    } catch {
+      const sep = whatsAppHref.includes('?') ? '&' : '?'
+      return `${whatsAppHref}${sep}text=${encodeURIComponent(text)}`
+    }
+  }, [packageEnquirySummary, whatsAppHref])
+
+  const packageEnquiryMailtoHref = useMemo(() => {
+    const subject = `Costa del Sol package enquiry — ${selectedPackage.name}`
+    const params = new URLSearchParams({
+      subject,
+      body: packageEnquirySummary
+    })
+    return `mailto:hello@golfsolireland.com?${params.toString()}`
+  }, [packageEnquirySummary, selectedPackage.name])
+
   const handleSavePackageToAccount = useCallback(async () => {
     setSaveBuildError(null)
     setSaveBuildOk(false)
@@ -438,7 +503,7 @@ function CustomerPackagePage() {
   return (
     <div className="overflow-x-hidden bg-offwhite">
       <Navbar links={packagePageLinks} primaryCta="Make enquiry" />
-      <FloatingWhatsAppButton hidden={isFooterInView} href={whatsAppHref} />
+      <FloatingWhatsAppButton hidden={isFooterInView} href={packageEnquiryWhatsAppHref} />
       <CookieBanner hidden={hasAcceptedCookies} onAccept={handleAcceptCookies} />
 
       <main>
@@ -466,10 +531,10 @@ function CustomerPackagePage() {
               <h1 className="max-w-3xl font-display text-5xl font-black leading-tight tracking-tight text-white md:text-7xl lg:text-[5rem]">
                 Choose the package style, size the group, and see the trip cost live
               </h1>
-              <p className="mt-5 max-w-2xl text-[1.28rem] font-medium leading-8 text-white/82 md:text-[1.42rem]">
+              <p className="mt-5 max-w-2xl text-[1.28rem] font-medium leading-8 text-white md:text-[1.42rem]">
                 Built for solo golfers, couples, and groups all the way up to 8 players.
               </p>
-              <p className="mt-6 max-w-xl text-base leading-8 text-white/74 md:text-lg">
+              <p className="mt-6 max-w-xl text-base leading-8 text-white md:text-lg">
                 Pick the stay level, transfer style, number of rounds, and group size. The page updates instantly so customers can understand the package price before they enquire.
               </p>
 
@@ -541,7 +606,7 @@ function CustomerPackagePage() {
                     <div className={cx('mt-6 space-y-3 rounded-[1.5rem] border p-4', isSelected ? 'border-white/10 bg-white/6' : 'border-forest-100 bg-white/72')}>
                       {item.included.map((entry) => (
                         <div key={entry} className={cx('flex items-center gap-3 text-[0.98rem]', isSelected ? 'text-white/82' : 'text-forest-900/72')}>
-                          <CheckCircle2 className={cx('h-4 w-4 shrink-0', isSelected ? 'text-gold-300' : 'text-fairway-600')} aria-hidden="true" />
+                          <CheckCircle2 className={cx('h-4 w-4 shrink-0', isSelected ? 'text-gold-300' : 'text-gold-500')} aria-hidden="true" />
                           <span>{entry}</span>
                         </div>
                       ))}
@@ -854,13 +919,13 @@ function CustomerPackagePage() {
                 </p>
 
                 <div className="mt-8 flex flex-wrap gap-4">
-                  <LuxuryButton href={whatsAppHref} rel="noreferrer" target="_blank">
+                  <LuxuryButton href={packageEnquiryWhatsAppHref} rel="noreferrer" target="_blank">
                     WhatsApp enquiry
                   </LuxuryButton>
                   <LuxuryButton href={proposalTemplateHref} variant="white">
                     View proposal (print / PDF)
                   </LuxuryButton>
-                  <LuxuryButton href="mailto:hello@golfsolireland.com" variant="outline">
+                  <LuxuryButton href={packageEnquiryMailtoHref} variant="outline">
                     Email package request
                   </LuxuryButton>
                 </div>
