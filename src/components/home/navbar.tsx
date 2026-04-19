@@ -76,10 +76,10 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
         className={cx(
           'mx-auto max-w-7xl border px-4 py-3 transition-all duration-300 md:rounded-full md:px-6',
           isMenuOpen
-            ? 'rounded-[2rem] border-white/10 bg-forest-950/[0.97] shadow-soft backdrop-blur-xl'
+            ? 'rounded-[2rem] border-forest-700 bg-forest-950 shadow-[0_24px_64px_rgba(58,29,22,0.28)]'
             : isScrolled
-              ? 'rounded-full border-white/10 bg-forest-900/95 shadow-soft backdrop-blur-md'
-              : 'rounded-full border-white/10 bg-white/5 backdrop-blur-sm'
+              ? 'rounded-full border-forest-200 bg-[#f7f2ea] shadow-[0_18px_48px_rgba(58,29,22,0.14)]'
+              : 'rounded-full border-forest-200 bg-[#f3ead8]'
         )}
       >
         <div className="flex items-center justify-between gap-4">
@@ -88,14 +88,17 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
             className="max-w-[calc(100%-4.5rem)] transition-all duration-300"
             href={homeHref}
           >
-            <Logo tone={isScrolled || isMenuOpen ? 'scrolled' : 'hero'} />
+            <Logo tone={isScrolled || isMenuOpen ? 'light' : 'hero'} />
           </a>
 
           <nav aria-label="Primary navigation" className="hidden items-center gap-7 md:flex">
             {links.map((link) => (
               <a
                 key={link}
-                className="text-base font-medium tracking-[0.01em] text-white transition-colors hover:text-white"
+                className={cx(
+                  'text-base font-medium tracking-[0.01em] transition-colors',
+                  isScrolled ? 'text-forest-900 hover:text-fairway-600' : 'text-forest-900 hover:text-forest-700'
+                )}
                 href={navHrefForLink(link)}
               >
                 {link}
@@ -122,8 +125,12 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
             aria-expanded={isMenuOpen}
             aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             className={cx(
-              'inline-flex h-11 w-11 items-center justify-center rounded-full border text-white transition-colors hover:border-gold-400 hover:text-gold-400 md:hidden',
-              isMenuOpen ? 'border-white/20 bg-black/30' : 'border-white/20 bg-white/10'
+              'inline-flex h-11 w-11 items-center justify-center rounded-full border transition-colors md:hidden',
+              isMenuOpen
+                ? 'border-forest-700 bg-forest-900 text-white hover:border-gold-300 hover:text-gold-200'
+                : isScrolled
+                  ? 'border-forest-100 bg-white text-forest-900 hover:border-fairway-300 hover:text-fairway-700'
+                  : 'border-forest-200 bg-[#f7f2ea] text-forest-900 hover:border-fairway-300 hover:text-fairway-700'
             )}
             onClick={handleToggleMenu}
             type="button"
@@ -136,7 +143,7 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
           {isMenuOpen ? (
             <motion.div
               animate={{ opacity: 1, y: 0 }}
-              className="mt-4 flex flex-col gap-4 rounded-[1.5rem] border border-white/12 bg-forest-950/[0.94] px-4 pb-4 pt-4 shadow-soft backdrop-blur-xl md:hidden"
+              className="mt-4 flex flex-col gap-4 rounded-[1.5rem] border border-forest-700 bg-forest-950 px-4 pb-4 pt-4 shadow-[0_24px_64px_rgba(58,29,22,0.28)] md:hidden"
               exit={{ opacity: 0, y: -12 }}
               initial={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.25, ease: 'easeOut' }}
@@ -144,7 +151,7 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
               {links.map((link) => (
                 <a
                   key={link}
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white transition-colors hover:border-gold-400/40 hover:text-white"
+                  className="rounded-2xl border border-forest-700 bg-forest-900 px-4 py-3 text-white transition-colors hover:border-gold-400/40 hover:text-white"
                   href={navHrefForLink(link)}
                   onClick={handleCloseMenu}
                 >

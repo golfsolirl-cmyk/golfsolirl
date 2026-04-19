@@ -105,8 +105,8 @@ export function LoginPage() {
             <a aria-label="Golf Sol Ireland — home" className="mt-5 inline-block" href="/">
               <Logo size="large" tone="scrolled" />
             </a>
-            <h1 className="font-display mt-6 text-3xl font-bold tracking-tight text-white md:text-4xl">Sign in</h1>
-            <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/88">
+            <h1 className="font-display mt-6 text-4xl font-bold tracking-tight text-white md:text-5xl">Sign in</h1>
+            <p className="mt-3 max-w-xl text-base leading-relaxed text-white/88 md:text-lg">
               Connect Supabase to enable secure magic-link sign-in.
             </p>
           </div>
@@ -116,7 +116,7 @@ export function LoginPage() {
         </section>
         <main className="relative z-[1] mx-auto w-full max-w-lg flex-1 px-4 pb-20 pt-8 md:px-6 md:pb-28">
           <div className="rounded-[2rem] border border-forest-100 bg-white p-8 shadow-soft md:p-10">
-            <p className="text-sm leading-relaxed text-forest-700">
+            <p className="text-base leading-relaxed text-forest-700">
               Add <code className="rounded-md border border-forest-200 bg-white px-1.5 py-0.5 text-xs text-forest-900">VITE_SUPABASE_URL</code>{' '}
               and{' '}
               <code className="rounded-md border border-forest-200 bg-white px-1.5 py-0.5 text-xs text-forest-900">VITE_SUPABASE_ANON_KEY</code>{' '}
@@ -139,7 +139,7 @@ export function LoginPage() {
           <div className="mb-10 scale-90">
             <Logo size="large" tone="scrolled" />
           </div>
-          <p className="text-sm font-medium tracking-wide text-white/55">Loading…</p>
+          <p className="text-base font-medium tracking-wide text-white/55 md:text-lg">Loading…</p>
         </div>
         <SiteFooter copyrightNote={loginFooterCopyrightNote} footerRef={footerRef} intro={loginFooterIntro} />
       </div>
@@ -163,7 +163,7 @@ export function LoginPage() {
             site. No password to remember.
           </p>
           {safeReturnPath ? (
-            <p className="mt-3 max-w-xl rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-base text-white/90">
+            <p className="mt-3 max-w-xl rounded-2xl border border-white/15 bg-[#8f4d2d] px-4 py-3 text-base text-white/90 md:text-lg">
               After you sign in, we&apos;ll bring you back to your package so you can save it to your account.
             </p>
           ) : null}
@@ -190,9 +190,9 @@ export function LoginPage() {
                       ? 'Supabase returned an error for this sign-in attempt.'
                       : 'Something went wrong. Try again.'}
                 </p>
-                {queryHint ? <p className="text-sm text-forest-700">{decodeURIComponent(queryHint)}</p> : null}
+                {queryHint ? <p className="text-base text-forest-700">{decodeURIComponent(queryHint)}</p> : null}
                 {queryError === 'no_session' ? (
-                  <p className="text-sm text-forest-600">
+                  <p className="text-base text-forest-600">
                     Check Supabase → Authentication → URL configuration: add{' '}
                     <code className="rounded bg-white/80 px-1 py-0.5 text-xs text-forest-900 ring-1 ring-forest-100">
                       {`${window.location.origin}/auth/callback`}
@@ -215,7 +215,7 @@ export function LoginPage() {
               <form className="space-y-6" noValidate onSubmit={handleSubmit}>
                 <div>
                   <label
-                    className="mb-2 block text-sm font-semibold uppercase tracking-[0.16em] text-forest-900"
+                    className="mb-2 block text-base font-semibold uppercase tracking-[0.16em] text-forest-900"
                     htmlFor="login-email"
                   >
                     Email

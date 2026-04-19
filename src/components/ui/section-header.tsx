@@ -73,7 +73,7 @@ export function AnimatedStepKicker({
         className={cx(
           'flex items-center gap-3 rounded-full border px-4 py-3',
           centered && 'justify-center',
-          dark ? 'border-white/10 bg-white/5 backdrop-blur-sm' : 'border-forest-100 bg-white/85 shadow-sm'
+          dark ? 'border-white/15 bg-[#7a3f26] shadow-[0_10px_24px_rgba(38,18,14,0.22)]' : 'border-forest-100 bg-white shadow-sm'
         )}
         variants={{
           hidden: { opacity: 0, y: 12 },
@@ -122,10 +122,10 @@ export function SectionHeader({
       transition={{ duration: 0.7, ease: 'easeOut' }}
     >
       <AnimatedStepKicker centered={centered} dark={dark} kicker={kicker} />
-      <h2 className={cx('mb-4 font-display text-[2.5rem] font-black leading-[1.05] tracking-[-0.02em] md:text-[3.25rem]', dark && 'text-white')}>
+      <h2 className={cx('mb-4 font-display text-[2.7rem] font-black leading-[1.05] tracking-[-0.02em] md:text-[3.35rem]', dark && 'text-white')}>
         {title}
       </h2>
-      <p className={cx('max-w-2xl text-[1.03rem] leading-8 md:text-[1.1rem]', dark ? 'text-white/74' : 'text-forest-900/72', centered && 'mx-auto')}>
+      <p className={cx('max-w-2xl text-[1.12rem] leading-9 md:text-[1.2rem]', dark ? 'text-white/80' : 'text-forest-900/76', centered && 'mx-auto')}>
         {body}
       </p>
     </motion.div>

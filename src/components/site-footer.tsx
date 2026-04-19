@@ -27,7 +27,11 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
   const dashboardHref = profile?.role === 'admin' ? '/dashboard/admin' : '/dashboard'
 
   return (
-    <footer ref={footerRef} className="relative overflow-hidden border-t border-white/10 bg-forest-950 px-6 py-10 text-white">
+    <footer
+      ref={footerRef}
+      className="relative overflow-hidden border-t border-white/14 px-6 py-10 text-white"
+      style={{ background: 'var(--section-contact-bg)' }}
+    >
       <AmbientGolfBall className="right-[3%] top-2 opacity-75 xl:right-[6%]" size="sm" tone="footer" />
       <div className="mx-auto flex max-w-7xl flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-md">
@@ -56,10 +60,10 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
                 const Icon = footerSocialIconMap[label]
 
                 return (
-                  <a
+                <a
                     key={label}
                     aria-label={`Visit our ${label} page`}
-                    className="group inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#dc5801]/25 bg-white/5 text-[#dc5801] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#dc5801]/65 hover:bg-[#dc5801] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dc5801] focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                    className="group inline-flex h-12 w-12 items-center justify-center rounded-full border border-gold-300/30 bg-[#7a3f26] text-gold-300 transition-all duration-300 hover:-translate-y-0.5 hover:border-gold-300/70 hover:bg-gold-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-300 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
                     href={href}
                     rel="noreferrer"
                     target="_blank"

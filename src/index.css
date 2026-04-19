@@ -1,28 +1,110 @@
-@import url('https://fonts.bunny.net/css?family=rubik:300,400,500,600,700,800,900|dancing-script:600,700&display=swap');
+@import url('https://fonts.bunny.net/css?family=inter:300,400,500,600,700,800,900|manrope:300,400,500,600,700,800|sora:300,400,500,600,700,800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-forest-950: 38 18 14;
+  --color-forest-900: 58 29 22;
+  --color-forest-800: 90 46 32;
+  --color-forest-700: 122 63 38;
+  --color-forest-600: 160 79 44;
+  --color-forest-500: 200 100 52;
+  --color-forest-100: 234 220 207;
+  --color-forest-50: 248 239 231;
+
+  --color-fairway-700: 59 52 31;
+  --color-fairway-600: 84 74 42;
+  --color-fairway-500: 109 93 53;
+  --color-fairway-400: 145 121 68;
+  --color-fairway-200: 216 199 154;
+  --color-fairway-100: 237 226 197;
+  --color-fairway-50: 248 242 223;
+
+  --color-gold-600: 190 63 44;
+  --color-gold-500: 217 74 50;
+  --color-gold-400: 239 91 60;
+  --color-gold-300: 247 177 103;
+  --color-gold-50: 255 242 222;
+
+  --color-sky-muted: 246 237 220;
+  --color-sky-section: 241 228 205;
+  --color-sky-light: 251 244 231;
+  --color-cream: 243 237 224;
+  --color-offwhite: 247 242 234;
+
+  --hero-overlay-start: 38 18 14;
+  --hero-overlay-mid: 58 29 22;
+  --hero-overlay-end: 122 63 38;
+  --hero-bottom-start: 58 29 22;
+  --hero-bottom-end: 38 18 14;
+
+  --font-family-display: Sora;
+  --font-family-body: Inter;
+  --type-scale: 1.04;
+  --heading-weight: 800;
+  --body-weight: 500;
+
+  --button-radius: 26px;
+  --button-padding-x: 2rem;
+  --button-padding-y: 1.05rem;
+  --button-shadow: 0 18px 40px rgba(58, 29, 22, 0.2);
+
+  --section-spacing-multiplier: 1.08;
+  --surface-radius: 32px;
+  --surface-shadow: 0 16px 34px rgba(58, 29, 22, 0.16);
+
+  --wave-amplitude: 42;
+  --wave-curve: 56;
+  --wave-drift: 12;
+  --wave-fill-primary: #f7f2ea;
+  --wave-fill-secondary: #f1e4cd;
+  --wave-fill-dark: #5a2e20;
+
+  --section-home-bg: linear-gradient(130deg, #f5efdf 0%, #f3e5c8 56%, #f0d7b0 100%);
+  --section-transfer-showcase-bg: linear-gradient(145deg, #f9f2e2 0%, #f4e5c7 62%, #f9dfbf 100%);
+  --section-trust-bg: linear-gradient(180deg, #f7f2ea 0%, #f2e9d8 100%);
+  --section-packages-bg: linear-gradient(180deg, #f8f2e7 0%, #f5ead5 100%);
+  --section-costa-bg: linear-gradient(180deg, #f4e9d4 0%, #f1e0bf 100%);
+  --section-momentum-bg: linear-gradient(180deg, #f3ddbc 0%, #efd2a8 100%);
+  --section-courses-bg: linear-gradient(180deg, #f6ecd8 0%, #f2e2c4 100%);
+  --section-hotels-bg: linear-gradient(180deg, #f4e7cf 0%, #f0ddba 100%);
+  --section-transfers-bg: linear-gradient(145deg, #3a1d16 0%, #5a2e20 45%, #7a3f26 100%);
+  --section-plan-bg: #f7f2ea;
+  --section-testimonials-bg: #f5ecdd;
+  --section-contact-bg: linear-gradient(150deg, #3a1d16 0%, #5a2e20 55%, #7a3f26 100%);
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
-    font-size: clamp(16.6px, 0.24vw + 15.9px, 18.3px);
+    font-size: clamp(17.2px, 0.3vw + 16.2px, 19px);
   }
 
   body {
     @apply bg-offwhite font-body text-forest-900 antialiased;
-    line-height: 1.64;
+    line-height: calc(1.58 * var(--type-scale));
+    font-weight: var(--body-weight);
     text-rendering: optimizeLegibility;
+    letter-spacing: -0.01em;
   }
 
   * {
     @apply border-transparent;
   }
 
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: var(--heading-weight);
+    letter-spacing: -0.025em;
+  }
+
   ::selection {
-    background: rgba(220, 88, 1, 0.28);
-    color: #163a13;
+    background: rgba(var(--color-gold-400), 0.25);
+    color: rgb(var(--color-forest-900));
   }
 }
 
@@ -38,10 +120,28 @@
 @layer components {
   .section-shell {
     @apply relative overflow-hidden px-6 py-20 md:py-28;
+    padding-top: calc(5.4rem * var(--section-spacing-multiplier));
+    padding-bottom: calc(7rem * var(--section-spacing-multiplier));
   }
 
   .section-inner {
     @apply relative z-10 mx-auto max-w-7xl;
+  }
+
+  .surface-card {
+    border-radius: var(--surface-radius);
+    box-shadow: var(--surface-shadow);
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --type-scale: 1.09;
+  }
+
+  .section-shell {
+    padding-top: calc(4.5rem * var(--section-spacing-multiplier));
+    padding-bottom: calc(5.2rem * var(--section-spacing-multiplier));
   }
 }
 

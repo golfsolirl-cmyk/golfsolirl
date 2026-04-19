@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">Malaga airport transfer meet and greet</title>
+  <desc id="desc">Stylized illustration of Malaga airport terminal, a driver portrait, and premium transfer vehicles.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f2e7d0" />
+      <stop offset="58%" stop-color="#e5c596" />
+      <stop offset="100%" stop-color="#cd8a4d" />
+    </linearGradient>
+    <linearGradient id="ground" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#b35a2f" />
+      <stop offset="100%" stop-color="#e07b3b" />
+    </linearGradient>
+    <linearGradient id="apron" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f7efe2" />
+      <stop offset="100%" stop-color="#d2b184" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="800" fill="url(#sky)" />
+  <rect y="530" width="1200" height="270" fill="url(#ground)" />
+  <ellipse cx="780" cy="600" rx="400" ry="70" fill="#8c4b2f" opacity=".35" />
+
+  <g transform="translate(310 190)">
+    <rect width="700" height="210" rx="30" fill="#5b3a22" opacity=".88" />
+    <rect x="34" y="34" width="632" height="100" rx="20" fill="#f7efe2" />
+    <text x="90" y="102" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="800" fill="#4d2b19">MALAGA</text>
+    <rect x="34" y="150" width="632" height="34" rx="10" fill="#6d4326" />
+    <text x="66" y="173" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="600" fill="#f9e4c0">ARRIVALS " MEET &amp; GREET " TRANSFERS</text>
+  </g>
+
+  <g transform="translate(60 180)">
+    <circle cx="170" cy="170" r="140" fill="#f5d7b7" />
+    <ellipse cx="175" cy="290" rx="150" ry="120" fill="#3a1e16" />
+    <path d="M75 305c45-30 145-32 190 0v116H75z" fill="#6c4126" />
+    <ellipse cx="172" cy="168" rx="86" ry="96" fill="#f0c6a0" />
+    <ellipse cx="168" cy="151" rx="78" ry="72" fill="#6b4126" />
+    <ellipse cx="168" cy="195" rx="58" ry="42" fill="#ddb28e" />
+    <circle cx="145" cy="180" r="7" fill="#3f1f16" />
+    <circle cx="195" cy="180" r="7" fill="#3f1f16" />
+    <path d="M143 220c22 18 56 18 77 0" fill="none" stroke="#8f5738" stroke-width="6" stroke-linecap="round" />
+  </g>
+
+  <g transform="translate(480 470)">
+    <rect x="0" y="60" width="330" height="90" rx="30" fill="url(#apron)" />
+    <rect x="40" y="20" width="240" height="70" rx="22" fill="#f7efe2" />
+    <rect x="65" y="30" width="80" height="24" rx="8" fill="#9ec0d8" opacity=".85" />
+    <rect x="155" y="30" width="95" height="24" rx="8" fill="#9ec0d8" opacity=".85" />
+    <circle cx="70" cy="155" r="24" fill="#3b1f16" />
+    <circle cx="255" cy="155" r="24" fill="#3b1f16" />
+  </g>
+
+  <g transform="translate(770 445)">
+    <rect x="0" y="70" width="280" height="82" rx="28" fill="url(#apron)" />
+    <rect x="30" y="25" width="220" height="62" rx="20" fill="#f4e9d4" />
+    <rect x="54" y="35" width="72" height="20" rx="7" fill="#8fb2c9" opacity=".9" />
+    <rect x="136" y="35" width="86" height="20" rx="7" fill="#8fb2c9" opacity=".9" />
+    <circle cx="58" cy="154" r="21" fill="#3b1f16" />
+    <circle cx="216" cy="154" r="21" fill="#3b1f16" />
+  </g>
+
+  <g transform="translate(885 88)">
+    <path d="M0 42h92l-18 16H18z" fill="#d9a064" />
+    <path d="M85 42l34-12-8 20z" fill="#c67d43" />
+    <rect x="14" y="52" width="8" height="28" rx="3" fill="#9a6c42" />
+  </g>
+
+  <g transform="translate(620 665)">
+    <rect x="0" y="0" width="410" height="92" rx="16" fill="#203d6d" opacity=".9" />
+    <text x="26" y="34" font-family="Inter, Arial, sans-serif" font-size="31" font-weight="800" fill="#f9d16d">AIRPORT TRANSFERS</text>
+    <text x="26" y="64" font-family="Inter, Arial, sans-serif" font-size="23" font-weight="600" fill="#f8f4e8">Driver meet &amp; greet " Mercedes fleet</text>
+  </g>
+
+  <rect x="0" y="0" width="1200" height="800" fill="none" stroke="#e9dbc3" stroke-width="20" />
+</svg>

@@ -14,6 +14,8 @@ import { ClientDashboardPage } from './pages/client-dashboard-page'
 import { AdminDashboardPage } from './pages/admin-dashboard-page'
 import { ClientDocumentPage } from './pages/client-document-page'
 import { isFooterArticlePath } from './data/footer-article-pages'
+import { ThemeProvider } from './providers/theme-provider'
+import { DesignControlPanel } from './components/dev/design-control-panel'
 import './index.css'
 
 function resolvePage() {
@@ -78,7 +80,10 @@ function resolvePage() {
 const ActivePage = resolvePage()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <AuthProvider>
-    <ActivePage />
-  </AuthProvider>
+  <ThemeProvider>
+    <AuthProvider>
+      <ActivePage />
+      {import.meta.env.DEV ? <DesignControlPanel /> : null}
+    </AuthProvider>
+  </ThemeProvider>
 )
