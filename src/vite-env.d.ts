@@ -5,6 +5,7 @@ interface ImportMetaEnv {
   readonly VITE_SUPABASE_ANON_KEY?: string
   readonly VITE_STRIPE_PUBLISHABLE_KEY?: string
   readonly VITE_RESEND_AUDIENCE_ID?: string
+  readonly VITE_ENABLE_DESIGN_PANEL?: string
 }
 
 interface ImportMeta {

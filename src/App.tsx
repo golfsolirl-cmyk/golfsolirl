@@ -34,6 +34,7 @@ import { Logo, ShamrockIcon } from './components/ui/logo'
 import { AnimatedStepKicker, SectionHeader } from './components/ui/section-header'
 import { WaveDivider } from './components/ui/wave-divider'
 import { integrationRegistry } from './config/integrations'
+import { DesignControlPanel } from './components/dev/design-control-panel'
 import {
   costaMetrics,
   featuredCourses,
@@ -60,6 +61,7 @@ import {
   writeLandingMapToSessionStorage,
   type CourseHotelPickerValue
 } from './data/coastal-golf-data'
+import { useDesignTheme } from './theme/design-theme-provider'
 
 const CourseHotelMapPicker = lazy(async () => {
   const m = await import('./components/course-hotel-map-picker')
@@ -121,6 +123,9 @@ const revealUp = {
 } as const
 
 function App() {
+  const {
+    theme: { sections }
+  } = useDesignTheme()
   const [selectedHotelTier, setSelectedHotelTier] = useState<HotelFilter>('all')
   const [quickGroupSize, setQuickGroupSize] = useState(4)
   const [quickNights, setQuickNights] = useState(4)
@@ -285,16 +290,14 @@ function App() {
   }, [])
 
   return (
-    <div className="overflow-x-hidden bg-offwhite">
+    <div className="overflow-x-hidden" style={{ backgroundColor: 'var(--gsol-app-bg)', color: 'var(--gsol-text-primary)' }}>
       <Navbar links={navLinks} primaryCta={primaryActions.planTrip} />
+      <DesignControlPanel />
       <FloatingWhatsAppButton hidden={isFooterInView} href={whatsAppHref} />
       <CookieBanner hidden={hasAcceptedCookies} onAccept={handleAcceptCookies} />
 
       <main>
-        <section
-          className="relative min-h-screen overflow-hidden bg-forest-900 px-6 pb-28 pt-36 md:pt-40"
-          id="home"
-        >
+        <section className="relative min-h-screen overflow-hidden px-6 pb-28 pt-36 md:pt-40" id="home" style={{ backgroundColor: sections.home }}>
           <div
             aria-hidden="true"
             className="absolute inset-0 bg-cover bg-center"
@@ -461,7 +464,7 @@ function App() {
             </motion.aside>
           </div>
 
-          <WaveDivider fill="#ffffff" />
+          <WaveDivider fill={sections.packages} />
         </section>
 
         <section className="relative overflow-hidden border-b border-forest-100 bg-white px-6 py-14 md:py-18">
@@ -973,7 +976,7 @@ function App() {
           </div>
         </section>
 
-        <section className="section-shell bg-white pb-28" id="packages">
+        <section className="section-shell pb-28" id="packages" style={{ backgroundColor: sections.packages }}>
           <div className="section-inner grid items-start gap-12 md:grid-cols-[0.9fr_1.1fr] md:gap-16">
             <div>
               <SectionHeader
@@ -1021,10 +1024,10 @@ function App() {
             </div>
           </div>
 
-          <WaveDivider fill="#f2f5ef" />
+          <WaveDivider fill={sections.costa} />
         </section>
 
-        <section className="section-shell bg-cream pb-28" id="costa-del-sol">
+        <section className="section-shell pb-28" id="costa-del-sol" style={{ backgroundColor: sections.costa }}>
           <AmbientGolfBall className="right-[4%] top-14 opacity-85 xl:right-[7%]" size="md" tone="cream" />
           <div className="section-inner grid items-center gap-12 md:grid-cols-2 md:gap-16">
             <motion.div className="relative" {...revealUp}>
@@ -1085,10 +1088,10 @@ function App() {
             </div>
           </div>
 
-          <WaveDivider fill="#cce8f4" />
+          <WaveDivider fill={sections.courses} />
         </section>
 
-        <section className="section-shell bg-sky-section pb-24 pt-16">
+        <section className="section-shell pb-24 pt-16" style={{ backgroundColor: sections.courses }}>
           <motion.div className="section-inner text-center" {...revealUp}>
             <AnimatedStepKicker centered kicker="Step 3 — Let the week feel effortless" />
             <h2 className="mx-auto mt-3 max-w-4xl font-display text-[2.5rem] font-black leading-[1.05] tracking-[-0.02em] text-forest-900 md:text-[3.25rem]">
@@ -1099,10 +1102,10 @@ function App() {
             </p>
           </motion.div>
 
-          <WaveDivider fill="#e8f4fb" />
+          <WaveDivider fill={sections.courses} />
         </section>
 
-        <section className="section-shell bg-sky-muted pb-28" id="courses">
+        <section className="section-shell pb-28" id="courses" style={{ backgroundColor: sections.courses }}>
           <AmbientGolfBall className="left-[4%] top-14 opacity-80 xl:left-[7%]" size="sm" tone="sky" />
           <div className="section-inner">
             <SectionHeader
@@ -1119,10 +1122,10 @@ function App() {
             </div>
           </div>
 
-          <WaveDivider fill="#f0f7ee" />
+          <WaveDivider fill={sections.hotels} />
         </section>
 
-        <section className="section-shell bg-forest-50 pb-28" id="hotels">
+        <section className="section-shell pb-28" id="hotels" style={{ backgroundColor: sections.hotels }}>
           <div className="section-inner">
             <SectionHeader
               body="Not every group wants the same base. Some want lively and central, some want polished and relaxed, and some want the full five-star switch-off from the moment they arrive."
@@ -1162,10 +1165,10 @@ function App() {
             </div>
           </div>
 
-          <WaveDivider fill="#163a13" />
+          <WaveDivider fill={sections.transfers} />
         </section>
 
-        <section className="section-shell bg-forest-900 pb-28" id="transfers">
+        <section className="section-shell pb-28" id="transfers" style={{ backgroundColor: sections.transfers }}>
           <div aria-hidden="true" className="absolute -left-20 top-8 h-72 w-72 rounded-full bg-fairway-500/10 blur-3xl" />
           <div aria-hidden="true" className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-gold-400/10 blur-3xl" />
           <AmbientGolfBall className="right-[5%] top-16 opacity-90 xl:right-[8%]" size="md" tone="dark" />
@@ -1216,10 +1219,10 @@ function App() {
             </div>
           </div>
 
-          <WaveDivider fill="#ffffff" />
+          <WaveDivider fill={sections.plan} />
         </section>
 
-        <section className="section-shell bg-white pb-28" id="plan-trip">
+        <section className="section-shell pb-28" id="plan-trip" style={{ backgroundColor: sections.plan }}>
           <div className="section-inner">
             <SectionHeader
               body="Tell us your dates, group style, preferred courses, and stay level. We shape the route, confirm the details, and make the whole planning process feel straightforward from first enquiry to final itinerary."
@@ -1235,10 +1238,10 @@ function App() {
             </div>
           </div>
 
-          <WaveDivider fill="#ffffff" />
+          <WaveDivider fill={sections.testimonials} />
         </section>
 
-        <section className="section-shell bg-white pb-28" id="testimonials">
+        <section className="section-shell pb-28" id="testimonials" style={{ backgroundColor: sections.testimonials }}>
           <div className="section-inner">
             <SectionHeader
               body="The social proof is intentionally premium and restrained: enough to signal trust, without turning the page into a hard-sell brochure."
@@ -1255,7 +1258,7 @@ function App() {
           </div>
         </section>
 
-        <section className="section-shell bg-forest-900 pb-20">
+        <section className="section-shell pb-20" style={{ backgroundColor: sections.transfers }}>
           <div aria-hidden="true" className="absolute left-[-100px] top-[-40px] h-72 w-72 rounded-full bg-fairway-500/10 blur-3xl" />
           <div aria-hidden="true" className="absolute bottom-[-40px] right-[-60px] h-72 w-72 rounded-full bg-gold-400/10 blur-3xl" />
 
