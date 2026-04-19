@@ -1,0 +1,50 @@
+import { motion } from 'framer-motion'
+import { BondedBadge } from '../components/bonded-badge'
+import { GeButton } from '../components/ge-button'
+import { GeSection } from '../components/ge-section'
+import { RBullet } from '../components/r-bullet'
+import { factsCopy } from '../data/copy'
+
+const fadeUp = {
+  initial: { opacity: 0, y: 16 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.2 },
+  transition: { duration: 0.55, ease: 'easeOut' }
+} as const
+
+export function GeFacts() {
+  return (
+    <GeSection background="white" className="pt-20 pb-12">
+      <div className="grid gap-12 lg:grid-cols-[0.45fr_0.55fr] lg:items-start">
+        <motion.div className="flex flex-col items-center text-center lg:items-start lg:text-left" {...fadeUp}>
+          <p className="font-ge text-[0.85rem] font-bold uppercase tracking-[0.2em] text-ge-orange">
+            {factsCopy.eyebrow}
+          </p>
+          <h2 className="mt-3 font-ge text-[2rem] font-extrabold uppercase leading-tight tracking-[0.02em] text-ge-teal sm:text-[2.4rem]">
+            {factsCopy.title}
+          </h2>
+          <div className="mt-8">
+            <BondedBadge size={150} />
+          </div>
+        </motion.div>
+
+        <div className="flex flex-col gap-8">
+          {factsCopy.pillars.map((pillar) => (
+            <motion.div key={pillar.title} {...fadeUp}>
+              <RBullet title={pillar.title}>{pillar.body}</RBullet>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-16 flex flex-col items-center gap-5 border-t border-ge-gray100 pt-12 text-center">
+        <h3 className="font-ge text-[1.5rem] font-bold uppercase tracking-[0.04em] text-ge-teal sm:text-[1.8rem]">
+          {factsCopy.ctaTitle}
+        </h3>
+        <GeButton href="#enquire" variant="orange" size="lg">
+          {factsCopy.ctaLabel}
+        </GeButton>
+      </div>
+    </GeSection>
+  )
+}

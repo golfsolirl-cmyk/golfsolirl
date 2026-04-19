@@ -36,7 +36,24 @@ export default {
           light: '#dbeafe'
         },
         cream: '#f2f5ef',
-        offwhite: '#f7f9f5'
+        offwhite: '#f7f9f5',
+        ge: {
+          teal: '#007C69',
+          'teal-dark': '#005a4d',
+          'teal-light': '#29c4a9',
+          blue: '#2692E0',
+          'blue-light': '#7EBEC5',
+          orange: '#ff5b2d',
+          'orange-hover': '#e94a1f',
+          purple: '#61115D',
+          ink: '#2d3940',
+          gray700: '#3e3e3e',
+          gray500: '#4e4e4e',
+          gray300: '#bfbfbf',
+          gray200: '#e2e2e2',
+          gray100: '#efefef',
+          gray50: '#f3f3f3'
+        }
       },
       fontFamily: {
         display: ['"Rubik"', 'system-ui', 'sans-serif'],
@@ -44,7 +61,8 @@ export default {
         accent: ['"Rubik"', 'system-ui', 'sans-serif'],
         script: ['"Rubik"', 'system-ui', 'sans-serif'],
         'brand-script': ['"Dancing Script"', 'cursive'],
-        'brand-serif': ['"Rubik"', 'system-ui', 'sans-serif']
+        'brand-serif': ['"Rubik"', 'system-ui', 'sans-serif'],
+        ge: ['"Open Sans"', 'system-ui', 'sans-serif']
       },
       boxShadow: {
         glow: '0 24px 80px rgba(220, 88, 1, 0.18)',

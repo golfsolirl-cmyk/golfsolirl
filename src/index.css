@@ -1,4 +1,4 @@
-@import url('https://fonts.bunny.net/css?family=rubik:300,400,500,600,700,800,900|dancing-script:600,700&display=swap');
+@import url('https://fonts.bunny.net/css?family=rubik:300,400,500,600,700,800,900|dancing-script:600,700|open-sans:300,400,600,700,800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -42,6 +42,30 @@
 
   .section-inner {
     @apply relative z-10 mx-auto max-w-7xl;
+  }
+
+  /* Scoped styles for the Golf Experience literal-clone homepage */
+  .ge-page {
+    font-family: theme('fontFamily.ge');
+    color: theme('colors.ge.ink');
+    background: #ffffff;
+    line-height: 1.6;
+  }
+  .ge-page h1,
+  .ge-page h2,
+  .ge-page h3,
+  .ge-page h4,
+  .ge-page h5,
+  .ge-page h6 {
+    font-family: theme('fontFamily.ge');
+    color: theme('colors.ge.ink');
+    line-height: 1.2;
+  }
+  .ge-page a {
+    color: inherit;
+  }
+  .ge-page button {
+    font-family: theme('fontFamily.ge');
   }
 }
 

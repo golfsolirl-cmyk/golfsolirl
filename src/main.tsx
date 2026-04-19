@@ -14,10 +14,19 @@ import { ClientDashboardPage } from './pages/client-dashboard-page'
 import { AdminDashboardPage } from './pages/admin-dashboard-page'
 import { ClientDocumentPage } from './pages/client-document-page'
 import { isFooterArticlePath } from './data/footer-article-pages'
+import { GolfExperienceHome } from './pages/golf-experience/golf-experience-home'
 import './index.css'
 
 function resolvePage() {
   const normalizedPath = window.location.pathname === '/' ? '/' : window.location.pathname.replace(/\/+$/, '')
+
+  if (normalizedPath === '/') {
+    return GolfExperienceHome
+  }
+
+  if (normalizedPath === '/golf-sol') {
+    return App
+  }
 
   if (normalizedPath === '/logo-preview') {
     return LogoPreviewPage
