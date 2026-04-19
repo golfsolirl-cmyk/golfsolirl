@@ -19,13 +19,13 @@ export function GeFooter() {
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           {footerColumns.map((column) => (
             <div key={column.title}>
-              <p className="font-ge text-[0.78rem] font-bold uppercase tracking-[0.18em] text-ge-orange">
+              <p className="font-ge text-[0.78rem] font-bold uppercase tracking-[0.18em] text-ge-blue">
                 {column.title}
               </p>
               <ul className="mt-4 space-y-2.5">
                 {column.links.map((link) => (
                   <li key={`${column.title}-${link.label}`} className="flex items-start gap-2">
-                    <ChevronRight className="mt-1 h-3.5 w-3.5 shrink-0 text-ge-teal-light" aria-hidden="true" />
+                    <ChevronRight className="mt-1 h-3.5 w-3.5 shrink-0 text-ge-blue-light" aria-hidden="true" />
                     <a
                       href={link.href}
                       className="font-ge text-[0.88rem] text-white/85 transition-colors hover:text-ge-orange"
@@ -39,30 +39,30 @@ export function GeFooter() {
           ))}
 
           <div>
-            <p className="font-ge text-[0.78rem] font-bold uppercase tracking-[0.18em] text-ge-orange">
+            <p className="font-ge text-[0.78rem] font-bold uppercase tracking-[0.18em] text-ge-blue">
               Contact Us
             </p>
             <ul className="mt-4 space-y-3">
               <li className="flex items-start gap-2">
-                <Phone className="mt-1 h-4 w-4 shrink-0 text-ge-teal-light" aria-hidden="true" />
+                <Phone className="mt-1 h-4 w-4 shrink-0 text-ge-blue-light" aria-hidden="true" />
                 <a
                   href={`tel:${contactInfo.phoneTel}`}
-                  className="font-ge text-[0.88rem] text-white/90 hover:text-ge-orange"
+                  className="font-ge text-[0.88rem] text-white/90 hover:text-ge-blue-light"
                 >
                   {contactInfo.phoneDisplay}
                 </a>
               </li>
               <li className="flex items-start gap-2">
-                <Mail className="mt-1 h-4 w-4 shrink-0 text-ge-teal-light" aria-hidden="true" />
+                <Mail className="mt-1 h-4 w-4 shrink-0 text-ge-blue-light" aria-hidden="true" />
                 <a
                   href={`mailto:${contactInfo.email}`}
-                  className="font-ge text-[0.88rem] text-white/90 hover:text-ge-orange"
+                  className="font-ge text-[0.88rem] text-white/90 hover:text-ge-blue-light"
                 >
                   {contactInfo.email}
                 </a>
               </li>
             </ul>
-            <p className="mt-6 font-ge text-[0.78rem] font-bold uppercase tracking-[0.18em] text-ge-orange">
+            <p className="mt-6 font-ge text-[0.78rem] font-bold uppercase tracking-[0.18em] text-ge-blue">
               Follow Social
             </p>
             <div className="mt-4 flex flex-wrap gap-3">

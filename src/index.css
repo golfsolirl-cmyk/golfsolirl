@@ -44,7 +44,9 @@
     @apply relative z-10 mx-auto max-w-7xl;
   }
 
-  /* Scoped styles for the Golf Experience literal-clone homepage */
+  /* Scoped styles for the Golf Experience literal-clone homepage.
+     IMPORTANT: keep selector specificity low so Tailwind utilities
+     (text-white, text-ge-teal, etc.) always win for color. */
   .ge-page {
     font-family: theme('fontFamily.ge');
     color: theme('colors.ge.ink');
@@ -58,11 +60,7 @@
   .ge-page h5,
   .ge-page h6 {
     font-family: theme('fontFamily.ge');
-    color: theme('colors.ge.ink');
     line-height: 1.2;
-  }
-  .ge-page a {
-    color: inherit;
   }
   .ge-page button {
     font-family: theme('fontFamily.ge');

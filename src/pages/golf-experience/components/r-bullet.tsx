@@ -16,12 +16,12 @@ export function RBullet({ title, children, className }: RBulletProps) {
     <div className={cx('flex items-start gap-4', className)}>
       <span
         aria-hidden="true"
-        className="mt-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ge-teal font-ge text-base font-extrabold text-white shadow-sm"
+        className="mt-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ge-blue font-ge text-base font-extrabold text-white shadow-sm"
       >
         R
       </span>
       <div>
-        <h4 className="font-ge text-[1.18rem] font-bold uppercase tracking-[0.06em] text-ge-teal">
+        <h4 className="font-ge text-[1.18rem] font-bold uppercase tracking-[0.06em] text-ge-blue">
           {title}
         </h4>
         <div className="mt-2 font-ge text-[0.96rem] leading-7 text-ge-gray500">

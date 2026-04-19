@@ -4,7 +4,7 @@ interface TriangleDividerProps {
   readonly fill?: string
   readonly position?: 'top' | 'bottom'
   readonly height?: number
-  readonly variant?: 'simple' | 'layered'
+  readonly variant?: 'simple' | 'layered' | 'tab'
   readonly className?: string
 }
 
@@ -20,6 +20,33 @@ export function TriangleDivider({
   className
 }: TriangleDividerProps) {
   const flip = position === 'top'
+
+  // The "tab" variant is a small centered triangle that hangs OUTSIDE
+  // its parent section. It uses a fixed-width SVG so it doesn't stretch.
+  if (variant === 'tab') {
+    const tabPosClass = position === 'top' ? '-top-px' : '-bottom-px'
+    return (
+      <div
+        aria-hidden="true"
+        className={cx(
+          'pointer-events-none absolute left-1/2 z-10 -translate-x-1/2',
+          tabPosClass,
+          className
+        )}
+        style={{ transform: flip ? 'translate(-50%, 0) rotate(180deg)' : 'translate(-50%, 0)', lineHeight: 0 }}
+      >
+        <svg
+          width={Math.round(height * 1.4)}
+          height={height}
+          viewBox="0 0 80 60"
+          xmlns="http://www.w3.org/2000/svg"
+          style={{ display: 'block' }}
+        >
+          <path d="M0 0 L40 60 L80 0 Z" fill={fill} />
+        </svg>
+      </div>
+    )
+  }
 
   return (
     <div

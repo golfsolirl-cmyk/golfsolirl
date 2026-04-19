@@ -20,7 +20,7 @@ export function GeFacts() {
           <p className="font-ge text-[0.85rem] font-bold uppercase tracking-[0.2em] text-ge-orange">
             {factsCopy.eyebrow}
           </p>
-          <h2 className="mt-3 font-ge text-[2rem] font-extrabold uppercase leading-tight tracking-[0.02em] text-ge-teal sm:text-[2.4rem]">
+          <h2 className="mt-3 font-ge text-[2rem] font-extrabold uppercase leading-tight tracking-[0.02em] text-ge-blue sm:text-[2.4rem]">
             {factsCopy.title}
           </h2>
           <div className="mt-8">
@@ -38,7 +38,7 @@ export function GeFacts() {
       </div>
 
       <div className="mt-16 flex flex-col items-center gap-5 border-t border-ge-gray100 pt-12 text-center">
-        <h3 className="font-ge text-[1.5rem] font-bold uppercase tracking-[0.04em] text-ge-teal sm:text-[1.8rem]">
+        <h3 className="font-ge text-[1.5rem] font-bold uppercase tracking-[0.04em] text-ge-blue sm:text-[1.8rem]">
           {factsCopy.ctaTitle}
         </h3>
         <GeButton href="#enquire" variant="orange" size="lg">

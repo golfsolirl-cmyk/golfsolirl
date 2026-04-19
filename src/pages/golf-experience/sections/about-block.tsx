@@ -18,6 +18,8 @@ export function GeAboutBlock() {
           <img
             src={aboutCopy.image}
             alt="Meet the Golf Experience team"
+            loading="lazy"
+            decoding="async"
             className="h-full max-h-[460px] w-full object-cover"
           />
         </motion.div>
@@ -26,7 +28,7 @@ export function GeAboutBlock() {
           <p className="font-ge text-[0.85rem] font-bold uppercase tracking-[0.2em] text-ge-orange">
             {aboutCopy.eyebrow}
           </p>
-          <h2 className="mt-3 font-ge text-[2rem] font-extrabold uppercase leading-tight tracking-[0.02em] text-ge-teal sm:text-[2.4rem]">
+          <h2 className="mt-3 font-ge text-[2rem] font-extrabold uppercase leading-tight tracking-[0.02em] text-ge-blue sm:text-[2.4rem]">
             {aboutCopy.title}
           </h2>
           <div className="mt-6 space-y-4">
@@ -37,7 +39,7 @@ export function GeAboutBlock() {
             ))}
           </div>
           <div className="mt-8">
-            <GeButton href="#enquire" variant="outline-teal" size="md">
+            <GeButton href="#enquire" variant="outline-blue" size="md">
               {aboutCopy.cta}
             </GeButton>
           </div>

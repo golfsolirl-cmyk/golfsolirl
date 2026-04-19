@@ -4,6 +4,10 @@ export interface GeNavLink {
   readonly children?: readonly GeNavLink[]
 }
 
+/**
+ * Top-level desktop nav. Kept to a maximum of 7 visible items so the bar
+ * never wraps at 1024px+. Secondary links live under the "More" dropdown.
+ */
 export const primaryNav: readonly GeNavLink[] = [
   { label: 'Home', href: '#top' },
   {
@@ -35,11 +39,17 @@ export const primaryNav: readonly GeNavLink[] = [
   },
   { label: 'Transport', href: '#extras' },
   { label: 'Excursions', href: '#extras' },
-  { label: 'Testimonials', href: '#enquire' },
-  { label: 'Golf Map', href: '#enquire' },
-  { label: 'News', href: '#enquire' },
-  { label: 'FAQ', href: '#enquire' },
-  { label: 'Contact', href: '#enquire' }
+  {
+    label: 'More',
+    href: '#enquire',
+    children: [
+      { label: 'Testimonials', href: '#enquire' },
+      { label: 'Golf Map', href: '#enquire' },
+      { label: 'News', href: '#enquire' },
+      { label: 'FAQ', href: '#enquire' },
+      { label: 'Contact', href: '#enquire' }
+    ]
+  }
 ] as const
 
 export const footerColumns = [

@@ -25,15 +25,9 @@ const fadeUp = {
 
 export function GeExtrasStrip() {
   return (
-    <GeSection
-      background="gray"
-      id="extras"
-      className="pt-16 pb-16"
-      topDivider={{ fill: '#007C69', variant: 'simple' }}
-      bottomDivider={{ fill: '#007C69', variant: 'simple' }}
-    >
+    <GeSection background="gray" id="extras" className="pt-16 pb-16">
       <div className="text-center">
-        <h2 className="font-ge text-[1.85rem] font-extrabold uppercase tracking-[0.04em] text-ge-teal sm:text-[2.2rem]">
+        <h2 className="font-ge text-[1.85rem] font-extrabold uppercase tracking-[0.04em] text-ge-blue sm:text-[2.2rem]">
           {extrasCopy.title}
         </h2>
         <p className="mt-2 font-ge text-base italic text-ge-gray500">{extrasCopy.subtitle}</p>
@@ -46,14 +40,14 @@ export function GeExtrasStrip() {
             className="flex flex-col items-center text-center"
             {...fadeUp}
           >
-            <span className="inline-flex h-20 w-20 items-center justify-center rounded-full border-2 border-ge-teal bg-white text-ge-teal shadow-[0_8px_24px_rgba(0,124,105,0.15)]">
+            <span className="inline-flex h-20 w-20 items-center justify-center rounded-full border-2 border-ge-blue bg-white text-ge-blue shadow-[0_8px_24px_rgba(38,146,224,0.18)]">
               <Icon className="h-9 w-9" aria-hidden="true" />
             </span>
             <h4 className="mt-5 font-ge text-[1.05rem] font-bold uppercase tracking-[0.06em] text-ge-ink">
               {title}
             </h4>
             {note ? (
-              <p className="mt-1 font-ge text-[0.78rem] uppercase tracking-[0.14em] text-ge-orange">
+              <p className="mt-1 font-ge text-[0.78rem] uppercase tracking-[0.14em] text-ge-blue">
                 ({note})
               </p>
             ) : null}

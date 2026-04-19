@@ -11,7 +11,6 @@ import { GeFinalCta } from './sections/final-cta'
 import { GeFooter } from './sections/ge-footer'
 import { GeHero } from './sections/hero'
 import { GeNavbar } from './sections/ge-navbar'
-import { GeTopBar, GeTopBarMobile } from './sections/top-bar'
 
 export function GolfExperienceHome() {
   return (
@@ -22,8 +21,6 @@ export function GolfExperienceHome() {
       >
         Skip to content
       </a>
-      <GeTopBar />
-      <GeTopBarMobile />
       <GeNavbar />
 
       <main id="main">

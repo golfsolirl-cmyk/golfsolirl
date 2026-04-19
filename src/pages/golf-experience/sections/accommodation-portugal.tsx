@@ -8,10 +8,10 @@ export function GeAccommodationPortugal() {
   return (
     <GeSection background="gray" id="accommodation-portugal" className="pt-12 pb-14">
       <div className="text-center">
-        <h2 className="font-ge text-[1.85rem] font-extrabold uppercase tracking-[0.04em] text-ge-teal sm:text-[2.2rem]">
+        <h2 className="font-ge text-[1.85rem] font-extrabold uppercase tracking-[0.04em] text-ge-blue sm:text-[2.2rem]">
           {hotelListsCopy.portugalHeading}
         </h2>
-        <span aria-hidden="true" className="mx-auto mt-3 block h-1 w-16 rounded-full bg-ge-orange" />
+        <span aria-hidden="true" className="mx-auto mt-3 block h-1 w-16 rounded-full bg-ge-blue" />
       </div>
 
       <div className="mt-10 grid gap-6 md:grid-cols-3">
@@ -21,7 +21,7 @@ export function GeAccommodationPortugal() {
       </div>
 
       <div className="mt-8 flex justify-center">
-        <GeButton href="#" variant="orange" size="md">
+        <GeButton href="#" variant="blue" size="md">
           {hotelListsCopy.cta}
         </GeButton>
       </div>

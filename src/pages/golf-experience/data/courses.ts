@@ -27,7 +27,7 @@ export const coursesSpain: readonly GeCourse[] = [
     description:
       'Flamingos Golf Club is located at Cancelada, between the towns of Marbella and Estepona. A challenging course noted for its breathtaking views of the Mediterranean Sea, North Africa and Gibraltar.',
     image:
-      'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1587381420270-3e1a5b9e6904?auto=format&fit=crop&w=1200&q=80',
     href: '#'
   }
 ] as const

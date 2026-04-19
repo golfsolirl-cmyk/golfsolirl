@@ -11,7 +11,7 @@ interface DividerSpec {
 interface GeSectionProps {
   readonly id?: string
   readonly children: ReactNode
-  readonly background?: 'white' | 'gray' | 'teal' | 'tealDark' | 'ink'
+  readonly background?: 'white' | 'gray' | 'teal' | 'tealDark' | 'blue' | 'ink'
   readonly className?: string
   readonly innerClassName?: string
   readonly topDivider?: DividerSpec
@@ -24,6 +24,7 @@ const backgrounds = {
   gray: 'bg-ge-gray50 text-ge-ink',
   teal: 'bg-ge-teal text-white',
   tealDark: 'bg-ge-teal-dark text-white',
+  blue: 'bg-ge-blue text-white',
   ink: 'bg-ge-ink text-white'
 } as const
 

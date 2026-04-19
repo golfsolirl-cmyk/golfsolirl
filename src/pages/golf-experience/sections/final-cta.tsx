@@ -4,12 +4,7 @@ import { finalCtaCopy } from '../data/copy'
 
 export function GeFinalCta() {
   return (
-    <GeSection
-      id="enquire"
-      background="teal"
-      className="pt-20 pb-20"
-      topDivider={{ fill: '#f3f3f3', variant: 'simple' }}
-    >
+    <GeSection id="enquire" background="blue" className="pt-20 pb-20">
       <div className="text-center">
         <h2 className="font-ge text-[1.85rem] font-extrabold uppercase leading-tight tracking-[0.04em] text-white sm:text-[2.4rem]">
           {finalCtaCopy.title}

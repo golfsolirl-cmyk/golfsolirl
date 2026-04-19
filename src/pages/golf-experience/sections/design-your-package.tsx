@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion'
-import { GeSection } from '../components/ge-section'
+import { TriangleDivider } from '../components/triangle-divider'
 import { designYourPackage } from '../data/copy'
 
 interface StepCard {
-  readonly eyebrow: string
+  readonly badge: string
   readonly title: string
   readonly body: string
   readonly image: string
@@ -18,58 +18,102 @@ const fadeUp = {
 } as const
 
 export function GeDesignYourPackage() {
+  // 4 steps to match the source site exactly.
   const steps: readonly StepCard[] = [
-    designYourPackage.step1,
-    designYourPackage.step2,
-    designYourPackage.step3
+    {
+      badge: 'Step 1',
+      title: 'Choose Your Destination',
+      body: designYourPackage.step1.body,
+      image: designYourPackage.step1.image,
+      link: designYourPackage.step1.link
+    },
+    {
+      badge: 'Step 2',
+      title: 'Choose Your Golf Course',
+      body: designYourPackage.step2.body,
+      image: designYourPackage.step2.image,
+      link: designYourPackage.step2.link
+    },
+    {
+      badge: 'Step 3',
+      title: 'Choose Your Accommodation',
+      body: designYourPackage.step3.body,
+      image: designYourPackage.step3.image,
+      link: designYourPackage.step3.link
+    },
+    {
+      badge: 'Step 4',
+      title: 'Let us do the rest!',
+      body: 'We design the perfect itinerary, book your tee times, transfers and accommodation, and look after every detail from departure to your final round.',
+      image:
+        'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&w=1200&q=80',
+      link: '#enquire'
+    }
   ]
 
   return (
-    <GeSection background="white" className="pt-20 pb-12">
-      <div className="text-center">
-        <h2 className="font-ge text-[1.95rem] font-extrabold uppercase tracking-[0.04em] text-ge-teal sm:text-[2.4rem]">
-          {designYourPackage.title}
-        </h2>
-        <p className="mt-3 font-ge text-[0.95rem] font-semibold uppercase tracking-[0.18em] text-ge-gray500">
-          {designYourPackage.step1Tag} <span className="text-ge-orange">·</span>{' '}
-          {designYourPackage.step2Tag} <span className="text-ge-orange">·</span>{' '}
-          {designYourPackage.step3Tag}
-        </p>
-        <p className="mt-2 font-ge text-base italic text-ge-orange">{designYourPackage.closer}</p>
+    <section
+      id="design-package"
+      aria-labelledby="design-package-title"
+      className="relative bg-ge-blue text-white"
+    >
+      {/* Small white tab hanging from the top edge into the blue, exactly
+          like the source. */}
+      <TriangleDivider fill="#ffffff" position="top" height={36} variant="tab" />
+
+      <div className="mx-auto max-w-[1180px] px-5 pb-20 pt-20 sm:px-8">
+        <motion.div className="text-center" {...fadeUp}>
+          <h2
+            id="design-package-title"
+            className="font-ge text-[1.95rem] font-extrabold leading-tight text-white sm:text-[2.4rem]"
+          >
+            {designYourPackage.title}
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl font-ge text-sm font-semibold uppercase tracking-[0.18em] text-white/80">
+            Choose your destination · Choose your golf course · Choose your accommodation
+          </p>
+          <p className="mt-2 font-ge text-base italic text-white/80">{designYourPackage.closer}</p>
+        </motion.div>
+
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {steps.map((step) => (
+            <motion.article
+              key={step.badge}
+              className="group relative flex flex-col overflow-hidden rounded-sm bg-white text-ge-ink shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_36px_rgba(0,0,0,0.24)]"
+              {...fadeUp}
+            >
+              <div className="relative aspect-[16/10] overflow-hidden">
+                <img
+                  src={step.image}
+                  alt={step.title}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <span className="absolute left-0 top-3 inline-flex min-h-[28px] items-center bg-ge-ink/85 px-3 py-1 font-ge text-[0.75rem] font-bold uppercase tracking-[0.14em] text-white">
+                  {step.badge}
+                </span>
+              </div>
+              <div className="flex flex-1 flex-col p-5">
+                <h3 className="font-ge text-[1.05rem] font-bold leading-snug text-ge-blue">
+                  {step.title}
+                </h3>
+                <p className="mt-2 line-clamp-4 font-ge text-[0.88rem] leading-6 text-ge-gray500">
+                  {step.body}
+                </p>
+                <a
+                  href={step.link}
+                  className="mt-4 inline-flex min-h-[40px] items-center gap-1 self-start font-ge text-[0.78rem] font-bold uppercase tracking-[0.14em] text-ge-blue transition-colors hover:text-ge-orange"
+                >
+                  Read more →
+                </a>
+              </div>
+            </motion.article>
+          ))}
+        </div>
       </div>
 
-      <div className="mt-12 grid gap-8 md:grid-cols-3">
-        {steps.map((step) => (
-          <motion.article
-            key={step.eyebrow}
-            className="group flex flex-col overflow-hidden rounded-sm border border-ge-gray100 bg-white shadow-[0_4px_18px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(0,0,0,0.1)]"
-            {...fadeUp}
-          >
-            <div className="relative aspect-[16/10] overflow-hidden">
-              <img
-                src={step.image}
-                alt={step.title}
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-            </div>
-            <div className="flex flex-1 flex-col p-6">
-              <p className="font-ge text-[0.78rem] font-bold uppercase tracking-[0.16em] text-ge-orange">
-                {step.eyebrow}
-              </p>
-              <h3 className="mt-2 font-ge text-[1.3rem] font-bold leading-snug text-ge-teal">
-                {step.title}
-              </h3>
-              <p className="mt-3 font-ge text-[0.95rem] leading-7 text-ge-gray500">{step.body}</p>
-              <a
-                href={step.link}
-                className="mt-5 inline-flex items-center gap-1 self-start font-ge text-[0.8rem] font-bold uppercase tracking-[0.14em] text-ge-teal transition-colors hover:text-ge-orange"
-              >
-                Read more →
-              </a>
-            </div>
-          </motion.article>
-        ))}
-      </div>
-    </GeSection>
+      <TriangleDivider fill="#ffffff" position="bottom" height={70} variant="simple" />
+    </section>
   )
 }
