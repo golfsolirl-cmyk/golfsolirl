@@ -473,5 +473,4 @@ export const primaryActions = {
   enquire: 'Start Your Enquiry'
 } as const
 
-export const heroBackgroundImage =
-  'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=1800&q=80'
+export const heroBackgroundImage = '/images/hero-malaga-transfer.svg'

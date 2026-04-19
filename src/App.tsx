@@ -421,9 +421,9 @@ function App() {
             >
               <div className="overflow-hidden rounded-[1.5rem]">
                 <img
-                  alt="Airport transfer Mercedes vehicles waiting near the terminal for meet and greet service"
+                  alt="Illustrated Malaga airport transfer meet-and-greet scene with driver and Mercedes vehicles"
                   className="h-48 w-full object-cover"
-                  src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=1400&q=80"
+                  src="/images/hero-malaga-transfer-card.svg"
                 />
               </div>
               <div className="mt-5">

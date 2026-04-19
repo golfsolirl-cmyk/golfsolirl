@@ -1,0 +1,112 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="skyGradient" x1="960" y1="40" x2="960" y2="820" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2A3A58" />
+      <stop offset="0.38" stop-color="#6E4A3A" />
+      <stop offset="0.78" stop-color="#C96B3B" />
+      <stop offset="1" stop-color="#E28A45" />
+    </linearGradient>
+    <linearGradient id="groundGradient" x1="960" y1="820" x2="960" y2="1080" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#E88434" />
+      <stop offset="1" stop-color="#B95D2C" />
+    </linearGradient>
+    <linearGradient id="terminalGradient" x1="930" y1="300" x2="930" y2="740" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5F6B79" />
+      <stop offset="1" stop-color="#34404B" />
+    </linearGradient>
+    <linearGradient id="windowGlow" x1="870" y1="340" x2="1260" y2="540" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F7D88E" />
+      <stop offset="1" stop-color="#B9C7D6" />
+    </linearGradient>
+    <linearGradient id="roadLine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FFCB68" />
+      <stop offset="1" stop-color="#F0A34A" />
+    </linearGradient>
+    <radialGradient id="sunGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1470 220) rotate(90) scale(240 420)">
+      <stop offset="0" stop-color="#FFD79A" stop-opacity="0.84" />
+      <stop offset="1" stop-color="#FFD79A" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#skyGradient)" />
+  <ellipse cx="1470" cy="220" rx="420" ry="240" fill="url(#sunGlow)" />
+
+  <g opacity="0.9">
+    <rect x="520" y="270" width="860" height="430" rx="26" fill="url(#terminalGradient)" />
+    <rect x="560" y="320" width="620" height="220" rx="18" fill="url(#windowGlow)" />
+    <rect x="1210" y="320" width="130" height="220" rx="14" fill="#47525D" />
+    <rect x="1228" y="338" width="94" height="72" rx="9" fill="#D9E3EF" />
+    <rect x="1228" y="426" width="94" height="96" rx="9" fill="#6E7882" />
+    <rect x="560" y="562" width="780" height="112" rx="16" fill="#2C3640" />
+    <text x="900" y="412" fill="#F3D074" font-size="84" font-family="Inter, Arial, sans-serif" font-weight="800" letter-spacing="5">MALAGA</text>
+    <text x="1155" y="410" fill="#E5EEF8" font-size="28" font-family="Inter, Arial, sans-serif" font-weight="600">AGP</text>
+  </g>
+
+  <rect x="0" y="820" width="1920" height="260" fill="url(#groundGradient)" />
+  <path d="M0 780C190 742 360 740 540 770C715 798 900 816 1070 792C1285 762 1460 712 1920 760V840H0V780Z" fill="#D77634" opacity="0.66" />
+  <path d="M0 820C250 790 500 804 710 842C980 892 1190 900 1420 856C1620 818 1760 786 1920 802V1080H0V820Z" fill="#B85F2E" opacity="0.72" />
+
+  <g transform="translate(120 372)">
+    <circle cx="220" cy="108" r="102" fill="#E7B688" />
+    <rect x="148" y="186" width="176" height="242" rx="28" fill="#232A30" />
+    <path d="M160 208C168 160 194 130 220 130C248 130 274 160 282 208V278H160V208Z" fill="#DD9C63" />
+    <rect x="118" y="270" width="236" height="42" rx="12" fill="#1B2329" />
+    <rect x="184" y="106" width="72" height="14" rx="7" fill="#895A3A" />
+    <circle cx="190" cy="100" r="14" fill="#8A5A39" />
+    <circle cx="250" cy="100" r="14" fill="#8A5A39" />
+    <rect x="138" y="400" width="220" height="84" rx="18" fill="#2E3944" opacity="0.85" />
+    <text x="248" y="452" text-anchor="middle" fill="#F4D98C" font-size="30" font-family="Inter, Arial, sans-serif" font-weight="700">MEET &amp; GREET</text>
+  </g>
+
+  <g transform="translate(860 540)">
+    <ellipse cx="304" cy="198" rx="374" ry="56" fill="#7F4826" opacity="0.45" />
+    <rect x="34" y="58" width="472" height="132" rx="28" fill="#F4F6F7" />
+    <rect x="70" y="78" width="202" height="58" rx="12" fill="#D6E1EC" />
+    <rect x="284" y="78" width="188" height="58" rx="12" fill="#D6E1EC" />
+    <path d="M62 152H486V188H62V152Z" fill="#D9A249" />
+    <circle cx="130" cy="198" r="38" fill="#2D2C31" />
+    <circle cx="130" cy="198" r="19" fill="#82858C" />
+    <circle cx="430" cy="198" r="38" fill="#2D2C31" />
+    <circle cx="430" cy="198" r="19" fill="#82858C" />
+    <rect x="262" y="132" width="112" height="20" rx="10" fill="#B8C8D8" />
+    <rect x="172" y="100" width="84" height="20" rx="10" fill="#AABED0" />
+    <text x="268" y="186" fill="#123053" font-size="20" font-family="Inter, Arial, sans-serif" font-weight="800" letter-spacing="1">MERCEDES TRANSFER</text>
+  </g>
+
+  <g transform="translate(1300 566)">
+    <ellipse cx="190" cy="172" rx="218" ry="46" fill="#7E4624" opacity="0.35" />
+    <rect x="18" y="58" width="340" height="110" rx="24" fill="#2D3640" />
+    <rect x="42" y="78" width="128" height="44" rx="10" fill="#7D8C9B" />
+    <rect x="182" y="78" width="150" height="44" rx="10" fill="#7D8C9B" />
+    <circle cx="88" cy="172" r="32" fill="#1D1E22" />
+    <circle cx="88" cy="172" r="16" fill="#757982" />
+    <circle cx="292" cy="172" r="32" fill="#1D1E22" />
+    <circle cx="292" cy="172" r="16" fill="#757982" />
+  </g>
+
+  <path d="M1460 364L1508 340L1515 355L1472 380L1460 364Z" fill="#E6EDF4" />
+  <path d="M1515 355L1550 359L1519 371L1515 355Z" fill="#CFD9E4" />
+
+  <rect x="86" y="66" width="1748" height="948" rx="44" stroke="#2A130F" stroke-width="6" opacity="0.9" />
+  <rect x="108" y="86" width="1704" height="908" rx="36" stroke="#D39A49" stroke-width="2" opacity="0.66" />
+
+  <g transform="translate(120 84)">
+    <rect width="1680" height="72" rx="18" fill="#173D6A" />
+    <path d="M0 55H1680V72H0V55Z" fill="#E1B45B" />
+    <text x="44" y="48" fill="#F6D27F" font-size="46" font-family="Inter, Arial, sans-serif" font-weight="800" letter-spacing="3">AIRPORT TRANSFERS</text>
+  </g>
+
+  <g transform="translate(100 900)">
+    <rect width="1320" height="124" rx="24" fill="#113B66" />
+    <path d="M0 98H1320V124H0V98Z" fill="#E1B45B" />
+    <text x="34" y="56" fill="#F9D36E" font-size="52" font-family="Inter, Arial, sans-serif" font-weight="900">BOOK NOW</text>
+    <text x="34" y="104" fill="#FFFFFF" font-size="54" font-family="Inter, Arial, sans-serif" font-weight="800">0034 633 783 073</text>
+  </g>
+
+  <g transform="translate(1450 892)">
+    <circle cx="130" cy="68" r="70" fill="#E5B648" />
+    <circle cx="130" cy="68" r="58" fill="#F5CD66" />
+    <text x="130" y="58" text-anchor="middle" fill="#113B66" font-size="38" font-family="Inter, Arial, sans-serif" font-weight="900">24/7</text>
+    <text x="130" y="94" text-anchor="middle" fill="#113B66" font-size="28" font-family="Inter, Arial, sans-serif" font-weight="800">SERVICE</text>
+  </g>
+</svg>
