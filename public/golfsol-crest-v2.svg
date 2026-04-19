@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-label="GolfSol Ireland crest">
+  <title>GolfSol Ireland</title>
+  <defs>
+    <!-- Gold gradients -->
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff3b0"/>
+      <stop offset="14%" stop-color="#ffe07a"/>
+      <stop offset="48%" stop-color="#f4b41a"/>
+      <stop offset="78%" stop-color="#c98a17"/>
+      <stop offset="100%" stop-color="#7a5512"/>
+    </linearGradient>
+    <linearGradient id="goldRibbon" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffe98a"/>
+      <stop offset="50%" stop-color="#ecae1c"/>
+      <stop offset="100%" stop-color="#8a5e10"/>
+    </linearGradient>
+    <linearGradient id="goldHi" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity=".9"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Greens -->
+    <linearGradient id="green" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1f7a25"/>
+      <stop offset="55%" stop-color="#0f4716"/>
+      <stop offset="100%" stop-color="#062a0c"/>
+    </linearGradient>
+    <linearGradient id="fairway" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7fcc4f"/>
+      <stop offset="100%" stop-color="#2c8a2f"/>
+    </linearGradient>
+    <linearGradient id="grassDark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3aa53e"/>
+      <stop offset="100%" stop-color="#155f1a"/>
+    </linearGradient>
+
+    <!-- Sun rays radial -->
+    <radialGradient id="sunglow" cx="50%" cy="42%" r="55%">
+      <stop offset="0%" stop-color="#fff8c8" stop-opacity="1"/>
+      <stop offset="55%" stop-color="#ffd54a" stop-opacity=".55"/>
+      <stop offset="100%" stop-color="#ffd54a" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Steel for clubs -->
+    <linearGradient id="steel" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#e9eef2"/>
+      <stop offset="50%" stop-color="#9aa7b1"/>
+      <stop offset="100%" stop-color="#5b6770"/>
+    </linearGradient>
+
+    <!-- Ireland flag (Pantone-ish) -->
+    <linearGradient id="ieGreen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a8a4d"/>
+      <stop offset="100%" stop-color="#0e5e35"/>
+    </linearGradient>
+    <linearGradient id="ieOrange" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff9b3f"/>
+      <stop offset="100%" stop-color="#d96b1a"/>
+    </linearGradient>
+    <!-- Spain flag -->
+    <linearGradient id="esRed" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d52b1e"/>
+      <stop offset="100%" stop-color="#9a1d14"/>
+    </linearGradient>
+    <linearGradient id="esYellow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffd146"/>
+      <stop offset="100%" stop-color="#cf9810"/>
+    </linearGradient>
+
+    <!-- Effects -->
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity=".35"/>
+    </filter>
+    <filter id="softShadowSm" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1.4" stdDeviation="1.5" flood-color="#000" flood-opacity=".4"/>
+    </filter>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- ================= TOP: crossed flags ================= -->
+  <g transform="translate(300 110)" filter="url(#softShadow)">
+    <!-- Two thin gold flagpoles crossing slightly -->
+    <line x1="-2" y1="-50" x2="-30" y2="78" stroke="url(#goldRibbon)" stroke-width="3.2" stroke-linecap="round"/>
+    <line x1="2"  y1="-50" x2="30"  y2="78" stroke="url(#goldRibbon)" stroke-width="3.2" stroke-linecap="round"/>
+    <circle cx="-2" cy="-52" r="4" fill="url(#goldRibbon)" stroke="#7a5512" stroke-width="0.6"/>
+    <circle cx="2"  cy="-52" r="4" fill="url(#goldRibbon)" stroke="#7a5512" stroke-width="0.6"/>
+
+    <!-- Ireland flag (left) -->
+    <g transform="translate(-110 -38)">
+      <rect x="0" y="0" width="36" height="58" fill="url(#ieGreen)"/>
+      <rect x="36" y="0" width="36" height="58" fill="#ffffff"/>
+      <rect x="72" y="0" width="36" height="58" fill="url(#ieOrange)"/>
+      <rect x="0" y="0" width="108" height="58" fill="none" stroke="#5d3f0a" stroke-width="1.3"/>
+      <!-- subtle wave shading -->
+      <path d="M0 0 Q54 14 108 0 L108 58 Q54 44 0 58 Z" fill="url(#goldHi)" opacity=".18"/>
+    </g>
+
+    <!-- Spain flag (right) -->
+    <g transform="translate(2 -38)">
+      <rect x="0"  y="0"  width="108" height="14" fill="url(#esRed)"/>
+      <rect x="0"  y="14" width="108" height="30" fill="url(#esYellow)"/>
+      <rect x="0"  y="44" width="108" height="14" fill="url(#esRed)"/>
+      <!-- crest placeholder on yellow band -->
+      <rect x="20" y="20" width="14" height="18" fill="#a23123" opacity=".85" rx="1.5"/>
+      <circle cx="27" cy="22" r="3" fill="#ffd146" stroke="#7a3a10" stroke-width="0.6"/>
+      <rect x="0" y="0" width="108" height="58" fill="none" stroke="#5d3f0a" stroke-width="1.3"/>
+      <path d="M0 0 Q54 14 108 0 L108 58 Q54 44 0 58 Z" fill="url(#goldHi)" opacity=".18"/>
+    </g>
+  </g>
+
+  <!-- ================= GOLD ENERGY SWIRLS (behind shield) ================= -->
+  <g filter="url(#softShadow)">
+    <path d="M70 320 C 30 380, 90 470, 200 470 C 130 470, 80 410, 90 360 Z" fill="url(#goldRibbon)" opacity=".95"/>
+    <path d="M530 320 C 570 380, 510 470, 400 470 C 470 470, 520 410, 510 360 Z" fill="url(#goldRibbon)" opacity=".95"/>
+    <path d="M120 220 C 90 250, 80 300, 100 350 C 90 280, 130 240, 180 230 Z" fill="url(#goldRibbon)" opacity=".85"/>
+    <path d="M480 220 C 510 250, 520 300, 500 350 C 510 280, 470 240, 420 230 Z" fill="url(#goldRibbon)" opacity=".85"/>
+    <!-- sparkles -->
+    <g fill="#fff8d6" opacity=".9">
+      <path d="M120 280 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3z"/>
+      <path d="M470 290 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3z"/>
+      <circle cx="80" cy="380" r="2.4"/>
+      <circle cx="520" cy="370" r="2.4"/>
+      <circle cx="170" cy="455" r="2"/>
+      <circle cx="430" cy="455" r="2"/>
+    </g>
+  </g>
+
+  <!-- ================= SHIELD ================= -->
+  <g filter="url(#softShadow)">
+    <!-- Outer gold rim -->
+    <path d="M150 200
+             C 150 188, 162 178, 178 178
+             L 422 178
+             C 438 178, 450 188, 450 200
+             L 450 460
+             C 450 510, 422 552, 380 580
+             L 308 632
+             C 304 636, 296 636, 292 632
+             L 220 580
+             C 178 552, 150 510, 150 460 Z"
+          fill="url(#goldRibbon)" stroke="#5d3f0a" stroke-width="2"/>
+    <!-- Inner green field -->
+    <path d="M163 211
+             C 163 201, 173 193, 186 193
+             L 414 193
+             C 427 193, 437 201, 437 211
+             L 437 458
+             C 437 502, 412 540, 374 565
+             L 305 614
+             C 302 617, 298 617, 295 614
+             L 226 565
+             C 188 540, 163 502, 163 458 Z"
+          fill="url(#green)" stroke="#fff3b0" stroke-width="1.5"/>
+    <!-- subtle inner highlight rim -->
+    <path d="M168 215 L 432 215" stroke="#fff8d6" stroke-width="1" opacity=".4"/>
+  </g>
+
+  <!-- ================= SCENE INSIDE SHIELD ================= -->
+  <!-- Far green hill silhouette -->
+  <g clip-path="inset(0)">
+    <path d="M163 360
+             C 220 320, 280 340, 300 340
+             C 320 340, 380 320, 437 360
+             L 437 458 C 437 502, 412 540, 374 565
+             L 305 614 C 302 617, 298 617, 295 614
+             L 226 565 C 188 540, 163 502, 163 458 Z"
+          fill="url(#fairway)"/>
+    <!-- darker mid-ground -->
+    <path d="M170 410 C 230 380, 280 392, 300 392 C 320 392, 370 380, 430 410
+             L 430 458 C 430 498, 408 532, 372 555
+             L 305 600 C 302 602, 298 602, 295 600
+             L 228 555 C 192 532, 170 498, 170 458 Z"
+          fill="url(#grassDark)" opacity=".75"/>
+    <!-- horizon flagsticks (small white flags) -->
+    <g stroke="#ffffff" stroke-width="1.6" stroke-linecap="round">
+      <line x1="218" y1="324" x2="218" y2="356"/>
+      <line x1="382" y1="324" x2="382" y2="356"/>
+    </g>
+    <g fill="#ffffff">
+      <path d="M218 324 L 218 332 L 232 328 Z"/>
+      <path d="M382 324 L 382 332 L 368 328 Z"/>
+    </g>
+  </g>
+
+  <!-- Sun rays burst -->
+  <g transform="translate(300 320)">
+    <circle r="76" fill="url(#sunglow)"/>
+    <g fill="#ffd54a" opacity=".75">
+      <!-- ray triangles around the sun -->
+      <g>
+        <path d="M0 -90 L -6 -40 L 6 -40 Z"/>
+        <g transform="rotate(20)"><path d="M0 -90 L -5 -40 L 5 -40 Z"/></g>
+        <g transform="rotate(-20)"><path d="M0 -90 L -5 -40 L 5 -40 Z"/></g>
+        <g transform="rotate(40)"><path d="M0 -88 L -5 -40 L 5 -40 Z"/></g>
+        <g transform="rotate(-40)"><path d="M0 -88 L -5 -40 L 5 -40 Z"/></g>
+        <g transform="rotate(60)"><path d="M0 -84 L -4 -40 L 4 -40 Z"/></g>
+        <g transform="rotate(-60)"><path d="M0 -84 L -4 -40 L 4 -40 Z"/></g>
+        <g transform="rotate(78)"><path d="M0 -80 L -4 -40 L 4 -40 Z"/></g>
+        <g transform="rotate(-78)"><path d="M0 -80 L -4 -40 L 4 -40 Z"/></g>
+      </g>
+    </g>
+  </g>
+
+  <!-- Crossed golf clubs (X behind ball) -->
+  <g transform="translate(300 332)" filter="url(#softShadow)">
+    <!-- Left club (rotates from upper-left to lower-right) -->
+    <g transform="rotate(-22)">
+      <line x1="0" y1="-110" x2="0" y2="60" stroke="url(#steel)" stroke-width="6" stroke-linecap="round"/>
+      <!-- grip -->
+      <rect x="-4" y="-110" width="8" height="42" rx="3" fill="#1c1c1c"/>
+      <rect x="-3" y="-105" width="6" height="36" rx="2" fill="#3a3a3a"/>
+      <!-- club head iron -->
+      <path d="M-22 56 C -28 70, -8 86, 18 80 C 24 78, 26 70, 22 64 L 6 56 Z"
+            fill="url(#steel)" stroke="#3b4148" stroke-width="1.2"/>
+      <path d="M-20 60 L -2 70" stroke="#3b4148" stroke-width="0.8"/>
+    </g>
+    <!-- Right club mirrored -->
+    <g transform="scale(-1 1) rotate(-22)">
+      <line x1="0" y1="-110" x2="0" y2="60" stroke="url(#steel)" stroke-width="6" stroke-linecap="round"/>
+      <rect x="-4" y="-110" width="8" height="42" rx="3" fill="#1c1c1c"/>
+      <rect x="-3" y="-105" width="6" height="36" rx="2" fill="#3a3a3a"/>
+      <path d="M-22 56 C -28 70, -8 86, 18 80 C 24 78, 26 70, 22 64 L 6 56 Z"
+            fill="url(#steel)" stroke="#3b4148" stroke-width="1.2"/>
+      <path d="M-20 60 L -2 70" stroke="#3b4148" stroke-width="0.8"/>
+    </g>
+  </g>
+
+  <!-- Golf ball -->
+  <g transform="translate(300 326)" filter="url(#softShadowSm)">
+    <circle r="38" fill="#ffffff" stroke="#bfbfbf" stroke-width="1"/>
+    <circle r="38" fill="url(#goldHi)" opacity=".55"/>
+    <!-- dimples -->
+    <g fill="#dadfe3">
+      <circle cx="-14" cy="-14" r="3"/>
+      <circle cx="-2"  cy="-18" r="2.6"/>
+      <circle cx="10"  cy="-14" r="3"/>
+      <circle cx="20"  cy="-4"  r="2.6"/>
+      <circle cx="-22" cy="-2"  r="2.6"/>
+      <circle cx="-14" cy="8"   r="3"/>
+      <circle cx="0"   cy="2"   r="2.6"/>
+      <circle cx="12"  cy="6"   r="2.8"/>
+      <circle cx="22"  cy="10"  r="2.4"/>
+      <circle cx="-6"  cy="16"  r="2.4"/>
+      <circle cx="6"   cy="20"  r="2.4"/>
+      <circle cx="-18" cy="14"  r="2.4"/>
+    </g>
+    <!-- specular highlight -->
+    <ellipse cx="-12" cy="-16" rx="10" ry="5" fill="#ffffff" opacity=".7"/>
+  </g>
+
+  <!-- ================= GOLFSOL BANNER ================= -->
+  <g filter="url(#softShadow)">
+    <!-- ribbon ends -->
+    <path d="M70 470 L 152 472 L 138 510 L 60 504 Z" fill="url(#goldRibbon)" stroke="#5d3f0a" stroke-width="1.4"/>
+    <path d="M530 470 L 448 472 L 462 510 L 540 504 Z" fill="url(#goldRibbon)" stroke="#5d3f0a" stroke-width="1.4"/>
+    <!-- main banner -->
+    <path d="M120 444
+             C 240 432, 360 432, 480 444
+             L 480 514
+             C 360 526, 240 526, 120 514 Z"
+          fill="url(#green)" stroke="#5d3f0a" stroke-width="2"/>
+    <!-- inner gold border -->
+    <path d="M132 454
+             C 240 444, 360 444, 468 454
+             L 468 506
+             C 360 516, 240 516, 132 506 Z"
+          fill="none" stroke="url(#goldRibbon)" stroke-width="2.4"/>
+    <!-- top sheen -->
+    <path d="M132 454 C 240 446, 360 446, 468 454 L 468 462 C 360 456, 240 456, 132 462 Z" fill="url(#goldHi)" opacity=".45"/>
+  </g>
+
+  <!-- GOLFSOL text -->
+  <g>
+    <text x="300" y="498"
+          text-anchor="middle"
+          font-family="'Arial Black', 'Helvetica Neue', Impact, system-ui, sans-serif"
+          font-weight="900"
+          font-size="58"
+          letter-spacing="3"
+          fill="url(#gold)"
+          stroke="#5d3f0a"
+          stroke-width="2.2"
+          paint-order="stroke">GOLFSOL</text>
+    <text x="300" y="498"
+          text-anchor="middle"
+          font-family="'Arial Black', 'Helvetica Neue', Impact, system-ui, sans-serif"
+          font-weight="900"
+          font-size="58"
+          letter-spacing="3"
+          fill="url(#goldHi)"
+          opacity=".55">GOLFSOL</text>
+  </g>
+
+  <!-- ================= IRELAND sub-banner ================= -->
+  <g filter="url(#softShadowSm)">
+    <path d="M210 524 L 390 524 L 402 540 L 390 556 L 210 556 L 198 540 Z"
+          fill="url(#green)" stroke="#5d3f0a" stroke-width="1.4"/>
+    <path d="M214 528 L 386 528 L 396 540 L 386 552 L 214 552 L 204 540 Z"
+          fill="none" stroke="url(#goldRibbon)" stroke-width="1.6"/>
+    <text x="300" y="547"
+          text-anchor="middle"
+          font-family="'Arial Black', 'Helvetica Neue', Impact, system-ui, sans-serif"
+          font-weight="900"
+          font-size="20"
+          letter-spacing="6"
+          fill="url(#gold)"
+          stroke="#5d3f0a"
+          stroke-width="1"
+          paint-order="stroke">&#183; IRELAND &#183;</text>
+  </g>
+
+  <!-- ================= SHAMROCK + WHEAT (bottom of shield) ================= -->
+  <g transform="translate(300 590)">
+    <!-- left wheat -->
+    <g transform="translate(-46 0) rotate(-25)">
+      <path d="M0 0 C -8 -6, -22 -6, -32 0" stroke="url(#goldRibbon)" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <g fill="url(#goldRibbon)" stroke="#7a5512" stroke-width="0.6">
+        <ellipse cx="-6"  cy="-3" rx="3.6" ry="1.7" transform="rotate(-25 -6 -3)"/>
+        <ellipse cx="-14" cy="-5" rx="3.6" ry="1.7" transform="rotate(-25 -14 -5)"/>
+        <ellipse cx="-22" cy="-5" rx="3.6" ry="1.7" transform="rotate(-25 -22 -5)"/>
+        <ellipse cx="-12" cy="2"  rx="3.6" ry="1.7" transform="rotate(15 -12 2)"/>
+        <ellipse cx="-20" cy="1"  rx="3.6" ry="1.7" transform="rotate(15 -20 1)"/>
+      </g>
+    </g>
+    <!-- right wheat -->
+    <g transform="translate(46 0) rotate(25) scale(-1 1)">
+      <path d="M0 0 C -8 -6, -22 -6, -32 0" stroke="url(#goldRibbon)" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <g fill="url(#goldRibbon)" stroke="#7a5512" stroke-width="0.6">
+        <ellipse cx="-6"  cy="-3" rx="3.6" ry="1.7" transform="rotate(-25 -6 -3)"/>
+        <ellipse cx="-14" cy="-5" rx="3.6" ry="1.7" transform="rotate(-25 -14 -5)"/>
+        <ellipse cx="-22" cy="-5" rx="3.6" ry="1.7" transform="rotate(-25 -22 -5)"/>
+        <ellipse cx="-12" cy="2"  rx="3.6" ry="1.7" transform="rotate(15 -12 2)"/>
+        <ellipse cx="-20" cy="1"  rx="3.6" ry="1.7" transform="rotate(15 -20 1)"/>
+      </g>
+    </g>
+    <!-- shamrock -->
+    <g filter="url(#glow)">
+      <g fill="#3aa53e" stroke="#1f6c20" stroke-width="1">
+        <ellipse cx="0" cy="-9" rx="9" ry="11" transform="rotate(-10 0 -9)"/>
+        <ellipse cx="-10" cy="2" rx="9" ry="11" transform="rotate(50 -10 2)"/>
+        <ellipse cx="10"  cy="2" rx="9" ry="11" transform="rotate(-50 10 2)"/>
+      </g>
+      <g fill="#7fd07f" opacity=".55">
+        <ellipse cx="-2" cy="-13" rx="2.4" ry="5" transform="rotate(-10 -2 -13)"/>
+        <ellipse cx="-13" cy="-2" rx="2.4" ry="5" transform="rotate(50 -13 -2)"/>
+        <ellipse cx="8" cy="-2"   rx="2.4" ry="5" transform="rotate(-50 8 -2)"/>
+      </g>
+      <path d="M0 11 L 0 22" stroke="#1f6c20" stroke-width="2" stroke-linecap="round" fill="none"/>
+    </g>
+  </g>
+</svg>

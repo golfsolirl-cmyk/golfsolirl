@@ -3,9 +3,11 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDown, Menu, X } from 'lucide-react'
 import { cx } from '../../../lib/utils'
 import { GeButton } from '../components/ge-button'
-import { GeLogo } from '../components/ge-logo'
 import { primaryNav, type GeNavLink } from '../data/nav'
 import { GeTopBar } from './top-bar'
+
+// Brand crest used in the header. Lives in /workspace/public so Vite serves it at the site root.
+const headerCrest = '/golfsol-crest-v2.svg'
 
 interface GeNavbarProps {
   /** Render mode: 'overlay' floats white text over the hero, 'solid' is a sticky white bar. */
@@ -55,9 +57,22 @@ export function GeNavbar({ mode = 'auto' }: GeNavbarProps = {}) {
         <a
           href="#top"
           aria-label="Golf Experience home"
-          className="shrink-0 transition-transform duration-300"
+          className="flex shrink-0 items-center transition-transform duration-300"
         >
-          <GeLogo size={isOverlay ? 84 : 60} />
+          <img
+            src={headerCrest}
+            alt="GolfSol Ireland"
+            width={113}
+            height={150}
+            decoding="async"
+            fetchPriority="high"
+            className={cx(
+              'w-auto select-none object-contain transition-all duration-300',
+              isOverlay
+                ? 'h-[96px] drop-shadow-[0_10px_22px_rgba(0,0,0,0.5)] sm:h-[120px] md:h-[132px]'
+                : 'h-[58px] drop-shadow-[0_4px_10px_rgba(0,0,0,0.22)] sm:h-[68px]'
+            )}
+          />
         </a>
 
         <nav aria-label="Primary navigation" className="hidden items-center gap-x-6 lg:flex">
