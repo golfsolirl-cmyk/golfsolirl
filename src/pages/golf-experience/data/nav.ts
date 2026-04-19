@@ -38,11 +38,11 @@ export const primaryNav: readonly GeNavLink[] = [
     ]
   },
   { label: 'Transport', href: '#extras' },
-  { label: 'Excursions', href: '#extras' },
   {
     label: 'More',
     href: '#enquire',
     children: [
+      { label: 'Excursions', href: '#extras' },
       { label: 'Testimonials', href: '#enquire' },
       { label: 'Golf Map', href: '#enquire' },
       { label: 'News', href: '#enquire' },

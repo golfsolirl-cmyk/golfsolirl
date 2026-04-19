@@ -1,7 +1,7 @@
 import { ChevronRight, Mail, Phone } from 'lucide-react'
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaXTwitter } from 'react-icons/fa6'
+import { GeBrandLockup } from '../components/brand-lockup'
 import { GeButton } from '../components/ge-button'
-import { GeLogo } from '../components/ge-logo'
 import { aboutFooterCopy, contactInfo } from '../data/copy'
 import { footerColumns } from '../data/nav'
 
@@ -84,8 +84,8 @@ export function GeFooter() {
 
         <div className="mt-12 grid gap-10 border-t border-white/10 pt-10 lg:grid-cols-[0.4fr_0.6fr] lg:items-center">
           <div>
-            <GeLogo variant="on-dark" />
-            <p className="mt-5 font-ge text-[0.9rem] leading-7 text-white/72">{aboutFooterCopy}</p>
+            <GeBrandLockup tone="on-dark" mode="footer" />
+            <p className="mt-6 font-ge text-[0.9rem] leading-7 text-white/72">{aboutFooterCopy}</p>
           </div>
           <div className="flex flex-col items-start gap-4 lg:items-end">
             <p className="font-ge text-[0.78rem] font-bold uppercase tracking-[0.18em] text-white/70">
