@@ -7,12 +7,12 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    font-size: clamp(16.6px, 0.24vw + 15.9px, 18.3px);
+    font-size: clamp(16px, 0.18vw + 15.7px, 17.5px);
   }
 
   body {
     @apply bg-offwhite font-body text-forest-900 antialiased;
-    line-height: 1.64;
+    line-height: 1.58;
     text-rendering: optimizeLegibility;
   }
 
@@ -21,7 +21,7 @@
   }
 
   ::selection {
-    background: rgba(220, 88, 1, 0.28);
+    background: rgba(217, 119, 6, 0.24);
     color: #163a13;
   }
 }
@@ -37,7 +37,7 @@
 
 @layer components {
   .section-shell {
-    @apply relative overflow-hidden px-6 py-20 md:py-28;
+    @apply relative overflow-hidden px-6 py-16 md:py-24;
   }
 
   .section-inner {

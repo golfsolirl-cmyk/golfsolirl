@@ -20,13 +20,13 @@ type LinkProps = SharedButtonProps &
   }
 
 const baseClasses =
-  'inline-flex items-center justify-center gap-2 rounded-full px-7 py-4 text-[1.02rem] font-semibold tracking-[0.015em] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent'
+  'inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-[0.98rem] font-semibold uppercase tracking-[0.08em] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent'
 
 const variantClasses = {
-  primary: 'bg-gold-400 text-white shadow-glow hover:-translate-y-0.5 hover:bg-gold-500',
-  secondary: 'bg-fairway-600 text-white shadow-soft hover:bg-fairway-700',
-  outline: 'border border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 hover:border-white/50',
-  white: 'border border-forest-100 bg-white text-forest-900 shadow-sm hover:bg-forest-50'
+  primary: 'bg-gold-500 text-white shadow-[0_12px_26px_rgba(217,119,6,0.24)] hover:-translate-y-0.5 hover:bg-gold-600',
+  secondary: 'bg-forest-800 text-white shadow-soft hover:bg-forest-900',
+  outline: 'border border-forest-300 bg-white text-forest-900 hover:border-gold-500 hover:text-gold-600',
+  white: 'border border-forest-200 bg-white text-forest-900 shadow-sm hover:border-forest-300 hover:bg-forest-50'
 } as const
 
 function isLinkProps(props: ButtonProps | LinkProps): props is LinkProps {

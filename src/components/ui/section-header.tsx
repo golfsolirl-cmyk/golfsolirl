@@ -71,9 +71,9 @@ export function AnimatedStepKicker({
     >
       <motion.div
         className={cx(
-          'flex items-center gap-3 rounded-full border px-4 py-3',
+          'flex items-center gap-3 rounded-full border px-4 py-2.5',
           centered && 'justify-center',
-          dark ? 'border-white/10 bg-white/5 backdrop-blur-sm' : 'border-forest-100 bg-white/85 shadow-sm'
+          dark ? 'border-white/20 bg-white/10' : 'border-forest-200 bg-white'
         )}
         variants={{
           hidden: { opacity: 0, y: 12 },
@@ -83,15 +83,15 @@ export function AnimatedStepKicker({
         <span
           aria-hidden="true"
           className={cx(
-            'font-display text-[1.3rem] font-black leading-none md:text-[1.68rem]',
-            dark ? 'text-gold-300' : 'text-gold-500'
+            'font-display text-[1.2rem] font-black leading-none md:text-[1.45rem]',
+            dark ? 'text-gold-300' : 'text-gold-600'
           )}
         >
           —
         </span>
         <span
           className={cx(
-            'font-display text-[1.28rem] font-black tracking-[0.01em] md:text-[1.64rem]',
+            'font-display text-[1.02rem] font-bold uppercase tracking-[0.12em] md:text-[1.08rem]',
             dark ? 'text-white' : 'text-forest-900'
           )}
         >
@@ -122,10 +122,15 @@ export function SectionHeader({
       transition={{ duration: 0.7, ease: 'easeOut' }}
     >
       <AnimatedStepKicker centered={centered} dark={dark} kicker={kicker} />
-      <h2 className={cx('mb-4 font-display text-[2.5rem] font-black leading-[1.05] tracking-[-0.02em] md:text-[3.25rem]', dark && 'text-white')}>
+      <h2
+        className={cx(
+          'mb-4 font-display text-[2rem] font-black leading-[1.08] tracking-[-0.015em] md:text-[2.7rem]',
+          dark && 'text-white'
+        )}
+      >
         {title}
       </h2>
-      <p className={cx('max-w-2xl text-[1.03rem] leading-8 md:text-[1.1rem]', dark ? 'text-white/74' : 'text-forest-900/72', centered && 'mx-auto')}>
+      <p className={cx('max-w-2xl text-[1rem] leading-8 md:text-[1.03rem]', dark ? 'text-white/78' : 'text-forest-900/70', centered && 'mx-auto')}>
         {body}
       </p>
     </motion.div>

@@ -21,8 +21,8 @@ const fadeUpProps = {
 export function TrustStat({ value, label }: StatItem) {
   return (
     <div className="min-w-[88px]">
-      <p className="font-display text-[1.95rem] font-bold text-gold-300 md:text-[2.25rem]">{value}</p>
-      <p className="mt-1 text-base leading-7 text-white">{label}</p>
+      <p className="font-display text-[1.95rem] font-bold text-gold-600 md:text-[2.25rem]">{value}</p>
+      <p className="mt-1 text-base leading-7 text-forest-900/80">{label}</p>
     </div>
   )
 }
@@ -33,11 +33,11 @@ export function PackageCard({ name, description, price, duration, highlight, inc
   return (
     <motion.article
       className={cx(
-        'group relative overflow-hidden rounded-[2rem] border p-7 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl',
+        'group relative overflow-hidden rounded-[1.6rem] border p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg',
         isFeaturedPackage && 'md:col-span-2',
         isFeaturedPackage
-          ? 'border-gold-300 bg-gradient-to-br from-forest-950 via-forest-900 to-forest-800 text-white'
-          : 'border-forest-100 bg-gradient-to-br from-white via-white to-gold-50/60'
+          ? 'border-forest-700 bg-forest-800 text-white'
+          : 'border-forest-200 bg-white'
       )}
       {...fadeUpProps}
     >
@@ -47,7 +47,7 @@ export function PackageCard({ name, description, price, duration, highlight, inc
           'absolute inset-x-0 top-0 h-24',
           isFeaturedPackage
             ? 'bg-[radial-gradient(circle_at_top,rgba(253,186,116,0.28),transparent_68%)]'
-            : 'bg-[radial-gradient(circle_at_top,rgba(220,88,1,0.12),transparent_68%)]'
+            : 'bg-[radial-gradient(circle_at_top,rgba(22,58,19,0.07),transparent_68%)]'
         )}
       />
       <div
@@ -66,7 +66,7 @@ export function PackageCard({ name, description, price, duration, highlight, inc
                 'inline-flex rounded-full border px-3 py-1.5 text-sm font-semibold uppercase tracking-[0.1em]',
                 isFeaturedPackage
                   ? 'border-gold-300/40 bg-gold-400/15 text-gold-300'
-                  : 'border-gold-200 bg-gold-50 text-forest-950'
+                  : 'border-forest-200 bg-forest-50 text-forest-900'
               )}
             >
               {highlight}
@@ -77,7 +77,7 @@ export function PackageCard({ name, description, price, duration, highlight, inc
                 'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium',
                 isFeaturedPackage
                   ? 'border-white/10 bg-white/8 text-white/75'
-                  : 'border-forest-100 bg-white/80 text-forest-900/68'
+                  : 'border-forest-200 bg-offwhite text-forest-900/68'
               )}
             >
               <CalendarDays className="h-3.5 w-3.5" aria-hidden="true" />
@@ -109,14 +109,11 @@ export function PackageCard({ name, description, price, duration, highlight, inc
           <h3 className={cx('text-[1.85rem] font-semibold tracking-[-0.015em] md:text-[2rem]', isFeaturedPackage ? 'text-white' : 'text-forest-900')}>
             {name}
           </h3>
-          <p className={cx('mt-3 text-[1.02rem] leading-8', isFeaturedPackage ? 'text-white/76' : 'text-forest-900/70')}>{description}</p>
+          <p className={cx('mt-3 text-[1.02rem] leading-8', isFeaturedPackage ? 'text-white/80' : 'text-forest-900/72')}>{description}</p>
         </div>
 
         <div
-          className={cx(
-            'mb-6 space-y-3 rounded-[1.5rem] border p-4',
-            isFeaturedPackage ? 'border-white/10 bg-white/6 backdrop-blur-sm' : 'border-forest-100 bg-white/80'
-          )}
+          className={cx('mb-6 space-y-3 rounded-[1.2rem] border p-4', isFeaturedPackage ? 'border-white/15 bg-white/8' : 'border-forest-200 bg-offwhite')}
         >
           {includes.map((item) => (
             <div
@@ -161,7 +158,7 @@ export function PackageCard({ name, description, price, duration, highlight, inc
 export function CourseCard({ name, location, distance, badge, description, rate, image, tags }: CourseItem) {
   return (
     <motion.article
-      className="group overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+      className="group overflow-hidden rounded-[1.4rem] border border-forest-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
       {...fadeUpProps}
     >
       <div className="relative h-56 overflow-hidden">
@@ -171,7 +168,7 @@ export function CourseCard({ name, location, distance, badge, description, rate,
           src={image}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-forest-900/75 via-transparent to-transparent" />
-        <span className="absolute left-4 top-4 rounded-full bg-gold-400 px-3 py-1.5 text-sm font-semibold text-forest-950">
+        <span className="absolute left-4 top-4 rounded-full bg-gold-500 px-3 py-1.5 text-sm font-semibold text-white">
           {badge}
         </span>
         <div className="absolute bottom-4 left-4 right-4">
@@ -190,7 +187,7 @@ export function CourseCard({ name, location, distance, badge, description, rate,
           {tags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full border border-gold-200 bg-gold-50 px-3 py-1.5 text-sm font-medium text-forest-900"
+              className="rounded-full border border-forest-200 bg-offwhite px-3 py-1.5 text-sm font-medium text-forest-900"
             >
               {tag}
             </span>
@@ -210,14 +207,14 @@ export function CourseCard({ name, location, distance, badge, description, rate,
 export function HotelCard({ name, tier, area, image, description, perks, price }: HotelItem) {
   const tierClassName =
     tier === 5
-      ? 'border-gold-200 bg-gold-50 text-gold-600'
+      ? 'border-gold-200 bg-gold-50 text-gold-700'
       : tier === 4
-        ? 'border-white/15 bg-forest-800 text-white'
-        : 'border-white/15 bg-fairway-700 text-white'
+        ? 'border-white/15 bg-forest-700 text-white'
+        : 'border-white/15 bg-fairway-600 text-white'
 
   return (
     <motion.article
-      className="group overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+      className="group overflow-hidden rounded-[1.4rem] border border-forest-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
       {...fadeUpProps}
     >
       <div className="relative h-56 overflow-hidden">
@@ -249,7 +246,7 @@ export function HotelCard({ name, tier, area, image, description, perks, price }
           {perks.map((perk) => (
             <span
               key={perk}
-              className="rounded-full border border-white/12 bg-forest-900 px-3 py-1.5 text-sm font-medium text-white"
+              className="rounded-full border border-forest-200 bg-offwhite px-3 py-1.5 text-sm font-medium text-forest-900"
             >
               {perk}
             </span>
@@ -269,7 +266,7 @@ export function HotelCard({ name, tier, area, image, description, perks, price }
 export function FeatureTile({ title, description, icon: Icon }: TransferFeature) {
   return (
     <motion.article
-      className="rounded-[2rem] border border-white/15 bg-white/10 p-6 backdrop-blur-md"
+      className="rounded-[1.4rem] border border-white/20 bg-white/8 p-6"
       {...fadeUpProps}
     >
       <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-forest-950 shadow-[0_12px_24px_rgba(0,0,0,0.16)]">
@@ -284,7 +281,7 @@ export function FeatureTile({ title, description, icon: Icon }: TransferFeature)
 export function StepCard({ step, title, description, image }: PlanningStep) {
   return (
     <motion.article
-      className="group overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+      className="group overflow-hidden rounded-[1.4rem] border border-forest-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
       {...fadeUpProps}
     >
       <div className="relative h-44 overflow-hidden">
@@ -307,7 +304,7 @@ export function StepCard({ step, title, description, image }: PlanningStep) {
 export function TestimonialCard({ quote, name, meta }: TestimonialItem) {
   return (
     <motion.article
-      className="rounded-[2rem] border border-forest-100 bg-white p-6 shadow-sm"
+      className="rounded-[1.4rem] border border-forest-200 bg-white p-6 shadow-sm"
       {...fadeUpProps}
     >
       <div className="mb-4 flex gap-1">

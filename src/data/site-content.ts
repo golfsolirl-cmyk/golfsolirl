@@ -124,9 +124,9 @@ export const navLinks = [
 ] as const
 
 export const heroStats: readonly StatItem[] = [
-  { value: '70+', label: 'Costa del Sol courses, chosen with Irish groups in mind' },
-  { value: '4.9/5', label: 'Average satisfaction from Irish travellers' },
-  { value: '100%', label: 'Irish-led planning from first call to final round' }
+  { value: '30+', label: 'Years planning golf holidays on the Costa del Sol' },
+  { value: '70+', label: 'Courses between Malaga and Gibraltar' },
+  { value: '1989', label: 'Established and serving golf groups continuously' }
 ]
 
 export const irishDepartureRoutes: readonly IrishDepartureRoute[] = [
@@ -468,7 +468,7 @@ export const costaMetrics = [
 ] as const
 
 export const primaryActions = {
-  planTrip: 'Plan Your Trip',
+  planTrip: 'Design Your Golf Package',
   viewPackages: 'View Packages',
   enquire: 'Start Your Enquiry'
 } as const

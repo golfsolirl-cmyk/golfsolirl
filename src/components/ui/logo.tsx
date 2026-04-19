@@ -38,9 +38,9 @@ export function Logo({ className, size = 'default', tone = 'light' }: LogoProps)
   const isHero = tone === 'hero'
   const isScrolled = tone === 'scrolled'
 
-  const primaryClassName = isHero ? 'text-white' : isScrolled ? 'text-white' : 'text-[#003805]'
-  const secondaryClassName = isHero || isScrolled ? 'text-orange-500' : 'text-orange-900'
-  const taglineClassName = isHero ? 'text-white' : isScrolled ? 'text-white' : 'text-[#4B5563]'
+  const primaryClassName = isHero ? 'text-white' : isScrolled ? 'text-[#003805]' : 'text-[#003805]'
+  const secondaryClassName = isHero ? 'text-orange-500' : 'text-orange-700'
+  const taglineClassName = isHero ? 'text-white' : 'text-[#4B5563]'
   const heroWordmarkStyle = isHero
     ? {
         textShadow: '0 2px 28px rgba(0,0,0,0.35)'

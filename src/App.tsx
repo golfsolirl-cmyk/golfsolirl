@@ -30,7 +30,7 @@ import {
 import { LuxuryButton } from './components/ui/button'
 import { SiteFooter } from './components/site-footer'
 import { AmbientGolfBall } from './components/ui/ambient-golf-ball'
-import { Logo, ShamrockIcon } from './components/ui/logo'
+import { ShamrockIcon } from './components/ui/logo'
 import { AnimatedStepKicker, SectionHeader } from './components/ui/section-header'
 import { WaveDivider } from './components/ui/wave-divider'
 import { integrationRegistry } from './config/integrations'
@@ -291,10 +291,7 @@ function App() {
       <CookieBanner hidden={hasAcceptedCookies} onAccept={handleAcceptCookies} />
 
       <main>
-        <section
-          className="relative min-h-screen overflow-hidden bg-forest-900 px-6 pb-28 pt-36 md:pt-40"
-          id="home"
-        >
+        <section className="relative min-h-screen overflow-hidden bg-forest-900 px-6 pb-20 pt-36 md:pt-40" id="home">
           <div
             aria-hidden="true"
             className="absolute inset-0 bg-cover bg-center"
@@ -303,10 +300,8 @@ function App() {
           <div aria-hidden="true" className="absolute inset-0 bg-hero-overlay" />
           <div aria-hidden="true" className="absolute inset-0 bg-hero-bottom" />
 
-          <div aria-hidden="true" className="absolute right-[-120px] top-[-96px] h-80 w-80 rounded-full bg-fairway-500/20 blur-3xl md:h-96 md:w-96" />
-          <div aria-hidden="true" className="absolute right-[12%] top-[18%] hidden h-56 w-56 rounded-full border-2 border-white/20 animate-float md:block" />
-          <div aria-hidden="true" className="absolute bottom-[24%] right-[8%] hidden h-72 w-72 rounded-full border-4 border-fairway-400/30 animate-float-slow md:block" />
-          <div aria-hidden="true" className="absolute right-[16%] top-[24%] h-40 w-40 rounded-full bg-gold-400/15 blur-2xl md:h-44 md:w-44" />
+          <div aria-hidden="true" className="absolute right-[-120px] top-[-96px] h-80 w-80 rounded-full bg-fairway-500/16 blur-3xl md:h-96 md:w-96" />
+          <div aria-hidden="true" className="absolute right-[14%] top-[24%] h-44 w-44 rounded-full bg-gold-400/18 blur-3xl md:h-56 md:w-56" />
           <AmbientGolfBall className="right-[3%] top-[18%] opacity-95 lg:right-[6%]" size="lg" tone="hero" variant="hero" />
 
           <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-14 md:grid-cols-2 md:gap-16">
@@ -316,7 +311,7 @@ function App() {
               transition={{ duration: 0.8, ease: 'easeOut' }}
             >
               <motion.p
-                className="mb-4 text-[1.02rem] font-semibold uppercase tracking-[0.14em] text-gold-300 md:text-[1.14rem]"
+                className="mb-4 text-[0.94rem] font-semibold uppercase tracking-[0.2em] text-gold-300 md:text-[1rem]"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.1, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -326,56 +321,54 @@ function App() {
               </motion.p>
 
               <motion.h1
-                className="max-w-3xl font-display text-5xl font-black leading-tight tracking-tight text-white md:text-7xl lg:text-[5rem]"
+                className="max-w-3xl font-display text-5xl font-black leading-[1.03] tracking-[-0.01em] text-white md:text-7xl lg:text-[5rem]"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.2, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                An Irish way to book Costa del Sol golf without the usual noise
+                Golf holidays and golf trips on the Costa del Sol, planned properly
               </motion.h1>
 
               <motion.p
-                className="mt-5 max-w-2xl text-[1.28rem] font-medium leading-8 text-white md:text-[1.42rem]"
+                className="mt-5 max-w-2xl text-[1.08rem] font-medium leading-8 text-white/90 md:text-[1.22rem]"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.32, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                Premium Costa del Sol packages, handpicked stays, smooth transfers, and Irish-led judgement from first enquiry to final round.
+                Choose your destination, courses, and accommodation. We arrange the rest with premium support, clear planning, and one seamless itinerary.
               </motion.p>
 
               <motion.p
-                className="mt-6 max-w-xl text-base leading-8 text-white md:text-lg"
+                className="mt-5 max-w-xl text-[1rem] leading-8 text-white/82 md:text-[1.05rem]"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.44, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                <span className="text-gold-300">Golf Sol Ireland</span> is the premium shortcut for Irish golfers heading south: no generic package feel, no piecing things together, just a cleaner route from Irish departure lounge to{' '}
-                <span className="text-gold-300">Spanish fairway</span>.
+                <span className="text-gold-300">Golf Sol Ireland</span> helps Irish golfers build high-quality Costa del Sol trips without stitching together multiple providers.
               </motion.p>
 
               <motion.div
-                className="mt-7 max-w-2xl rounded-[1.8rem] border border-[#fdba74]/35 bg-[linear-gradient(135deg,rgba(8,27,8,0.68),rgba(22,58,19,0.84),rgba(220,88,1,0.16))] p-[1px] shadow-[0_20px_60px_rgba(10,32,8,0.24)]"
+                className="mt-7 max-w-2xl rounded-[1.2rem] border border-white/20 bg-white/10 p-4 shadow-[0_18px_44px_rgba(10,32,8,0.2)] backdrop-blur-sm"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.5, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                <div className="rounded-[1.72rem] bg-forest-950/92 px-5 py-5 backdrop-blur-md md:px-6">
+                <div className="rounded-[1rem] border border-white/10 bg-forest-950/72 px-5 py-5 md:px-6">
                   <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                     <div className="max-w-xl">
-                      <p className="text-sm font-semibold uppercase tracking-[0.24em] text-gold-300">Payments handled properly</p>
-                      <p className="mt-3 text-[1.12rem] font-semibold leading-8 text-white md:text-[1.2rem]">
-                        All customer payments are made in Ireland{' '}
-                        <span className="text-gold-300">directly to Golf Sol Ireland</span> — not to a Spanish middleman, not to a mystery operator, and not offshore.
+                      <p className="text-[0.8rem] font-semibold uppercase tracking-[0.2em] text-gold-300">Payment confidence</p>
+                      <p className="mt-3 text-[1.02rem] font-semibold leading-8 text-white md:text-[1.08rem]">
+                        All customer payments are made in Ireland <span className="text-gold-300">directly to Golf Sol Ireland</span> for a familiar and trusted booking process.
                       </p>
-                      <p className="mt-3 text-base leading-7 text-white">
-                        It keeps the booking cleaner, more familiar, and easier to trust from the first deposit onwards.
+                      <p className="mt-2 text-sm leading-7 text-white/82">
+                        No patchwork handoffs. No unclear payment routes. One accountable team from first enquiry to final confirmation.
                       </p>
                     </div>
-                    <div className="inline-flex min-h-12 items-center gap-3 self-start rounded-full border border-white/20 bg-white/8 px-4 py-2.5 text-sm font-semibold text-white">
+                    <div className="inline-flex min-h-12 items-center gap-3 self-start rounded-full border border-white/20 bg-white/8 px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-white">
                       <CreditCard className="h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
                       <span>Ireland-based payment flow</span>
                     </div>
@@ -399,7 +392,7 @@ function App() {
               </motion.div>
 
               <motion.div
-                className="mt-10 flex flex-wrap gap-6"
+                className="mt-10 flex flex-wrap gap-8"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.68, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -412,13 +405,13 @@ function App() {
             </motion.div>
 
             <motion.aside
-              className="relative hidden max-w-md justify-self-end rounded-[2rem] border border-white/20 bg-forest-950/75 p-6 shadow-2xl backdrop-blur-md md:block"
+              className="relative hidden max-w-md justify-self-end rounded-[1.25rem] border border-white/20 bg-white/92 p-5 text-forest-900 shadow-xl md:block"
               initial={{ opacity: 0, y: 24 }}
               transition={{ delay: 0.25, duration: 0.8 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <div className="overflow-hidden rounded-[1.5rem]">
+              <div className="overflow-hidden rounded-[0.9rem]">
                 <img
                   alt="Luxury golf resort in Costa del Sol"
                   className="h-48 w-full object-cover"
@@ -426,13 +419,13 @@ function App() {
                 />
               </div>
               <div className="mt-5">
-                <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">Signature route</p>
-                <h2 className="mt-2 font-display text-[2rem] font-bold leading-tight text-white md:text-[2.2rem]">Marbella to Sotogrande</h2>
-                <p className="mt-3 text-[1.02rem] leading-8 text-white">
+                <p className="text-[0.75rem] font-semibold uppercase tracking-[0.2em] text-gold-700">Signature route</p>
+                <h2 className="mt-2 font-display text-[1.85rem] font-bold leading-tight text-forest-900 md:text-[2rem]">Marbella to Sotogrande</h2>
+                <p className="mt-3 text-[0.98rem] leading-8 text-forest-900/74">
                   Championship golf, polished stays, and transfer rhythm designed for Irish golfers who want the trip to feel effortless.
                 </p>
                 <motion.p
-                  className="mt-5 max-w-sm font-display text-[2.85rem] font-black leading-[1] tracking-[-0.02em] text-gold-300 md:text-[3.1rem]"
+                  className="mt-5 max-w-sm font-display text-[2.3rem] font-black leading-[1] tracking-[-0.02em] text-gold-700 md:text-[2.6rem]"
                   animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
                   initial={{ opacity: 0, y: 16 }}
                   transition={{
@@ -448,15 +441,15 @@ function App() {
               </div>
               <div className="mt-5 space-y-3">
                 {heroCardHighlights.map((item) => (
-                  <div key={item} className="flex items-center gap-3 text-base text-white">
-                    <CheckCircle2 className="h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
+                  <div key={item} className="flex items-center gap-3 text-sm text-forest-900/80">
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-gold-600" aria-hidden="true" />
                     <span>{item}</span>
                   </div>
                 ))}
               </div>
-              <div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-white/20 pt-4 text-sm">
-                <span className="text-white">Irish-owned planning</span>
-                <span className="text-gold-300">Luxury, not generic</span>
+              <div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-forest-200 pt-4 text-xs font-semibold uppercase tracking-[0.1em]">
+                <span className="text-forest-900/70">Irish-owned planning</span>
+                <span className="text-gold-700">Luxury, not generic</span>
               </div>
             </motion.aside>
           </div>
@@ -464,12 +457,12 @@ function App() {
           <WaveDivider fill="#ffffff" />
         </section>
 
-        <section className="relative overflow-hidden border-b border-forest-100 bg-white px-6 py-14 md:py-18">
+        <section className="relative overflow-hidden border-b border-forest-100 bg-white px-6 py-14 md:py-16">
           <div aria-hidden="true" className="absolute left-[-80px] top-10 h-56 w-56 rounded-full bg-fairway-400/12 blur-3xl" />
           <div aria-hidden="true" className="absolute right-[-40px] top-[-30px] h-64 w-64 rounded-full bg-gold-300/12 blur-3xl" />
           <div className="section-inner">
             <motion.div
-              className="overflow-hidden rounded-[2.25rem] border border-forest-100 bg-[linear-gradient(135deg,#ffffff_0%,#f6faf3_42%,#fff8ef_100%)] p-5 shadow-soft md:p-7"
+              className="overflow-hidden rounded-[1.6rem] border border-forest-200 bg-white p-5 shadow-sm md:p-7"
               initial={{ opacity: 0, y: 24 }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
               viewport={{ once: true, amount: 'some', margin: '0px 0px 80px 0px' }}
@@ -478,23 +471,23 @@ function App() {
               <div className="grid gap-8 xl:grid-cols-[1.05fr_0.95fr] xl:items-center">
                 <div>
                   <div className="flex flex-wrap items-center gap-3">
-                    <span className="inline-flex items-center gap-2 rounded-full border border-forest-900 bg-forest-950 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-white shadow-[0_14px_30px_rgba(10,32,8,0.14)]">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-forest-300 bg-offwhite px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-forest-900">
                       <span className="h-2 w-2 rounded-full bg-gold-300" />
                       Irish driver transfer service
                     </span>
-                    <span className="rounded-full border border-gold-300/45 bg-gold-50 px-4 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-gold-700">
+                    <span className="rounded-full border border-gold-300/45 bg-gold-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-gold-700">
                       Airport, hotel, and golf-course lines covered
                     </span>
                   </div>
 
-                  <h2 className="mt-5 max-w-3xl font-display text-[2.5rem] font-black leading-[1.05] tracking-[-0.02em] text-forest-900 md:text-[3.25rem]">
+                  <h2 className="mt-5 max-w-3xl font-display text-[2rem] font-black leading-[1.06] tracking-[-0.015em] text-forest-900 md:text-[2.7rem]">
                     New Mercedes transfer vans, Golf Sol branding on the side, and Irish drivers handling the full route
                   </h2>
-                  <p className="mt-4 max-w-3xl text-[1.03rem] leading-8 text-forest-900/72 md:text-[1.1rem]">
+                  <p className="mt-4 max-w-3xl text-[1rem] leading-8 text-forest-900/72 md:text-[1.03rem]">
                     From Malaga airport arrivals to hotel check-in runs and every golf-course movement in between, the transport side of the trip is handled for you by Irish drivers who understand the pace, the luggage, and the group dynamic.
                   </p>
 
-                  <div className="mt-6 overflow-hidden rounded-[1.8rem] border border-forest-900 bg-forest-950 shadow-[0_18px_42px_rgba(10,32,8,0.12)]">
+                  <div className="mt-6 overflow-hidden rounded-[1.2rem] border border-forest-700 bg-forest-900 shadow-sm">
                     <div className="flex flex-col gap-3 px-4 py-4 md:px-5">
                       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                         <div className="flex items-center gap-3">
@@ -531,7 +524,7 @@ function App() {
 
                   <div className="mt-6 grid gap-3 sm:grid-cols-3">
                     {transferServiceMoments.map(({ title, description, icon: Icon }) => (
-                      <div key={title} className="rounded-[1.6rem] border border-forest-100 bg-white/88 p-4 shadow-sm">
+                      <div key={title} className="rounded-[1rem] border border-forest-200 bg-offwhite p-4">
                         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-forest-950 text-gold-300">
                           <Icon className="h-5 w-5" aria-hidden="true" />
                         </div>
@@ -542,7 +535,7 @@ function App() {
                   </div>
                 </div>
 
-                <div className="relative overflow-hidden rounded-[2rem] border border-forest-100 bg-forest-950 p-5 text-white shadow-[0_28px_80px_rgba(22,58,19,0.16)] md:p-6">
+                <div className="relative overflow-hidden rounded-[1.3rem] border border-forest-200 bg-forest-900 p-5 text-white shadow-sm md:p-6">
                   <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(255,255,255,0.08),transparent_20%),radial-gradient(circle_at_82%_12%,rgba(220,88,1,0.22),transparent_20%)]" />
                   <div className="relative z-10">
                     <div className="overflow-hidden rounded-[1.5rem]">
@@ -613,7 +606,7 @@ function App() {
             </motion.div>
 
             <motion.div
-              className="mt-6 overflow-hidden rounded-[2rem] border border-forest-100 bg-[linear-gradient(135deg,#ffffff_0%,#f7f9f5_36%,#eef5e7_70%,#fff7ef_100%)] p-5 shadow-sm md:p-6"
+              className="mt-6 overflow-hidden rounded-[1.4rem] border border-forest-200 bg-offwhite p-5 shadow-sm md:p-6"
               initial={{ opacity: 0, y: 24 }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
               viewport={{ once: true, amount: 'some', margin: '0px 0px 80px 0px' }}
@@ -707,7 +700,7 @@ function App() {
                 </motion.div>
 
                 <motion.div
-                  className="rounded-[1.75rem] border border-forest-100 bg-white/88 p-5 shadow-sm backdrop-blur-sm"
+                  className="rounded-[1.4rem] border border-forest-200 bg-white p-5 shadow-sm"
                   initial={{ opacity: 0, y: 18 }}
                   transition={{ delay: 0.08, duration: 0.5, ease: 'easeOut' }}
                   viewport={{ once: true, amount: 'some' }}
@@ -799,7 +792,7 @@ function App() {
               </p>
             </motion.div>
             <motion.div
-              className="relative overflow-hidden rounded-[2.5rem] border border-forest-100 bg-gradient-to-br from-white via-cream to-offwhite px-6 py-8 text-forest-900 shadow-soft md:px-8 md:py-10"
+              className="relative overflow-hidden rounded-[1.6rem] border border-forest-200 bg-white px-6 py-8 text-forest-900 shadow-sm md:px-8 md:py-10"
               initial={{ opacity: 0, y: 30 }}
               transition={{ duration: 0.7, ease: 'easeOut' }}
               viewport={{ once: true, amount: 0.2 }}
@@ -857,7 +850,7 @@ function App() {
                   </motion.div>
 
                   <motion.h2
-                    className="mt-5 max-w-2xl font-display text-[2.5rem] font-black leading-[1.05] tracking-[-0.02em] text-forest-900 md:text-[3.25rem]"
+                    className="mt-5 max-w-2xl font-display text-[2rem] font-black leading-[1.08] tracking-[-0.015em] text-forest-900 md:text-[2.7rem]"
                     initial={{ opacity: 0, y: 20 }}
                     transition={{ delay: 0.14, duration: 0.6, ease: 'easeOut' }}
                     viewport={{ once: true }}
@@ -879,7 +872,7 @@ function App() {
                   </motion.p>
 
                   <motion.div
-                    className="mt-6 rounded-[2rem] border border-forest-100 bg-white/90 p-5 shadow-sm"
+                    className="mt-6 rounded-[1.2rem] border border-forest-200 bg-offwhite p-5"
                     initial={{ opacity: 0, y: 20 }}
                     transition={{ delay: 0.28, duration: 0.6, ease: 'easeOut' }}
                     viewport={{ once: true }}
@@ -904,7 +897,7 @@ function App() {
                     whileInView={{ opacity: 1, y: 0 }}
                   >
                     {heroStats.map((item) => (
-                      <div key={item.label} className="rounded-[1.75rem] border border-forest-100 bg-white/80 p-4 shadow-sm">
+                      <div key={item.label} className="rounded-[1rem] border border-forest-200 bg-white p-4">
                         <p className="font-display text-3xl font-bold text-gold-300">{item.value}</p>
                         <p className="mt-2 text-sm leading-7 text-forest-900/62">{item.label}</p>
                       </div>
@@ -916,7 +909,7 @@ function App() {
                   {trustSignals.map(({ title, description, icon: Icon }, index) => (
                     <motion.article
                       key={title}
-                      className="group rounded-[2rem] border border-forest-100 bg-white/85 p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+                      className="group rounded-[1.2rem] border border-forest-200 bg-offwhite p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-sm"
                       initial={{ opacity: 0, x: 18 }}
                       transition={{ delay: 0.12 * index, duration: 0.55, ease: 'easeOut' }}
                       viewport={{ once: true, amount: 0.25 }}
@@ -986,7 +979,7 @@ function App() {
                 {packageFeatureRows.map(({ title, description, icon: Icon }, index) => (
                   <motion.div
                     key={title}
-                    className="group rounded-[2rem] border border-forest-100 bg-offwhite p-5"
+                    className="group rounded-[1.2rem] border border-forest-200 bg-offwhite p-5"
                     {...revealUp}
                   >
                     <motion.div
@@ -1024,33 +1017,33 @@ function App() {
           <WaveDivider fill="#f2f5ef" />
         </section>
 
-        <section className="section-shell bg-cream pb-28" id="costa-del-sol">
+        <section className="section-shell bg-offwhite pb-28" id="costa-del-sol">
           <AmbientGolfBall className="right-[4%] top-14 opacity-85 xl:right-[7%]" size="md" tone="cream" />
           <div className="section-inner grid items-center gap-12 md:grid-cols-2 md:gap-16">
             <motion.div className="relative" {...revealUp}>
               <div aria-hidden="true" className="absolute -left-12 top-10 h-52 w-52 rounded-full bg-fairway-500/10 blur-3xl" />
               <div className="relative grid gap-4 md:grid-cols-2">
-                <div className="md:col-span-2 overflow-hidden rounded-[2rem]">
+                <div className="md:col-span-2 overflow-hidden rounded-[1.2rem]">
                   <img
                     alt="Aerial golf course view on the Costa del Sol"
                     className="h-72 w-full object-cover transition-transform duration-500 hover:scale-105"
                     src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1400&q=80"
                   />
                 </div>
-                <div className="overflow-hidden rounded-[2rem]">
+                <div className="overflow-hidden rounded-[1.2rem]">
                   <img
                     alt="Golfers walking fairway in the Spanish sunshine"
                     className="h-52 w-full object-cover transition-transform duration-500 hover:scale-105"
                     src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80"
                   />
                 </div>
-                <div className="relative overflow-hidden rounded-[2rem]">
+                <div className="relative overflow-hidden rounded-[1.2rem]">
                   <img
                     alt="Costa del Sol luxury hotel pool"
                     className="h-52 w-full object-cover transition-transform duration-500 hover:scale-105"
                     src="https://images.unsplash.com/photo-1573843981267-be1999ff37cd?auto=format&fit=crop&w=1200&q=80"
                   />
-                  <div className="absolute bottom-4 right-4 rounded-[1.5rem] border border-white/10 bg-forest-900/85 px-4 py-3 text-white shadow-soft backdrop-blur-md">
+                  <div className="absolute bottom-4 right-4 rounded-[1rem] border border-white/15 bg-forest-900/90 px-4 py-3 text-white shadow-sm">
                     <p className="font-display text-2xl font-bold text-gold-400">70+</p>
                     <p className="text-sm text-white/74">Courses across the coast</p>
                   </div>
@@ -1067,7 +1060,7 @@ function App() {
 
               <motion.div className="grid gap-4 sm:grid-cols-3" {...revealUp}>
                 {costaMetrics.map((metric) => (
-                  <div key={metric.label} className="rounded-[2rem] border border-white/60 bg-white/70 p-5 backdrop-blur-sm">
+                  <div key={metric.label} className="rounded-[1rem] border border-forest-200 bg-white p-5">
                     <p className="font-display text-3xl font-bold text-forest-900">{metric.value}</p>
                     <p className="mt-2 text-[1.02rem] leading-8 text-forest-900/68">{metric.label}</p>
                   </div>
@@ -1088,10 +1081,10 @@ function App() {
           <WaveDivider fill="#cce8f4" />
         </section>
 
-        <section className="section-shell bg-sky-section pb-24 pt-16">
+        <section className="section-shell bg-white pb-24 pt-16">
           <motion.div className="section-inner text-center" {...revealUp}>
             <AnimatedStepKicker centered kicker="Step 3 — Let the week feel effortless" />
-            <h2 className="mx-auto mt-3 max-w-4xl font-display text-[2.5rem] font-black leading-[1.05] tracking-[-0.02em] text-forest-900 md:text-[3.25rem]">
+            <h2 className="mx-auto mt-3 max-w-4xl font-display text-[2rem] font-black leading-[1.08] tracking-[-0.015em] text-forest-900 md:text-[2.7rem]">
               Costa del Sol golf should feel effortless, elegant, and worth talking about on the flight home
             </h2>
             <p className="mx-auto mt-5 max-w-2xl text-[1.03rem] leading-8 text-forest-900/72 md:text-[1.1rem]">
@@ -1099,10 +1092,10 @@ function App() {
             </p>
           </motion.div>
 
-          <WaveDivider fill="#e8f4fb" />
+          <WaveDivider fill="#f7f9f5" />
         </section>
 
-        <section className="section-shell bg-sky-muted pb-28" id="courses">
+        <section className="section-shell bg-offwhite pb-28" id="courses">
           <AmbientGolfBall className="left-[4%] top-14 opacity-80 xl:left-[7%]" size="sm" tone="sky" />
           <div className="section-inner">
             <SectionHeader
@@ -1180,7 +1173,7 @@ function App() {
               />
 
               <motion.div className="space-y-4" {...revealUp}>
-                <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-sm">
+                <div className="rounded-[1.2rem] border border-white/15 bg-white/8 p-5">
                   <p className="mb-2 text-sm font-semibold uppercase tracking-[0.14em] text-orange-700">From enquiry to confirmed itinerary</p>
                   <div className="mb-4 max-w-lg rounded-[1.4rem] border border-gold-300/18 bg-[linear-gradient(135deg,rgba(255,255,255,0.12),rgba(253,186,116,0.08))] px-4 py-3 shadow-[0_12px_28px_rgba(10,32,8,0.16)]">
                     <p className="text-[1.02rem] leading-8 text-white">
@@ -1273,7 +1266,7 @@ function App() {
                 {landingEnquiryHighlights.map(({ title, icon: Icon }) => (
                   <motion.div
                     key={title}
-                    className="rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-sm"
+                    className="rounded-[1.2rem] border border-white/15 bg-white/8 p-5"
                     {...revealUp}
                   >
                     <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-white/12 text-gold-300">
@@ -1286,7 +1279,7 @@ function App() {
             </div>
 
             <motion.div
-              className="rounded-[2rem] border border-white/10 bg-white/10 p-7 shadow-2xl backdrop-blur-md md:p-8"
+              className="rounded-[1.4rem] border border-white/15 bg-white/8 p-7 shadow-xl md:p-8"
               {...revealUp}
             >
               <form className="space-y-6 md:space-y-7" onSubmit={handleNewsletterSubmit}>
@@ -1451,7 +1444,7 @@ function QuickSelectorCard({
   readonly columnsClassName?: string
 }) {
   return (
-    <div className="rounded-[1.75rem] border border-forest-100 bg-white/88 p-5 shadow-sm backdrop-blur-sm">
+    <div className="rounded-[1.2rem] border border-forest-200 bg-white p-5 shadow-sm">
       <div className="flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-forest-900 text-white">
           <Icon className="h-5 w-5" aria-hidden="true" />
@@ -1470,7 +1463,7 @@ function QuickSelectorCard({
             <button
               key={option.value}
               className={cx(
-                'rounded-2xl border px-3 py-3 text-sm font-semibold transition-all',
+                'rounded-xl border px-3 py-3 text-sm font-semibold transition-all',
                 isActive
                   ? 'border-gold-300 bg-forest-900 text-white shadow-soft'
                   : 'border-forest-100 bg-offwhite/85 text-forest-900 hover:bg-white'
