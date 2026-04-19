@@ -76,10 +76,10 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
         className={cx(
           'mx-auto max-w-7xl border px-4 py-3 transition-all duration-300 md:rounded-full md:px-6',
           isMenuOpen
-            ? 'rounded-[2rem] border-white/10 bg-forest-950/[0.97] shadow-soft backdrop-blur-xl'
+            ? 'rounded-[1.5rem] border-forest-200 bg-white shadow-md'
             : isScrolled
-              ? 'rounded-full border-white/10 bg-forest-900/95 shadow-soft backdrop-blur-md'
-              : 'rounded-full border-white/10 bg-white/5 backdrop-blur-sm'
+              ? 'rounded-full border-forest-200 bg-white shadow-md'
+              : 'rounded-full border-white/45 bg-white/90 backdrop-blur-sm'
         )}
       >
         <div className="flex items-center justify-between gap-4">
@@ -95,7 +95,7 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
             {links.map((link) => (
               <a
                 key={link}
-                className="text-base font-medium tracking-[0.01em] text-white transition-colors hover:text-white"
+                className="text-sm font-semibold uppercase tracking-[0.08em] text-forest-900 transition-colors hover:text-gold-600"
                 href={navHrefForLink(link)}
               >
                 {link}
@@ -122,8 +122,8 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
             aria-expanded={isMenuOpen}
             aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             className={cx(
-              'inline-flex h-11 w-11 items-center justify-center rounded-full border text-white transition-colors hover:border-gold-400 hover:text-gold-400 md:hidden',
-              isMenuOpen ? 'border-white/20 bg-black/30' : 'border-white/20 bg-white/10'
+              'inline-flex h-11 w-11 items-center justify-center rounded-full border text-forest-900 transition-colors hover:border-gold-500 hover:text-gold-600 md:hidden',
+              isMenuOpen ? 'border-forest-300 bg-offwhite' : 'border-forest-200 bg-white'
             )}
             onClick={handleToggleMenu}
             type="button"
@@ -136,7 +136,7 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
           {isMenuOpen ? (
             <motion.div
               animate={{ opacity: 1, y: 0 }}
-              className="mt-4 flex flex-col gap-4 rounded-[1.5rem] border border-white/12 bg-forest-950/[0.94] px-4 pb-4 pt-4 shadow-soft backdrop-blur-xl md:hidden"
+              className="mt-4 flex flex-col gap-4 rounded-[1.25rem] border border-forest-200 bg-white px-4 pb-4 pt-4 shadow-md md:hidden"
               exit={{ opacity: 0, y: -12 }}
               initial={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.25, ease: 'easeOut' }}
@@ -144,7 +144,7 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
               {links.map((link) => (
                 <a
                   key={link}
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white transition-colors hover:border-gold-400/40 hover:text-white"
+                  className="rounded-2xl border border-forest-200 bg-offwhite px-4 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-forest-900 transition-colors hover:border-gold-400 hover:text-gold-700"
                   href={navHrefForLink(link)}
                   onClick={handleCloseMenu}
                 >

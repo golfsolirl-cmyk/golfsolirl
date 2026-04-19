@@ -27,12 +27,12 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
   const dashboardHref = profile?.role === 'admin' ? '/dashboard/admin' : '/dashboard'
 
   return (
-    <footer ref={footerRef} className="relative overflow-hidden border-t border-white/10 bg-forest-950 px-6 py-10 text-white">
+    <footer ref={footerRef} className="relative overflow-hidden border-t border-forest-200 bg-forest-900 px-6 py-10 text-white">
       <AmbientGolfBall className="right-[3%] top-2 opacity-75 xl:right-[6%]" size="sm" tone="footer" />
       <div className="mx-auto flex max-w-7xl flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-md">
           <Logo tone="hero" />
-          <p className="mt-4 text-[1.02rem] leading-8 text-white/72">{intro}</p>
+          <p className="mt-4 text-[1.02rem] leading-8 text-white/76">{intro}</p>
           {showAuthFooter && !authLoading ? (
             <div className="mt-6 border-t border-white/10 pt-6">
               <p className="text-sm font-semibold uppercase tracking-[0.14em] text-white/72">Client area</p>
@@ -40,7 +40,7 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
                 <li className="flex items-center gap-2">
                   <ChevronRight className="h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
                   <a
-                    className="text-base font-medium text-white transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                    className="text-base font-medium text-white transition-colors hover:text-gold-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-900"
                     href={session ? dashboardHref : '/login'}
                   >
                     {session ? 'My dashboard' : 'Sign in'}
@@ -59,7 +59,7 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
                   <a
                     key={label}
                     aria-label={`Visit our ${label} page`}
-                    className="group inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#dc5801]/25 bg-white/5 text-[#dc5801] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#dc5801]/65 hover:bg-[#dc5801] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dc5801] focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                    className="group inline-flex h-12 w-12 items-center justify-center rounded-full border border-gold-300/35 bg-white/8 text-gold-300 transition-all duration-300 hover:-translate-y-0.5 hover:border-gold-300 hover:bg-gold-500 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-900"
                     href={href}
                     rel="noreferrer"
                     target="_blank"
@@ -81,7 +81,7 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
                   <li key={item.href} className="flex items-center gap-2">
                     <ChevronRight className="h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
                     <a
-                      className="text-base font-medium text-white transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                      className="text-base font-medium text-white transition-colors hover:text-gold-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-900"
                       href={item.href}
                     >
                       {item.label}
