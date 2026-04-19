@@ -3,10 +3,12 @@ import { FaBluesky, FaFacebookF, FaLinkedinIn, FaWhatsapp } from 'react-icons/fa
 import { integrationRegistry } from '../config/integrations'
 import { FooterCompanyContact } from './footer-company-contact'
 import { AmbientGolfBall } from './ui/ambient-golf-ball'
-import { Logo } from './ui/logo'
 import { footerGroups, footerSocialLinks } from '../data/site-content'
 import { useAuth } from '../providers/auth-provider'
 import type { RefObject } from 'react'
+
+// Crest lives in /workspace/public so Vite serves it at the site root.
+const golfsolCrest = '/golfsol-crest.svg'
 
 const footerSocialIconMap = {
   LinkedIn: FaLinkedinIn,
@@ -31,7 +33,15 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
       <AmbientGolfBall className="right-[3%] top-2 opacity-75 xl:right-[6%]" size="sm" tone="footer" />
       <div className="mx-auto flex max-w-7xl flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-md">
-          <Logo tone="hero" />
+          <img
+            src={golfsolCrest}
+            alt="Golf Sol Ireland"
+            width={320}
+            height={213}
+            loading="lazy"
+            decoding="async"
+            className="h-auto w-[14rem] select-none drop-shadow-[0_12px_28px_rgba(0,0,0,0.45)] sm:w-[16rem] md:w-[18rem]"
+          />
           <p className="mt-4 text-[1.02rem] leading-8 text-white/72">{intro}</p>
           {showAuthFooter && !authLoading ? (
             <div className="mt-6 border-t border-white/10 pt-6">
