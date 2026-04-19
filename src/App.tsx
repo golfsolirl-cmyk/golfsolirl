@@ -292,8 +292,9 @@ function App() {
 
       <main>
         <section
-          className="relative min-h-screen overflow-hidden bg-forest-900 px-6 pb-28 pt-36 md:pt-40"
+          className="relative min-h-screen overflow-hidden px-6 pb-28 pt-36 md:pt-40"
           id="home"
+          style={{ background: 'var(--section-home-bg)' }}
         >
           <div
             aria-hidden="true"
@@ -357,7 +358,7 @@ function App() {
               </motion.p>
 
               <motion.div
-                className="mt-7 max-w-2xl rounded-[1.8rem] border border-[#fdba74]/35 bg-[linear-gradient(135deg,rgba(8,27,8,0.68),rgba(22,58,19,0.84),rgba(220,88,1,0.16))] p-[1px] shadow-[0_20px_60px_rgba(10,32,8,0.24)]"
+                className="mt-7 max-w-2xl rounded-[1.8rem] border border-gold-300/35 bg-[linear-gradient(135deg,rgba(13,29,56,0.74),rgba(19,40,74,0.88),rgba(255,143,91,0.18))] p-[1px] shadow-[0_20px_60px_rgba(5,11,26,0.32)]"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.5, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -461,15 +462,18 @@ function App() {
             </motion.aside>
           </div>
 
-          <WaveDivider fill="#ffffff" />
+          <WaveDivider fill="var(--wave-fill-secondary)" />
         </section>
 
-        <section className="relative overflow-hidden border-b border-forest-100 bg-white px-6 py-14 md:py-18">
+        <section
+          className="relative overflow-hidden border-b border-forest-100 px-6 py-14 md:py-18"
+          style={{ background: 'var(--section-transfer-showcase-bg)' }}
+        >
           <div aria-hidden="true" className="absolute left-[-80px] top-10 h-56 w-56 rounded-full bg-fairway-400/12 blur-3xl" />
           <div aria-hidden="true" className="absolute right-[-40px] top-[-30px] h-64 w-64 rounded-full bg-gold-300/12 blur-3xl" />
           <div className="section-inner">
             <motion.div
-              className="overflow-hidden rounded-[2.25rem] border border-forest-100 bg-[linear-gradient(135deg,#ffffff_0%,#f6faf3_42%,#fff8ef_100%)] p-5 shadow-soft md:p-7"
+              className="overflow-hidden rounded-[2.25rem] border border-forest-100 bg-[linear-gradient(135deg,#ffffff_0%,#f3f8ff_45%,#fff4ed_100%)] p-5 shadow-soft md:p-7"
               initial={{ opacity: 0, y: 24 }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
               viewport={{ once: true, amount: 'some', margin: '0px 0px 80px 0px' }}
@@ -554,7 +558,7 @@ function App() {
                     </div>
 
                     <div className="mt-5 space-y-5 rounded-[1.5rem] border border-white/10 bg-white/6 p-5 backdrop-blur-sm md:p-6">
-                      <div className="rounded-[1.45rem] border border-white/12 bg-[linear-gradient(135deg,#ffffff_0%,#f7f9f5_100%)] p-5 text-forest-950 shadow-[0_18px_40px_rgba(0,0,0,0.2)] md:p-6">
+                      <div className="rounded-[1.45rem] border border-white/12 bg-[linear-gradient(135deg,#ffffff_0%,#f3f8ff_100%)] p-5 text-forest-950 shadow-[0_18px_40px_rgba(0,0,0,0.2)] md:p-6">
                         <div className="flex flex-wrap items-start justify-between gap-3 gap-y-2">
                           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-700">Golf Sol Ireland transfer branding</p>
                           <span className="shrink-0 rounded-full border border-forest-900 bg-forest-950 px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.16em] text-white sm:px-5">
@@ -566,11 +570,11 @@ function App() {
                             <div className="flex min-w-0 items-center justify-center gap-3 sm:justify-start sm:gap-4 sm:px-7 sm:py-7">
                               <img alt="" aria-hidden="true" className="h-12 w-12 shrink-0 object-contain sm:h-12 sm:w-12" src={logoIcon} />
                               <div className="min-w-0 text-left">
-                                <p className="font-display text-[1.35rem] font-black uppercase tracking-[-0.05em] text-[#003805] sm:text-[1.35rem]">GolfSol</p>
-                                <p className="text-[0.8rem] font-bold uppercase tracking-[0.2em] text-[#dc5801] sm:text-[0.8rem]">Ireland</p>
+                                <p className="font-display text-[1.35rem] font-black uppercase tracking-[-0.05em] text-forest-900 sm:text-[1.35rem]">GolfSol</p>
+                                <p className="text-[0.8rem] font-bold uppercase tracking-[0.2em] text-gold-500 sm:text-[0.8rem]">Ireland</p>
                               </div>
                             </div>
-                            <div className="min-w-0 rounded-xl bg-[#0a2008] px-5 py-6 text-left sm:rounded-none sm:border-l-[3px] sm:border-gold-400/90 sm:px-8 sm:py-7 sm:pl-7">
+                            <div className="min-w-0 rounded-xl bg-forest-950 px-5 py-6 text-left sm:rounded-none sm:border-l-[3px] sm:border-gold-400/90 sm:px-8 sm:py-7 sm:pl-7">
                               <p className="text-sm font-semibold uppercase tracking-[0.16em] text-gold-300 sm:text-[0.8rem] sm:tracking-[0.2em]">
                                 Mercedes fleet
                               </p>
@@ -613,7 +617,7 @@ function App() {
             </motion.div>
 
             <motion.div
-              className="mt-6 overflow-hidden rounded-[2rem] border border-forest-100 bg-[linear-gradient(135deg,#ffffff_0%,#f7f9f5_36%,#eef5e7_70%,#fff7ef_100%)] p-5 shadow-sm md:p-6"
+              className="mt-6 overflow-hidden rounded-[2rem] border border-forest-100 bg-[linear-gradient(135deg,#ffffff_0%,#f4f8ff_40%,#ebf3ff_70%,#fff4ed_100%)] p-5 shadow-sm md:p-6"
               initial={{ opacity: 0, y: 24 }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
               viewport={{ once: true, amount: 'some', margin: '0px 0px 80px 0px' }}
@@ -707,7 +711,7 @@ function App() {
                 </motion.div>
 
                 <motion.div
-                  className="rounded-[1.75rem] border border-forest-100 bg-white/88 p-5 shadow-sm backdrop-blur-sm"
+                  className="surface-card rounded-[1.75rem] border border-forest-100 bg-white/88 p-5 shadow-sm backdrop-blur-sm"
                   initial={{ opacity: 0, y: 18 }}
                   transition={{ delay: 0.08, duration: 0.5, ease: 'easeOut' }}
                   viewport={{ once: true, amount: 'some' }}
@@ -767,7 +771,10 @@ function App() {
           </div>
         </section>
 
-        <section className="relative bg-white px-6 pb-24 pt-10 md:pt-14">
+        <section
+          className="relative px-6 pb-24 pt-10 md:pt-14"
+          style={{ background: 'var(--section-trust-bg)' }}
+        >
           <AmbientGolfBall className="left-[3%] top-10 opacity-80 xl:left-[6%]" size="sm" tone="light" />
           <div className="section-inner">
             <motion.div
@@ -783,7 +790,7 @@ function App() {
                     Why groups trust
                   </span>
                   <span className="flex flex-wrap items-center justify-center gap-2 leading-none">
-                    <span className="font-display text-[2.9rem] font-black tracking-[-0.05em] text-[#003805] md:text-[3.8rem]">
+                    <span className="font-display text-[2.9rem] font-black tracking-[-0.05em] text-forest-900 md:text-[3.8rem]">
                       GolfSol
                     </span>
                     <ShamrockIcon className="h-7 w-7 self-center md:h-9 md:w-9" />
@@ -973,7 +980,7 @@ function App() {
           </div>
         </section>
 
-        <section className="section-shell bg-white pb-28" id="packages">
+        <section className="section-shell pb-28" id="packages" style={{ background: 'var(--section-packages-bg)' }}>
           <div className="section-inner grid items-start gap-12 md:grid-cols-[0.9fr_1.1fr] md:gap-16">
             <div>
               <SectionHeader
@@ -1021,10 +1028,10 @@ function App() {
             </div>
           </div>
 
-          <WaveDivider fill="#f2f5ef" />
+          <WaveDivider fill="var(--wave-fill-primary)" />
         </section>
 
-        <section className="section-shell bg-cream pb-28" id="costa-del-sol">
+        <section className="section-shell pb-28" id="costa-del-sol" style={{ background: 'var(--section-costa-bg)' }}>
           <AmbientGolfBall className="right-[4%] top-14 opacity-85 xl:right-[7%]" size="md" tone="cream" />
           <div className="section-inner grid items-center gap-12 md:grid-cols-2 md:gap-16">
             <motion.div className="relative" {...revealUp}>
@@ -1085,10 +1092,10 @@ function App() {
             </div>
           </div>
 
-          <WaveDivider fill="#cce8f4" />
+          <WaveDivider fill="var(--wave-fill-secondary)" />
         </section>
 
-        <section className="section-shell bg-sky-section pb-24 pt-16">
+        <section className="section-shell pb-24 pt-16" style={{ background: 'var(--section-momentum-bg)' }}>
           <motion.div className="section-inner text-center" {...revealUp}>
             <AnimatedStepKicker centered kicker="Step 3 — Let the week feel effortless" />
             <h2 className="mx-auto mt-3 max-w-4xl font-display text-[2.5rem] font-black leading-[1.05] tracking-[-0.02em] text-forest-900 md:text-[3.25rem]">
@@ -1099,10 +1106,10 @@ function App() {
             </p>
           </motion.div>
 
-          <WaveDivider fill="#e8f4fb" />
+          <WaveDivider fill="var(--wave-fill-secondary)" />
         </section>
 
-        <section className="section-shell bg-sky-muted pb-28" id="courses">
+        <section className="section-shell pb-28" id="courses" style={{ background: 'var(--section-courses-bg)' }}>
           <AmbientGolfBall className="left-[4%] top-14 opacity-80 xl:left-[7%]" size="sm" tone="sky" />
           <div className="section-inner">
             <SectionHeader
@@ -1119,10 +1126,10 @@ function App() {
             </div>
           </div>
 
-          <WaveDivider fill="#f0f7ee" />
+          <WaveDivider fill="var(--wave-fill-secondary)" />
         </section>
 
-        <section className="section-shell bg-forest-50 pb-28" id="hotels">
+        <section className="section-shell pb-28" id="hotels" style={{ background: 'var(--section-hotels-bg)' }}>
           <div className="section-inner">
             <SectionHeader
               body="Not every group wants the same base. Some want lively and central, some want polished and relaxed, and some want the full five-star switch-off from the moment they arrive."
@@ -1162,10 +1169,10 @@ function App() {
             </div>
           </div>
 
-          <WaveDivider fill="#163a13" />
+          <WaveDivider fill="var(--wave-fill-dark)" />
         </section>
 
-        <section className="section-shell bg-forest-900 pb-28" id="transfers">
+        <section className="section-shell pb-28" id="transfers" style={{ background: 'var(--section-transfers-bg)' }}>
           <div aria-hidden="true" className="absolute -left-20 top-8 h-72 w-72 rounded-full bg-fairway-500/10 blur-3xl" />
           <div aria-hidden="true" className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-gold-400/10 blur-3xl" />
           <AmbientGolfBall className="right-[5%] top-16 opacity-90 xl:right-[8%]" size="md" tone="dark" />
@@ -1181,7 +1188,7 @@ function App() {
 
               <motion.div className="space-y-4" {...revealUp}>
                 <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-sm">
-                  <p className="mb-2 text-sm font-semibold uppercase tracking-[0.14em] text-orange-700">From enquiry to confirmed itinerary</p>
+                  <p className="mb-2 text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">From enquiry to confirmed itinerary</p>
                   <div className="mb-4 max-w-lg rounded-[1.4rem] border border-gold-300/18 bg-[linear-gradient(135deg,rgba(255,255,255,0.12),rgba(253,186,116,0.08))] px-4 py-3 shadow-[0_12px_28px_rgba(10,32,8,0.16)]">
                     <p className="text-[1.02rem] leading-8 text-white">
                       The goal is simple: once a group enquires, everything from transfers and stay details to payment and confirmations should feel joined-up,
@@ -1219,7 +1226,7 @@ function App() {
           <WaveDivider fill="#ffffff" />
         </section>
 
-        <section className="section-shell bg-white pb-28" id="plan-trip">
+        <section className="section-shell pb-28" id="plan-trip" style={{ background: 'var(--section-plan-bg)' }}>
           <div className="section-inner">
             <SectionHeader
               body="Tell us your dates, group style, preferred courses, and stay level. We shape the route, confirm the details, and make the whole planning process feel straightforward from first enquiry to final itinerary."
@@ -1238,7 +1245,7 @@ function App() {
           <WaveDivider fill="#ffffff" />
         </section>
 
-        <section className="section-shell bg-white pb-28" id="testimonials">
+        <section className="section-shell pb-28" id="testimonials" style={{ background: 'var(--section-testimonials-bg)' }}>
           <div className="section-inner">
             <SectionHeader
               body="The social proof is intentionally premium and restrained: enough to signal trust, without turning the page into a hard-sell brochure."
@@ -1255,7 +1262,7 @@ function App() {
           </div>
         </section>
 
-        <section className="section-shell bg-forest-900 pb-20">
+        <section className="section-shell pb-20" style={{ background: 'var(--section-contact-bg)' }}>
           <div aria-hidden="true" className="absolute left-[-100px] top-[-40px] h-72 w-72 rounded-full bg-fairway-500/10 blur-3xl" />
           <div aria-hidden="true" className="absolute bottom-[-40px] right-[-60px] h-72 w-72 rounded-full bg-gold-400/10 blur-3xl" />
 
@@ -1390,7 +1397,7 @@ function App() {
                       'rounded-[1.4rem] border px-5 py-4 text-lg leading-relaxed md:text-xl',
                       enquiryFormStatus === 'success'
                         ? 'border-gold-300/30 bg-gold-400/12 text-white'
-                        : 'border-[#f7a24f]/35 bg-[#dc5801]/12 text-white'
+                        : 'border-gold-300/35 bg-gold-400/12 text-white'
                     )}
                   >
                     {enquiryFormMessage}
@@ -1451,7 +1458,7 @@ function QuickSelectorCard({
   readonly columnsClassName?: string
 }) {
   return (
-    <div className="rounded-[1.75rem] border border-forest-100 bg-white/88 p-5 shadow-sm backdrop-blur-sm">
+    <div className="surface-card rounded-[1.75rem] border border-forest-100 bg-white/88 p-5 shadow-sm backdrop-blur-sm">
       <div className="flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-forest-900 text-white">
           <Icon className="h-5 w-5" aria-hidden="true" />
@@ -1541,7 +1548,7 @@ function FloatingWhatsAppButton({
       <span className="relative z-10 flex h-[3.85rem] w-[3.85rem] items-center justify-center sm:h-[4.15rem] sm:w-[4.15rem]">
         <span
           aria-hidden="true"
-          className="absolute inset-0 rounded-full bg-[#25d366]/25 blur-xl transition-all duration-300 group-hover:scale-110 group-hover:opacity-100"
+          className="absolute inset-0 rounded-full bg-fairway-500/25 blur-xl transition-all duration-300 group-hover:scale-110 group-hover:opacity-100"
         />
         <span
           aria-hidden="true"
@@ -1553,7 +1560,7 @@ function FloatingWhatsAppButton({
           className="absolute left-[17%] top-[13%] h-[28%] w-[26%] rounded-full bg-white/70 blur-[7px]"
         />
         <span className="absolute inset-0 flex items-center justify-center">
-          <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/80 bg-white text-[#128c4a] shadow-[0_10px_24px_rgba(18,140,74,0.28)] transition-transform duration-300 group-hover:scale-110 sm:h-11 sm:w-11">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/80 bg-white text-fairway-700 shadow-[0_10px_24px_rgba(49,129,188,0.28)] transition-transform duration-300 group-hover:scale-110 sm:h-11 sm:w-11">
             <FaWhatsapp className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden="true" />
           </span>
         </span>
@@ -1591,7 +1598,7 @@ function CookieBanner({
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
           <button
-            className="rounded-full bg-[#dc5801] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#c84f01]"
+            className="rounded-full bg-gold-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gold-600"
             onClick={onAccept}
             type="button"
           >

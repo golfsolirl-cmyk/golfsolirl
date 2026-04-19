@@ -7,10 +7,10 @@ const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURICom
 export function FooterCompanyContact() {
   return (
     <div className="mx-auto mt-10 max-w-7xl">
-      <div className="relative overflow-hidden rounded-[1.75rem] border border-white/14 bg-[linear-gradient(152deg,rgba(255,255,255,0.09)_0%,rgba(255,255,255,0.02)_48%,rgba(80,163,45,0.06)_100%)] p-6 shadow-[0_28px_72px_rgba(0,0,0,0.28)] ring-1 ring-white/[0.06] md:p-8">
+      <div className="relative overflow-hidden rounded-[1.75rem] border border-white/14 bg-[linear-gradient(152deg,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0.04)_48%,rgba(49,129,188,0.12)_100%)] p-6 shadow-[0_28px_72px_rgba(0,0,0,0.28)] ring-1 ring-white/[0.06] md:p-8">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_90%_80%_at_0%_-20%,rgba(220,88,1,0.14),transparent_50%),radial-gradient(ellipse_70%_60%_at_100%_100%,rgba(80,163,45,0.11),transparent_45%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_90%_80%_at_0%_-20%,rgba(255,143,91,0.15),transparent_50%),radial-gradient(ellipse_70%_60%_at_100%_100%,rgba(49,129,188,0.15),transparent_45%)]"
         />
         <div className="relative z-10 grid gap-8 md:grid-cols-2 md:items-start md:gap-12 lg:gap-20">
           <div>

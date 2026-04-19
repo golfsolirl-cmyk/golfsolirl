@@ -33,7 +33,7 @@ export function PackageCard({ name, description, price, duration, highlight, inc
   return (
     <motion.article
       className={cx(
-        'group relative overflow-hidden rounded-[2rem] border p-7 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl',
+        'surface-card group relative overflow-hidden rounded-[2rem] border p-7 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl',
         isFeaturedPackage && 'md:col-span-2',
         isFeaturedPackage
           ? 'border-gold-300 bg-gradient-to-br from-forest-950 via-forest-900 to-forest-800 text-white'
@@ -161,7 +161,7 @@ export function PackageCard({ name, description, price, duration, highlight, inc
 export function CourseCard({ name, location, distance, badge, description, rate, image, tags }: CourseItem) {
   return (
     <motion.article
-      className="group overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+      className="surface-card group overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
       {...fadeUpProps}
     >
       <div className="relative h-56 overflow-hidden">
@@ -217,7 +217,7 @@ export function HotelCard({ name, tier, area, image, description, perks, price }
 
   return (
     <motion.article
-      className="group overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+      className="surface-card group overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
       {...fadeUpProps}
     >
       <div className="relative h-56 overflow-hidden">
@@ -284,7 +284,7 @@ export function FeatureTile({ title, description, icon: Icon }: TransferFeature)
 export function StepCard({ step, title, description, image }: PlanningStep) {
   return (
     <motion.article
-      className="group overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+      className="surface-card group overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
       {...fadeUpProps}
     >
       <div className="relative h-44 overflow-hidden">
@@ -307,7 +307,7 @@ export function StepCard({ step, title, description, image }: PlanningStep) {
 export function TestimonialCard({ quote, name, meta }: TestimonialItem) {
   return (
     <motion.article
-      className="rounded-[2rem] border border-forest-100 bg-white p-6 shadow-sm"
+      className="surface-card rounded-[2rem] border border-forest-100 bg-white p-6 shadow-sm"
       {...fadeUpProps}
     >
       <div className="mb-4 flex gap-1">

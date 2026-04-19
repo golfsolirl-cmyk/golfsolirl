@@ -5,56 +5,56 @@ export default {
     extend: {
       colors: {
         forest: {
-          950: '#0a2008',
-          900: '#163a13',
-          800: '#1a4516',
-          700: '#1f571a',
-          600: '#2a7020',
-          500: '#3a8d2e',
-          100: '#d9efd3',
-          50: '#f0f7ee'
+          950: 'rgb(var(--color-forest-950) / <alpha-value>)',
+          900: 'rgb(var(--color-forest-900) / <alpha-value>)',
+          800: 'rgb(var(--color-forest-800) / <alpha-value>)',
+          700: 'rgb(var(--color-forest-700) / <alpha-value>)',
+          600: 'rgb(var(--color-forest-600) / <alpha-value>)',
+          500: 'rgb(var(--color-forest-500) / <alpha-value>)',
+          100: 'rgb(var(--color-forest-100) / <alpha-value>)',
+          50: 'rgb(var(--color-forest-50) / <alpha-value>)'
         },
         fairway: {
-          700: '#316619',
-          600: '#3d8120',
-          500: '#50a32d',
-          400: '#6ebf47',
-          200: '#c3e9a8',
-          100: '#e3f5d3',
-          50: '#f5fbf0'
+          700: 'rgb(var(--color-fairway-700) / <alpha-value>)',
+          600: 'rgb(var(--color-fairway-600) / <alpha-value>)',
+          500: 'rgb(var(--color-fairway-500) / <alpha-value>)',
+          400: 'rgb(var(--color-fairway-400) / <alpha-value>)',
+          200: 'rgb(var(--color-fairway-200) / <alpha-value>)',
+          100: 'rgb(var(--color-fairway-100) / <alpha-value>)',
+          50: 'rgb(var(--color-fairway-50) / <alpha-value>)'
         },
         gold: {
-          600: '#d97706',
-          500: '#f59e0b',
-          400: '#dc5801',
-          300: '#fdba74',
-          50: '#fffbeb'
+          600: 'rgb(var(--color-gold-600) / <alpha-value>)',
+          500: 'rgb(var(--color-gold-500) / <alpha-value>)',
+          400: 'rgb(var(--color-gold-400) / <alpha-value>)',
+          300: 'rgb(var(--color-gold-300) / <alpha-value>)',
+          50: 'rgb(var(--color-gold-50) / <alpha-value>)'
         },
         sky: {
-          muted: '#e8f4fb',
-          section: '#cce8f4',
-          light: '#dbeafe'
+          muted: 'rgb(var(--color-sky-muted) / <alpha-value>)',
+          section: 'rgb(var(--color-sky-section) / <alpha-value>)',
+          light: 'rgb(var(--color-sky-light) / <alpha-value>)'
         },
-        cream: '#f2f5ef',
-        offwhite: '#f7f9f5'
+        cream: 'rgb(var(--color-cream) / <alpha-value>)',
+        offwhite: 'rgb(var(--color-offwhite) / <alpha-value>)'
       },
       fontFamily: {
-        display: ['"Rubik"', 'system-ui', 'sans-serif'],
-        body: ['"Rubik"', 'system-ui', 'sans-serif'],
-        accent: ['"Rubik"', 'system-ui', 'sans-serif'],
-        script: ['"Rubik"', 'system-ui', 'sans-serif'],
+        display: ['var(--font-family-display)', 'system-ui', 'sans-serif'],
+        body: ['var(--font-family-body)', 'system-ui', 'sans-serif'],
+        accent: ['var(--font-family-body)', 'system-ui', 'sans-serif'],
+        script: ['var(--font-family-display)', 'system-ui', 'sans-serif'],
         'brand-script': ['"Dancing Script"', 'cursive'],
-        'brand-serif': ['"Rubik"', 'system-ui', 'sans-serif']
+        'brand-serif': ['var(--font-family-display)', 'system-ui', 'sans-serif']
       },
       boxShadow: {
-        glow: '0 24px 80px rgba(220, 88, 1, 0.18)',
-        soft: '0 18px 60px rgba(22, 58, 19, 0.12)'
+        glow: '0 24px 80px rgba(var(--color-gold-400), 0.28)',
+        soft: '0 18px 60px rgba(var(--color-forest-900), 0.14)'
       },
       backgroundImage: {
         'hero-overlay':
-          'linear-gradient(90deg, rgba(10,32,8,0.92) 0%, rgba(10,32,8,0.72) 42%, rgba(10,32,8,0.28) 100%)',
+          'linear-gradient(90deg, rgb(var(--hero-overlay-start) / 0.93) 0%, rgb(var(--hero-overlay-mid) / 0.72) 42%, rgb(var(--hero-overlay-end) / 0.24) 100%)',
         'hero-bottom':
-          'linear-gradient(180deg, rgba(10,32,8,0.04) 0%, rgba(10,32,8,0.76) 100%)'
+          'linear-gradient(180deg, rgb(var(--hero-bottom-start) / 0.08) 0%, rgb(var(--hero-bottom-end) / 0.78) 100%)'
       },
       keyframes: {
         float: {

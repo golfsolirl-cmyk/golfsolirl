@@ -1,28 +1,110 @@
-@import url('https://fonts.bunny.net/css?family=rubik:300,400,500,600,700,800,900|dancing-script:600,700&display=swap');
+@import url('https://fonts.bunny.net/css?family=inter:300,400,500,600,700,800,900|manrope:300,400,500,600,700,800|sora:300,400,500,600,700,800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-forest-950: 5 11 26;
+  --color-forest-900: 13 29 56;
+  --color-forest-800: 19 40 74;
+  --color-forest-700: 25 55 98;
+  --color-forest-600: 33 80 128;
+  --color-forest-500: 45 108 166;
+  --color-forest-100: 220 232 250;
+  --color-forest-50: 241 246 255;
+
+  --color-fairway-700: 31 79 130;
+  --color-fairway-600: 42 103 159;
+  --color-fairway-500: 49 129 188;
+  --color-fairway-400: 74 154 212;
+  --color-fairway-200: 191 220 247;
+  --color-fairway-100: 223 240 255;
+  --color-fairway-50: 243 249 255;
+
+  --color-gold-600: 212 91 56;
+  --color-gold-500: 237 120 80;
+  --color-gold-400: 255 143 91;
+  --color-gold-300: 255 199 166;
+  --color-gold-50: 255 244 237;
+
+  --color-sky-muted: 234 241 255;
+  --color-sky-section: 220 235 255;
+  --color-sky-light: 237 245 255;
+  --color-cream: 243 247 255;
+  --color-offwhite: 248 251 255;
+
+  --hero-overlay-start: 5 11 26;
+  --hero-overlay-mid: 13 29 56;
+  --hero-overlay-end: 22 52 97;
+  --hero-bottom-start: 13 29 56;
+  --hero-bottom-end: 5 11 26;
+
+  --font-family-display: Sora;
+  --font-family-body: Manrope;
+  --type-scale: 1;
+  --heading-weight: 780;
+  --body-weight: 500;
+
+  --button-radius: 999px;
+  --button-padding-x: 1.75rem;
+  --button-padding-y: 0.95rem;
+  --button-shadow: 0 20px 48px rgba(5, 11, 26, 0.24);
+
+  --section-spacing-multiplier: 1;
+  --surface-radius: 28px;
+  --surface-shadow: 0 20px 52px rgba(5, 11, 26, 0.15);
+
+  --wave-amplitude: 42;
+  --wave-curve: 56;
+  --wave-drift: 12;
+  --wave-fill-primary: #ffffff;
+  --wave-fill-secondary: #edf5ff;
+  --wave-fill-dark: #0d1d38;
+
+  --section-home-bg: linear-gradient(130deg, #0d1d38 0%, #13284a 46%, #1b3b69 100%);
+  --section-transfer-showcase-bg: linear-gradient(145deg, #f8fbff 0%, #edf5ff 62%, #fff4ed 100%);
+  --section-trust-bg: linear-gradient(180deg, #ffffff 0%, #f6f9ff 100%);
+  --section-packages-bg: linear-gradient(180deg, #f8fbff 0%, #f0f6ff 100%);
+  --section-costa-bg: linear-gradient(180deg, #f2f7ff 0%, #e8f1ff 100%);
+  --section-momentum-bg: linear-gradient(180deg, #dcebff 0%, #e6f1ff 100%);
+  --section-courses-bg: linear-gradient(180deg, #edf5ff 0%, #f6faff 100%);
+  --section-hotels-bg: linear-gradient(180deg, #f4f8ff 0%, #fdf2ec 100%);
+  --section-transfers-bg: linear-gradient(145deg, #0d1d38 0%, #13284a 45%, #193762 100%);
+  --section-plan-bg: #ffffff;
+  --section-testimonials-bg: #f8fbff;
+  --section-contact-bg: linear-gradient(150deg, #0d1d38 0%, #13284a 55%, #193762 100%);
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
-    font-size: clamp(16.6px, 0.24vw + 15.9px, 18.3px);
+    font-size: clamp(16.4px, 0.22vw + 15.8px, 18.1px);
   }
 
   body {
     @apply bg-offwhite font-body text-forest-900 antialiased;
-    line-height: 1.64;
+    line-height: calc(1.62 * var(--type-scale));
+    font-weight: var(--body-weight);
     text-rendering: optimizeLegibility;
+    letter-spacing: -0.01em;
   }
 
   * {
     @apply border-transparent;
   }
 
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: var(--heading-weight);
+    letter-spacing: -0.025em;
+  }
+
   ::selection {
-    background: rgba(220, 88, 1, 0.28);
-    color: #163a13;
+    background: rgba(var(--color-gold-400), 0.25);
+    color: rgb(var(--color-forest-900));
   }
 }
 
@@ -38,10 +120,17 @@
 @layer components {
   .section-shell {
     @apply relative overflow-hidden px-6 py-20 md:py-28;
+    padding-top: calc(5rem * var(--section-spacing-multiplier));
+    padding-bottom: calc(6.5rem * var(--section-spacing-multiplier));
   }
 
   .section-inner {
     @apply relative z-10 mx-auto max-w-7xl;
+  }
+
+  .surface-card {
+    border-radius: var(--surface-radius);
+    box-shadow: var(--surface-shadow);
   }
 }
 

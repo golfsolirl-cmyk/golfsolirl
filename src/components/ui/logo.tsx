@@ -8,7 +8,7 @@ interface LogoProps {
 }
 
 /** Brand shamrock fill — matches “Why groups trust” and all inline shamrocks site-wide */
-export const shamrockIconColorClassName = 'text-fairway-600'
+export const shamrockIconColorClassName = 'text-fairway-500'
 
 export function ShamrockIcon({ className }: { readonly className?: string }) {
   return (
@@ -38,9 +38,9 @@ export function Logo({ className, size = 'default', tone = 'light' }: LogoProps)
   const isHero = tone === 'hero'
   const isScrolled = tone === 'scrolled'
 
-  const primaryClassName = isHero ? 'text-white' : isScrolled ? 'text-white' : 'text-[#003805]'
-  const secondaryClassName = isHero || isScrolled ? 'text-orange-500' : 'text-orange-900'
-  const taglineClassName = isHero ? 'text-white' : isScrolled ? 'text-white' : 'text-[#4B5563]'
+  const primaryClassName = isHero ? 'text-white' : isScrolled ? 'text-white' : 'text-forest-900'
+  const secondaryClassName = isHero || isScrolled ? 'text-gold-300' : 'text-gold-600'
+  const taglineClassName = isHero ? 'text-white/88' : isScrolled ? 'text-white/88' : 'text-forest-700/80'
   const heroWordmarkStyle = isHero
     ? {
         textShadow: '0 2px 28px rgba(0,0,0,0.35)'
