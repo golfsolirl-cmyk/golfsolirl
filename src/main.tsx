@@ -14,6 +14,7 @@ import { ClientDashboardPage } from './pages/client-dashboard-page'
 import { AdminDashboardPage } from './pages/admin-dashboard-page'
 import { ClientDocumentPage } from './pages/client-document-page'
 import { isFooterArticlePath } from './data/footer-article-pages'
+import { DesignThemeProvider } from './theme/design-theme-provider'
 import './index.css'
 
 function resolvePage() {
@@ -78,7 +79,9 @@ function resolvePage() {
 const ActivePage = resolvePage()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <AuthProvider>
-    <ActivePage />
-  </AuthProvider>
+  <DesignThemeProvider>
+    <AuthProvider>
+      <ActivePage />
+    </AuthProvider>
+  </DesignThemeProvider>
 )

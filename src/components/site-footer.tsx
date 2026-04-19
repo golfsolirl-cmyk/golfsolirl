@@ -27,7 +27,11 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
   const dashboardHref = profile?.role === 'admin' ? '/dashboard/admin' : '/dashboard'
 
   return (
-    <footer ref={footerRef} className="relative overflow-hidden border-t border-white/10 bg-forest-950 px-6 py-10 text-white">
+    <footer
+      ref={footerRef}
+      className="relative overflow-hidden border-t border-white/10 px-6 py-10 text-white"
+      style={{ backgroundColor: 'var(--gsol-section-footer-bg)' }}
+    >
       <AmbientGolfBall className="right-[3%] top-2 opacity-75 xl:right-[6%]" size="sm" tone="footer" />
       <div className="mx-auto flex max-w-7xl flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-md">
