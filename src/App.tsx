@@ -421,16 +421,16 @@ function App() {
             >
               <div className="overflow-hidden rounded-[1.5rem]">
                 <img
-                  alt="Luxury golf resort in Costa del Sol"
+                  alt="Airport transfer Mercedes vehicles waiting near the terminal for meet and greet service"
                   className="h-48 w-full object-cover"
-                  src="https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1200&q=80"
+                  src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=1400&q=80"
                 />
               </div>
               <div className="mt-5">
-                <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">Signature route</p>
-                <h2 className="mt-2 font-display text-[2rem] font-bold leading-tight text-white md:text-[2.2rem]">Marbella to Sotogrande</h2>
+                <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">Airport transfer experience</p>
+                <h2 className="mt-2 font-display text-[2rem] font-bold leading-tight text-white md:text-[2.2rem]">Malaga Airport Meet &amp; Greet</h2>
                 <p className="mt-3 text-[1.02rem] leading-8 text-white">
-                  Championship golf, polished stays, and transfer rhythm designed for Irish golfers who want the trip to feel effortless.
+                  Driver waiting at arrivals, Mercedes transfer vehicle ready outside, and a clean handoff from airport terminal to Costa hotel check-in.
                 </p>
                 <motion.p
                   className="mt-5 max-w-sm font-display text-[2.85rem] font-black leading-[1] tracking-[-0.02em] text-gold-300 md:text-[3.1rem]"
@@ -444,7 +444,7 @@ function App() {
                   viewport={{ once: true }}
                   whileInView={{ opacity: 1, y: 0 }}
                 >
-                  Trade grey skies for golden fairways
+                  Land in Malaga, meet your driver, and glide straight to your hotel
                 </motion.p>
               </div>
               <div className="mt-5 space-y-3">

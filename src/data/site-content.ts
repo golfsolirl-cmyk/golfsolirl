@@ -455,10 +455,10 @@ export const packageFeatureRows = [
 ] as const
 
 export const heroCardHighlights = [
-  'Marbella and Sotogrande itineraries for Irish groups',
-  '3 to 5-star accommodation tiers',
-  'Private and shared transfer options',
-  'Irish-led support before you ever board the flight'
+  'Málaga airport arrivals meet-and-greet support',
+  'Driver waiting with your group name at arrivals',
+  'Golf-bag friendly Mercedes transfer vehicles',
+  'Irish-led routing from airport to hotel check-in'
 ] as const
 
 export const costaMetrics = [
@@ -474,4 +474,4 @@ export const primaryActions = {
 } as const
 
 export const heroBackgroundImage =
-  'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1800&q=80'
+  'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=1800&q=80'
