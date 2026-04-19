@@ -28,9 +28,9 @@ const variantClasses = {
   secondary:
     'bg-[linear-gradient(135deg,rgb(var(--color-fairway-600)),rgb(var(--color-fairway-500)))] text-white shadow-[var(--button-shadow)] hover:-translate-y-0.5 hover:brightness-105',
   outline:
-    'border border-white/40 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 hover:border-white/60 shadow-[0_12px_28px_rgba(5,11,26,0.18)]',
+    'border border-white/55 bg-[#5a2e20] text-white hover:bg-[#7a3f26] hover:border-white/70 shadow-[0_10px_24px_rgba(58,29,22,0.22)]',
   white:
-    'border border-forest-100 bg-white text-forest-900 shadow-[0_12px_30px_rgba(5,11,26,0.12)] hover:bg-forest-50 hover:-translate-y-0.5'
+    'border border-forest-100 bg-white text-forest-900 shadow-[0_10px_24px_rgba(58,29,22,0.14)] hover:bg-forest-50 hover:-translate-y-0.5'
 } as const
 
 function isLinkProps(props: ButtonProps | LinkProps): props is LinkProps {

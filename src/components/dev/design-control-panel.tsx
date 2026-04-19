@@ -101,7 +101,7 @@ export function DesignControlPanel() {
         {isOpen ? (
           <motion.aside
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            className="pointer-events-auto mb-3 w-[min(92vw,360px)] rounded-[1.5rem] border border-forest-100 bg-offwhite/95 p-4 shadow-[0_24px_80px_rgba(5,11,26,0.2)] backdrop-blur-xl"
+            className="pointer-events-auto mb-3 w-[min(92vw,360px)] rounded-[1.5rem] border border-forest-100 bg-offwhite p-4 shadow-[0_24px_80px_rgba(5,11,26,0.2)]"
             exit={{ opacity: 0, y: 10, scale: 0.98 }}
             initial={{ opacity: 0, y: 16, scale: 0.98 }}
             transition={{ duration: 0.18, ease: 'easeOut' }}
@@ -139,7 +139,7 @@ export function DesignControlPanel() {
               ))}
             </div>
 
-            <div className="rounded-2xl border border-forest-100 bg-white/90 p-3">
+            <div className="rounded-2xl border border-forest-100 bg-white p-3">
               <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-forest-900/68">{activeSectionMeta.label}</p>
 
               {activeSection === 'colors' ? (

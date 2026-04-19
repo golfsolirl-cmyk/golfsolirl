@@ -48,12 +48,12 @@ const formatEur = (value: number) =>
   new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value)
 
 const inputClass =
-  'w-full rounded-2xl border-2 border-orange-400 bg-white px-4 py-3 text-sm text-forest-900 placeholder:text-forest-400 outline-none transition-[border-color,box-shadow] focus:border-orange-500 focus:ring-2 focus:ring-orange-300/70'
+  'w-full rounded-2xl border-2 border-orange-400 bg-white px-4 py-3 text-base text-forest-900 placeholder:text-forest-400 outline-none transition-[border-color,box-shadow] focus:border-orange-500 focus:ring-2 focus:ring-orange-300/70'
 
 const labelClass = 'mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-gold-600'
 
 const readOnlyCalcClass =
-  'w-full rounded-2xl border-2 border-forest-200/90 bg-offwhite px-4 py-3 text-sm text-forest-900'
+  'w-full rounded-2xl border-2 border-forest-200/90 bg-offwhite px-4 py-3 text-base text-forest-900'
 
 const readOnlyCalcHintClass = 'mt-1 text-xs text-forest-500'
 
@@ -296,7 +296,7 @@ export function ClientDashboardPage() {
       variant="client"
     >
       {listLoading ? (
-        <p className="text-sm font-medium text-forest-600">Loading your account…</p>
+        <p className="text-base font-medium text-forest-600">Loading your account…</p>
       ) : (
         <div className="space-y-14 md:space-y-16">
           <section>
@@ -304,7 +304,7 @@ export function ClientDashboardPage() {
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Package builds</p>
                 <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Your saved calculator trips</h2>
-                <p className="mt-2 max-w-2xl text-sm text-forest-600">
+                <p className="mt-2 max-w-2xl text-base text-forest-600">
                   Remove builds you don&apos;t need. Use the dropdown to pick a trip and fill in proposal-style details —
                   we save everything you enter to your account.
                 </p>
@@ -315,7 +315,7 @@ export function ClientDashboardPage() {
             </div>
 
             {buildsError ? (
-              <div className="rounded-3xl border border-amber-200/90 bg-amber-50/90 px-6 py-4 text-sm text-amber-950 shadow-soft">
+              <div className="rounded-3xl border border-amber-200/90 bg-amber-50/90 px-6 py-4 text-base text-amber-950 shadow-soft">
                 <p className="font-medium">Could not load saved packages.</p>
                 <p className="mt-2 text-amber-900/85">{buildsError}</p>
                 <p className="mt-2 text-xs text-amber-900/70">
@@ -325,14 +325,14 @@ export function ClientDashboardPage() {
                 </p>
               </div>
             ) : packageBuilds.length === 0 ? (
-              <div className="rounded-[2rem] border border-dashed border-forest-200 bg-offwhite px-6 py-10 text-center text-sm text-forest-900 md:px-10">
+              <div className="rounded-[2rem] border border-dashed border-forest-200 bg-offwhite px-6 py-10 text-center text-base text-forest-900 md:px-10">
                 No saved builds yet — use the live calculator on the packages page and choose &quot;Save to my account&quot;.
               </div>
             ) : (
               <>
                 {removeError ? (
                   <div
-                    className="mb-6 rounded-2xl border-2 border-red-300 bg-red-50/95 px-5 py-4 text-sm text-red-900"
+                    className="mb-6 rounded-2xl border-2 border-red-300 bg-red-50/95 px-5 py-4 text-base text-red-900"
                     role="alert"
                   >
                     <p className="font-semibold">Could not remove package</p>
@@ -369,7 +369,7 @@ export function ClientDashboardPage() {
                             })}
                           </p>
                           {typeof total === 'number' ? (
-                            <p className="mt-2 text-sm font-medium text-forest-700">Group estimate {formatEur(total)}</p>
+                            <p className="mt-2 text-base font-medium text-forest-700">Group estimate {formatEur(total)}</p>
                           ) : null}
                         </div>
                         <div className="flex flex-wrap items-center gap-3">
@@ -397,7 +397,7 @@ export function ClientDashboardPage() {
                   <h3 className="font-display mt-2 text-xl font-semibold text-forest-950 md:text-2xl">
                     Proposal-style information (saved to your account)
                   </h3>
-                  <p className="mt-2 max-w-2xl text-sm text-forest-600">
+                  <p className="mt-2 max-w-2xl text-base text-forest-600">
                     Package, stay, group size, nights, rounds, and pricing come from your saved calculator — those are read-only
                     here. Everything else you can edit and save; Golf Sol Ireland can adjust calculator fields if needed.
                   </p>
@@ -440,7 +440,7 @@ export function ClientDashboardPage() {
                                 {section.title}
                               </h4>
                               {section.title === 'Trip shape' ? (
-                                <p className="text-sm font-medium text-forest-700">
+                                <p className="text-base font-medium text-forest-700">
                                   Trip shape: {tripForm.nights.trim() || '0'} nights / {tripForm.rounds.trim() || '0'} rounds
                                   <span className="ml-2 font-normal text-forest-500">(from calculator — read-only)</span>
                                 </p>
@@ -519,7 +519,7 @@ export function ClientDashboardPage() {
                         {detailsMessage ? (
                           <p
                             className={cx(
-                              'text-sm font-medium',
+                              'text-base font-medium',
                               detailsStatus === 'error' ? 'text-red-700' : 'text-forest-800'
                             )}
                             role={detailsStatus === 'error' ? 'alert' : 'status'}
@@ -529,7 +529,7 @@ export function ClientDashboardPage() {
                         ) : null}
                       </>
                     ) : (
-                      <p className="mt-4 text-sm text-forest-600">Select a trip above to edit and save details.</p>
+                      <p className="mt-4 text-base text-forest-600">Select a trip above to edit and save details.</p>
                     )}
                   </form>
                 </div>
@@ -542,7 +542,7 @@ export function ClientDashboardPage() {
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Proposals</p>
                 <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Documents from Golf Sol Ireland</h2>
-                <p className="mt-2 max-w-2xl text-sm text-forest-600">
+                <p className="mt-2 max-w-2xl text-base text-forest-600">
                   Formal proposals we send appear below with a PDF download. Terms and thank-you pages only show here after
                   Golf Sol Ireland enables them for your account.
                 </p>
@@ -553,7 +553,7 @@ export function ClientDashboardPage() {
               <div className="mb-8 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Your PDF library</p>
                 <h3 className="font-display mt-2 text-lg font-semibold text-forest-950">Terms and thank-you</h3>
-                <p className="mt-2 max-w-xl text-sm text-forest-600">
+                <p className="mt-2 max-w-xl text-base text-forest-600">
                   Open a page, then use <strong className="font-medium text-forest-800">Save PDF</strong> for a print-ready copy
                   with the same header and footer as our main website.
                 </p>
@@ -573,7 +573,7 @@ export function ClientDashboardPage() {
             ) : null}
 
             {proposalsError ? (
-              <div className="rounded-3xl border border-red-200/80 bg-red-50/90 px-6 py-4 text-sm text-red-900 shadow-soft">
+              <div className="rounded-3xl border border-red-200/80 bg-red-50/90 px-6 py-4 text-base text-red-900 shadow-soft">
                 {proposalsError}
               </div>
             ) : proposals.length === 0 ? (

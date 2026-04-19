@@ -103,87 +103,87 @@ type ThemeContextValue = {
 const defaultTheme: DesignThemeConfig = {
   palette: {
     forest: {
-      950: '#050b1a',
-      900: '#0d1d38',
-      800: '#13284a',
-      700: '#193762',
-      600: '#215080',
-      500: '#2d6ca6',
-      100: '#dce8fa',
-      50: '#f1f6ff'
+      950: '#26120e',
+      900: '#3a1d16',
+      800: '#5a2e20',
+      700: '#7a3f26',
+      600: '#a04f2c',
+      500: '#c86434',
+      100: '#eadccf',
+      50: '#f8efe7'
     },
     fairway: {
-      700: '#1f4f82',
-      600: '#2a679f',
-      500: '#3181bc',
-      400: '#4a9ad4',
-      200: '#bfdcf7',
-      100: '#dff0ff',
-      50: '#f3f9ff'
+      700: '#3b341f',
+      600: '#544a2a',
+      500: '#6d5d35',
+      400: '#917944',
+      200: '#d8c79a',
+      100: '#ede2c5',
+      50: '#f8f2df'
     },
     gold: {
-      600: '#d45b38',
-      500: '#ed7850',
-      400: '#ff8f5b',
-      300: '#ffc7a6',
-      50: '#fff4ed'
+      600: '#be3f2c',
+      500: '#d94a32',
+      400: '#ef5b3c',
+      300: '#f7b167',
+      50: '#fff2de'
     },
     sky: {
-      muted: '#eaf1ff',
-      section: '#dcebff',
-      light: '#edf5ff'
+      muted: '#f6eddc',
+      section: '#f1e4cd',
+      light: '#fbf4e7'
     },
     neutral: {
-      cream: '#f3f7ff',
-      offwhite: '#f8fbff'
+      cream: '#f3ede0',
+      offwhite: '#f7f2ea'
     },
     heroOverlay: {
-      start: '#050b1a',
-      mid: '#0d1d38',
-      end: '#163461',
-      bottomStart: '#0d1d38',
-      bottomEnd: '#050b1a'
+      start: '#26120e',
+      mid: '#3a1d16',
+      end: '#7a3f26',
+      bottomStart: '#3a1d16',
+      bottomEnd: '#26120e'
     }
   },
   sections: {
-    home: 'linear-gradient(130deg, #0d1d38 0%, #13284a 46%, #1b3b69 100%)',
-    'transfer-showcase': 'linear-gradient(145deg, #f8fbff 0%, #edf5ff 62%, #fff4ed 100%)',
-    trust: 'linear-gradient(180deg, #ffffff 0%, #f6f9ff 100%)',
-    packages: 'linear-gradient(180deg, #f8fbff 0%, #f0f6ff 100%)',
-    costa: 'linear-gradient(180deg, #f2f7ff 0%, #e8f1ff 100%)',
-    momentum: 'linear-gradient(180deg, #dcebff 0%, #e6f1ff 100%)',
-    courses: 'linear-gradient(180deg, #edf5ff 0%, #f6faff 100%)',
-    hotels: 'linear-gradient(180deg, #f4f8ff 0%, #fdf2ec 100%)',
-    transfers: 'linear-gradient(145deg, #0d1d38 0%, #13284a 45%, #193762 100%)',
-    plan: '#ffffff',
-    testimonials: '#f8fbff',
-    contact: 'linear-gradient(150deg, #0d1d38 0%, #13284a 55%, #193762 100%)'
+    home: 'linear-gradient(130deg, #f5efdf 0%, #f3e5c8 56%, #f0d7b0 100%)',
+    'transfer-showcase': 'linear-gradient(145deg, #f9f2e2 0%, #f4e5c7 62%, #f9dfbf 100%)',
+    trust: 'linear-gradient(180deg, #f7f2ea 0%, #f2e9d8 100%)',
+    packages: 'linear-gradient(180deg, #f8f2e7 0%, #f5ead5 100%)',
+    costa: 'linear-gradient(180deg, #f4e9d4 0%, #f1e0bf 100%)',
+    momentum: 'linear-gradient(180deg, #f3ddbc 0%, #efd2a8 100%)',
+    courses: 'linear-gradient(180deg, #f6ecd8 0%, #f2e2c4 100%)',
+    hotels: 'linear-gradient(180deg, #f4e7cf 0%, #f0ddba 100%)',
+    transfers: 'linear-gradient(145deg, #3a1d16 0%, #5a2e20 45%, #7a3f26 100%)',
+    plan: '#f7f2ea',
+    testimonials: '#f5ecdd',
+    contact: 'linear-gradient(150deg, #3a1d16 0%, #5a2e20 55%, #7a3f26 100%)'
   },
   typography: {
     fontFamilyDisplay: 'Sora',
-    fontFamilyBody: 'Manrope',
-    scale: 1,
-    headingWeight: 780,
+    fontFamilyBody: 'Inter',
+    scale: 1.04,
+    headingWeight: 800,
     bodyWeight: 500
   },
   buttons: {
-    radius: 999,
-    paddingX: 1.75,
-    paddingY: 0.95,
-    shadowOpacity: 0.24
+    radius: 26,
+    paddingX: 2,
+    paddingY: 1.05,
+    shadowOpacity: 0.2
   },
   density: {
-    sectionSpacing: 1,
-    cardRadius: 1,
-    surfaceShadowOpacity: 0.15
+    sectionSpacing: 1.08,
+    cardRadius: 1.16,
+    surfaceShadowOpacity: 0.18
   },
   dividers: {
-    amplitude: 42,
-    curve: 56,
+    amplitude: 44,
+    curve: 58,
     drift: 12,
-    fillPrimary: '#ffffff',
-    fillSecondary: '#edf5ff',
-    fillDark: '#0d1d38'
+    fillPrimary: '#f7f2ea',
+    fillSecondary: '#f1e4cd',
+    fillDark: '#5a2e20'
   }
 }
 
@@ -195,90 +195,90 @@ const randomPalettes: readonly ThemePalette[] = [
   defaultTheme.palette,
   {
     forest: {
-      950: '#121021',
-      900: '#1f1a37',
-      800: '#2b2350',
-      700: '#3c2f6f',
-      600: '#56459a',
-      500: '#6e5fc1',
-      100: '#e8e2ff',
-      50: '#f6f4ff'
+      950: '#25140f',
+      900: '#3a2118',
+      800: '#542d1f',
+      700: '#7a3f25',
+      600: '#9f542d',
+      500: '#c96b33',
+      100: '#ecdcc7',
+      50: '#faefe2'
     },
     fairway: {
-      700: '#2c3f93',
-      600: '#3a52b4',
-      500: '#4d66d8',
-      400: '#667ef2',
-      200: '#cad6ff',
-      100: '#e5ecff',
-      50: '#f5f8ff'
+      700: '#383521',
+      600: '#4e482c',
+      500: '#685e35',
+      400: '#8a7a45',
+      200: '#d7c79f',
+      100: '#efe3c7',
+      50: '#faf3e4'
     },
     gold: {
-      600: '#c15a75',
-      500: '#d86f8c',
-      400: '#f887a6',
-      300: '#ffc2d3',
-      50: '#fff2f7'
+      600: '#b93f2b',
+      500: '#d24d32',
+      400: '#ea6140',
+      300: '#f5b66f',
+      50: '#fff3df'
     },
     sky: {
-      muted: '#f1eeff',
-      section: '#e7e1ff',
-      light: '#f5f2ff'
+      muted: '#f7ecd8',
+      section: '#f1e2c4',
+      light: '#fbf2e1'
     },
     neutral: {
-      cream: '#f8f5ff',
-      offwhite: '#fcfaff'
+      cream: '#f5ecda',
+      offwhite: '#fbf3e4'
     },
     heroOverlay: {
-      start: '#121021',
-      mid: '#1f1a37',
-      end: '#3c2f6f',
-      bottomStart: '#1f1a37',
-      bottomEnd: '#121021'
+      start: '#25140f',
+      mid: '#3a2118',
+      end: '#7a3f25',
+      bottomStart: '#3a2118',
+      bottomEnd: '#25140f'
     }
   },
   {
     forest: {
-      950: '#102227',
-      900: '#17333a',
-      800: '#1d444d',
-      700: '#285b65',
-      600: '#357882',
-      500: '#4497a2',
-      100: '#d8edf1',
-      50: '#eef7f9'
+      950: '#2a1511',
+      900: '#40231a',
+      800: '#5e3322',
+      700: '#824629',
+      600: '#a95b30',
+      500: '#d17333',
+      100: '#efdcc5',
+      50: '#fbf0e1'
     },
     fairway: {
-      700: '#1f6670',
-      600: '#2b7f89',
-      500: '#399ba6',
-      400: '#4eb6c2',
-      200: '#bde7ed',
-      100: '#ddf4f7',
-      50: '#f0fbfc'
+      700: '#36341f',
+      600: '#4e4729',
+      500: '#685d33',
+      400: '#887643',
+      200: '#d7c49a',
+      100: '#efe1c2',
+      50: '#fbf2e1'
     },
     gold: {
-      600: '#d1692f',
-      500: '#eb7f3f',
-      400: '#ff9854',
-      300: '#ffcfad',
-      50: '#fff5ec'
+      600: '#bd402a',
+      500: '#d85031',
+      400: '#ef6840',
+      300: '#f8b66d',
+      50: '#fff4df'
     },
     sky: {
-      muted: '#e8f8fb',
-      section: '#d9f0f6',
-      light: '#ecf9fc'
+      muted: '#f8ecd6',
+      section: '#f4e3c2',
+      light: '#fcf2df'
     },
     neutral: {
-      cream: '#f3fbfc',
-      offwhite: '#f8fcfd'
+      cream: '#f6ecd9',
+      offwhite: '#fcf3e3'
     },
     heroOverlay: {
-      start: '#102227',
-      mid: '#17333a',
-      end: '#285b65',
-      bottomStart: '#17333a',
-      bottomEnd: '#102227'
+      start: '#2a1511',
+      mid: '#40231a',
+      end: '#824629',
+      bottomStart: '#40231a',
+      bottomEnd: '#2a1511'
     }
   }
 ]
@@ -443,8 +443,8 @@ export function ThemeProvider({ children }: { readonly children: ReactNode }) {
 
       const withRandomizedSections: Record<SectionThemeKey, string> = {
         ...withPalette.sections,
-        home: `linear-gradient(130deg, ${palette.forest[900]} 0%, ${palette.forest[800]} 50%, ${palette.forest[700]} 100%)`,
-        'transfer-showcase': `linear-gradient(145deg, ${palette.neutral.offwhite} 0%, ${palette.sky.light} 60%, ${palette.gold[50]} 100%)`,
+        home: `linear-gradient(130deg, ${palette.neutral.offwhite} 0%, ${palette.sky.light} 54%, ${palette.gold[50]} 100%)`,
+        'transfer-showcase': `linear-gradient(145deg, ${palette.neutral.offwhite} 0%, ${palette.sky.section} 60%, ${palette.gold[50]} 100%)`,
         transfers: `linear-gradient(145deg, ${palette.forest[900]} 0%, ${palette.forest[800]} 45%, ${palette.forest[700]} 100%)`,
         contact: `linear-gradient(145deg, ${palette.forest[900]} 0%, ${palette.forest[800]} 45%, ${palette.forest[700]} 100%)`
       }

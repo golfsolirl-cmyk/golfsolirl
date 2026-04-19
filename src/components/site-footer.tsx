@@ -60,10 +60,10 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
                 const Icon = footerSocialIconMap[label]
 
                 return (
-                  <a
+                <a
                     key={label}
                     aria-label={`Visit our ${label} page`}
-                    className="group inline-flex h-12 w-12 items-center justify-center rounded-full border border-gold-300/30 bg-white/5 text-gold-300 transition-all duration-300 hover:-translate-y-0.5 hover:border-gold-300/70 hover:bg-gold-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-300 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                    className="group inline-flex h-12 w-12 items-center justify-center rounded-full border border-gold-300/30 bg-[#7a3f26] text-gold-300 transition-all duration-300 hover:-translate-y-0.5 hover:border-gold-300/70 hover:bg-gold-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-300 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
                     href={href}
                     rel="noreferrer"
                     target="_blank"

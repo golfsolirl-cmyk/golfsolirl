@@ -358,16 +358,16 @@ function App() {
               </motion.p>
 
               <motion.div
-                className="mt-7 max-w-2xl rounded-[1.8rem] border border-gold-300/35 bg-[linear-gradient(135deg,rgba(13,29,56,0.74),rgba(19,40,74,0.88),rgba(255,143,91,0.18))] p-[1px] shadow-[0_20px_60px_rgba(5,11,26,0.32)]"
+                className="mt-7 max-w-2xl rounded-[1.8rem] border border-gold-300/55 bg-[linear-gradient(135deg,rgba(58,29,22,0.96),rgba(90,46,32,0.98),rgba(160,79,44,0.92))] p-[1px] shadow-[0_20px_48px_rgba(58,29,22,0.28)]"
                 initial={{ opacity: 0, y: 30 }}
                 transition={{ delay: 0.5, duration: 0.7 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                <div className="rounded-[1.72rem] bg-forest-950/92 px-5 py-5 backdrop-blur-md md:px-6">
+                <div className="rounded-[1.72rem] bg-forest-950 px-6 py-6 md:px-7">
                   <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                     <div className="max-w-xl">
-                      <p className="text-sm font-semibold uppercase tracking-[0.24em] text-gold-300">Payments handled properly</p>
+                      <p className="text-base font-semibold uppercase tracking-[0.24em] text-gold-300">Payments handled properly</p>
                       <p className="mt-3 text-[1.12rem] font-semibold leading-8 text-white md:text-[1.2rem]">
                         All customer payments are made in Ireland{' '}
                         <span className="text-gold-300">directly to Golf Sol Ireland</span> — not to a Spanish middleman, not to a mystery operator, and not offshore.
@@ -376,7 +376,7 @@ function App() {
                         It keeps the booking cleaner, more familiar, and easier to trust from the first deposit onwards.
                       </p>
                     </div>
-                    <div className="inline-flex min-h-12 items-center gap-3 self-start rounded-full border border-white/20 bg-white/8 px-4 py-2.5 text-sm font-semibold text-white">
+                    <div className="inline-flex min-h-12 items-center gap-3 self-start rounded-full border border-white/30 bg-forest-700 px-4 py-2.5 text-base font-semibold text-white">
                       <CreditCard className="h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
                       <span>Ireland-based payment flow</span>
                     </div>
@@ -413,7 +413,7 @@ function App() {
             </motion.div>
 
             <motion.aside
-              className="relative hidden max-w-md justify-self-end rounded-[2rem] border border-white/20 bg-forest-950/75 p-6 shadow-2xl backdrop-blur-md md:block"
+              className="relative hidden max-w-md justify-self-end rounded-[2rem] border border-white/25 bg-forest-950 p-7 shadow-[0_22px_50px_rgba(58,29,22,0.34)] md:block"
               initial={{ opacity: 0, y: 24 }}
               transition={{ delay: 0.25, duration: 0.8 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -427,7 +427,7 @@ function App() {
                 />
               </div>
               <div className="mt-5">
-                <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">Airport transfer experience</p>
+                <p className="text-base font-semibold uppercase tracking-[0.14em] text-gold-300">Airport transfer experience</p>
                 <h2 className="mt-2 font-display text-[2rem] font-bold leading-tight text-white md:text-[2.2rem]">Malaga Airport Meet &amp; Greet</h2>
                 <p className="mt-3 text-[1.02rem] leading-8 text-white">
                   Driver waiting at arrivals, Mercedes transfer vehicle ready outside, and a clean handoff from airport terminal to Costa hotel check-in.
@@ -455,7 +455,7 @@ function App() {
                   </div>
                 ))}
               </div>
-              <div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-white/20 pt-4 text-sm">
+              <div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-white/20 pt-4 text-base">
                 <span className="text-white">Irish-owned planning</span>
                 <span className="text-gold-300">Luxury, not generic</span>
               </div>
@@ -482,11 +482,11 @@ function App() {
               <div className="grid gap-8 xl:grid-cols-[1.05fr_0.95fr] xl:items-center">
                 <div>
                   <div className="flex flex-wrap items-center gap-3">
-                    <span className="inline-flex items-center gap-2 rounded-full border border-forest-900 bg-forest-950 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-white shadow-[0_14px_30px_rgba(10,32,8,0.14)]">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-forest-900 bg-forest-950 px-4 py-2 text-base font-semibold uppercase tracking-[0.2em] text-white shadow-[0_14px_30px_rgba(10,32,8,0.14)]">
                       <span className="h-2 w-2 rounded-full bg-gold-300" />
                       Irish driver transfer service
                     </span>
-                    <span className="rounded-full border border-gold-300/45 bg-gold-50 px-4 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-gold-700">
+                    <span className="rounded-full border border-gold-300/45 bg-gold-50 px-4 py-2 text-base font-semibold uppercase tracking-[0.14em] text-gold-700">
                       Airport, hotel, and golf-course lines covered
                     </span>
                   </div>
@@ -510,7 +510,7 @@ function App() {
                             <p className="font-display text-[1.35rem] font-black uppercase tracking-[-0.03em] text-white">Mercedes Fleet</p>
                           </div>
                         </div>
-                        <div className="inline-flex items-center gap-2 self-start rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-white">
+                        <div className="inline-flex items-center gap-2 self-start rounded-full border border-white/20 bg-[#8f4d2d] px-4 py-2 text-base font-semibold uppercase tracking-[0.14em] text-white">
                           <span className="h-2 w-2 shrink-0 rounded-full bg-gold-300" />
                           Branded transfer service
                         </div>
@@ -524,7 +524,7 @@ function App() {
                         ].map((item) => (
                           <span
                             key={item}
-                            className="inline-flex min-h-11 items-center rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white"
+                            className="inline-flex min-h-11 items-center rounded-full border border-white/20 bg-[#8f4d2d] px-4 py-2 text-base font-semibold text-white"
                           >
                             {item}
                           </span>
@@ -535,7 +535,7 @@ function App() {
 
                   <div className="mt-6 grid gap-3 sm:grid-cols-3">
                     {transferServiceMoments.map(({ title, description, icon: Icon }) => (
-                      <div key={title} className="rounded-[1.6rem] border border-forest-100 bg-white/88 p-4 shadow-sm">
+                      <div key={title} className="surface-card rounded-[1.6rem] border border-forest-100 bg-white p-4 shadow-sm">
                         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-forest-950 text-gold-300">
                           <Icon className="h-5 w-5" aria-hidden="true" />
                         </div>
@@ -557,11 +557,11 @@ function App() {
                       />
                     </div>
 
-                    <div className="mt-5 space-y-5 rounded-[1.5rem] border border-white/10 bg-white/6 p-5 backdrop-blur-sm md:p-6">
+                    <div className="mt-5 space-y-5 rounded-[1.5rem] border border-white/10 bg-[#8f4d2d] p-5 md:p-6">
                       <div className="rounded-[1.45rem] border border-white/12 bg-[linear-gradient(135deg,#ffffff_0%,#f3f8ff_100%)] p-5 text-forest-950 shadow-[0_18px_40px_rgba(0,0,0,0.2)] md:p-6">
                         <div className="flex flex-wrap items-start justify-between gap-3 gap-y-2">
-                          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-700">Golf Sol Ireland transfer branding</p>
-                          <span className="shrink-0 rounded-full border border-forest-900 bg-forest-950 px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.16em] text-white sm:px-5">
+                          <p className="text-base font-semibold uppercase tracking-[0.2em] text-gold-700">Golf Sol Ireland transfer branding</p>
+                          <span className="shrink-0 rounded-full border border-forest-900 bg-forest-950 px-4 py-2.5 text-base font-semibold uppercase tracking-[0.16em] text-white sm:px-5">
                             Mercedes fleet spec
                           </span>
                         </div>
@@ -575,7 +575,7 @@ function App() {
                               </div>
                             </div>
                             <div className="min-w-0 rounded-xl bg-forest-950 px-5 py-6 text-left sm:rounded-none sm:border-l-[3px] sm:border-gold-400/90 sm:px-8 sm:py-7 sm:pl-7">
-                              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-gold-300 sm:text-[0.8rem] sm:tracking-[0.2em]">
+                              <p className="text-base font-semibold uppercase tracking-[0.16em] text-gold-300 sm:text-[0.8rem] sm:tracking-[0.2em]">
                                 Mercedes fleet
                               </p>
                               <p className="mt-3 text-base font-semibold leading-8 text-white sm:mt-4 sm:text-base sm:leading-8">
@@ -587,13 +587,13 @@ function App() {
                       </div>
 
                       <div className="flex flex-wrap gap-3 md:gap-4">
-                        <span className="rounded-full border border-gold-300/35 bg-gold-400/12 px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.18em] text-gold-200 md:px-5">
+                        <span className="rounded-full border border-gold-300/35 bg-gold-400/12 px-4 py-2.5 text-base font-semibold uppercase tracking-[0.18em] text-gold-200 md:px-5">
                           Mercedes van service
                         </span>
-                        <span className="rounded-full border border-white/10 bg-white/8 px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.18em] text-white/88 md:px-5">
+                        <span className="rounded-full border border-white/10 bg-[#7a3f26] px-4 py-2.5 text-base font-semibold uppercase tracking-[0.18em] text-white/88 md:px-5">
                           Golf bag and luggage ready
                         </span>
-                        <span className="rounded-full border border-white/10 bg-white/8 px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.18em] text-white/88 md:px-5">
+                        <span className="rounded-full border border-white/10 bg-[#7a3f26] px-4 py-2.5 text-base font-semibold uppercase tracking-[0.18em] text-white/88 md:px-5">
                           Irish-driver coordinated
                         </span>
                       </div>
@@ -625,7 +625,7 @@ function App() {
             >
               <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.16em] text-gold-500">Departing from Ireland</p>
+                  <p className="text-base font-semibold uppercase tracking-[0.16em] text-gold-500">Departing from Ireland</p>
                   <h2 className="mt-3 max-w-2xl font-display text-3xl font-bold leading-tight text-forest-900 md:text-4xl">
                     Quick package start for Irish golfers heading to the Costa del Sol
                   </h2>
@@ -634,7 +634,7 @@ function App() {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-3 rounded-full border border-gold-300/35 bg-white/80 px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.14em] text-forest-900/72">
+                <div className="flex items-center gap-3 rounded-full border border-gold-300/40 bg-[#f8efe0] px-4 py-2.5 text-base font-semibold uppercase tracking-[0.14em] text-forest-900/72">
                   <span className="h-2 w-2 rounded-full bg-fairway-500" />
                   <span>Quick calculator</span>
                 </div>
@@ -688,14 +688,14 @@ function App() {
 
                   <div className="mt-5 rounded-[1.6rem] border border-white/80 bg-white p-5 shadow-sm">
                     <p className="text-base font-semibold text-forest-900">Choose a golf course & hotel</p>
-                    <p className="mt-1 text-sm text-forest-900/56">
+                    <p className="mt-1 text-base text-forest-900/56">
                       Optional — tap a course on the map, filter by hotel stars, then pick a nearby stay. Selections carry through to the package page and
                       can align your stay tier with the hotel you chose.
                     </p>
                     <div className="mt-4">
                       <Suspense
                         fallback={
-                          <div className="flex h-[400px] items-center justify-center rounded-[0.625rem] border border-forest-200 bg-offwhite text-sm text-forest-600">
+                          <div className="flex h-[400px] items-center justify-center rounded-[0.625rem] border border-forest-200 bg-offwhite text-base text-forest-600">
                             Loading map…
                           </div>
                         }
@@ -711,7 +711,7 @@ function App() {
                 </motion.div>
 
                 <motion.div
-                  className="surface-card rounded-[1.75rem] border border-forest-100 bg-white/88 p-5 shadow-sm backdrop-blur-sm"
+                  className="surface-card rounded-[1.75rem] border border-forest-100 bg-white p-6 shadow-sm"
                   initial={{ opacity: 0, y: 18 }}
                   transition={{ delay: 0.08, duration: 0.5, ease: 'easeOut' }}
                   viewport={{ once: true, amount: 'some' }}
@@ -722,8 +722,8 @@ function App() {
                       <Bus className="h-5 w-5" aria-hidden="true" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-forest-900">Transfer style</p>
-                      <p className="text-sm leading-relaxed text-forest-900/60">
+                      <p className="text-base font-semibold text-forest-900">Transfer style</p>
+                      <p className="text-base leading-relaxed text-forest-900/60">
                         Choose the level of transport support that suits the trip
                       </p>
                     </div>
@@ -745,8 +745,8 @@ function App() {
                           onClick={() => setQuickTransfer(option.value)}
                           type="button"
                         >
-                          <p className="text-sm font-semibold">{option.label}</p>
-                          <p className={cx('mt-1 text-sm leading-relaxed', isActive ? 'text-white' : 'text-forest-900/62')}>
+                          <p className="text-base font-semibold">{option.label}</p>
+                          <p className={cx('mt-1 text-base leading-relaxed', isActive ? 'text-white' : 'text-forest-900/62')}>
                             {option.description}
                           </p>
                         </button>
@@ -758,11 +758,11 @@ function App() {
                     <LuxuryButton href={quickPackagesHref} showArrow>
                       Open full package page
                     </LuxuryButton>
-                    <div className="rounded-full border border-forest-100 bg-offwhite px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-forest-900/68">
+                    <div className="rounded-full border border-forest-100 bg-offwhite px-4 py-2.5 text-base font-semibold uppercase tracking-[0.12em] text-forest-900/68">
                       {quickGroupSize} golfers • {quickNights} nights • {quickRounds} rounds
                     </div>
                   </div>
-                  <p className="mt-4 text-sm leading-relaxed text-forest-900/62">
+                  <p className="mt-4 text-base leading-relaxed text-forest-900/62">
                     Continue on the packages page to save this build to your account (magic-link sign-in) or open a printable proposal for your group.
                   </p>
                 </motion.div>
@@ -786,7 +786,7 @@ function App() {
             >
               <div className="flex justify-center">
                 <h2 className="flex flex-col items-center gap-1 text-center">
-                  <span className="text-sm font-semibold uppercase tracking-[0.28em] text-gold-500">
+                  <span className="text-base font-semibold uppercase tracking-[0.28em] text-gold-500">
                     Why groups trust
                   </span>
                   <span className="flex flex-wrap items-center justify-center gap-2 leading-none">
@@ -818,7 +818,7 @@ function App() {
               <div className="relative z-10 grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10">
                 <div>
                   <motion.div
-                    className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.12em]"
+                    className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-base font-semibold uppercase tracking-[0.12em]"
                     initial={{ opacity: 0, x: -16, scale: 0.96 }}
                     transition={{
                       opacity: { delay: 0.08, duration: 0.5, ease: 'easeOut' },
@@ -886,7 +886,7 @@ function App() {
                   </motion.p>
 
                   <motion.div
-                    className="mt-6 rounded-[2rem] border border-forest-100 bg-white/90 p-5 shadow-sm"
+                    className="surface-card mt-6 rounded-[2rem] border border-forest-100 bg-[#f8efe0] p-7 shadow-sm"
                     initial={{ opacity: 0, y: 20 }}
                     transition={{ delay: 0.28, duration: 0.6, ease: 'easeOut' }}
                     viewport={{ once: true }}
@@ -898,7 +898,7 @@ function App() {
                         <p className="text-base leading-relaxed text-forest-900/82 md:text-lg">
                           For Irish golfers who want every detail to feel considered, every transfer to make sense, and every round to land exactly where it should.
                         </p>
-                        <p className="mt-3 text-sm font-semibold uppercase tracking-[0.12em] text-forest-900/62">Smarter planning. Better golf. Zero noise.</p>
+                        <p className="mt-3 text-base font-semibold uppercase tracking-[0.12em] text-forest-900/62">Smarter planning. Better golf. Zero noise.</p>
                       </div>
                     </div>
                   </motion.div>
@@ -911,9 +911,9 @@ function App() {
                     whileInView={{ opacity: 1, y: 0 }}
                   >
                     {heroStats.map((item) => (
-                      <div key={item.label} className="rounded-[1.75rem] border border-forest-100 bg-white/80 p-4 shadow-sm">
+                      <div key={item.label} className="surface-card rounded-[1.75rem] border border-forest-100 bg-[#f8efe0] p-5 shadow-sm">
                         <p className="font-display text-3xl font-bold text-gold-300">{item.value}</p>
-                        <p className="mt-2 text-sm leading-7 text-forest-900/62">{item.label}</p>
+                        <p className="mt-2 text-base leading-7 text-forest-900/62">{item.label}</p>
                       </div>
                     ))}
                   </motion.div>
@@ -923,7 +923,7 @@ function App() {
                   {trustSignals.map(({ title, description, icon: Icon }, index) => (
                     <motion.article
                       key={title}
-                      className="group rounded-[2rem] border border-forest-100 bg-white/85 p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+                      className="surface-card group rounded-[2rem] border border-forest-100 bg-[#f8efe0] p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
                       initial={{ opacity: 0, x: 18 }}
                       transition={{ delay: 0.12 * index, duration: 0.55, ease: 'easeOut' }}
                       viewport={{ once: true, amount: 0.25 }}
@@ -935,7 +935,7 @@ function App() {
                         </div>
                         <div>
                           <h3 className="text-base font-semibold text-forest-900">{title}</h3>
-                          <p className="mt-2 text-sm leading-relaxed text-forest-900/62">{description}</p>
+                          <p className="mt-2 text-base leading-relaxed text-forest-900/62">{description}</p>
                         </div>
                       </div>
                     </motion.article>
@@ -955,7 +955,7 @@ function App() {
                     {trustMarkers.map((marker) => (
                       <div
                         key={marker}
-                        className="inline-flex items-center gap-2 rounded-full border border-forest-100 bg-white/80 px-4 py-2.5 text-sm font-medium text-forest-900/74"
+                        className="surface-card inline-flex items-center gap-2 rounded-full border border-forest-100 bg-[#f8efe0] px-4 py-2.5 text-base font-medium text-forest-900/74"
                       >
                         <CheckCircle2 className="h-4 w-4 text-gold-300" aria-hidden="true" />
                         <span>{marker}</span>
@@ -966,7 +966,7 @@ function App() {
                   <div className="flex flex-wrap gap-3">
                     <LuxuryButton href="/packages">See What Is Included</LuxuryButton>
                     <LuxuryButton
-                      className="border border-gold-300/40 bg-white text-forest-900 shadow-sm hover:-translate-y-0.5 hover:border-gold-400 hover:bg-gold-50"
+                      className="border border-gold-300/50 bg-[#f8efe0] text-forest-900 shadow-sm hover:-translate-y-0.5 hover:border-gold-400 hover:bg-[#f3e3c8]"
                       href="#testimonials"
                       showArrow
                       variant="white"
@@ -1057,9 +1057,9 @@ function App() {
                     className="h-52 w-full object-cover transition-transform duration-500 hover:scale-105"
                     src="https://images.unsplash.com/photo-1573843981267-be1999ff37cd?auto=format&fit=crop&w=1200&q=80"
                   />
-                  <div className="absolute bottom-4 right-4 rounded-[1.5rem] border border-white/10 bg-forest-900/85 px-4 py-3 text-white shadow-soft backdrop-blur-md">
+                  <div className="absolute bottom-4 right-4 rounded-[1.5rem] border border-white/10 bg-forest-900 px-4 py-3 text-white shadow-soft">
                     <p className="font-display text-2xl font-bold text-gold-400">70+</p>
-                    <p className="text-sm text-white/74">Courses across the coast</p>
+                    <p className="text-base text-white/74">Courses across the coast</p>
                   </div>
                 </div>
               </div>
@@ -1074,7 +1074,7 @@ function App() {
 
               <motion.div className="grid gap-4 sm:grid-cols-3" {...revealUp}>
                 {costaMetrics.map((metric) => (
-                  <div key={metric.label} className="rounded-[2rem] border border-white/60 bg-white/70 p-5 backdrop-blur-sm">
+                  <div key={metric.label} className="surface-card rounded-[2rem] border border-white/60 bg-white p-5">
                     <p className="font-display text-3xl font-bold text-forest-900">{metric.value}</p>
                     <p className="mt-2 text-[1.02rem] leading-8 text-forest-900/68">{metric.label}</p>
                   </div>
@@ -1148,7 +1148,7 @@ function App() {
                     key={String(tier)}
                     aria-label={`Filter accommodation by ${label}`}
                     className={cx(
-                      'rounded-full border px-5 py-2 text-sm font-medium transition-all',
+                      'rounded-full border px-5 py-2 text-base font-medium transition-all',
                       isActive
                         ? 'border-forest-900 bg-forest-900 text-white shadow-md'
                         : 'border-forest-200 bg-white text-forest-700 hover:border-forest-400'
@@ -1187,17 +1187,17 @@ function App() {
               />
 
               <motion.div className="space-y-4" {...revealUp}>
-                <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-sm">
-                  <p className="mb-2 text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">From enquiry to confirmed itinerary</p>
-                  <div className="mb-4 max-w-lg rounded-[1.4rem] border border-gold-300/18 bg-[linear-gradient(135deg,rgba(255,255,255,0.12),rgba(253,186,116,0.08))] px-4 py-3 shadow-[0_12px_28px_rgba(10,32,8,0.16)]">
-                    <p className="text-[1.02rem] leading-8 text-white">
+                <div className="surface-card rounded-[2rem] border border-white/10 bg-[#7a3f26] p-7 md:p-8">
+                  <p className="mb-2 text-base font-semibold uppercase tracking-[0.14em] text-gold-300">From enquiry to confirmed itinerary</p>
+                  <div className="mb-4 max-w-lg rounded-[1.4rem] border border-gold-300/18 bg-[linear-gradient(135deg,#f8efe0,#f3e3c8)] px-4 py-3 shadow-[0_12px_28px_rgba(58,29,22,0.18)]">
+                    <p className="text-[1.02rem] leading-8 text-forest-900">
                       The goal is simple: once a group enquires, everything from transfers and stay details to payment and confirmations should feel joined-up,
                       calm, and easy to trust.
                     </p>
                   </div>
                   <div className="space-y-3">
                     {Object.values(integrationRegistry).map((integration) => (
-                      <div key={integration.label} className="flex items-start gap-3 text-sm text-white/70">
+                      <div key={integration.label} className="flex items-start gap-3 text-base text-white/70">
                         <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
                         <span>{integration.label}</span>
                       </div>
@@ -1280,10 +1280,10 @@ function App() {
                 {landingEnquiryHighlights.map(({ title, icon: Icon }) => (
                   <motion.div
                     key={title}
-                    className="rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-sm"
+                    className="rounded-[2rem] border border-white/10 bg-[#7a3f26] p-6"
                     {...revealUp}
                   >
-                    <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-white/12 text-gold-300">
+                    <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#f8efe0] text-forest-900">
                       <Icon className="h-5 w-5 md:h-6 md:w-6" aria-hidden="true" />
                     </div>
                     <p className="text-base leading-relaxed text-white md:text-lg">{title}</p>
@@ -1293,7 +1293,7 @@ function App() {
             </div>
 
             <motion.div
-              className="rounded-[2rem] border border-white/10 bg-white/10 p-7 shadow-2xl backdrop-blur-md md:p-8"
+              className="surface-card rounded-[2rem] border border-white/10 bg-[#8f4d2d] p-7 shadow-2xl md:p-8"
               {...revealUp}
             >
               <form className="space-y-6 md:space-y-7" onSubmit={handleNewsletterSubmit}>
@@ -1302,7 +1302,7 @@ function App() {
                     Full name
                   </label>
                   <input
-                    className="w-full rounded-full border border-white/20 bg-white/10 px-6 py-4 text-lg text-white placeholder:text-white/45 focus:border-gold-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/40 md:py-[1.15rem] md:text-xl"
+                    className="w-full rounded-full border border-white/25 bg-[#f8efe0] px-6 py-4 text-lg text-forest-900 placeholder:text-forest-900/50 focus:border-gold-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-300/40 md:py-[1.15rem] md:text-xl"
                     id="full-name"
                     name="fullName"
                     placeholder="Patrick Murphy"
@@ -1316,7 +1316,7 @@ function App() {
                     Email address
                   </label>
                   <input
-                    className="w-full rounded-full border border-white/20 bg-white/10 px-6 py-4 text-lg text-white placeholder:text-white/45 focus:border-gold-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/40 md:py-[1.15rem] md:text-xl"
+                    className="w-full rounded-full border border-white/25 bg-[#f8efe0] px-6 py-4 text-lg text-forest-900 placeholder:text-forest-900/50 focus:border-gold-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-300/40 md:py-[1.15rem] md:text-xl"
                     id="email"
                     name="email"
                     placeholder="patrick@example.ie"
@@ -1330,7 +1330,7 @@ function App() {
                     Phone / WhatsApp
                   </label>
                   <input
-                    className="w-full rounded-full border border-white/20 bg-white/10 px-6 py-4 text-lg text-white placeholder:text-white/45 focus:border-gold-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/40 md:py-[1.15rem] md:text-xl"
+                    className="w-full rounded-full border border-white/25 bg-[#f8efe0] px-6 py-4 text-lg text-forest-900 placeholder:text-forest-900/50 focus:border-gold-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-300/40 md:py-[1.15rem] md:text-xl"
                     id="phone-whatsapp"
                     name="phoneWhatsApp"
                     placeholder="+353 87 000 0000"
@@ -1345,7 +1345,7 @@ function App() {
                     Best time to call
                   </label>
                   <select
-                    className="w-full rounded-full border border-white/20 bg-white/10 px-6 py-4 text-lg text-white focus:border-gold-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/40 md:py-[1.15rem] md:text-xl"
+                    className="w-full rounded-full border border-white/25 bg-[#f8efe0] px-6 py-4 text-lg text-forest-900 focus:border-gold-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-300/40 md:py-[1.15rem] md:text-xl"
                     id="best-time-to-call"
                     name="bestTimeToCall"
                     required
@@ -1377,7 +1377,7 @@ function App() {
                     Trip interest
                   </label>
                   <input
-                    className="w-full rounded-full border border-white/20 bg-white/10 px-6 py-4 text-lg text-white placeholder:text-white/45 focus:border-gold-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/40 md:py-[1.15rem] md:text-xl"
+                    className="w-full rounded-full border border-white/25 bg-[#f8efe0] px-6 py-4 text-lg text-forest-900 placeholder:text-forest-900/50 focus:border-gold-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-300/40 md:py-[1.15rem] md:text-xl"
                     id="interest"
                     name="interest"
                     placeholder="5-star week in Marbella for 8 golfers"
@@ -1405,7 +1405,7 @@ function App() {
                 ) : null}
 
                 <div className="rounded-[1.5rem] border border-white/10 bg-black/10 p-5 md:p-6">
-                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-white md:text-base">What happens next</p>
+                  <p className="text-base font-semibold uppercase tracking-[0.2em] text-white md:text-base">What happens next</p>
                   <div className="mt-4 space-y-4 text-base leading-relaxed text-white md:text-lg">
                     <div className="flex items-center gap-3">
                       <Phone className="h-5 w-5 shrink-0 text-gold-400" aria-hidden="true" />
@@ -1458,13 +1458,13 @@ function QuickSelectorCard({
   readonly columnsClassName?: string
 }) {
   return (
-    <div className="surface-card rounded-[1.75rem] border border-forest-100 bg-white/88 p-5 shadow-sm backdrop-blur-sm">
+    <div className="surface-card rounded-[1.75rem] border border-forest-100 bg-white p-6 shadow-sm">
       <div className="flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-forest-900 text-white">
           <Icon className="h-5 w-5" aria-hidden="true" />
         </div>
         <div>
-          <p className="text-sm font-semibold text-forest-900">{label}</p>
+          <p className="text-base font-semibold text-forest-900">{label}</p>
           {description ? <p className="text-xs leading-relaxed text-forest-900/52">{description}</p> : null}
         </div>
       </div>
@@ -1477,7 +1477,7 @@ function QuickSelectorCard({
             <button
               key={option.value}
               className={cx(
-                'rounded-2xl border px-3 py-3 text-sm font-semibold transition-all',
+                'rounded-2xl border px-3 py-3 text-base font-semibold transition-all',
                 isActive
                   ? 'border-gold-300 bg-forest-900 text-white shadow-soft'
                   : 'border-forest-100 bg-offwhite/85 text-forest-900 hover:bg-white'
@@ -1516,7 +1516,7 @@ function FloatingWhatsAppButton({
       }}
       aria-label="Chat with us on WhatsApp"
       className={cx(
-        'group fixed bottom-4 right-3 z-[60] inline-flex items-center gap-2 overflow-hidden rounded-full bg-white/72 px-2.5 py-2.5 pr-2 shadow-soft backdrop-blur-md transition-all duration-300 hover:bg-white/82 sm:bottom-5 sm:right-4 sm:pr-4',
+        'group fixed bottom-4 right-3 z-[60] inline-flex items-center gap-2 overflow-hidden rounded-full border border-forest-100 bg-[#f8efe0] px-2.5 py-2.5 pr-2 shadow-soft transition-all duration-300 hover:bg-[#f3e3c8] sm:bottom-5 sm:right-4 sm:pr-4',
         hidden && 'pointer-events-none'
       )}
       href={href}
@@ -1532,7 +1532,7 @@ function FloatingWhatsAppButton({
       whileHover={{ scale: 1.03, x: -2 }}
       whileTap={{ scale: 0.98 }}
     >
-      <span aria-hidden="true" className="absolute inset-0 rounded-full bg-white/18" />
+      <span aria-hidden="true" className="absolute inset-0 rounded-full bg-[#f8efe0]" />
       <span aria-hidden="true" className="absolute inset-0 rounded-full border border-white/25" />
       <span aria-hidden="true" className="absolute inset-[1px] rounded-full bg-[linear-gradient(135deg,rgba(255,255,255,0.48),rgba(255,255,255,0.12))]" />
       <span aria-hidden="true" className="absolute inset-[1.5px] rounded-full bg-[rgba(255,255,255,0.58)]" />
@@ -1543,7 +1543,7 @@ function FloatingWhatsAppButton({
         className="absolute inset-[-35%] rounded-full bg-[conic-gradient(from_0deg,transparent_0deg,transparent_235deg,rgba(255,255,255,0.04)_255deg,rgba(37,211,102,0.8)_290deg,rgba(255,255,255,0.92)_320deg,rgba(18,140,74,0.7)_345deg,transparent_360deg)]"
         transition={{ duration: 5.8, ease: 'linear', repeat: Infinity }}
       />
-      <span aria-hidden="true" className="absolute inset-[2.5px] rounded-full bg-[linear-gradient(135deg,rgba(255,255,255,0.9),rgba(248,252,250,0.72))] backdrop-blur-md" />
+      <span aria-hidden="true" className="absolute inset-[2.5px] rounded-full bg-[linear-gradient(135deg,rgba(248,239,224,1),rgba(243,227,200,0.88))]" />
 
       <span className="relative z-10 flex h-[3.85rem] w-[3.85rem] items-center justify-center sm:h-[4.15rem] sm:w-[4.15rem]">
         <span
@@ -1557,7 +1557,7 @@ function FloatingWhatsAppButton({
         <ShamrockIcon className="h-[3.8rem] w-[3.8rem] drop-shadow-[0_10px_18px_rgba(61,129,32,0.34)] transition-all duration-300 group-hover:scale-[1.08] group-hover:drop-shadow-[0_16px_24px_rgba(61,129,32,0.42)] sm:h-[4.1rem] sm:w-[4.1rem]" />
         <span
           aria-hidden="true"
-          className="absolute left-[17%] top-[13%] h-[28%] w-[26%] rounded-full bg-white/70 blur-[7px]"
+          className="absolute left-[17%] top-[13%] h-[28%] w-[26%] rounded-full bg-white/90 blur-[7px]"
         />
         <span className="absolute inset-0 flex items-center justify-center">
           <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/80 bg-white text-fairway-700 shadow-[0_10px_24px_rgba(49,129,188,0.28)] transition-transform duration-300 group-hover:scale-110 sm:h-11 sm:w-11">
@@ -1565,7 +1565,7 @@ function FloatingWhatsAppButton({
           </span>
         </span>
       </span>
-      <span className="relative z-10 hidden pr-1 text-sm font-semibold text-forest-900 transition-colors duration-300 group-hover:text-forest-950 sm:inline">
+      <span className="relative z-10 hidden pr-1 text-base font-semibold text-forest-900 transition-colors duration-300 group-hover:text-forest-950 sm:inline">
         WhatsApp
       </span>
     </motion.a>
@@ -1586,26 +1586,26 @@ function CookieBanner({
   return (
     <motion.div
       animate={{ opacity: 1, y: 0 }}
-      className="fixed bottom-4 left-3 right-3 z-[55] rounded-[1.75rem] border border-white/15 bg-forest-950/92 p-4 text-white shadow-2xl backdrop-blur-md sm:left-4 sm:right-auto sm:max-w-md"
+      className="fixed bottom-4 left-3 right-3 z-[55] rounded-[1.75rem] border border-forest-100 bg-[#f8efe0] p-4 text-forest-900 shadow-2xl sm:left-4 sm:right-auto sm:max-w-md"
       initial={{ opacity: 0, y: 18 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
     >
-      <div aria-hidden="true" className="absolute inset-0 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(255,255,255,0.06),rgba(220,88,1,0.06),rgba(80,163,45,0.06))]" />
+      <div aria-hidden="true" className="absolute inset-0 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(248,239,224,0.95),rgba(243,227,200,0.82),rgba(247,177,103,0.35))]" />
       <div className="relative z-10">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-gold-300">Cookie notice</p>
-        <p className="mt-2 text-sm leading-relaxed text-white">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-gold-600">Cookie notice</p>
+        <p className="mt-2 text-base leading-relaxed text-forest-900/78">
           We use cookies to improve the browsing experience, understand site traffic, and keep the journey smooth.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
           <button
-            className="rounded-full bg-gold-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gold-600"
+            className="rounded-full bg-gold-500 px-4 py-2 text-base font-semibold text-white transition-colors hover:bg-gold-600"
             onClick={onAccept}
             type="button"
           >
             Accept cookies
           </button>
           <button
-            className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10"
+            className="rounded-full border border-forest-100 bg-white px-4 py-2 text-base font-medium text-forest-900 transition-colors hover:bg-[#f3e3c8]"
             onClick={onAccept}
             type="button"
           >

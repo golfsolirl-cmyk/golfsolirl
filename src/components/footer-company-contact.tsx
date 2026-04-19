@@ -7,7 +7,7 @@ const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURICom
 export function FooterCompanyContact() {
   return (
     <div className="mx-auto mt-10 max-w-7xl">
-      <div className="relative overflow-hidden rounded-[1.75rem] border border-white/14 bg-[linear-gradient(152deg,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0.04)_48%,rgba(49,129,188,0.12)_100%)] p-6 shadow-[0_28px_72px_rgba(0,0,0,0.28)] ring-1 ring-white/[0.06] md:p-8">
+      <div className="relative overflow-hidden rounded-[1.75rem] border border-white/14 bg-[linear-gradient(152deg,rgba(255,238,214,0.18)_0%,rgba(201,123,72,0.12)_52%,rgba(91,74,43,0.18)_100%)] p-6 shadow-[0_24px_58px_rgba(38,18,14,0.34)] ring-1 ring-white/[0.08] md:p-8">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_90%_80%_at_0%_-20%,rgba(255,143,91,0.15),transparent_50%),radial-gradient(ellipse_70%_60%_at_100%_100%,rgba(49,129,188,0.15),transparent_45%)]"
@@ -57,7 +57,7 @@ export function FooterCompanyContact() {
                 <p className="text-base leading-7 text-white/64">Irish mobile — same number on WhatsApp for quick trip questions.</p>
                 <a
                   aria-label={`Message Golf Sol Ireland on WhatsApp at ${companyContact.phoneDisplay}`}
-                  className="group inline-flex min-h-11 items-center gap-2.5 rounded-full border border-white/25 bg-white/10 px-5 py-3 text-base font-semibold text-white transition-all hover:border-white/40 hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                  className="group inline-flex min-h-11 items-center gap-2.5 rounded-full border border-white/35 bg-[#7a3f26] px-5 py-3 text-base font-semibold text-white transition-all hover:border-white/55 hover:bg-[#a04f2c] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
                   href={companyContact.whatsappHref}
                   rel="noreferrer"
                   target="_blank"
