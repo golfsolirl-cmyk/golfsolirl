@@ -44,16 +44,19 @@ export function GeNavbar({ mode: _mode = 'auto' }: GeNavbarProps = {}) {
       {isOverlay ? <GeTopBar /> : null}
       <div
         className={cx(
-          'mx-auto flex max-w-[1340px] items-center justify-between gap-4 px-4 transition-all duration-300 sm:px-5',
-          // Tight vertical padding lets the larger crest dominate the bar
-          // without inflating header height further.
+          // Mobile (< lg): relative wrapper so the brand can centre via
+          //   mx-auto while the hamburger floats absolutely on the right.
+          // Desktop (lg+): standard flex row with brand on the left and
+          //   the full nav menu on the right.
+          'relative mx-auto flex max-w-[1340px] items-center px-4 transition-all duration-300 sm:px-5',
+          'lg:justify-between lg:gap-4',
           isOverlay ? 'py-4' : 'py-1.5 lg:py-1'
         )}
       >
         <a
           href="#top"
           aria-label="GolfSol Ireland home"
-          className="flex shrink-0 items-center transition-transform duration-300"
+          className="mx-auto flex shrink-0 items-center transition-transform duration-300 lg:mx-0"
         >
           <GeBrandLockup tone={isOverlay ? 'on-dark' : 'on-light'} mode={isOverlay ? 'overlay' : 'sticky'} />
         </a>
@@ -73,7 +76,9 @@ export function GeNavbar({ mode: _mode = 'auto' }: GeNavbarProps = {}) {
           aria-expanded={isMenuOpen}
           aria-controls="ge-mobile-menu"
           className={cx(
-            'inline-flex h-11 w-11 items-center justify-center rounded-full border-2 transition-colors lg:hidden',
+            // Absolute on mobile so the brand can be perfectly centred;
+            // hidden entirely on lg+ where the full nav takes over.
+            'absolute right-4 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border-2 transition-colors sm:right-5 lg:hidden',
             isOverlay
               ? 'border-white/60 text-white hover:border-white hover:bg-white/15'
               : 'border-ge-gray200 text-gs-dark hover:border-gs-green hover:text-gs-green'
