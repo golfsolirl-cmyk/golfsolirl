@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 
 /**
- * Hero now displays the brand-composed Malaga → Costa del Sol creative
+ * Hero displays the brand-composed Málaga → Costa del Sol creative
  * (`public/images/hero-malaga-transfers.{webp,jpg}`) at its native 2:1
  * aspect ratio, directly under the white navbar. The crest in the navbar
  * sits flush above the image's gold ribbon banner — same green / gold
@@ -55,8 +55,8 @@ export function GeHero() {
             sizes="100vw"
           />
           <img
-            src="/images/hero-malaga-transfers.jpg"
-            alt="GolfSol Ireland — From plane to fairway. Meet-and-greet at Malaga, golf-bag friendly Mercedes transfers, tee times pre-booked. Call +353 87 446 4766."
+            src="/images/hero-malaga-transfers-1600.jpg"
+            alt="GolfSol Ireland — From plane to fairway. Meet-and-greet at Málaga, golf-bag friendly Mercedes transfers, tee times pre-booked. Call +353 87 446 4766."
             className="block h-auto w-full select-none"
             fetchPriority="high"
             decoding="async"
@@ -68,7 +68,7 @@ export function GeHero() {
         {/* Hidden semantic H1 for SEO + AA — the visible headline lives in
             the composed image as raster art. */}
         <h1 id="ge-hero-title" className="sr-only">
-          From Plane to Fairway — GolfSol Ireland Malaga to Costa del Sol golf transfers
+          From Plane to Fairway — GolfSol Ireland Málaga to Costa del Sol golf transfers
         </h1>
 
         {/* Animated scroll-down chevron, anchored to the right edge so it

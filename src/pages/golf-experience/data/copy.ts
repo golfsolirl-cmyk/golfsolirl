@@ -12,6 +12,14 @@ export const contactInfo = {
   email: 'hello@golfsolireland.ie'
 } as const
 
+/** Alt text for the brand-composed Malaga hero raster (homepage). */
+export const malagaHeroImageAlt =
+  'GolfSol Ireland — From plane to fairway. Meet-and-greet at Malaga, golf-bag friendly Mercedes transfers, tee times pre-booked. Call +353 87 446 4766.' as const
+
+/** Alt for the transport-page hero variant (premium van, chauffeur, golf bags at airport). */
+export const transportHeroImageAlt =
+  'GolfSol Ireland transport hero — premium black Mercedes van at a Mediterranean airport arrivals curb, chauffeur beside the vehicle, golf bags and clubs being loaded, warm golden-hour light, forest green and gold brand atmosphere.' as const
+
 export const heroCopy = {
   title: 'YOUR COSTA DEL SOL GOLF TRIP STARTS RIGHT HERE.',
   cta: 'GET A QUOTE'
@@ -30,7 +38,7 @@ export const designYourPackage = {
       'Fuengirola, Torremolinos, Marbella or Sotogrande — every Sol resort town is within a short, golf-bag-friendly Mercedes transfer of the best courses in southern Spain.',
     image:
       'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80',
-    link: '#golf-courses-spain'
+    link: '/#golf-courses-spain'
   },
   step2: {
     eyebrow: 'STEP 2',
@@ -39,7 +47,7 @@ export const designYourPackage = {
       'Over seventy 18-hole courses sit between Málaga and Sotogrande — the highest density of golf anywhere in Europe. We hold preferential green-fee rates and live tee-sheet access on all of them, so we slot your group into the right course at the right time of day.',
     image:
       'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&w=1200&q=80',
-    link: '#golf-courses-spain'
+    link: '/#golf-courses-spain'
   },
   step3: {
     eyebrow: 'STEP 3',
@@ -48,7 +56,7 @@ export const designYourPackage = {
       'We work directly with the Costa del Sol hotels Irish societies return to year after year — Hotel Angela, Yaramar, Ilunion Fuengirola, Riu, Don Pablo, Sol Timor and Ocean House. Better rates, friendlier cancellation terms, no surprises.',
     image:
       'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80',
-    link: '#accommodation-spain'
+    link: '/#accommodation-spain'
   }
 } as const
 

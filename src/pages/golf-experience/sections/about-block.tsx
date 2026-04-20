@@ -59,7 +59,7 @@ export function GeAboutBlock() {
             ))}
           </div>
           <div className="mt-8">
-            <GeButton href="#enquire" variant="gs-gold" size="md">
+            <GeButton href="/#enquire" variant="gs-gold" size="md">
               {aboutCopy.cta}
             </GeButton>
           </div>

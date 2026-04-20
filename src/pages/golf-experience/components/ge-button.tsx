@@ -88,9 +88,11 @@ export function GeButton(props: GeButtonAnchorProps | GeButtonButtonProps) {
     )
   }
 
-  const { href: _ignored, ...buttonRest } = rest as GeButtonButtonProps & { href?: string }
+  const { href: _ignored, type: buttonType = 'button', ...buttonRest } = rest as GeButtonButtonProps & {
+    href?: string
+  }
   return (
-    <button type="button" className={classes} {...buttonRest}>
+    <button type={buttonType} className={classes} {...buttonRest}>
       {children}
     </button>
   )

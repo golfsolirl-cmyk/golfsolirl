@@ -66,7 +66,7 @@ export function GeNavbar({ mode: _mode = 'auto' }: GeNavbarProps = {}) {
         </a>
 
         <a
-          href="#top"
+          href="/#top"
           aria-label="GolfSol Ireland home"
           className="mx-auto flex shrink-0 items-center transition-transform duration-300 lg:mx-0"
         >
@@ -77,7 +77,7 @@ export function GeNavbar({ mode: _mode = 'auto' }: GeNavbarProps = {}) {
           {primaryNav.map((link) => (
             <DesktopNavItem key={link.label} link={link} colorClass={linkColor} />
           ))}
-          <GeButton href="#enquire" size="sm" variant={isOverlay ? 'outline-gs-white' : 'gs-gold'}>
+          <GeButton href="/#enquire" size="sm" variant={isOverlay ? 'outline-gs-white' : 'gs-gold'}>
             Get Quote
           </GeButton>
         </nav>
@@ -171,7 +171,7 @@ export function GeNavbar({ mode: _mode = 'auto' }: GeNavbarProps = {}) {
                 ))}
               </ul>
               <div className="mt-4">
-                <GeButton href="#enquire" size="md" variant="gs-gold" className="w-full">
+                <GeButton href="/#enquire" size="md" variant="gs-gold" className="w-full">
                   Get a Quote
                 </GeButton>
               </div>

@@ -21,7 +21,7 @@ export function GeAccommodationSpain() {
       </div>
 
       <div className="mt-10 flex justify-center">
-        <GeButton href="#enquire" variant="gs-gold" size="md">
+        <GeButton href="/#enquire" variant="gs-gold" size="md">
           {hotelListsCopy.cta}
         </GeButton>
       </div>

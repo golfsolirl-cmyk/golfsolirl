@@ -15,6 +15,7 @@ import { AdminDashboardPage } from './pages/admin-dashboard-page'
 import { ClientDocumentPage } from './pages/client-document-page'
 import { isFooterArticlePath } from './data/footer-article-pages'
 import { GolfExperienceHome } from './pages/golf-experience/golf-experience-home'
+import { TransportServicePage } from './pages/golf-experience/transport-service-page'
 import { ContinueTripPage } from './pages/continue-trip-page'
 import './index.css'
 
@@ -23,6 +24,10 @@ function resolvePage() {
 
   if (normalizedPath === '/') {
     return GolfExperienceHome
+  }
+
+  if (normalizedPath === '/services/transport') {
+    return TransportServicePage
   }
 
   if (normalizedPath === '/continue-trip') {

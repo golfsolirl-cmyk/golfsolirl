@@ -25,7 +25,7 @@ export function GeCoursesSpain() {
       </p>
 
       <div className="mt-6 flex justify-center">
-        <GeButton href="#enquire" variant="gs-gold" size="md">
+        <GeButton href="/#enquire" variant="gs-gold" size="md">
           {courseListsCopy.cta}
         </GeButton>
       </div>

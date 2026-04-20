@@ -27,7 +27,7 @@ export const hotelsSpain: readonly GeHotel[] = [
     nearestCourse: '15 min · Mijas Golf',
     image:
       'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80',
-    href: '#enquire'
+    href: '/#enquire'
   },
   {
     name: 'Hotel Yaramar',
@@ -37,7 +37,7 @@ export const hotelsSpain: readonly GeHotel[] = [
     nearestCourse: '15 min · Mijas Golf',
     image:
       'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80',
-    href: '#enquire'
+    href: '/#enquire'
   },
   {
     name: 'Ilunion Fuengirola',
@@ -47,7 +47,7 @@ export const hotelsSpain: readonly GeHotel[] = [
     nearestCourse: '12 min · Santana Golf',
     image:
       'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80',
-    href: '#enquire'
+    href: '/#enquire'
   },
   {
     name: 'Hotel Riu Costa del Sol',
@@ -57,7 +57,7 @@ export const hotelsSpain: readonly GeHotel[] = [
     nearestCourse: '8 min · Parador Málaga Golf',
     image:
       'https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1200&q=80',
-    href: '#enquire'
+    href: '/#enquire'
   },
   {
     name: 'Hotel Don Pablo',
@@ -67,7 +67,7 @@ export const hotelsSpain: readonly GeHotel[] = [
     nearestCourse: '10 min · Parador Málaga Golf',
     image:
       'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80',
-    href: '#enquire'
+    href: '/#enquire'
   },
   {
     name: 'Sol Timor Apartamentos',
@@ -77,7 +77,7 @@ export const hotelsSpain: readonly GeHotel[] = [
     nearestCourse: '10 min · Parador Málaga Golf',
     image:
       'https://images.unsplash.com/photo-1568084680786-a84f91d1153c?auto=format&fit=crop&w=1200&q=80',
-    href: '#enquire'
+    href: '/#enquire'
   },
   {
     name: 'Ocean House Costa del Sol',
@@ -87,6 +87,6 @@ export const hotelsSpain: readonly GeHotel[] = [
     nearestCourse: '8 min · Parador Málaga Golf',
     image:
       'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80',
-    href: '#enquire'
+    href: '/#enquire'
   }
 ] as const

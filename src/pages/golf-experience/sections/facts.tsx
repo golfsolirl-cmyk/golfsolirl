@@ -44,7 +44,7 @@ export function GeFacts() {
         <h3 className="font-ge text-[1.5rem] font-bold uppercase tracking-[0.04em] text-gs-green sm:text-[1.8rem]">
           {factsCopy.ctaTitle}
         </h3>
-        <GeButton href="#enquire" variant="orange" size="lg">
+        <GeButton href="/#enquire" variant="orange" size="lg">
           {factsCopy.ctaLabel}
         </GeButton>
       </div>
