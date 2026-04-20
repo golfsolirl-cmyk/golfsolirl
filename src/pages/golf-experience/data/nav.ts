@@ -25,16 +25,17 @@ export const primaryNav: readonly GeNavLink[] = [
     label: 'Golf Courses',
     href: '#golf-courses-spain',
     children: [
-      { label: 'Spain', href: '#golf-courses-spain' },
-      { label: 'Portugal', href: '#golf-courses-portugal' }
+      { label: 'Sotogrande Cluster', href: '#golf-courses-spain' },
+      { label: 'Marbella Golf Valley', href: '#golf-courses-spain' },
+      { label: 'Mijas & Fuengirola', href: '#golf-courses-spain' }
     ]
   },
   {
     label: 'Accommodation',
     href: '#accommodation-spain',
     children: [
-      { label: 'Spain', href: '#accommodation-spain' },
-      { label: 'Portugal', href: '#accommodation-portugal' }
+      { label: 'Fuengirola Hotels', href: '#accommodation-spain' },
+      { label: 'Torremolinos Hotels', href: '#accommodation-spain' }
     ]
   },
   { label: 'Transport', href: '#extras' },
@@ -56,14 +57,14 @@ export const footerColumns = [
   {
     title: 'Quick Links',
     links: [
-      { label: 'Golf Club Rental – Costa del Sol Only', href: '#extras' },
-      { label: 'Tee Time Bookings only', href: '#enquire' },
-      { label: 'Family Holidays', href: '#enquire' },
-      { label: 'Incentive Packages', href: '#enquire' },
-      { label: 'Dress Code for Golf in Spain', href: '#enquire' },
-      { label: 'Travelling to Spain', href: '#enquire' },
-      { label: 'Excursions', href: '#extras' },
-      { label: 'Golf in Portugal', href: '#golf-courses-portugal' }
+      { label: 'Golf Club Rental – Costa del Sol', href: '#extras' },
+      { label: 'Tee Time Bookings Only', href: '#enquire' },
+      { label: 'Society & Group Trips', href: '#enquire' },
+      { label: 'Family Golf Holidays', href: '#enquire' },
+      { label: 'Dress Code on the Costa del Sol', href: '#enquire' },
+      { label: 'Travelling to Málaga (AGP)', href: '#enquire' },
+      { label: 'Excursions on the Sol', href: '#extras' },
+      { label: 'Costa del Sol Golf Map', href: '#golf-courses-spain' }
     ]
   },
   {
@@ -77,11 +78,11 @@ export const footerColumns = [
     title: 'Navigation',
     links: [
       { label: 'Home', href: '#top' },
-      { label: 'Golf Courses', href: '#golf-courses-spain' },
-      { label: 'Transport', href: '#extras' },
-      { label: 'Accommodation', href: '#accommodation-spain' },
-      { label: 'Golf Holiday Enquiry Form', href: '#enquire' },
-      { label: 'News', href: '#enquire' },
+      { label: 'Costa del Sol Courses', href: '#golf-courses-spain' },
+      { label: 'Málaga Airport Transfers', href: '#extras' },
+      { label: 'Hotels Irish Groups Love', href: '#accommodation-spain' },
+      { label: 'Get a Quote', href: '#enquire' },
+      { label: 'Sol Insider News', href: '#enquire' },
       { label: 'Terms & Conditions', href: '#' },
       { label: 'Join our newsletter', href: '#enquire' },
       { label: 'Give a Testimonial', href: '#enquire' }

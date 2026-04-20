@@ -1,50 +1,51 @@
 /**
- * Long-form copy for the literal Golf Experience clone homepage.
- * Source: golfexperience.net (public marketing homepage), adapted to remove
- * specific accreditation / registration claims.
+ * Long-form copy for the GolfSol Ireland homepage.
+ * Voice: Irish-owned, Costa del Sol specialist. We do not market golf in
+ * Portugal or Morocco — content here is laser-focused on the Sol corridor
+ * (Málaga → Sotogrande) where Irish groups travel most.
  */
 
 export const contactInfo = {
-  tagline: 'GOLF HOLIDAYS IN SPAIN, PORTUGAL AND MOROCCO',
-  phoneDisplay: '+34 952 887 492',
-  phoneTel: '+34952887492',
-  email: 'info@golfexperience.net'
+  tagline: 'IRISH-OWNED · COSTA DEL SOL GOLF SPECIALISTS',
+  phoneDisplay: '+353 87 446 4766',
+  phoneTel: '+353874464766',
+  email: 'hello@golfsolireland.ie'
 } as const
 
 export const heroCopy = {
-  title: 'YOUR TAILOR MADE GOLF HOLIDAY STARTS RIGHT HERE!',
-  cta: 'ENQUIRE NOW'
+  title: 'YOUR COSTA DEL SOL GOLF TRIP STARTS RIGHT HERE.',
+  cta: 'GET A QUOTE'
 } as const
 
 export const designYourPackage = {
-  title: 'Design Your Golf Package',
-  step1Tag: 'Choose Your Destination',
-  step2Tag: 'Choose Your Golf Course',
-  step3Tag: 'Choose Your Accommodation',
-  closer: 'Let us do the rest!',
+  title: 'Design Your Costa del Sol Golf Trip',
+  step1Tag: 'Pick Your Costa del Sol Base',
+  step2Tag: 'Pick Your Tee Times',
+  step3Tag: 'Pick Your Hotel',
+  closer: 'Leave the rest to us.',
   step1: {
     eyebrow: 'STEP 1',
-    title: 'Let’s tee off.',
+    title: 'Pick your Costa del Sol base.',
     body:
-      'Choose between Spain’s Costa del Sol or Portugal – Europe’s two most popular year round Golfing Destinations.',
+      'Fuengirola, Torremolinos, Marbella or Sotogrande — every Sol resort town is within a short, golf-bag-friendly Mercedes transfer of the best courses in southern Spain.',
     image:
       'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80',
     link: '#golf-courses-spain'
   },
   step2: {
     eyebrow: 'STEP 2',
-    title: 'Choose Spain or Portugal Golf Courses.',
+    title: 'Pick your Costa del Sol tee times.',
     body:
-      'With over seventy 18 hole courses between Malaga and Gibraltar the Costa del Sol has the highest density of courses anywhere in Europe. We have preferential green-fee rates and access to tee-times on all of these. Learn about the courses in Spain and Portugal and discuss with us the best choice for the perfect golf package.',
+      'Over seventy 18-hole courses sit between Málaga and Sotogrande — the highest density of golf anywhere in Europe. We hold preferential green-fee rates and live tee-sheet access on all of them, so we slot your group into the right course at the right time of day.',
     image:
       'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&w=1200&q=80',
     link: '#golf-courses-spain'
   },
   step3: {
     eyebrow: 'STEP 3',
-    title: 'Browse the highest quality Golf Accommodation in Spain & Portugal.',
+    title: 'Pick the hotel Irish groups already love.',
     body:
-      'Golf Experience has Tour Operator contracts with all the prominent hotels on the Costa del Sol and a selection of properties in all the major cities in Spain & Portugal. When you book your accommodation through us you benefit from cheaper rates and also much better cancellation conditions which is becoming increasingly important.',
+      'We work directly with the Costa del Sol hotels Irish societies return to year after year — Hotel Angela, Yaramar, Ilunion Fuengirola, Riu, Don Pablo, Sol Timor and Ocean House. Better rates, friendlier cancellation terms, no surprises.',
     image:
       'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80',
     link: '#accommodation-spain'
@@ -53,70 +54,68 @@ export const designYourPackage = {
 
 export const factsCopy = {
   eyebrow: 'Why book with us',
-  title: 'Golf Experience Facts',
+  title: 'Why GolfSol Ireland',
   pillars: [
     {
-      title: 'Established Over 30 Years',
+      title: 'Irish-owned, on the ground',
       body:
-        'Golf Experience has traded continuously since 1989. This means over 3 decades of experience and partner relationships which ultimately help to make your trip run smoothly from start to finish. Customer care is not a cliché with us. Our best Marketing tool is not Google AdWords or any high-powered strategic management thinking – it’s about taking care of your holiday. Then you do our marketing!'
+        'We are Irish, we live on the Costa del Sol, and we know how Irish golf societies travel. Every itinerary, transfer and tee time is built around what works for an Irish group — not a generic European package.'
     },
     {
-      title: 'The specialists in our area',
+      title: 'Costa del Sol specialists',
       body:
-        'We do not aim to be the biggest. We aim to be the best in the areas which we cover. So, if you are planning a trip to Spain or Portugal tap into our experience and expertise and let us design a proposal for you upcoming trip.'
+        'We do one thing: golf trips on the Costa del Sol. That focus means we know every course, every hotel and every transfer route between Málaga airport and Sotogrande. No guesswork — just the right course at the right time.'
     },
     {
-      title: 'Fully Bonded Tour Operator',
+      title: 'Fully bonded · 24/7 support',
       body:
-        'Golf Experience is a fully bonded and licensed Tour Operator in compliance with local and EU travel law. You benefit from the application of practices which guarantee that you will be treated fairly and with appropriate financial protection in the event of insolvency.'
+        'GolfSol Ireland is a fully bonded operator in compliance with Spanish and EU travel law. From the moment you land at Málaga AGP to the last tee shot, our team is one phone call away — day or night.'
     }
   ],
-  ctaTitle: 'Let us design your perfect golf tour!',
-  ctaLabel: 'ENQUIRE NOW'
+  ctaTitle: 'Let us design your perfect Costa del Sol golf trip.',
+  ctaLabel: 'GET A QUOTE'
 } as const
 
 export const aboutCopy = {
   eyebrow: 'About Us',
-  title: 'About Golf Experience',
+  title: 'About GolfSol Ireland',
   paragraphs: [
-    'The company has grown continually to its current position as the leading Golf Travel Agent on the Costa del Sol and a major player in the Portuguese and Moroccan markets.',
-    'Our legal status is that of a Spanish Tour Operator and we are licensed and bonded in full compliance with local and EU law.',
-    'Our business philosophy is simple – taking the upmost care of our clients from the very first contact to the end of the trip and often afterwards. Attention to detail and going the extra mile for our clients is what we do every day.'
+    'GolfSol Ireland is an Irish-owned, Costa del Sol-based golf travel specialist built for Irish societies, four-balls and family groups travelling out of Dublin, Cork, Shannon and Belfast.',
+    'We are licensed and bonded as a tour operator in full compliance with Spanish and EU travel law, with airport meet-and-greet, golf-bag-friendly Mercedes transfers and pre-booked tee times wrapped into every package.',
+    'Our promise is simple — take care of every Irish group from the moment they land in Málaga to the moment we drop them back at the AGP terminal. Same crew, same standard, every single trip.'
   ],
-  cta: 'VIEW MORE',
+  cta: 'LEARN MORE',
   image:
     'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1400&q=80'
 } as const
 
 export const finalCtaCopy = {
-  title: 'LET US DESIGN YOUR PERFECT GOLF TRIP!',
-  cta: 'ENQUIRE NOW'
+  title: 'LET US DESIGN YOUR COSTA DEL SOL GOLF TRIP.',
+  cta: 'GET A QUOTE'
 } as const
 
 export const accommodationIntroCopy = {
   eyebrow: 'STEP 3',
-  title: 'Browse and Choose from the highest quality Golf Accommodation in Spain & Portugal',
+  title: 'The Costa del Sol hotels Irish groups love',
   body:
-    'Golf Experience has Tour Operator contracts with all the prominent hotels on the Costa del Sol and a selection of properties in all the major cities in Spain & Portugal. When you book your accommodation through us you benefit from cheaper rates and also much better cancellation conditions which is becoming increasingly important.'
+    'These are the seven Costa del Sol properties Irish societies and four-balls return to season after season — beachfront in Fuengirola, classic Torremolinos resorts and apartment-style stays for big groups. Better rates, friendlier cancellation terms, every detail looked after by our team on the ground.'
 } as const
 
 export const courseListsCopy = {
-  spainHeading: 'Golf Courses in Spain',
-  portugalHeading: 'Golf Courses in Portugal',
-  manyMore: '…and many many more!',
-  cta: 'VIEW ALL GOLF COURSES'
+  spainHeading: 'Costa del Sol Golf Courses',
+  manyMore: '…and many more across the Sol corridor.',
+  cta: 'GET TEE-TIME PRICING'
 } as const
 
 export const hotelListsCopy = {
-  spainHeading: 'Hotels & Accommodation in Spain',
-  portugalHeading: 'Hotels & Accommodation in Portugal',
-  cta: 'VIEW ALL OUR ACCOMMODATION OPTIONS'
+  spainHeading: 'Hotels Irish Groups Love on the Costa del Sol',
+  cta: 'GET A STAY-AND-PLAY QUOTE'
 } as const
 
 export const extrasCopy = {
-  title: 'The FULL picture!',
-  subtitle: 'And we also provide:'
+  title: 'The full Costa del Sol package.',
+  subtitle: 'And we also handle:'
 } as const
 
 export const aboutFooterCopy =
-  'Established in 1989 making us one of the longest established Golf Specialist travel agents in Spain. Golf Experience is a fully bonded and licensed travel agency in full compliance with Spanish & EU Law.'
+  'Irish-owned and based on the Costa del Sol, GolfSol Ireland is a fully bonded golf travel specialist serving Irish societies, four-balls and family groups travelling to Spain’s Sol corridor.'

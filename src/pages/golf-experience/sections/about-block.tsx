@@ -17,7 +17,7 @@ export function GeAboutBlock() {
         <motion.div className="overflow-hidden rounded-sm shadow-[0_18px_40px_rgba(0,0,0,0.1)]" {...fadeUp}>
           <img
             src={aboutCopy.image}
-            alt="Meet the Golf Experience team"
+            alt="Meet the GolfSol Ireland team on the Costa del Sol"
             loading="lazy"
             decoding="async"
             className="h-full max-h-[460px] w-full object-cover"
@@ -39,7 +39,7 @@ export function GeAboutBlock() {
             ))}
           </div>
           <div className="mt-8">
-            <GeButton href="#enquire" variant="outline-blue" size="md">
+            <GeButton href="#enquire" variant="gs-gold" size="md">
               {aboutCopy.cta}
             </GeButton>
           </div>

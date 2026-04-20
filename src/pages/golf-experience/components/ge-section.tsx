@@ -22,8 +22,10 @@ interface GeSectionProps {
 const backgrounds = {
   white: 'bg-white text-gs-dark',
   gray: 'bg-ge-gray50 text-gs-dark',
-  teal: 'bg-ge-teal text-white',
-  tealDark: 'bg-ge-teal-dark text-white',
+  // Legacy "teal" / "tealDark" / "blue" all map onto the GolfSol green
+  // palette so any older references render in brand colour automatically.
+  teal: 'bg-gs-green text-white',
+  tealDark: 'bg-gs-dark text-white',
   blue: 'bg-gs-green text-white',
   ink: 'bg-gs-dark text-white'
 } as const

@@ -11,7 +11,7 @@ export function GeCoursesSpain() {
         <h2 className="font-ge text-[1.85rem] font-extrabold uppercase tracking-[0.04em] text-gs-green sm:text-[2.2rem]">
           {courseListsCopy.spainHeading}
         </h2>
-        <span aria-hidden="true" className="mx-auto mt-3 block h-1 w-16 rounded-full bg-gs-green" />
+        <span aria-hidden="true" className="mx-auto mt-3 block h-1 w-16 rounded-full bg-gs-gold" />
       </div>
 
       <div className="mt-10 grid gap-6 md:grid-cols-3">
@@ -25,7 +25,7 @@ export function GeCoursesSpain() {
       </p>
 
       <div className="mt-6 flex justify-center">
-        <GeButton href="#" variant="blue" size="md">
+        <GeButton href="#enquire" variant="gs-gold" size="md">
           {courseListsCopy.cta}
         </GeButton>
       </div>

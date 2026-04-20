@@ -1,6 +1,17 @@
+/**
+ * Costa del Sol courses we send Irish groups to most often.
+ * Strictly the Málaga – Sotogrande corridor — no destinations outside
+ * the Sol. Each card opens an enquiry to design a tee-time package.
+ */
+
 export interface GeCourse {
   readonly name: string
+  /** Short marketing line for the card. */
   readonly description: string
+  /** Town / area shown in a green chip on the upgraded card. */
+  readonly area: string
+  /** Difficulty / character chip — drives the second small badge. */
+  readonly badge: string
   readonly image: string
   readonly href: string
 }
@@ -8,53 +19,62 @@ export interface GeCourse {
 export const coursesSpain: readonly GeCourse[] = [
   {
     name: 'Real Club Valderrama',
+    area: 'Sotogrande',
+    badge: 'Tournament-tough',
     description:
-      'Officially voted Europe’s No. 1 Golf Course. Home to the Volvo Masters and host to the 1997 Ryder Cup. You may return home shell shocked but should be content with the thought that you are one of the lucky few to have played here.',
+      'Routinely ranked Europe’s number-one course and host of the 1997 Ryder Cup. A bucket-list round and a story you’ll dine out on for years.',
     image:
       'https://images.unsplash.com/photo-1592919505780-303950717480?auto=format&fit=crop&w=1200&q=80',
-    href: '#'
+    href: '#enquire'
   },
   {
-    name: 'Zagaleta New Course',
+    name: 'Finca Cortesín',
+    area: 'Casares',
+    badge: '2023 Solheim Cup',
     description:
-      'A splendid array of green tongues. This par-70 course inaugurated in 2005 really does merge golf with nature, assimilating the playing experience with the gorgeous nature that envelopes it.',
+      'Cabell Robinson masterpiece of width, elevation and pure Bermuda greens. Hosted the 2023 Solheim Cup and three Volvo World Match Plays.',
     image:
       'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&w=1200&q=80',
-    href: '#'
+    href: '#enquire'
   },
   {
-    name: 'Flamingos Golf Club',
+    name: 'La Reserva de Sotogrande',
+    area: 'Sotogrande',
+    badge: 'Resort luxury',
     description:
-      'Flamingos Golf Club is located at Cancelada, between the towns of Marbella and Estepona. A challenging course noted for its breathtaking views of the Mediterranean Sea, North Africa and Gibraltar.',
+      'A Cabell Robinson layout draped over rolling Andalusian hills with sea and mountain views from almost every tee. Pristine conditioning year-round.',
     image:
       'https://images.unsplash.com/photo-1587381420270-3e1a5b9e6904?auto=format&fit=crop&w=1200&q=80',
-    href: '#'
-  }
-] as const
-
-export const coursesPortugal: readonly GeCourse[] = [
-  {
-    name: 'Dunas Golf Comporta',
-    description:
-      'After a few years of construction, Comporta Dunas presents itself as one of the best places for golf in Europe. Designed by David McLay-Kidd in a setting that already inspires reverence among players.',
-    image:
-      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
-    href: '#'
+    href: '#enquire'
   },
   {
-    name: 'Quinta da Ria / Quinta da Cima',
+    name: 'Real Club de Golf Sotogrande',
+    area: 'Sotogrande',
+    badge: 'Trent Jones classic',
     description:
-      'Quinta da Ria Resort, situated on the Eastern Coast, is a well-known golf attraction in the Algarve. It includes two spectacular 18-hole golf courses set into a mature, scenic landscape.',
+      'The original Robert Trent Jones Sr. design that put the Costa del Sol on the golfing map back in 1964. Tree-lined, classical, demanding.',
     image:
-      'https://images.unsplash.com/photo-1519834785169-98be25ec3f84?auto=format&fit=crop&w=1200&q=80',
-    href: '#'
+      'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80',
+    href: '#enquire'
   },
   {
-    name: 'Vale do Lobo Royal',
+    name: 'Los Naranjos Golf Club',
+    area: 'Marbella',
+    badge: 'Group favourite',
     description:
-      'Vale do Lobo is the Algarve’s most senior golf resort, founded in 1962 and currently the largest luxury resort in Portugal. Much has happened at the Vale since Sir Henry Cotton laid out the first holes.',
+      'Stunning orange-tree lined fairways in the heart of Nueva Andalucía’s “Golf Valley”. A long-time favourite with Irish societies — fair and fun.',
     image:
       'https://images.unsplash.com/photo-1526772662000-3f88f10405ff?auto=format&fit=crop&w=1200&q=80',
-    href: '#'
+    href: '#enquire'
+  },
+  {
+    name: 'La Quinta Golf & Country Club',
+    area: 'Benahavís · Marbella',
+    badge: 'Manuel Piñero design',
+    description:
+      'Three loops of nine wandering through the foothills above Puerto Banús — flexible itineraries, dramatic mountain backdrops, top-tier conditioning.',
+    image:
+      'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80',
+    href: '#enquire'
   }
 ] as const

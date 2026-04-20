@@ -106,10 +106,10 @@ export function GeFooter() {
       <div className="border-t border-white/10 bg-black/30">
         <div className="mx-auto flex max-w-[1180px] flex-col items-center justify-between gap-3 px-5 py-5 text-center md:flex-row md:text-left">
           <p className="font-ge text-sm text-white/70 sm:text-[0.85rem]">
-            Copyright © {new Date().getFullYear()} – Golf Experience – All Rights Reserved
+            Copyright © {new Date().getFullYear()} – GolfSol Ireland – All Rights Reserved
           </p>
           <p className="font-ge text-sm uppercase tracking-[0.12em] text-white/60 sm:text-[0.8rem]">
-            Site demo · structural homepage clone
+            Irish-owned · Costa del Sol golf specialists
           </p>
         </div>
       </div>

@@ -34,16 +34,19 @@ const sizes: Record<Size, string> = {
 }
 
 const variants: Record<Variant, string> = {
-  blue: 'bg-ge-blue text-white hover:bg-[#1f7fc6] shadow-[0_8px_22px_rgba(38,146,224,0.32)]',
+  // Legacy "blue" variant repointed to GolfSol gold so any unmigrated
+  // call-sites pick up the brand palette automatically — no blue ever.
+  blue: 'bg-gradient-to-br from-gs-gold to-gs-gold-light text-gs-dark hover:shadow-gs-gold-hover shadow-gs-gold',
   orange: 'bg-ge-orange text-white hover:bg-ge-orange-hover shadow-[0_8px_22px_rgba(255,91,45,0.32)]',
-  teal: 'bg-ge-teal text-white hover:bg-ge-teal-dark shadow-[0_8px_22px_rgba(0,124,105,0.28)]',
+  // Legacy "teal" repointed to GolfSol green
+  teal: 'bg-gs-green text-white hover:bg-gs-electric hover:text-gs-dark shadow-gs-green',
   'outline-teal':
-    'border-2 border-ge-teal bg-transparent text-ge-teal hover:bg-ge-teal hover:text-white',
+    'border-2 border-gs-green bg-transparent text-gs-green hover:bg-gs-green hover:text-white',
   'outline-blue':
-    'border-2 border-ge-blue bg-transparent text-ge-blue hover:bg-ge-blue hover:text-white',
+    'border-2 border-ge-orange bg-transparent text-ge-orange hover:bg-ge-orange hover:text-white',
   'outline-white':
-    'border-2 border-white bg-transparent text-white hover:bg-white hover:text-ge-blue',
-  'ghost-white': 'bg-transparent text-white hover:text-ge-orange',
+    'border-2 border-white bg-transparent text-white hover:bg-gs-gold hover:text-gs-dark hover:border-gs-gold',
+  'ghost-white': 'bg-transparent text-white hover:text-gs-gold',
   // === GolfSol sport-energy palette ===
   // Primary CTA — fresh sport green, lifts to electric green on hover
   'gs-green':

@@ -18,33 +18,33 @@ const fadeUp = {
 } as const
 
 export function GeDesignYourPackage() {
-  // 4 steps to match the source site exactly.
+  // 4 steps — Costa del Sol focused, all CTAs route into the quote flow.
   const steps: readonly StepCard[] = [
     {
       badge: 'Step 1',
-      title: 'Choose Your Destination',
+      title: 'Pick Your Sol Base',
       body: designYourPackage.step1.body,
       image: designYourPackage.step1.image,
       link: designYourPackage.step1.link
     },
     {
       badge: 'Step 2',
-      title: 'Choose Your Golf Course',
+      title: 'Pick Your Tee Times',
       body: designYourPackage.step2.body,
       image: designYourPackage.step2.image,
       link: designYourPackage.step2.link
     },
     {
       badge: 'Step 3',
-      title: 'Choose Your Accommodation',
+      title: 'Pick Your Hotel',
       body: designYourPackage.step3.body,
       image: designYourPackage.step3.image,
       link: designYourPackage.step3.link
     },
     {
       badge: 'Step 4',
-      title: 'Let us do the rest!',
-      body: 'We design the perfect itinerary, book your tee times, transfers and accommodation, and look after every detail from departure to your final round.',
+      title: 'Leave the rest to us',
+      body: 'We design the itinerary, book the tees, lock in golf-bag-friendly Mercedes transfers and meet you at AGP arrivals — every detail from arrivals hall to final putt.',
       image:
         'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&w=1200&q=80',
       link: '#enquire'
@@ -79,7 +79,7 @@ export function GeDesignYourPackage() {
           {steps.map((step) => (
             <motion.article
               key={step.badge}
-              className="group relative flex flex-col overflow-hidden rounded-sm bg-white text-gs-dark shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_36px_rgba(0,0,0,0.24)]"
+              className="group relative flex flex-col overflow-hidden rounded-2xl bg-white text-gs-dark shadow-[0_10px_28px_rgba(0,0,0,0.22)] transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_22px_50px_rgba(0,0,0,0.32)]"
               {...fadeUp}
             >
               <div className="relative aspect-[16/10] overflow-hidden">
@@ -88,14 +88,19 @@ export function GeDesignYourPackage() {
                   alt={step.title}
                   loading="lazy"
                   decoding="async"
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-110"
                 />
-                <span className="absolute left-0 top-3 inline-flex min-h-[32px] items-center bg-gs-dark/85 px-3 py-1 font-ge text-sm font-bold uppercase tracking-[0.12em] text-white sm:text-[0.8rem]">
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gs-dark/60 via-transparent to-transparent"
+                />
+                {/* Gold step badge */}
+                <span className="absolute left-3 top-3 inline-flex min-h-[32px] items-center rounded-full bg-gradient-to-br from-gs-gold to-[#f4b41a] px-3.5 py-1 font-ge text-sm font-extrabold uppercase tracking-[0.12em] text-gs-dark shadow-[0_6px_16px_rgba(255,199,44,0.45)] sm:text-[0.8rem]">
                   {step.badge}
                 </span>
               </div>
               <div className="flex flex-1 flex-col p-5">
-                <h3 className="font-ge text-[1.05rem] font-bold leading-snug text-gs-green">
+                <h3 className="font-ge text-lg font-extrabold leading-snug text-gs-green sm:text-[1.1rem]">
                   {step.title}
                 </h3>
                 <p className="mt-2 line-clamp-4 font-ge text-base leading-6 text-ge-gray500 sm:text-[0.95rem]">
@@ -103,11 +108,15 @@ export function GeDesignYourPackage() {
                 </p>
                 <a
                   href={step.link}
-                  className="mt-4 inline-flex min-h-[44px] items-center gap-1 self-start font-ge text-base font-bold uppercase tracking-[0.12em] text-gs-green transition-colors hover:text-ge-orange sm:text-[0.85rem]"
+                  className="mt-4 inline-flex min-h-[44px] items-center gap-2 self-start rounded-full bg-gs-dark/5 px-4 py-2 font-ge text-base font-bold uppercase tracking-[0.12em] text-gs-green transition-all duration-300 hover:bg-gs-gold hover:text-gs-dark group-hover:bg-gs-gold group-hover:text-gs-dark sm:text-[0.85rem]"
                 >
-                  Read more →
+                  Get a Quote →
                 </a>
               </div>
+              <span
+                aria-hidden="true"
+                className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-gradient-to-r from-gs-gold via-[#f4b41a] to-ge-orange transition-transform duration-500 group-hover:scale-x-100"
+              />
             </motion.article>
           ))}
         </div>
