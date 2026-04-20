@@ -67,9 +67,9 @@ export const factsCopy = {
         'We do one thing: golf trips on the Costa del Sol. That focus means we know every course, every hotel and every transfer route between Málaga airport and Sotogrande. No guesswork — just the right course at the right time.'
     },
     {
-      title: 'Fully bonded · 24/7 support',
+      title: 'Plane to fairway · 24/7 care',
       body:
-        'GolfSol Ireland is a fully bonded operator in compliance with Spanish and EU travel law. From the moment you land at Málaga AGP to the last tee shot, our team is one phone call away — day or night.'
+        'From the moment you land at Málaga AGP to your final putt at Sotogrande, an Irish point of contact is one phone call (or WhatsApp) away — flight delays, late tee changes, lost clubs, we handle it. No call centres, no language barriers, no being passed around.'
     }
   ],
   ctaTitle: 'Let us design your perfect Costa del Sol golf trip.',

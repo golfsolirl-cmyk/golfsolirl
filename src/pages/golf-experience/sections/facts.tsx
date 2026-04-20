@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { BondedBadge } from '../components/bonded-badge'
+import { IrishOwnedSeal } from '../components/irish-owned-seal'
 import { GeButton } from '../components/ge-button'
 import { GeSection } from '../components/ge-section'
 import { RBullet } from '../components/r-bullet'
@@ -23,8 +23,8 @@ export function GeFacts() {
           <h2 className="mt-3 font-ge text-[2rem] font-extrabold uppercase leading-tight tracking-[0.02em] text-gs-green sm:text-[2.4rem]">
             {factsCopy.title}
           </h2>
-          <div className="mt-8">
-            <BondedBadge size={150} />
+          <div className="mt-8 inline-flex items-center justify-center rounded-full p-1.5 shadow-[0_10px_30px_rgba(6,59,42,0.25)] ring-1 ring-gs-gold/40">
+            <IrishOwnedSeal size={170} />
           </div>
         </motion.div>
 
