@@ -44,8 +44,10 @@ export function GeNavbar({ mode: _mode = 'auto' }: GeNavbarProps = {}) {
       {isOverlay ? <GeTopBar /> : null}
       <div
         className={cx(
-          'mx-auto flex max-w-[1340px] items-center justify-between gap-4 px-5 transition-all duration-300',
-          isOverlay ? 'py-4' : 'py-2'
+          'mx-auto flex max-w-[1340px] items-center justify-between gap-4 px-4 transition-all duration-300 sm:px-5',
+          // Tighter padding on mobile lets the bigger crest dominate;
+          // lg+ shrinks back so the full nav fits without overflow.
+          isOverlay ? 'py-4' : 'py-2 lg:py-1.5'
         )}
       >
         <a

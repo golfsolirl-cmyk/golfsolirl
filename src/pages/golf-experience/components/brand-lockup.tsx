@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import { cx } from '../../../lib/utils'
 
 interface BrandLockupProps {
@@ -133,37 +134,92 @@ export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
     )
   }
 
-  // Sticky compact horizontal lockup for the white scrolled navbar.
+  // Sticky horizontal lockup for the white navbar — sized to GRAB ATTENTION
+  // on mobile (h-[96px] base), with spring entrance + a one-shot gold
+  // shimmer sweep on mount and a subtle continuous float to draw the eye.
   return (
-    <div className={cx('flex items-center gap-3', className)}>
-      <img
-        src={crest}
-        alt=""
-        aria-hidden="true"
-        width={400}
-        height={600}
-        decoding="async"
-        className="h-[58px] w-auto shrink-0 select-none object-contain drop-shadow-[0_4px_10px_rgba(0,0,0,0.2)] sm:h-[64px]"
-      />
-      <div className="flex items-center gap-2 leading-none">
+    <div className={cx('flex items-center gap-3 sm:gap-4', className)}>
+      <motion.div
+        className="relative shrink-0"
+        initial={{ scale: 0.55, opacity: 0, rotate: -8 }}
+        animate={{ scale: 1, opacity: 1, rotate: 0 }}
+        transition={{ type: 'spring', stiffness: 220, damping: 16, mass: 0.7, delay: 0.05 }}
+      >
+        <motion.img
+          src={crest}
+          alt=""
+          aria-hidden="true"
+          width={400}
+          height={600}
+          decoding="async"
+          fetchPriority="high"
+          className="relative z-10 block h-[96px] w-auto select-none object-contain drop-shadow-[0_6px_14px_rgba(0,0,0,0.25)] sm:h-[104px] md:h-[110px] lg:h-[100px] xl:h-[108px]"
+          animate={{ y: [0, -3, 0] }}
+          transition={{ duration: 4.5, ease: 'easeInOut', repeat: Infinity, delay: 0.8 }}
+        />
+        {/* One-shot gold shimmer sweep on mount — a moving gradient mask
+            that travels across the crest once when the page loads. */}
+        <motion.div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 overflow-hidden"
+          style={{ mixBlendMode: 'screen' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0, 1, 1, 0] }}
+          transition={{ duration: 1.6, times: [0, 0.15, 0.85, 1], delay: 0.6 }}
+        >
+          <motion.div
+            className="absolute inset-y-0 w-[60%] -skew-x-[20deg]"
+            style={{
+              background:
+                'linear-gradient(90deg, transparent 0%, rgba(255,231,122,0.0) 25%, rgba(255,231,122,0.85) 50%, rgba(255,231,122,0.0) 75%, transparent 100%)'
+            }}
+            initial={{ x: '-120%' }}
+            animate={{ x: '220%' }}
+            transition={{ duration: 1.2, ease: 'easeInOut', delay: 0.7 }}
+          />
+        </motion.div>
+        {/* Continuous soft radial glow — drawn behind the crest as a
+            blurred radial gradient rather than box-shadow on a rectangle,
+            so it reads as an organic warm halo not a square ring. */}
+        <motion.div
+          aria-hidden="true"
+          className="pointer-events-none absolute -inset-4 -z-0"
+          style={{
+            background:
+              'radial-gradient(circle at 50% 55%, rgba(255,199,44,0.55) 0%, rgba(255,199,44,0.18) 35%, rgba(255,199,44,0) 65%)',
+            filter: 'blur(12px)'
+          }}
+          animate={{ opacity: [0.35, 0.85, 0.35], scale: [0.92, 1.04, 0.92] }}
+          transition={{ duration: 3.6, ease: 'easeInOut', repeat: Infinity, delay: 1.4 }}
+        />
+      </motion.div>
+
+      <motion.div
+        className="flex items-center gap-2 leading-none sm:gap-2.5"
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.45, duration: 0.45, ease: 'easeOut' }}
+      >
         <span
           className={cx(
-            'font-brand-script text-[1.55rem] font-bold leading-none sm:text-[1.75rem]',
+            'font-brand-script font-bold leading-none',
+            'text-[2rem] sm:text-[2.2rem] md:text-[2.4rem] lg:text-[2rem] xl:text-[2.2rem]',
             tone === 'on-dark' ? goldText : darkText
           )}
         >
           GolfSol
         </span>
-        <Shamrock className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
+        <Shamrock className="h-5 w-5 sm:h-[22px] sm:w-[22px] md:h-6 md:w-6 lg:h-5 lg:w-5" />
         <span
           className={cx(
-            'font-ge text-[0.78rem] font-extrabold uppercase leading-none tracking-[0.28em] sm:text-[0.85rem]',
+            'font-ge font-extrabold uppercase leading-none tracking-[0.28em]',
+            'text-[0.95rem] sm:text-[1.05rem] md:text-[1.1rem] lg:text-[0.95rem] xl:text-[1rem]',
             tone === 'on-dark' ? orangeText : 'text-[#d96b1a]'
           )}
         >
           Ireland
         </span>
-      </div>
+      </motion.div>
     </div>
   )
 }
