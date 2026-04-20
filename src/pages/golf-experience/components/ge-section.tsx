@@ -20,12 +20,12 @@ interface GeSectionProps {
 }
 
 const backgrounds = {
-  white: 'bg-white text-ge-ink',
-  gray: 'bg-ge-gray50 text-ge-ink',
+  white: 'bg-white text-gs-dark',
+  gray: 'bg-ge-gray50 text-gs-dark',
   teal: 'bg-ge-teal text-white',
   tealDark: 'bg-ge-teal-dark text-white',
-  blue: 'bg-ge-blue text-white',
-  ink: 'bg-ge-ink text-white'
+  blue: 'bg-gs-green text-white',
+  ink: 'bg-gs-dark text-white'
 } as const
 
 export function GeSection({

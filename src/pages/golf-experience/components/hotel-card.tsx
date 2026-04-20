@@ -28,8 +28,8 @@ export function GeHotelCard({ hotel }: HotelCardProps) {
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
       </div>
-      <div className="border-t-2 border-ge-blue px-4 py-3">
-        <h3 className="font-ge text-[0.95rem] font-bold leading-snug text-ge-blue">
+      <div className="border-t-2 border-gs-green px-4 py-3">
+        <h3 className="font-ge text-[0.95rem] font-bold leading-snug text-gs-green">
           {hotel.name}
         </h3>
         <p className="mt-1 font-ge text-[0.78rem] uppercase tracking-[0.12em] text-ge-gray500">

@@ -49,8 +49,8 @@
      (text-white, text-ge-teal, etc.) always win for color. */
   .ge-page {
     font-family: theme('fontFamily.ge');
-    color: theme('colors.ge.ink');
-    background: #ffffff;
+    color: theme('colors.gs.dark');
+    background: theme('colors.gs.bg');
     line-height: 1.6;
   }
   /* Slow Ken-Burns pan on the two hero plates */

@@ -72,7 +72,9 @@ export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
 
   if (mode === 'overlay') {
     // Overlay: just the crest, BIG. The crest art already contains
-    // 'GOLFSOL IRELAND' so we don't repeat it. Tagline sits underneath.
+    // 'GOLFSOL IRELAND' so we don't repeat the wordmark. Tagline sits
+    // beneath on tablets and up; on mobile we hide it to keep the area
+    // breathing room next to the hamburger button.
     return (
       <div className={cx('flex flex-col items-start gap-1.5', className)}>
         <img
@@ -82,12 +84,12 @@ export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
           height={600}
           decoding="async"
           fetchPriority="high"
-          className="h-[130px] w-auto shrink-0 select-none object-contain drop-shadow-[0_10px_24px_rgba(0,0,0,0.55)] sm:h-[160px] md:h-[190px] lg:h-[210px]"
+          className="h-[180px] w-auto shrink-0 select-none object-contain drop-shadow-[0_10px_24px_rgba(0,0,0,0.55)] sm:h-[200px] md:h-[200px] lg:h-[220px]"
         />
         <span
           className={cx(
-            'pl-1 font-ge text-[0.6rem] font-semibold uppercase tracking-[0.28em] sm:text-[0.65rem] md:text-[0.7rem]',
-            tone === 'on-dark' ? 'text-white/85' : 'text-[#0d4a14]/70'
+            'hidden pl-1 font-ge text-[0.6rem] font-semibold uppercase tracking-[0.28em] sm:inline sm:text-[0.65rem] md:text-[0.7rem]',
+            tone === 'on-dark' ? 'text-white/85' : 'text-gs-dark/70'
           )}
         >
           Spain · Portugal · Morocco

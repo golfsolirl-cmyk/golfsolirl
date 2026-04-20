@@ -8,21 +8,15 @@ import { primaryNav, type GeNavLink } from '../data/nav'
 import { GeTopBar } from './top-bar'
 
 interface GeNavbarProps {
-  /** Render mode: 'overlay' floats white text over the hero, 'solid' is a sticky white bar. */
+  /** Render mode: 'auto' = sticky-white always (current). The legacy overlay
+   *  was retired so the navbar's crest sits flush above the brand-composed
+   *  hero image's gold ribbon and reads as one unified piece. */
   readonly mode?: 'auto'
 }
 
-export function GeNavbar({ mode = 'auto' }: GeNavbarProps = {}) {
+export function GeNavbar({ mode: _mode = 'auto' }: GeNavbarProps = {}) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null)
-  const [isScrolled, setIsScrolled] = useState(false)
-
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 80)
-    handleScroll()
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
 
   useEffect(() => {
     if (!isMenuOpen) return
@@ -33,8 +27,10 @@ export function GeNavbar({ mode = 'auto' }: GeNavbarProps = {}) {
     return () => window.removeEventListener('keydown', handleEscape)
   }, [isMenuOpen])
 
-  const isOverlay = mode === 'auto' && !isScrolled && !isMenuOpen
-  const linkColor = isOverlay ? 'text-white hover:text-white/80' : 'text-ge-ink hover:text-ge-blue'
+  // Always render the solid white sticky bar. The hero image is now its own
+  // self-contained brand creative below the navbar.
+  const isOverlay = false
+  const linkColor = 'text-gs-dark hover:text-gs-green'
 
   return (
     <header
@@ -64,7 +60,7 @@ export function GeNavbar({ mode = 'auto' }: GeNavbarProps = {}) {
           {primaryNav.map((link) => (
             <DesktopNavItem key={link.label} link={link} colorClass={linkColor} />
           ))}
-          <GeButton href="#enquire" size="sm" variant={isOverlay ? 'outline-white' : 'blue'}>
+          <GeButton href="#enquire" size="sm" variant={isOverlay ? 'outline-gs-white' : 'gs-green'}>
             Enquire
           </GeButton>
         </nav>
@@ -78,7 +74,7 @@ export function GeNavbar({ mode = 'auto' }: GeNavbarProps = {}) {
             'inline-flex h-11 w-11 items-center justify-center rounded-full border-2 transition-colors lg:hidden',
             isOverlay
               ? 'border-white/60 text-white hover:border-white hover:bg-white/15'
-              : 'border-ge-gray200 text-ge-ink hover:border-ge-blue hover:text-ge-blue'
+              : 'border-ge-gray200 text-gs-dark hover:border-gs-green hover:text-gs-green'
           )}
           onClick={() => setIsMenuOpen((value) => !value)}
         >
@@ -104,7 +100,7 @@ export function GeNavbar({ mode = 'auto' }: GeNavbarProps = {}) {
                       <div>
                         <button
                           type="button"
-                          className="flex min-h-[48px] w-full items-center justify-between py-3 text-left font-ge text-sm font-bold uppercase tracking-[0.1em] text-ge-ink"
+                          className="flex min-h-[48px] w-full items-center justify-between py-3 text-left font-ge text-sm font-bold uppercase tracking-[0.1em] text-gs-dark"
                           onClick={() =>
                             setOpenSubmenu((current) => (current === link.label ? null : link.label))
                           }
@@ -132,7 +128,7 @@ export function GeNavbar({ mode = 'auto' }: GeNavbarProps = {}) {
                                 <li key={child.label}>
                                   <a
                                     href={child.href}
-                                    className="block min-h-[44px] py-2 text-sm text-ge-gray500 hover:text-ge-blue"
+                                    className="block min-h-[44px] py-2 text-sm text-ge-gray500 hover:text-gs-green"
                                     onClick={() => setIsMenuOpen(false)}
                                   >
                                     {child.label}
@@ -146,7 +142,7 @@ export function GeNavbar({ mode = 'auto' }: GeNavbarProps = {}) {
                     ) : (
                       <a
                         href={link.href}
-                        className="block min-h-[48px] py-3 font-ge text-sm font-bold uppercase tracking-[0.1em] text-ge-ink hover:text-ge-blue"
+                        className="block min-h-[48px] py-3 font-ge text-sm font-bold uppercase tracking-[0.1em] text-gs-dark hover:text-gs-green"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         {link.label}
@@ -156,7 +152,7 @@ export function GeNavbar({ mode = 'auto' }: GeNavbarProps = {}) {
                 ))}
               </ul>
               <div className="mt-4">
-                <GeButton href="#enquire" size="md" variant="blue" className="w-full">
+                <GeButton href="#enquire" size="md" variant="gs-green" className="w-full">
                   Enquire Now
                 </GeButton>
               </div>
@@ -207,7 +203,7 @@ function DesktopNavItem({ link, colorClass }: { readonly link: GeNavLink; readon
               <a
                 key={child.label}
                 href={child.href}
-                className="block px-4 py-2.5 font-ge text-[0.78rem] font-semibold uppercase tracking-[0.1em] text-ge-ink hover:bg-ge-gray50 hover:text-ge-blue"
+                className="block px-4 py-2.5 font-ge text-[0.78rem] font-semibold uppercase tracking-[0.1em] text-gs-dark hover:bg-ge-gray50 hover:text-gs-green"
               >
                 {child.label}
               </a>

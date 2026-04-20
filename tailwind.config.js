@@ -37,6 +37,15 @@ export default {
         },
         cream: '#f2f5ef',
         offwhite: '#f7f9f5',
+        // GolfSol Ireland sport-energy palette (used on the clone home `/`)
+        gs: {
+          green: '#0B6B45',          // Primary Green — fresher, stronger
+          dark: '#063B2A',            // Dark Green — text & deep surfaces
+          electric: '#1ED760',        // Electric Green Accent — energy pop
+          gold: '#FFC72C',            // Gold — bright, sporty
+          'gold-light': '#FFE27A',    // Gold Highlight
+          bg: '#F4F7F5'               // Light turf background
+        },
         ge: {
           teal: '#007C69',
           'teal-dark': '#005a4d',
@@ -66,13 +75,18 @@ export default {
       },
       boxShadow: {
         glow: '0 24px 80px rgba(220, 88, 1, 0.18)',
-        soft: '0 18px 60px rgba(22, 58, 19, 0.12)'
+        soft: '0 18px 60px rgba(22, 58, 19, 0.12)',
+        'gs-gold': '0 8px 22px rgba(255,199,44,0.42)',
+        'gs-gold-hover': '0 10px 28px rgba(255,199,44,0.62)',
+        'gs-green': '0 8px 22px rgba(11,107,69,0.32)'
       },
       backgroundImage: {
         'hero-overlay':
           'linear-gradient(90deg, rgba(10,32,8,0.92) 0%, rgba(10,32,8,0.72) 42%, rgba(10,32,8,0.28) 100%)',
         'hero-bottom':
-          'linear-gradient(180deg, rgba(10,32,8,0.04) 0%, rgba(10,32,8,0.76) 100%)'
+          'linear-gradient(180deg, rgba(10,32,8,0.04) 0%, rgba(10,32,8,0.76) 100%)',
+        'gs-gold': 'linear-gradient(135deg, #FFC72C 0%, #FFE27A 100%)',
+        'gs-energy': 'linear-gradient(90deg, #0B6B45 0%, #1ED760 100%)'
       },
       keyframes: {
         float: {

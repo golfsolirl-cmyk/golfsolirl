@@ -28,7 +28,7 @@ export function GeCourseCard({ course }: CourseCardProps) {
         />
       </div>
       <div className="flex flex-1 flex-col p-6">
-        <h3 className="font-ge text-[1.25rem] font-bold leading-snug text-ge-blue">
+        <h3 className="font-ge text-[1.25rem] font-bold leading-snug text-gs-green">
           {course.name}
         </h3>
         <p className="mt-3 line-clamp-4 font-ge text-[0.92rem] leading-7 text-ge-gray500">
@@ -36,7 +36,7 @@ export function GeCourseCard({ course }: CourseCardProps) {
         </p>
         <a
           href={course.href}
-          className="mt-4 inline-flex min-h-[40px] items-center gap-1 self-start font-ge text-[0.78rem] font-bold uppercase tracking-[0.14em] text-ge-blue transition-colors hover:text-ge-orange"
+          className="mt-4 inline-flex min-h-[40px] items-center gap-1 self-start font-ge text-[0.78rem] font-bold uppercase tracking-[0.14em] text-gs-green transition-colors hover:text-ge-orange"
         >
           Read more →
         </a>

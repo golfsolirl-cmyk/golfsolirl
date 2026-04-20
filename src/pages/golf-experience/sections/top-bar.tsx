@@ -35,7 +35,7 @@ export function GeTopBar() {
 
 export function GeTopBarMobile() {
   return (
-    <div className="flex items-center justify-between gap-3 bg-ge-blue px-4 py-2 text-white md:hidden">
+    <div className="flex items-center justify-between gap-3 bg-gs-green px-4 py-2 text-white md:hidden">
       <p className="text-[0.6rem] font-bold uppercase tracking-[0.14em]">{contactInfo.tagline}</p>
       <div className="flex items-center gap-3">
         <a

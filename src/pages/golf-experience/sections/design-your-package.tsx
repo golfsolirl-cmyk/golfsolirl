@@ -55,7 +55,7 @@ export function GeDesignYourPackage() {
     <section
       id="design-package"
       aria-labelledby="design-package-title"
-      className="relative bg-ge-blue text-white"
+      className="relative bg-gs-green text-white"
     >
       {/* Small white tab hanging from the top edge into the blue, exactly
           like the source. */}
@@ -79,7 +79,7 @@ export function GeDesignYourPackage() {
           {steps.map((step) => (
             <motion.article
               key={step.badge}
-              className="group relative flex flex-col overflow-hidden rounded-sm bg-white text-ge-ink shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_36px_rgba(0,0,0,0.24)]"
+              className="group relative flex flex-col overflow-hidden rounded-sm bg-white text-gs-dark shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_36px_rgba(0,0,0,0.24)]"
               {...fadeUp}
             >
               <div className="relative aspect-[16/10] overflow-hidden">
@@ -90,12 +90,12 @@ export function GeDesignYourPackage() {
                   decoding="async"
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <span className="absolute left-0 top-3 inline-flex min-h-[28px] items-center bg-ge-ink/85 px-3 py-1 font-ge text-[0.75rem] font-bold uppercase tracking-[0.14em] text-white">
+                <span className="absolute left-0 top-3 inline-flex min-h-[28px] items-center bg-gs-dark/85 px-3 py-1 font-ge text-[0.75rem] font-bold uppercase tracking-[0.14em] text-white">
                   {step.badge}
                 </span>
               </div>
               <div className="flex flex-1 flex-col p-5">
-                <h3 className="font-ge text-[1.05rem] font-bold leading-snug text-ge-blue">
+                <h3 className="font-ge text-[1.05rem] font-bold leading-snug text-gs-green">
                   {step.title}
                 </h3>
                 <p className="mt-2 line-clamp-4 font-ge text-[0.88rem] leading-6 text-ge-gray500">
@@ -103,7 +103,7 @@ export function GeDesignYourPackage() {
                 </p>
                 <a
                   href={step.link}
-                  className="mt-4 inline-flex min-h-[40px] items-center gap-1 self-start font-ge text-[0.78rem] font-bold uppercase tracking-[0.14em] text-ge-blue transition-colors hover:text-ge-orange"
+                  className="mt-4 inline-flex min-h-[40px] items-center gap-1 self-start font-ge text-[0.78rem] font-bold uppercase tracking-[0.14em] text-gs-green transition-colors hover:text-ge-orange"
                 >
                   Read more →
                 </a>

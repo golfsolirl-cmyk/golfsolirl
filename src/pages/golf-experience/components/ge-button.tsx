@@ -1,7 +1,20 @@
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react'
 import { cx } from '../../../lib/utils'
 
-type Variant = 'blue' | 'orange' | 'teal' | 'outline-teal' | 'outline-blue' | 'outline-white' | 'ghost-white'
+type Variant =
+  | 'blue'
+  | 'orange'
+  | 'teal'
+  | 'outline-teal'
+  | 'outline-blue'
+  | 'outline-white'
+  | 'ghost-white'
+  // GolfSol sport-energy palette variants (clone home /)
+  | 'gs-green'
+  | 'gs-gold'
+  | 'gs-electric'
+  | 'outline-gs-white'
+  | 'outline-gs-green'
 type Size = 'sm' | 'md' | 'lg'
 
 interface CommonProps {
@@ -28,11 +41,26 @@ const variants: Record<Variant, string> = {
     'border-2 border-ge-blue bg-transparent text-ge-blue hover:bg-ge-blue hover:text-white',
   'outline-white':
     'border-2 border-white bg-transparent text-white hover:bg-white hover:text-ge-blue',
-  'ghost-white': 'bg-transparent text-white hover:text-ge-orange'
+  'ghost-white': 'bg-transparent text-white hover:text-ge-orange',
+  // === GolfSol sport-energy palette ===
+  // Primary CTA — fresh sport green, lifts to electric green on hover
+  'gs-green':
+    'bg-gs-green text-white hover:bg-gs-electric hover:text-gs-dark shadow-gs-green',
+  // Loud secondary — gold gradient
+  'gs-gold':
+    'bg-gs-gold bg-gradient-to-br from-gs-gold to-gs-gold-light text-gs-dark hover:shadow-gs-gold-hover shadow-gs-gold',
+  // Energy pop — bright electric on dark surfaces
+  'gs-electric':
+    'bg-gs-electric text-gs-dark hover:bg-gs-gold hover:text-gs-dark shadow-gs-green',
+  // Outline on dark hero
+  'outline-gs-white':
+    'border-2 border-white bg-transparent text-white hover:bg-gs-gold hover:text-gs-dark hover:border-gs-gold',
+  'outline-gs-green':
+    'border-2 border-gs-green bg-transparent text-gs-green hover:bg-gs-green hover:text-white'
 }
 
 const baseClasses =
-  'inline-flex items-center justify-center gap-2 rounded-[2px] font-ge font-bold uppercase tracking-[0.14em] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ge-orange focus-visible:ring-offset-2'
+  'inline-flex items-center justify-center gap-2 rounded-md font-ge font-bold uppercase tracking-[0.14em] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gs-electric focus-visible:ring-offset-2'
 
 interface GeButtonAnchorProps extends CommonProps, Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'className' | 'children'> {
   readonly href: string
