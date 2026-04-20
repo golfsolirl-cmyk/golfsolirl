@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import { TriangleDivider } from '../components/triangle-divider'
 import { designYourPackage } from '../data/copy'
 
 interface StepCard {
@@ -57,10 +56,6 @@ export function GeDesignYourPackage() {
       aria-labelledby="design-package-title"
       className="relative bg-gs-green text-white"
     >
-      {/* Small white tab hanging from the top edge into the blue, exactly
-          like the source. */}
-      <TriangleDivider fill="#ffffff" position="top" height={36} variant="tab" />
-
       <div className="mx-auto max-w-[1180px] px-5 pb-20 pt-20 sm:px-8">
         <motion.div className="text-center" {...fadeUp}>
           <h2
@@ -121,8 +116,6 @@ export function GeDesignYourPackage() {
           ))}
         </div>
       </div>
-
-      <TriangleDivider fill="#ffffff" position="bottom" height={70} variant="simple" />
     </section>
   )
 }
