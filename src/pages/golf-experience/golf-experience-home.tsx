@@ -9,6 +9,7 @@ import { GeFinalCta } from './sections/final-cta'
 import { GeFooter } from './sections/ge-footer'
 import { GeHero } from './sections/hero'
 import { GeNavbar } from './sections/ge-navbar'
+import { GePaymentsIreland } from './sections/payments-ireland'
 
 export function GolfExperienceHome() {
   return (
@@ -23,6 +24,7 @@ export function GolfExperienceHome() {
 
       <main id="main">
         <GeHero />
+        <GePaymentsIreland />
         <GeDesignYourPackage />
         <GeCoursesSpain />
         <GeAccommodationIntro />
