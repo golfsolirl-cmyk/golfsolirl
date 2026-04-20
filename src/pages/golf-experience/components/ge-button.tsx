@@ -1,18 +1,7 @@
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react'
 import { cx } from '../../../lib/utils'
 
-type Variant =
-  | 'blue'
-  | 'orange'
-  | 'teal'
-  | 'outline-teal'
-  | 'outline-blue'
-  | 'outline-white'
-  | 'ghost-white'
-  // New sport-energy design system variants
-  | 'sport'
-  | 'gold'
-  | 'outline-sport'
+type Variant = 'blue' | 'orange' | 'teal' | 'outline-teal' | 'outline-blue' | 'outline-white' | 'ghost-white'
 type Size = 'sm' | 'md' | 'lg'
 
 interface CommonProps {
@@ -39,19 +28,11 @@ const variants: Record<Variant, string> = {
     'border-2 border-ge-blue bg-transparent text-ge-blue hover:bg-ge-blue hover:text-white',
   'outline-white':
     'border-2 border-white bg-transparent text-white hover:bg-white hover:text-ge-blue',
-  'ghost-white': 'bg-transparent text-white hover:text-ge-orange',
-  // Primary action — sport green, lifts to brighter primary-accent on hover
-  sport:
-    'bg-primary text-white hover:bg-primary-accent hover:text-primary-dark shadow-soft hover:shadow-medium',
-  // Loud secondary — gold gradient, big presence
-  gold:
-    'bg-gold-gradient text-primary-dark hover:shadow-gold-hover shadow-gold',
-  'outline-sport':
-    'border-2 border-white bg-transparent text-white hover:bg-white hover:text-primary'
+  'ghost-white': 'bg-transparent text-white hover:text-ge-orange'
 }
 
 const baseClasses =
-  'inline-flex items-center justify-center gap-2 rounded-md font-heading font-semibold uppercase tracking-[0.14em] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-accent focus-visible:ring-offset-2'
+  'inline-flex items-center justify-center gap-2 rounded-[2px] font-ge font-bold uppercase tracking-[0.14em] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ge-orange focus-visible:ring-offset-2'
 
 interface GeButtonAnchorProps extends CommonProps, Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'className' | 'children'> {
   readonly href: string
