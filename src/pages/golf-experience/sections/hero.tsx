@@ -122,7 +122,7 @@ export function GeHero() {
         </p>
 
         <div className="mt-9">
-          <GeButton href="#enquire" variant="blue" size="lg">
+          <GeButton href="#enquire" variant="gold" size="lg">
             {heroCopy.cta}
           </GeButton>
         </div>

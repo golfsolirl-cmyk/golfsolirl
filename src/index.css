@@ -1,4 +1,4 @@
-@import url('https://fonts.bunny.net/css?family=rubik:300,400,500,600,700,800,900|dancing-script:600,700|open-sans:300,400,600,700,800&display=swap');
+@import url('https://fonts.bunny.net/css?family=rubik:300,400,500,600,700,800,900|dancing-script:600,700|open-sans:300,400,600,700,800|inter:300,400,500,600,700,800,900|oswald:300,400,500,600,700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -45,13 +45,31 @@
   }
 
   /* Scoped styles for the Golf Experience literal-clone homepage.
-     IMPORTANT: keep selector specificity low so Tailwind utilities
-     (text-white, text-ge-teal, etc.) always win for color. */
+     Now wired up to the new sport-energy design system:
+       - body  → Inter
+       - heads → Oswald (uppercase tracking)
+       - text  → text.primary (#063B2A)
+       - bg    → background (#F4F7F5)
+     Selector specificity stays low so Tailwind utilities still win. */
   .ge-page {
-    font-family: theme('fontFamily.ge');
-    color: theme('colors.ge.ink');
-    background: #ffffff;
+    font-family: theme('fontFamily.body');
+    color: theme('colors.text.primary');
+    background: theme('colors.background');
     line-height: 1.6;
+  }
+  .ge-page h1,
+  .ge-page h2,
+  .ge-page h3,
+  .ge-page h4,
+  .ge-page h5,
+  .ge-page h6 {
+    font-family: theme('fontFamily.heading');
+    line-height: 1.1;
+    letter-spacing: 0.02em;
+  }
+  .ge-page button {
+    font-family: theme('fontFamily.heading');
+    letter-spacing: 0.06em;
   }
   /* Slow Ken-Burns pan on the two hero plates */
   @keyframes heroPanLeft {
@@ -61,18 +79,6 @@
   @keyframes heroPanRight {
     from { transform: scale(1.1) translate(0, 0); }
     to   { transform: scale(1.12) translate(2%, -1%); }
-  }
-  .ge-page h1,
-  .ge-page h2,
-  .ge-page h3,
-  .ge-page h4,
-  .ge-page h5,
-  .ge-page h6 {
-    font-family: theme('fontFamily.ge');
-    line-height: 1.2;
-  }
-  .ge-page button {
-    font-family: theme('fontFamily.ge');
   }
 }
 

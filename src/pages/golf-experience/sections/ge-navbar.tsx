@@ -64,7 +64,7 @@ export function GeNavbar({ mode = 'auto' }: GeNavbarProps = {}) {
           {primaryNav.map((link) => (
             <DesktopNavItem key={link.label} link={link} colorClass={linkColor} />
           ))}
-          <GeButton href="#enquire" size="sm" variant={isOverlay ? 'outline-white' : 'blue'}>
+          <GeButton href="#enquire" size="sm" variant={isOverlay ? 'outline-sport' : 'sport'}>
             Enquire
           </GeButton>
         </nav>
@@ -156,7 +156,7 @@ export function GeNavbar({ mode = 'auto' }: GeNavbarProps = {}) {
                 ))}
               </ul>
               <div className="mt-4">
-                <GeButton href="#enquire" size="md" variant="blue" className="w-full">
+                <GeButton href="#enquire" size="md" variant="sport" className="w-full">
                   Enquire Now
                 </GeButton>
               </div>
