@@ -18,9 +18,10 @@ export function GeHero() {
       aria-labelledby="ge-hero-title"
       id="top"
     >
-      {/* Spacer for the fixed navbar — sized to match the new big crest
-          lockup heights (mobile 96px crest + py-2 ≈ 112px; lg shrinks). */}
-      <div aria-hidden="true" className="h-[112px] w-full bg-white sm:h-[120px] md:h-[126px] lg:h-[100px] xl:h-[104px]" />
+      {/* Spacer for the fixed navbar — sized to match the larger sticky
+          crest heights (mobile 110px + py-1.5 ≈ 134px; md peaks at 152px;
+          lg shrinks back so the desktop nav menu fits comfortably). */}
+      <div aria-hidden="true" className="h-[134px] w-full bg-white sm:h-[148px] md:h-[164px] lg:h-[130px] xl:h-[142px]" />
 
       {/* Full-width brand creative. Two compositions:
           - Portrait 2:3 for narrow viewports (< 768px) — the headline,
