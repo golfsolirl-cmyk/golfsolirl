@@ -17,7 +17,7 @@ export function GeFacts() {
     <GeSection background="white" className="pt-20 pb-12">
       <div className="grid gap-12 lg:grid-cols-[0.45fr_0.55fr] lg:items-start">
         <motion.div className="flex flex-col items-center text-center lg:items-start lg:text-left" {...fadeUp}>
-          <p className="font-ge text-[0.85rem] font-bold uppercase tracking-[0.2em] text-ge-orange">
+          <p className="font-ge text-sm font-bold uppercase tracking-[0.18em] text-ge-orange sm:text-[0.85rem]">
             {factsCopy.eyebrow}
           </p>
           <h2 className="mt-3 font-ge text-[2rem] font-extrabold uppercase leading-tight tracking-[0.02em] text-gs-green sm:text-[2.4rem]">

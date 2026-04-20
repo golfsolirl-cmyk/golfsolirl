@@ -28,7 +28,7 @@ export function GeFooter() {
                     <ChevronRight className="mt-1 h-3.5 w-3.5 shrink-0 text-gs-green-light" aria-hidden="true" />
                     <a
                       href={link.href}
-                      className="font-ge text-[0.88rem] text-white/85 transition-colors hover:text-ge-orange"
+                      className="font-ge text-base text-white/90 transition-colors hover:text-ge-orange sm:text-[0.95rem]"
                     >
                       {link.label}
                     </a>
@@ -47,7 +47,7 @@ export function GeFooter() {
                 <Phone className="mt-1 h-4 w-4 shrink-0 text-gs-green-light" aria-hidden="true" />
                 <a
                   href={`tel:${contactInfo.phoneTel}`}
-                  className="font-ge text-[0.88rem] text-white/90 hover:text-gs-green-light"
+                  className="font-ge text-base text-white/95 hover:text-gs-green-light sm:text-[0.95rem]"
                 >
                   {contactInfo.phoneDisplay}
                 </a>
@@ -56,7 +56,7 @@ export function GeFooter() {
                 <Mail className="mt-1 h-4 w-4 shrink-0 text-gs-green-light" aria-hidden="true" />
                 <a
                   href={`mailto:${contactInfo.email}`}
-                  className="font-ge text-[0.88rem] text-white/90 hover:text-gs-green-light"
+                  className="font-ge text-base text-white/95 hover:text-gs-green-light sm:text-[0.95rem]"
                 >
                   {contactInfo.email}
                 </a>
@@ -85,7 +85,7 @@ export function GeFooter() {
         <div className="mt-12 grid gap-10 border-t border-white/10 pt-10 lg:grid-cols-[0.4fr_0.6fr] lg:items-center">
           <div>
             <GeBrandLockup tone="on-dark" mode="footer" />
-            <p className="mt-6 font-ge text-[0.9rem] leading-7 text-white/72">{aboutFooterCopy}</p>
+            <p className="mt-6 font-ge text-base leading-7 text-white/80 sm:text-[0.95rem]">{aboutFooterCopy}</p>
           </div>
           <div className="flex flex-col items-start gap-4 lg:items-end">
             <p className="font-ge text-[0.78rem] font-bold uppercase tracking-[0.18em] text-white/70">
@@ -105,10 +105,10 @@ export function GeFooter() {
 
       <div className="border-t border-white/10 bg-black/30">
         <div className="mx-auto flex max-w-[1180px] flex-col items-center justify-between gap-3 px-5 py-5 text-center md:flex-row md:text-left">
-          <p className="font-ge text-[0.78rem] text-white/60">
+          <p className="font-ge text-sm text-white/70 sm:text-[0.85rem]">
             Copyright © {new Date().getFullYear()} – Golf Experience – All Rights Reserved
           </p>
-          <p className="font-ge text-[0.78rem] uppercase tracking-[0.14em] text-white/50">
+          <p className="font-ge text-sm uppercase tracking-[0.12em] text-white/60 sm:text-[0.8rem]">
             Site demo · structural homepage clone
           </p>
         </div>

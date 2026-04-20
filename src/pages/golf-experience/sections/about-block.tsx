@@ -25,7 +25,7 @@ export function GeAboutBlock() {
         </motion.div>
 
         <motion.div {...fadeUp}>
-          <p className="font-ge text-[0.85rem] font-bold uppercase tracking-[0.2em] text-ge-orange">
+          <p className="font-ge text-sm font-bold uppercase tracking-[0.2em] text-ge-orange sm:text-[0.85rem]">
             {aboutCopy.eyebrow}
           </p>
           <h2 className="mt-3 font-ge text-[2rem] font-extrabold uppercase leading-tight tracking-[0.02em] text-gs-green sm:text-[2.4rem]">
@@ -33,7 +33,7 @@ export function GeAboutBlock() {
           </h2>
           <div className="mt-6 space-y-4">
             {aboutCopy.paragraphs.map((paragraph) => (
-              <p key={paragraph} className="font-ge text-[0.98rem] leading-7 text-ge-gray500">
+              <p key={paragraph} className="font-ge text-base leading-7 text-ge-gray500 sm:text-[1rem]">
                 {paragraph}
               </p>
             ))}

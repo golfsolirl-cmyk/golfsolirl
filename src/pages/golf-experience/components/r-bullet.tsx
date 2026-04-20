@@ -24,7 +24,7 @@ export function RBullet({ title, children, className }: RBulletProps) {
         <h4 className="font-ge text-[1.18rem] font-bold uppercase tracking-[0.06em] text-gs-green">
           {title}
         </h4>
-        <div className="mt-2 font-ge text-[0.96rem] leading-7 text-ge-gray500">
+        <div className="mt-2 font-ge text-base leading-7 text-ge-gray500 sm:text-[1rem]">
           {children}
         </div>
       </div>

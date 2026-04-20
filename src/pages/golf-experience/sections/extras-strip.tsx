@@ -47,7 +47,7 @@ export function GeExtrasStrip() {
               {title}
             </h4>
             {note ? (
-              <p className="mt-1 font-ge text-[0.78rem] uppercase tracking-[0.14em] text-gs-green">
+              <p className="mt-1 font-ge text-sm uppercase tracking-[0.12em] text-gs-green sm:text-[0.85rem]">
                 ({note})
               </p>
             ) : null}

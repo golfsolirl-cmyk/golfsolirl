@@ -29,10 +29,10 @@ export function GeHotelCard({ hotel }: HotelCardProps) {
         />
       </div>
       <div className="border-t-2 border-gs-green px-4 py-3">
-        <h3 className="font-ge text-[0.95rem] font-bold leading-snug text-gs-green">
+        <h3 className="font-ge text-lg font-bold leading-snug text-gs-green sm:text-[1rem]">
           {hotel.name}
         </h3>
-        <p className="mt-1 font-ge text-[0.78rem] uppercase tracking-[0.12em] text-ge-gray500">
+        <p className="mt-1 font-ge text-sm uppercase tracking-[0.1em] text-ge-gray500 sm:text-[0.8rem]">
           {hotel.area}
         </p>
       </div>

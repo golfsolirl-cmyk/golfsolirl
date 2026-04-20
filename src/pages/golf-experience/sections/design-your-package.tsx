@@ -69,7 +69,7 @@ export function GeDesignYourPackage() {
           >
             {designYourPackage.title}
           </h2>
-          <p className="mx-auto mt-3 max-w-xl font-ge text-sm font-semibold uppercase tracking-[0.18em] text-white/80">
+          <p className="mx-auto mt-3 max-w-xl font-ge text-base font-semibold uppercase tracking-[0.16em] text-white/80 sm:text-sm">
             Choose your destination · Choose your golf course · Choose your accommodation
           </p>
           <p className="mt-2 font-ge text-base italic text-white/80">{designYourPackage.closer}</p>
@@ -90,7 +90,7 @@ export function GeDesignYourPackage() {
                   decoding="async"
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <span className="absolute left-0 top-3 inline-flex min-h-[28px] items-center bg-gs-dark/85 px-3 py-1 font-ge text-[0.75rem] font-bold uppercase tracking-[0.14em] text-white">
+                <span className="absolute left-0 top-3 inline-flex min-h-[32px] items-center bg-gs-dark/85 px-3 py-1 font-ge text-sm font-bold uppercase tracking-[0.12em] text-white sm:text-[0.8rem]">
                   {step.badge}
                 </span>
               </div>
@@ -98,12 +98,12 @@ export function GeDesignYourPackage() {
                 <h3 className="font-ge text-[1.05rem] font-bold leading-snug text-gs-green">
                   {step.title}
                 </h3>
-                <p className="mt-2 line-clamp-4 font-ge text-[0.88rem] leading-6 text-ge-gray500">
+                <p className="mt-2 line-clamp-4 font-ge text-base leading-6 text-ge-gray500 sm:text-[0.95rem]">
                   {step.body}
                 </p>
                 <a
                   href={step.link}
-                  className="mt-4 inline-flex min-h-[40px] items-center gap-1 self-start font-ge text-[0.78rem] font-bold uppercase tracking-[0.14em] text-gs-green transition-colors hover:text-ge-orange"
+                  className="mt-4 inline-flex min-h-[44px] items-center gap-1 self-start font-ge text-base font-bold uppercase tracking-[0.12em] text-gs-green transition-colors hover:text-ge-orange sm:text-[0.85rem]"
                 >
                   Read more →
                 </a>
