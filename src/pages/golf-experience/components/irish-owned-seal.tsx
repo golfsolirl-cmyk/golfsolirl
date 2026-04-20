@@ -6,25 +6,30 @@ interface IrishOwnedSealProps {
 }
 
 /**
- * Circular brand seal used in the "Why GolfSol Ireland" section.
+ * Clean, premium circular brand seal for the "Why GolfSol Ireland" section.
  *
- * IMPORTANT: this replaces the previous "Fully Bonded Tour Operator" badge —
- * we are NOT a bonded operator and must never imply that. This seal only
- * states things we know to be true:
+ * Replaces the old "Fully Bonded" badge — we are NOT a bonded operator.
+ * This seal only states things we know to be true:
  *   • Irish owned
  *   • Costa del Sol focused
- *   • Plane → Fairway 24/7 care
  *
- * Visual: dark forest-green disc with two concentric gold rings, arched
- * copy top + bottom in gold caps, a small gold star divider, and a centre
- * emblem of a shamrock layered behind a golf flag with sun rays — ties
- * directly into the gold + green brand palette.
+ * Design language:
+ *   • Single dark forest-green disc with one bold gold ring border.
+ *   • Inner thin gold hairline ring with breathing room.
+ *   • Two arched lines of caps text in gold (top + bottom, both upright).
+ *   • Two small gold "fleur" dividers at 9 and 3 o'clock to separate
+ *     the top and bottom arcs.
+ *   • Centre: a single, geometric shamrock — three perfectly round leaves
+ *     in bright green with a darker green outline and a small gold crown
+ *     dot above. No competing flag/sun/text.
+ *   • Generous negative space throughout. Premium wax-stamp feel rather
+ *     than crowded medallion.
  */
 export function IrishOwnedSeal({ className, size = 180 }: IrishOwnedSealProps) {
   return (
     <svg
       role="img"
-      aria-label="Irish owned · Costa del Sol golf specialists · Plane to fairway 24/7 care"
+      aria-label="GolfSol Ireland — Irish owned, Costa del Sol golf specialists"
       className={cx(className)}
       width={size}
       height={size}
@@ -32,159 +37,123 @@ export function IrishOwnedSeal({ className, size = 180 }: IrishOwnedSealProps) {
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
-        {/* Arched text paths */}
-        <path id="seal-arc-top" d="M 22 100 a 78 78 0 0 1 156 0" fill="none" />
-        {/* Bottom arc: traced RIGHT→LEFT along the bottom so the textPath
-            baseline rests on the inside of the curve and the letters sit
-            upright (rather than upside-down on the outside). */}
-        <path id="seal-arc-bottom" d="M 172 100 a 72 72 0 0 1 -144 0" fill="none" />
+        {/* Top arc — left→right across the upper half. Curve bulges UP and
+            the text baseline rides along it reading upright. */}
+        <path id="seal-arc-top" d="M 28 100 a 72 72 0 0 1 144 0" fill="none" />
+        {/* Bottom arc — left→right across the LOWER half (sweep=0 so the
+            arc bulges DOWN). Path direction at the bottom is left→right,
+            which means text characters stand upright above the curve. */}
+        <path id="seal-arc-bottom" d="M 28 100 a 72 72 0 0 0 144 0" fill="none" />
 
-        {/* Gold gradient */}
-        <linearGradient id="seal-gold" x1="0%" y1="0%" x2="0%" y2="100%">
+        {/* Gold gradient — soft top-down */}
+        <linearGradient id="seal-gold" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#FFE27A" />
-          <stop offset="50%" stopColor="#FFC72C" />
-          <stop offset="100%" stopColor="#E2A300" />
+          <stop offset="55%" stopColor="#FFC72C" />
+          <stop offset="100%" stopColor="#D89A00" />
         </linearGradient>
 
-        {/* Sunburst */}
-        <radialGradient id="seal-sun" cx="50%" cy="45%" r="60%">
-          <stop offset="0%" stopColor="#FFE27A" stopOpacity="0.65" />
-          <stop offset="60%" stopColor="#FFC72C" stopOpacity="0.0" />
+        {/* Shamrock leaf gradient — bright top, deeper at base */}
+        <radialGradient id="seal-leaf" cx="40%" cy="35%" r="70%">
+          <stop offset="0%" stopColor="#34E37A" />
+          <stop offset="100%" stopColor="#0F8A48" />
         </radialGradient>
-
-        <filter id="seal-soft" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="0.6" />
-        </filter>
       </defs>
 
-      {/* Outer dark disc */}
+      {/* Outer disc */}
       <circle cx="100" cy="100" r="96" fill="#063B2A" />
 
-      {/* Outer gold ring */}
+      {/* Bold gold ring border */}
       <circle
         cx="100"
         cy="100"
-        r="93"
+        r="92"
         fill="none"
         stroke="url(#seal-gold)"
-        strokeWidth="3"
+        strokeWidth="3.5"
       />
 
-      {/* Inner gold hairline ring */}
+      {/* Inner hairline ring (gives the band of arched text room to breathe) */}
       <circle
         cx="100"
         cy="100"
-        r="84"
+        r="78"
         fill="none"
         stroke="url(#seal-gold)"
-        strokeWidth="1.2"
-        opacity="0.85"
+        strokeWidth="0.9"
+        opacity="0.55"
       />
-
-      {/* Soft sunburst behind centre emblem */}
-      <circle cx="100" cy="92" r="55" fill="url(#seal-sun)" />
 
       {/* Top arched text */}
       <text
         fill="url(#seal-gold)"
-        fontFamily="Oswald, Open Sans, sans-serif"
+        fontFamily="Oswald, 'Open Sans', sans-serif"
         fontWeight="700"
-        fontSize="11"
-        letterSpacing="3"
+        fontSize="13"
+        letterSpacing="3.4"
       >
         <textPath href="#seal-arc-top" startOffset="50%" textAnchor="middle">
-          IRISH OWNED · COSTA DEL SOL
+          IRISH OWNED
         </textPath>
       </text>
 
-      {/* Bottom arched text (path is rotated 180°, so text reads correctly) */}
+      {/* Bottom arched text */}
       <text
         fill="url(#seal-gold)"
-        fontFamily="Oswald, Open Sans, sans-serif"
+        fontFamily="Oswald, 'Open Sans', sans-serif"
         fontWeight="700"
-        fontSize="9.5"
-        letterSpacing="2.6"
+        fontSize="11.5"
+        letterSpacing="3.2"
       >
         <textPath href="#seal-arc-bottom" startOffset="50%" textAnchor="middle">
-          PLANE TO FAIRWAY · 24/7 CARE
+          COSTA DEL SOL
         </textPath>
       </text>
 
-      {/* Star dividers between top/bottom arcs */}
+      {/* Star dividers at 9 and 3 o'clock — small, evenly spaced */}
       <g fill="url(#seal-gold)">
-        <polygon points="14,100 19,97 18,103" />
-        <polygon points="186,100 181,97 182,103" />
+        <circle cx="14" cy="100" r="2.4" />
+        <circle cx="186" cy="100" r="2.4" />
+        <circle cx="20" cy="100" r="1.2" opacity="0.7" />
+        <circle cx="180" cy="100" r="1.2" opacity="0.7" />
       </g>
 
-      {/* Centre emblem — golf flag pole rising behind a clean shamrock */}
-      <g transform="translate(100 100)">
-        {/* Golf flag pole + pennant (drawn FIRST so the shamrock sits in front) */}
-        <g>
-          <line
-            x1="0"
-            y1="-44"
-            x2="0"
-            y2="32"
-            stroke="url(#seal-gold)"
-            strokeWidth="2.4"
-            strokeLinecap="round"
-          />
-          <path
-            d="M 0 -44 L 22 -38 L 0 -30 Z"
-            fill="url(#seal-gold)"
-            stroke="#E2A300"
-            strokeWidth="0.8"
-            strokeLinejoin="round"
-          />
-          {/* Tee disc / hole at base */}
-          <ellipse cx="0" cy="34" rx="14" ry="3" fill="#0B6B45" opacity="0.7" />
-        </g>
+      {/* Centre shamrock — clean geometric three-leaf */}
+      <g transform="translate(100 102)">
+        {/* Optional small gold crown dot above (premium accent) */}
+        <circle cx="0" cy="-44" r="2.2" fill="url(#seal-gold)" />
 
-        {/* Shamrock — three round leaves + stem */}
+        {/* Three round leaves */}
         <g
-          fill="#1ED760"
+          fill="url(#seal-leaf)"
           stroke="#0B6B45"
-          strokeWidth="1.3"
+          strokeWidth="1.4"
           strokeLinejoin="round"
-          filter="url(#seal-soft)"
         >
-          {/* Top leaf */}
-          <circle cx="0" cy="-12" r="11" />
-          {/* Left leaf */}
-          <circle cx="-11" cy="4" r="11" />
-          {/* Right leaf */}
-          <circle cx="11" cy="4" r="11" />
-          {/* Centre disc to fuse the three leaves cleanly */}
-          <circle cx="0" cy="-2" r="5.5" />
-          {/* Subtle leaf highlights */}
-          <ellipse cx="-3" cy="-15" rx="2.6" ry="1.4" fill="#7CF59E" stroke="none" opacity="0.85" />
-          <ellipse cx="-14" cy="0" rx="2.6" ry="1.4" fill="#7CF59E" stroke="none" opacity="0.85" />
-          <ellipse cx="8" cy="0" rx="2.6" ry="1.4" fill="#7CF59E" stroke="none" opacity="0.85" />
+          {/* Top */}
+          <circle cx="0" cy="-15" r="14" />
+          {/* Bottom-left */}
+          <circle cx="-14" cy="6" r="14" />
+          {/* Bottom-right */}
+          <circle cx="14" cy="6" r="14" />
+          {/* Tiny centre disc to make the three leaves feel fused */}
+          <circle cx="0" cy="-2" r="6" />
         </g>
-        {/* Stem */}
-        <path
-          d="M 0 8 Q 2 18 -3 28"
-          stroke="#0B6B45"
-          strokeWidth="2.4"
-          fill="none"
-          strokeLinecap="round"
-        />
-      </g>
 
-      {/* Tiny gold caption block under emblem */}
-      <g transform="translate(100 162)">
-        <rect x="-32" y="-8" width="64" height="16" rx="3" fill="#0B6B45" stroke="url(#seal-gold)" strokeWidth="0.8" />
-        <text
-          textAnchor="middle"
-          y="3"
-          fill="url(#seal-gold)"
-          fontFamily="Oswald, Open Sans, sans-serif"
-          fontWeight="800"
-          fontSize="8"
-          letterSpacing="2.2"
-        >
-          EST. 2025
-        </text>
+        {/* Soft highlights on each leaf for dimension */}
+        <g fill="#A8F5C2" opacity="0.55">
+          <ellipse cx="-4" cy="-19" rx="3" ry="1.6" />
+          <ellipse cx="-18" cy="2" rx="3" ry="1.6" />
+          <ellipse cx="11" cy="2" rx="3" ry="1.6" />
+        </g>
+
+        {/* Stem — short, clean curve */}
+        <path
+          d="M 0 14 Q 1 24 -3 32"
+          stroke="#0B6B45"
+          strokeWidth="2.6"
+          strokeLinecap="round"
+          fill="none"
+        />
       </g>
     </svg>
   )

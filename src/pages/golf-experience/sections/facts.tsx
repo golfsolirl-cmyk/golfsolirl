@@ -23,8 +23,11 @@ export function GeFacts() {
           <h2 className="mt-3 font-ge text-[2rem] font-extrabold uppercase leading-tight tracking-[0.02em] text-gs-green sm:text-[2.4rem]">
             {factsCopy.title}
           </h2>
-          <div className="mt-8 inline-flex items-center justify-center rounded-full p-1.5 shadow-[0_10px_30px_rgba(6,59,42,0.25)] ring-1 ring-gs-gold/40">
-            <IrishOwnedSeal size={170} />
+          <div className="mt-8">
+            <IrishOwnedSeal
+              size={180}
+              className="drop-shadow-[0_12px_28px_rgba(6,59,42,0.28)]"
+            />
           </div>
         </motion.div>
 
