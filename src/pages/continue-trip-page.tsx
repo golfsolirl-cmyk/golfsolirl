@@ -57,8 +57,10 @@ function parseFlightSnap(raw: string): FlightSnap | null {
   }
 }
 
+type SnapState = FlightSnap | null | undefined
+
 export function ContinueTripPage() {
-  const [snap, setSnap] = useState<FlightSnap | null>(undefined)
+  const [snap, setSnap] = useState<SnapState>(undefined)
 
   useEffect(() => {
     try {
