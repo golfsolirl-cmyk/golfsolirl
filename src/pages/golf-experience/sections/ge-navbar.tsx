@@ -48,8 +48,8 @@ export function GeNavbar({ mode = 'auto' }: GeNavbarProps = {}) {
       {isOverlay ? <GeTopBar /> : null}
       <div
         className={cx(
-          'mx-auto flex max-w-[1280px] items-center justify-between gap-4 px-5 transition-all duration-300',
-          isOverlay ? 'py-3' : 'py-2'
+          'mx-auto flex max-w-[1340px] items-center justify-between gap-4 px-5 transition-all duration-300',
+          isOverlay ? 'py-4' : 'py-2'
         )}
       >
         <a

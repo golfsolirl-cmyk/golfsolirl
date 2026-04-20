@@ -9,7 +9,7 @@ import { contactInfo } from '../data/copy'
 export function GeTopBar() {
   return (
     <div className="hidden md:block">
-      <div className="mx-auto flex max-w-[1280px] items-center justify-between px-5 py-2 text-[0.74rem] font-semibold uppercase tracking-[0.14em] text-white">
+      <div className="mx-auto flex max-w-[1340px] items-center justify-between px-5 py-2 text-[0.74rem] font-semibold uppercase tracking-[0.14em] text-white">
         <p className="text-white/85">{contactInfo.tagline}</p>
         <div className="flex items-center gap-5 text-white/95">
           <a

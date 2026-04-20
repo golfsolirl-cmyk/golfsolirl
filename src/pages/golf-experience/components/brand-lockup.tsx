@@ -15,93 +15,90 @@ interface BrandLockupProps {
 const crest = '/golfsol-crest-header.png'
 const footerCrest = '/golfsol-crest-footer.png'
 
+/**
+ * Premium tri-leaf shamrock with subtle inner highlight + stem.
+ * Sized via className font-size or h-/w-* utilities on the wrapper.
+ */
 function Shamrock({ className }: { readonly className?: string }) {
   return (
     <svg
       aria-hidden="true"
-      viewBox="0 0 24 28"
-      className={cx('shrink-0', className)}
+      viewBox="0 0 32 36"
+      className={cx('shrink-0 drop-shadow-[0_2px_4px_rgba(0,0,0,0.35)]', className)}
       xmlns="http://www.w3.org/2000/svg"
     >
-      <g fill="#3aa53e" stroke="#1f6c20" strokeWidth="0.8">
-        <ellipse cx="12" cy="6" rx="5" ry="6.5" transform="rotate(-12 12 6)" />
-        <ellipse cx="6"  cy="13" rx="5" ry="6.5" transform="rotate(48 6 13)" />
-        <ellipse cx="18" cy="13" rx="5" ry="6.5" transform="rotate(-48 18 13)" />
+      <defs>
+        <radialGradient id="shamLeaf" cx="40%" cy="35%" r="65%">
+          <stop offset="0%" stopColor="#7fd07f" />
+          <stop offset="55%" stopColor="#3aa53e" />
+          <stop offset="100%" stopColor="#1f6c20" />
+        </radialGradient>
+      </defs>
+      <g stroke="#1f6c20" strokeWidth="0.8">
+        <ellipse cx="16" cy="8" rx="6" ry="8" transform="rotate(-12 16 8)" fill="url(#shamLeaf)" />
+        <ellipse cx="8" cy="17" rx="6" ry="8" transform="rotate(48 8 17)" fill="url(#shamLeaf)" />
+        <ellipse cx="24" cy="17" rx="6" ry="8" transform="rotate(-48 24 17)" fill="url(#shamLeaf)" />
       </g>
-      <g fill="#7fd07f" opacity="0.6">
-        <ellipse cx="11" cy="3.5" rx="1.2" ry="3" transform="rotate(-12 11 3.5)" />
-        <ellipse cx="4"  cy="10"  rx="1.2" ry="3" transform="rotate(48 4 10)" />
-        <ellipse cx="16" cy="10"  rx="1.2" ry="3" transform="rotate(-48 16 10)" />
+      <g fill="#fff8d6" opacity="0.55">
+        <ellipse cx="14" cy="4.5" rx="1.4" ry="3.4" transform="rotate(-12 14 4.5)" />
+        <ellipse cx="5" cy="13" rx="1.4" ry="3.4" transform="rotate(48 5 13)" />
+        <ellipse cx="22" cy="13" rx="1.4" ry="3.4" transform="rotate(-48 22 13)" />
       </g>
-      <path d="M12 14 L12 25" stroke="#1f6c20" strokeWidth="1.6" strokeLinecap="round" fill="none" />
+      <path
+        d="M16 18 C 17 24, 16 28, 14 33"
+        stroke="#1f6c20"
+        strokeWidth="2"
+        strokeLinecap="round"
+        fill="none"
+      />
     </svg>
   )
 }
 
 /**
  * The header brand lockup for the GE clone home page (`/`).
- * Pairs the GolfSol crest with a "GolfSol · Ireland" wordmark and a shamrock.
- * Uses two layouts:
- *   - overlay  → big crest above the wordmark (stacked, 1 line "GolfSol Ireland"),
- *                hero-scale, sits over the dark hero image
- *   - sticky   → horizontal lockup with smaller crest + wordmark on a white bar
+ * Pairs the GolfSol crest PNG with a "GolfSol [shamrock] Ireland" wordmark.
+ *
+ *  - overlay  → big crest above 'GolfSol Ireland' in Dancing Script,
+ *               hero-scale, sits over the dark hero image
+ *  - sticky   → horizontal compact lockup for the white sticky navbar
+ *  - footer   → landscape footer crest with wordmark + tagline beneath
  */
 export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
-  const goldText = 'text-[#f4b41a]'
-  const orangeText = 'text-[#ff9b3f]'
+  const goldText =
+    'bg-[linear-gradient(180deg,#fff7c4_0%,#ffe07a_18%,#f4b41a_55%,#c98a17_85%,#7a4f10_100%)] bg-clip-text text-transparent'
+  const orangeText = 'text-[#ff7a1a]'
   const darkText = 'text-[#0d4a14]'
 
   if (mode === 'overlay') {
+    // Overlay: just the crest, BIG. The crest art already contains
+    // 'GOLFSOL IRELAND' so we don't repeat it. Tagline sits underneath.
     return (
-      <div className={cx('flex items-center gap-2.5 sm:gap-3.5', className)}>
+      <div className={cx('flex flex-col items-start gap-1.5', className)}>
         <img
           src={crest}
-          alt=""
-          aria-hidden="true"
+          alt="GolfSol Ireland — Irish-owned golf travel"
           width={400}
           height={600}
           decoding="async"
           fetchPriority="high"
-          className="h-[80px] w-auto shrink-0 select-none object-contain drop-shadow-[0_8px_18px_rgba(0,0,0,0.5)] sm:h-[88px] md:h-[96px] lg:h-[104px]"
+          className="h-[130px] w-auto shrink-0 select-none object-contain drop-shadow-[0_10px_24px_rgba(0,0,0,0.55)] sm:h-[160px] md:h-[190px] lg:h-[210px]"
         />
-        <div className="hidden flex-col items-start gap-0.5 leading-none xl:flex">
-          <div className="flex items-baseline gap-1.5">
-            <span
-              className={cx(
-                'font-ge font-extrabold tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]',
-                'text-[1.35rem] md:text-[1.5rem] lg:text-[1.7rem]',
-                tone === 'on-dark' ? goldText : darkText
-              )}
-            >
-              GolfSol
-            </span>
-            <Shamrock className="h-4 w-4 md:h-[18px] md:w-[18px]" />
-            <span
-              className={cx(
-                'font-ge font-bold uppercase tracking-[0.16em] drop-shadow-[0_1px_6px_rgba(0,0,0,0.45)]',
-                'text-[0.78rem] md:text-[0.85rem] lg:text-[0.95rem]',
-                tone === 'on-dark' ? orangeText : 'text-[#d96b1a]'
-              )}
-            >
-              Ireland
-            </span>
-          </div>
-          <span
-            className={cx(
-              'font-ge text-[0.6rem] font-semibold uppercase tracking-[0.22em] lg:text-[0.65rem]',
-              tone === 'on-dark' ? 'text-white/75' : 'text-[#0d4a14]/70'
-            )}
-          >
-            Spain · Portugal · Morocco
-          </span>
-        </div>
+        <span
+          className={cx(
+            'pl-1 font-ge text-[0.6rem] font-semibold uppercase tracking-[0.28em] sm:text-[0.65rem] md:text-[0.7rem]',
+            tone === 'on-dark' ? 'text-white/85' : 'text-[#0d4a14]/70'
+          )}
+        >
+          Spain · Portugal · Morocco
+        </span>
       </div>
     )
   }
 
   if (mode === 'footer') {
     return (
-      <div className={cx('flex flex-col items-start gap-4', className)}>
+      <div className={cx('flex flex-col items-start gap-5', className)}>
         <img
           src={footerCrest}
           alt="GolfSol Ireland"
@@ -109,27 +106,34 @@ export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
           height={533}
           loading="lazy"
           decoding="async"
-          className="h-auto w-full max-w-[280px] select-none object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.45)] sm:max-w-[320px] md:max-w-[360px]"
+          className="h-auto w-full max-w-[300px] select-none object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.45)] sm:max-w-[340px] md:max-w-[380px]"
         />
-        <div className="flex items-baseline gap-2 leading-none">
-          <span className={cx('font-ge text-[1.65rem] font-extrabold tracking-tight md:text-[1.85rem]', goldText)}>
+        <div className="flex flex-col items-start leading-none">
+          <span className={cx('font-brand-script text-[2.4rem] font-bold leading-[0.95] md:text-[2.8rem]', goldText)}>
             GolfSol
           </span>
-          <Shamrock className="h-6 w-6 md:h-7 md:w-7" />
-          <span className={cx('font-ge text-[1rem] font-bold uppercase tracking-[0.18em] md:text-[1.1rem]', orangeText)}>
-            Ireland
-          </span>
+          <div className="mt-1 flex items-center gap-2">
+            <Shamrock className="h-6 w-6 md:h-7 md:w-7" />
+            <span
+              className={cx(
+                'font-ge text-[1rem] font-extrabold uppercase leading-none tracking-[0.32em] md:text-[1.1rem]',
+                orangeText
+              )}
+            >
+              Ireland
+            </span>
+          </div>
         </div>
-        <span className="font-ge text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-white/70">
+        <span className="font-ge text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-white/70">
           Spain · Portugal · Morocco
         </span>
       </div>
     )
   }
 
-  // sticky compact horizontal lockup
+  // Sticky compact horizontal lockup for the white scrolled navbar.
   return (
-    <div className={cx('flex items-center gap-2.5', className)}>
+    <div className={cx('flex items-center gap-3', className)}>
       <img
         src={crest}
         alt=""
@@ -137,21 +141,21 @@ export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
         width={400}
         height={600}
         decoding="async"
-        className="h-[44px] w-auto select-none object-contain drop-shadow-[0_4px_10px_rgba(0,0,0,0.2)] sm:h-[52px]"
+        className="h-[58px] w-auto shrink-0 select-none object-contain drop-shadow-[0_4px_10px_rgba(0,0,0,0.2)] sm:h-[64px]"
       />
-      <div className="flex items-baseline gap-1.5">
+      <div className="flex items-center gap-2 leading-none">
         <span
           className={cx(
-            'font-ge text-[1.05rem] font-extrabold leading-none tracking-tight sm:text-[1.2rem]',
+            'font-brand-script text-[1.55rem] font-bold leading-none sm:text-[1.75rem]',
             tone === 'on-dark' ? goldText : darkText
           )}
         >
           GolfSol
         </span>
-        <Shamrock className="h-4 w-4" />
+        <Shamrock className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
         <span
           className={cx(
-            'font-ge text-[0.72rem] font-bold uppercase leading-none tracking-[0.16em] sm:text-[0.8rem]',
+            'font-ge text-[0.78rem] font-extrabold uppercase leading-none tracking-[0.28em] sm:text-[0.85rem]',
             tone === 'on-dark' ? orangeText : 'text-[#d96b1a]'
           )}
         >

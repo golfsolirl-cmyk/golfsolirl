@@ -53,6 +53,15 @@
     background: #ffffff;
     line-height: 1.6;
   }
+  /* Slow Ken-Burns pan on the two hero plates */
+  @keyframes heroPanLeft {
+    from { transform: scale(1.1) translate(0, 0); }
+    to   { transform: scale(1.12) translate(-2%, -1%); }
+  }
+  @keyframes heroPanRight {
+    from { transform: scale(1.1) translate(0, 0); }
+    to   { transform: scale(1.12) translate(2%, -1%); }
+  }
   .ge-page h1,
   .ge-page h2,
   .ge-page h3,
