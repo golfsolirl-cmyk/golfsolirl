@@ -68,21 +68,31 @@ export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
   return (
     <div className={cx('flex items-center', className)}>
       <motion.div
-        className="relative shrink-0"
-        initial={{ scale: 0.6, opacity: 0, y: -6 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
+        // Outer wrapper handles the spring entrance animation. Note we
+        // animate ONLY opacity on mount (not scale) — the CSS transform on
+        // the img owns the resting transform, otherwise Framer Motion
+        // would overwrite the Tailwind scale-* utility.
+        // overflow-visible so the CSS-scaled crest (mobile only) can render
+        // past the navbar bottom edge into the white hero spacer below
+        // without being clipped.
+        className="relative shrink-0 overflow-visible"
+        initial={{ opacity: 0, y: -6 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ type: 'spring', stiffness: 220, damping: 18, mass: 0.7, delay: 0.05 }}
       >
-        <motion.img
+        <img
           src={footerCrest}
           alt="GolfSol Ireland"
           width={800}
           height={533}
           decoding="async"
           fetchPriority="high"
-          className="relative z-10 block h-[110px] w-auto select-none object-contain drop-shadow-[0_8px_18px_rgba(0,0,0,0.32)] sm:h-[124px] md:h-[140px] lg:h-[118px] xl:h-[130px]"
-          animate={{ y: [0, -2, 0] }}
-          transition={{ duration: 4.5, ease: 'easeInOut', repeat: Infinity, delay: 0.8 }}
+          // Layout box stays the same height (header doesn't grow), but on
+          // mobile we visually scale the crest ~50% via CSS transform with
+          // a top origin — the crest spills downward into the white hero
+          // spacer below the navbar (which is also white, so it looks
+          // continuous). lg:+ resets to scale-100 so desktop is unchanged.
+          className="relative z-10 block h-[110px] w-auto origin-top scale-[1.45] select-none object-contain drop-shadow-[0_10px_22px_rgba(0,0,0,0.35)] sm:h-[124px] sm:scale-[1.4] md:h-[140px] md:scale-[1.3] lg:h-[118px] lg:scale-100 xl:h-[130px]"
         />
         {/* One-shot gold shimmer sweep on mount */}
         <motion.div
