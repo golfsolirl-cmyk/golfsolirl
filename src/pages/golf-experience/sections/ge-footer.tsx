@@ -38,7 +38,7 @@ export function GeFooter() {
             </div>
           ))}
 
-          <div>
+          <div id="contact-us">
             <p className="font-ge text-[0.78rem] font-bold uppercase tracking-[0.18em] text-gs-green">
               Contact Us
             </p>
