@@ -117,40 +117,109 @@ export function IrishOwnedSeal({ className, size = 180 }: IrishOwnedSealProps) {
         <circle cx="180" cy="100" r="1.2" opacity="0.7" />
       </g>
 
-      {/* Centre shamrock — clean geometric three-leaf */}
-      <g transform="translate(100 102)">
-        {/* Optional small gold crown dot above (premium accent) */}
-        <circle cx="0" cy="-44" r="2.2" fill="url(#seal-gold)" />
+      {/* Centre — illustrated four-leaf clover matching the shamrock inside
+          the GolfSol Ireland header crest:
+            • Four heart-shaped leaves arranged in an X (NE / SE / SW / NW)
+            • Lime body with gold edge rim and dark forest outline
+            • Inner yellow-green highlight on each leaf for dimension
+            • Small dark stem drops below                                       */}
+      <g transform="translate(100 100)">
+        {/*
+          A single heart-leaf path drawn pointing UP.
+            • Top (the two lobes of the heart) sits well ABOVE 0
+            • Bottom point (the leaf's notch / attachment point) is at (0, 0)
+            • Total height ~24, max width ~22
+          We then rotate four copies about (0,0) so all four notches meet at
+          the centre and the fat ends fan outward.
+        */}
+        <defs>
+          <path
+            id="seal-leaf-shape"
+            d="
+              M 0 0
+              C -10 -8,  -22 -10, -22 -20
+              C -22 -28, -14 -32,  -8 -28
+              C -3 -25,   0 -22,   0 -18
+              C 0 -22,    3 -25,   8 -28
+              C 14 -32,  22 -28,  22 -20
+              C 22 -10,  10 -8,   0 0
+              Z
+            "
+          />
+        </defs>
 
-        {/* Three round leaves */}
-        <g
-          fill="url(#seal-leaf)"
-          stroke="#0B6B45"
-          strokeWidth="1.4"
-          strokeLinejoin="round"
-        >
-          {/* Top */}
-          <circle cx="0" cy="-15" r="14" />
-          {/* Bottom-left */}
-          <circle cx="-14" cy="6" r="14" />
-          {/* Bottom-right */}
-          <circle cx="14" cy="6" r="14" />
-          {/* Tiny centre disc to make the three leaves feel fused */}
-          <circle cx="0" cy="-2" r="6" />
+        {/* Group all four leaves so we can repeat fills/strokes cleanly */}
+        <g>
+          {/* Gold rim — draw fattened outline first so it looks like a halo edge */}
+          <g
+            fill="none"
+            stroke="url(#seal-gold)"
+            strokeWidth="2.6"
+            strokeLinejoin="round"
+            opacity="0.9"
+          >
+            <use href="#seal-leaf-shape" transform="rotate(-45)" />
+            <use href="#seal-leaf-shape" transform="rotate(45)" />
+            <use href="#seal-leaf-shape" transform="rotate(135)" />
+            <use href="#seal-leaf-shape" transform="rotate(-135)" />
+          </g>
+
+          {/* Leaf bodies (filled) with thin dark outline */}
+          <g
+            fill="url(#seal-leaf)"
+            stroke="#0B3D24"
+            strokeWidth="1.4"
+            strokeLinejoin="round"
+          >
+            <use href="#seal-leaf-shape" transform="rotate(-45)" />
+            <use href="#seal-leaf-shape" transform="rotate(45)" />
+            <use href="#seal-leaf-shape" transform="rotate(135)" />
+            <use href="#seal-leaf-shape" transform="rotate(-135)" />
+          </g>
+
+          {/* Soft inner highlights — one ellipse near the fat top of each leaf,
+              positioned by hand for each rotation. */}
+          <g fill="#E5FFAE" opacity="0.55">
+            {/* NE leaf — rotate(-45) maps tip to upper-right */}
+            <ellipse
+              cx="0"
+              cy="-22"
+              rx="5"
+              ry="2.4"
+              transform="rotate(-45) translate(-4 0)"
+            />
+            <ellipse
+              cx="0"
+              cy="-22"
+              rx="5"
+              ry="2.4"
+              transform="rotate(45) translate(4 0)"
+            />
+            <ellipse
+              cx="0"
+              cy="-22"
+              rx="5"
+              ry="2.4"
+              transform="rotate(135) translate(4 0)"
+            />
+            <ellipse
+              cx="0"
+              cy="-22"
+              rx="5"
+              ry="2.4"
+              transform="rotate(-135) translate(-4 0)"
+            />
+          </g>
+
+          {/* Centre nub — tiny dark dot where leaves meet */}
+          <circle cx="0" cy="0" r="2.4" fill="#0B3D24" />
         </g>
 
-        {/* Soft highlights on each leaf for dimension */}
-        <g fill="#A8F5C2" opacity="0.55">
-          <ellipse cx="-4" cy="-19" rx="3" ry="1.6" />
-          <ellipse cx="-18" cy="2" rx="3" ry="1.6" />
-          <ellipse cx="11" cy="2" rx="3" ry="1.6" />
-        </g>
-
-        {/* Stem — short, clean curve */}
+        {/* Stem — short, slim, slightly curved, dark green */}
         <path
-          d="M 0 14 Q 1 24 -3 32"
-          stroke="#0B6B45"
-          strokeWidth="2.6"
+          d="M 0 4 C 2 14, -2 22, 0 32"
+          stroke="#0B3D24"
+          strokeWidth="3"
           strokeLinecap="round"
           fill="none"
         />
