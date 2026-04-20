@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="GolfSol Ireland crest">
+  <title>GolfSol Ireland</title>
+  <defs>
+    <!-- Gold gradient: shiny, top-lit, three-stop highlight + warm shadow -->
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff3b0"/>
+      <stop offset="14%" stop-color="#ffe07a"/>
+      <stop offset="48%" stop-color="#f4b41a"/>
+      <stop offset="78%" stop-color="#c98a17"/>
+      <stop offset="100%" stop-color="#7a5512"/>
+    </linearGradient>
+    <linearGradient id="goldRibbon" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffe98a"/>
+      <stop offset="50%" stop-color="#ecae1c"/>
+      <stop offset="100%" stop-color="#8a5e10"/>
+    </linearGradient>
+    <linearGradient id="goldHighlight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity=".95"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1f6f24"/>
+      <stop offset="55%" stop-color="#0f4516"/>
+      <stop offset="100%" stop-color="#062a0c"/>
+    </linearGradient>
+    <linearGradient id="greenShine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#36a13e" stop-opacity=".55"/>
+      <stop offset="100%" stop-color="#36a13e" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="crestGlow" cx="50%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#ffe08a" stop-opacity=".18"/>
+      <stop offset="100%" stop-color="#ffe08a" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity=".35"/>
+    </filter>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Outer sweeping gold ribbons (left + right) -->
+  <g filter="url(#softShadow)">
+    <path d="M50 230 C 30 160, 100 110, 220 100 C 270 95, 280 100, 280 110 C 200 120, 110 160, 90 230 Z"
+          fill="url(#goldRibbon)" stroke="#7a5512" stroke-width="1.5"/>
+    <path d="M550 230 C 570 160, 500 110, 380 100 C 330 95, 320 100, 320 110 C 400 120, 490 160, 510 230 Z"
+          fill="url(#goldRibbon)" stroke="#7a5512" stroke-width="1.5"/>
+    <!-- lower ribbon tails -->
+    <path d="M70 240 C 110 290, 180 320, 230 320 L 230 332 C 170 332, 100 308, 60 260 Z"
+          fill="url(#goldRibbon)" stroke="#7a5512" stroke-width="1.2"/>
+    <path d="M530 240 C 490 290, 420 320, 370 320 L 370 332 C 430 332, 500 308, 540 260 Z"
+          fill="url(#goldRibbon)" stroke="#7a5512" stroke-width="1.2"/>
+  </g>
+
+  <!-- Sparkles -->
+  <g fill="#fff8d6" opacity=".85">
+    <path d="M180 80 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3z"/>
+    <path d="M450 320 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z"/>
+    <circle cx="78" cy="200" r="2"/>
+    <circle cx="520" cy="170" r="2"/>
+  </g>
+
+  <!-- Crest shield base (dark green) -->
+  <g filter="url(#softShadow)">
+    <path d="M120 110
+             C 120 100, 130 92, 145 92
+             L 455 92
+             C 470 92, 480 100, 480 110
+             L 480 195
+             L 495 195
+             C 495 220, 485 245, 470 268
+             L 308 372
+             C 304 376, 296 376, 292 372
+             L 130 268
+             C 115 245, 105 220, 105 195
+             L 120 195 Z"
+          fill="url(#green)" stroke="#fff3b0" stroke-width="3"/>
+    <!-- Inner highlight glow -->
+    <path d="M140 130 L 460 130 L 460 230 L 300 350 L 140 230 Z" fill="url(#crestGlow)"/>
+    <!-- Subtle top sheen -->
+    <path d="M140 110 C 200 150, 400 150, 460 110 L 460 96 L 140 96 Z" fill="url(#greenShine)"/>
+  </g>
+
+  <!-- Top wordmark: GOLFSOL -->
+  <g filter="url(#softShadow)">
+    <text x="300" y="180"
+          text-anchor="middle"
+          font-family="'Arial Black', 'Helvetica Neue', Impact, system-ui, sans-serif"
+          font-weight="900"
+          font-size="86"
+          letter-spacing="-2"
+          fill="url(#gold)"
+          stroke="#5d3f0a"
+          stroke-width="2.5"
+          paint-order="stroke">GolfSol</text>
+    <!-- Top sheen on wordmark -->
+    <text x="300" y="180"
+          text-anchor="middle"
+          font-family="'Arial Black', 'Helvetica Neue', Impact, system-ui, sans-serif"
+          font-weight="900"
+          font-size="86"
+          letter-spacing="-2"
+          fill="url(#goldHighlight)"
+          opacity=".55">GolfSol</text>
+  </g>
+
+  <!-- Center motif: green shamrock between two gold wheat sprigs -->
+  <g transform="translate(300 235)">
+    <!-- Left wheat sprig -->
+    <g transform="translate(-78 0) rotate(-22)">
+      <path d="M0 0 C -10 -8, -28 -10, -42 -2" stroke="url(#goldRibbon)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <g fill="url(#goldRibbon)" stroke="#7a5512" stroke-width="0.8">
+        <ellipse cx="-8" cy="-3" rx="4.5" ry="2.2" transform="rotate(-25 -8 -3)"/>
+        <ellipse cx="-18" cy="-6" rx="4.5" ry="2.2" transform="rotate(-25 -18 -6)"/>
+        <ellipse cx="-28" cy="-7" rx="4.5" ry="2.2" transform="rotate(-25 -28 -7)"/>
+        <ellipse cx="-38" cy="-6" rx="4.5" ry="2.2" transform="rotate(-25 -38 -6)"/>
+        <ellipse cx="-13" cy="3" rx="4.5" ry="2.2" transform="rotate(15 -13 3)"/>
+        <ellipse cx="-23" cy="2" rx="4.5" ry="2.2" transform="rotate(15 -23 2)"/>
+        <ellipse cx="-33" cy="0" rx="4.5" ry="2.2" transform="rotate(15 -33 0)"/>
+      </g>
+    </g>
+    <!-- Right wheat sprig (mirror) -->
+    <g transform="translate(78 0) rotate(22) scale(-1 1)">
+      <path d="M0 0 C -10 -8, -28 -10, -42 -2" stroke="url(#goldRibbon)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <g fill="url(#goldRibbon)" stroke="#7a5512" stroke-width="0.8">
+        <ellipse cx="-8" cy="-3" rx="4.5" ry="2.2" transform="rotate(-25 -8 -3)"/>
+        <ellipse cx="-18" cy="-6" rx="4.5" ry="2.2" transform="rotate(-25 -18 -6)"/>
+        <ellipse cx="-28" cy="-7" rx="4.5" ry="2.2" transform="rotate(-25 -28 -7)"/>
+        <ellipse cx="-38" cy="-6" rx="4.5" ry="2.2" transform="rotate(-25 -38 -6)"/>
+        <ellipse cx="-13" cy="3" rx="4.5" ry="2.2" transform="rotate(15 -13 3)"/>
+        <ellipse cx="-23" cy="2" rx="4.5" ry="2.2" transform="rotate(15 -23 2)"/>
+        <ellipse cx="-33" cy="0" rx="4.5" ry="2.2" transform="rotate(15 -33 0)"/>
+      </g>
+    </g>
+    <!-- Center shamrock -->
+    <g transform="translate(0 0)" filter="url(#glow)">
+      <g fill="#3aa53e" stroke="#1f6c20" stroke-width="1.2">
+        <ellipse cx="0" cy="-12" rx="11" ry="14" transform="rotate(-10 0 -12)"/>
+        <ellipse cx="-12" cy="2" rx="11" ry="14" transform="rotate(50 -12 2)"/>
+        <ellipse cx="12" cy="2" rx="11" ry="14" transform="rotate(-50 12 2)"/>
+      </g>
+      <!-- highlight on shamrock leaves -->
+      <g fill="#7fd07f" opacity=".55">
+        <ellipse cx="-3" cy="-16" rx="3" ry="6" transform="rotate(-10 -3 -16)"/>
+        <ellipse cx="-15" cy="-3" rx="3" ry="6" transform="rotate(50 -15 -3)"/>
+        <ellipse cx="9" cy="-3" rx="3" ry="6" transform="rotate(-50 9 -3)"/>
+      </g>
+      <!-- stem -->
+      <path d="M0 12 L0 30" stroke="#1f6c20" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+    </g>
+  </g>
+
+  <!-- IRELAND ribbon (lower banner) -->
+  <g filter="url(#softShadow)">
+    <path d="M170 270
+             L 430 270
+             L 446 286
+             L 430 302
+             L 170 302
+             L 154 286 Z"
+          fill="url(#goldRibbon)" stroke="#5d3f0a" stroke-width="1.6"/>
+    <!-- highlight stripe -->
+    <rect x="160" y="274" width="280" height="4" fill="#fff3b0" opacity=".55"/>
+    <text x="300" y="294"
+          text-anchor="middle"
+          font-family="'Arial Black', 'Helvetica Neue', Impact, system-ui, sans-serif"
+          font-weight="900"
+          font-size="22"
+          letter-spacing="6"
+          fill="#5d3f0a">IRELAND</text>
+  </g>
+</svg>
