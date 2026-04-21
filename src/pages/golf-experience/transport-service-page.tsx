@@ -8,6 +8,7 @@ import { TransportHero } from './sections/transport-hero'
 import { TransportPromise } from './sections/transport-promise'
 import { TransportRouteStory } from './sections/transport-route-story'
 import { WhatsappFab } from './components/whatsapp-fab'
+import { usePageSeo } from '../../lib/seo'
 
 /**
  * Dedicated Transport service page — same shell as {@link GolfExperienceHome}
@@ -16,6 +17,14 @@ import { WhatsappFab } from './components/whatsapp-fab'
  * final CTA.
  */
 export function TransportServicePage() {
+  usePageSeo({
+    title: 'Costa del Sol Golf Transfers | GolfSol Ireland',
+    description:
+      'Book Malaga airport transfers, hotel shuttles, and golf-day transport for Costa del Sol golf trips with Irish-led planning from GolfSol Ireland.',
+    path: '/services/transport',
+    image: '/images/transport-hero-coastal-drive.jpg'
+  })
+
   return (
     <div className="ge-page min-h-screen overflow-x-hidden bg-white">
       <a

@@ -11,8 +11,17 @@ import { GeHero } from './sections/hero'
 import { GeNavbar } from './sections/ge-navbar'
 import { GePaymentsIreland } from './sections/payments-ireland'
 import { WhatsappFab } from './components/whatsapp-fab'
+import { usePageSeo } from '../../lib/seo'
 
 export function GolfExperienceHome() {
+  usePageSeo({
+    title: 'GolfSol Ireland | Premium Costa del Sol golf trips for Irish golfers',
+    description:
+      'Plan Costa del Sol golf holidays with GolfSol Ireland. Compare golf courses, accommodation, airport transfers, and tailored golf packages built for Irish travellers.',
+    path: '/',
+    image: '/images/about-golfsol-hero.jpg'
+  })
+
   return (
     <div className="ge-page min-h-screen overflow-x-hidden bg-white">
       <a

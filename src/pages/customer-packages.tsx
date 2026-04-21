@@ -17,6 +17,7 @@ import { Logo, ShamrockIcon } from '../components/ui/logo'
 import { AnimatedStepKicker, SectionHeader } from '../components/ui/section-header'
 import { WaveDivider } from '../components/ui/wave-divider'
 import { integrationRegistry } from '../config/integrations'
+import { GeQuickEnquiryForm } from './golf-experience/components/ge-quick-enquiry-form'
 import {
   COURSES,
   parseCourseHotelSearch,
@@ -25,6 +26,7 @@ import {
 import { footerSocialLinks, heroBackgroundImage } from '../data/site-content'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { buildPackageConfig, defaultLabelForBuild } from '../lib/package-build'
+import { usePageSeo } from '../lib/seo'
 import { cx } from '../lib/utils'
 import { useAuth } from '../providers/auth-provider'
 import { CookieBanner, FloatingWhatsAppButton, formatEuro } from './packages'
@@ -215,6 +217,14 @@ function CustomerPackagePage() {
   const selectedPackage = packageStyles.find((item) => item.name === selectedPackageName) ?? packageStyles[1]
   const selectedStay = stayOptions.find((item) => item.name === selectedStayName) ?? stayOptions[1]
   const selectedTransfer = transferOptions.find((item) => item.name === selectedTransferName) ?? transferOptions[1]
+
+  usePageSeo({
+    title: 'Golf Packages Calculator | GolfSol Ireland',
+    description:
+      'Build a Costa del Sol golf package with live pricing for group size, accommodation, rounds, and transfers. Tailored for Irish golfers.',
+    path: '/packages',
+    image: '/images/about-golfsol-hero.jpg'
+  })
 
   const fromLanding = useMemo(
     () => new URLSearchParams(window.location.search).get('from') === 'landing',
@@ -931,21 +941,21 @@ function CustomerPackagePage() {
                 </div>
               </div>
 
-              <motion.div className="rounded-[2rem] border border-white/10 bg-white/6 p-6 text-white backdrop-blur-sm" {...revealUp}>
-                <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">What customers can do here</p>
-                <div className="mt-5 space-y-4">
-                  {[
-                    'Price the trip from 1 to 8 golfers',
-                    'Compare package style, stay level, and transfers',
-                    'See a deposit estimate before enquiring',
-                    'Understand the package before speaking to you'
-                  ].map((item) => (
-                    <div key={item} className="flex items-start gap-3 text-base text-white/82">
-                      <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-gold-300" aria-hidden="true" />
-                      <span>{item}</span>
-                    </div>
-                  ))}
-                </div>
+              <motion.div {...revealUp}>
+                <GeQuickEnquiryForm
+                  className="border-white/10 bg-white/96 shadow-[0_24px_60px_rgba(8,27,8,0.18)]"
+                  title="Send this package build"
+                  lead="Share your preferred package shape and we will tailor the final route, hotel, golf mix, and transfer timings around your dates."
+                  interestPreset="Packages page enquiry"
+                  enquiryType="booking"
+                  contextLines={[
+                    `Package style: ${selectedPackage.name}`,
+                    `Stay level: ${selectedStay.name}`,
+                    `Transfer style: ${selectedTransfer.name}`,
+                    `Trip shape: ${nights} nights / ${rounds} rounds`,
+                    `Indicative price: ${formatEuro(pricingSummary.estimatedPerPerson)} per person`
+                  ]}
+                />
               </motion.div>
             </div>
           </div>

@@ -10,7 +10,9 @@ import { WaveDivider } from '../components/ui/wave-divider'
 import { getFooterArticlePage } from '../data/footer-article-pages'
 import { footerSocialLinks, heroBackgroundImage, navLinks, primaryActions } from '../data/site-content'
 import { cx } from '../lib/utils'
+import { usePageSeo } from '../lib/seo'
 import { CookieBanner, FloatingWhatsAppButton } from './packages'
+import { GeQuickEnquiryForm } from './golf-experience/components/ge-quick-enquiry-form'
 
 const sectionShells = [
   'section-shell bg-white pb-28 pt-24',
@@ -30,14 +32,6 @@ function FooterArticlePage() {
 
   const page = useMemo(() => getFooterArticlePage(path), [path])
   const whatsAppHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
-
-  useEffect(() => {
-    if (!page) {
-      return
-    }
-
-    document.title = page.metaTitle
-  }, [page])
 
   useEffect(() => {
     const dismissed = localStorage.getItem('gsol-cookie-banner-dismissed')
@@ -78,6 +72,14 @@ function FooterArticlePage() {
       </div>
     )
   }
+
+  usePageSeo({
+    title: page.metaTitle,
+    description: page.metaDescription ?? page.heroBody,
+    path,
+    image: '/images/about-golfsol-hero.jpg',
+    type: 'article'
+  })
 
   return (
     <div className="overflow-x-hidden bg-offwhite">
@@ -130,7 +132,7 @@ function FooterArticlePage() {
 
         {page.sections.map((section, index) => (
           <section key={section.title} className={cx(sectionShells[index % sectionShells.length])}>
-            <div className="mx-auto max-w-7xl px-6">
+            <div className="mx-auto grid max-w-7xl gap-8 px-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
               <motion.div
                 className="max-w-3xl"
                 initial={{ opacity: 0, y: 28 }}
@@ -152,6 +154,22 @@ function FooterArticlePage() {
                   </ul>
                 ) : null}
               </motion.div>
+
+              <motion.aside
+                className="rounded-[1.75rem] border border-forest-100 bg-white/88 p-5 shadow-soft backdrop-blur-sm"
+                initial={{ opacity: 0, y: 28 }}
+                transition={{ delay: 0.08, duration: 0.65, ease: 'easeOut' }}
+                viewport={{ once: true, amount: 0.25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+              >
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gold-600">Planning lens</p>
+                <p className="mt-3 text-base leading-7 text-forest-900/70">
+                  Irish golfers usually decide faster when course fit, hotel feel, and transfer time are shown together.
+                </p>
+                <div className="mt-4 rounded-[1.25rem] border border-forest-100 bg-offwhite px-4 py-3 text-sm leading-7 text-forest-900/68">
+                  Need a tailored answer? Use the form below and reference this topic in your enquiry.
+                </div>
+              </motion.aside>
             </div>
           </section>
         ))}
@@ -176,7 +194,7 @@ function FooterArticlePage() {
         ) : null}
 
         <section className="section-shell bg-cream pb-28 pt-24">
-          <div className="mx-auto max-w-7xl px-6 text-center">
+          <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               transition={{ duration: 0.65 }}
@@ -184,17 +202,33 @@ function FooterArticlePage() {
               whileInView={{ opacity: 1, y: 0 }}
             >
               <h2 className="font-display text-3xl font-bold text-forest-900 md:text-4xl">Ready when you are</h2>
-              <p className="mx-auto mt-4 max-w-xl text-base leading-8 text-forest-900/68 md:text-lg">
-                Tell us your dates and group — we will come back with a sensible next step, usually by email, phone, or WhatsApp.
+              <p className="mt-4 max-w-xl text-base leading-8 text-forest-900/68 md:text-lg">
+                Tell us what you are planning and we will come back with a relevant next step tied to this page topic.
               </p>
-              <div className="mt-8 flex flex-wrap justify-center gap-4">
-                <LuxuryButton href="/#plan-trip" showArrow>
-                  Start your enquiry
-                </LuxuryButton>
+              <div className="mt-8 flex flex-wrap gap-4">
                 <LuxuryButton href="/" variant="white">
                   Back to home
                 </LuxuryButton>
+                <LuxuryButton href="/packages" showArrow>
+                  Compare packages
+                </LuxuryButton>
               </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              transition={{ delay: 0.08, duration: 0.65 }}
+              viewport={{ once: true }}
+              whileInView={{ opacity: 1, y: 0 }}
+            >
+              <GeQuickEnquiryForm
+                className="shadow-[0_24px_60px_rgba(22,58,19,0.12)]"
+                title={page.formTitle ?? 'Start your enquiry'}
+                lead={page.formLead ?? 'Share your trip outline and we will reply with a practical next step.'}
+                interestPreset={page.interestPreset ?? page.heroTitle}
+                enquiryType={page.enquiryType ?? 'booking'}
+                contextLines={[`Page topic: ${page.heroTitle}`]}
+              />
             </motion.div>
           </div>
         </section>

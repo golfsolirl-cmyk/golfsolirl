@@ -6,16 +6,23 @@ export type FooterArticleSection = {
 
 export type FooterArticleContent = {
   readonly metaTitle: string
+  readonly metaDescription?: string
   readonly kicker: string
   readonly heroTitle: string
   readonly heroBody: string
   readonly sections: readonly FooterArticleSection[]
   readonly asideQuote?: { readonly text: string; readonly attribution: string }
+  readonly formTitle?: string
+  readonly formLead?: string
+  readonly interestPreset?: string
+  readonly enquiryType?: 'booking' | 'legal' | 'newsletter' | 'testimonial' | 'support'
 }
 
 export const footerArticlePages: Record<string, FooterArticleContent> = {
   '/golf-packages': {
     metaTitle: 'Golf packages | Golf Sol Ireland',
+    metaDescription:
+      'Explore Costa del Sol golf packages built for Irish golfers, with joined-up planning across golf, hotels, and airport transfers.',
     kicker: 'Explore — shaped for Irish golfers',
     heroTitle: 'Golf packages that feel joined-up, not bolted together',
     heroBody:
@@ -39,10 +46,16 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
     asideQuote: {
       text: 'The best weeks are not the busiest — they are the ones where every day has a reason.',
       attribution: 'Golf Sol Ireland'
-    }
+    },
+    formTitle: 'Ask about golf packages',
+    formLead: 'Tell us your dates, group size, and preferred package style. We will come back with a sharper next step.',
+    interestPreset: 'Golf packages',
+    enquiryType: 'booking'
   },
   '/featured-courses': {
     metaTitle: 'Featured courses | Golf Sol Ireland',
+    metaDescription:
+      'See featured Costa del Sol golf courses recommended for Irish golf trips, with routing and availability context that helps groups decide faster.',
     kicker: 'Explore — championship calibre',
     heroTitle: 'Featured courses worth building a week around',
     heroBody:
@@ -62,10 +75,16 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
     asideQuote: {
       text: 'A great trip is a playlist, not a single track on repeat.',
       attribution: 'Course planning notes'
-    }
+    },
+    formTitle: 'Ask for a course shortlist',
+    formLead: 'Share your base, dates, and handicap spread and we will suggest rounds that suit your group.',
+    interestPreset: 'Featured golf courses',
+    enquiryType: 'booking'
   },
   '/accommodation-tiers': {
     metaTitle: 'Accommodation tiers | Golf Sol Ireland',
+    metaDescription:
+      'Compare Costa del Sol accommodation tiers for Irish golf trips, from smart social bases to full five-star resort stays.',
     kicker: 'Explore — stay that matches the trip',
     heroTitle: 'Accommodation tiers from smart bases to full luxury',
     heroBody:
@@ -81,10 +100,16 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
         body: 'A Cork society on a first Costa trip often wants different energy than a couples escape. We match base, board, and proximity to dining so evenings feel easy after 36 holes.',
         bullets: ['Half-board when early tee times dominate', 'Apartment-style options for longer stays', 'Parking and bag storage practicalities']
       }
-    ]
+    ],
+    formTitle: 'Get matched stay options',
+    formLead: 'Tell us the trip style and budget you have in mind and we will shortlist the right accommodation level.',
+    interestPreset: 'Accommodation tiers',
+    enquiryType: 'booking'
   },
   '/airport-transfers': {
     metaTitle: 'Airport transfers | Golf Sol Ireland',
+    metaDescription:
+      'Plan Malaga airport transfers for Costa del Sol golf groups, with vehicles sized for golf bags, route timing, and week-long movement support.',
     kicker: 'Explore — Malaga and beyond',
     heroTitle: 'Airport transfers that start the trip calmly',
     heroBody:
@@ -104,10 +129,16 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
     asideQuote: {
       text: 'The holiday starts when the airport stress ends.',
       attribution: 'Transfer planning'
-    }
+    },
+    formTitle: 'Plan airport transfers',
+    formLead: 'Send us your airport, group size, and destination so we can map the cleanest arrival flow.',
+    interestPreset: 'Airport transfers',
+    enquiryType: 'booking'
   },
   '/tailored-itinerary': {
     metaTitle: 'Tailored itinerary | Golf Sol Ireland',
+    metaDescription:
+      'Build a tailored Costa del Sol golf itinerary with balanced pacing, realistic routing, and clear travel-week structure for Irish groups.',
     kicker: 'Plan your trip — bespoke pacing',
     heroTitle: 'Tailored itineraries with breathing room',
     heroBody:
@@ -123,10 +154,16 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
         body: 'Once deposits land and suppliers confirm, we freeze what must not move and keep flexibility where it helps. You always know which parts are firm and which are still adjustable.',
         bullets: ['Single timeline the whole group can share', 'WhatsApp-friendly summaries', 'PDF outline for the club committee']
       }
-    ]
+    ],
+    formTitle: 'Start your itinerary brief',
+    formLead: 'Share the outline of your trip and we will help shape a day-by-day plan that works in the real world.',
+    interestPreset: 'Tailored itinerary',
+    enquiryType: 'booking'
   },
   '/course-shortlist': {
     metaTitle: 'Course shortlist | Golf Sol Ireland',
+    metaDescription:
+      'Request a Costa del Sol course shortlist based on your base, dates, and handicap range, with practical advice for Irish golf groups.',
     kicker: 'Plan your trip — decisive golf',
     heroTitle: 'A course shortlist that respects your handicap spread',
     heroBody:
@@ -142,10 +179,16 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
         body: 'Once the group signs off, we chase availability in the right order so you do not lose a keystone round while debating the fourth name on the list.',
         bullets: ['Parallel holds where suppliers allow', 'Clear expiry times on options', 'Deposit triggers explained upfront']
       }
-    ]
+    ],
+    formTitle: 'Request a course shortlist',
+    formLead: 'Tell us where you are staying and what level of golf you want and we will narrow the right options.',
+    interestPreset: 'Course shortlist',
+    enquiryType: 'booking'
   },
   '/hotel-matching': {
     metaTitle: 'Hotel matching | Golf Sol Ireland',
+    metaDescription:
+      'Get Costa del Sol hotel matching for your golf trip, based on budget, group personality, evenings, and logistics that actually matter.',
     kicker: 'Plan your trip — the right base',
     heroTitle: 'Hotel matching tied to how you use the evenings',
     heroBody:
@@ -161,10 +204,16 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
         body: 'If budget or dates move, we remap quickly — swapping a base without unraveling the whole golf plan is part of the job.',
         bullets: ['Apples-to-apples comparisons', 'Refund and change rules summarised', 'No shame in downgrading to win on golf spend']
       }
-    ]
+    ],
+    formTitle: 'Get hotel matching help',
+    formLead: 'Share your group style, budget, and preferred base and we will recommend a better-fit hotel shortlist.',
+    interestPreset: 'Hotel matching',
+    enquiryType: 'booking'
   },
   '/group-preferences': {
     metaTitle: 'Group preferences | Golf Sol Ireland',
+    metaDescription:
+      'Capture group preferences for Costa del Sol golf travel, from rooming and mobility needs to extras and budgeting for Irish societies.',
     kicker: 'Plan your trip — societies & friends',
     heroTitle: 'Group preferences captured without the chaos',
     heroBody:
@@ -184,10 +233,16 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
     asideQuote: {
       text: 'Good group travel is half logistics, half diplomacy.',
       attribution: 'Group planning'
-    }
+    },
+    formTitle: 'Tell us about your group',
+    formLead: 'Share the group type, likely numbers, and any sensitivities and we will help shape the trip around them.',
+    interestPreset: 'Group preferences',
+    enquiryType: 'booking'
   },
   '/irish-group-planning': {
     metaTitle: 'Irish group planning | Golf Sol Ireland',
+    metaDescription:
+      'Golf trip planning for Irish groups travelling to the Costa del Sol, with departure patterns, budgets, and booking style handled properly.',
     kicker: 'Travel support — Irish lens',
     heroTitle: 'Irish group planning with Costa del Sol fluency',
     heroBody:
@@ -203,10 +258,16 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
         body: 'Irish groups often split costs in specific ways. We quote in euros with plain-English notes on what is per person, per room, or per vehicle so the treasurer stays sane.',
         bullets: ['VAT-inclusive framing where relevant', 'FX awareness without pretending to predict rates', 'Receipt trails for committees']
       }
-    ]
+    ],
+    formTitle: 'Plan an Irish group trip',
+    formLead: 'Tell us where your group is flying from and how you usually plan, and we will help with a cleaner Costa del Sol setup.',
+    interestPreset: 'Irish group planning',
+    enquiryType: 'booking'
   },
   '/costa-del-sol-routing': {
     metaTitle: 'Costa del Sol routing | Golf Sol Ireland',
+    metaDescription:
+      'Understand Costa del Sol routing for golf trips, with realistic drive times, corridor planning, and less dead mileage across the week.',
     kicker: 'Travel support — geography that saves time',
     heroTitle: 'Costa del Sol routing that trims dead miles',
     heroBody:
@@ -222,10 +283,16 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
         body: 'Sometimes two longer drives unlock unbeatable golf pairings. We flag those trade-offs openly so you choose with eyes open.',
         bullets: ['Scenic versus fast motorway choices', 'Toll costs folded into comparisons', 'Parking realities at popular clubs']
       }
-    ]
+    ],
+    formTitle: 'Get routing help',
+    formLead: 'Share the courses or areas you are considering and we will advise on a cleaner route across the week.',
+    interestPreset: 'Costa del Sol routing',
+    enquiryType: 'booking'
   },
   '/transfer-coordination': {
     metaTitle: 'Transfer coordination | Golf Sol Ireland',
+    metaDescription:
+      'Coordinate Costa del Sol golf transfers around tee times, hotel pickups, and group luggage with one joined-up movement plan.',
     kicker: 'Travel support — seamless movement',
     heroTitle: 'Transfer coordination that survives real-world delays',
     heroBody:
@@ -241,10 +308,16 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
         body: 'Vans, trailers, and roof boxes behave differently. We specify what fits so nobody learns at the kerb that the third bag will not close the door.',
         bullets: ['Club protection basics on the road', 'Shared versus private transfer trade-offs', 'Last-minute size changes escalated fast']
       }
-    ]
+    ],
+    formTitle: 'Coordinate transfers',
+    formLead: 'Send your golf-day movements and hotel details and we will help map the transfer plan.',
+    interestPreset: 'Transfer coordination',
+    enquiryType: 'booking'
   },
   '/booking-follow-up': {
     metaTitle: 'Booking follow-up | Golf Sol Ireland',
+    metaDescription:
+      'See how Golf Sol Ireland handles booking follow-up, deposit momentum, and pre-departure clarity for Costa del Sol golf groups.',
     kicker: 'Travel support — after you say yes',
     heroTitle: 'Booking follow-up that keeps momentum',
     heroBody:
@@ -264,10 +337,16 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
     asideQuote: {
       text: 'Momentum is a luxury — we protect it after you commit.',
       attribution: 'Client care'
-    }
+    },
+    formTitle: 'Ask about booking follow-up',
+    formLead: 'If your group is already moving toward a booking, we can help clarify the next milestones.',
+    interestPreset: 'Booking follow-up',
+    enquiryType: 'support'
   },
   '/deposit-upfront': {
     metaTitle: '20% deposit upfront | Golf Sol Ireland',
+    metaDescription:
+      'Understand how the upfront deposit works for Costa del Sol golf trips, including what it secures and how group changes are handled.',
     kicker: 'Booking details — how deposits work',
     heroTitle: '20% deposit upfront to lock real inventory',
     heroBody:
@@ -283,10 +362,16 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
         body: 'Groups change. We walk through how substitutions work, whether empty beds carry a penalty, and when names must be final for the hotel.',
         bullets: ['Name-change windows where flexible', 'Minimum numbers for contracted rates', 'Good-faith efforts to refill beds']
       }
-    ]
+    ],
+    formTitle: 'Ask about deposits',
+    formLead: 'Send your booking question and we will clarify how deposits work before you commit.',
+    interestPreset: 'Deposit upfront',
+    enquiryType: 'support'
   },
   '/final-balance-terms': {
     metaTitle: 'Final balance terms | Golf Sol Ireland',
+    metaDescription:
+      'Review final balance timing and payment terms for Costa del Sol golf trips, translated into plain English for Irish groups.',
     kicker: 'Booking details — balances',
     heroTitle: 'Final balance terms without spreadsheet shock',
     heroBody:
@@ -302,10 +387,16 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
         body: 'Buggies, spa, and pro-shop spend usually stay on personal cards. We flag likely extras so nobody confuses them with the package balance.',
         bullets: ['Estimated spend bands for common extras', 'Club policies on cash versus card', 'Tips and service charges in context']
       }
-    ]
+    ],
+    formTitle: 'Ask about balance timing',
+    formLead: 'If you need clarity on payment dates or balance terms, send a quick question here.',
+    interestPreset: 'Final balance terms',
+    enquiryType: 'support'
   },
   '/no-obligation-enquiry': {
     metaTitle: 'No-obligation enquiry | Golf Sol Ireland',
+    metaDescription:
+      'Start a no-obligation Costa del Sol golf enquiry with Golf Sol Ireland and get thoughtful guidance before any booking commitment.',
     kicker: 'Booking details — start easy',
     heroTitle: 'No-obligation enquiry — ask without pressure',
     heroBody:
@@ -325,10 +416,16 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
     asideQuote: {
       text: 'The best enquiries feel like a chat at the bar, not a tribunal.',
       attribution: 'First contact'
-    }
+    },
+    formTitle: 'Start a no-obligation enquiry',
+    formLead: 'Tell us the outline of your trip and we will come back with calm, useful guidance.',
+    interestPreset: 'No-obligation enquiry',
+    enquiryType: 'booking'
   },
   '/terms-and-conditions': {
     metaTitle: 'Terms & conditions | Golf Sol Ireland',
+    metaDescription:
+      'Read the plain-language terms and conditions overview for Golf Sol Ireland golf travel planning and Costa del Sol bookings.',
     kicker: 'Booking details — legal clarity',
     heroTitle: 'Terms & conditions — plain-language overview',
     heroBody:
@@ -349,7 +446,11 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
         body: 'Your proposal and confirmation emails contain the enforceable terms for your specific trip, including cancellation and payment clauses. Keep them with your travel documents.',
         bullets: ['Ask us to explain any clause you are unsure about', 'Escalate disputes early — dates rarely improve when delayed', 'Irish and EU consumer frameworks may apply depending on services booked']
       }
-    ]
+    ],
+    formTitle: 'Ask a terms question',
+    formLead: 'If anything in the terms needs clarification, send your question and we will explain it plainly.',
+    interestPreset: 'Terms and conditions',
+    enquiryType: 'legal'
   }
 }
 

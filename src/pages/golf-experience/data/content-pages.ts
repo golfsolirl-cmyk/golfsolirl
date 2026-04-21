@@ -6,6 +6,7 @@ export interface GeContentPageSection {
 
 export interface GeContentPageData {
   readonly metaTitle: string
+  readonly metaDescription?: string
   readonly eyebrow: string
   readonly title: string
   readonly subtitle: string
@@ -547,7 +548,47 @@ const geContentPages: Record<string, GeContentPageData> = {
   '/services/golf-club-rental': golfClubRentalPage,
   '/services/tee-time-bookings': teeTimeOnlyPage,
   '/services/family-holidays': familyHolidaysPage,
-  '/services/society-group-trips': bookingPage
+  '/services/society-group-trips': bookingPage,
+  '/golf-courses/sotogrande': {
+    ...coursesPage,
+    metaTitle: 'Sotogrande Golf Courses | GolfSol Ireland',
+    eyebrow: 'Golf Courses',
+    title: 'Sotogrande golf courses for premium Costa del Sol itineraries',
+    subtitle: 'Compare marquee Sotogrande rounds with practical routing notes for Irish golf groups.',
+    interestPreset: 'Sotogrande golf courses'
+  },
+  '/golf-courses/marbella-golf-valley': {
+    ...coursesPage,
+    metaTitle: 'Marbella Golf Valley | GolfSol Ireland',
+    eyebrow: 'Golf Courses',
+    title: 'Marbella Golf Valley shortlists for Irish golf travellers',
+    subtitle: 'See which Marbella-area rounds fit lively bases, shorter transfers, and premium golf weeks.',
+    interestPreset: 'Marbella Golf Valley'
+  },
+  '/golf-courses/mijas-fuengirola': {
+    ...coursesPage,
+    metaTitle: 'Mijas & Fuengirola Golf | GolfSol Ireland',
+    eyebrow: 'Golf Courses',
+    title: 'Mijas and Fuengirola golf planning for Irish groups',
+    subtitle: 'Build practical golf days around the Mijas and Fuengirola corridor with cleaner transfer timing.',
+    interestPreset: 'Mijas and Fuengirola golf'
+  },
+  '/accommodation/fuengirola-hotels': {
+    ...accommodationPage,
+    metaTitle: 'Fuengirola Golf Hotels | GolfSol Ireland',
+    eyebrow: 'Accommodation',
+    title: 'Fuengirola hotels that work for Costa del Sol golf trips',
+    subtitle: 'Match lively Fuengirola bases to your golf schedule, budget, and group style without guesswork.',
+    interestPreset: 'Fuengirola hotels'
+  },
+  '/accommodation/torremolinos-hotels': {
+    ...accommodationPage,
+    metaTitle: 'Torremolinos Golf Hotels | GolfSol Ireland',
+    eyebrow: 'Accommodation',
+    title: 'Torremolinos hotels for golfers flying into Málaga',
+    subtitle: 'Choose Torremolinos stays that shorten the airport run while keeping your golf week polished.',
+    interestPreset: 'Torremolinos hotels'
+  }
 }
 
 export { geContentPages }

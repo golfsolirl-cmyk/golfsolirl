@@ -2,12 +2,15 @@ import { useMemo, useState, type FormEvent } from 'react'
 import { Send } from 'lucide-react'
 import { GeButton } from './ge-button'
 import { contactInfo } from '../data/copy'
+import { cx } from '../../../lib/utils'
 
 interface GeQuickEnquiryFormProps {
   readonly title: string
   readonly lead: string
   readonly interestPreset: string
   readonly enquiryType?: 'booking' | 'legal' | 'newsletter' | 'testimonial' | 'support'
+  readonly contextLines?: readonly string[]
+  readonly className?: string
 }
 
 const labelClass =
@@ -19,7 +22,9 @@ export function GeQuickEnquiryForm({
   title,
   lead,
   interestPreset,
-  enquiryType
+  enquiryType,
+  contextLines = [],
+  className
 }: GeQuickEnquiryFormProps) {
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
@@ -125,6 +130,7 @@ export function GeQuickEnquiryForm({
     try {
       const interestLines = [
         interestPreset,
+        ...contextLines,
         contextSummary || null,
         !isLegalPage && !isSupportPage && !isNewsletterPage && !isTestimonialPage && !isGuidePage && travelDates.trim()
           ? `Travel dates: ${travelDates.trim()}`
@@ -170,7 +176,12 @@ export function GeQuickEnquiryForm({
   }
 
   return (
-    <div className="rounded-2xl border border-gs-dark/10 bg-white p-5 shadow-[0_20px_50px_rgba(6,59,42,0.12)] sm:p-6">
+    <div
+      className={cx(
+        'rounded-2xl border border-gs-dark/10 bg-white p-5 shadow-[0_20px_50px_rgba(6,59,42,0.12)] sm:p-6',
+        className
+      )}
+    >
       <p className="font-ge text-[0.78rem] font-bold uppercase tracking-[0.16em] text-ge-orange">
         Quick form
       </p>

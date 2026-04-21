@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle2, ChevronRight, Phone } from 'lucide-react'
 import { cx } from '../../lib/utils'
+import { usePageSeo } from '../../lib/seo'
 import { GeFooter } from './sections/ge-footer'
 import { GeNavbar } from './sections/ge-navbar'
 import { GeQuickEnquiryForm } from './components/ge-quick-enquiry-form'
@@ -35,12 +36,23 @@ export function GeContentPage() {
     )
   }
 
-  document.title = page.metaTitle
+  usePageSeo({
+    title: page.metaTitle,
+    description: page.metaDescription ?? page.subtitle,
+    path,
+    image: page.heroImage
+  })
 
   return (
     <div className="ge-page min-h-screen overflow-x-hidden bg-white">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-gs-gold focus:px-4 focus:py-2 focus:font-ge focus:text-sm focus:font-bold focus:uppercase focus:tracking-[0.14em] focus:text-gs-dark"
+      >
+        Skip to content
+      </a>
       <GeNavbar />
-      <main>
+      <main id="main">
         <section className="relative isolate overflow-hidden bg-gs-dark text-white">
           <div aria-hidden="true" className="h-[134px] w-full bg-white sm:h-[148px] md:h-[164px] lg:h-[130px] xl:h-[142px]" />
           <div className="relative">
