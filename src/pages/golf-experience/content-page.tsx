@@ -1,13 +1,12 @@
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle2, ChevronRight, Phone } from 'lucide-react'
+import { PublicSiteShell } from '../../components/public/public-site-shell'
+import { usePageSeo } from '../../lib/use-page-seo'
 import { cx } from '../../lib/utils'
-import { GeFooter } from './sections/ge-footer'
-import { GeNavbar } from './sections/ge-navbar'
 import { GeQuickEnquiryForm } from './components/ge-quick-enquiry-form'
 import { contactInfo } from './data/copy'
 import { getGeContentPage } from './data/content-pages'
-import { WhatsappFab } from './components/whatsapp-fab'
 
 function normalisePath() {
   const path = window.location.pathname.replace(/\/+$/, '')
@@ -17,6 +16,36 @@ function normalisePath() {
 export function GeContentPage() {
   const path = useMemo(() => normalisePath(), [])
   const page = useMemo(() => getGeContentPage(path), [path])
+  const seoTitle = page?.metaTitle ?? 'Golf Sol Ireland'
+  const seoDescription = page?.subtitle ?? 'Premium Costa del Sol golf travel for Irish golfers.'
+  const seoImage = page?.heroImage ?? '/images/hero-malaga-transfers-1600.jpg'
+  const seoType = page?.enquiryType === 'legal' ? 'article' : 'website'
+
+  usePageSeo({
+    title: seoTitle,
+    description: seoDescription,
+    path,
+    image: seoImage,
+    type: seoType,
+    keywords: [
+      page?.eyebrow ?? 'Golf travel',
+      page?.title ?? 'Golf Sol Ireland',
+      'Golf Sol Ireland',
+      'Costa del Sol golf trips',
+      'Irish golfers Spain'
+    ],
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': page?.enquiryType === 'legal' ? 'WebPage' : 'Service',
+      name: page?.title ?? 'Golf Sol Ireland',
+      description: seoDescription,
+      url: `${window.location.origin}${path}`,
+      provider: {
+        '@type': 'TravelAgency',
+        name: 'Golf Sol Ireland'
+      }
+    }
+  })
 
   if (!page) {
     return (
@@ -35,12 +64,9 @@ export function GeContentPage() {
     )
   }
 
-  document.title = page.metaTitle
-
   return (
-    <div className="ge-page min-h-screen overflow-x-hidden bg-white">
-      <GeNavbar />
-      <main>
+    <PublicSiteShell>
+      <div id="main">
         <section className="relative isolate overflow-hidden bg-gs-dark text-white">
           <div aria-hidden="true" className="h-[134px] w-full bg-white sm:h-[148px] md:h-[164px] lg:h-[130px] xl:h-[142px]" />
           <div className="relative">
@@ -93,8 +119,8 @@ export function GeContentPage() {
         <section className="bg-white py-14 sm:py-16">
           <div className="mx-auto grid max-w-[1180px] gap-10 px-5 sm:px-8 lg:grid-cols-[1.06fr_0.94fr] lg:items-start">
             <div className="space-y-6">
-              <div className="rounded-2xl border border-ge-gray100 bg-ge-gray50 p-5 sm:p-6">
-                <p className="font-ge text-sm font-bold uppercase tracking-[0.16em] text-ge-orange">Why this helps</p>
+              <div className="theme-card rounded-[var(--gsi-card-radius)] border border-ge-gray100 bg-[linear-gradient(135deg,rgba(244,247,245,0.95),rgba(255,255,255,1))] p-5 sm:p-6">
+                <p className="font-ge text-sm font-bold uppercase tracking-[0.16em] text-ge-orange">Why this page matters</p>
                 <ul className="mt-4 space-y-3">
                   {page.highlights.map((item) => (
                     <li key={item} className="flex items-start gap-2.5 font-ge text-base leading-7 text-gs-dark">
@@ -106,8 +132,16 @@ export function GeContentPage() {
               </div>
 
               {page.sections.map((section) => (
-                <article key={section.title} className="rounded-2xl border border-ge-gray100 bg-white p-5 shadow-[0_10px_30px_rgba(6,59,42,0.06)] sm:p-7">
-                  <h2 className="font-ge text-[1.58rem] font-extrabold leading-tight text-gs-green sm:text-[1.9rem]">{section.title}</h2>
+                <article key={section.title} className="theme-card rounded-[var(--gsi-card-radius)] border border-ge-gray100 bg-white p-5 sm:p-7">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="inline-flex rounded-full border border-gold-300/35 bg-gold-50 px-3 py-1 text-[0.72rem] font-bold uppercase tracking-[0.18em] text-gold-600">
+                      {page.eyebrow}
+                    </span>
+                    <span className="inline-flex rounded-full border border-ge-gray100 bg-ge-gray50 px-3 py-1 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-ge-gray500">
+                      Tailored for this page
+                    </span>
+                  </div>
+                  <h2 className="mt-4 font-ge text-[1.58rem] font-extrabold leading-tight text-gs-green sm:text-[1.9rem]">{section.title}</h2>
                   <p className="mt-3 font-ge text-base leading-7 text-ge-gray500">{section.body}</p>
                   {section.bullets ? (
                     <ul className="mt-4 space-y-2.5">
@@ -130,8 +164,11 @@ export function GeContentPage() {
                 enquiryType={page.enquiryType ?? 'booking'}
                 interestPreset={page.interestPreset}
               />
-              <div className="mt-5 rounded-2xl border border-ge-gray100 bg-white p-5 shadow-[0_8px_20px_rgba(6,59,42,0.06)]">
+              <div className="theme-card mt-5 rounded-[var(--gsi-card-radius)] border border-ge-gray100 bg-white p-5">
                 <p className="font-ge text-sm font-bold uppercase tracking-[0.16em] text-ge-orange">Prefer to call?</p>
+                <p className="mt-2 text-sm leading-6 text-ge-gray500">
+                  We can talk through this exact page topic and turn it into a relevant quote or next step.
+                </p>
                 <a
                   href={`tel:${contactInfo.phoneTel}`}
                   className="mt-3 inline-flex min-h-[44px] items-center gap-2 rounded-full border-2 border-gs-green px-4 py-2.5 font-ge text-base font-bold uppercase tracking-[0.12em] text-gs-green transition-colors hover:bg-gs-green hover:text-white"
@@ -143,9 +180,7 @@ export function GeContentPage() {
             </aside>
           </div>
         </section>
-      </main>
-      <GeFooter />
-      <WhatsappFab />
-    </div>
+      </div>
+    </PublicSiteShell>
   )
 }

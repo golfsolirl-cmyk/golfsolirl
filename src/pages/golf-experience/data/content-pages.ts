@@ -511,7 +511,52 @@ const geContentPages: Record<string, GeContentPageData> = {
     interestPreset: 'Travel to Malaga AGP'
   },
   '/golf-courses': coursesPage,
+  '/golf-courses/sotogrande': {
+    ...coursesPage,
+    metaTitle: 'Sotogrande Golf Courses | GolfSol Ireland',
+    eyebrow: 'Golf Courses',
+    title: 'Sotogrande golf courses for standout Costa del Sol itineraries',
+    subtitle:
+      'Explore the Sotogrande cluster for marquee rounds, stronger finishing experiences, and route planning that still works for Irish groups.',
+    interestPreset: 'Sotogrande golf courses'
+  },
+  '/golf-courses/marbella-golf-valley': {
+    ...coursesPage,
+    metaTitle: 'Marbella Golf Valley | GolfSol Ireland',
+    eyebrow: 'Golf Courses',
+    title: 'Marbella Golf Valley picks for lively, premium golf weeks',
+    subtitle:
+      'Build around Marbella Golf Valley when your group wants strong golf, central nightlife access, and easy day-by-day routing.',
+    interestPreset: 'Marbella Golf Valley'
+  },
+  '/golf-courses/mijas-fuengirola': {
+    ...coursesPage,
+    metaTitle: 'Mijas & Fuengirola Golf | GolfSol Ireland',
+    eyebrow: 'Golf Courses',
+    title: 'Mijas and Fuengirola golf options with cleaner transfer logic',
+    subtitle:
+      'For Irish groups staying closer to the airport side of the coast, these Mijas and Fuengirola golf options keep travel days simpler.',
+    interestPreset: 'Mijas and Fuengirola golf'
+  },
   '/accommodation': accommodationPage,
+  '/accommodation/fuengirola-hotels': {
+    ...accommodationPage,
+    metaTitle: 'Fuengirola Hotels | GolfSol Ireland',
+    eyebrow: 'Accommodation',
+    title: 'Fuengirola hotels that Irish golf groups book repeatedly',
+    subtitle:
+      'Fuengirola works well for Irish groups who want beachfront energy, walkable evenings, and practical access to the wider Costa del Sol.',
+    interestPreset: 'Fuengirola hotels'
+  },
+  '/accommodation/torremolinos-hotels': {
+    ...accommodationPage,
+    metaTitle: 'Torremolinos Hotels | GolfSol Ireland',
+    eyebrow: 'Accommodation',
+    title: 'Torremolinos hotels for easier airport-led golf trips',
+    subtitle:
+      'Torremolinos is ideal when flight convenience, transfer simplicity, and a relaxed trip rhythm matter more than southern-nightlife prestige.',
+    interestPreset: 'Torremolinos hotels'
+  },
   '/golf-map': {
     ...coursesPage,
     metaTitle: 'Costa del Sol Golf Map | GolfSol Ireland',

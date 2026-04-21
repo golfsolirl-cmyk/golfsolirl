@@ -5,88 +5,91 @@ export default {
     extend: {
       colors: {
         forest: {
-          950: '#0a2008',
-          900: '#163a13',
-          800: '#1a4516',
-          700: '#1f571a',
-          600: '#2a7020',
-          500: '#3a8d2e',
-          100: '#d9efd3',
-          50: '#f0f7ee'
+          950: 'rgb(var(--gsi-color-forest-950) / <alpha-value>)',
+          900: 'rgb(var(--gsi-color-forest-900) / <alpha-value>)',
+          800: 'rgb(var(--gsi-color-forest-800) / <alpha-value>)',
+          700: 'rgb(var(--gsi-color-forest-700) / <alpha-value>)',
+          600: 'rgb(var(--gsi-color-forest-600) / <alpha-value>)',
+          500: 'rgb(var(--gsi-color-forest-500) / <alpha-value>)',
+          100: 'rgb(var(--gsi-color-forest-100) / <alpha-value>)',
+          50: 'rgb(var(--gsi-color-forest-50) / <alpha-value>)'
         },
         fairway: {
-          700: '#316619',
-          600: '#3d8120',
-          500: '#50a32d',
-          400: '#6ebf47',
-          200: '#c3e9a8',
-          100: '#e3f5d3',
-          50: '#f5fbf0'
+          700: 'rgb(var(--gsi-color-fairway-700) / <alpha-value>)',
+          600: 'rgb(var(--gsi-color-fairway-600) / <alpha-value>)',
+          500: 'rgb(var(--gsi-color-fairway-500) / <alpha-value>)',
+          400: 'rgb(var(--gsi-color-fairway-400) / <alpha-value>)',
+          200: 'rgb(var(--gsi-color-fairway-200) / <alpha-value>)',
+          100: 'rgb(var(--gsi-color-fairway-100) / <alpha-value>)',
+          50: 'rgb(var(--gsi-color-fairway-50) / <alpha-value>)'
         },
         gold: {
-          600: '#d97706',
-          500: '#f59e0b',
-          400: '#dc5801',
-          300: '#fdba74',
-          50: '#fffbeb'
+          600: 'rgb(var(--gsi-color-gold-600) / <alpha-value>)',
+          500: 'rgb(var(--gsi-color-gold-500) / <alpha-value>)',
+          400: 'rgb(var(--gsi-color-gold-400) / <alpha-value>)',
+          300: 'rgb(var(--gsi-color-gold-300) / <alpha-value>)',
+          200: 'rgb(var(--gsi-color-gold-200) / <alpha-value>)',
+          50: 'rgb(var(--gsi-color-gold-50) / <alpha-value>)'
         },
         sky: {
-          muted: '#e8f4fb',
-          section: '#cce8f4',
-          light: '#dbeafe'
+          muted: 'rgb(var(--gsi-color-sky-muted) / <alpha-value>)',
+          section: 'rgb(var(--gsi-color-sky-section) / <alpha-value>)',
+          light: 'rgb(var(--gsi-color-sky-light) / <alpha-value>)'
         },
-        cream: '#f2f5ef',
-        offwhite: '#f7f9f5',
-        // GolfSol Ireland sport-energy palette (used on the clone home `/`)
+        cream: 'rgb(var(--gsi-color-cream) / <alpha-value>)',
+        offwhite: 'rgb(var(--gsi-color-offwhite) / <alpha-value>)',
         gs: {
-          green: '#0B6B45',          // Primary Green — fresher, stronger
-          dark: '#063B2A',            // Dark Green — text & deep surfaces
-          electric: '#1ED760',        // Electric Green Accent — energy pop
-          gold: '#FFC72C',            // Gold — bright, sporty
-          'gold-light': '#FFE27A',    // Gold Highlight
-          bg: '#F4F7F5'               // Light turf background
+          green: 'rgb(var(--gsi-color-gs-green) / <alpha-value>)',
+          dark: 'rgb(var(--gsi-color-gs-dark) / <alpha-value>)',
+          electric: 'rgb(var(--gsi-color-gs-electric) / <alpha-value>)',
+          gold: 'rgb(var(--gsi-color-gs-gold) / <alpha-value>)',
+          'gold-light': 'rgb(var(--gsi-color-gs-gold-light) / <alpha-value>)',
+          bg: 'rgb(var(--gsi-color-gs-bg) / <alpha-value>)'
         },
         ge: {
-          teal: '#007C69',
-          'teal-dark': '#005a4d',
-          'teal-light': '#29c4a9',
-          blue: '#2692E0',
-          'blue-light': '#7EBEC5',
-          orange: '#ff5b2d',
-          'orange-hover': '#e94a1f',
-          purple: '#61115D',
-          ink: '#2d3940',
-          gray700: '#3e3e3e',
-          gray500: '#4e4e4e',
-          gray300: '#bfbfbf',
-          gray200: '#e2e2e2',
-          gray100: '#efefef',
-          gray50: '#f3f3f3'
+          teal: 'rgb(var(--gsi-color-ge-teal) / <alpha-value>)',
+          'teal-dark': 'rgb(var(--gsi-color-ge-teal-dark) / <alpha-value>)',
+          'teal-light': 'rgb(var(--gsi-color-ge-teal-light) / <alpha-value>)',
+          blue: 'rgb(var(--gsi-color-ge-blue) / <alpha-value>)',
+          'blue-light': 'rgb(var(--gsi-color-ge-blue-light) / <alpha-value>)',
+          orange: 'rgb(var(--gsi-color-ge-orange) / <alpha-value>)',
+          'orange-hover': 'rgb(var(--gsi-color-ge-orange-hover) / <alpha-value>)',
+          purple: 'rgb(var(--gsi-color-ge-purple) / <alpha-value>)',
+          ink: 'rgb(var(--gsi-color-ge-ink) / <alpha-value>)',
+          gray700: 'rgb(var(--gsi-color-ge-gray700) / <alpha-value>)',
+          gray500: 'rgb(var(--gsi-color-ge-gray500) / <alpha-value>)',
+          gray300: 'rgb(var(--gsi-color-ge-gray300) / <alpha-value>)',
+          gray200: 'rgb(var(--gsi-color-ge-gray200) / <alpha-value>)',
+          gray100: 'rgb(var(--gsi-color-ge-gray100) / <alpha-value>)',
+          gray50: 'rgb(var(--gsi-color-ge-gray50) / <alpha-value>)'
         }
       },
       fontFamily: {
-        display: ['"Rubik"', 'system-ui', 'sans-serif'],
-        body: ['"Rubik"', 'system-ui', 'sans-serif'],
-        accent: ['"Rubik"', 'system-ui', 'sans-serif'],
-        script: ['"Rubik"', 'system-ui', 'sans-serif'],
+        display: ['var(--gsi-font-display)', 'system-ui', 'sans-serif'],
+        body: ['var(--gsi-font-body)', 'system-ui', 'sans-serif'],
+        accent: ['var(--gsi-font-body)', 'system-ui', 'sans-serif'],
+        script: ['var(--gsi-font-body)', 'system-ui', 'sans-serif'],
         'brand-script': ['"Dancing Script"', 'cursive'],
-        'brand-serif': ['"Rubik"', 'system-ui', 'sans-serif'],
-        ge: ['"Open Sans"', 'system-ui', 'sans-serif']
+        'brand-serif': ['var(--gsi-font-display)', 'system-ui', 'sans-serif'],
+        ge: ['var(--gsi-font-ge)', 'system-ui', 'sans-serif']
       },
       boxShadow: {
-        glow: '0 24px 80px rgba(220, 88, 1, 0.18)',
-        soft: '0 18px 60px rgba(22, 58, 19, 0.12)',
-        'gs-gold': '0 8px 22px rgba(255,199,44,0.42)',
-        'gs-gold-hover': '0 10px 28px rgba(255,199,44,0.62)',
-        'gs-green': '0 8px 22px rgba(11,107,69,0.32)'
+        glow: 'var(--gsi-shadow-glow)',
+        soft: 'var(--gsi-shadow-soft)',
+        'gs-gold': 'var(--gsi-shadow-gs-gold)',
+        'gs-gold-hover': 'var(--gsi-shadow-gs-gold-hover)',
+        'gs-green': 'var(--gsi-shadow-gs-green)',
+        card: 'var(--gsi-shadow-card)'
       },
       backgroundImage: {
         'hero-overlay':
           'linear-gradient(90deg, rgba(10,32,8,0.92) 0%, rgba(10,32,8,0.72) 42%, rgba(10,32,8,0.28) 100%)',
         'hero-bottom':
           'linear-gradient(180deg, rgba(10,32,8,0.04) 0%, rgba(10,32,8,0.76) 100%)',
-        'gs-gold': 'linear-gradient(135deg, #FFC72C 0%, #FFE27A 100%)',
-        'gs-energy': 'linear-gradient(90deg, #0B6B45 0%, #1ED760 100%)'
+        'gs-gold':
+          'linear-gradient(135deg, rgb(var(--gsi-color-gs-gold)) 0%, rgb(var(--gsi-color-gs-gold-light)) 100%)',
+        'gs-energy':
+          'linear-gradient(90deg, rgb(var(--gsi-color-gs-green)) 0%, rgb(var(--gsi-color-gs-electric)) 100%)'
       },
       keyframes: {
         float: {

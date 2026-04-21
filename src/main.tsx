@@ -1,6 +1,7 @@
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import { AuthProvider } from './providers/auth-provider'
+import { DesignThemeProvider } from './providers/design-theme-provider'
 import { LogoPreviewPage } from './pages/logo-preview'
 import { CustomerPackagePage } from './pages/customer-packages'
 import { PackageAdminPage } from './pages/packages'
@@ -41,7 +42,7 @@ function resolvePage() {
   }
 
   if (normalizedPath === '/golf-sol') {
-    return App
+    return GolfExperienceHome
   }
 
   if (normalizedPath === '/logo-preview') {
@@ -97,13 +98,15 @@ function resolvePage() {
     return FooterArticlePage
   }
 
-  return App
+  return GolfExperienceHome
 }
 
 const ActivePage = resolvePage()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <AuthProvider>
-    <ActivePage />
-  </AuthProvider>
+  <DesignThemeProvider>
+    <AuthProvider>
+      <ActivePage />
+    </AuthProvider>
+  </DesignThemeProvider>
 )

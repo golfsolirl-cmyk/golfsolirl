@@ -21,6 +21,7 @@ export function GeQuickEnquiryForm({
   interestPreset,
   enquiryType
 }: GeQuickEnquiryFormProps) {
+  const preset = interestPreset.toLowerCase()
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [phoneWhatsApp, setPhoneWhatsApp] = useState('')
@@ -32,34 +33,86 @@ export function GeQuickEnquiryForm({
   const [updateType, setUpdateType] = useState('Course updates')
   const [visitMonth, setVisitMonth] = useState('')
   const [travelPartyType, setTravelPartyType] = useState('Golf group')
+  const [preferredArea, setPreferredArea] = useState('Marbella')
+  const [hotelTier, setHotelTier] = useState('4-star')
+  const [rentalSets, setRentalSets] = useState('4')
+  const [rentalProfile, setRentalProfile] = useState('Mixed standard sets')
+  const [teeTimeArea, setTeeTimeArea] = useState('Marbella / Nueva Andalucia')
+  const [teeTimeRounds, setTeeTimeRounds] = useState('3')
+  const [familyPartyMix, setFamilyPartyMix] = useState('2 adults / 2 children')
+  const [familyStayStyle, setFamilyStayStyle] = useState('Beach resort with golf access')
+  const [courseFocus, setCourseFocus] = useState('Best-value mix')
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const isLegalPage = enquiryType === 'legal'
-  const isFaqPage = interestPreset.toLowerCase().includes('faq')
+  const isFaqPage = preset.includes('faq')
   const isNewsletterPage = enquiryType === 'newsletter'
   const isTestimonialPage = enquiryType === 'testimonial'
-  const isGuidePage = interestPreset.toLowerCase().includes('guidance') || interestPreset.toLowerCase().includes('travel to')
+  const isGuidePage = preset.includes('guidance') || preset.includes('travel to')
   const isBookingPage = enquiryType === 'booking'
   const isSupportPage = enquiryType === 'support' || isFaqPage
+  const isClubRentalPage = preset.includes('club rental')
+  const isTeeTimePage = preset.includes('tee time')
+  const isFamilyHolidayPage = preset.includes('family')
+  const isAccommodationPage = preset.includes('accommodation') || preset.includes('hotel')
+  const isCoursePage = preset.includes('course') || preset.includes('golf map')
+  const isPackagePage = preset.includes('package:')
+  const showPhoneField = !isNewsletterPage
+  const phoneRequired = isBookingPage || isClubRentalPage || isTeeTimePage || isFamilyHolidayPage || isAccommodationPage || isCoursePage
+  const nameRequired = !isNewsletterPage
 
   const notesPlaceholder = useMemo(() => {
     if (isLegalPage) return 'Tell us your legal/privacy question.'
     if (isFaqPage) return 'Tell us the exact question you need answered.'
-    if (isNewsletterPage) return 'Tell us what updates you care about most.'
+    if (isNewsletterPage) return 'Tell us what kind of updates or offers you want to receive.'
     if (isTestimonialPage) return 'Share key highlights from your trip.'
     if (isGuidePage) return 'Tell us what travel guidance you need.'
+    if (isClubRentalPage) return 'Tell us preferred brands, shaft types, or anything specific your group needs.'
+    if (isTeeTimePage) return 'Tell us tee-time preferences, handicap spread, or must-play rounds.'
+    if (isFamilyHolidayPage) return 'Tell us ages, school-holiday dates, or what balance of golf and downtime you want.'
+    if (isAccommodationPage) return 'Tell us budget, board basis, nightlife preferences, or any must-have hotel features.'
+    if (isCoursePage) return 'Tell us the type of courses you want to prioritise and any must-play venues.'
     if (isBookingPage) return 'Tell us what you need help booking.'
     return 'Tell us what matters most for your trip.'
-  }, [isBookingPage, isFaqPage, isGuidePage, isLegalPage, isNewsletterPage, isTestimonialPage])
+  }, [
+    isAccommodationPage,
+    isBookingPage,
+    isClubRentalPage,
+    isCoursePage,
+    isFaqPage,
+    isFamilyHolidayPage,
+    isGuidePage,
+    isLegalPage,
+    isNewsletterPage,
+    isTeeTimePage,
+    isTestimonialPage
+  ])
 
   const notesLabel = useMemo(() => {
     if (isLegalPage || isFaqPage || isGuidePage) return 'Question details'
     if (isNewsletterPage) return 'Update request details'
     if (isTestimonialPage) return 'Testimonial details'
+    if (isClubRentalPage) return 'Rental notes'
+    if (isTeeTimePage) return 'Tee-time notes'
+    if (isFamilyHolidayPage) return 'Family trip notes'
+    if (isAccommodationPage) return 'Stay notes'
+    if (isCoursePage) return 'Course notes'
     if (isBookingPage) return 'Booking notes'
     return 'Notes (optional)'
-  }, [isBookingPage, isFaqPage, isGuidePage, isLegalPage, isNewsletterPage, isTestimonialPage])
+  }, [
+    isAccommodationPage,
+    isBookingPage,
+    isClubRentalPage,
+    isCoursePage,
+    isFaqPage,
+    isFamilyHolidayPage,
+    isGuidePage,
+    isLegalPage,
+    isNewsletterPage,
+    isTeeTimePage,
+    isTestimonialPage
+  ])
 
   const contextSummary = useMemo(() => {
     if (isLegalPage) {
@@ -76,6 +129,21 @@ export function GeQuickEnquiryForm({
     }
     if (isGuidePage) {
       return visitMonth.trim() ? `Planned travel month: ${visitMonth.trim()}` : 'Guide context: general'
+    }
+    if (isClubRentalPage) {
+      return `Rental sets: ${rentalSets} | Rental profile: ${rentalProfile}`
+    }
+    if (isTeeTimePage) {
+      return `Golf area: ${teeTimeArea} | Preferred rounds: ${teeTimeRounds}`
+    }
+    if (isFamilyHolidayPage) {
+      return `Party mix: ${familyPartyMix} | Stay style: ${familyStayStyle}`
+    }
+    if (isAccommodationPage) {
+      return `Preferred area: ${preferredArea} | Hotel tier: ${hotelTier}`
+    }
+    if (isCoursePage) {
+      return `Golf area: ${preferredArea} | Course focus: ${courseFocus}`
     }
     if (isBookingPage) {
       const details = []
@@ -98,7 +166,21 @@ export function GeQuickEnquiryForm({
     travelPartyType,
     travelDates,
     groupSize,
-    visitMonth
+    visitMonth,
+    rentalSets,
+    rentalProfile,
+    teeTimeArea,
+    teeTimeRounds,
+    familyPartyMix,
+    familyStayStyle,
+    preferredArea,
+    hotelTier,
+    courseFocus,
+    isClubRentalPage,
+    isTeeTimePage,
+    isFamilyHolidayPage,
+    isAccommodationPage,
+    isCoursePage
   ])
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -110,8 +192,12 @@ export function GeQuickEnquiryForm({
     const mail = email.trim().toLowerCase()
     const phone = phoneWhatsApp.trim()
 
-    if (!name || !mail || !phone) {
-      setErrorMessage('Please add your name, email, and phone/WhatsApp.')
+    if ((nameRequired && !name) || !mail || (phoneRequired && !phone)) {
+      setErrorMessage(
+        phoneRequired
+          ? 'Please add the details needed here: name, email, and phone/WhatsApp.'
+          : 'Please add the required contact details for this request.'
+      )
       setStatus('error')
       return
     }
@@ -139,11 +225,11 @@ export function GeQuickEnquiryForm({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          fullName: name,
+          fullName: name || 'Newsletter subscriber',
           email: mail,
-          phoneWhatsApp: phone,
+          phoneWhatsApp: phone || 'Not supplied',
           interest: interestLines.join('\n'),
-          bestTimeToCall: 'Any time'
+          bestTimeToCall: phoneRequired ? 'Any time' : 'Email preferred'
         })
       })
       const data = (await response.json().catch(() => ({}))) as { message?: string }
@@ -163,6 +249,15 @@ export function GeQuickEnquiryForm({
       setUpdateType('Course updates')
       setVisitMonth('')
       setTravelPartyType('Golf group')
+      setPreferredArea('Marbella')
+      setHotelTier('4-star')
+      setRentalSets('4')
+      setRentalProfile('Mixed standard sets')
+      setTeeTimeArea('Marbella / Nueva Andalucia')
+      setTeeTimeRounds('3')
+      setFamilyPartyMix('2 adults / 2 children')
+      setFamilyStayStyle('Beach resort with golf access')
+      setCourseFocus('Best-value mix')
     } catch (error) {
       setStatus('error')
       setErrorMessage(error instanceof Error ? error.message : 'Could not send your request right now.')
@@ -200,8 +295,8 @@ export function GeQuickEnquiryForm({
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               autoComplete="name"
-              required
-              placeholder="Your name"
+              required={nameRequired}
+              placeholder={isNewsletterPage ? 'Optional' : 'Your name'}
             />
           </label>
           <label className="block">
@@ -216,18 +311,20 @@ export function GeQuickEnquiryForm({
               placeholder="you@example.com"
             />
           </label>
-          <label className="block">
-            <span className={labelClass}>Phone / WhatsApp</span>
-            <input
-              className={inputClass}
-              value={phoneWhatsApp}
-              onChange={(e) => setPhoneWhatsApp(e.target.value)}
-              autoComplete="tel"
-              type="tel"
-              required
-              placeholder={contactInfo.phoneDisplay}
-            />
-          </label>
+          {showPhoneField ? (
+            <label className="block">
+              <span className={labelClass}>{phoneRequired ? 'Phone / WhatsApp' : 'Phone / WhatsApp (optional)'}</span>
+              <input
+                className={inputClass}
+                value={phoneWhatsApp}
+                onChange={(e) => setPhoneWhatsApp(e.target.value)}
+                autoComplete="tel"
+                type="tel"
+                required={phoneRequired}
+                placeholder={contactInfo.phoneDisplay}
+              />
+            </label>
+          ) : null}
           {isLegalPage ? (
             <label className="block">
               <span className={labelClass}>Legal topic</span>
@@ -272,6 +369,119 @@ export function GeQuickEnquiryForm({
               </select>
             </label>
           ) : null}
+          {isClubRentalPage ? (
+            <>
+              <label className="block">
+                <span className={labelClass}>How many rental sets?</span>
+                <select className={inputClass} value={rentalSets} onChange={(e) => setRentalSets(e.target.value)}>
+                  <option>1</option>
+                  <option>2</option>
+                  <option>4</option>
+                  <option>8</option>
+                  <option>12+</option>
+                </select>
+              </label>
+              <label className="block">
+                <span className={labelClass}>Rental profile</span>
+                <select className={inputClass} value={rentalProfile} onChange={(e) => setRentalProfile(e.target.value)}>
+                  <option>Mixed standard sets</option>
+                  <option>Premium men&apos;s sets</option>
+                  <option>Ladies&apos; sets</option>
+                  <option>Left-handed sets</option>
+                  <option>Mixed requirement</option>
+                </select>
+              </label>
+            </>
+          ) : null}
+          {isTeeTimePage ? (
+            <>
+              <label className="block">
+                <span className={labelClass}>Preferred golf area</span>
+                <select className={inputClass} value={teeTimeArea} onChange={(e) => setTeeTimeArea(e.target.value)}>
+                  <option>Marbella / Nueva Andalucia</option>
+                  <option>Mijas / Fuengirola</option>
+                  <option>Estepona / Sotogrande</option>
+                  <option>Open to suggestions</option>
+                </select>
+              </label>
+              <label className="block">
+                <span className={labelClass}>Preferred number of rounds</span>
+                <select className={inputClass} value={teeTimeRounds} onChange={(e) => setTeeTimeRounds(e.target.value)}>
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4+</option>
+                </select>
+              </label>
+            </>
+          ) : null}
+          {isFamilyHolidayPage ? (
+            <>
+              <label className="block">
+                <span className={labelClass}>Family party mix</span>
+                <input
+                  className={inputClass}
+                  value={familyPartyMix}
+                  onChange={(e) => setFamilyPartyMix(e.target.value)}
+                  placeholder="e.g. 4 adults / 2 children"
+                />
+              </label>
+              <label className="block">
+                <span className={labelClass}>Preferred stay style</span>
+                <select className={inputClass} value={familyStayStyle} onChange={(e) => setFamilyStayStyle(e.target.value)}>
+                  <option>Beach resort with golf access</option>
+                  <option>Quiet luxury hotel</option>
+                  <option>Apartment-style stay</option>
+                  <option>Open to suggestions</option>
+                </select>
+              </label>
+            </>
+          ) : null}
+          {isAccommodationPage ? (
+            <>
+              <label className="block">
+                <span className={labelClass}>Preferred hotel area</span>
+                <select className={inputClass} value={preferredArea} onChange={(e) => setPreferredArea(e.target.value)}>
+                  <option>Marbella</option>
+                  <option>Fuengirola</option>
+                  <option>Torremolinos</option>
+                  <option>Estepona</option>
+                  <option>Open to suggestions</option>
+                </select>
+              </label>
+              <label className="block">
+                <span className={labelClass}>Hotel tier</span>
+                <select className={inputClass} value={hotelTier} onChange={(e) => setHotelTier(e.target.value)}>
+                  <option>3-star</option>
+                  <option>4-star</option>
+                  <option>5-star</option>
+                  <option>Best-value shortlist</option>
+                </select>
+              </label>
+            </>
+          ) : null}
+          {isCoursePage ? (
+            <>
+              <label className="block">
+                <span className={labelClass}>Preferred golf area</span>
+                <select className={inputClass} value={preferredArea} onChange={(e) => setPreferredArea(e.target.value)}>
+                  <option>Marbella</option>
+                  <option>Mijas / Fuengirola</option>
+                  <option>Estepona / Sotogrande</option>
+                  <option>Open to suggestions</option>
+                </select>
+              </label>
+              <label className="block">
+                <span className={labelClass}>Course focus</span>
+                <select className={inputClass} value={courseFocus} onChange={(e) => setCourseFocus(e.target.value)}>
+                  <option>Best-value mix</option>
+                  <option>Championship highlights</option>
+                  <option>Easier social golf</option>
+                  <option>Balance of all three</option>
+                </select>
+              </label>
+            </>
+          ) : null}
           {isGuidePage ? (
             <label className="block">
               <span className={labelClass}>Planned travel month (optional)</span>
@@ -286,7 +496,7 @@ export function GeQuickEnquiryForm({
           {!isLegalPage && !isSupportPage && !isNewsletterPage && !isTestimonialPage && !isGuidePage ? (
             <>
               <label className="block">
-                <span className={labelClass}>Travel dates (optional)</span>
+                <span className={labelClass}>{isPackagePage ? 'Preferred travel dates' : 'Travel dates (optional)'}</span>
                 <input
                   className={inputClass}
                   value={travelDates}
@@ -295,7 +505,7 @@ export function GeQuickEnquiryForm({
                 />
               </label>
               <label className="block">
-                <span className={labelClass}>Group size (optional)</span>
+                <span className={labelClass}>{isPackagePage ? 'Group size you are pricing for' : 'Group size (optional)'}</span>
                 <input
                   className={inputClass}
                   value={groupSize}

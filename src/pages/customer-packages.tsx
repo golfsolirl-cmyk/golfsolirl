@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import {
   BedDouble,
@@ -9,13 +9,13 @@ import {
   Sparkles,
   Users
 } from 'lucide-react'
-import { Navbar } from '../components/home/navbar'
+import { PublicSiteShell } from '../components/public/public-site-shell'
 import { LuxuryButton } from '../components/ui/button'
-import { SiteFooter } from '../components/site-footer'
 import { AmbientGolfBall } from '../components/ui/ambient-golf-ball'
 import { Logo, ShamrockIcon } from '../components/ui/logo'
 import { AnimatedStepKicker, SectionHeader } from '../components/ui/section-header'
 import { WaveDivider } from '../components/ui/wave-divider'
+import { GeQuickEnquiryForm } from './golf-experience/components/ge-quick-enquiry-form'
 import { integrationRegistry } from '../config/integrations'
 import {
   COURSES,
@@ -24,10 +24,11 @@ import {
 } from '../data/coastal-golf-data'
 import { footerSocialLinks, heroBackgroundImage } from '../data/site-content'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
+import { usePageSeo } from '../lib/use-page-seo'
 import { buildPackageConfig, defaultLabelForBuild } from '../lib/package-build'
 import { cx } from '../lib/utils'
 import { useAuth } from '../providers/auth-provider'
-import { CookieBanner, FloatingWhatsAppButton, formatEuro } from './packages'
+import { FloatingWhatsAppButton, formatEuro } from './packages'
 
 const CourseHotelMapPicker = lazy(async () => {
   const m = await import('../components/course-hotel-map-picker')
@@ -204,12 +205,9 @@ function CustomerPackagePage() {
   const [courseHotelPick, setCourseHotelPick] = useState<CourseHotelPickerValue>(() =>
     parseCourseHotelSearch(window.location.search)
   )
-  const [hasAcceptedCookies, setHasAcceptedCookies] = useState(true)
-  const [isFooterInView, setIsFooterInView] = useState(false)
   const [isSavingBuild, setIsSavingBuild] = useState(false)
   const [saveBuildError, setSaveBuildError] = useState<string | null>(null)
   const [saveBuildOk, setSaveBuildOk] = useState(false)
-  const footerRef = useRef<HTMLElement | null>(null)
   const whatsAppHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
 
   const selectedPackage = packageStyles.find((item) => item.name === selectedPackageName) ?? packageStyles[1]
@@ -367,6 +365,37 @@ function CustomerPackagePage() {
     return `mailto:hello@golfsolireland.com?${params.toString()}`
   }, [packageEnquirySummary, selectedPackage.name])
 
+  const packageFormPreset = useMemo(() => {
+    const summary = [
+      `Package: ${selectedPackage.name}`,
+      `Stay: ${selectedStay.name}`,
+      `Transfer: ${selectedTransfer.name}`,
+      `Trip: ${nights} nights / ${rounds} rounds`,
+      `Group size: ${groupSize} golfers`,
+      `Estimated total: ${formatEuro(pricingSummary.estimatedGroupTotal)}`
+    ]
+
+    if (courseHotelPick.selectedCourse) {
+      summary.push(`Preferred course: ${COURSES.find((course) => course.id === courseHotelPick.selectedCourse)?.name ?? courseHotelPick.selectedCourse}`)
+    }
+
+    if (courseHotelPick.selectedHotel) {
+      summary.push(`Preferred hotel: ${courseHotelPick.selectedHotel.name}`)
+    }
+
+    return summary.join(' | ')
+  }, [
+    courseHotelPick.selectedCourse,
+    courseHotelPick.selectedHotel,
+    groupSize,
+    nights,
+    pricingSummary.estimatedGroupTotal,
+    rounds,
+    selectedPackage.name,
+    selectedStay.name,
+    selectedTransfer.name
+  ])
+
   const handleSavePackageToAccount = useCallback(async () => {
     setSaveBuildError(null)
     setSaveBuildOk(false)
@@ -469,44 +498,29 @@ function CustomerPackagePage() {
     courseHotelPick.selectedHotel?.name
   ])
 
-  const handleAcceptCookies = () => {
-    localStorage.setItem('gsol-cookie-banner-dismissed', 'true')
-    setHasAcceptedCookies(true)
-  }
-
-  useEffect(() => {
-    const dismissed = localStorage.getItem('gsol-cookie-banner-dismissed')
-    setHasAcceptedCookies(dismissed === 'true')
-  }, [])
-
-  useEffect(() => {
-    if (!footerRef.current) {
-      return
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsFooterInView(entry.isIntersecting)
+  usePageSeo({
+    title: 'Golf Packages | Golf Sol Ireland',
+    description:
+      'Build a Costa del Sol golf package online with live pricing for Irish golfers, including stays, transfers, rounds, and package-specific enquiry support.',
+    path: '/packages',
+    image: '/images/hero-malaga-transfers-1600.jpg',
+    keywords: ['Costa del Sol golf packages', 'Golf Sol Ireland packages', 'golf trip calculator Spain'],
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      serviceType: 'Golf holiday package planning',
+      provider: {
+        '@type': 'TravelAgency',
+        name: 'Golf Sol Ireland'
       },
-      {
-        threshold: 0.2
-      }
-    )
-
-    observer.observe(footerRef.current)
-
-    return () => {
-      observer.disconnect()
+      areaServed: ['Ireland', 'Costa del Sol'],
+      url: `${window.location.origin}/packages`
     }
-  }, [])
+  })
 
   return (
-    <div className="overflow-x-hidden bg-offwhite">
-      <Navbar links={packagePageLinks} primaryCta="Make enquiry" />
-      <FloatingWhatsAppButton hidden={isFooterInView} href={packageEnquiryWhatsAppHref} />
-      <CookieBanner hidden={hasAcceptedCookies} onAccept={handleAcceptCookies} />
-
-      <main>
+    <PublicSiteShell pageClassName="bg-offwhite" showWhatsAppFab={false}>
+      <FloatingWhatsAppButton hidden={false} href={packageEnquiryWhatsAppHref} />
         <section className="relative min-h-screen overflow-hidden bg-forest-900 px-6 pb-28 pt-36 md:pt-40" id="home">
           <div
             aria-hidden="true"
@@ -931,20 +945,28 @@ function CustomerPackagePage() {
                 </div>
               </div>
 
-              <motion.div className="rounded-[2rem] border border-white/10 bg-white/6 p-6 text-white backdrop-blur-sm" {...revealUp}>
-                <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">What customers can do here</p>
-                <div className="mt-5 space-y-4">
-                  {[
-                    'Price the trip from 1 to 8 golfers',
-                    'Compare package style, stay level, and transfers',
-                    'See a deposit estimate before enquiring',
-                    'Understand the package before speaking to you'
-                  ].map((item) => (
-                    <div key={item} className="flex items-start gap-3 text-base text-white/82">
-                      <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-gold-300" aria-hidden="true" />
-                      <span>{item}</span>
-                    </div>
-                  ))}
+              <motion.div {...revealUp}>
+                <GeQuickEnquiryForm
+                  title="Request this package build"
+                  lead="Your current package shape is included in the enquiry so we can reply with a relevant next step instead of a generic quote."
+                  interestPreset={packageFormPreset}
+                  enquiryType="booking"
+                />
+                <div className="mt-5 rounded-[2rem] border border-white/10 bg-white/6 p-6 text-white backdrop-blur-sm">
+                  <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">What happens next</p>
+                  <div className="mt-5 space-y-4">
+                    {[
+                      'We reply against the exact package build you selected',
+                      'We refine hotel fit, rounds, and routing around your dates',
+                      'We confirm what is live and what needs a backup option',
+                      'You get a cleaner quote path with fewer back-and-forths'
+                    ].map((item) => (
+                      <div key={item} className="flex items-start gap-3 text-base text-white/82">
+                        <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-gold-300" aria-hidden="true" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </motion.div>
             </div>
@@ -952,14 +974,7 @@ function CustomerPackagePage() {
 
           <WaveDivider fill="#0a2008" />
         </section>
-      </main>
-
-      <SiteFooter
-        copyrightNote="Public-facing package selector for Irish golfers travelling to the Costa del Sol."
-        footerRef={footerRef}
-        intro="Golf Sol Ireland creates premium Costa del Sol golf packages for Irish golfers who want a cleaner route from first enquiry to final round."
-      />
-    </div>
+    </PublicSiteShell>
   )
 }
 

@@ -4,10 +4,78 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --gsi-color-forest-950: 6 49 38;
+  --gsi-color-forest-900: 10 59 45;
+  --gsi-color-forest-800: 18 74 56;
+  --gsi-color-forest-700: 30 92 67;
+  --gsi-color-forest-600: 11 107 69;
+  --gsi-color-forest-500: 36 133 92;
+  --gsi-color-forest-100: 210 233 223;
+  --gsi-color-forest-50: 235 245 240;
+  --gsi-color-fairway-700: 8 63 41;
+  --gsi-color-fairway-600: 10 86 55;
+  --gsi-color-fairway-500: 11 107 69;
+  --gsi-color-fairway-400: 46 128 95;
+  --gsi-color-fairway-200: 130 190 163;
+  --gsi-color-fairway-100: 177 215 196;
+  --gsi-color-fairway-50: 219 238 228;
+  --gsi-color-gold-600: 178 132 23;
+  --gsi-color-gold-500: 235 176 33;
+  --gsi-color-gold-400: 255 91 45;
+  --gsi-color-gold-300: 255 214 108;
+  --gsi-color-gold-200: 255 226 144;
+  --gsi-color-gold-50: 255 248 225;
+  --gsi-color-sky-muted: 224 238 245;
+  --gsi-color-sky-section: 206 229 240;
+  --gsi-color-sky-light: 224 241 250;
+  --gsi-color-cream: 242 240 233;
+  --gsi-color-offwhite: 247 249 245;
+  --gsi-color-gs-green: 11 107 69;
+  --gsi-color-gs-dark: 6 59 42;
+  --gsi-color-gs-electric: 30 215 96;
+  --gsi-color-gs-gold: 255 199 44;
+  --gsi-color-gs-gold-light: 255 226 122;
+  --gsi-color-gs-bg: 244 247 245;
+  --gsi-color-ge-teal: 11 107 69;
+  --gsi-color-ge-teal-dark: 5 75 56;
+  --gsi-color-ge-teal-light: 83 149 121;
+  --gsi-color-ge-blue: 42 123 124;
+  --gsi-color-ge-blue-light: 124 196 201;
+  --gsi-color-ge-orange: 255 91 45;
+  --gsi-color-ge-orange-hover: 235 74 31;
+  --gsi-color-ge-purple: 97 17 93;
+  --gsi-color-ge-ink: 4 48 34;
+  --gsi-color-ge-gray700: 49 85 74;
+  --gsi-color-ge-gray500: 84 115 106;
+  --gsi-color-ge-gray300: 174 192 186;
+  --gsi-color-ge-gray200: 209 220 216;
+  --gsi-color-ge-gray100: 232 237 235;
+  --gsi-color-ge-gray50: 243 246 244;
+  --gsi-font-display: "Rubik";
+  --gsi-font-body: "Rubik";
+  --gsi-font-ge: "Open Sans";
+  --gsi-root-font-size: 17.2px;
+  --gsi-button-radius: 999px;
+  --gsi-button-padding-x: 28px;
+  --gsi-button-padding-y: 16px;
+  --gsi-card-radius: 28px;
+  --gsi-section-spacing: 112px;
+  --gsi-density-scale: 1;
+  --gsi-wave-height-scale: 1;
+  --gsi-wave-motion-scale: 1;
+  --gsi-shadow-glow: 0 12px 32px rgba(255, 199, 44, 0.34);
+  --gsi-shadow-soft: 0 18px 60px rgba(6, 59, 42, 0.16);
+  --gsi-shadow-gs-gold: 0 12px 32px rgba(255, 199, 44, 0.34);
+  --gsi-shadow-gs-gold-hover: 0 14px 36px rgba(255, 199, 44, 0.46);
+  --gsi-shadow-gs-green: 0 8px 22px rgba(11, 107, 69, 0.28);
+  --gsi-shadow-card: 0 24px 72px rgba(6, 59, 42, 0.18);
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
-    font-size: clamp(16.6px, 0.24vw + 15.9px, 18.3px);
+    font-size: clamp(calc(var(--gsi-root-font-size) - 0.6px), 0.24vw + calc(var(--gsi-root-font-size) - 0.9px), calc(var(--gsi-root-font-size) + 1px));
   }
 
   body {
@@ -37,11 +105,22 @@
 
 @layer components {
   .section-shell {
-    @apply relative overflow-hidden px-6 py-20 md:py-28;
+    @apply relative overflow-hidden px-6;
+    padding-top: calc(var(--gsi-section-spacing) * var(--gsi-density-scale));
+    padding-bottom: calc(var(--gsi-section-spacing) * var(--gsi-density-scale));
   }
 
   .section-inner {
     @apply relative z-10 mx-auto max-w-7xl;
+  }
+
+  .theme-card {
+    border-radius: var(--gsi-card-radius);
+    box-shadow: var(--gsi-shadow-card);
+  }
+
+  .theme-button-radius {
+    border-radius: var(--gsi-button-radius);
   }
 
   /* Scoped styles for the Golf Experience literal-clone homepage.
@@ -53,6 +132,13 @@
     background: theme('colors.gs.bg');
     line-height: 1.6;
   }
+
+  .ge-page [class*='rounded-['],
+  .ge-page [class*='rounded-2'],
+  .ge-page [class*='rounded-3'] {
+    border-radius: min(var(--gsi-card-radius), 2.4rem);
+  }
+
   /* Slow Ken-Burns pan on the two hero plates */
   @keyframes heroPanLeft {
     from { transform: scale(1.1) translate(0, 0); }
@@ -73,6 +159,16 @@
   }
   .ge-page button {
     font-family: theme('fontFamily.ge');
+  }
+
+  [data-gsi-wave-style='soft'] svg path {
+    transform: scaleY(calc(0.94 * var(--gsi-wave-height-scale)));
+    transform-origin: center bottom;
+  }
+
+  [data-gsi-wave-style='crest'] svg path {
+    transform: scaleY(calc(1.08 * var(--gsi-wave-height-scale)));
+    transform-origin: center bottom;
   }
 }
 

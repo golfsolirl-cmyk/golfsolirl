@@ -1,16 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle2, Quote } from 'lucide-react'
-import { Navbar } from '../components/home/navbar'
-import { SiteFooter } from '../components/site-footer'
-import { LuxuryButton } from '../components/ui/button'
+import { PublicSiteShell } from '../components/public/public-site-shell'
 import { AmbientGolfBall } from '../components/ui/ambient-golf-ball'
-import { AnimatedStepKicker } from '../components/ui/section-header'
+import { LuxuryButton } from '../components/ui/button'
+import { usePageSeo } from '../lib/use-page-seo'
 import { WaveDivider } from '../components/ui/wave-divider'
 import { getFooterArticlePage } from '../data/footer-article-pages'
-import { footerSocialLinks, heroBackgroundImage, navLinks, primaryActions } from '../data/site-content'
+import { heroBackgroundImage } from '../data/site-content'
 import { cx } from '../lib/utils'
-import { CookieBanner, FloatingWhatsAppButton } from './packages'
+import { AnimatedStepKicker } from '../components/ui/section-header'
 
 const sectionShells = [
   'section-shell bg-white pb-28 pt-24',
@@ -19,54 +18,38 @@ const sectionShells = [
 ] as const
 
 function FooterArticlePage() {
-  const [hasAcceptedCookies, setHasAcceptedCookies] = useState(true)
-  const [isFooterInView, setIsFooterInView] = useState(false)
-  const footerRef = useRef<HTMLElement | null>(null)
-
   const path = useMemo(() => {
     const p = window.location.pathname.replace(/\/+$/, '')
     return p === '' ? '/' : p
   }, [])
 
   const page = useMemo(() => getFooterArticlePage(path), [path])
-  const whatsAppHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
 
-  useEffect(() => {
-    if (!page) {
-      return
-    }
-
-    document.title = page.metaTitle
-  }, [page])
-
-  useEffect(() => {
-    const dismissed = localStorage.getItem('gsol-cookie-banner-dismissed')
-    setHasAcceptedCookies(dismissed === 'true')
-  }, [])
-
-  useEffect(() => {
-    if (!footerRef.current) {
-      return
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsFooterInView(entry.isIntersecting)
-      },
-      { threshold: 0.2 }
-    )
-
-    observer.observe(footerRef.current)
-
-    return () => {
-      observer.disconnect()
-    }
-  }, [])
-
-  const handleAcceptCookies = () => {
-    localStorage.setItem('gsol-cookie-banner-dismissed', 'true')
-    setHasAcceptedCookies(true)
-  }
+  usePageSeo({
+    title: page?.metaTitle ?? 'Golf Sol Ireland',
+    description: page?.heroBody ?? 'Costa del Sol golf travel guidance for Irish golfers.',
+    path,
+    image: '/images/hero-malaga-transfers-1600.jpg',
+    type: 'article',
+    keywords: page ? ['Golf Sol Ireland', page.heroTitle, page.kicker, 'Costa del Sol golf travel'] : undefined,
+    jsonLd: page
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'Article',
+          headline: page.heroTitle,
+          description: page.heroBody,
+          author: {
+            '@type': 'Organization',
+            name: 'Golf Sol Ireland'
+          },
+          publisher: {
+            '@type': 'Organization',
+            name: 'Golf Sol Ireland'
+          },
+          url: `${window.location.origin}${path}`
+        }
+      : undefined
+  })
 
   if (!page) {
     return (
@@ -80,12 +63,8 @@ function FooterArticlePage() {
   }
 
   return (
-    <div className="overflow-x-hidden bg-offwhite">
-      <Navbar links={navLinks} primaryCta={primaryActions.planTrip} />
-      <FloatingWhatsAppButton hidden={isFooterInView} href={whatsAppHref} />
-      <CookieBanner hidden={hasAcceptedCookies} onAccept={handleAcceptCookies} />
-
-      <main>
+    <PublicSiteShell pageClassName="bg-offwhite">
+      <div id="main">
         <section className="relative min-h-[56vh] overflow-hidden bg-forest-900 px-6 pb-28 pt-36 md:min-h-[60vh] md:pt-40">
           <div
             aria-hidden="true"
@@ -118,8 +97,8 @@ function FooterArticlePage() {
                 <LuxuryButton href="/packages" showArrow>
                   View packages
                 </LuxuryButton>
-                <LuxuryButton href="/#plan-trip" variant="outline">
-                  {primaryActions.planTrip}
+                <LuxuryButton href="/contact" variant="outline">
+                  Get a quote
                 </LuxuryButton>
               </div>
             </motion.div>
@@ -188,7 +167,7 @@ function FooterArticlePage() {
                 Tell us your dates and group — we will come back with a sensible next step, usually by email, phone, or WhatsApp.
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-4">
-                <LuxuryButton href="/#plan-trip" showArrow>
+                <LuxuryButton href="/contact" showArrow>
                   Start your enquiry
                 </LuxuryButton>
                 <LuxuryButton href="/" variant="white">
@@ -198,14 +177,8 @@ function FooterArticlePage() {
             </motion.div>
           </div>
         </section>
-      </main>
-
-      <SiteFooter
-        copyrightNote="Golf travel planning for Irish groups heading to the Costa del Sol."
-        footerRef={footerRef}
-        intro="Golf Sol Ireland exists for golfers who want the Costa del Sol done properly: better courses, smarter stays, and a smoother trip from first enquiry to final round."
-      />
-    </div>
+      </div>
+    </PublicSiteShell>
   )
 }
 
