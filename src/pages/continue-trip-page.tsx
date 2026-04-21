@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ArrowLeft, CheckCircle2 } from 'lucide-react'
 import { GOLF_SOL_TRIP_FLIGHT_PREFILL_KEY } from './golf-experience/components/already-booked-flight-panel'
+import { applyPageSeo } from '../lib/seo'
 
 type TravelMode = 'flight' | 'arrived'
 
@@ -61,6 +62,17 @@ type SnapState = FlightSnap | null | undefined
 
 export function ContinueTripPage() {
   const [snap, setSnap] = useState<SnapState>(undefined)
+
+  useEffect(() => {
+    applyPageSeo({
+      title: 'Continue Trip Planning | Golf Sol Ireland',
+      description:
+        'Continue your Costa del Sol golf trip brief by confirming flight snapshot details and preparing your full itinerary request.',
+      path: '/continue-trip',
+      image: '/images/transport-moment-arrivals.jpg',
+      noindex: true
+    })
+  }, [])
 
   useEffect(() => {
     try {

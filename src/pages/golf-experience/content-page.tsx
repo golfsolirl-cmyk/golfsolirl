@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle2, ChevronRight, Phone } from 'lucide-react'
 import { cx } from '../../lib/utils'
@@ -8,6 +8,7 @@ import { GeQuickEnquiryForm } from './components/ge-quick-enquiry-form'
 import { contactInfo } from './data/copy'
 import { getGeContentPage } from './data/content-pages'
 import { WhatsappFab } from './components/whatsapp-fab'
+import { applyPageSeo } from '../../lib/seo'
 
 function normalisePath() {
   const path = window.location.pathname.replace(/\/+$/, '')
@@ -17,6 +18,20 @@ function normalisePath() {
 export function GeContentPage() {
   const path = useMemo(() => normalisePath(), [])
   const page = useMemo(() => getGeContentPage(path), [path])
+
+  useEffect(() => {
+    if (!page) {
+      return
+    }
+
+    applyPageSeo({
+      title: page.metaTitle,
+      description: page.subtitle,
+      path,
+      image: page.heroImage,
+      type: path.startsWith('/guides/') ? 'article' : 'website'
+    })
+  }, [page, path])
 
   if (!page) {
     return (
@@ -34,8 +49,6 @@ export function GeContentPage() {
       </div>
     )
   }
-
-  document.title = page.metaTitle
 
   return (
     <div className="ge-page min-h-screen overflow-x-hidden bg-white">

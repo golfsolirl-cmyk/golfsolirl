@@ -26,6 +26,7 @@ import { footerSocialLinks, heroBackgroundImage } from '../data/site-content'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { buildPackageConfig, defaultLabelForBuild } from '../lib/package-build'
 import { cx } from '../lib/utils'
+import { applyPageSeo } from '../lib/seo'
 import { useAuth } from '../providers/auth-provider'
 import { CookieBanner, FloatingWhatsAppButton, formatEuro } from './packages'
 
@@ -473,6 +474,16 @@ function CustomerPackagePage() {
     localStorage.setItem('gsol-cookie-banner-dismissed', 'true')
     setHasAcceptedCookies(true)
   }
+
+  useEffect(() => {
+    applyPageSeo({
+      title: 'Golf Packages Calculator | Golf Sol Ireland',
+      description:
+        'Build a Costa del Sol golf package for Irish golfers with live pricing by group size, accommodation tier, rounds, and transfers.',
+      path: '/packages',
+      image: '/images/hero-malaga-transfers.jpg'
+    })
+  }, [])
 
   useEffect(() => {
     const dismissed = localStorage.getItem('gsol-cookie-banner-dismissed')

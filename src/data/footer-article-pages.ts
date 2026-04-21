@@ -6,6 +6,13 @@ export type FooterArticleSection = {
 
 export type FooterArticleContent = {
   readonly metaTitle: string
+  readonly metaDescription: string
+  readonly heroImage: string
+  readonly heroAlt: string
+  readonly enquiryType?: 'booking' | 'legal' | 'newsletter' | 'testimonial' | 'support'
+  readonly interestPreset?: string
+  readonly formTitle?: string
+  readonly formLead?: string
   readonly kicker: string
   readonly heroTitle: string
   readonly heroBody: string
@@ -16,6 +23,14 @@ export type FooterArticleContent = {
 export const footerArticlePages: Record<string, FooterArticleContent> = {
   '/golf-packages': {
     metaTitle: 'Golf packages | Golf Sol Ireland',
+    metaDescription:
+      'Compare premium Costa del Sol golf packages for Irish golfers with joined-up planning for golf, accommodation, and transfers.',
+    heroImage: '/images/hero-malaga-transfers.jpg',
+    heroAlt: 'Irish golfers enjoying a premium Costa del Sol golf package experience.',
+    enquiryType: 'booking',
+    interestPreset: 'Golf packages',
+    formTitle: 'Request package options',
+    formLead: 'Share dates and group details and we will suggest the right package setup.',
     kicker: 'Explore — shaped for Irish golfers',
     heroTitle: 'Golf packages that feel joined-up, not bolted together',
     heroBody:
@@ -43,6 +58,14 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
   },
   '/featured-courses': {
     metaTitle: 'Featured courses | Golf Sol Ireland',
+    metaDescription:
+      'Discover featured Costa del Sol golf courses for Irish groups, with practical course routing and tee-time planning.',
+    heroImage: '/images/about-golfsol-hero.jpg',
+    heroAlt: 'Featured Costa del Sol golf courses selected for Irish golf trips.',
+    enquiryType: 'booking',
+    interestPreset: 'Featured courses',
+    formTitle: 'Get a featured course shortlist',
+    formLead: 'Tell us your dates and we will send you the right course options quickly.',
     kicker: 'Explore — championship calibre',
     heroTitle: 'Featured courses worth building a week around',
     heroBody:
@@ -66,6 +89,14 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
   },
   '/accommodation-tiers': {
     metaTitle: 'Accommodation tiers | Golf Sol Ireland',
+    metaDescription:
+      'Review Costa del Sol accommodation tiers for Irish golfers, from smart-value to luxury stays matched to group trips.',
+    heroImage: '/images/transport-moment-resort.jpg',
+    heroAlt: 'Costa del Sol accommodation tiers for Irish golf groups.',
+    enquiryType: 'booking',
+    interestPreset: 'Accommodation tiers',
+    formTitle: 'Get matched hotel tiers',
+    formLead: 'Share your budget and trip style and we will return clear hotel tier options.',
     kicker: 'Explore — stay that matches the trip',
     heroTitle: 'Accommodation tiers from smart bases to full luxury',
     heroBody:
@@ -85,6 +116,14 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
   },
   '/airport-transfers': {
     metaTitle: 'Airport transfers | Golf Sol Ireland',
+    metaDescription:
+      'Book Málaga airport transfers for Irish golf groups with golf-bag-friendly vehicles and seamless Costa del Sol routing.',
+    heroImage: '/images/transport-moment-arrivals.jpg',
+    heroAlt: 'Málaga airport transfer support for Irish golfers in Costa del Sol.',
+    enquiryType: 'booking',
+    interestPreset: 'Airport transfers',
+    formTitle: 'Request airport transfer options',
+    formLead: 'Tell us your flight and group size and we will send transfer options quickly.',
     kicker: 'Explore — Malaga and beyond',
     heroTitle: 'Airport transfers that start the trip calmly',
     heroBody:
@@ -108,6 +147,14 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
   },
   '/tailored-itinerary': {
     metaTitle: 'Tailored itinerary | Golf Sol Ireland',
+    metaDescription:
+      'Plan a tailored Costa del Sol golf itinerary for Irish groups with practical pacing, route logic, and premium trip flow.',
+    heroImage: '/images/transport-hero-coastal-drive.jpg',
+    heroAlt: 'Tailored Costa del Sol golf itinerary planning for Irish groups.',
+    enquiryType: 'booking',
+    interestPreset: 'Tailored itinerary',
+    formTitle: 'Request a tailored itinerary',
+    formLead: 'Send your preferred dates and rounds and we will shape a day-by-day plan.',
     kicker: 'Plan your trip — bespoke pacing',
     heroTitle: 'Tailored itineraries with breathing room',
     heroBody:
@@ -127,6 +174,14 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
   },
   '/course-shortlist': {
     metaTitle: 'Course shortlist | Golf Sol Ireland',
+    metaDescription:
+      'Get a practical Costa del Sol course shortlist for Irish golfers, balanced by routing, handicap spread, and tee-time realism.',
+    heroImage: '/images/about-golfsol-hero.jpg',
+    heroAlt: 'Costa del Sol course shortlist planning for Irish golf groups.',
+    enquiryType: 'booking',
+    interestPreset: 'Course shortlist',
+    formTitle: 'Request your course shortlist',
+    formLead: 'Tell us your base and dates and we will send a focused course list.',
     kicker: 'Plan your trip — decisive golf',
     heroTitle: 'A course shortlist that respects your handicap spread',
     heroBody:
@@ -146,6 +201,14 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
   },
   '/hotel-matching': {
     metaTitle: 'Hotel matching | Golf Sol Ireland',
+    metaDescription:
+      'Match your Costa del Sol golf trip with the right hotel style, location, and board basis for Irish golf groups.',
+    heroImage: '/images/transport-moment-resort.jpg',
+    heroAlt: 'Hotel matching for Irish golfers visiting Costa del Sol.',
+    enquiryType: 'booking',
+    interestPreset: 'Hotel matching',
+    formTitle: 'Request matched hotel options',
+    formLead: 'Share your group style and we will recommend the right hotel base.',
     kicker: 'Plan your trip — the right base',
     heroTitle: 'Hotel matching tied to how you use the evenings',
     heroBody:
@@ -165,6 +228,14 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
   },
   '/group-preferences': {
     metaTitle: 'Group preferences | Golf Sol Ireland',
+    metaDescription:
+      'Plan group preferences for Irish golf trips in Costa del Sol, from rooming and extras to smooth organiser workflows.',
+    heroImage: '/images/hero-malaga-transfers.jpg',
+    heroAlt: 'Irish group golf planning preferences for Costa del Sol trips.',
+    enquiryType: 'support',
+    interestPreset: 'Group preferences',
+    formTitle: 'Share group preferences',
+    formLead: 'Tell us how your group likes to travel and we will shape practical options.',
     kicker: 'Plan your trip — societies & friends',
     heroTitle: 'Group preferences captured without the chaos',
     heroBody:
@@ -188,6 +259,14 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
   },
   '/irish-group-planning': {
     metaTitle: 'Irish group planning | Golf Sol Ireland',
+    metaDescription:
+      'Irish-first Costa del Sol group planning with practical routing, pricing clarity, and support from enquiry to travel.',
+    heroImage: '/images/hero-malaga-transfers.jpg',
+    heroAlt: 'Irish group planning expertise for Costa del Sol golf holidays.',
+    enquiryType: 'support',
+    interestPreset: 'Irish group planning',
+    formTitle: 'Ask about Irish group planning',
+    formLead: 'Share your group profile and we will suggest the cleanest planning route.',
     kicker: 'Travel support — Irish lens',
     heroTitle: 'Irish group planning with Costa del Sol fluency',
     heroBody:
@@ -207,6 +286,14 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
   },
   '/costa-del-sol-routing': {
     metaTitle: 'Costa del Sol routing | Golf Sol Ireland',
+    metaDescription:
+      'Optimise Costa del Sol golf routing to reduce transfer friction, dead miles, and scheduling stress for Irish groups.',
+    heroImage: '/images/transport-hero-coastal-drive.jpg',
+    heroAlt: 'Costa del Sol routing map guidance for golf groups.',
+    enquiryType: 'support',
+    interestPreset: 'Costa del Sol routing',
+    formTitle: 'Request routing advice',
+    formLead: 'Tell us where you want to stay and play and we will map the best route.',
     kicker: 'Travel support — geography that saves time',
     heroTitle: 'Costa del Sol routing that trims dead miles',
     heroBody:
@@ -226,6 +313,14 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
   },
   '/transfer-coordination': {
     metaTitle: 'Transfer coordination | Golf Sol Ireland',
+    metaDescription:
+      'Coordinate Costa del Sol golf transfers from airport to hotel to course with one joined-up plan for Irish groups.',
+    heroImage: '/images/transport-fleet-lineup.jpg',
+    heroAlt: 'Transfer coordination for Irish golfers in Costa del Sol.',
+    enquiryType: 'booking',
+    interestPreset: 'Transfer coordination',
+    formTitle: 'Coordinate your transfers',
+    formLead: 'Share your travel plan and we will coordinate your transfer schedule.',
     kicker: 'Travel support — seamless movement',
     heroTitle: 'Transfer coordination that survives real-world delays',
     heroBody:
@@ -245,6 +340,14 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
   },
   '/booking-follow-up': {
     metaTitle: 'Booking follow-up | Golf Sol Ireland',
+    metaDescription:
+      'Understand booking follow-up steps for Costa del Sol golf trips, including payment timelines and pre-departure planning.',
+    heroImage: '/images/transport-fleet-lineup.jpg',
+    heroAlt: 'Costa del Sol golf booking follow-up support for Irish groups.',
+    enquiryType: 'support',
+    interestPreset: 'Booking follow-up',
+    formTitle: 'Ask a booking follow-up question',
+    formLead: 'Send your booking query and we will clarify the next step quickly.',
     kicker: 'Travel support — after you say yes',
     heroTitle: 'Booking follow-up that keeps momentum',
     heroBody:
@@ -268,6 +371,14 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
   },
   '/deposit-upfront': {
     metaTitle: '20% deposit upfront | Golf Sol Ireland',
+    metaDescription:
+      'Learn how 20% deposit booking works for Costa del Sol golf holidays and what it secures for Irish golf groups.',
+    heroImage: '/images/transport-moment-arrivals.jpg',
+    heroAlt: 'Deposit and booking confirmation process for Costa del Sol golf trips.',
+    enquiryType: 'legal',
+    interestPreset: '20% deposit terms',
+    formTitle: 'Ask about deposit terms',
+    formLead: 'Send your deposit question and we will explain what applies to your trip.',
     kicker: 'Booking details — how deposits work',
     heroTitle: '20% deposit upfront to lock real inventory',
     heroBody:
@@ -287,6 +398,14 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
   },
   '/final-balance-terms': {
     metaTitle: 'Final balance terms | Golf Sol Ireland',
+    metaDescription:
+      'Review final balance timing and payment terms for Costa del Sol golf trips booked through Golf Sol Ireland.',
+    heroImage: '/images/transport-fleet-lineup.jpg',
+    heroAlt: 'Final balance and payment terms for Irish golf trips to Costa del Sol.',
+    enquiryType: 'legal',
+    interestPreset: 'Final balance terms',
+    formTitle: 'Ask about final balance terms',
+    formLead: 'Send your final balance query and we will clarify timelines and terms.',
     kicker: 'Booking details — balances',
     heroTitle: 'Final balance terms without spreadsheet shock',
     heroBody:
@@ -306,6 +425,14 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
   },
   '/no-obligation-enquiry': {
     metaTitle: 'No-obligation enquiry | Golf Sol Ireland',
+    metaDescription:
+      'Start a no-obligation enquiry for your Costa del Sol golf holiday and get practical guidance tailored to Irish golfers.',
+    heroImage: '/images/hero-malaga-transfers.jpg',
+    heroAlt: 'No-obligation enquiry support for Irish golfers planning Costa del Sol trips.',
+    enquiryType: 'booking',
+    interestPreset: 'No-obligation enquiry',
+    formTitle: 'Start a no-obligation enquiry',
+    formLead: 'Share your trip basics and we will come back with clear options.',
     kicker: 'Booking details — start easy',
     heroTitle: 'No-obligation enquiry — ask without pressure',
     heroBody:
@@ -329,6 +456,14 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
   },
   '/terms-and-conditions': {
     metaTitle: 'Terms & conditions | Golf Sol Ireland',
+    metaDescription:
+      'Read a plain-language overview of Golf Sol Ireland terms and conditions for Costa del Sol golf booking services.',
+    heroImage: '/images/about-golfsol-hero.jpg',
+    heroAlt: 'Terms and conditions overview for Golf Sol Ireland.',
+    enquiryType: 'legal',
+    interestPreset: 'Terms and conditions',
+    formTitle: 'Ask a legal question',
+    formLead: 'Need clarification on terms? Send your question and we will explain it clearly.',
     kicker: 'Booking details — legal clarity',
     heroTitle: 'Terms & conditions — plain-language overview',
     heroBody:

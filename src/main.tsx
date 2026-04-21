@@ -1,5 +1,4 @@
 import ReactDOM from 'react-dom/client'
-import App from './App'
 import { AuthProvider } from './providers/auth-provider'
 import { LogoPreviewPage } from './pages/logo-preview'
 import { CustomerPackagePage } from './pages/customer-packages'
@@ -19,6 +18,7 @@ import { TransportServicePage } from './pages/golf-experience/transport-service-
 import { GeContentPage } from './pages/golf-experience/content-page'
 import { ContinueTripPage } from './pages/continue-trip-page'
 import { isGeContentPagePath } from './pages/golf-experience/data/content-pages'
+import { ensureOrganizationStructuredData } from './lib/seo'
 import './index.css'
 
 function resolvePage() {
@@ -41,7 +41,7 @@ function resolvePage() {
   }
 
   if (normalizedPath === '/golf-sol') {
-    return App
+    return GolfExperienceHome
   }
 
   if (normalizedPath === '/logo-preview') {
@@ -97,10 +97,11 @@ function resolvePage() {
     return FooterArticlePage
   }
 
-  return App
+  return GolfExperienceHome
 }
 
 const ActivePage = resolvePage()
+ensureOrganizationStructuredData()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <AuthProvider>

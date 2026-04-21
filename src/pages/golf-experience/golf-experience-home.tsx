@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { GeAboutBlock } from './sections/about-block'
 import { GeAccommodationIntro } from './sections/accommodation-intro'
 import { GeAccommodationSpain } from './sections/accommodation-spain'
@@ -11,8 +12,19 @@ import { GeHero } from './sections/hero'
 import { GeNavbar } from './sections/ge-navbar'
 import { GePaymentsIreland } from './sections/payments-ireland'
 import { WhatsappFab } from './components/whatsapp-fab'
+import { applyPageSeo } from '../../lib/seo'
 
 export function GolfExperienceHome() {
+  useEffect(() => {
+    applyPageSeo({
+      title: 'Golf Sol Ireland | Costa del Sol Golf Holidays for Irish Golfers',
+      description:
+        'Premium Costa del Sol golf trips for Irish golfers: golf packages, accommodation, airport transfers, and tee-time planning with Irish-owned support.',
+      path: '/',
+      image: '/images/hero-malaga-transfers.jpg'
+    })
+  }, [])
+
   return (
     <div className="ge-page min-h-screen overflow-x-hidden bg-white">
       <a

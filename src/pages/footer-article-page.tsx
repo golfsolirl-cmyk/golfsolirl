@@ -1,210 +1,186 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { CheckCircle2, Quote } from 'lucide-react'
-import { Navbar } from '../components/home/navbar'
-import { SiteFooter } from '../components/site-footer'
-import { LuxuryButton } from '../components/ui/button'
-import { AmbientGolfBall } from '../components/ui/ambient-golf-ball'
-import { AnimatedStepKicker } from '../components/ui/section-header'
-import { WaveDivider } from '../components/ui/wave-divider'
+import { CheckCircle2, ChevronRight, Phone, Quote } from 'lucide-react'
+import { applyPageSeo } from '../lib/seo'
+import { contactInfo } from './golf-experience/data/copy'
+import { GeButton } from './golf-experience/components/ge-button'
+import { GeQuickEnquiryForm } from './golf-experience/components/ge-quick-enquiry-form'
+import { WhatsappFab } from './golf-experience/components/whatsapp-fab'
+import { GeFooter } from './golf-experience/sections/ge-footer'
+import { GeNavbar } from './golf-experience/sections/ge-navbar'
 import { getFooterArticlePage } from '../data/footer-article-pages'
-import { footerSocialLinks, heroBackgroundImage, navLinks, primaryActions } from '../data/site-content'
-import { cx } from '../lib/utils'
-import { CookieBanner, FloatingWhatsAppButton } from './packages'
-
-const sectionShells = [
-  'section-shell bg-white pb-28 pt-24',
-  'section-shell bg-forest-50 pb-28 pt-24',
-  'section-shell bg-sky-muted pb-28 pt-24'
-] as const
 
 function FooterArticlePage() {
-  const [hasAcceptedCookies, setHasAcceptedCookies] = useState(true)
-  const [isFooterInView, setIsFooterInView] = useState(false)
-  const footerRef = useRef<HTMLElement | null>(null)
-
   const path = useMemo(() => {
     const p = window.location.pathname.replace(/\/+$/, '')
     return p === '' ? '/' : p
   }, [])
 
   const page = useMemo(() => getFooterArticlePage(path), [path])
-  const whatsAppHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
 
   useEffect(() => {
     if (!page) {
       return
     }
 
-    document.title = page.metaTitle
-  }, [page])
-
-  useEffect(() => {
-    const dismissed = localStorage.getItem('gsol-cookie-banner-dismissed')
-    setHasAcceptedCookies(dismissed === 'true')
-  }, [])
-
-  useEffect(() => {
-    if (!footerRef.current) {
-      return
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsFooterInView(entry.isIntersecting)
-      },
-      { threshold: 0.2 }
-    )
-
-    observer.observe(footerRef.current)
-
-    return () => {
-      observer.disconnect()
-    }
-  }, [])
-
-  const handleAcceptCookies = () => {
-    localStorage.setItem('gsol-cookie-banner-dismissed', 'true')
-    setHasAcceptedCookies(true)
-  }
+    applyPageSeo({
+      title: page.metaTitle,
+      description: page.metaDescription,
+      path,
+      image: page.heroImage,
+      type: 'article'
+    })
+  }, [page, path])
 
   if (!page) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-offwhite px-6 text-center text-forest-900">
-        <p className="font-display text-2xl font-bold">Page not found</p>
-        <LuxuryButton className="mt-6" href="/">
+      <div className="ge-page flex min-h-screen flex-col items-center justify-center bg-ge-gray50 px-6 text-center">
+        <p className="font-ge text-[2rem] font-extrabold text-gs-dark sm:text-[2.4rem]">Page not found</p>
+        <p className="mt-2 font-ge text-base text-ge-gray500">This link may have moved.</p>
+        <GeButton className="mt-6" href="/#top" size="md" variant="gs-green">
           Back home
-        </LuxuryButton>
+        </GeButton>
       </div>
     )
   }
 
   return (
-    <div className="overflow-x-hidden bg-offwhite">
-      <Navbar links={navLinks} primaryCta={primaryActions.planTrip} />
-      <FloatingWhatsAppButton hidden={isFooterInView} href={whatsAppHref} />
-      <CookieBanner hidden={hasAcceptedCookies} onAccept={handleAcceptCookies} />
+    <div className="ge-page min-h-screen overflow-x-hidden bg-white">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-gs-gold focus:px-4 focus:py-2 focus:font-ge focus:text-sm focus:font-bold focus:uppercase focus:tracking-[0.14em] focus:text-gs-dark"
+      >
+        Skip to content
+      </a>
+      <GeNavbar />
 
-      <main>
-        <section className="relative min-h-[56vh] overflow-hidden bg-forest-900 px-6 pb-28 pt-36 md:min-h-[60vh] md:pt-40">
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${heroBackgroundImage})` }}
-          />
-          <div aria-hidden="true" className="absolute inset-0 bg-hero-overlay" />
-          <div aria-hidden="true" className="absolute inset-0 bg-hero-bottom" />
-          <div
-            aria-hidden="true"
-            className="absolute inset-x-0 bottom-0 z-[1] h-32 bg-gradient-to-b from-transparent via-forest-950/40 to-forest-950/75"
-          />
-          <div aria-hidden="true" className="absolute right-[-100px] top-[-80px] h-72 w-72 rounded-full bg-fairway-500/18 blur-3xl md:h-80 md:w-80" />
-          <AmbientGolfBall className="right-[4%] top-[20%] opacity-90 lg:right-[7%]" size="md" tone="hero" variant="hero" />
-
-          <div className="relative z-10 mx-auto max-w-7xl">
-            <motion.div
-              animate={{ opacity: 1, y: 0 }}
-              initial={{ opacity: 0, y: 24 }}
-              transition={{ duration: 0.75, ease: 'easeOut' }}
-            >
-              <AnimatedStepKicker dark kicker={page.kicker} />
-              <h1 className="max-w-3xl font-display text-4xl font-black leading-tight tracking-tight text-white drop-shadow-[0_4px_28px_rgba(0,0,0,0.55)] md:text-5xl lg:text-6xl">
-                {page.heroTitle}
-              </h1>
-              <p className="mt-5 max-w-2xl text-base leading-relaxed text-white/90 drop-shadow-[0_2px_18px_rgba(0,0,0,0.5)] md:text-lg">
-                {page.heroBody}
-              </p>
-              <div className="mt-8 flex flex-wrap gap-4">
-                <LuxuryButton href="/packages" showArrow>
-                  View packages
-                </LuxuryButton>
-                <LuxuryButton href="/#plan-trip" variant="outline">
-                  {primaryActions.planTrip}
-                </LuxuryButton>
+      <main id="main">
+        <section className="relative isolate overflow-hidden bg-gs-dark text-white">
+          <div aria-hidden="true" className="h-[134px] w-full bg-white sm:h-[148px] md:h-[164px] lg:h-[130px] xl:h-[142px]" />
+          <div className="relative">
+            <img
+              src={page.heroImage}
+              alt={page.heroAlt}
+              className="h-[42vh] min-h-[300px] w-full object-cover object-center md:h-[50vh] md:min-h-[420px] lg:h-[54vh]"
+              width={2200}
+              height={1100}
+            />
+            <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-r from-gs-dark/88 via-gs-dark/66 to-gs-dark/48" />
+            <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gs-dark/70 via-transparent to-transparent" />
+            <div className="absolute inset-0 z-10 flex items-end pb-20 sm:pb-24">
+              <div className="mx-auto w-full max-w-[1180px] px-5 sm:px-8">
+                <motion.div
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.55, ease: 'easeOut' }}
+                  className="max-w-3xl"
+                >
+                  <p className="font-ge text-[0.8rem] font-bold uppercase tracking-[0.24em] text-gs-gold sm:text-[0.88rem]">
+                    {page.kicker}
+                  </p>
+                  <h1 className="mt-3 font-ge text-[2.15rem] font-extrabold leading-[1.03] tracking-[-0.01em] text-white sm:text-[2.8rem] md:text-[3.25rem]">
+                    {page.heroTitle}
+                  </h1>
+                  <p className="mt-4 max-w-2xl font-ge text-[1.04rem] leading-7 text-white/92 sm:text-[1.12rem] sm:leading-8">
+                    {page.heroBody}
+                  </p>
+                </motion.div>
               </div>
-            </motion.div>
+            </div>
+            <div className="absolute inset-x-0 bottom-0 z-20">
+              <div
+                aria-hidden
+                className="h-[3px]"
+                style={{
+                  background:
+                    'linear-gradient(90deg, transparent 0%, rgba(184,137,0,0.5) 12%, #FFC72C 28%, #FFE27A 50%, #FFC72C 72%, rgba(184,137,0,0.5) 88%, transparent 100%)'
+                }}
+              />
+              <div className="border-y border-[#b88900]/45 bg-[linear-gradient(90deg,#ffc72c_0%,#ffe27a_45%,#ffc72c_100%)]">
+                <div className="mx-auto flex w-full max-w-[1180px] items-center justify-center px-5 py-2.5 sm:px-8 sm:py-3">
+                  <span className="font-ge text-[0.78rem] font-extrabold uppercase tracking-[0.28em] text-gs-dark sm:text-[0.88rem]">
+                    Golf Sol Ireland
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
-
-          <WaveDivider fill="#ffffff" />
         </section>
 
-        {page.sections.map((section, index) => (
-          <section key={section.title} className={cx(sectionShells[index % sectionShells.length])}>
-            <div className="mx-auto max-w-7xl px-6">
-              <motion.div
-                className="max-w-3xl"
-                initial={{ opacity: 0, y: 28 }}
-                transition={{ duration: 0.65, ease: 'easeOut' }}
-                viewport={{ once: true, amount: 0.25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-              >
-                <p className="mb-3 text-base font-semibold uppercase tracking-[0.18em] text-gold-600">Golf Sol Ireland</p>
-                <h2 className="font-display text-3xl font-bold leading-tight tracking-[-0.03em] text-forest-900 md:text-4xl">{section.title}</h2>
-                <p className="mt-4 text-base leading-8 text-forest-900/70 md:text-lg">{section.body}</p>
-                {section.bullets && section.bullets.length > 0 ? (
-                  <ul className="mt-6 space-y-3">
-                    {section.bullets.map((line) => (
-                      <li key={line} className="flex items-start gap-3 text-base text-forest-900/74 md:text-lg">
-                        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-gold-500" aria-hidden="true" />
-                        <span>{line}</span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
-              </motion.div>
-            </div>
-          </section>
-        ))}
+        <section className="bg-white py-14 sm:py-16">
+          <div className="mx-auto grid max-w-[1180px] gap-10 px-5 sm:px-8 lg:grid-cols-[1.06fr_0.94fr] lg:items-start">
+            <div className="space-y-6">
+              {page.sections.map((section) => (
+                <article key={section.title} className="rounded-2xl border border-ge-gray100 bg-white p-5 shadow-[0_10px_30px_rgba(6,59,42,0.06)] sm:p-7">
+                  <h2 className="font-ge text-[1.58rem] font-extrabold leading-tight text-gs-green sm:text-[1.9rem]">{section.title}</h2>
+                  <p className="mt-3 font-ge text-base leading-7 text-ge-gray500">{section.body}</p>
+                  {section.bullets ? (
+                    <ul className="mt-4 space-y-2.5">
+                      {section.bullets.map((bullet) => (
+                        <li key={bullet} className="flex items-start gap-2.5 font-ge text-base text-gs-dark">
+                          <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-gs-gold" aria-hidden />
+                          <span>{bullet}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </article>
+              ))}
 
-        {page.asideQuote ? (
-          <section className="section-shell relative overflow-hidden bg-forest-900 pb-28 pt-24 text-white">
-            <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(80,163,45,0.2),transparent_42%),radial-gradient(circle_at_80%_80%,rgba(220,88,1,0.14),transparent_40%)]" />
-            <div className="relative z-10 mx-auto max-w-7xl px-6">
-              <motion.div
-                className="mx-auto max-w-3xl text-center"
-                initial={{ opacity: 0, y: 20 }}
-                transition={{ duration: 0.7 }}
-                viewport={{ once: true }}
-                whileInView={{ opacity: 1, y: 0 }}
-              >
-                <Quote className="mx-auto h-10 w-10 text-gold-300/80" aria-hidden="true" />
-                <p className="mt-6 font-display text-2xl font-semibold leading-snug text-white md:text-3xl">{page.asideQuote.text}</p>
-                <p className="mt-4 text-base font-medium uppercase tracking-[0.2em] text-white/52">{page.asideQuote.attribution}</p>
-              </motion.div>
+              {page.asideQuote ? (
+                <div className="rounded-2xl border border-ge-gray100 bg-gs-dark p-6 text-white shadow-[0_12px_34px_rgba(6,59,42,0.2)] sm:p-7">
+                  <Quote className="h-8 w-8 text-gs-gold/85" aria-hidden />
+                  <p className="mt-4 font-ge text-[1.22rem] font-semibold leading-8 sm:text-[1.35rem]">{page.asideQuote.text}</p>
+                  <p className="mt-3 font-ge text-sm font-bold uppercase tracking-[0.18em] text-white/60">{page.asideQuote.attribution}</p>
+                </div>
+              ) : null}
             </div>
-          </section>
-        ) : null}
 
-        <section className="section-shell bg-cream pb-28 pt-24">
-          <div className="mx-auto max-w-7xl px-6 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.65 }}
-              viewport={{ once: true }}
-              whileInView={{ opacity: 1, y: 0 }}
-            >
-              <h2 className="font-display text-3xl font-bold text-forest-900 md:text-4xl">Ready when you are</h2>
-              <p className="mx-auto mt-4 max-w-xl text-base leading-8 text-forest-900/68 md:text-lg">
-                Tell us your dates and group — we will come back with a sensible next step, usually by email, phone, or WhatsApp.
-              </p>
-              <div className="mt-8 flex flex-wrap justify-center gap-4">
-                <LuxuryButton href="/#plan-trip" showArrow>
-                  Start your enquiry
-                </LuxuryButton>
-                <LuxuryButton href="/" variant="white">
-                  Back to home
-                </LuxuryButton>
+            <aside className="lg:sticky lg:top-36">
+              <GeQuickEnquiryForm
+                title={page.formTitle ?? 'Start your enquiry'}
+                lead={page.formLead ?? 'Share your trip details and we will reply with clear next steps.'}
+                enquiryType={page.enquiryType ?? 'booking'}
+                interestPreset={page.interestPreset ?? page.heroTitle}
+              />
+              <div className="mt-5 rounded-2xl border border-ge-gray100 bg-white p-5 shadow-[0_8px_20px_rgba(6,59,42,0.06)]">
+                <p className="font-ge text-sm font-bold uppercase tracking-[0.16em] text-ge-orange">Prefer to call?</p>
+                <a
+                  href={`tel:${contactInfo.phoneTel}`}
+                  className="mt-3 inline-flex min-h-[44px] items-center gap-2 rounded-full border-2 border-gs-green px-4 py-2.5 font-ge text-base font-bold uppercase tracking-[0.12em] text-gs-green transition-colors hover:bg-gs-green hover:text-white"
+                >
+                  <Phone className="h-4 w-4" aria-hidden />
+                  {contactInfo.phoneDisplay}
+                </a>
               </div>
-            </motion.div>
+            </aside>
+          </div>
+        </section>
+
+        <section className="bg-ge-gray50 py-14 sm:py-16">
+          <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
+            <div className="rounded-2xl border border-ge-gray100 bg-white p-6 text-center shadow-[0_10px_30px_rgba(6,59,42,0.06)] sm:p-8">
+              <h2 className="font-ge text-[1.8rem] font-extrabold leading-tight text-gs-green sm:text-[2.1rem]">
+                Ready to shape your Costa del Sol trip?
+              </h2>
+              <p className="mx-auto mt-3 max-w-2xl font-ge text-base leading-7 text-ge-gray500">
+                Tell us your dates and group style and we will come back with practical options that fit your route, golf preferences, and budget.
+              </p>
+              <div className="mt-6 flex flex-wrap justify-center gap-3">
+                <GeButton href="/#top" size="md" variant="gs-green">
+                  Back to home
+                </GeButton>
+                <GeButton href="/contact" size="md" variant="gs-gold">
+                  Get quote
+                </GeButton>
+              </div>
+            </div>
           </div>
         </section>
       </main>
 
-      <SiteFooter
-        copyrightNote="Golf travel planning for Irish groups heading to the Costa del Sol."
-        footerRef={footerRef}
-        intro="Golf Sol Ireland exists for golfers who want the Costa del Sol done properly: better courses, smarter stays, and a smoother trip from first enquiry to final round."
-      />
+      <GeFooter />
+      <WhatsappFab />
     </div>
   )
 }

@@ -19,6 +19,7 @@ import { AnimatedStepKicker, SectionHeader } from '../components/ui/section-head
 import { WaveDivider } from '../components/ui/wave-divider'
 import { footerSocialLinks, heroBackgroundImage } from '../data/site-content'
 import { cx } from '../lib/utils'
+import { applyPageSeo } from '../lib/seo'
 
 const packagePageLinks = ['Packages', 'Stays', 'Pricing', 'Enquire'] as const
 
@@ -191,6 +192,17 @@ function PackageAdminPage() {
     setLoginError('')
     setIsUnlocked(true)
   }
+
+  useEffect(() => {
+    applyPageSeo({
+      title: 'Package Pricing Admin | Golf Sol Ireland',
+      description:
+        'Internal package pricing studio for Golf Sol Ireland to shape accommodation, golf, transfer, and margin calculations.',
+      path: '/packages-admin',
+      image: '/images/hero-malaga-transfers.jpg',
+      noindex: true
+    })
+  }, [])
 
   useEffect(() => {
     const dismissed = localStorage.getItem('gsol-cookie-banner-dismissed')
