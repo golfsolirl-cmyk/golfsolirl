@@ -36,6 +36,7 @@ interface SmartEnquiryMeta {
 }
 
 const WHATSAPP_NUMBER = contactInfo.phoneTel.replace(/\D/g, '')
+const DEFAULT_PLACEHOLDER = 'Please advise'
 
 const smartEnquiryMeta: Record<SmartEnquiryIntent, SmartEnquiryMeta> = {
   'trip-planning': {
@@ -120,7 +121,7 @@ function cleanValue(value: string | number | undefined): string | null {
   return trimmed ? trimmed : null
 }
 
-function line(label: string, value: string | number | undefined, fallback = '?'): string {
+function line(label: string, value: string | number | undefined, fallback = DEFAULT_PLACEHOLDER): string {
   return `${label}: ${cleanValue(value) ?? fallback}`
 }
 
@@ -130,7 +131,7 @@ function formatPassengers(passengers: string | number | undefined): string {
   }
 
   const value = cleanValue(passengers)
-  if (!value) return '?'
+  if (!value) return DEFAULT_PLACEHOLDER
 
   const digits = Number.parseInt(value, 10)
   if (Number.isFinite(digits) && `${digits}` === value) {
@@ -247,7 +248,7 @@ export function buildSmartWhatsAppMessage({
           "Hi GolfSol Ireland - I'm looking for Costa del Sol tee-time options.",
           line('Travel dates', dates),
           line('Group size', groupSize),
-          `Preferred courses / area: ${cleanValue(notes) ?? '?'}`,
+          `Preferred courses / area: ${cleanValue(notes) ?? DEFAULT_PLACEHOLDER}`,
           source
         ]
       case 'accommodation':
@@ -255,7 +256,7 @@ export function buildSmartWhatsAppMessage({
           "Hi GolfSol Ireland - I'm looking for accommodation options for our golf trip.",
           line('Travel dates', dates),
           line('Group size', groupSize),
-          `Preferred base / budget: ${cleanValue(notes) ?? '?'}`,
+          `Preferred base / budget: ${cleanValue(notes) ?? DEFAULT_PLACEHOLDER}`,
           source
         ]
       case 'club-rental':
@@ -279,13 +280,13 @@ export function buildSmartWhatsAppMessage({
           "Hi GolfSol Ireland - I'd like help finalising a Costa del Sol golf trip.",
           line('Travel dates', dates),
           line('Group size', groupSize),
-          `Already booked: ${cleanValue(notes) ?? '?'}`,
+          `Already booked: ${cleanValue(notes) ?? DEFAULT_PLACEHOLDER}`,
           source
         ]
       case 'legal':
         return [
           'Hi GolfSol Ireland - I have a question about your legal information.',
-          `Question: ${cleanValue(notes) ?? '?'}`,
+          `Question: ${cleanValue(notes) ?? DEFAULT_PLACEHOLDER}`,
           source
         ]
       case 'newsletter':
@@ -297,13 +298,13 @@ export function buildSmartWhatsAppMessage({
       case 'testimonial':
         return [
           'Hi GolfSol Ireland - I would like to share feedback from our trip.',
-          `Trip summary: ${cleanValue(notes) ?? '?'}`,
+          `Trip summary: ${cleanValue(notes) ?? DEFAULT_PLACEHOLDER}`,
           source
         ]
       case 'support':
         return [
           'Hi GolfSol Ireland - I have a question after browsing your site.',
-          `Question: ${cleanValue(notes) ?? '?'}`,
+          `Question: ${cleanValue(notes) ?? DEFAULT_PLACEHOLDER}`,
           source
         ]
       case 'trip-planning':
