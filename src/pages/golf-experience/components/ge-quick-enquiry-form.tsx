@@ -6,9 +6,8 @@ import { contactInfo } from '../data/copy'
 interface GeQuickEnquiryFormProps {
   readonly title: string
   readonly lead: string
-  readonly pageEyebrow: string
-  readonly pageTitle: string
   readonly interestPreset: string
+  readonly enquiryType?: 'booking' | 'legal' | 'newsletter' | 'testimonial' | 'support'
 }
 
 const labelClass =
@@ -19,9 +18,8 @@ const inputClass =
 export function GeQuickEnquiryForm({
   title,
   lead,
-  pageEyebrow,
-  pageTitle,
-  interestPreset
+  interestPreset,
+  enquiryType
 }: GeQuickEnquiryFormProps) {
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
@@ -37,14 +35,13 @@ export function GeQuickEnquiryForm({
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  const normalizedEyebrow = pageEyebrow.trim().toLowerCase()
-  const normalizedTitle = pageTitle.trim().toLowerCase()
-  const isLegalPage = normalizedEyebrow === 'legal'
-  const isFaqPage = normalizedTitle.includes('frequently asked questions')
-  const isNewsletterPage = normalizedTitle.includes('newsletter')
-  const isTestimonialPage = normalizedTitle.includes('testimonial')
-  const isGuidePage = normalizedEyebrow === 'travel guide'
-  const isBookingPage = normalizedEyebrow === 'booking' || normalizedTitle.includes('booking')
+  const isLegalPage = enquiryType === 'legal'
+  const isFaqPage = interestPreset.toLowerCase().includes('faq')
+  const isNewsletterPage = enquiryType === 'newsletter'
+  const isTestimonialPage = enquiryType === 'testimonial'
+  const isGuidePage = interestPreset.toLowerCase().includes('guidance') || interestPreset.toLowerCase().includes('travel to')
+  const isBookingPage = enquiryType === 'booking'
+  const isSupportPage = enquiryType === 'support' || isFaqPage
 
   const notesPlaceholder = useMemo(() => {
     if (isLegalPage) return 'Tell us your legal/privacy question.'
@@ -68,7 +65,7 @@ export function GeQuickEnquiryForm({
     if (isLegalPage) {
       return `Legal topic: ${legalTopic}`
     }
-    if (isFaqPage) {
+    if (isFaqPage || isSupportPage) {
       return `FAQ category: ${questionType}`
     }
     if (isNewsletterPage) {
@@ -93,6 +90,7 @@ export function GeQuickEnquiryForm({
     isGuidePage,
     isLegalPage,
     isNewsletterPage,
+    isSupportPage,
     isTestimonialPage,
     legalTopic,
     questionType,
@@ -128,10 +126,10 @@ export function GeQuickEnquiryForm({
       const interestLines = [
         interestPreset,
         contextSummary || null,
-        !isLegalPage && !isFaqPage && !isNewsletterPage && !isTestimonialPage && !isGuidePage && travelDates.trim()
+        !isLegalPage && !isSupportPage && !isNewsletterPage && !isTestimonialPage && !isGuidePage && travelDates.trim()
           ? `Travel dates: ${travelDates.trim()}`
           : null,
-        !isLegalPage && !isFaqPage && !isNewsletterPage && !isTestimonialPage && !isGuidePage && groupSize.trim()
+        !isLegalPage && !isSupportPage && !isNewsletterPage && !isTestimonialPage && !isGuidePage && groupSize.trim()
           ? `Group size: ${groupSize.trim()}`
           : null,
         notes.trim() ? `Notes: ${notes.trim()}` : null
@@ -241,7 +239,7 @@ export function GeQuickEnquiryForm({
               </select>
             </label>
           ) : null}
-          {isFaqPage ? (
+          {isFaqPage || isSupportPage ? (
             <label className="block">
               <span className={labelClass}>Question category</span>
               <select className={inputClass} value={questionType} onChange={(e) => setQuestionType(e.target.value)}>
@@ -285,7 +283,7 @@ export function GeQuickEnquiryForm({
               />
             </label>
           ) : null}
-          {!isLegalPage && !isFaqPage && !isNewsletterPage && !isTestimonialPage && !isGuidePage ? (
+          {!isLegalPage && !isSupportPage && !isNewsletterPage && !isTestimonialPage && !isGuidePage ? (
             <>
               <label className="block">
                 <span className={labelClass}>Travel dates (optional)</span>
