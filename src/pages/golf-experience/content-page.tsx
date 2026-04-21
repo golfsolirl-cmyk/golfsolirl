@@ -2,12 +2,11 @@ import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle2, ChevronRight, Phone } from 'lucide-react'
 import { cx } from '../../lib/utils'
-import { GeFooter } from './sections/ge-footer'
-import { GeNavbar } from './sections/ge-navbar'
 import { GeQuickEnquiryForm } from './components/ge-quick-enquiry-form'
 import { contactInfo } from './data/copy'
 import { getGeContentPage } from './data/content-pages'
-import { WhatsappFab } from './components/whatsapp-fab'
+import { PublicSiteShell } from '../../components/public/public-site-shell'
+import { buildWebPageJsonLd, usePageMetadata } from '../../lib/page-metadata'
 
 function normalisePath() {
   const path = window.location.pathname.replace(/\/+$/, '')
@@ -35,11 +34,24 @@ export function GeContentPage() {
     )
   }
 
-  document.title = page.metaTitle
+  usePageMetadata({
+    title: page.metaTitle,
+    description: page.metaDescription ?? page.subtitle,
+    canonicalPath: path,
+    image: page.heroImage,
+    type: 'article',
+    keywords: page.metaKeywords,
+    jsonLd: buildWebPageJsonLd({
+      title: page.metaTitle,
+      description: page.metaDescription ?? page.subtitle,
+      canonicalUrl: `https://golfsolirl.com${path}`,
+      image: `https://golfsolirl.com${page.heroImage}`,
+      type: 'Article'
+    })
+  })
 
   return (
-    <div className="ge-page min-h-screen overflow-x-hidden bg-white">
-      <GeNavbar />
+    <PublicSiteShell>
       <main>
         <section className="relative isolate overflow-hidden bg-gs-dark text-white">
           <div aria-hidden="true" className="h-[134px] w-full bg-white sm:h-[148px] md:h-[164px] lg:h-[130px] xl:h-[142px]" />
@@ -129,6 +141,9 @@ export function GeContentPage() {
                 lead={page.formLead}
                 enquiryType={page.enquiryType ?? 'booking'}
                 interestPreset={page.interestPreset}
+                contextLabel={page.formContextLabel}
+                bestTimeToCallLabel={page.bestTimeToCallLabel}
+                bestTimeToCallOptions={page.bestTimeToCallOptions}
               />
               <div className="mt-5 rounded-2xl border border-ge-gray100 bg-white p-5 shadow-[0_8px_20px_rgba(6,59,42,0.06)]">
                 <p className="font-ge text-sm font-bold uppercase tracking-[0.16em] text-ge-orange">Prefer to call?</p>
@@ -144,8 +159,6 @@ export function GeContentPage() {
           </div>
         </section>
       </main>
-      <GeFooter />
-      <WhatsappFab />
-    </div>
+    </PublicSiteShell>
   )
 }

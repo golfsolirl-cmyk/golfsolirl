@@ -20,13 +20,14 @@ type LinkProps = SharedButtonProps &
   }
 
 const baseClasses =
-  'inline-flex items-center justify-center gap-2 rounded-full px-7 py-4 text-[1.02rem] font-semibold tracking-[0.015em] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent'
+  'inline-flex items-center justify-center gap-2 rounded-full px-7 py-4 text-[1.02rem] font-semibold tracking-[0.015em] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gs-gold focus-visible:ring-offset-2 focus-visible:ring-offset-transparent'
 
 const variantClasses = {
-  primary: 'bg-gold-400 text-white shadow-glow hover:-translate-y-0.5 hover:bg-gold-500',
-  secondary: 'bg-fairway-600 text-white shadow-soft hover:bg-fairway-700',
-  outline: 'border border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 hover:border-white/50',
-  white: 'border border-forest-100 bg-white text-forest-900 shadow-sm hover:bg-forest-50'
+  primary:
+    'bg-gradient-to-br from-gs-gold to-gs-gold-light text-gs-dark shadow-gs-gold hover:-translate-y-0.5 hover:shadow-gs-gold-hover',
+  secondary: 'bg-gs-green text-white shadow-gs-green hover:bg-gs-electric hover:text-gs-dark',
+  outline: 'border border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 hover:border-gs-gold/50',
+  white: 'border border-gs-dark/10 bg-white text-gs-dark shadow-[0_10px_28px_rgba(6,59,42,0.08)] hover:bg-gs-bg'
 } as const
 
 function isLinkProps(props: ButtonProps | LinkProps): props is LinkProps {

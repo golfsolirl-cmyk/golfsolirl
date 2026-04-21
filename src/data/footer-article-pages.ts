@@ -6,6 +6,8 @@ export type FooterArticleSection = {
 
 export type FooterArticleContent = {
   readonly metaTitle: string
+  readonly metaDescription?: string
+  readonly metaKeywords?: readonly string[]
   readonly kicker: string
   readonly heroTitle: string
   readonly heroBody: string

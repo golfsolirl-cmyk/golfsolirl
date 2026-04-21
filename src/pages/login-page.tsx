@@ -1,16 +1,12 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { LuxuryButton } from '../components/ui/button'
 import { Logo } from '../components/ui/logo'
-import { SiteFooter } from '../components/site-footer'
 import { WaveDivider } from '../components/ui/wave-divider'
+import { PublicSiteShell } from '../components/public/public-site-shell'
 import { integrationRegistry } from '../config/integrations'
 import { AUTH_NEXT_STORAGE_KEY, isSafeInternalPath } from '../lib/internal-redirect'
+import { usePageMetadata } from '../lib/page-metadata'
 import { useAuth } from '../providers/auth-provider'
-
-const loginFooterIntro =
-  'Golf Sol Ireland exists for golfers who want the Costa del Sol done properly: better courses, smarter stays, and a smoother trip from first enquiry to final round.'
-
-const loginFooterCopyrightNote = 'Golf travel planning for Irish groups heading to the Costa del Sol.'
 
 const LoginHeroBackdrop = () => (
   <>
@@ -30,18 +26,31 @@ const LoginHeroBackdrop = () => (
 )
 
 export function LoginPage() {
-  const footerRef = useRef<HTMLElement | null>(null)
   const { signInWithMagicLink, session, profile, isLoading, isSupabaseConfigured } = useAuth()
   const [email, setEmail] = useState('')
   const [formError, setFormError] = useState<string | null>(null)
   const [isSending, setIsSending] = useState(false)
   const [sent, setSent] = useState(false)
 
+  usePageMetadata({
+    title: 'Sign in',
+    description: 'Sign in to GolfSol Ireland to save packages and access your trip dashboard.',
+    canonicalPath: '/login',
+    noindex: true
+  })
+
   const params = new URLSearchParams(window.location.search)
   const queryError = params.get('error')
   const queryHint = params.get('hint')
   const nextRaw = params.get('next') ?? ''
   const safeReturnPath = nextRaw && isSafeInternalPath(nextRaw) ? nextRaw : null
+
+  usePageMetadata({
+    title: 'Client sign in',
+    description: 'Sign in to access your saved GolfSol Ireland packages, proposals, and client trip documents.',
+    canonicalPath: '/login',
+    noindex: true
+  })
 
   useEffect(() => {
     if (isLoading || !session) {
@@ -97,12 +106,13 @@ export function LoginPage() {
 
   if (!integrationRegistry.supabase.enabled || !isSupabaseConfigured) {
     return (
-      <div className="flex min-h-screen flex-col bg-offwhite font-body text-forest-900">
-        <section className="relative overflow-hidden bg-forest-950 pb-0">
+      <PublicSiteShell withCookieBanner={false} withWhatsApp={false}>
+        <main id="main" className="bg-offwhite font-body text-forest-900">
+          <section className="relative overflow-hidden bg-forest-950 pb-0 pt-[134px] sm:pt-[148px] md:pt-[164px] lg:pt-[130px] xl:pt-[142px]">
           <LoginHeroBackdrop />
           <div className="relative z-10 mx-auto max-w-7xl px-4 pb-16 pt-10 md:px-6 md:pb-20 md:pt-14">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gold-200">Account access</p>
-            <a aria-label="Golf Sol Ireland — home" className="mt-5 inline-block" href="/">
+            <a aria-label="GolfSol Ireland — home" className="mt-5 inline-block" href="/">
               <Logo size="large" tone="scrolled" />
             </a>
             <h1 className="font-display mt-6 text-3xl font-bold tracking-tight text-white md:text-4xl">Sign in</h1>
@@ -113,53 +123,55 @@ export function LoginPage() {
           <div className="relative z-[2] -mb-px">
             <WaveDivider fill="#f7f9f5" />
           </div>
-        </section>
-        <main className="relative z-[1] mx-auto w-full max-w-lg flex-1 px-4 pb-20 pt-8 md:px-6 md:pb-28">
-          <div className="rounded-[2rem] border border-forest-100 bg-white p-8 shadow-soft md:p-10">
-            <p className="text-sm leading-relaxed text-forest-700">
-              Add <code className="rounded-md border border-forest-200 bg-white px-1.5 py-0.5 text-xs text-forest-900">VITE_SUPABASE_URL</code>{' '}
-              and{' '}
-              <code className="rounded-md border border-forest-200 bg-white px-1.5 py-0.5 text-xs text-forest-900">VITE_SUPABASE_ANON_KEY</code>{' '}
-              to your environment, then restart the dev server.
-            </p>
-            <LuxuryButton className="mt-8" href="/" variant="primary">
-              Back to home
-            </LuxuryButton>
-          </div>
+          </section>
+          <section className="relative z-[1] mx-auto w-full max-w-lg px-4 pb-20 pt-8 md:px-6 md:pb-28">
+            <div className="rounded-[2rem] border border-forest-100 bg-white p-8 shadow-soft md:p-10">
+              <p className="text-sm leading-relaxed text-forest-700">
+                Add <code className="rounded-md border border-forest-200 bg-white px-1.5 py-0.5 text-xs text-forest-900">VITE_SUPABASE_URL</code>{' '}
+                and{' '}
+                <code className="rounded-md border border-forest-200 bg-white px-1.5 py-0.5 text-xs text-forest-900">VITE_SUPABASE_ANON_KEY</code>{' '}
+                to your environment, then restart the dev server.
+              </p>
+              <LuxuryButton className="mt-8" href="/" variant="primary">
+                Back to home
+              </LuxuryButton>
+            </div>
+          </section>
         </main>
-        <SiteFooter copyrightNote={loginFooterCopyrightNote} footerRef={footerRef} intro={loginFooterIntro} />
-      </div>
+      </PublicSiteShell>
     )
   }
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen flex-col bg-forest-950">
-        <div className="flex flex-1 flex-col items-center justify-center px-6">
-          <div className="mb-10 scale-90">
-            <Logo size="large" tone="scrolled" />
+      <PublicSiteShell withCookieBanner={false} withWhatsApp={false}>
+        <main id="main" className="flex min-h-[70vh] items-center justify-center bg-forest-950 px-6 pt-[134px] text-center sm:pt-[148px] md:pt-[164px] lg:pt-[130px] xl:pt-[142px]">
+          <div className="flex flex-col items-center">
+            <div className="mb-10 scale-90">
+              <Logo size="large" tone="scrolled" />
+            </div>
+            <p className="text-sm font-medium tracking-wide text-white/55">Loading…</p>
           </div>
-          <p className="text-sm font-medium tracking-wide text-white/55">Loading…</p>
-        </div>
-        <SiteFooter copyrightNote={loginFooterCopyrightNote} footerRef={footerRef} intro={loginFooterIntro} />
-      </div>
+        </main>
+      </PublicSiteShell>
     )
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-offwhite font-body text-forest-900">
-      <section className="relative overflow-hidden bg-forest-950 pb-0">
+    <PublicSiteShell withCookieBanner={false} withWhatsApp={false}>
+      <main id="main" className="bg-offwhite font-body text-forest-900">
+      <section className="relative overflow-hidden bg-forest-950 pb-0 pt-[134px] sm:pt-[148px] md:pt-[164px] lg:pt-[130px] xl:pt-[142px]">
         <LoginHeroBackdrop />
         <div className="relative z-10 mx-auto max-w-7xl px-4 pb-16 pt-10 md:px-6 md:pb-20 md:pt-14">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gold-200">Account access</p>
-          <a aria-label="Golf Sol Ireland — home" className="mt-5 inline-block transition-opacity hover:opacity-95" href="/">
+          <a aria-label="GolfSol Ireland — home" className="mt-5 inline-block transition-opacity hover:opacity-95" href="/">
             <Logo size="large" tone="scrolled" />
           </a>
           <h1 className="font-display mt-6 text-[2.2rem] font-bold tracking-[-0.03em] text-white md:text-[2.85rem] md:leading-tight">
             Sign in
           </h1>
           <p className="mt-4 max-w-xl text-base leading-8 text-white md:text-lg">
-            We&apos;ll email you a secure magic link — the same premium Golf Sol Ireland experience as the rest of the
+            We&apos;ll email you a secure magic link — the same premium GolfSol Ireland experience as the rest of the
             site. No password to remember.
           </p>
           {safeReturnPath ? (
@@ -173,7 +185,7 @@ export function LoginPage() {
         </div>
       </section>
 
-      <main className="relative z-[1] mx-auto w-full max-w-lg flex-1 px-4 pb-20 pt-4 md:px-6 md:pb-28 md:pt-6">
+      <section className="relative z-[1] mx-auto w-full max-w-lg px-4 pb-20 pt-4 md:px-6 md:pb-28 md:pt-6">
         <div className="relative overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-soft">
           <div
             aria-hidden="true"
@@ -207,7 +219,7 @@ export function LoginPage() {
               <div className="rounded-2xl border border-forest-200 bg-white px-4 py-4 text-base leading-8 text-forest-900">
                 <p className="font-semibold text-forest-950">Check your inbox</p>
                 <p className="mt-2 text-forest-700">
-                  Open the link from Golf Sol Ireland to finish signing in. You can close this tab — the link opens in
+                  Open the link from GolfSol Ireland to finish signing in. You can close this tab — the link opens in
                   your browser.
                 </p>
               </div>
@@ -251,9 +263,8 @@ export function LoginPage() {
             </div>
           </div>
         </div>
+      </section>
       </main>
-
-      <SiteFooter copyrightNote={loginFooterCopyrightNote} footerRef={footerRef} intro={loginFooterIntro} />
-    </div>
+    </PublicSiteShell>
   )
 }

@@ -6,6 +6,8 @@ export interface GeContentPageSection {
 
 export interface GeContentPageData {
   readonly metaTitle: string
+  readonly metaDescription?: string
+  readonly metaKeywords?: readonly string[]
   readonly eyebrow: string
   readonly title: string
   readonly subtitle: string
@@ -17,6 +19,9 @@ export interface GeContentPageData {
   readonly formLead: string
   readonly interestPreset: string
   readonly enquiryType?: 'booking' | 'legal' | 'newsletter' | 'testimonial' | 'support'
+  readonly formContextLabel?: string
+  readonly bestTimeToCallLabel?: string
+  readonly bestTimeToCallOptions?: readonly string[]
 }
 
 const trustHighlights = [
@@ -27,6 +32,9 @@ const trustHighlights = [
 
 const contactPage: GeContentPageData = {
   metaTitle: 'Contact | GolfSol Ireland',
+  metaDescription:
+    'Contact GolfSol Ireland for Costa del Sol golf holiday quotes, group itineraries, accommodation options, and airport transfer planning for Irish golfers.',
+  metaKeywords: ['GolfSol Ireland contact', 'Costa del Sol golf quote', 'Irish golf holiday enquiry'],
   eyebrow: 'Contact',
   title: 'Get your golf holiday quote quickly',
   subtitle:
@@ -51,11 +59,17 @@ const contactPage: GeContentPageData = {
   formTitle: 'Start your quote request',
   formLead: 'Use this short form and we will come back with clear, actionable options.',
   interestPreset: 'General quote request',
-  enquiryType: 'booking'
+  enquiryType: 'booking',
+  formContextLabel: 'Trip focus',
+  bestTimeToCallLabel: 'Preferred reply window',
+  bestTimeToCallOptions: ['Any time', 'Morning reply', 'Afternoon reply', 'Evening reply', 'Email only']
 }
 
 const termsPage: GeContentPageData = {
   metaTitle: 'Terms & Conditions | GolfSol Ireland',
+  metaDescription:
+    'Read the GolfSol Ireland terms and conditions overview before booking Costa del Sol golf packages, transfers, accommodation, or group travel services.',
+  metaKeywords: ['GolfSol Ireland terms', 'Costa del Sol golf booking terms', 'Irish golf holiday conditions'],
   eyebrow: 'Legal',
   title: 'Terms and conditions overview before you book',
   subtitle:
@@ -80,11 +94,17 @@ const termsPage: GeContentPageData = {
   formTitle: 'Ask about terms',
   formLead: 'Send your question and we will clarify terms before you proceed.',
   interestPreset: 'Terms and conditions enquiry',
-  enquiryType: 'legal'
+  enquiryType: 'legal',
+  formContextLabel: 'Legal topic',
+  bestTimeToCallLabel: 'Preferred response method',
+  bestTimeToCallOptions: ['Email reply', 'Phone call', 'WhatsApp reply']
 }
 
 const privacyPage: GeContentPageData = {
   metaTitle: 'Privacy Policy | GolfSol Ireland',
+  metaDescription:
+    'Review how GolfSol Ireland handles customer enquiry details, trip preferences, and communications for Costa del Sol golf travel planning.',
+  metaKeywords: ['GolfSol Ireland privacy', 'golf holiday privacy policy', 'Costa del Sol travel data'],
   eyebrow: 'Legal',
   title: 'Privacy policy summary in plain language',
   subtitle:
@@ -109,11 +129,17 @@ const privacyPage: GeContentPageData = {
   formTitle: 'Ask a privacy question',
   formLead: 'If you need clarification on data handling, send a quick request here.',
   interestPreset: 'Privacy policy enquiry',
-  enquiryType: 'legal'
+  enquiryType: 'legal',
+  formContextLabel: 'Privacy topic',
+  bestTimeToCallLabel: 'Preferred response method',
+  bestTimeToCallOptions: ['Email reply', 'Phone call', 'WhatsApp reply']
 }
 
 const golfClubRentalPage: GeContentPageData = {
   metaTitle: 'Golf Club Rental | GolfSol Ireland',
+  metaDescription:
+    'Book Costa del Sol golf club rental with GolfSol Ireland and have quality sets coordinated around your flights, hotel, and tee times.',
+  metaKeywords: ['golf club rental Costa del Sol', 'GolfSol Ireland rental clubs', 'Malaga golf club hire'],
   eyebrow: 'Services',
   title: 'Golf club rental on the Sol, ready when you land',
   subtitle:
@@ -138,11 +164,17 @@ const golfClubRentalPage: GeContentPageData = {
   formTitle: 'Request club rental options',
   formLead: 'Share player count and travel window. We send suitable rental choices quickly.',
   interestPreset: 'Golf club rental',
-  enquiryType: 'booking'
+  enquiryType: 'booking',
+  formContextLabel: 'Rental requirement',
+  bestTimeToCallLabel: 'Best time to discuss rental',
+  bestTimeToCallOptions: ['Any time', 'Morning call', 'Afternoon call', 'Evening call', 'Email only']
 }
 
 const teeTimeOnlyPage: GeContentPageData = {
   metaTitle: 'Tee Time Bookings Only | GolfSol Ireland',
+  metaDescription:
+    'Get Costa del Sol tee-time bookings only from GolfSol Ireland when your hotel is already arranged and you want Irish-led course recommendations.',
+  metaKeywords: ['Costa del Sol tee times', 'GolfSol Ireland tee time booking', 'Irish golf groups Spain'],
   eyebrow: 'Services',
   title: 'Tee-time bookings only, if your hotel is already sorted',
   subtitle:
@@ -167,11 +199,17 @@ const teeTimeOnlyPage: GeContentPageData = {
   formTitle: 'Get tee-time options',
   formLead: 'Tell us your dates and group size and we will return a clean shortlist.',
   interestPreset: 'Tee time bookings only',
-  enquiryType: 'booking'
+  enquiryType: 'booking',
+  formContextLabel: 'Golf requirement',
+  bestTimeToCallLabel: 'Best time to discuss tee times',
+  bestTimeToCallOptions: ['Any time', 'Morning call', 'Afternoon call', 'Evening call', 'Email only']
 }
 
 const familyHolidaysPage: GeContentPageData = {
   metaTitle: 'Family Golf Holidays | GolfSol Ireland',
+  metaDescription:
+    'Plan family golf holidays on the Costa del Sol with GolfSol Ireland, combining golf, family-friendly stays, transfers, and balanced itineraries.',
+  metaKeywords: ['family golf holidays Spain', 'Costa del Sol family golf', 'GolfSol Ireland family trips'],
   eyebrow: 'Services',
   title: 'Family golf holidays with less friction and better pacing',
   subtitle:
@@ -196,11 +234,17 @@ const familyHolidaysPage: GeContentPageData = {
   formTitle: 'Plan a family golf holiday',
   formLead: 'Share your travel dates and family mix. We propose a practical, easy-to-run trip.',
   interestPreset: 'Family golf holidays',
-  enquiryType: 'booking'
+  enquiryType: 'booking',
+  formContextLabel: 'Family trip focus',
+  bestTimeToCallLabel: 'Best time to discuss your family trip',
+  bestTimeToCallOptions: ['Any time', 'Morning call', 'Afternoon call', 'Evening call', 'Email only']
 }
 
 const aboutPage: GeContentPageData = {
   metaTitle: 'About GolfSol Ireland',
+  metaDescription:
+    'Learn about GolfSol Ireland, an Irish-owned Costa del Sol golf travel specialist focused on golf packages, hotels, transfers, and group planning.',
+  metaKeywords: ['about GolfSol Ireland', 'Irish golf travel specialist', 'Costa del Sol golf experts'],
   eyebrow: 'About',
   title: 'Irish-owned Costa del Sol golf specialists',
   subtitle:
@@ -225,11 +269,17 @@ const aboutPage: GeContentPageData = {
   formTitle: 'Talk to our team',
   formLead: 'Share your dates and group details and we will guide the right next step.',
   interestPreset: 'About GolfSol Ireland',
-  enquiryType: 'support'
+  enquiryType: 'support',
+  formContextLabel: 'Question type',
+  bestTimeToCallLabel: 'Preferred contact method',
+  bestTimeToCallOptions: ['Email reply', 'Phone call', 'WhatsApp reply']
 }
 
 const bookingPage: GeContentPageData = {
   metaTitle: 'Booking | GolfSol Ireland',
+  metaDescription:
+    'Understand the GolfSol Ireland booking flow for Costa del Sol golf holidays, including quotes, confirmations, deposits, and organiser support.',
+  metaKeywords: ['GolfSol Ireland booking', 'Costa del Sol golf booking', 'golf holiday organiser support'],
   eyebrow: 'Booking',
   title: 'Booking flow that stays clear at every step',
   subtitle:
@@ -254,11 +304,17 @@ const bookingPage: GeContentPageData = {
   formTitle: 'Start booking support',
   formLead: 'Send your dates and group details and we will outline the cleanest booking path.',
   interestPreset: 'Booking support',
-  enquiryType: 'booking'
+  enquiryType: 'booking',
+  formContextLabel: 'Booking focus',
+  bestTimeToCallLabel: 'Best time to discuss booking',
+  bestTimeToCallOptions: ['Any time', 'Morning call', 'Afternoon call', 'Evening call', 'Email only']
 }
 
 const transportOverviewPage: GeContentPageData = {
   metaTitle: 'Transport | GolfSol Ireland',
+  metaDescription:
+    'Arrange Costa del Sol golf transport with GolfSol Ireland, including Malaga airport pickups, hotel shuttles, and golf-day transfers for Irish groups.',
+  metaKeywords: ['Costa del Sol golf transport', 'Malaga golf transfers', 'GolfSol Ireland transport'],
   eyebrow: 'Transport',
   title: 'Reliable golf transport from AGP to your final round',
   subtitle:
@@ -283,11 +339,17 @@ const transportOverviewPage: GeContentPageData = {
   formTitle: 'Request transport planning',
   formLead: 'Share your route and dates and we will return a clear transfer plan.',
   interestPreset: 'Transport planning',
-  enquiryType: 'booking'
+  enquiryType: 'booking',
+  formContextLabel: 'Transport focus',
+  bestTimeToCallLabel: 'Best time to discuss transport',
+  bestTimeToCallOptions: ['Any time', 'Morning call', 'Afternoon call', 'Evening call', 'Email only']
 }
 
 const coursesPage: GeContentPageData = {
   metaTitle: 'Costa del Sol Golf Courses | GolfSol Ireland',
+  metaDescription:
+    'Explore Costa del Sol golf courses with GolfSol Ireland and get Irish-led help choosing the right championship and value rounds for your trip.',
+  metaKeywords: ['Costa del Sol golf courses', 'GolfSol Ireland courses', 'Spanish golf trip planning'],
   eyebrow: 'Golf Courses',
   title: 'Costa del Sol course options, narrowed to what matters',
   subtitle:
@@ -312,11 +374,17 @@ const coursesPage: GeContentPageData = {
   formTitle: 'Get a course shortlist',
   formLead: 'Share your base and dates and we will send suitable rounds quickly.',
   interestPreset: 'Costa del Sol courses',
-  enquiryType: 'booking'
+  enquiryType: 'booking',
+  formContextLabel: 'Course planning focus',
+  bestTimeToCallLabel: 'Best time to discuss courses',
+  bestTimeToCallOptions: ['Any time', 'Morning call', 'Afternoon call', 'Evening call', 'Email only']
 }
 
 const accommodationPage: GeContentPageData = {
   metaTitle: 'Accommodation | GolfSol Ireland',
+  metaDescription:
+    'Compare Costa del Sol accommodation with GolfSol Ireland and get hotel recommendations that match your golf schedule, budget, and group style.',
+  metaKeywords: ['Costa del Sol golf accommodation', 'GolfSol Ireland hotels', 'Marbella golf stays'],
   eyebrow: 'Accommodation',
   title: 'Costa del Sol accommodation matched to your golf trip',
   subtitle:
@@ -341,11 +409,17 @@ const accommodationPage: GeContentPageData = {
   formTitle: 'Get matched hotel options',
   formLead: 'Share your dates and group size and we will return clean accommodation choices.',
   interestPreset: 'Accommodation matching',
-  enquiryType: 'booking'
+  enquiryType: 'booking',
+  formContextLabel: 'Stay requirement',
+  bestTimeToCallLabel: 'Best time to discuss accommodation',
+  bestTimeToCallOptions: ['Any time', 'Morning call', 'Afternoon call', 'Evening call', 'Email only']
 }
 
 const testimonialsPage: GeContentPageData = {
   metaTitle: 'Testimonials | GolfSol Ireland',
+  metaDescription:
+    'Read GolfSol Ireland testimonials from Irish golfers and share feedback on Costa del Sol golf trips, transfers, hotels, and itinerary planning.',
+  metaKeywords: ['GolfSol Ireland testimonials', 'Irish golfer reviews Spain', 'Costa del Sol golf feedback'],
   eyebrow: 'Trust',
   title: 'Why Irish golfers trust GolfSol Ireland',
   subtitle:
@@ -370,11 +444,17 @@ const testimonialsPage: GeContentPageData = {
   formTitle: 'Send a testimonial or request',
   formLead: 'Use this form to request details or share feedback from your trip.',
   interestPreset: 'Testimonials and feedback',
-  enquiryType: 'testimonial'
+  enquiryType: 'testimonial',
+  formContextLabel: 'Feedback type',
+  bestTimeToCallLabel: 'Preferred follow-up',
+  bestTimeToCallOptions: ['Email reply', 'Phone call', 'WhatsApp reply']
 }
 
 const faqPage: GeContentPageData = {
   metaTitle: 'FAQ | GolfSol Ireland',
+  metaDescription:
+    'See the GolfSol Ireland FAQ covering Costa del Sol golf packages, deposits, transport, organiser questions, and booking timelines for Irish groups.',
+  metaKeywords: ['GolfSol Ireland FAQ', 'Costa del Sol golf questions', 'Irish golf holiday FAQ'],
   eyebrow: 'Help',
   title: 'Frequently asked questions, answered clearly',
   subtitle:
@@ -399,11 +479,17 @@ const faqPage: GeContentPageData = {
   formTitle: 'Ask your question',
   formLead: 'Send your question here and we will respond with a direct answer.',
   interestPreset: 'FAQ request',
-  enquiryType: 'support'
+  enquiryType: 'support',
+  formContextLabel: 'Question category',
+  bestTimeToCallLabel: 'Preferred reply window',
+  bestTimeToCallOptions: ['Email reply', 'Morning call', 'Afternoon call', 'Evening call', 'WhatsApp reply']
 }
 
 const newsPage: GeContentPageData = {
   metaTitle: 'Sol Insider News | GolfSol Ireland',
+  metaDescription:
+    'Get Costa del Sol golf travel updates from GolfSol Ireland, including course notes, seasonal planning reminders, and useful organiser guidance.',
+  metaKeywords: ['GolfSol Ireland news', 'Costa del Sol golf updates', 'Irish golf travel news'],
   eyebrow: 'Updates',
   title: 'Sol Insider news for Irish golf travellers',
   subtitle:
@@ -428,11 +514,17 @@ const newsPage: GeContentPageData = {
   formTitle: 'Request latest planning updates',
   formLead: 'Drop your details and we will send the right information for your dates.',
   interestPreset: 'Sol insider news',
-  enquiryType: 'support'
+  enquiryType: 'support',
+  formContextLabel: 'Update category',
+  bestTimeToCallLabel: 'Preferred response method',
+  bestTimeToCallOptions: ['Email reply', 'WhatsApp reply', 'Phone call']
 }
 
 const newsletterPage: GeContentPageData = {
   metaTitle: 'Newsletter | GolfSol Ireland',
+  metaDescription:
+    'Join the GolfSol Ireland newsletter for Costa del Sol golf travel updates, planning tips, and useful information for Irish golfers.',
+  metaKeywords: ['GolfSol Ireland newsletter', 'Costa del Sol golf newsletter', 'Irish golf travel updates'],
   eyebrow: 'Stay Updated',
   title: 'Join our newsletter for useful golf travel updates',
   subtitle:
@@ -457,7 +549,10 @@ const newsletterPage: GeContentPageData = {
   formTitle: 'Join the newsletter',
   formLead: 'Drop your details and we will include you in relevant updates.',
   interestPreset: 'Newsletter signup',
-  enquiryType: 'newsletter'
+  enquiryType: 'newsletter',
+  formContextLabel: 'Update preference',
+  bestTimeToCallLabel: 'Preferred contact method',
+  bestTimeToCallOptions: ['Email only', 'WhatsApp updates', 'Phone call if needed']
 }
 
 const geContentPages: Record<string, GeContentPageData> = {
@@ -511,7 +606,57 @@ const geContentPages: Record<string, GeContentPageData> = {
     interestPreset: 'Travel to Malaga AGP'
   },
   '/golf-courses': coursesPage,
+  '/golf-courses/sotogrande': {
+    ...coursesPage,
+    metaTitle: 'Sotogrande Golf Courses | GolfSol Ireland',
+    metaDescription:
+      'Explore Sotogrande golf course options with GolfSol Ireland, including premium routing, marquee rounds, and group-friendly planning on the western Costa del Sol.',
+    eyebrow: 'Golf Courses',
+    title: 'Sotogrande golf courses for standout Costa del Sol trips',
+    subtitle: 'Build around marquee western-Costa rounds without wasting time on poor routing or mismatched course mixes.',
+    interestPreset: 'Sotogrande golf courses'
+  },
+  '/golf-courses/marbella-golf-valley': {
+    ...coursesPage,
+    metaTitle: 'Marbella Golf Valley | GolfSol Ireland',
+    metaDescription:
+      'See Marbella Golf Valley course ideas from GolfSol Ireland and get a cleaner shortlist for Irish golf groups staying near Marbella or Nueva Andalucia.',
+    eyebrow: 'Golf Courses',
+    title: 'Marbella Golf Valley rounds with easier trip planning',
+    subtitle: 'Shortlist the right Marbella-area courses by travel time, pace, and how they fit the rest of your week.',
+    interestPreset: 'Marbella Golf Valley'
+  },
+  '/golf-courses/mijas-fuengirola': {
+    ...coursesPage,
+    metaTitle: 'Mijas & Fuengirola Golf | GolfSol Ireland',
+    metaDescription:
+      'Compare Mijas and Fuengirola golf options with GolfSol Ireland and build a Costa del Sol itinerary that suits lively bases and shorter transfer windows.',
+    eyebrow: 'Golf Courses',
+    title: 'Mijas and Fuengirola golf options for practical, social trips',
+    subtitle: 'Ideal for groups who want easier logistics, busy resort bases, and strong golf without long transfer days.',
+    interestPreset: 'Mijas and Fuengirola golf'
+  },
   '/accommodation': accommodationPage,
+  '/accommodation/fuengirola-hotels': {
+    ...accommodationPage,
+    metaTitle: 'Fuengirola Hotels for Golf Trips | GolfSol Ireland',
+    metaDescription:
+      'Browse Fuengirola hotel guidance from GolfSol Ireland and find Costa del Sol stays that work for golf groups, nightlife access, and easier transfer planning.',
+    eyebrow: 'Accommodation',
+    title: 'Fuengirola hotels that work for Irish golf groups',
+    subtitle: 'Stay near the promenade, dining, and transfer links while keeping golf-day logistics practical across the week.',
+    interestPreset: 'Fuengirola hotels'
+  },
+  '/accommodation/torremolinos-hotels': {
+    ...accommodationPage,
+    metaTitle: 'Torremolinos Hotels for Golf Trips | GolfSol Ireland',
+    metaDescription:
+      'See Torremolinos hotel recommendations from GolfSol Ireland and choose Costa del Sol accommodation suited to short airport transfers and flexible golf bases.',
+    eyebrow: 'Accommodation',
+    title: 'Torremolinos hotel options with easier airport access',
+    subtitle: 'Useful for golfers who want a shorter first-day transfer and a resort base that keeps the trip simple.',
+    interestPreset: 'Torremolinos hotels'
+  },
   '/golf-map': {
     ...coursesPage,
     metaTitle: 'Costa del Sol Golf Map | GolfSol Ireland',

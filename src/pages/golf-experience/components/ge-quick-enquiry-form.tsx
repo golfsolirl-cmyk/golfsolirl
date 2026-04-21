@@ -8,6 +8,9 @@ interface GeQuickEnquiryFormProps {
   readonly lead: string
   readonly interestPreset: string
   readonly enquiryType?: 'booking' | 'legal' | 'newsletter' | 'testimonial' | 'support'
+  readonly contextLabel?: string
+  readonly bestTimeToCallLabel?: string
+  readonly bestTimeToCallOptions?: readonly string[]
 }
 
 const labelClass =
@@ -19,11 +22,15 @@ export function GeQuickEnquiryForm({
   title,
   lead,
   interestPreset,
-  enquiryType
+  enquiryType,
+  contextLabel,
+  bestTimeToCallLabel,
+  bestTimeToCallOptions
 }: GeQuickEnquiryFormProps) {
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [phoneWhatsApp, setPhoneWhatsApp] = useState('')
+  const [bookingContext, setBookingContext] = useState('')
   const [travelDates, setTravelDates] = useState('')
   const [groupSize, setGroupSize] = useState('')
   const [notes, setNotes] = useState('')
@@ -32,6 +39,7 @@ export function GeQuickEnquiryForm({
   const [updateType, setUpdateType] = useState('Course updates')
   const [visitMonth, setVisitMonth] = useState('')
   const [travelPartyType, setTravelPartyType] = useState('Golf group')
+  const [bestTimeToCall, setBestTimeToCall] = useState(bestTimeToCallOptions?.[0] ?? 'Any time')
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -61,6 +69,40 @@ export function GeQuickEnquiryForm({
     return 'Notes (optional)'
   }, [isBookingPage, isFaqPage, isGuidePage, isLegalPage, isNewsletterPage, isTestimonialPage])
 
+  const activeContextLabel = useMemo(() => {
+    if (contextLabel) {
+      return contextLabel
+    }
+    if (isLegalPage) return 'Legal topic'
+    if (isFaqPage || isSupportPage) return 'Question category'
+    if (isNewsletterPage) return 'Update preference'
+    if (isTestimonialPage) return 'Trip type'
+    if (isGuidePage) return 'Travel month'
+    if (isBookingPage) return 'Trip context'
+    return 'Context'
+  }, [contextLabel, isBookingPage, isFaqPage, isGuidePage, isLegalPage, isNewsletterPage, isSupportPage, isTestimonialPage])
+
+  const replyLabel = bestTimeToCallLabel ?? 'Preferred reply window'
+
+  const bookingContextPlaceholder = useMemo(() => {
+    const preset = interestPreset.toLowerCase()
+    if (preset.includes('rental')) return 'e.g. Premium right-handed sets for 6 golfers'
+    if (preset.includes('tee time') || preset.includes('course')) return 'e.g. Championship/value mix near Marbella'
+    if (preset.includes('accommodation') || preset.includes('hotel')) return 'e.g. 4-star beachfront base with twin rooms'
+    if (preset.includes('transport')) return 'e.g. Airport, golf-day, and dinner transfers'
+    if (preset.includes('family')) return 'e.g. Family-friendly base with flexible golf days'
+    if (preset.includes('incentive')) return 'e.g. Corporate group with premium routing and dinners'
+    if (preset.includes('map')) return 'e.g. Help choosing the best golf base cluster'
+    return 'Tell us what you need from this page'
+  }, [interestPreset])
+
+  const replyOptions = useMemo(() => {
+    if (bestTimeToCallOptions && bestTimeToCallOptions.length > 0) {
+      return bestTimeToCallOptions
+    }
+    return ['Any time', 'Morning', 'Afternoon', 'Evening', 'Email only'] as const
+  }, [bestTimeToCallOptions])
+
   const contextSummary = useMemo(() => {
     if (isLegalPage) {
       return `Legal topic: ${legalTopic}`
@@ -79,6 +121,7 @@ export function GeQuickEnquiryForm({
     }
     if (isBookingPage) {
       const details = []
+      if (bookingContext.trim()) details.push(`${activeContextLabel}: ${bookingContext.trim()}`)
       if (travelDates.trim()) details.push(`Travel dates: ${travelDates.trim()}`)
       if (groupSize.trim()) details.push(`Group size: ${groupSize.trim()}`)
       return details.length ? details.join(' | ') : 'Booking context: awaiting dates/group size'
@@ -96,9 +139,11 @@ export function GeQuickEnquiryForm({
     questionType,
     updateType,
     travelPartyType,
+    bookingContext,
     travelDates,
     groupSize,
-    visitMonth
+    visitMonth,
+    activeContextLabel
   ])
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -117,6 +162,11 @@ export function GeQuickEnquiryForm({
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) {
       setErrorMessage('Please enter a valid email address.')
+      setStatus('error')
+      return
+    }
+    if (!bestTimeToCall.trim()) {
+      setErrorMessage('Please choose how you would like us to reply.')
       setStatus('error')
       return
     }
@@ -143,7 +193,7 @@ export function GeQuickEnquiryForm({
           email: mail,
           phoneWhatsApp: phone,
           interest: interestLines.join('\n'),
-          bestTimeToCall: 'Any time'
+          bestTimeToCall: bestTimeToCall.trim()
         })
       })
       const data = (await response.json().catch(() => ({}))) as { message?: string }
@@ -155,6 +205,7 @@ export function GeQuickEnquiryForm({
       setFullName('')
       setEmail('')
       setPhoneWhatsApp('')
+      setBookingContext('')
       setTravelDates('')
       setGroupSize('')
       setNotes('')
@@ -163,6 +214,7 @@ export function GeQuickEnquiryForm({
       setUpdateType('Course updates')
       setVisitMonth('')
       setTravelPartyType('Golf group')
+      setBestTimeToCall(replyOptions[0] ?? 'Any time')
     } catch (error) {
       setStatus('error')
       setErrorMessage(error instanceof Error ? error.message : 'Could not send your request right now.')
@@ -230,7 +282,7 @@ export function GeQuickEnquiryForm({
           </label>
           {isLegalPage ? (
             <label className="block">
-              <span className={labelClass}>Legal topic</span>
+              <span className={labelClass}>{activeContextLabel}</span>
               <select className={inputClass} value={legalTopic} onChange={(e) => setLegalTopic(e.target.value)}>
                 <option>Privacy policy</option>
                 <option>Terms and conditions</option>
@@ -241,7 +293,7 @@ export function GeQuickEnquiryForm({
           ) : null}
           {isFaqPage || isSupportPage ? (
             <label className="block">
-              <span className={labelClass}>Question category</span>
+              <span className={labelClass}>{activeContextLabel}</span>
               <select className={inputClass} value={questionType} onChange={(e) => setQuestionType(e.target.value)}>
                 <option>General question</option>
                 <option>Payments and deposits</option>
@@ -252,7 +304,7 @@ export function GeQuickEnquiryForm({
           ) : null}
           {isNewsletterPage ? (
             <label className="block">
-              <span className={labelClass}>Update preference</span>
+              <span className={labelClass}>{activeContextLabel}</span>
               <select className={inputClass} value={updateType} onChange={(e) => setUpdateType(e.target.value)}>
                 <option>Course updates</option>
                 <option>Planning tips</option>
@@ -263,7 +315,7 @@ export function GeQuickEnquiryForm({
           ) : null}
           {isTestimonialPage ? (
             <label className="block">
-              <span className={labelClass}>Trip type</span>
+              <span className={labelClass}>{activeContextLabel}</span>
               <select className={inputClass} value={travelPartyType} onChange={(e) => setTravelPartyType(e.target.value)}>
                 <option>Golf group</option>
                 <option>Society trip</option>
@@ -274,7 +326,7 @@ export function GeQuickEnquiryForm({
           ) : null}
           {isGuidePage ? (
             <label className="block">
-              <span className={labelClass}>Planned travel month (optional)</span>
+              <span className={labelClass}>{activeContextLabel} (optional)</span>
               <input
                 className={inputClass}
                 value={visitMonth}
@@ -285,6 +337,25 @@ export function GeQuickEnquiryForm({
           ) : null}
           {!isLegalPage && !isSupportPage && !isNewsletterPage && !isTestimonialPage && !isGuidePage ? (
             <>
+              <label className="block">
+                <span className={labelClass}>{activeContextLabel}</span>
+                <input
+                  className={inputClass}
+                  value={bookingContext}
+                  onChange={(e) => setBookingContext(e.target.value)}
+                  placeholder={bookingContextPlaceholder}
+                />
+              </label>
+              <label className="block">
+                <span className={labelClass}>{replyLabel}</span>
+                <select className={inputClass} value={bestTimeToCall} onChange={(e) => setBestTimeToCall(e.target.value)}>
+                  {replyOptions.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </label>
               <label className="block">
                 <span className={labelClass}>Travel dates (optional)</span>
                 <input
@@ -304,6 +375,18 @@ export function GeQuickEnquiryForm({
                 />
               </label>
             </>
+          ) : null}
+          {isLegalPage || isSupportPage || isNewsletterPage || isTestimonialPage || isGuidePage ? (
+            <label className="block">
+              <span className={labelClass}>{replyLabel}</span>
+              <select className={inputClass} value={bestTimeToCall} onChange={(e) => setBestTimeToCall(e.target.value)}>
+                {replyOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
           ) : null}
           <label className="block">
             <span className={labelClass}>{notesLabel}</span>

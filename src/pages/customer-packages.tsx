@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import {
   BedDouble,
@@ -9,11 +9,9 @@ import {
   Sparkles,
   Users
 } from 'lucide-react'
-import { Navbar } from '../components/home/navbar'
 import { LuxuryButton } from '../components/ui/button'
-import { SiteFooter } from '../components/site-footer'
 import { AmbientGolfBall } from '../components/ui/ambient-golf-ball'
-import { Logo, ShamrockIcon } from '../components/ui/logo'
+import { ShamrockIcon } from '../components/ui/logo'
 import { AnimatedStepKicker, SectionHeader } from '../components/ui/section-header'
 import { WaveDivider } from '../components/ui/wave-divider'
 import { integrationRegistry } from '../config/integrations'
@@ -24,17 +22,17 @@ import {
 } from '../data/coastal-golf-data'
 import { footerSocialLinks, heroBackgroundImage } from '../data/site-content'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
+import { buildWebPageJsonLd, usePageMetadata } from '../lib/page-metadata'
 import { buildPackageConfig, defaultLabelForBuild } from '../lib/package-build'
 import { cx } from '../lib/utils'
 import { useAuth } from '../providers/auth-provider'
-import { CookieBanner, FloatingWhatsAppButton, formatEuro } from './packages'
+import { PublicSiteShell } from '../components/public/public-site-shell'
+import { formatEuro } from './packages'
 
 const CourseHotelMapPicker = lazy(async () => {
   const m = await import('../components/course-hotel-map-picker')
   return { default: m.CourseHotelMapPicker }
 })
-
-const packagePageLinks = ['Packages', 'Stays', 'Calculator', 'Enquire'] as const
 
 const packageStyles = [
   {
@@ -204,12 +202,9 @@ function CustomerPackagePage() {
   const [courseHotelPick, setCourseHotelPick] = useState<CourseHotelPickerValue>(() =>
     parseCourseHotelSearch(window.location.search)
   )
-  const [hasAcceptedCookies, setHasAcceptedCookies] = useState(true)
-  const [isFooterInView, setIsFooterInView] = useState(false)
   const [isSavingBuild, setIsSavingBuild] = useState(false)
   const [saveBuildError, setSaveBuildError] = useState<string | null>(null)
   const [saveBuildOk, setSaveBuildOk] = useState(false)
-  const footerRef = useRef<HTMLElement | null>(null)
   const whatsAppHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
 
   const selectedPackage = packageStyles.find((item) => item.name === selectedPackageName) ?? packageStyles[1]
@@ -225,6 +220,27 @@ function CustomerPackagePage() {
     () => `/login?next=${encodeURIComponent(`${window.location.pathname}${window.location.search}`)}`,
     []
   )
+
+  usePageMetadata({
+    title: 'Costa del Sol golf packages builder',
+    description:
+      'Build a Costa del Sol golf package with GolfSol Ireland, compare stays and transfer styles, and see live pricing tailored to Irish travellers.',
+    canonicalPath: '/packages',
+    image: '/images/hero-malaga-transfers-1600.jpg',
+    keywords: [
+      'GolfSol Ireland packages',
+      'Costa del Sol golf packages',
+      'golf holiday calculator',
+      'Irish golf travel packages'
+    ],
+    jsonLd: buildWebPageJsonLd({
+      title: 'Costa del Sol golf packages builder',
+      description:
+        'Build a Costa del Sol golf package with GolfSol Ireland, compare stays and transfer styles, and see live pricing tailored to Irish travellers.',
+      canonicalUrl: 'https://golfsolirl.com/packages',
+      image: 'https://golfsolirl.com/images/hero-malaga-transfers-1600.jpg'
+    })
+  })
 
   const pricingSummary = useMemo(() => {
     const accommodationPerPerson = selectedStay.pricePerNight * nights
@@ -304,7 +320,7 @@ function CustomerPackagePage() {
 
   const packageEnquirySummary = useMemo(() => {
     const lines = [
-      'Hi Golf Sol Ireland,',
+      'Hi GolfSol Ireland,',
       '',
       "I'm interested in a Costa del Sol golf package. Here's my calculator selection:",
       '',
@@ -364,7 +380,7 @@ function CustomerPackagePage() {
       subject,
       body: packageEnquirySummary
     })
-    return `mailto:hello@golfsolireland.com?${params.toString()}`
+    return `mailto:hello@golfsolirl.com?${params.toString()}`
   }, [packageEnquirySummary, selectedPackage.name])
 
   const handleSavePackageToAccount = useCallback(async () => {
@@ -469,44 +485,9 @@ function CustomerPackagePage() {
     courseHotelPick.selectedHotel?.name
   ])
 
-  const handleAcceptCookies = () => {
-    localStorage.setItem('gsol-cookie-banner-dismissed', 'true')
-    setHasAcceptedCookies(true)
-  }
-
-  useEffect(() => {
-    const dismissed = localStorage.getItem('gsol-cookie-banner-dismissed')
-    setHasAcceptedCookies(dismissed === 'true')
-  }, [])
-
-  useEffect(() => {
-    if (!footerRef.current) {
-      return
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsFooterInView(entry.isIntersecting)
-      },
-      {
-        threshold: 0.2
-      }
-    )
-
-    observer.observe(footerRef.current)
-
-    return () => {
-      observer.disconnect()
-    }
-  }, [])
-
   return (
-    <div className="overflow-x-hidden bg-offwhite">
-      <Navbar links={packagePageLinks} primaryCta="Make enquiry" />
-      <FloatingWhatsAppButton hidden={isFooterInView} href={packageEnquiryWhatsAppHref} />
-      <CookieBanner hidden={hasAcceptedCookies} onAccept={handleAcceptCookies} />
-
-      <main>
+    <PublicSiteShell>
+      <main id="main">
         <section className="relative min-h-screen overflow-hidden bg-forest-900 px-6 pb-28 pt-36 md:pt-40" id="home">
           <div
             aria-hidden="true"
@@ -953,13 +934,7 @@ function CustomerPackagePage() {
           <WaveDivider fill="#0a2008" />
         </section>
       </main>
-
-      <SiteFooter
-        copyrightNote="Public-facing package selector for Irish golfers travelling to the Costa del Sol."
-        footerRef={footerRef}
-        intro="Golf Sol Ireland creates premium Costa del Sol golf packages for Irish golfers who want a cleaner route from first enquiry to final round."
-      />
-    </div>
+    </PublicSiteShell>
   )
 }
 

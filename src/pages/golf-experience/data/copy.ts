@@ -9,7 +9,7 @@ export const contactInfo = {
   tagline: 'IRISH-OWNED · COSTA DEL SOL GOLF SPECIALISTS',
   phoneDisplay: '+353 87 446 4766',
   phoneTel: '+353874464766',
-  email: 'hello@golfsolireland.ie'
+  email: 'hello@golfsolirl.com'
 } as const
 
 /** Alt text for the brand-composed Malaga hero raster (homepage). */
@@ -114,7 +114,7 @@ export const aboutCopy = {
   title: 'About GolfSol Ireland',
   paragraphs: [
     'GolfSol Ireland is an Irish-owned, Costa del Sol-based golf travel specialist built for Irish societies, four-balls and family groups travelling out of Dublin, Cork, Shannon and Belfast.',
-    'We are licensed and bonded as a tour operator in full compliance with Spanish and EU travel law, with airport meet-and-greet, golf-bag-friendly Mercedes transfers and pre-booked tee times wrapped into every package.',
+    'We run an Irish-owned, Costa del Sol-based planning service with airport meet-and-greet, golf-bag-friendly Mercedes transfers, and pre-booked tee times wrapped into every package.',
     'Our promise is simple — take care of every Irish group from the moment they land in Málaga to the moment we drop them back at the AGP terminal. Same crew, same standard, every single trip.'
   ],
   cta: 'LEARN MORE',
@@ -151,4 +151,4 @@ export const extrasCopy = {
 } as const
 
 export const aboutFooterCopy =
-  'Irish-owned and based on the Costa del Sol, GolfSol Ireland is a fully bonded golf travel specialist serving Irish societies, four-balls and family groups travelling to Spain’s Sol corridor.'
+  'Irish-owned and based on the Costa del Sol, GolfSol Ireland is a specialist golf travel planner serving Irish societies, four-balls and family groups travelling to Spain’s Sol corridor.'
