@@ -1,8 +1,9 @@
-import { useState, type FormEvent } from 'react'
+import { useMemo, useState, type FormEvent } from 'react'
 import { motion } from 'framer-motion'
-import { Send } from 'lucide-react'
+import { MessageCircle, Send } from 'lucide-react'
 import { GeButton } from './ge-button'
 import { contactInfo } from '../data/copy'
+import { buildWhatsAppHref, createTransportFormWhatsAppMessage } from '../lib/whatsapp'
 import { transportEnquiryFormCopy } from '../data/transport-service'
 
 const labelClass =
@@ -115,6 +116,21 @@ export function TransportHeroEnquiryForm() {
     Destination: destination.trim(),
     'Collection time / ASAP': asap ? 'ASAP' : collectionTime.trim()
   })
+  const whatsappHref = useMemo(
+    () =>
+      buildWhatsAppHref(
+        createTransportFormWhatsAppMessage({
+          fullName,
+          phoneWhatsApp,
+          passengers,
+          collectionPoint,
+          destination,
+          collectionTime,
+          asap
+        })
+      ),
+    [asap, collectionPoint, collectionTime, destination, fullName, passengers, phoneWhatsApp]
+  )
 
   return (
     <motion.div
@@ -284,10 +300,26 @@ export function TransportHeroEnquiryForm() {
               </p>
             ) : null}
 
-            <GeButton type="submit" variant="gs-green" size="md" className="w-full" disabled={status === 'submitting'}>
-              <Send className="h-4 w-4" aria-hidden />
-              {status === 'submitting' ? transportEnquiryFormCopy.sending : transportEnquiryFormCopy.submit}
-            </GeButton>
+            <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+              <GeButton type="submit" variant="gs-green" size="md" className="w-full" disabled={status === 'submitting'}>
+                <Send className="h-4 w-4" aria-hidden />
+                {status === 'submitting' ? transportEnquiryFormCopy.sending : transportEnquiryFormCopy.submit}
+              </GeButton>
+              <GeButton
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                variant="outline-gs-green"
+                size="md"
+                className="w-full"
+              >
+                <MessageCircle className="h-4 w-4" aria-hidden />
+                WhatsApp this route
+              </GeButton>
+            </div>
+            <p className="font-ge text-sm leading-6 text-ge-gray500">
+              This WhatsApp button updates live with your route, passenger count, and preferred collection timing.
+            </p>
           </form>
         )}
       </div>

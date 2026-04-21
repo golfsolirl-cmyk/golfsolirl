@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { contactInfo } from '../data/copy'
+import { buildWhatsAppHref, createHomeWhatsAppMessage } from '../lib/whatsapp'
 
 /**
  * Floating WhatsApp action button.
@@ -20,13 +21,12 @@ import { contactInfo } from '../data/copy'
  *     screaming for attention.
  */
 
-const WHATSAPP_NUMBER = contactInfo.phoneTel.replace(/[^0-9]/g, '')
-const WHATSAPP_MESSAGE = encodeURIComponent(
-  "Hi GolfSol Ireland — I'd like a quote for a Costa del Sol golf trip."
-)
-const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`
-
 const MOBILE_BREAKPOINT_PX = 768
+
+interface WhatsappFabProps {
+  readonly message?: string
+  readonly label?: string
+}
 
 function WhatsappGlyph({ className }: { readonly className?: string }) {
   return (
@@ -41,9 +41,13 @@ function WhatsappGlyph({ className }: { readonly className?: string }) {
   )
 }
 
-export function WhatsappFab() {
+export function WhatsappFab({
+  message = createHomeWhatsAppMessage(),
+  label = 'Chat on WhatsApp'
+}: WhatsappFabProps) {
   const [isVisible, setIsVisible] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const whatsappUrl = buildWhatsAppHref(message)
 
   // Track viewport size + scroll position to decide visibility.
   useEffect(() => {
@@ -86,7 +90,7 @@ export function WhatsappFab() {
       {isVisible && (
         <motion.a
           key="whatsapp-fab"
-          href={WHATSAPP_URL}
+          href={whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`Chat with GolfSol Ireland on WhatsApp at ${contactInfo.phoneDisplay}`}
@@ -111,7 +115,7 @@ export function WhatsappFab() {
 
           {/* Optional label that only appears on hover, desktop+ */}
           <span className="pointer-events-none absolute right-full mr-3 hidden whitespace-nowrap rounded-md border border-gs-gold/40 bg-gs-dark/95 px-3 py-1.5 font-ge text-xs font-extrabold uppercase tracking-[0.16em] text-gs-gold opacity-0 shadow-lg backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 md:block">
-            Chat on WhatsApp
+            {label}
           </span>
         </motion.a>
       )}

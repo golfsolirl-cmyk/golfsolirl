@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion'
 import { CheckCircle2, MessageCircle, Phone } from 'lucide-react'
 import { GeSection } from '../components/ge-section'
+import { SmartWhatsAppButtons } from '../components/smart-whatsapp-buttons'
 import { TransportHeroEnquiryForm } from '../components/transport-hero-enquiry-form'
 import { contactInfo } from '../data/copy'
 import { transportEnquireBlockCopy } from '../data/transport-service'
+import { buildWhatsAppHref, createTransportPageWhatsAppMessage, createTransportQuickActions } from '../lib/whatsapp'
 
 const fadeUp = {
   initial: { opacity: 0, y: 18 },
@@ -20,9 +22,8 @@ const fadeUp = {
  * journey section above it.
  */
 export function TransportEnquireBlock() {
-  const whatsappHref = `https://wa.me/${contactInfo.phoneTel.replace('+', '')}?text=${encodeURIComponent(
-    'Hi GolfSol — looking for a Costa del Sol golf transfer.'
-  )}`
+  const whatsappHref = buildWhatsAppHref(createTransportPageWhatsAppMessage())
+  const quickActions = createTransportQuickActions()
 
   return (
     <GeSection
@@ -73,6 +74,13 @@ export function TransportEnquireBlock() {
               </li>
             ))}
           </ul>
+
+          <SmartWhatsAppButtons
+            className="mt-8"
+            title="Use a one-tap transport brief"
+            body="Open WhatsApp with a route-specific prompt instead of starting from a blank message."
+            actions={quickActions}
+          />
         </motion.div>
 
         <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.1 }}>

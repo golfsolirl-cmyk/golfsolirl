@@ -5,8 +5,10 @@ import { cx } from '../../lib/utils'
 import { GeFooter } from './sections/ge-footer'
 import { GeNavbar } from './sections/ge-navbar'
 import { GeQuickEnquiryForm } from './components/ge-quick-enquiry-form'
+import { SmartWhatsAppButtons } from './components/smart-whatsapp-buttons'
 import { contactInfo } from './data/copy'
 import { getGeContentPage } from './data/content-pages'
+import { createContentPageWhatsAppPlan } from './lib/whatsapp'
 import { WhatsappFab } from './components/whatsapp-fab'
 
 function normalisePath() {
@@ -17,6 +19,17 @@ function normalisePath() {
 export function GeContentPage() {
   const path = useMemo(() => normalisePath(), [])
   const page = useMemo(() => getGeContentPage(path), [path])
+  const whatsappPlan = useMemo(
+    () =>
+      page
+        ? createContentPageWhatsAppPlan({
+            title: page.title,
+            interestPreset: page.interestPreset,
+            enquiryType: page.enquiryType
+          })
+        : null,
+    [page]
+  )
 
   if (!page) {
     return (
@@ -130,6 +143,14 @@ export function GeContentPage() {
                 enquiryType={page.enquiryType ?? 'booking'}
                 interestPreset={page.interestPreset}
               />
+              {whatsappPlan ? (
+                <SmartWhatsAppButtons
+                  className="mt-5"
+                  title={whatsappPlan.title}
+                  body={whatsappPlan.body}
+                  actions={whatsappPlan.actions}
+                />
+              ) : null}
               <div className="mt-5 rounded-2xl border border-ge-gray100 bg-white p-5 shadow-[0_8px_20px_rgba(6,59,42,0.06)]">
                 <p className="font-ge text-sm font-bold uppercase tracking-[0.16em] text-ge-orange">Prefer to call?</p>
                 <a
@@ -145,7 +166,7 @@ export function GeContentPage() {
         </section>
       </main>
       <GeFooter />
-      <WhatsappFab />
+      <WhatsappFab message={whatsappPlan?.fabMessage} />
     </div>
   )
 }

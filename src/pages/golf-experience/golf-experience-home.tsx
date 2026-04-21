@@ -11,6 +11,7 @@ import { GeHero } from './sections/hero'
 import { GeNavbar } from './sections/ge-navbar'
 import { GePaymentsIreland } from './sections/payments-ireland'
 import { WhatsappFab } from './components/whatsapp-fab'
+import { createHomeWhatsAppMessage } from './lib/whatsapp'
 
 export function GolfExperienceHome() {
   return (
@@ -38,7 +39,7 @@ export function GolfExperienceHome() {
 
       <GeFooter />
 
-      <WhatsappFab />
+      <WhatsappFab message={createHomeWhatsAppMessage()} />
     </div>
   )
 }

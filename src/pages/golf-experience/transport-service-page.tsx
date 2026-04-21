@@ -8,6 +8,7 @@ import { TransportHero } from './sections/transport-hero'
 import { TransportPromise } from './sections/transport-promise'
 import { TransportRouteStory } from './sections/transport-route-story'
 import { WhatsappFab } from './components/whatsapp-fab'
+import { createTransportPageWhatsAppMessage } from './lib/whatsapp'
 
 /**
  * Dedicated Transport service page — same shell as {@link GolfExperienceHome}
@@ -33,12 +34,12 @@ export function TransportServicePage() {
         <TransportRouteStory />
         <TransportFleet />
         <TransportEnquireBlock />
-        <GeFinalCta />
+        <GeFinalCta whatsappMessage={createTransportPageWhatsAppMessage()} />
       </main>
 
       <GeFooter />
 
-      <WhatsappFab />
+      <WhatsappFab message={createTransportPageWhatsAppMessage()} label="Chat about transport on WhatsApp" />
     </div>
   )
 }
