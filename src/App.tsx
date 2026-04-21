@@ -39,6 +39,8 @@ import {
   featuredCourses,
   footerSocialLinks,
   heroBackgroundImage,
+  heroDriverPortraitImage,
+  heroMercedesVanImage,
   heroCardHighlights,
   heroStats,
   hotels,
@@ -300,7 +302,24 @@ function App() {
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url(${heroBackgroundImage})` }}
           />
-          <div aria-hidden="true" className="absolute inset-0 bg-hero-overlay" />
+          <div
+            aria-hidden="true"
+            className="absolute inset-y-0 left-0 w-[56%] bg-cover bg-[position:22%_center] opacity-[0.86] mix-blend-screen md:w-[44%]"
+            style={{ backgroundImage: `url(${heroDriverPortraitImage})` }}
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-x-0 bottom-0 h-[52%] bg-cover bg-center opacity-[0.8] mix-blend-lighten md:right-[-6%] md:left-[22%] md:h-[56%]"
+            style={{ backgroundImage: `url(${heroMercedesVanImage})` }}
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-[linear-gradient(120deg,rgba(4,18,28,0.82)_0%,rgba(7,28,43,0.7)_36%,rgba(10,48,74,0.44)_62%,rgba(5,21,37,0.82)_100%)]"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-[radial-gradient(circle_at_22%_34%,rgba(255,184,61,0.14),transparent_34%),radial-gradient(circle_at_73%_66%,rgba(250,168,45,0.12),transparent_38%)]"
+          />
           <div aria-hidden="true" className="absolute inset-0 bg-hero-bottom" />
 
           <div aria-hidden="true" className="absolute right-[-120px] top-[-96px] h-80 w-80 rounded-full bg-fairway-500/20 blur-3xl md:h-96 md:w-96" />

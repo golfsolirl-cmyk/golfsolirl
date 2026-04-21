@@ -474,4 +474,10 @@ export const primaryActions = {
 } as const
 
 export const heroBackgroundImage =
-  'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1800&q=80'
+  'https://images.unsplash.com/photo-1693036872771-d296a42cb05c?auto=format&fit=crop&w=2200&q=80'
+
+export const heroDriverPortraitImage =
+  'https://images.unsplash.com/photo-1493662279732-06477fb36073?auto=format&fit=crop&w=1400&q=80'
+
+export const heroMercedesVanImage =
+  'https://images.unsplash.com/photo-1578557904035-f68542b3770e?auto=format&fit=crop&w=1800&q=80'
