@@ -6,6 +6,7 @@ import { AmbientGolfBall } from './ui/ambient-golf-ball'
 import { footerGroups, footerSocialLinks } from '../data/site-content'
 import { useAuth } from '../providers/auth-provider'
 import type { RefObject } from 'react'
+import { buildSmartWhatsAppHref, formatSourcePage, inferWhatsAppIntentFromPath } from '../lib/smart-whatsapp'
 
 // Crest lives in /workspace/public so Vite serves it at the site root.
 const golfsolCrest = '/golfsol-crest.svg'
@@ -27,6 +28,15 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
   const { session, profile, isLoading: authLoading } = useAuth()
   const showAuthFooter = integrationRegistry.supabase.enabled
   const dashboardHref = profile?.role === 'admin' ? '/dashboard/admin' : '/dashboard'
+  const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/'
+  const smartSocialWhatsAppHref = buildSmartWhatsAppHref({
+    baseHref: footerSocialLinks.find((item) => item.label === 'WhatsApp')?.href,
+    context: {
+      intent: inferWhatsAppIntentFromPath(currentPath),
+      sourcePage: formatSourcePage(currentPath),
+      topic: 'footer social link'
+    }
+  })
 
   return (
     <footer ref={footerRef} className="relative overflow-hidden border-t border-white/10 bg-forest-950 px-6 py-10 text-white">
@@ -64,13 +74,14 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
             <div className="mt-4 flex flex-wrap gap-3">
               {footerSocialLinks.map(({ label, href }) => {
                 const Icon = footerSocialIconMap[label]
+                const resolvedHref = label === 'WhatsApp' ? smartSocialWhatsAppHref : href
 
                 return (
                   <a
                     key={label}
                     aria-label={`Visit our ${label} page`}
                     className="group inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#dc5801]/25 bg-white/5 text-[#dc5801] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#dc5801]/65 hover:bg-[#dc5801] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dc5801] focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
-                    href={href}
+                    href={resolvedHref}
                     rel="noreferrer"
                     target="_blank"
                   >

@@ -1,7 +1,8 @@
 import { useMemo, useState, type FormEvent } from 'react'
-import { Send } from 'lucide-react'
+import { MessageCircle, Send } from 'lucide-react'
 import { GeButton } from './ge-button'
 import { contactInfo } from '../data/copy'
+import { buildSmartWhatsAppHref, formatSourcePage } from '../../../lib/smart-whatsapp'
 
 interface GeQuickEnquiryFormProps {
   readonly title: string
@@ -98,6 +99,55 @@ export function GeQuickEnquiryForm({
     travelPartyType,
     travelDates,
     groupSize,
+    visitMonth
+  ])
+
+  const smartWhatsAppHref = useMemo(() => {
+    const sourcePath = typeof window !== 'undefined' ? window.location.pathname : '/'
+    const sourcePage = formatSourcePage(sourcePath)
+    const topic = isLegalPage
+      ? legalTopic
+      : isFaqPage || isSupportPage
+        ? questionType
+        : isNewsletterPage
+          ? updateType
+          : isTestimonialPage
+            ? travelPartyType
+            : interestPreset
+    const travelContext = travelDates.trim() || visitMonth.trim()
+
+    return buildSmartWhatsAppHref({
+      phoneNumber: contactInfo.phoneTel,
+      context: {
+        intent: isNewsletterPage
+          ? 'newsletter'
+          : isTestimonialPage
+            ? 'testimonial'
+            : isLegalPage || isSupportPage || isFaqPage
+              ? 'support'
+              : 'booking',
+        sourcePage,
+        topic,
+        groupSize: groupSize.trim(),
+        travelDates: travelContext,
+        notes: notes.trim() || contextSummary
+      }
+    })
+  }, [
+    contextSummary,
+    groupSize,
+    interestPreset,
+    isFaqPage,
+    isLegalPage,
+    isNewsletterPage,
+    isSupportPage,
+    isTestimonialPage,
+    legalTopic,
+    notes,
+    questionType,
+    travelDates,
+    travelPartyType,
+    updateType,
     visitMonth
   ])
 
@@ -324,6 +374,10 @@ export function GeQuickEnquiryForm({
           <GeButton className="w-full" type="submit" variant="gs-gold" size="lg" disabled={status === 'submitting'}>
             <Send className="h-4 w-4" aria-hidden />
             {status === 'submitting' ? 'Sending...' : 'Send request'}
+          </GeButton>
+          <GeButton className="w-full" href={smartWhatsAppHref} target="_blank" rel="noreferrer" variant="outline-gs-green" size="lg">
+            <MessageCircle className="h-4 w-4" aria-hidden />
+            Send by WhatsApp
           </GeButton>
         </form>
       )}

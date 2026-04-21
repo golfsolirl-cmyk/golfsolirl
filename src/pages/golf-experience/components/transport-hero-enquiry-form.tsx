@@ -1,9 +1,10 @@
-import { useState, type FormEvent } from 'react'
+import { useMemo, useState, type FormEvent } from 'react'
 import { motion } from 'framer-motion'
-import { Send } from 'lucide-react'
+import { MessageCircle, Send } from 'lucide-react'
 import { GeButton } from './ge-button'
 import { contactInfo } from '../data/copy'
 import { transportEnquiryFormCopy } from '../data/transport-service'
+import { buildSmartWhatsAppHref, formatSourcePage } from '../../../lib/smart-whatsapp'
 
 const labelClass =
   'mb-1 block font-ge text-sm font-bold uppercase tracking-[0.18em] text-ge-gray500 sm:text-[0.85rem]'
@@ -34,6 +35,22 @@ export function TransportHeroEnquiryForm() {
   const [asap, setAsap] = useState(false)
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const smartWhatsAppHref = useMemo(() => {
+    const timing = asap ? 'ASAP (first available driver)' : collectionTime.trim()
+    return buildSmartWhatsAppHref({
+      phoneNumber: contactInfo.phoneTel,
+      context: {
+        intent: 'transport',
+        sourcePage: formatSourcePage('/services/transport'),
+        routeFrom: collectionPoint.trim(),
+        routeTo: destination.trim(),
+        passengers,
+        collectionTime: timing,
+        notes: fullName.trim() ? `Name: ${fullName.trim()}` : ''
+      }
+    })
+  }, [asap, collectionPoint, collectionTime, destination, fullName, passengers])
 
   const resetIdle = () => {
     setStatus('idle')
@@ -137,6 +154,17 @@ export function TransportHeroEnquiryForm() {
             <p className="mt-3 font-ge text-base leading-7 text-ge-gray500 sm:text-[1rem]">{transportEnquiryFormCopy.successBody}</p>
             <GeButton href={`mailto:${contactInfo.email}`} variant="outline-gs-green" size="sm" className="mt-6">
               Email us directly
+            </GeButton>
+            <GeButton
+              href={smartWhatsAppHref}
+              target="_blank"
+              rel="noreferrer"
+              variant="gs-green"
+              size="sm"
+              className="mt-3"
+            >
+              <MessageCircle className="h-4 w-4" aria-hidden />
+              Continue on WhatsApp
             </GeButton>
           </div>
         ) : (
@@ -287,6 +315,17 @@ export function TransportHeroEnquiryForm() {
             <GeButton type="submit" variant="gs-green" size="md" className="w-full" disabled={status === 'submitting'}>
               <Send className="h-4 w-4" aria-hidden />
               {status === 'submitting' ? transportEnquiryFormCopy.sending : transportEnquiryFormCopy.submit}
+            </GeButton>
+            <GeButton
+              href={smartWhatsAppHref}
+              target="_blank"
+              rel="noreferrer"
+              variant="outline-gs-green"
+              size="md"
+              className="w-full"
+            >
+              <MessageCircle className="h-4 w-4" aria-hidden />
+              WhatsApp this transfer request
             </GeButton>
           </form>
         )}

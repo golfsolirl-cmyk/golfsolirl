@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { contactInfo } from '../data/copy'
+import { buildSmartWhatsAppHref, formatSourcePage, inferWhatsAppIntentFromPath } from '../../../lib/smart-whatsapp'
 
 /**
  * Floating WhatsApp action button.
@@ -21,10 +22,6 @@ import { contactInfo } from '../data/copy'
  */
 
 const WHATSAPP_NUMBER = contactInfo.phoneTel.replace(/[^0-9]/g, '')
-const WHATSAPP_MESSAGE = encodeURIComponent(
-  "Hi GolfSol Ireland — I'd like a quote for a Costa del Sol golf trip."
-)
-const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`
 
 const MOBILE_BREAKPOINT_PX = 768
 
@@ -44,6 +41,16 @@ function WhatsappGlyph({ className }: { readonly className?: string }) {
 export function WhatsappFab() {
   const [isVisible, setIsVisible] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const path = typeof window !== 'undefined' ? window.location.pathname : '/'
+  const intent = inferWhatsAppIntentFromPath(path)
+  const whatsappHref = buildSmartWhatsAppHref({
+    phoneNumber: WHATSAPP_NUMBER,
+    context: {
+      intent,
+      sourcePage: formatSourcePage(path),
+      topic: intent === 'support' ? 'website support' : 'Costa del Sol golf trip'
+    }
+  })
 
   // Track viewport size + scroll position to decide visibility.
   useEffect(() => {
@@ -86,7 +93,7 @@ export function WhatsappFab() {
       {isVisible && (
         <motion.a
           key="whatsapp-fab"
-          href={WHATSAPP_URL}
+          href={whatsappHref}
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`Chat with GolfSol Ireland on WhatsApp at ${contactInfo.phoneDisplay}`}

@@ -9,6 +9,7 @@ import { AnimatedStepKicker } from '../components/ui/section-header'
 import { WaveDivider } from '../components/ui/wave-divider'
 import { getFooterArticlePage } from '../data/footer-article-pages'
 import { footerSocialLinks, heroBackgroundImage, navLinks, primaryActions } from '../data/site-content'
+import { buildSmartWhatsAppHref, formatSourcePage } from '../lib/smart-whatsapp'
 import { cx } from '../lib/utils'
 import { CookieBanner, FloatingWhatsAppButton } from './packages'
 
@@ -29,7 +30,15 @@ function FooterArticlePage() {
   }, [])
 
   const page = useMemo(() => getFooterArticlePage(path), [path])
-  const whatsAppHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
+  const baseWhatsAppHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
+  const whatsAppHref = buildSmartWhatsAppHref({
+    baseHref: baseWhatsAppHref,
+    context: {
+      intent: 'support',
+      sourcePage: formatSourcePage(path),
+      topic: page?.heroTitle ?? 'article question'
+    }
+  })
 
   useEffect(() => {
     if (!page) {

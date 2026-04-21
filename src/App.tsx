@@ -60,6 +60,7 @@ import {
   writeLandingMapToSessionStorage,
   type CourseHotelPickerValue
 } from './data/coastal-golf-data'
+import { buildSmartWhatsAppHref, formatSourcePage } from './lib/smart-whatsapp'
 
 const CourseHotelMapPicker = lazy(async () => {
   const m = await import('./components/course-hotel-map-picker')
@@ -132,7 +133,18 @@ function App() {
   const [hasAcceptedCookies, setHasAcceptedCookies] = useState(true)
   const [isFooterInView, setIsFooterInView] = useState(false)
   const footerRef = useRef<HTMLElement | null>(null)
-  const whatsAppHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
+  const baseWhatsAppHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
+  const whatsAppHref = buildSmartWhatsAppHref({
+    baseHref: baseWhatsAppHref,
+    context: {
+      intent: 'package',
+      sourcePage: formatSourcePage('/'),
+      groupSize: quickGroupSize,
+      nights: quickNights,
+      rounds: quickRounds,
+      transferName: quickTransfer
+    }
+  })
 
   const filteredHotels = useMemo(() => {
     if (selectedHotelTier === 'all') {

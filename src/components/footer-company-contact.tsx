@@ -1,8 +1,17 @@
 import { ExternalLink, MapPin, Phone } from 'lucide-react'
 import { FaWhatsapp } from 'react-icons/fa6'
 import { companyContact } from '../data/site-content'
+import { buildSmartWhatsAppHref, formatSourcePage } from '../lib/smart-whatsapp'
 
 const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(companyContact.mapsQuery)}`
+const footerWhatsAppHref = buildSmartWhatsAppHref({
+  baseHref: companyContact.whatsappHref,
+  context: {
+    intent: 'support',
+    sourcePage: formatSourcePage('/footer'),
+    topic: 'general trip question'
+  }
+})
 
 export function FooterCompanyContact() {
   return (
@@ -58,7 +67,7 @@ export function FooterCompanyContact() {
                 <a
                   aria-label={`Message Golf Sol Ireland on WhatsApp at ${companyContact.phoneDisplay}`}
                   className="group inline-flex min-h-11 items-center gap-2.5 rounded-full border border-white/25 bg-white/10 px-5 py-3 text-base font-semibold text-white transition-all hover:border-white/40 hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
-                  href={companyContact.whatsappHref}
+                  href={footerWhatsAppHref}
                   rel="noreferrer"
                   target="_blank"
                 >

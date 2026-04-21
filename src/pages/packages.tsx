@@ -18,6 +18,7 @@ import { Logo, ShamrockIcon } from '../components/ui/logo'
 import { AnimatedStepKicker, SectionHeader } from '../components/ui/section-header'
 import { WaveDivider } from '../components/ui/wave-divider'
 import { footerSocialLinks, heroBackgroundImage } from '../data/site-content'
+import { buildSmartWhatsAppHref, formatSourcePage } from '../lib/smart-whatsapp'
 import { cx } from '../lib/utils'
 
 const packagePageLinks = ['Packages', 'Stays', 'Pricing', 'Enquire'] as const
@@ -125,10 +126,23 @@ function PackageAdminPage() {
   const [adminAccessCode, setAdminAccessCode] = useState('')
   const [loginError, setLoginError] = useState('')
   const footerRef = useRef<HTMLElement | null>(null)
-  const whatsAppHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
-
   const selectedAccommodation =
     accommodationOptions.find((option) => option.name === selectedAccommodationName) ?? accommodationOptions[1]
+  const baseWhatsAppHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
+  const sourcePage = formatSourcePage('/packages-admin')
+  const whatsAppHref = buildSmartWhatsAppHref({
+    baseHref: baseWhatsAppHref,
+    context: {
+      intent: 'package',
+      sourcePage,
+      groupSize,
+      nights,
+      rounds,
+      stayName: selectedAccommodation.name,
+      transferName: 'Custom transfer pricing',
+      packageStyle: 'Admin package calculator'
+    }
+  })
 
   const pricingSummary = useMemo(() => {
     const accommodationPerPerson = selectedAccommodation.pricePerPersonPerNight * nights
@@ -922,10 +936,12 @@ function MiniSummaryCard({ label, value }: { readonly label: string; readonly va
 
 export function FloatingWhatsAppButton({
   href,
-  hidden
+  hidden,
+  ariaLabel
 }: {
   readonly href: string
   readonly hidden: boolean
+  readonly ariaLabel?: string
 }) {
   return (
     <motion.a
@@ -940,7 +956,7 @@ export function FloatingWhatsAppButton({
           'drop-shadow(0 14px 28px rgba(22,58,19,0.18))'
         ]
       }}
-      aria-label="Chat with us on WhatsApp"
+      aria-label={ariaLabel ?? 'Chat with us on WhatsApp'}
       className={cx(
         'group fixed bottom-4 right-3 z-[60] inline-flex items-center gap-2 overflow-hidden rounded-full bg-white/72 px-2.5 py-2.5 pr-2 shadow-soft backdrop-blur-md transition-all duration-300 hover:bg-white/82 sm:bottom-5 sm:right-4 sm:pr-4',
         hidden && 'pointer-events-none'

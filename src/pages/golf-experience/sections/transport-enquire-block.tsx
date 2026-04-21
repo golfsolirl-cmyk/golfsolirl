@@ -4,6 +4,7 @@ import { GeSection } from '../components/ge-section'
 import { TransportHeroEnquiryForm } from '../components/transport-hero-enquiry-form'
 import { contactInfo } from '../data/copy'
 import { transportEnquireBlockCopy } from '../data/transport-service'
+import { buildSmartWhatsAppHref, formatSourcePage } from '../../../lib/smart-whatsapp'
 
 const fadeUp = {
   initial: { opacity: 0, y: 18 },
@@ -20,9 +21,16 @@ const fadeUp = {
  * journey section above it.
  */
 export function TransportEnquireBlock() {
-  const whatsappHref = `https://wa.me/${contactInfo.phoneTel.replace('+', '')}?text=${encodeURIComponent(
-    'Hi GolfSol — looking for a Costa del Sol golf transfer.'
-  )}`
+  const whatsappHref = buildSmartWhatsAppHref({
+    phoneNumber: contactInfo.phoneTel,
+    context: {
+      intent: 'transport',
+      sourcePage: formatSourcePage('/services/transport'),
+      routeFrom: 'Malaga Airport (AGP)',
+      routeTo: 'Costa del Sol hotel / golf course',
+      passengers: '1-8'
+    }
+  })
 
   return (
     <GeSection

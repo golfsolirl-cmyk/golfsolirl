@@ -25,9 +25,12 @@ import {
 import { footerSocialLinks, heroBackgroundImage } from '../data/site-content'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { buildPackageConfig, defaultLabelForBuild } from '../lib/package-build'
+import { buildSmartWhatsAppHref, formatSourcePage } from '../lib/smart-whatsapp'
 import { cx } from '../lib/utils'
 import { useAuth } from '../providers/auth-provider'
 import { CookieBanner, FloatingWhatsAppButton, formatEuro } from './packages'
+
+const PACKAGES_SOURCE_PAGE = formatSourcePage('/packages')
 
 const CourseHotelMapPicker = lazy(async () => {
   const m = await import('../components/course-hotel-map-picker')
@@ -343,20 +346,21 @@ function CustomerPackagePage() {
   ])
 
   const packageEnquiryWhatsAppHref = useMemo(() => {
-    const WHATSAPP_TEXT_LIMIT = 1800
-    let text = packageEnquirySummary
-    if (text.length > WHATSAPP_TEXT_LIMIT) {
-      text = `${text.slice(0, WHATSAPP_TEXT_LIMIT - 3)}...`
-    }
-    try {
-      const u = new URL(whatsAppHref)
-      u.searchParams.set('text', text)
-      return u.toString()
-    } catch {
-      const sep = whatsAppHref.includes('?') ? '&' : '?'
-      return `${whatsAppHref}${sep}text=${encodeURIComponent(text)}`
-    }
-  }, [packageEnquirySummary, whatsAppHref])
+    return buildSmartWhatsAppHref({
+      baseHref: whatsAppHref,
+      context: {
+        intent: 'package',
+        sourcePage: formatSourcePage('/packages'),
+        groupSize,
+        nights,
+        rounds,
+        packageStyle: selectedPackage.name,
+        stayName: selectedStay.name,
+        transferName: selectedTransfer.name,
+        notes: packageEnquirySummary
+      }
+    })
+  }, [groupSize, nights, packageEnquirySummary, rounds, selectedPackage.name, selectedStay.name, selectedTransfer.name, whatsAppHref])
 
   const packageEnquiryMailtoHref = useMemo(() => {
     const subject = `Costa del Sol package enquiry — ${selectedPackage.name}`
