@@ -1,7 +1,7 @@
 /**
  * Long-form copy for the GolfSol Ireland homepage.
- * Voice: Irish-owned, Costa del Sol specialist. We do not market golf in
- * Portugal or Morocco — content here is laser-focused on the Sol corridor
+ * Voice: Irish-owned, Costa del Sol specialist. We do not market golf outside
+ * this corridor — content here is laser-focused on the Sol corridor
  * (Málaga → Sotogrande) where Irish groups travel most.
  */
 

@@ -46,7 +46,7 @@ export function GeContentPage() {
             <img
               src={page.heroImage}
               alt={page.heroAlt}
-              className="h-[40vh] min-h-[280px] w-full object-cover object-center md:h-[46vh] md:min-h-[380px]"
+              className="h-[42vh] min-h-[300px] w-full object-cover object-[center_38%] md:h-[50vh] md:min-h-[420px] lg:h-[54vh]"
               width={2200}
               height={1100}
             />
