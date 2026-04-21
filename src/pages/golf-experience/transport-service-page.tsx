@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { GeFinalCta } from './sections/final-cta'
 import { GeFooter } from './sections/ge-footer'
 import { GeNavbar } from './sections/ge-navbar'
@@ -8,6 +9,7 @@ import { TransportHero } from './sections/transport-hero'
 import { TransportPromise } from './sections/transport-promise'
 import { TransportRouteStory } from './sections/transport-route-story'
 import { WhatsappFab } from './components/whatsapp-fab'
+import { defaultTransportEnquiryDraft, type TransportEnquiryDraft } from '../../lib/smart-enquiry'
 
 /**
  * Dedicated Transport service page — same shell as {@link GolfExperienceHome}
@@ -16,6 +18,8 @@ import { WhatsappFab } from './components/whatsapp-fab'
  * final CTA.
  */
 export function TransportServicePage() {
+  const [transportDraft, setTransportDraft] = useState<TransportEnquiryDraft>(defaultTransportEnquiryDraft)
+
   return (
     <div className="ge-page min-h-screen overflow-x-hidden bg-white">
       <a
@@ -27,18 +31,24 @@ export function TransportServicePage() {
       <GeNavbar />
 
       <main id="main">
-        <TransportHero />
+        <TransportHero transportDraft={transportDraft} />
         <TransportPromise />
         <GePaymentsIreland />
         <TransportRouteStory />
         <TransportFleet />
-        <TransportEnquireBlock />
-        <GeFinalCta />
+        <TransportEnquireBlock transportDraft={transportDraft} onTransportDraftChange={setTransportDraft} />
+        <GeFinalCta
+          pathname="/services/transport"
+          pageTitle="Transport"
+          interestPreset="Transport planning"
+          enquiryType="booking"
+          transportDraft={transportDraft}
+        />
       </main>
 
       <GeFooter />
 
-      <WhatsappFab />
+      <WhatsappFab transportDraft={transportDraft} />
     </div>
   )
 }

@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion'
-import { CheckCircle2, MessageCircle, Phone } from 'lucide-react'
+import { CheckCircle2, Phone } from 'lucide-react'
 import { GeSection } from '../components/ge-section'
 import { TransportHeroEnquiryForm } from '../components/transport-hero-enquiry-form'
+import { SmartWhatsAppPanel } from '../components/smart-whatsapp-panel'
 import { contactInfo } from '../data/copy'
 import { transportEnquireBlockCopy } from '../data/transport-service'
+import { getSmartPageWhatsAppConfig, type TransportEnquiryDraft } from '../../../lib/smart-enquiry'
 
 const fadeUp = {
   initial: { opacity: 0, y: 18 },
@@ -12,6 +14,11 @@ const fadeUp = {
   transition: { duration: 0.55, ease: 'easeOut' }
 } as const
 
+interface TransportEnquireBlockProps {
+  readonly transportDraft: TransportEnquiryDraft
+  readonly onTransportDraftChange: (draft: TransportEnquiryDraft) => void
+}
+
 /**
  * Bottom-of-page enquiry block — left column carries the reassurance copy,
  * direct contact buttons (call + WhatsApp), and three confidence ticks.
@@ -19,10 +26,17 @@ const fadeUp = {
  * the gold-cornered form card pops without competing with the dark green
  * journey section above it.
  */
-export function TransportEnquireBlock() {
-  const whatsappHref = `https://wa.me/${contactInfo.phoneTel.replace('+', '')}?text=${encodeURIComponent(
-    'Hi GolfSol — looking for a Costa del Sol golf transfer.'
-  )}`
+export function TransportEnquireBlock({
+  transportDraft,
+  onTransportDraftChange
+}: TransportEnquireBlockProps) {
+  const smartWhatsAppConfig = getSmartPageWhatsAppConfig({
+    pathname: '/services/transport',
+    pageTitle: 'Transport',
+    interestPreset: 'Transport planning',
+    enquiryType: 'booking',
+    transportDraft
+  })
 
   return (
     <GeSection
@@ -52,13 +66,10 @@ export function TransportEnquireBlock() {
               <span>{contactInfo.phoneDisplay}</span>
             </a>
             <a
-              href={whatsappHref}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2.5 rounded-xl border-2 border-gs-green bg-white px-5 font-ge text-base font-bold uppercase tracking-[0.12em] text-gs-green transition-all hover:bg-gs-green hover:text-white sm:text-[0.9rem]"
+              href="#transport-enquiry"
+              className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-xl border-2 border-gs-green bg-white px-5 font-ge text-base font-bold uppercase tracking-[0.12em] text-gs-green transition-all hover:bg-gs-green hover:text-white sm:text-[0.9rem]"
             >
-              <MessageCircle className="h-4 w-4" aria-hidden />
-              WhatsApp us
+              Build the transfer brief
             </a>
           </div>
 
@@ -73,10 +84,20 @@ export function TransportEnquireBlock() {
               </li>
             ))}
           </ul>
+
+          <SmartWhatsAppPanel
+            className="mt-8"
+            title="Smart WhatsApp shortcuts for transport"
+            intro="Use the live transfer brief or jump into a prebuilt enquiry that already sounds like a serious trip request."
+            primaryLabel={smartWhatsAppConfig.primaryLabel}
+            primaryHelper={smartWhatsAppConfig.primaryHelper}
+            primaryMessage={smartWhatsAppConfig.primaryMessage}
+            quickActions={smartWhatsAppConfig.quickActions}
+          />
         </motion.div>
 
         <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.1 }}>
-          <TransportHeroEnquiryForm />
+          <TransportHeroEnquiryForm draft={transportDraft} onDraftChange={onTransportDraftChange} />
         </motion.div>
       </div>
     </GeSection>

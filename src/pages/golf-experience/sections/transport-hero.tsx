@@ -1,9 +1,12 @@
+import { useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, ChevronDown, Clock3, PlaneLanding, Phone, ShieldCheck } from 'lucide-react'
+import { ArrowRight, ChevronDown, Clock3, MessageCircle, Phone, PlaneLanding, ShieldCheck } from 'lucide-react'
 import { GeButton } from '../components/ge-button'
 import { contactInfo } from '../data/copy'
 import { transportHeroCopy } from '../data/transport-service'
 import { cx } from '../../../lib/utils'
+import { getSmartPageWhatsAppConfig, type TransportEnquiryDraft } from '../../../lib/smart-enquiry'
+import { buildWhatsAppNumberHref } from '../../../lib/whatsapp'
 
 const fadeUp = {
   initial: { opacity: 0, y: 18 },
@@ -17,7 +20,11 @@ const fadeUp = {
  * frame chrome consistent with the rest of the site, and a chevron pointing
  * to the promise section. Same navbar spacer as homepage hero.
  */
-export function TransportHero() {
+interface TransportHeroProps {
+  readonly transportDraft?: TransportEnquiryDraft
+}
+
+export function TransportHero({ transportDraft }: TransportHeroProps = {}) {
   const mobileHighlights = [
     { icon: PlaneLanding, label: 'Flight tracking from Ireland' },
     { icon: ShieldCheck, label: 'Golf-bag friendly Mercedes fleet' },
@@ -25,6 +32,21 @@ export function TransportHero() {
   ] as const
 
   const isStripHero = transportHeroCopy.eyebrow.trim().toLowerCase() !== ''
+  const smartWhatsAppConfig = useMemo(
+    () =>
+      getSmartPageWhatsAppConfig({
+        pathname: '/services/transport',
+        pageTitle: 'Transport',
+        interestPreset: 'Transport planning',
+        enquiryType: 'booking',
+        transportDraft
+      }),
+    [transportDraft]
+  )
+  const heroWhatsAppHref = useMemo(
+    () => buildWhatsAppNumberHref(contactInfo.phoneTel, smartWhatsAppConfig.primaryMessage),
+    [smartWhatsAppConfig.primaryMessage]
+  )
 
   return (
     <section
@@ -86,9 +108,9 @@ export function TransportHero() {
                   {transportHeroCopy.primaryCta}
                   <ArrowRight className="h-4 w-4" aria-hidden />
                 </GeButton>
-                <GeButton href={`tel:${contactInfo.phoneTel}`} variant="outline-gs-white" size="lg" className="w-full">
-                  <Phone className="h-4 w-4" aria-hidden />
-                  {contactInfo.phoneDisplay}
+                <GeButton href={heroWhatsAppHref} target="_blank" rel="noreferrer" variant="outline-gs-white" size="lg" className="w-full">
+                  <MessageCircle className="h-4 w-4" aria-hidden />
+                  {transportHeroCopy.secondaryCta}
                 </GeButton>
               </div>
 
@@ -151,9 +173,13 @@ export function TransportHero() {
                     {transportHeroCopy.primaryCta}
                     <ArrowRight className="h-4 w-4" aria-hidden />
                   </GeButton>
+                  <GeButton href={heroWhatsAppHref} target="_blank" rel="noreferrer" variant="outline-gs-white" size="lg">
+                    <MessageCircle className="h-4 w-4" aria-hidden />
+                    {transportHeroCopy.secondaryCta}
+                  </GeButton>
                   <GeButton href={`tel:${contactInfo.phoneTel}`} variant="outline-gs-white" size="lg">
                     <Phone className="h-4 w-4" aria-hidden />
-                    {contactInfo.phoneDisplay}
+                    Call us
                   </GeButton>
                 </div>
 

@@ -5,9 +5,11 @@ import { cx } from '../../lib/utils'
 import { GeFooter } from './sections/ge-footer'
 import { GeNavbar } from './sections/ge-navbar'
 import { GeQuickEnquiryForm } from './components/ge-quick-enquiry-form'
+import { SmartWhatsAppPanel } from './components/smart-whatsapp-panel'
 import { contactInfo } from './data/copy'
 import { getGeContentPage } from './data/content-pages'
 import { WhatsappFab } from './components/whatsapp-fab'
+import { getSmartPageWhatsAppConfig } from '../../lib/smart-enquiry'
 
 function normalisePath() {
   const path = window.location.pathname.replace(/\/+$/, '')
@@ -17,6 +19,18 @@ function normalisePath() {
 export function GeContentPage() {
   const path = useMemo(() => normalisePath(), [])
   const page = useMemo(() => getGeContentPage(path), [path])
+  const smartWhatsAppConfig = useMemo(
+    () =>
+      page
+        ? getSmartPageWhatsAppConfig({
+            pathname: path,
+            pageTitle: page.title,
+            interestPreset: page.interestPreset,
+            enquiryType: page.enquiryType
+          })
+        : null,
+    [page, path]
+  )
 
   if (!page) {
     return (
@@ -130,6 +144,17 @@ export function GeContentPage() {
                 enquiryType={page.enquiryType ?? 'booking'}
                 interestPreset={page.interestPreset}
               />
+              {smartWhatsAppConfig ? (
+                <SmartWhatsAppPanel
+                  className="mt-5"
+                  title="Smart WhatsApp shortcuts"
+                  intro="Open a drafted message that already matches the page you are reading."
+                  primaryLabel={smartWhatsAppConfig.primaryLabel}
+                  primaryHelper={smartWhatsAppConfig.primaryHelper}
+                  primaryMessage={smartWhatsAppConfig.primaryMessage}
+                  quickActions={smartWhatsAppConfig.quickActions}
+                />
+              ) : null}
               <div className="mt-5 rounded-2xl border border-ge-gray100 bg-white p-5 shadow-[0_8px_20px_rgba(6,59,42,0.06)]">
                 <p className="font-ge text-sm font-bold uppercase tracking-[0.16em] text-ge-orange">Prefer to call?</p>
                 <a

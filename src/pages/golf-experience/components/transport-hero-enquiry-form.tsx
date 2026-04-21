@@ -1,9 +1,16 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { motion } from 'framer-motion'
-import { Send } from 'lucide-react'
+import { MessageCircle, Send } from 'lucide-react'
 import { GeButton } from './ge-button'
 import { contactInfo } from '../data/copy'
 import { transportEnquiryFormCopy } from '../data/transport-service'
+import {
+  buildTransportWhatsAppMessage,
+  defaultTransportEnquiryDraft,
+  type TransportEnquiryDraft,
+  type TransportServiceType
+} from '../../../lib/smart-enquiry'
+import { buildWhatsAppNumberHref } from '../../../lib/whatsapp'
 
 const labelClass =
   'mb-1 block font-ge text-sm font-bold uppercase tracking-[0.18em] text-ge-gray500 sm:text-[0.85rem]'
@@ -18,22 +25,67 @@ function buildMailtoFallback(body: Record<string, string>) {
   return `mailto:${contactInfo.email}?subject=${subject}&body=${mailBody}`
 }
 
+const serviceTypeOptions: readonly {
+  readonly label: TransportServiceType
+  readonly helper: string
+}[] = [
+  {
+    label: 'Airport transfer',
+    helper: 'Málaga AGP to hotel, villa, or resort'
+  },
+  {
+    label: 'Golf-day shuttle',
+    helper: 'Hotel-to-course routing with return legs'
+  },
+  {
+    label: 'Full-week driver support',
+    helper: 'Joined-up transport across the trip'
+  }
+]
+
+const passengerOptions = [1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 16, 24, 32] as const
+
+interface TransportHeroEnquiryFormProps {
+  readonly draft?: TransportEnquiryDraft
+  readonly onDraftChange?: (draft: TransportEnquiryDraft) => void
+}
+
 /**
  * Solid light enquiry card — sits inside {@link TransportEnquireBlock} at the
  * bottom of the transport service page. Posts to the same /api/enquiry route
  * as the homepage form.
  */
-export function TransportHeroEnquiryForm() {
+export function TransportHeroEnquiryForm({
+  draft = defaultTransportEnquiryDraft,
+  onDraftChange
+}: TransportHeroEnquiryFormProps = {}) {
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [phoneWhatsApp, setPhoneWhatsApp] = useState('')
-  const [passengers, setPassengers] = useState(4)
-  const [collectionPoint, setCollectionPoint] = useState('')
-  const [destination, setDestination] = useState('')
-  const [collectionTime, setCollectionTime] = useState('')
-  const [asap, setAsap] = useState(false)
+  const [serviceType, setServiceType] = useState<TransportServiceType>(draft.serviceType)
+  const [passengers, setPassengers] = useState(draft.passengers)
+  const [collectionPoint, setCollectionPoint] = useState(draft.collectionPoint)
+  const [destination, setDestination] = useState(draft.destination)
+  const [collectionTime, setCollectionTime] = useState(draft.collectionTime)
+  const [asap, setAsap] = useState(draft.asap)
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const transportDraft = useMemo<TransportEnquiryDraft>(
+    () => ({
+      serviceType,
+      passengers,
+      collectionPoint,
+      destination,
+      collectionTime,
+      asap
+    }),
+    [asap, collectionPoint, collectionTime, destination, passengers, serviceType]
+  )
+
+  useEffect(() => {
+    onDraftChange?.(transportDraft)
+  }, [onDraftChange, transportDraft])
 
   const resetIdle = () => {
     setStatus('idle')
@@ -60,7 +112,7 @@ export function TransportHeroEnquiryForm() {
       setStatus('error')
       return
     }
-    if (passengers < 1 || passengers > 16) {
+    if (passengers < 1 || passengers > 32) {
       setErrorMessage(transportEnquiryFormCopy.validationPassengers)
       setStatus('error')
       return
@@ -73,7 +125,7 @@ export function TransportHeroEnquiryForm() {
 
     const timing = asap ? 'ASAP (first available driver)' : collectionTime.trim()
     const interest = [
-      'TRANSPORT PAGE — transfer request',
+      `TRANSPORT PAGE — ${serviceType}`,
       `Passengers: ${passengers}`,
       `Collection point: ${from}`,
       `Destination: ${to}`,
@@ -110,11 +162,17 @@ export function TransportHeroEnquiryForm() {
     Name: fullName.trim(),
     Email: email.trim(),
     Phone: phoneWhatsApp.trim(),
+    Service: serviceType,
     Passengers: String(passengers),
     'Collection point': collectionPoint.trim(),
     Destination: destination.trim(),
     'Collection time / ASAP': asap ? 'ASAP' : collectionTime.trim()
   })
+
+  const whatsappHref = useMemo(
+    () => buildWhatsAppNumberHref(contactInfo.phoneTel, buildTransportWhatsAppMessage(transportDraft)),
+    [transportDraft]
+  )
 
   return (
     <motion.div
@@ -194,6 +252,36 @@ export function TransportHeroEnquiryForm() {
                 />
               </label>
 
+              <fieldset className="min-w-0 space-y-2 border-0 p-0 md:col-span-2">
+                <legend className={`${labelClass} w-full`}>{transportEnquiryFormCopy.serviceTypeLabel}</legend>
+                <div className="grid gap-2 sm:grid-cols-3">
+                  {serviceTypeOptions.map((option) => {
+                    const isActive = serviceType === option.label
+
+                    return (
+                      <button
+                        key={option.label}
+                        type="button"
+                        onClick={() => setServiceType(option.label)}
+                        className={`rounded-xl border px-3 py-3 text-left transition-all ${
+                          isActive
+                            ? 'border-gs-green bg-gs-green text-white shadow-[0_12px_28px_rgba(6,59,42,0.18)]'
+                            : 'border-ge-gray200 bg-ge-gray50 text-gs-dark hover:border-gs-green/45 hover:bg-white'
+                        }`}
+                      >
+                        <span className="block font-ge text-sm font-bold uppercase tracking-[0.12em]">{option.label}</span>
+                        <span className={`mt-1 block font-ge text-sm leading-5 ${isActive ? 'text-white/80' : 'text-ge-gray500'}`}>
+                          {option.helper}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+                <span className="block font-ge text-sm leading-snug text-ge-gray400 sm:text-[0.95rem]">
+                  {transportEnquiryFormCopy.serviceTypeHint}
+                </span>
+              </fieldset>
+
               <label className="block min-w-0 md:col-span-2">
                 <span className={labelClass}>{transportEnquiryFormCopy.passengersLabel}</span>
                 <select
@@ -202,12 +290,11 @@ export function TransportHeroEnquiryForm() {
                   onChange={(e) => setPassengers(Number(e.target.value))}
                   className={inputClass}
                 >
-                  {Array.from({ length: 16 }, (_, i) => i + 1).map((n) => (
+                  {passengerOptions.map((n) => (
                     <option key={n} value={n}>
                       {n} {n === 1 ? 'person' : 'people'}
                     </option>
                   ))}
-                  <option value={20}>16+ — let’s talk</option>
                 </select>
               </label>
 
@@ -284,10 +371,26 @@ export function TransportHeroEnquiryForm() {
               </p>
             ) : null}
 
-            <GeButton type="submit" variant="gs-green" size="md" className="w-full" disabled={status === 'submitting'}>
-              <Send className="h-4 w-4" aria-hidden />
-              {status === 'submitting' ? transportEnquiryFormCopy.sending : transportEnquiryFormCopy.submit}
-            </GeButton>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <GeButton type="submit" variant="gs-green" size="md" className="w-full" disabled={status === 'submitting'}>
+                <Send className="h-4 w-4" aria-hidden />
+                {status === 'submitting' ? transportEnquiryFormCopy.sending : transportEnquiryFormCopy.submit}
+              </GeButton>
+              <GeButton
+                href={whatsappHref}
+                target="_blank"
+                rel="noreferrer"
+                variant="outline-gs-green"
+                size="md"
+                className="w-full"
+              >
+                <MessageCircle className="h-4 w-4" aria-hidden />
+                {transportEnquiryFormCopy.whatsappCta}
+              </GeButton>
+            </div>
+            <p className="font-ge text-sm leading-snug text-ge-gray500">
+              {transportEnquiryFormCopy.whatsappHint}
+            </p>
           </form>
         )}
       </div>

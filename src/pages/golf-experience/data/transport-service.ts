@@ -9,7 +9,7 @@ export const transportHeroCopy = {
   subtitle:
     'Cars and vans that fit the bags, drivers that know the courses, and one Irish team holding it all together — from the moment your flight lands until the last drive home.',
   primaryCta: 'Get a transfer quote',
-  secondaryCta: 'Talk to us'
+  secondaryCta: 'WhatsApp a quick route'
 } as const
 
 /** Numbered facts strip under the hero — tight, magazine-style stats. */
@@ -117,6 +117,8 @@ export const transportEnquiryFormCopy = {
   nameLabel: 'Full name',
   emailLabel: 'Email',
   phoneLabel: 'Mobile / WhatsApp',
+  serviceTypeLabel: 'Transfer type',
+  serviceTypeHint: 'Pick the transport style that best matches the enquiry you want to send.',
   passengersLabel: 'Number of passengers',
   collectionLabel: 'Collection point',
   collectionHint: 'e.g. Málaga AGP Terminal 3, hotel name, villa address',
@@ -126,6 +128,8 @@ export const transportEnquiryFormCopy = {
   asapLabel: 'ASAP — first available driver',
   asapHint: 'Tick if you want the next slot rather than a fixed time.',
   submit: 'Send transfer request',
+  whatsappCta: 'WhatsApp this brief',
+  whatsappHint: 'The WhatsApp draft updates live with your route, passenger count, and timing.',
   sending: 'Sending…',
   successTitle: 'Request received',
   successBody: 'Check your inbox — we’ll be in touch shortly from Ireland.',
@@ -134,7 +138,7 @@ export const transportEnquiryFormCopy = {
   validationRequired: 'Please complete all required fields.',
   validationEmail: 'Please enter a valid email address.',
   validationTime: 'Choose a collection date and time, or tick ASAP.',
-  validationPassengers: 'Passengers must be between 1 and 16.'
+  validationPassengers: 'Passengers must be between 1 and 32.'
 } as const
 
 /** Legacy exports kept so older sections don’t break during migration. */
