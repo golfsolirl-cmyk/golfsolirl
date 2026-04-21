@@ -511,7 +511,47 @@ const geContentPages: Record<string, GeContentPageData> = {
     interestPreset: 'Travel to Malaga AGP'
   },
   '/golf-courses': coursesPage,
+  '/golf-courses/sotogrande': {
+    ...coursesPage,
+    metaTitle: 'Sotogrande Golf Courses | GolfSol Ireland',
+    eyebrow: 'Golf Courses',
+    title: 'Sotogrande golf courses for Irish groups',
+    subtitle: 'Plan standout rounds in Sotogrande with practical routing, timing, and stay guidance.',
+    interestPreset: 'Sotogrande course planning'
+  },
+  '/golf-courses/marbella-golf-valley': {
+    ...coursesPage,
+    metaTitle: 'Marbella Golf Valley | GolfSol Ireland',
+    eyebrow: 'Golf Courses',
+    title: 'Marbella Golf Valley rounds, planned properly',
+    subtitle: 'Build cleaner Marbella golf itineraries with Irish-first course and routing guidance.',
+    interestPreset: 'Marbella Golf Valley course planning'
+  },
+  '/golf-courses/mijas-fuengirola': {
+    ...coursesPage,
+    metaTitle: 'Mijas & Fuengirola Golf | GolfSol Ireland',
+    eyebrow: 'Golf Courses',
+    title: 'Mijas and Fuengirola golf course options',
+    subtitle: 'Compare Mijas and Fuengirola rounds by drive time, challenge level, and group fit.',
+    interestPreset: 'Mijas and Fuengirola course planning'
+  },
   '/accommodation': accommodationPage,
+  '/accommodation/fuengirola-hotels': {
+    ...accommodationPage,
+    metaTitle: 'Fuengirola Hotels for Golfers | GolfSol Ireland',
+    eyebrow: 'Accommodation',
+    title: 'Fuengirola hotels for Irish golf trips',
+    subtitle: 'Choose Fuengirola hotel bases that match your golf schedule and group travel style.',
+    interestPreset: 'Fuengirola hotel options'
+  },
+  '/accommodation/torremolinos-hotels': {
+    ...accommodationPage,
+    metaTitle: 'Torremolinos Hotels for Golfers | GolfSol Ireland',
+    eyebrow: 'Accommodation',
+    title: 'Torremolinos hotels for Irish golf groups',
+    subtitle: 'Find Torremolinos hotel options with clear trade-offs on location, style, and budget.',
+    interestPreset: 'Torremolinos hotel options'
+  },
   '/golf-map': {
     ...coursesPage,
     metaTitle: 'Costa del Sol Golf Map | GolfSol Ireland',
