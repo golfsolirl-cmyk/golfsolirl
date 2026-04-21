@@ -8,6 +8,7 @@ import { GeQuickEnquiryForm } from './components/ge-quick-enquiry-form'
 import { contactInfo } from './data/copy'
 import { getGeContentPage } from './data/content-pages'
 import { WhatsappFab } from './components/whatsapp-fab'
+import { getSmartWhatsappUrl } from '../../lib/smart-whatsapp'
 
 function normalisePath() {
   const path = window.location.pathname.replace(/\/+$/, '')
@@ -17,6 +18,13 @@ function normalisePath() {
 export function GeContentPage() {
   const path = useMemo(() => normalisePath(), [])
   const page = useMemo(() => getGeContentPage(path), [path])
+  const pageSupportWhatsappHref = useMemo(
+    () =>
+      getSmartWhatsappUrl('support', {
+        pageLabel: page?.title
+      }),
+    [page?.title]
+  )
 
   if (!page) {
     return (
@@ -138,6 +146,14 @@ export function GeContentPage() {
                 >
                   <Phone className="h-4 w-4" aria-hidden />
                   {contactInfo.phoneDisplay}
+                </a>
+                <a
+                  href={pageSupportWhatsappHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-3 inline-flex min-h-[44px] items-center gap-2 rounded-full border-2 border-gs-dark px-4 py-2.5 font-ge text-base font-bold uppercase tracking-[0.12em] text-gs-dark transition-colors hover:bg-gs-dark hover:text-white"
+                >
+                  WhatsApp this page question
                 </a>
               </div>
             </aside>

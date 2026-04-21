@@ -1,9 +1,10 @@
 import { useState, type FormEvent } from 'react'
 import { motion } from 'framer-motion'
-import { Send } from 'lucide-react'
+import { MessageCircle, Send } from 'lucide-react'
 import { GeButton } from './ge-button'
 import { contactInfo } from '../data/copy'
 import { transportEnquiryFormCopy } from '../data/transport-service'
+import { getSmartWhatsappUrl } from '../../../lib/smart-whatsapp'
 
 const labelClass =
   'mb-1 block font-ge text-sm font-bold uppercase tracking-[0.18em] text-ge-gray500 sm:text-[0.85rem]'
@@ -114,6 +115,12 @@ export function TransportHeroEnquiryForm() {
     'Collection point': collectionPoint.trim(),
     Destination: destination.trim(),
     'Collection time / ASAP': asap ? 'ASAP' : collectionTime.trim()
+  })
+  const smartTransportWhatsappHref = getSmartWhatsappUrl('transport-custom', {
+    from: collectionPoint,
+    to: destination,
+    passengers,
+    note: asap ? 'ASAP pickup requested' : collectionTime
   })
 
   return (
@@ -287,6 +294,17 @@ export function TransportHeroEnquiryForm() {
             <GeButton type="submit" variant="gs-green" size="md" className="w-full" disabled={status === 'submitting'}>
               <Send className="h-4 w-4" aria-hidden />
               {status === 'submitting' ? transportEnquiryFormCopy.sending : transportEnquiryFormCopy.submit}
+            </GeButton>
+            <GeButton
+              href={smartTransportWhatsappHref}
+              target="_blank"
+              rel="noreferrer"
+              variant="outline-gs-green"
+              size="md"
+              className="w-full"
+            >
+              <MessageCircle className="h-4 w-4" aria-hidden />
+              WhatsApp this transfer brief
             </GeButton>
           </form>
         )}

@@ -34,10 +34,10 @@ import { Logo, ShamrockIcon } from './components/ui/logo'
 import { AnimatedStepKicker, SectionHeader } from './components/ui/section-header'
 import { WaveDivider } from './components/ui/wave-divider'
 import { integrationRegistry } from './config/integrations'
+import { getSmartWhatsappUrl } from './lib/smart-whatsapp'
 import {
   costaMetrics,
   featuredCourses,
-  footerSocialLinks,
   heroBackgroundImage,
   heroCardHighlights,
   heroStats,
@@ -132,7 +132,6 @@ function App() {
   const [hasAcceptedCookies, setHasAcceptedCookies] = useState(true)
   const [isFooterInView, setIsFooterInView] = useState(false)
   const footerRef = useRef<HTMLElement | null>(null)
-  const whatsAppHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
 
   const filteredHotels = useMemo(() => {
     if (selectedHotelTier === 'all') {
@@ -171,6 +170,17 @@ function App() {
 
     return `/packages?${searchParams.toString()}`
   }, [courseHotelSelection, quickGroupSize, quickNights, quickRounds, quickTransfer, selectedHotelTier])
+  const smartPackageWhatsappHref = useMemo(
+    () =>
+      getSmartWhatsappUrl('packages-build', {
+        groupSize: quickGroupSize,
+        nights: quickNights,
+        rounds: quickRounds,
+        transferStyle: quickTransfer,
+        note: 'Built from the live quick package planner'
+      }),
+    [quickGroupSize, quickNights, quickRounds, quickTransfer]
+  )
 
   const handleCourseHotelMapChange = useCallback((value: CourseHotelPickerValue) => {
     setCourseHotelSelection(value)
@@ -287,7 +297,7 @@ function App() {
   return (
     <div className="overflow-x-hidden bg-offwhite">
       <Navbar links={navLinks} primaryCta={primaryActions.planTrip} />
-      <FloatingWhatsAppButton hidden={isFooterInView} href={whatsAppHref} />
+      <FloatingWhatsAppButton hidden={isFooterInView} href={smartPackageWhatsappHref} />
       <CookieBanner hidden={hasAcceptedCookies} onAccept={handleAcceptCookies} />
 
       <main>
@@ -753,6 +763,9 @@ function App() {
                   <div className="mt-5 flex flex-wrap gap-3">
                     <LuxuryButton href={quickPackagesHref} showArrow>
                       Open full package page
+                    </LuxuryButton>
+                    <LuxuryButton href={smartPackageWhatsappHref} variant="white">
+                      WhatsApp this package setup
                     </LuxuryButton>
                     <div className="rounded-full border border-forest-100 bg-offwhite px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-forest-900/68">
                       {quickGroupSize} golfers • {quickNights} nights • {quickRounds} rounds
