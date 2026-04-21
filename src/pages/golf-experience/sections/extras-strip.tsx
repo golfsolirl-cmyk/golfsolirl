@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Briefcase, Bus, Car, Compass, type LucideIcon } from 'lucide-react'
+import { Briefcase, Bus, Car, type LucideIcon } from 'lucide-react'
 import { GeSection } from '../components/ge-section'
 import { extrasCopy } from '../data/copy'
 
@@ -12,8 +12,7 @@ interface Extra {
 const extras: readonly Extra[] = [
   { title: 'Golf Club Rental', icon: Briefcase, note: 'Costa del Sol Only' },
   { title: 'Transfers', icon: Bus },
-  { title: 'Car Rental', icon: Car },
-  { title: 'Excursions', icon: Compass }
+  { title: 'Car Rental', icon: Car }
 ]
 
 const fadeUp = {
@@ -33,7 +32,7 @@ export function GeExtrasStrip() {
         <p className="mt-3 font-ge text-[1.05rem] italic leading-7 text-ge-gray500 sm:text-[1.1rem]">{extrasCopy.subtitle}</p>
       </div>
 
-      <div className="mt-14 grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4">
+      <div className="mt-14 grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3">
         {extras.map(({ title, icon: Icon, note }) => (
           <motion.div
             key={title}
