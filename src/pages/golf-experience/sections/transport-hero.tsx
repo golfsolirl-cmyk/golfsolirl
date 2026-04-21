@@ -3,7 +3,6 @@ import { ArrowRight, ChevronDown, Clock3, PlaneLanding, Phone, ShieldCheck } fro
 import { GeButton } from '../components/ge-button'
 import { contactInfo } from '../data/copy'
 import { transportHeroCopy } from '../data/transport-service'
-import { cx } from '../../../lib/utils'
 
 const fadeUp = {
   initial: { opacity: 0, y: 18 },
@@ -23,8 +22,6 @@ export function TransportHero() {
     { icon: ShieldCheck, label: 'Golf-bag friendly Mercedes fleet' },
     { icon: Clock3, label: 'Fast quote turnaround' }
   ] as const
-
-  const isStripHero = transportHeroCopy.eyebrow.trim().toLowerCase() !== ''
 
   return (
     <section
@@ -63,6 +60,10 @@ export function TransportHero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55, ease: 'easeOut' }}
             >
+              <span className="inline-flex items-center gap-2 rounded-full border border-gs-gold/35 bg-gs-dark/45 px-3 py-1.5 font-ge text-[0.66rem] font-bold uppercase tracking-[0.18em] text-gs-gold">
+                <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-gs-gold shadow-[0_0_10px_rgba(255,199,44,0.68)]" />
+                {transportHeroCopy.eyebrow}
+              </span>
               <h2 className="mt-4 font-ge text-[2.05rem] font-extrabold leading-[1.04] tracking-[-0.01em] text-white">
                 {transportHeroCopy.title}
               </h2>
@@ -135,9 +136,13 @@ export function TransportHero() {
           />
 
           {/* Overlay copy */}
-          <div className={cx('absolute inset-0 z-[10] hidden items-end sm:items-center md:flex', isStripHero ? 'pb-20 sm:pb-24 md:pb-24' : 'pb-12 sm:pb-0')}>
+          <div className="absolute inset-0 z-[10] hidden items-end pb-12 sm:items-center sm:pb-0 md:flex">
             <div className="mx-auto w-full max-w-[1180px] px-5 sm:px-8">
               <motion.div className="max-w-2xl" {...fadeUp}>
+                <span className="inline-flex items-center gap-2 rounded-full border border-gs-gold/40 bg-gs-dark/35 px-3 py-1.5 font-ge text-[0.7rem] font-bold uppercase tracking-[0.18em] text-gs-gold backdrop-blur-sm sm:text-[0.78rem]">
+                  <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-gs-gold shadow-[0_0_10px_rgba(255,199,44,0.7)]" />
+                  {transportHeroCopy.eyebrow}
+                </span>
                 <h2 className="mt-5 font-ge text-[2.25rem] font-extrabold leading-[1.05] tracking-[-0.005em] text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.55)] sm:text-[3rem] md:text-[3.5rem] lg:text-[4rem]">
                   {transportHeroCopy.title}
                 </h2>
@@ -173,26 +178,6 @@ export function TransportHero() {
           >
             <ChevronDown className="h-5 w-5" />
           </motion.a>
-
-          {isStripHero ? (
-            <div className="absolute inset-x-0 bottom-0 z-20">
-              <div
-                aria-hidden
-                className="h-[3px]"
-                style={{
-                  background:
-                    'linear-gradient(90deg, transparent 0%, rgba(184,137,0,0.5) 12%, #FFC72C 28%, #FFE27A 50%, #FFC72C 72%, rgba(184,137,0,0.5) 88%, transparent 100%)'
-                }}
-              />
-              <div className="border-y border-[#b88900]/45 bg-[linear-gradient(90deg,#ffc72c_0%,#ffe27a_45%,#ffc72c_100%)]">
-                <div className="mx-auto flex w-full max-w-[1180px] items-center justify-center px-5 py-2.5 sm:px-8 sm:py-3">
-                  <span className="font-ge text-[0.78rem] font-extrabold uppercase tracking-[0.34em] text-gs-dark sm:text-[0.88rem]">
-                    {transportHeroCopy.eyebrow}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ) : null}
         </div>
       </div>
     </section>
