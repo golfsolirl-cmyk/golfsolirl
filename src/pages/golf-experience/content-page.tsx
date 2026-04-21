@@ -1,7 +1,8 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle2, ChevronRight, Phone } from 'lucide-react'
 import { cx } from '../../lib/utils'
+import { applySeo } from '../../lib/seo'
 import { GeFooter } from './sections/ge-footer'
 import { GeNavbar } from './sections/ge-navbar'
 import { GeQuickEnquiryForm } from './components/ge-quick-enquiry-form'
@@ -17,6 +18,19 @@ function normalisePath() {
 export function GeContentPage() {
   const path = useMemo(() => normalisePath(), [])
   const page = useMemo(() => getGeContentPage(path), [path])
+
+  useEffect(() => {
+    if (!page) {
+      return
+    }
+
+    applySeo({
+      title: page.metaTitle,
+      description: page.metaDescription ?? page.subtitle,
+      path: page.canonicalPath ?? path,
+      imagePath: page.heroImage
+    })
+  }, [page, path])
 
   if (!page) {
     return (
@@ -34,8 +48,6 @@ export function GeContentPage() {
       </div>
     )
   }
-
-  document.title = page.metaTitle
 
   return (
     <div className="ge-page min-h-screen overflow-x-hidden bg-white">

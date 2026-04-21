@@ -1,3 +1,5 @@
+import { footerArticlePages } from '../../../data/footer-article-pages'
+
 export interface GeContentPageSection {
   readonly title: string
   readonly body: string
@@ -6,6 +8,8 @@ export interface GeContentPageSection {
 
 export interface GeContentPageData {
   readonly metaTitle: string
+  readonly metaDescription?: string
+  readonly canonicalPath?: string
   readonly eyebrow: string
   readonly title: string
   readonly subtitle: string
@@ -460,7 +464,7 @@ const newsletterPage: GeContentPageData = {
   enquiryType: 'newsletter'
 }
 
-const geContentPages: Record<string, GeContentPageData> = {
+const baseGeContentPages: Record<string, GeContentPageData> = {
   '/about': aboutPage,
   '/booking': bookingPage,
   '/transport': transportOverviewPage,
@@ -472,10 +476,10 @@ const geContentPages: Record<string, GeContentPageData> = {
   '/news': newsPage,
   '/newsletter': newsletterPage,
   '/contact': contactPage,
-  '/contact/golf-holiday-enquiry-form': contactPage,
-  '/contact/give-a-testimonial': testimonialsPage,
-  '/contact/privacy-policy': privacyPage,
-  '/terms-conditions': termsPage,
+  '/contact/golf-holiday-enquiry-form': { ...contactPage, canonicalPath: '/contact' },
+  '/contact/give-a-testimonial': { ...testimonialsPage, canonicalPath: '/testimonials' },
+  '/contact/privacy-policy': { ...privacyPage, canonicalPath: '/privacy-policy' },
+  '/terms-conditions': { ...termsPage, canonicalPath: '/terms-and-conditions' },
   '/privacy-policy': privacyPage,
   '/terms-and-conditions': termsPage,
   '/links-and-information/dress-code-for-golf-in-spain': {
@@ -511,7 +515,52 @@ const geContentPages: Record<string, GeContentPageData> = {
     interestPreset: 'Travel to Malaga AGP'
   },
   '/golf-courses': coursesPage,
+  '/golf-courses/sotogrande': {
+    ...coursesPage,
+    metaTitle: 'Sotogrande Golf Courses | GolfSol Ireland',
+    title: 'Sotogrande golf courses for premium group rounds',
+    subtitle:
+      'Plan strong championship days in Sotogrande with practical routing, balanced difficulty, and clean transport windows.',
+    interestPreset: 'Sotogrande course shortlist',
+    canonicalPath: '/golf-courses'
+  },
+  '/golf-courses/marbella-golf-valley': {
+    ...coursesPage,
+    metaTitle: 'Marbella Golf Valley Courses | GolfSol Ireland',
+    title: 'Marbella Golf Valley course planning for Irish groups',
+    subtitle:
+      'Build a Marbella-focused golf week with realistic drive times, smart tee slots, and course variety that suits your group.',
+    interestPreset: 'Marbella Golf Valley planning',
+    canonicalPath: '/golf-courses'
+  },
+  '/golf-courses/mijas-fuengirola': {
+    ...coursesPage,
+    metaTitle: 'Mijas & Fuengirola Golf Courses | GolfSol Ireland',
+    title: 'Mijas and Fuengirola courses with smooth trip logistics',
+    subtitle:
+      'Combine quality rounds around Mijas and Fuengirola while keeping transfer timing and evening plans easy for the group.',
+    interestPreset: 'Mijas and Fuengirola golf courses',
+    canonicalPath: '/golf-courses'
+  },
   '/accommodation': accommodationPage,
+  '/accommodation/fuengirola-hotels': {
+    ...accommodationPage,
+    metaTitle: 'Fuengirola Golf Hotels | GolfSol Ireland',
+    title: 'Fuengirola hotels Irish golf groups return to',
+    subtitle:
+      'Choose Fuengirola stays that balance course access, evening walkability, and value for travelling golf groups.',
+    interestPreset: 'Fuengirola hotel matching',
+    canonicalPath: '/accommodation'
+  },
+  '/accommodation/torremolinos-hotels': {
+    ...accommodationPage,
+    metaTitle: 'Torremolinos Golf Hotels | GolfSol Ireland',
+    title: 'Torremolinos hotel options for Costa del Sol golf trips',
+    subtitle:
+      'Match Torremolinos hotels to your golf schedule with practical transfer routes and rooming setups that work for groups.',
+    interestPreset: 'Torremolinos hotel matching',
+    canonicalPath: '/accommodation'
+  },
   '/golf-map': {
     ...coursesPage,
     metaTitle: 'Costa del Sol Golf Map | GolfSol Ireland',
@@ -544,10 +593,71 @@ const geContentPages: Record<string, GeContentPageData> = {
     subtitle: 'Use route-led planning to decide base, courses, and transfer rhythm quickly.',
     interestPreset: 'Promo maps'
   },
-  '/services/golf-club-rental': golfClubRentalPage,
-  '/services/tee-time-bookings': teeTimeOnlyPage,
-  '/services/family-holidays': familyHolidaysPage,
-  '/services/society-group-trips': bookingPage
+  '/services/golf-club-rental': { ...golfClubRentalPage, canonicalPath: '/golf-club-rental' },
+  '/services/tee-time-bookings': { ...teeTimeOnlyPage, canonicalPath: '/tee-time-bookings-only' },
+  '/services/family-holidays': { ...familyHolidaysPage, canonicalPath: '/family-holidays' },
+  '/services/society-group-trips': { ...bookingPage, canonicalPath: '/booking' }
+}
+
+function inferFooterEnquiryType(path: string): GeContentPageData['enquiryType'] {
+  if (path.includes('terms')) {
+    return 'legal'
+  }
+  return 'booking'
+}
+
+function inferFooterHero(path: string): Pick<GeContentPageData, 'heroImage' | 'heroAlt'> {
+  if (path.includes('transfer') || path.includes('routing')) {
+    return {
+      heroImage: '/images/transport-hero-coastal-drive.jpg',
+      heroAlt: 'Premium transfer vehicle and Costa del Sol route planning for golf groups.'
+    }
+  }
+  if (path.includes('hotel') || path.includes('accommodation')) {
+    return {
+      heroImage: '/images/transport-moment-resort.jpg',
+      heroAlt: 'Costa del Sol golf accommodation and hotel options for Irish groups.'
+    }
+  }
+  return {
+    heroImage: '/images/about-golfsol-hero.jpg',
+    heroAlt: 'Costa del Sol golf travel planning and premium Irish-led support.'
+  }
+}
+
+const footerArticleGePages: Record<string, GeContentPageData> = Object.entries(footerArticlePages).reduce(
+  (acc, [path, page]) => {
+    const enquiryType = inferFooterEnquiryType(path)
+    const hero = inferFooterHero(path)
+
+    acc[path] = {
+      metaTitle: page.metaTitle.replace('Golf Sol Ireland', 'GolfSol Ireland'),
+      metaDescription: page.heroBody,
+      canonicalPath: path,
+      eyebrow: page.kicker.split('—')[0]?.trim() || 'Guide',
+      title: page.heroTitle,
+      subtitle: page.heroBody,
+      heroImage: hero.heroImage,
+      heroAlt: hero.heroAlt,
+      highlights: trustHighlights,
+      sections: page.sections,
+      formTitle: enquiryType === 'legal' ? 'Ask about terms and conditions' : 'Request planning support',
+      formLead:
+        enquiryType === 'legal'
+          ? 'Send your question and our Irish team will clarify the terms for your group.'
+          : 'Share your dates and group details to get relevant planning guidance quickly.',
+      interestPreset: page.heroTitle,
+      enquiryType
+    }
+
+    return acc
+  },
+  {} as Record<string, GeContentPageData>
+)
+
+const geContentPages: Record<string, GeContentPageData> = {
+  ...footerArticleGePages,
+  ...baseGeContentPages
 }
 
 export { geContentPages }

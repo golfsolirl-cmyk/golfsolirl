@@ -8,6 +8,8 @@ import { TransportHero } from './sections/transport-hero'
 import { TransportPromise } from './sections/transport-promise'
 import { TransportRouteStory } from './sections/transport-route-story'
 import { WhatsappFab } from './components/whatsapp-fab'
+import { useEffect } from 'react'
+import { applySeo } from '../../lib/seo'
 
 /**
  * Dedicated Transport service page — same shell as {@link GolfExperienceHome}
@@ -16,6 +18,16 @@ import { WhatsappFab } from './components/whatsapp-fab'
  * final CTA.
  */
 export function TransportServicePage() {
+  useEffect(() => {
+    applySeo({
+      title: 'Transport Services | GolfSol Ireland',
+      description:
+        'Premium Costa del Sol golf transport with airport transfers, golf-day shuttles, and Irish-led support from arrival to departure.',
+      path: '/services/transport',
+      imagePath: '/images/transport-hero-coastal-drive.jpg'
+    })
+  }, [])
+
   return (
     <div className="ge-page min-h-screen overflow-x-hidden bg-white">
       <a
