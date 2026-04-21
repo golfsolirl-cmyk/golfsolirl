@@ -25,21 +25,21 @@ export function GeDesignYourPackage() {
       title: 'Pick Your Sol Base',
       body: designYourPackage.step1.body,
       image: designYourPackage.step1.image,
-      link: designYourPackage.step1.link
+      link: '/accommodation'
     },
     {
       badge: 'Step 2',
       title: 'Pick Your Tee Times',
       body: designYourPackage.step2.body,
       image: designYourPackage.step2.image,
-      link: designYourPackage.step2.link
+      link: '/golf-courses'
     },
     {
       badge: 'Step 3',
       title: 'Pick Your Hotel',
       body: designYourPackage.step3.body,
       image: designYourPackage.step3.image,
-      link: designYourPackage.step3.link
+      link: '/accommodation'
     },
     {
       badge: 'Step 4',
@@ -47,7 +47,7 @@ export function GeDesignYourPackage() {
       body: 'We design the itinerary, book the tees, lock in golf-bag-friendly Mercedes transfers and meet you at AGP arrivals — every detail from arrivals hall to final putt.',
       image:
         'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&w=1200&q=80',
-      link: '/#enquire'
+      link: '/contact'
     }
   ]
 
@@ -57,18 +57,18 @@ export function GeDesignYourPackage() {
       aria-labelledby="design-package-title"
       className="relative bg-gs-green text-white"
     >
-      <div className="mx-auto max-w-[1180px] px-5 pb-20 pt-20 sm:px-8">
+      <div className="mx-auto max-w-[1180px] px-5 pb-24 pt-24 sm:px-8">
         <motion.div className="text-center" {...fadeUp}>
           <h2
             id="design-package-title"
-            className="font-ge text-[1.95rem] font-extrabold leading-tight text-white sm:text-[2.4rem]"
+            className="font-ge text-[2.2rem] font-extrabold leading-[1.05] text-white sm:text-[2.75rem]"
           >
             {designYourPackage.title}
           </h2>
-          <p className="mx-auto mt-3 max-w-xl font-ge text-base font-semibold uppercase tracking-[0.16em] text-white/80 sm:text-sm">
+          <p className="mx-auto mt-4 max-w-2xl font-ge text-[1rem] font-semibold uppercase tracking-[0.16em] text-white/80 sm:text-[1.05rem]">
             Choose your destination · Choose your golf course · Choose your accommodation
           </p>
-          <p className="mt-2 font-ge text-base italic text-white/80">{designYourPackage.closer}</p>
+          <p className="mt-3 font-ge text-[1.05rem] italic text-white/85">{designYourPackage.closer}</p>
         </motion.div>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">

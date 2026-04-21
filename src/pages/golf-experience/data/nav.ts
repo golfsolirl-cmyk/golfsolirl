@@ -12,43 +12,43 @@ export const primaryNav: readonly GeNavLink[] = [
   { label: 'Home', href: '/#top' },
   {
     label: 'Services',
-    href: '/#extras',
+    href: '/services/transport',
     children: [
       { label: 'Transport', href: '/services/transport' },
-      { label: 'Excursions', href: '/#extras' },
-      { label: 'Golf Club Rental', href: '/#extras' },
-      { label: 'Tee Time Bookings only', href: '/#enquire' },
-      { label: 'Family Holidays', href: '/#enquire' }
+      { label: 'Excursions', href: '/services/excursions' },
+      { label: 'Golf Club Rental', href: '/services/golf-club-rental' },
+      { label: 'Tee Time Bookings only', href: '/services/tee-time-bookings' },
+      { label: 'Family Holidays', href: '/services/family-holidays' }
     ]
   },
   {
     label: 'Golf Courses',
-    href: '/#golf-courses-spain',
+    href: '/golf-courses',
     children: [
-      { label: 'Sotogrande Cluster', href: '/#golf-courses-spain' },
-      { label: 'Marbella Golf Valley', href: '/#golf-courses-spain' },
-      { label: 'Mijas & Fuengirola', href: '/#golf-courses-spain' }
+      { label: 'Sotogrande Cluster', href: '/golf-courses/sotogrande' },
+      { label: 'Marbella Golf Valley', href: '/golf-courses/marbella-golf-valley' },
+      { label: 'Mijas & Fuengirola', href: '/golf-courses/mijas-fuengirola' }
     ]
   },
   {
     label: 'Accommodation',
-    href: '/#accommodation-spain',
+    href: '/accommodation',
     children: [
-      { label: 'Fuengirola Hotels', href: '/#accommodation-spain' },
-      { label: 'Torremolinos Hotels', href: '/#accommodation-spain' }
+      { label: 'Fuengirola Hotels', href: '/accommodation/fuengirola-hotels' },
+      { label: 'Torremolinos Hotels', href: '/accommodation/torremolinos-hotels' }
     ]
   },
   { label: 'Transport', href: '/services/transport' },
   {
     label: 'More',
-    href: '/#enquire',
+    href: '/contact',
     children: [
-      { label: 'Excursions', href: '/#extras' },
-      { label: 'Testimonials', href: '/#enquire' },
-      { label: 'Golf Map', href: '/#enquire' },
-      { label: 'News', href: '/#enquire' },
-      { label: 'FAQ', href: '/#enquire' },
-      { label: 'Contact', href: '/#enquire' }
+      { label: 'Excursions', href: '/services/excursions' },
+      { label: 'Testimonials', href: '/testimonials' },
+      { label: 'Golf Map', href: '/golf-map' },
+      { label: 'News', href: '/news' },
+      { label: 'FAQ', href: '/faq' },
+      { label: 'Contact', href: '/contact' }
     ]
   }
 ] as const
@@ -57,35 +57,35 @@ export const footerColumns = [
   {
     title: 'Quick Links',
     links: [
-      { label: 'Golf Club Rental – Costa del Sol', href: '/#extras' },
-      { label: 'Tee Time Bookings Only', href: '/#enquire' },
-      { label: 'Society & Group Trips', href: '/#enquire' },
-      { label: 'Family Golf Holidays', href: '/#enquire' },
-      { label: 'Dress Code on the Costa del Sol', href: '/#enquire' },
-      { label: 'Travelling to Málaga (AGP)', href: '/#enquire' },
-      { label: 'Excursions on the Sol', href: '/#extras' },
-      { label: 'Costa del Sol Golf Map', href: '/#golf-courses-spain' }
+      { label: 'Golf Club Rental – Costa del Sol', href: '/services/golf-club-rental' },
+      { label: 'Tee Time Bookings Only', href: '/services/tee-time-bookings' },
+      { label: 'Society & Group Trips', href: '/services/society-group-trips' },
+      { label: 'Family Golf Holidays', href: '/services/family-holidays' },
+      { label: 'Dress Code on the Costa del Sol', href: '/guides/dress-code-costa-del-sol' },
+      { label: 'Travelling to Málaga (AGP)', href: '/guides/travelling-to-malaga-agp' },
+      { label: 'Excursions on the Sol', href: '/services/excursions' },
+      { label: 'Costa del Sol Golf Map', href: '/golf-map' }
     ]
   },
   {
     title: 'Legal',
     links: [
-      { label: 'Privacy Policy', href: '#' },
-      { label: 'Terms & Conditions', href: '#' }
+      { label: 'Privacy Policy', href: '/privacy-policy' },
+      { label: 'Terms & Conditions', href: '/terms-and-conditions' }
     ]
   },
   {
     title: 'Navigation',
     links: [
       { label: 'Home', href: '/#top' },
-      { label: 'Costa del Sol Courses', href: '/#golf-courses-spain' },
+      { label: 'Costa del Sol Courses', href: '/golf-courses' },
       { label: 'Málaga Airport Transfers', href: '/services/transport' },
-      { label: 'Hotels Irish Groups Love', href: '/#accommodation-spain' },
-      { label: 'Get a Quote', href: '/#enquire' },
-      { label: 'Sol Insider News', href: '/#enquire' },
-      { label: 'Terms & Conditions', href: '#' },
-      { label: 'Join our newsletter', href: '/#enquire' },
-      { label: 'Give a Testimonial', href: '/#enquire' }
+      { label: 'Hotels Irish Groups Love', href: '/accommodation' },
+      { label: 'Get a Quote', href: '/contact' },
+      { label: 'Sol Insider News', href: '/news' },
+      { label: 'Terms & Conditions', href: '/terms-and-conditions' },
+      { label: 'Join our newsletter', href: '/newsletter' },
+      { label: 'Give a Testimonial', href: '/testimonials' }
     ]
   }
 ] as const

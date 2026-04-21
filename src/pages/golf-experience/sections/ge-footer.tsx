@@ -6,10 +6,10 @@ import { aboutFooterCopy, contactInfo } from '../data/copy'
 import { footerColumns } from '../data/nav'
 
 const socials = [
-  { label: 'Facebook', icon: FaFacebookF, href: '#' },
-  { label: 'Instagram', icon: FaInstagram, href: '#' },
-  { label: 'X', icon: FaXTwitter, href: '#' },
-  { label: 'LinkedIn', icon: FaLinkedinIn, href: '#' }
+  { label: 'Facebook', icon: FaFacebookF, href: 'https://www.facebook.com/' },
+  { label: 'Instagram', icon: FaInstagram, href: 'https://www.instagram.com/' },
+  { label: 'X', icon: FaXTwitter, href: 'https://x.com/' },
+  { label: 'LinkedIn', icon: FaLinkedinIn, href: 'https://www.linkedin.com/' }
 ]
 
 export function GeFooter() {
@@ -92,10 +92,10 @@ export function GeFooter() {
               Stay in touch
             </p>
             <div className="flex flex-wrap gap-3">
-              <GeButton href="/#enquire" variant="outline-white" size="sm">
+              <GeButton href="/newsletter" variant="outline-white" size="sm">
                 Join our newsletter
               </GeButton>
-              <GeButton href="/#enquire" variant="outline-white" size="sm">
+              <GeButton href="/testimonials" variant="outline-white" size="sm">
                 Give a Testimonial
               </GeButton>
             </div>
