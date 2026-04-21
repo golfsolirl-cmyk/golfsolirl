@@ -16,6 +16,7 @@ export interface GeContentPageData {
   readonly formTitle: string
   readonly formLead: string
   readonly interestPreset: string
+  readonly enquiryType?: 'booking' | 'legal' | 'newsletter' | 'testimonial' | 'support'
 }
 
 const trustHighlights = [
@@ -49,7 +50,8 @@ const contactPage: GeContentPageData = {
   ],
   formTitle: 'Start your quote request',
   formLead: 'Use this short form and we will come back with clear, actionable options.',
-  interestPreset: 'General quote request'
+  interestPreset: 'General quote request',
+  enquiryType: 'booking'
 }
 
 const termsPage: GeContentPageData = {
@@ -77,7 +79,8 @@ const termsPage: GeContentPageData = {
   ],
   formTitle: 'Ask about terms',
   formLead: 'Send your question and we will clarify terms before you proceed.',
-  interestPreset: 'Terms and conditions enquiry'
+  interestPreset: 'Terms and conditions enquiry',
+  enquiryType: 'legal'
 }
 
 const privacyPage: GeContentPageData = {
@@ -105,7 +108,8 @@ const privacyPage: GeContentPageData = {
   ],
   formTitle: 'Ask a privacy question',
   formLead: 'If you need clarification on data handling, send a quick request here.',
-  interestPreset: 'Privacy policy enquiry'
+  interestPreset: 'Privacy policy enquiry',
+  enquiryType: 'legal'
 }
 
 const golfClubRentalPage: GeContentPageData = {
@@ -133,7 +137,8 @@ const golfClubRentalPage: GeContentPageData = {
   ],
   formTitle: 'Request club rental options',
   formLead: 'Share player count and travel window. We send suitable rental choices quickly.',
-  interestPreset: 'Golf club rental'
+  interestPreset: 'Golf club rental',
+  enquiryType: 'booking'
 }
 
 const teeTimeOnlyPage: GeContentPageData = {
@@ -161,7 +166,8 @@ const teeTimeOnlyPage: GeContentPageData = {
   ],
   formTitle: 'Get tee-time options',
   formLead: 'Tell us your dates and group size and we will return a clean shortlist.',
-  interestPreset: 'Tee time bookings only'
+  interestPreset: 'Tee time bookings only',
+  enquiryType: 'booking'
 }
 
 const familyHolidaysPage: GeContentPageData = {
@@ -189,7 +195,8 @@ const familyHolidaysPage: GeContentPageData = {
   ],
   formTitle: 'Plan a family golf holiday',
   formLead: 'Share your travel dates and family mix. We propose a practical, easy-to-run trip.',
-  interestPreset: 'Family golf holidays'
+  interestPreset: 'Family golf holidays',
+  enquiryType: 'booking'
 }
 
 const aboutPage: GeContentPageData = {
@@ -217,7 +224,8 @@ const aboutPage: GeContentPageData = {
   ],
   formTitle: 'Talk to our team',
   formLead: 'Share your dates and group details and we will guide the right next step.',
-  interestPreset: 'About GolfSol Ireland'
+  interestPreset: 'About GolfSol Ireland',
+  enquiryType: 'support'
 }
 
 const bookingPage: GeContentPageData = {
@@ -245,7 +253,8 @@ const bookingPage: GeContentPageData = {
   ],
   formTitle: 'Start booking support',
   formLead: 'Send your dates and group details and we will outline the cleanest booking path.',
-  interestPreset: 'Booking support'
+  interestPreset: 'Booking support',
+  enquiryType: 'booking'
 }
 
 const transportOverviewPage: GeContentPageData = {
@@ -273,7 +282,8 @@ const transportOverviewPage: GeContentPageData = {
   ],
   formTitle: 'Request transport planning',
   formLead: 'Share your route and dates and we will return a clear transfer plan.',
-  interestPreset: 'Transport planning'
+  interestPreset: 'Transport planning',
+  enquiryType: 'booking'
 }
 
 const coursesPage: GeContentPageData = {
@@ -301,7 +311,8 @@ const coursesPage: GeContentPageData = {
   ],
   formTitle: 'Get a course shortlist',
   formLead: 'Share your base and dates and we will send suitable rounds quickly.',
-  interestPreset: 'Costa del Sol courses'
+  interestPreset: 'Costa del Sol courses',
+  enquiryType: 'booking'
 }
 
 const accommodationPage: GeContentPageData = {
@@ -329,7 +340,8 @@ const accommodationPage: GeContentPageData = {
   ],
   formTitle: 'Get matched hotel options',
   formLead: 'Share your dates and group size and we will return clean accommodation choices.',
-  interestPreset: 'Accommodation matching'
+  interestPreset: 'Accommodation matching',
+  enquiryType: 'booking'
 }
 
 const testimonialsPage: GeContentPageData = {
@@ -357,7 +369,8 @@ const testimonialsPage: GeContentPageData = {
   ],
   formTitle: 'Send a testimonial or request',
   formLead: 'Use this form to request details or share feedback from your trip.',
-  interestPreset: 'Testimonials and feedback'
+  interestPreset: 'Testimonials and feedback',
+  enquiryType: 'testimonial'
 }
 
 const faqPage: GeContentPageData = {
@@ -385,7 +398,8 @@ const faqPage: GeContentPageData = {
   ],
   formTitle: 'Ask your question',
   formLead: 'Send your question here and we will respond with a direct answer.',
-  interestPreset: 'FAQ request'
+  interestPreset: 'FAQ request',
+  enquiryType: 'support'
 }
 
 const newsPage: GeContentPageData = {
@@ -413,7 +427,8 @@ const newsPage: GeContentPageData = {
   ],
   formTitle: 'Request latest planning updates',
   formLead: 'Drop your details and we will send the right information for your dates.',
-  interestPreset: 'Sol insider news'
+  interestPreset: 'Sol insider news',
+  enquiryType: 'support'
 }
 
 const newsletterPage: GeContentPageData = {
@@ -441,7 +456,8 @@ const newsletterPage: GeContentPageData = {
   ],
   formTitle: 'Join the newsletter',
   formLead: 'Drop your details and we will include you in relevant updates.',
-  interestPreset: 'Newsletter signup'
+  interestPreset: 'Newsletter signup',
+  enquiryType: 'newsletter'
 }
 
 const geContentPages: Record<string, GeContentPageData> = {

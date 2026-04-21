@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useMemo, useState, type FormEvent } from 'react'
 import { Send } from 'lucide-react'
 import { GeButton } from './ge-button'
 import { contactInfo } from '../data/copy'
@@ -6,6 +6,8 @@ import { contactInfo } from '../data/copy'
 interface GeQuickEnquiryFormProps {
   readonly title: string
   readonly lead: string
+  readonly pageEyebrow: string
+  readonly pageTitle: string
   readonly interestPreset: string
 }
 
@@ -17,6 +19,8 @@ const inputClass =
 export function GeQuickEnquiryForm({
   title,
   lead,
+  pageEyebrow,
+  pageTitle,
   interestPreset
 }: GeQuickEnquiryFormProps) {
   const [fullName, setFullName] = useState('')
@@ -25,8 +29,79 @@ export function GeQuickEnquiryForm({
   const [travelDates, setTravelDates] = useState('')
   const [groupSize, setGroupSize] = useState('')
   const [notes, setNotes] = useState('')
+  const [questionType, setQuestionType] = useState('General question')
+  const [legalTopic, setLegalTopic] = useState('Privacy policy')
+  const [updateType, setUpdateType] = useState('Course updates')
+  const [visitMonth, setVisitMonth] = useState('')
+  const [travelPartyType, setTravelPartyType] = useState('Golf group')
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const normalizedEyebrow = pageEyebrow.trim().toLowerCase()
+  const normalizedTitle = pageTitle.trim().toLowerCase()
+  const isLegalPage = normalizedEyebrow === 'legal'
+  const isFaqPage = normalizedTitle.includes('frequently asked questions')
+  const isNewsletterPage = normalizedTitle.includes('newsletter')
+  const isTestimonialPage = normalizedTitle.includes('testimonial')
+  const isGuidePage = normalizedEyebrow === 'travel guide'
+  const isBookingPage = normalizedEyebrow === 'booking' || normalizedTitle.includes('booking')
+
+  const notesPlaceholder = useMemo(() => {
+    if (isLegalPage) return 'Tell us your legal/privacy question.'
+    if (isFaqPage) return 'Tell us the exact question you need answered.'
+    if (isNewsletterPage) return 'Tell us what updates you care about most.'
+    if (isTestimonialPage) return 'Share key highlights from your trip.'
+    if (isGuidePage) return 'Tell us what travel guidance you need.'
+    if (isBookingPage) return 'Tell us what you need help booking.'
+    return 'Tell us what matters most for your trip.'
+  }, [isBookingPage, isFaqPage, isGuidePage, isLegalPage, isNewsletterPage, isTestimonialPage])
+
+  const notesLabel = useMemo(() => {
+    if (isLegalPage || isFaqPage || isGuidePage) return 'Question details'
+    if (isNewsletterPage) return 'Update request details'
+    if (isTestimonialPage) return 'Testimonial details'
+    if (isBookingPage) return 'Booking notes'
+    return 'Notes (optional)'
+  }, [isBookingPage, isFaqPage, isGuidePage, isLegalPage, isNewsletterPage, isTestimonialPage])
+
+  const contextSummary = useMemo(() => {
+    if (isLegalPage) {
+      return `Legal topic: ${legalTopic}`
+    }
+    if (isFaqPage) {
+      return `FAQ category: ${questionType}`
+    }
+    if (isNewsletterPage) {
+      return `Update preference: ${updateType}`
+    }
+    if (isTestimonialPage) {
+      return `Trip type: ${travelPartyType}`
+    }
+    if (isGuidePage) {
+      return visitMonth.trim() ? `Planned travel month: ${visitMonth.trim()}` : 'Guide context: general'
+    }
+    if (isBookingPage) {
+      const details = []
+      if (travelDates.trim()) details.push(`Travel dates: ${travelDates.trim()}`)
+      if (groupSize.trim()) details.push(`Group size: ${groupSize.trim()}`)
+      return details.length ? details.join(' | ') : 'Booking context: awaiting dates/group size'
+    }
+    return ''
+  }, [
+    isBookingPage,
+    isFaqPage,
+    isGuidePage,
+    isLegalPage,
+    isNewsletterPage,
+    isTestimonialPage,
+    legalTopic,
+    questionType,
+    updateType,
+    travelPartyType,
+    travelDates,
+    groupSize,
+    visitMonth
+  ])
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -52,8 +127,13 @@ export function GeQuickEnquiryForm({
     try {
       const interestLines = [
         interestPreset,
-        travelDates.trim() ? `Travel dates: ${travelDates.trim()}` : null,
-        groupSize.trim() ? `Group size: ${groupSize.trim()}` : null,
+        contextSummary || null,
+        !isLegalPage && !isFaqPage && !isNewsletterPage && !isTestimonialPage && !isGuidePage && travelDates.trim()
+          ? `Travel dates: ${travelDates.trim()}`
+          : null,
+        !isLegalPage && !isFaqPage && !isNewsletterPage && !isTestimonialPage && !isGuidePage && groupSize.trim()
+          ? `Group size: ${groupSize.trim()}`
+          : null,
         notes.trim() ? `Notes: ${notes.trim()}` : null
       ].filter(Boolean)
 
@@ -80,6 +160,11 @@ export function GeQuickEnquiryForm({
       setTravelDates('')
       setGroupSize('')
       setNotes('')
+      setQuestionType('General question')
+      setLegalTopic('Privacy policy')
+      setUpdateType('Course updates')
+      setVisitMonth('')
+      setTravelPartyType('Golf group')
     } catch (error) {
       setStatus('error')
       setErrorMessage(error instanceof Error ? error.message : 'Could not send your request right now.')
@@ -145,31 +230,90 @@ export function GeQuickEnquiryForm({
               placeholder={contactInfo.phoneDisplay}
             />
           </label>
+          {isLegalPage ? (
+            <label className="block">
+              <span className={labelClass}>Legal topic</span>
+              <select className={inputClass} value={legalTopic} onChange={(e) => setLegalTopic(e.target.value)}>
+                <option>Privacy policy</option>
+                <option>Terms and conditions</option>
+                <option>Data removal request</option>
+                <option>Consent and communications</option>
+              </select>
+            </label>
+          ) : null}
+          {isFaqPage ? (
+            <label className="block">
+              <span className={labelClass}>Question category</span>
+              <select className={inputClass} value={questionType} onChange={(e) => setQuestionType(e.target.value)}>
+                <option>General question</option>
+                <option>Payments and deposits</option>
+                <option>Course availability</option>
+                <option>Transfers and logistics</option>
+              </select>
+            </label>
+          ) : null}
+          {isNewsletterPage ? (
+            <label className="block">
+              <span className={labelClass}>Update preference</span>
+              <select className={inputClass} value={updateType} onChange={(e) => setUpdateType(e.target.value)}>
+                <option>Course updates</option>
+                <option>Planning tips</option>
+                <option>Special offers</option>
+                <option>All newsletter updates</option>
+              </select>
+            </label>
+          ) : null}
+          {isTestimonialPage ? (
+            <label className="block">
+              <span className={labelClass}>Trip type</span>
+              <select className={inputClass} value={travelPartyType} onChange={(e) => setTravelPartyType(e.target.value)}>
+                <option>Golf group</option>
+                <option>Society trip</option>
+                <option>Family holiday</option>
+                <option>Corporate incentive</option>
+              </select>
+            </label>
+          ) : null}
+          {isGuidePage ? (
+            <label className="block">
+              <span className={labelClass}>Planned travel month (optional)</span>
+              <input
+                className={inputClass}
+                value={visitMonth}
+                onChange={(e) => setVisitMonth(e.target.value)}
+                placeholder="e.g. September 2026"
+              />
+            </label>
+          ) : null}
+          {!isLegalPage && !isFaqPage && !isNewsletterPage && !isTestimonialPage && !isGuidePage ? (
+            <>
+              <label className="block">
+                <span className={labelClass}>Travel dates (optional)</span>
+                <input
+                  className={inputClass}
+                  value={travelDates}
+                  onChange={(e) => setTravelDates(e.target.value)}
+                  placeholder="e.g. 15–19 Sept 2026"
+                />
+              </label>
+              <label className="block">
+                <span className={labelClass}>Group size (optional)</span>
+                <input
+                  className={inputClass}
+                  value={groupSize}
+                  onChange={(e) => setGroupSize(e.target.value)}
+                  placeholder="e.g. 8 golfers"
+                />
+              </label>
+            </>
+          ) : null}
           <label className="block">
-            <span className={labelClass}>Travel dates (optional)</span>
-            <input
-              className={inputClass}
-              value={travelDates}
-              onChange={(e) => setTravelDates(e.target.value)}
-              placeholder="e.g. 15–19 Sept 2026"
-            />
-          </label>
-          <label className="block">
-            <span className={labelClass}>Group size (optional)</span>
-            <input
-              className={inputClass}
-              value={groupSize}
-              onChange={(e) => setGroupSize(e.target.value)}
-              placeholder="e.g. 8 golfers"
-            />
-          </label>
-          <label className="block">
-            <span className={labelClass}>Notes (optional)</span>
+            <span className={labelClass}>{notesLabel}</span>
             <textarea
               className="min-h-[120px] w-full rounded-xl border border-ge-gray200 bg-white px-3.5 py-3 font-ge text-[1rem] leading-7 text-gs-dark outline-none transition-shadow placeholder:text-ge-gray300 focus:border-gs-green focus:ring-2 focus:ring-gs-green/25"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Tell us what matters most for your trip."
+              placeholder={notesPlaceholder}
             />
           </label>
 

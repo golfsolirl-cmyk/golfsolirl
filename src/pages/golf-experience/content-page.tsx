@@ -62,11 +62,9 @@ export function GeContentPage() {
                   transition={{ duration: 0.55, ease: 'easeOut' }}
                   className="max-w-3xl"
                 >
-                  {!isLegalHero ? (
-                    <span className="inline-flex items-center rounded-full border border-gs-gold/50 bg-gs-dark/40 px-3 py-1.5 font-ge text-[0.72rem] font-bold uppercase tracking-[0.16em] text-gs-gold">
-                      {page.eyebrow}
-                    </span>
-                  ) : null}
+                  <span className="inline-flex items-center rounded-full border border-gs-gold/50 bg-gs-dark/40 px-3 py-1.5 font-ge text-[0.72rem] font-bold uppercase tracking-[0.16em] text-gs-gold">
+                    {page.eyebrow}
+                  </span>
                   <h1 className="mt-4 font-ge text-[2.15rem] font-extrabold leading-[1.03] tracking-[-0.01em] text-white sm:text-[2.8rem] md:text-[3.25rem]">
                     {page.title}
                   </h1>
@@ -132,7 +130,13 @@ export function GeContentPage() {
             </div>
 
             <aside className="lg:sticky lg:top-36">
-              <GeQuickEnquiryForm title={page.formTitle} lead={page.formLead} interestPreset={page.interestPreset} />
+              <GeQuickEnquiryForm
+                title={page.formTitle}
+                lead={page.formLead}
+                pageEyebrow={page.eyebrow}
+                pageTitle={page.title}
+                interestPreset={page.interestPreset}
+              />
               <div className="mt-5 rounded-2xl border border-ge-gray100 bg-white p-5 shadow-[0_8px_20px_rgba(6,59,42,0.06)]">
                 <p className="font-ge text-sm font-bold uppercase tracking-[0.16em] text-ge-orange">Prefer to call?</p>
                 <a
