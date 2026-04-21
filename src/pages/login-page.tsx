@@ -32,13 +32,6 @@ export function LoginPage() {
   const [isSending, setIsSending] = useState(false)
   const [sent, setSent] = useState(false)
 
-  usePageMetadata({
-    title: 'Sign in',
-    description: 'Sign in to GolfSol Ireland to save packages and access your trip dashboard.',
-    canonicalPath: '/login',
-    noindex: true
-  })
-
   const params = new URLSearchParams(window.location.search)
   const queryError = params.get('error')
   const queryHint = params.get('hint')
