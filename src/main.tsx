@@ -16,7 +16,9 @@ import { ClientDocumentPage } from './pages/client-document-page'
 import { isFooterArticlePath } from './data/footer-article-pages'
 import { GolfExperienceHome } from './pages/golf-experience/golf-experience-home'
 import { TransportServicePage } from './pages/golf-experience/transport-service-page'
+import { GeContentPage } from './pages/golf-experience/content-page'
 import { ContinueTripPage } from './pages/continue-trip-page'
+import { isGeContentPagePath } from './pages/golf-experience/data/content-pages'
 import './index.css'
 
 function resolvePage() {
@@ -28,6 +30,10 @@ function resolvePage() {
 
   if (normalizedPath === '/services/transport') {
     return TransportServicePage
+  }
+
+  if (isGeContentPagePath(normalizedPath)) {
+    return GeContentPage
   }
 
   if (normalizedPath === '/continue-trip') {

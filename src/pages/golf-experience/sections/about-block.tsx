@@ -12,8 +12,8 @@ const fadeUp = {
 
 export function GeAboutBlock() {
   return (
-    <GeSection background="gray" className="pt-16 pb-16">
-      <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
+    <GeSection background="gray" className="pt-20 pb-20 sm:pt-24 sm:pb-24">
+      <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
         <motion.div
           className="relative isolate h-[min(460px,72vw)] w-full min-h-[280px] overflow-hidden rounded-sm shadow-[0_18px_40px_rgba(0,0,0,0.1)] sm:h-[min(460px,56vw)] sm:min-h-[320px] lg:h-[420px]"
           {...fadeUp}
@@ -48,7 +48,7 @@ export function GeAboutBlock() {
           <p className="font-ge text-sm font-bold uppercase tracking-[0.2em] text-ge-orange sm:text-[0.85rem]">
             {aboutCopy.eyebrow}
           </p>
-          <h2 className="mt-3 font-ge text-[2rem] font-extrabold uppercase leading-tight tracking-[0.02em] text-gs-green sm:text-[2.4rem]">
+          <h2 className="mt-4 font-ge text-[2.2rem] font-extrabold uppercase leading-[1.08] tracking-[0.01em] text-gs-green sm:text-[2.6rem]">
             {aboutCopy.title}
           </h2>
           <div className="mt-6 space-y-4">
@@ -58,8 +58,8 @@ export function GeAboutBlock() {
               </p>
             ))}
           </div>
-          <div className="mt-8">
-            <GeButton href="/#enquire" variant="gs-gold" size="md">
+          <div className="mt-10">
+            <GeButton href="/contact" variant="gs-gold" size="lg">
               {aboutCopy.cta}
             </GeButton>
           </div>
