@@ -85,7 +85,7 @@ export function GeDesignYourPackage() {
               <SmartEnquiryButton
                 intent="trip-planning"
                 sourceLabel="Homepage design-your-package"
-                notes="Golf, accommodation, and Malaga transfers"
+                notes="Golf, hotel options, Malaga transfers"
                 label="Start a smart WhatsApp quote"
                 variant="gs-gold"
                 size="lg"
