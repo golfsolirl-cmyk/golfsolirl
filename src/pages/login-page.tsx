@@ -5,6 +5,7 @@ import { SiteFooter } from '../components/site-footer'
 import { WaveDivider } from '../components/ui/wave-divider'
 import { integrationRegistry } from '../config/integrations'
 import { AUTH_NEXT_STORAGE_KEY, isSafeInternalPath } from '../lib/internal-redirect'
+import { usePageSeo } from '../lib/use-page-seo'
 import { useAuth } from '../providers/auth-provider'
 
 const loginFooterIntro =
@@ -30,6 +31,13 @@ const LoginHeroBackdrop = () => (
 )
 
 export function LoginPage() {
+  usePageSeo({
+    title: 'Sign in | Golf Sol Ireland',
+    description: 'Secure Golf Sol Ireland sign-in for saved packages and customer dashboards.',
+    path: '/login',
+    noIndex: true
+  })
+
   const footerRef = useRef<HTMLElement | null>(null)
   const { signInWithMagicLink, session, profile, isLoading, isSupabaseConfigured } = useAuth()
   const [email, setEmail] = useState('')

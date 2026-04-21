@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ArrowLeft, CheckCircle2 } from 'lucide-react'
+import { usePageSeo } from '../lib/use-page-seo'
 import { GOLF_SOL_TRIP_FLIGHT_PREFILL_KEY } from './golf-experience/components/already-booked-flight-panel'
 
 type TravelMode = 'flight' | 'arrived'
@@ -61,6 +62,13 @@ type SnapState = FlightSnap | null | undefined
 
 export function ContinueTripPage() {
   const [snap, setSnap] = useState<SnapState>(undefined)
+
+  usePageSeo({
+    title: 'Continue Trip Brief | Golf Sol Ireland',
+    description: 'Continue your Golf Sol Ireland trip brief with your saved arrival details.',
+    path: '/continue-trip',
+    noIndex: true
+  })
 
   useEffect(() => {
     try {
