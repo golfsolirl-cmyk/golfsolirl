@@ -1,6 +1,13 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { contactInfo } from '../data/copy'
+import { getGeContentPage } from '../data/content-pages'
+import {
+  buildContentPageWhatsAppMessage,
+  buildGeneralWhatsAppMessage,
+  buildTransportWhatsAppMessage,
+  buildWhatsAppHref
+} from '../../../lib/smart-enquiry'
 
 /**
  * Floating WhatsApp action button.
@@ -21,10 +28,7 @@ import { contactInfo } from '../data/copy'
  */
 
 const WHATSAPP_NUMBER = contactInfo.phoneTel.replace(/[^0-9]/g, '')
-const WHATSAPP_MESSAGE = encodeURIComponent(
-  "Hi GolfSol Ireland — I'd like a quote for a Costa del Sol golf trip."
-)
-const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`
+const WHATSAPP_BASE_URL = `https://wa.me/${WHATSAPP_NUMBER}`
 
 const MOBILE_BREAKPOINT_PX = 768
 
@@ -44,6 +48,42 @@ function WhatsappGlyph({ className }: { readonly className?: string }) {
 export function WhatsappFab() {
   const [isVisible, setIsVisible] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const whatsappHref = useMemo(() => {
+    const path = window.location.pathname.replace(/\/+$/, '') || '/'
+
+    if (path === '/services/transport') {
+      return buildWhatsAppHref(
+        WHATSAPP_BASE_URL,
+        buildTransportWhatsAppMessage({
+          sourceLabel: 'transport page'
+        })
+      )
+    }
+
+    const contentPage = getGeContentPage(path)
+    if (contentPage) {
+      return buildWhatsAppHref(
+        WHATSAPP_BASE_URL,
+        buildContentPageWhatsAppMessage({
+          pageTitle: contentPage.title,
+          interestPreset: contentPage.interestPreset
+        })
+      )
+    }
+
+    return buildWhatsAppHref(
+      WHATSAPP_BASE_URL,
+      buildGeneralWhatsAppMessage({
+        intro: "I'm interested in planning a Costa del Sol golf trip.",
+        detailLines: [
+          'Trip type: Golf holiday quote',
+          'Group size: 1 to 8 golfers',
+          'Help needed: Courses, hotel, and transfers'
+        ],
+        closing: 'Please send me the best next step.'
+      })
+    )
+  }, [])
 
   // Track viewport size + scroll position to decide visibility.
   useEffect(() => {
@@ -86,7 +126,7 @@ export function WhatsappFab() {
       {isVisible && (
         <motion.a
           key="whatsapp-fab"
-          href={WHATSAPP_URL}
+          href={whatsappHref}
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`Chat with GolfSol Ireland on WhatsApp at ${contactInfo.phoneDisplay}`}
@@ -111,7 +151,7 @@ export function WhatsappFab() {
 
           {/* Optional label that only appears on hover, desktop+ */}
           <span className="pointer-events-none absolute right-full mr-3 hidden whitespace-nowrap rounded-md border border-gs-gold/40 bg-gs-dark/95 px-3 py-1.5 font-ge text-xs font-extrabold uppercase tracking-[0.16em] text-gs-gold opacity-0 shadow-lg backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 md:block">
-            Chat on WhatsApp
+            Smart WhatsApp quote
           </span>
         </motion.a>
       )}

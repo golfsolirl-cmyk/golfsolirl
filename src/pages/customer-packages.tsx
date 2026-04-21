@@ -24,6 +24,7 @@ import {
 } from '../data/coastal-golf-data'
 import { footerSocialLinks, heroBackgroundImage } from '../data/site-content'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
+import { buildPackageWhatsAppMessage, buildWhatsAppHref } from '../lib/smart-enquiry'
 import { buildPackageConfig, defaultLabelForBuild } from '../lib/package-build'
 import { cx } from '../lib/utils'
 import { useAuth } from '../providers/auth-provider'
@@ -303,32 +304,27 @@ function CustomerPackagePage() {
   ])
 
   const packageEnquirySummary = useMemo(() => {
-    const lines = [
-      'Hi Golf Sol Ireland,',
-      '',
-      "I'm interested in a Costa del Sol golf package. Here's my calculator selection:",
-      '',
-      `Package style: ${selectedPackage.name}`,
-      `Stay level: ${selectedStay.name}`,
-      `Transfer: ${selectedTransfer.name}`,
-      `Group size: ${groupSize} golfers`,
-      `Trip: ${nights} nights / ${rounds} rounds`,
-      `Indicative per person: ${formatEuro(pricingSummary.estimatedPerPerson)}`,
-      `Indicative group total: ${formatEuro(pricingSummary.estimatedGroupTotal)}`,
-      `Deposit (20%): ${formatEuro(pricingSummary.depositAmount)}`
-    ]
+    const selectedCourseName = courseHotelPick.selectedCourse
+      ? (COURSES.find((c) => c.id === courseHotelPick.selectedCourse)?.name ?? courseHotelPick.selectedCourse)
+      : undefined
+    const selectedHotelName = courseHotelPick.selectedHotel
+      ? `${courseHotelPick.selectedHotel.name} (${courseHotelPick.selectedHotel.stars}★) · ${courseHotelPick.selectedHotel.dist}`
+      : undefined
 
-    const { selectedCourse, selectedHotel } = courseHotelPick
-    if (selectedCourse) {
-      const courseName = COURSES.find((c) => c.id === selectedCourse)?.name
-      lines.push(`Preferred course: ${courseName ?? selectedCourse}`)
-    }
-    if (selectedHotel) {
-      lines.push(`Preferred hotel: ${selectedHotel.name} (${selectedHotel.stars}★) · ${selectedHotel.dist}`)
-    }
-
-    lines.push('', 'Please get in touch to tailor this.')
-    return lines.join('\n')
+    return buildPackageWhatsAppMessage({
+      sourceLabel: 'packages calculator',
+      packageStyle: selectedPackage.name,
+      stayName: selectedStay.name,
+      transferName: selectedTransfer.name,
+      groupSize: `${groupSize} golfer${groupSize > 1 ? 's' : ''}`,
+      nights,
+      rounds,
+      perPersonPrice: formatEuro(pricingSummary.estimatedPerPerson),
+      groupTotal: formatEuro(pricingSummary.estimatedGroupTotal),
+      deposit: formatEuro(pricingSummary.depositAmount),
+      courseName: selectedCourseName,
+      hotelName: selectedHotelName
+    })
   }, [
     courseHotelPick,
     groupSize,
@@ -343,19 +339,7 @@ function CustomerPackagePage() {
   ])
 
   const packageEnquiryWhatsAppHref = useMemo(() => {
-    const WHATSAPP_TEXT_LIMIT = 1800
-    let text = packageEnquirySummary
-    if (text.length > WHATSAPP_TEXT_LIMIT) {
-      text = `${text.slice(0, WHATSAPP_TEXT_LIMIT - 3)}...`
-    }
-    try {
-      const u = new URL(whatsAppHref)
-      u.searchParams.set('text', text)
-      return u.toString()
-    } catch {
-      const sep = whatsAppHref.includes('?') ? '&' : '?'
-      return `${whatsAppHref}${sep}text=${encodeURIComponent(text)}`
-    }
+    return buildWhatsAppHref(whatsAppHref, packageEnquirySummary)
   }, [packageEnquirySummary, whatsAppHref])
 
   const packageEnquiryMailtoHref = useMemo(() => {

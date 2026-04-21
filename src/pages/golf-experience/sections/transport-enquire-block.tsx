@@ -1,9 +1,11 @@
+import { useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { CheckCircle2, MessageCircle, Phone } from 'lucide-react'
+import { CheckCircle2, MessageCircle, Phone, Sparkles } from 'lucide-react'
 import { GeSection } from '../components/ge-section'
 import { TransportHeroEnquiryForm } from '../components/transport-hero-enquiry-form'
 import { contactInfo } from '../data/copy'
 import { transportEnquireBlockCopy } from '../data/transport-service'
+import { buildTransportWhatsAppMessage, buildWhatsAppHref } from '../../../lib/smart-enquiry'
 
 const fadeUp = {
   initial: { opacity: 0, y: 18 },
@@ -20,9 +22,23 @@ const fadeUp = {
  * journey section above it.
  */
 export function TransportEnquireBlock() {
-  const whatsappHref = `https://wa.me/${contactInfo.phoneTel.replace('+', '')}?text=${encodeURIComponent(
-    'Hi GolfSol — looking for a Costa del Sol golf transfer.'
-  )}`
+  const conciergeWhatsappHref = useMemo(
+    () =>
+      buildWhatsAppHref(
+        `https://wa.me/${contactInfo.phoneTel.replace(/[^0-9]/g, '')}`,
+        buildTransportWhatsAppMessage({
+          sourceLabel: 'transport page',
+          journeyType: 'Airport to resort transfer',
+          collectionPoint: 'Malaga Airport',
+          destination: 'Marbella / Fuengirola / golf resort',
+          passengers: '1 to 8 people',
+          collectionTime: 'To be confirmed',
+          golfBags: 'Yes - golf bags travelling',
+          notes: 'Looking for the smoothest option.'
+        })
+      ),
+    []
+  )
 
   return (
     <GeSection
@@ -52,7 +68,7 @@ export function TransportEnquireBlock() {
               <span>{contactInfo.phoneDisplay}</span>
             </a>
             <a
-              href={whatsappHref}
+              href={conciergeWhatsappHref}
               target="_blank"
               rel="noreferrer"
               className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2.5 rounded-xl border-2 border-gs-green bg-white px-5 font-ge text-base font-bold uppercase tracking-[0.12em] text-gs-green transition-all hover:bg-gs-green hover:text-white sm:text-[0.9rem]"
@@ -60,6 +76,20 @@ export function TransportEnquireBlock() {
               <MessageCircle className="h-4 w-4" aria-hidden />
               WhatsApp us
             </a>
+          </div>
+
+          <div className="mt-5 rounded-2xl border border-gs-green/12 bg-gs-green/[0.04] p-4 sm:p-5">
+            <div className="flex items-start gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gs-green text-white shadow-[0_12px_28px_rgba(6,59,42,0.18)]">
+                <Sparkles className="h-5 w-5" aria-hidden />
+              </div>
+              <div>
+                <p className="font-ge text-sm font-bold uppercase tracking-[0.16em] text-ge-orange">Smart transport concierge</p>
+                <p className="mt-2 font-ge text-base leading-7 text-ge-gray500">
+                  Tap WhatsApp and we open a prewritten transfer brief with pickup, destination, passenger count, golf bags, and timing prompts already in place.
+                </p>
+              </div>
+            </div>
           </div>
 
           <ul className="mt-8 space-y-3 border-t border-gs-dark/10 pt-6">

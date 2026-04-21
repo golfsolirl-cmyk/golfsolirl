@@ -19,6 +19,7 @@ import { AnimatedStepKicker, SectionHeader } from '../components/ui/section-head
 import { WaveDivider } from '../components/ui/wave-divider'
 import { footerSocialLinks, heroBackgroundImage } from '../data/site-content'
 import { cx } from '../lib/utils'
+import { buildPackageWhatsAppMessage, buildWhatsAppHref } from '../lib/smart-enquiry'
 
 const packagePageLinks = ['Packages', 'Stays', 'Pricing', 'Enquire'] as const
 
@@ -125,7 +126,7 @@ function PackageAdminPage() {
   const [adminAccessCode, setAdminAccessCode] = useState('')
   const [loginError, setLoginError] = useState('')
   const footerRef = useRef<HTMLElement | null>(null)
-  const whatsAppHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
+  const whatsAppBaseHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
 
   const selectedAccommodation =
     accommodationOptions.find((option) => option.name === selectedAccommodationName) ?? accommodationOptions[1]
@@ -169,6 +170,34 @@ function PackageAdminPage() {
     selectedAccommodation.pricePerPersonPerNight,
     transferExtrasTotal
   ])
+
+  const packageAdminWhatsAppHref = useMemo(
+    () =>
+      buildWhatsAppHref(
+        whatsAppBaseHref,
+        buildPackageWhatsAppMessage({
+          sourceLabel: 'internal pricing studio',
+          packageStyle: selectedAccommodation.name,
+          stayName: selectedAccommodation.name,
+          transferName: 'Driver and transport pricing review',
+          groupSize: `${groupSize} golfers`,
+          nights,
+          rounds,
+          perPersonPrice: formatEuro(pricingSummary.sellPricePerPerson),
+          groupTotal: formatEuro(pricingSummary.revenueForGroup),
+          notes: 'Please review or tailor this quoted package.'
+        })
+      ),
+    [
+      groupSize,
+      nights,
+      pricingSummary.revenueForGroup,
+      pricingSummary.sellPricePerPerson,
+      rounds,
+      selectedAccommodation.name,
+      whatsAppBaseHref
+    ]
+  )
 
   const handleAcceptCookies = () => {
     localStorage.setItem('gsol-cookie-banner-dismissed', 'true')
@@ -295,7 +324,7 @@ function PackageAdminPage() {
   return (
     <div className="overflow-x-hidden bg-offwhite">
       <Navbar links={packagePageLinks} primaryCta="Make Enquiry" />
-      <FloatingWhatsAppButton hidden={isFooterInView} href={whatsAppHref} />
+      <FloatingWhatsAppButton hidden={isFooterInView} href={packageAdminWhatsAppHref} />
       <CookieBanner hidden={hasAcceptedCookies} onAccept={handleAcceptCookies} />
 
       <main>
@@ -658,7 +687,7 @@ function PackageAdminPage() {
                 </p>
 
                 <div className="mt-8 flex flex-wrap gap-4">
-                  <LuxuryButton href={whatsAppHref} rel="noreferrer" target="_blank">
+                  <LuxuryButton href={packageAdminWhatsAppHref} rel="noreferrer" target="_blank">
                     WhatsApp enquiry
                   </LuxuryButton>
                   <LuxuryButton href="mailto:hello@golfsolireland.com" variant="outline">

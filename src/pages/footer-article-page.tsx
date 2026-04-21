@@ -9,6 +9,7 @@ import { AnimatedStepKicker } from '../components/ui/section-header'
 import { WaveDivider } from '../components/ui/wave-divider'
 import { getFooterArticlePage } from '../data/footer-article-pages'
 import { footerSocialLinks, heroBackgroundImage, navLinks, primaryActions } from '../data/site-content'
+import { buildGeneralWhatsAppMessage, buildWhatsAppHref } from '../lib/smart-enquiry'
 import { cx } from '../lib/utils'
 import { CookieBanner, FloatingWhatsAppButton } from './packages'
 
@@ -29,7 +30,21 @@ function FooterArticlePage() {
   }, [])
 
   const page = useMemo(() => getFooterArticlePage(path), [path])
-  const whatsAppHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
+  const whatsAppBaseHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
+  const whatsAppHref = useMemo(() => {
+    if (!page) {
+      return whatsAppBaseHref
+    }
+
+    return buildWhatsAppHref(
+      whatsAppBaseHref,
+      buildGeneralWhatsAppMessage({
+        intro: `I'm enquiring from the "${page.heroTitle}" page.`,
+        detailLines: [`Topic: ${page.kicker}`, 'Help needed: Advice on packages, stays, and transfers'],
+        closing: 'Please point me to the best next step.'
+      })
+    )
+  }, [page, whatsAppBaseHref])
 
   useEffect(() => {
     if (!page) {

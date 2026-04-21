@@ -1,9 +1,10 @@
-import { useState, type FormEvent } from 'react'
+import { useMemo, useState, type FormEvent } from 'react'
 import { motion } from 'framer-motion'
 import { Send } from 'lucide-react'
 import { GeButton } from './ge-button'
 import { contactInfo } from '../data/copy'
 import { transportEnquiryFormCopy } from '../data/transport-service'
+import { buildTransportWhatsAppMessage, buildWhatsAppHref } from '../../../lib/smart-enquiry'
 
 const labelClass =
   'mb-1 block font-ge text-sm font-bold uppercase tracking-[0.18em] text-ge-gray500 sm:text-[0.85rem]'
@@ -34,6 +35,22 @@ export function TransportHeroEnquiryForm() {
   const [asap, setAsap] = useState(false)
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const whatsappHref = useMemo(() => {
+    const timing = asap ? 'ASAP - first available driver' : collectionTime.trim()
+    return buildWhatsAppHref(
+      `https://wa.me/${contactInfo.phoneTel.replace(/[^0-9]/g, '')}`,
+      buildTransportWhatsAppMessage({
+        sourceLabel: 'transport page',
+        journeyType: 'Private transfer quote',
+        collectionPoint,
+        destination,
+        passengers: passengers === 20 ? '16+' : passengers,
+        collectionTime: timing,
+        golfBags: 'Golf bags travelling with the group',
+        notes: fullName.trim() ? `Name: ${fullName.trim()}` : undefined
+      })
+    )
+  }, [asap, collectionPoint, collectionTime, destination, fullName, passengers])
 
   const resetIdle = () => {
     setStatus('idle')
@@ -284,10 +301,25 @@ export function TransportHeroEnquiryForm() {
               </p>
             ) : null}
 
-            <GeButton type="submit" variant="gs-green" size="md" className="w-full" disabled={status === 'submitting'}>
-              <Send className="h-4 w-4" aria-hidden />
-              {status === 'submitting' ? transportEnquiryFormCopy.sending : transportEnquiryFormCopy.submit}
-            </GeButton>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <GeButton type="submit" variant="gs-green" size="md" className="w-full" disabled={status === 'submitting'}>
+                <Send className="h-4 w-4" aria-hidden />
+                {status === 'submitting' ? transportEnquiryFormCopy.sending : transportEnquiryFormCopy.submit}
+              </GeButton>
+              <GeButton
+                href={whatsappHref}
+                variant="outline-gs-green"
+                size="md"
+                className="w-full"
+                rel="noreferrer"
+                target="_blank"
+              >
+                Open smart WhatsApp draft
+              </GeButton>
+            </div>
+            <p className="font-ge text-sm leading-6 text-ge-gray500">
+              Prefer WhatsApp? We preload your route, group size, and timing so you only tweak the final details.
+            </p>
           </form>
         )}
       </div>

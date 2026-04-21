@@ -53,6 +53,7 @@ import {
   trustSignals,
   transferFeatures
 } from './data/site-content'
+import { buildPackageWhatsAppMessage, buildWhatsAppHref } from './lib/smart-enquiry'
 import { cx } from './lib/utils'
 import {
   COURSES,
@@ -95,6 +96,14 @@ const quickTransferOptions: readonly {
   }
 ]
 
+const buildHomepageSelectionNote = (selectedHotelTier: HotelFilter) => {
+  if (selectedHotelTier === 'all') {
+    return 'I am open to hotel recommendations as part of the package.'
+  }
+
+  return `Please keep the stay around a ${selectedHotelTier}-star level.`
+}
+
 const transferServiceMoments = [
   {
     title: 'Airport pickups and drop-offs',
@@ -132,7 +141,7 @@ function App() {
   const [hasAcceptedCookies, setHasAcceptedCookies] = useState(true)
   const [isFooterInView, setIsFooterInView] = useState(false)
   const footerRef = useRef<HTMLElement | null>(null)
-  const whatsAppHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
+  const whatsAppBaseHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
 
   const filteredHotels = useMemo(() => {
     if (selectedHotelTier === 'all') {
@@ -171,6 +180,31 @@ function App() {
 
     return `/packages?${searchParams.toString()}`
   }, [courseHotelSelection, quickGroupSize, quickNights, quickRounds, quickTransfer, selectedHotelTier])
+
+  const homepageWhatsappHref = useMemo(() => {
+    const selectedCourseName = courseHotelSelection.selectedCourse
+      ? (COURSES.find((c) => c.id === courseHotelSelection.selectedCourse)?.name ?? courseHotelSelection.selectedCourse)
+      : undefined
+    const selectedHotelName = courseHotelSelection.selectedHotel
+      ? `${courseHotelSelection.selectedHotel.name} (${courseHotelSelection.selectedHotel.stars}★) · ${courseHotelSelection.selectedHotel.dist}`
+      : undefined
+
+    return buildWhatsAppHref(
+      whatsAppBaseHref,
+      buildPackageWhatsAppMessage({
+        sourceLabel: 'homepage package planner',
+        packageStyle: 'Tailored homepage enquiry',
+        stayName: selectedHotelTier === 'all' ? 'Open to recommendations' : `${selectedHotelTier}-star stay`,
+        transferName: quickTransferOptions.find((option) => option.value === quickTransfer)?.label ?? quickTransfer,
+        groupSize: `${quickGroupSize} golfer${quickGroupSize > 1 ? 's' : ''}`,
+        nights: quickNights,
+        rounds: quickRounds,
+        courseName: selectedCourseName,
+        hotelName: selectedHotelName,
+        notes: buildHomepageSelectionNote(selectedHotelTier)
+      })
+    )
+  }, [courseHotelSelection, quickGroupSize, quickNights, quickRounds, quickTransfer, selectedHotelTier, whatsAppBaseHref])
 
   const handleCourseHotelMapChange = useCallback((value: CourseHotelPickerValue) => {
     setCourseHotelSelection(value)
@@ -287,7 +321,7 @@ function App() {
   return (
     <div className="overflow-x-hidden bg-offwhite">
       <Navbar links={navLinks} primaryCta={primaryActions.planTrip} />
-      <FloatingWhatsAppButton hidden={isFooterInView} href={whatsAppHref} />
+      <FloatingWhatsAppButton hidden={isFooterInView} href={homepageWhatsappHref} />
       <CookieBanner hidden={hasAcceptedCookies} onAccept={handleAcceptCookies} />
 
       <main>
@@ -753,6 +787,9 @@ function App() {
                   <div className="mt-5 flex flex-wrap gap-3">
                     <LuxuryButton href={quickPackagesHref} showArrow>
                       Open full package page
+                    </LuxuryButton>
+                    <LuxuryButton href={homepageWhatsappHref} rel="noreferrer" target="_blank" variant="white">
+                      Send this plan on WhatsApp
                     </LuxuryButton>
                     <div className="rounded-full border border-forest-100 bg-offwhite px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-forest-900/68">
                       {quickGroupSize} golfers • {quickNights} nights • {quickRounds} rounds
