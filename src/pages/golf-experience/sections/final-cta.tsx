@@ -1,8 +1,22 @@
 import { GeButton } from '../components/ge-button'
 import { GeSection } from '../components/ge-section'
 import { contactInfo, finalCtaCopy } from '../data/copy'
+import { buildGeneralWhatsAppMessage, buildWhatsAppHref } from '../../../lib/smart-enquiry'
 
 export function GeFinalCta() {
+  const whatsappHref = buildWhatsAppHref(
+    `https://wa.me/${contactInfo.phoneTel.replace(/[^0-9]/g, '')}`,
+    buildGeneralWhatsAppMessage({
+      intro: "I'm enquiring from the homepage and would like help planning a Costa del Sol golf trip.",
+      detailLines: [
+        'Trip type: Golf holiday quote',
+        'Group size: 1 to 8 golfers',
+        'Help needed: Courses, hotel, and transfers'
+      ],
+      closing: 'Please send me the best next step.'
+    })
+  )
+
   return (
     <GeSection id="enquire" background="ink" className="pt-24 pb-24">
       <div className="text-center">
@@ -13,6 +27,9 @@ export function GeFinalCta() {
           Send your dates and group size and we will come back with a clear plan, quickly.
         </p>
         <div className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <GeButton href={whatsappHref} variant="gs-gold" size="lg" rel="noreferrer" target="_blank">
+            Smart WhatsApp Quote
+          </GeButton>
           <GeButton href={`mailto:${contactInfo.email}`} variant="gs-gold" size="lg">
             {finalCtaCopy.cta}
           </GeButton>

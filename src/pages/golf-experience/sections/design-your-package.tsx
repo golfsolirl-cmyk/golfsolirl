@@ -1,6 +1,10 @@
+import { useMemo } from 'react'
 import { motion } from 'framer-motion'
+import { MessageCircle } from 'lucide-react'
 import { GeAlreadyBookedFlightPanel } from '../components/already-booked-flight-panel'
-import { designYourPackage } from '../data/copy'
+import { GeButton } from '../components/ge-button'
+import { contactInfo, designYourPackage } from '../data/copy'
+import { buildGeneralWhatsAppMessage, buildWhatsAppHref } from '../../../lib/smart-enquiry'
 
 interface StepCard {
   readonly badge: string
@@ -51,6 +55,23 @@ export function GeDesignYourPackage() {
     }
   ]
 
+  const homepagePackageWhatsappHref = useMemo(
+    () =>
+      buildWhatsAppHref(
+        `https://wa.me/${contactInfo.phoneTel.replace(/[^0-9]/g, '')}`,
+        buildGeneralWhatsAppMessage({
+          intro: "I'm on the homepage and want help designing a Costa del Sol golf trip.",
+          detailLines: [
+            'Trip brief: Help me choose the right base, courses, hotel, and transfers',
+            'Group size: 1 to 8 golfers',
+            'Travel style: Irish-led package planning'
+          ],
+          closing: 'Please send me the best next step on WhatsApp.'
+        })
+      ),
+    []
+  )
+
   return (
     <section
       id="design-package"
@@ -69,6 +90,15 @@ export function GeDesignYourPackage() {
             Choose your destination · Choose your golf course · Choose your accommodation
           </p>
           <p className="mt-3 font-ge text-[1.05rem] italic text-white/85">{designYourPackage.closer}</p>
+          <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <GeButton href="/contact" variant="gs-gold" size="md">
+              Start with a quote
+            </GeButton>
+            <GeButton href={homepagePackageWhatsappHref} variant="outline-gs-white" size="md" rel="noreferrer" target="_blank">
+              <MessageCircle className="h-4 w-4" aria-hidden />
+              Plan it on WhatsApp
+            </GeButton>
+          </div>
         </motion.div>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
