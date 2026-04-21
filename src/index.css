@@ -1,19 +1,91 @@
-@import url('https://fonts.bunny.net/css?family=rubik:300,400,500,600,700,800,900|dancing-script:600,700|open-sans:300,400,600,700,800&display=swap');
+@import url('https://fonts.bunny.net/css?family=rubik:300,400,500,600,700,800,900|dancing-script:600,700|open-sans:300,400,600,700,800|inter:400,500,600,700,800|manrope:400,500,600,700,800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --theme-font-display: "Rubik";
+    --theme-font-body: "Rubik";
+    --theme-font-ge: "Open Sans";
+    --theme-font-scale: 1;
+    --theme-display-weight: 800;
+    --theme-body-weight: 400;
+    --theme-button-radius: 999px;
+    --theme-button-padding-x: 1.65rem;
+    --theme-button-padding-y: 0.95rem;
+    --theme-card-radius: 28px;
+    --theme-card-radius-sm: 20px;
+    --theme-card-radius-lg: 36px;
+    --theme-section-spacing-mobile: 5.5rem;
+    --theme-section-spacing-desktop: 7rem;
+    --theme-density: 1;
+    --theme-wave-speed: 12s;
+    --color-forest-950: 10 32 8;
+    --color-forest-900: 22 58 19;
+    --color-forest-800: 26 69 22;
+    --color-forest-700: 31 87 26;
+    --color-forest-600: 42 112 32;
+    --color-forest-500: 58 141 46;
+    --color-forest-400: 91 157 63;
+    --color-forest-300: 187 220 173;
+    --color-forest-200: 217 239 211;
+    --color-forest-100: 217 239 211;
+    --color-forest-50: 240 247 238;
+    --color-fairway-700: 49 102 25;
+    --color-fairway-600: 61 129 32;
+    --color-fairway-500: 80 163 45;
+    --color-fairway-400: 110 191 71;
+    --color-fairway-300: 163 220 127;
+    --color-fairway-200: 195 233 168;
+    --color-fairway-100: 227 245 211;
+    --color-fairway-50: 245 251 240;
+    --color-gold-700: 186 96 20;
+    --color-gold-600: 217 119 6;
+    --color-gold-500: 245 158 11;
+    --color-gold-400: 220 88 1;
+    --color-gold-300: 253 186 116;
+    --color-gold-200: 254 227 151;
+    --color-gold-100: 255 243 199;
+    --color-gold-50: 255 251 235;
+    --color-cream: 242 245 239;
+    --color-offwhite: 247 249 245;
+    --color-gs-green: 11 107 69;
+    --color-gs-green-light: 104 220 146;
+    --color-gs-dark: 6 59 42;
+    --color-gs-electric: 30 215 96;
+    --color-gs-gold: 255 199 44;
+    --color-gs-gold-light: 255 226 122;
+    --color-gs-bg: 244 247 245;
+    --shadow-glow: 0 24px 80px rgba(220, 88, 1, 0.18);
+    --shadow-soft: 0 18px 60px rgba(22, 58, 19, 0.12);
+    --shadow-gs-gold: 0 8px 22px rgba(255, 199, 44, 0.42);
+    --shadow-gs-gold-hover: 0 10px 28px rgba(255, 199, 44, 0.62);
+    --shadow-gs-green: 0 8px 22px rgba(11, 107, 69, 0.32);
+    --theme-panel-shadow: 0 24px 80px rgba(6, 59, 42, 0.2);
+  }
+
   html {
     scroll-behavior: smooth;
-    font-size: clamp(16.6px, 0.24vw + 15.9px, 18.3px);
+    font-size: calc(clamp(16.6px, 0.24vw + 15.9px, 18.3px) * var(--theme-font-scale));
   }
 
   body {
-    @apply bg-offwhite font-body text-forest-900 antialiased;
+    @apply bg-offwhite text-forest-900 antialiased;
+    font-family: var(--theme-font-body), system-ui, sans-serif;
+    font-weight: var(--theme-body-weight);
     line-height: 1.64;
     text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: var(--theme-display-weight);
   }
 
   * {
@@ -37,7 +109,16 @@
 
 @layer components {
   .section-shell {
-    @apply relative overflow-hidden px-6 py-20 md:py-28;
+    @apply relative overflow-hidden px-6;
+    padding-top: var(--theme-section-spacing-mobile);
+    padding-bottom: var(--theme-section-spacing-mobile);
+  }
+
+  @media (min-width: 768px) {
+    .section-shell {
+      padding-top: var(--theme-section-spacing-desktop);
+      padding-bottom: var(--theme-section-spacing-desktop);
+    }
   }
 
   .section-inner {
@@ -48,7 +129,7 @@
      IMPORTANT: keep selector specificity low so Tailwind utilities
      (text-white, text-ge-teal, etc.) always win for color. */
   .ge-page {
-    font-family: theme('fontFamily.ge');
+    font-family: var(--theme-font-ge), system-ui, sans-serif;
     color: theme('colors.gs.dark');
     background: theme('colors.gs.bg');
     line-height: 1.6;
@@ -68,11 +149,11 @@
   .ge-page h4,
   .ge-page h5,
   .ge-page h6 {
-    font-family: theme('fontFamily.ge');
+    font-family: var(--theme-font-ge), system-ui, sans-serif;
     line-height: 1.2;
   }
   .ge-page button {
-    font-family: theme('fontFamily.ge');
+    font-family: var(--theme-font-ge), system-ui, sans-serif;
   }
 }
 

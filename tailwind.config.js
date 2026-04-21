@@ -1,50 +1,60 @@
 /** @type {import('tailwindcss').Config} */
+const cssVarColor = (name) => `rgb(var(${name}) / <alpha-value>)`
+
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
         forest: {
-          950: '#0a2008',
-          900: '#163a13',
-          800: '#1a4516',
-          700: '#1f571a',
-          600: '#2a7020',
-          500: '#3a8d2e',
-          100: '#d9efd3',
-          50: '#f0f7ee'
+          950: cssVarColor('--color-forest-950'),
+          900: cssVarColor('--color-forest-900'),
+          800: cssVarColor('--color-forest-800'),
+          700: cssVarColor('--color-forest-700'),
+          600: cssVarColor('--color-forest-600'),
+          500: cssVarColor('--color-forest-500'),
+          400: cssVarColor('--color-forest-400'),
+          300: cssVarColor('--color-forest-300'),
+          200: cssVarColor('--color-forest-200'),
+          100: cssVarColor('--color-forest-100'),
+          50: cssVarColor('--color-forest-50')
         },
         fairway: {
-          700: '#316619',
-          600: '#3d8120',
-          500: '#50a32d',
-          400: '#6ebf47',
-          200: '#c3e9a8',
-          100: '#e3f5d3',
-          50: '#f5fbf0'
+          700: cssVarColor('--color-fairway-700'),
+          600: cssVarColor('--color-fairway-600'),
+          500: cssVarColor('--color-fairway-500'),
+          400: cssVarColor('--color-fairway-400'),
+          300: cssVarColor('--color-fairway-300'),
+          200: cssVarColor('--color-fairway-200'),
+          100: cssVarColor('--color-fairway-100'),
+          50: cssVarColor('--color-fairway-50')
         },
         gold: {
-          600: '#d97706',
-          500: '#f59e0b',
-          400: '#dc5801',
-          300: '#fdba74',
-          50: '#fffbeb'
+          700: cssVarColor('--color-gold-700'),
+          600: cssVarColor('--color-gold-600'),
+          500: cssVarColor('--color-gold-500'),
+          400: cssVarColor('--color-gold-400'),
+          300: cssVarColor('--color-gold-300'),
+          200: cssVarColor('--color-gold-200'),
+          100: cssVarColor('--color-gold-100'),
+          50: cssVarColor('--color-gold-50')
         },
         sky: {
           muted: '#e8f4fb',
           section: '#cce8f4',
           light: '#dbeafe'
         },
-        cream: '#f2f5ef',
-        offwhite: '#f7f9f5',
+        cream: cssVarColor('--color-cream'),
+        offwhite: cssVarColor('--color-offwhite'),
         // GolfSol Ireland sport-energy palette (used on the clone home `/`)
         gs: {
-          green: '#0B6B45',          // Primary Green — fresher, stronger
-          dark: '#063B2A',            // Dark Green — text & deep surfaces
-          electric: '#1ED760',        // Electric Green Accent — energy pop
-          gold: '#FFC72C',            // Gold — bright, sporty
-          'gold-light': '#FFE27A',    // Gold Highlight
-          bg: '#F4F7F5'               // Light turf background
+          green: cssVarColor('--color-gs-green'),
+          'green-light': cssVarColor('--color-gs-green-light'),
+          dark: cssVarColor('--color-gs-dark'),
+          electric: cssVarColor('--color-gs-electric'),
+          gold: cssVarColor('--color-gs-gold'),
+          'gold-light': cssVarColor('--color-gs-gold-light'),
+          bg: cssVarColor('--color-gs-bg')
         },
         ge: {
           teal: '#007C69',
@@ -65,20 +75,20 @@ export default {
         }
       },
       fontFamily: {
-        display: ['"Rubik"', 'system-ui', 'sans-serif'],
-        body: ['"Rubik"', 'system-ui', 'sans-serif'],
-        accent: ['"Rubik"', 'system-ui', 'sans-serif'],
+        display: ['var(--theme-font-display)', 'system-ui', 'sans-serif'],
+        body: ['var(--theme-font-body)', 'system-ui', 'sans-serif'],
+        accent: ['var(--theme-font-display)', 'system-ui', 'sans-serif'],
         script: ['"Rubik"', 'system-ui', 'sans-serif'],
         'brand-script': ['"Dancing Script"', 'cursive'],
-        'brand-serif': ['"Rubik"', 'system-ui', 'sans-serif'],
-        ge: ['"Open Sans"', 'system-ui', 'sans-serif']
+        'brand-serif': ['var(--theme-font-display)', 'system-ui', 'sans-serif'],
+        ge: ['var(--theme-font-ge)', 'system-ui', 'sans-serif']
       },
       boxShadow: {
-        glow: '0 24px 80px rgba(220, 88, 1, 0.18)',
-        soft: '0 18px 60px rgba(22, 58, 19, 0.12)',
-        'gs-gold': '0 8px 22px rgba(255,199,44,0.42)',
-        'gs-gold-hover': '0 10px 28px rgba(255,199,44,0.62)',
-        'gs-green': '0 8px 22px rgba(11,107,69,0.32)'
+        glow: 'var(--shadow-glow)',
+        soft: 'var(--shadow-soft)',
+        'gs-gold': 'var(--shadow-gs-gold)',
+        'gs-gold-hover': 'var(--shadow-gs-gold-hover)',
+        'gs-green': 'var(--shadow-gs-green)'
       },
       backgroundImage: {
         'hero-overlay':

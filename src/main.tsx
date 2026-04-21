@@ -13,18 +13,24 @@ import { AuthCallbackPage } from './pages/auth-callback-page'
 import { ClientDashboardPage } from './pages/client-dashboard-page'
 import { AdminDashboardPage } from './pages/admin-dashboard-page'
 import { ClientDocumentPage } from './pages/client-document-page'
+import { NotFoundPage } from './pages/not-found-page'
 import { isFooterArticlePath } from './data/footer-article-pages'
 import { GolfExperienceHome } from './pages/golf-experience/golf-experience-home'
 import { TransportServicePage } from './pages/golf-experience/transport-service-page'
 import { GeContentPage } from './pages/golf-experience/content-page'
 import { ContinueTripPage } from './pages/continue-trip-page'
 import { isGeContentPagePath } from './pages/golf-experience/data/content-pages'
+import { SiteThemeProvider } from './providers/site-theme-provider'
 import './index.css'
 
 function resolvePage() {
   const normalizedPath = window.location.pathname === '/' ? '/' : window.location.pathname.replace(/\/+$/, '')
 
   if (normalizedPath === '/') {
+    return GolfExperienceHome
+  }
+
+  if (normalizedPath === '/golf-sol') {
     return GolfExperienceHome
   }
 
@@ -38,10 +44,6 @@ function resolvePage() {
 
   if (normalizedPath === '/continue-trip') {
     return ContinueTripPage
-  }
-
-  if (normalizedPath === '/golf-sol') {
-    return App
   }
 
   if (normalizedPath === '/logo-preview') {
@@ -97,13 +99,15 @@ function resolvePage() {
     return FooterArticlePage
   }
 
-  return App
+  return NotFoundPage
 }
 
 const ActivePage = resolvePage()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <AuthProvider>
-    <ActivePage />
-  </AuthProvider>
+  <SiteThemeProvider>
+    <AuthProvider>
+      <ActivePage />
+    </AuthProvider>
+  </SiteThemeProvider>
 )

@@ -2,12 +2,14 @@ import { useMemo, useState, type FormEvent } from 'react'
 import { Send } from 'lucide-react'
 import { GeButton } from './ge-button'
 import { contactInfo } from '../data/copy'
+import type { MarketingEnquiryType, MarketingFormVariant } from '../../../data/marketing-page-types'
 
 interface GeQuickEnquiryFormProps {
   readonly title: string
   readonly lead: string
   readonly interestPreset: string
-  readonly enquiryType?: 'booking' | 'legal' | 'newsletter' | 'testimonial' | 'support'
+  readonly enquiryType?: MarketingEnquiryType
+  readonly formVariant?: MarketingFormVariant
 }
 
 const labelClass =
@@ -15,11 +17,15 @@ const labelClass =
 const inputClass =
   'h-12 w-full rounded-xl border border-ge-gray200 bg-white px-3.5 font-ge text-[1rem] text-gs-dark outline-none transition-shadow placeholder:text-ge-gray300 focus:border-gs-green focus:ring-2 focus:ring-gs-green/25'
 
+const compactLines = (lines: Array<string | null>) =>
+  lines.filter((line): line is string => Boolean(line && line.trim()))
+
 export function GeQuickEnquiryForm({
   title,
   lead,
   interestPreset,
-  enquiryType
+  enquiryType,
+  formVariant
 }: GeQuickEnquiryFormProps) {
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
@@ -32,41 +38,123 @@ export function GeQuickEnquiryForm({
   const [updateType, setUpdateType] = useState('Course updates')
   const [visitMonth, setVisitMonth] = useState('')
   const [travelPartyType, setTravelPartyType] = useState('Golf group')
+  const [tripStyle, setTripStyle] = useState('Group golf holiday')
+  const [preferredArea, setPreferredArea] = useState('Open to suggestions')
+  const [accommodationTier, setAccommodationTier] = useState('4-star hotel')
+  const [courseArea, setCourseArea] = useState('Open to suggestions')
+  const [handicapMix, setHandicapMix] = useState('')
+  const [playersNeedingClubs, setPlayersNeedingClubs] = useState('')
+  const [rentalTier, setRentalTier] = useState('Standard sets')
+  const [handedness, setHandedness] = useState('Mostly right-handed')
+  const [deliveryPoint, setDeliveryPoint] = useState('')
+  const [pickupPoint, setPickupPoint] = useState('')
+  const [destinationPoint, setDestinationPoint] = useState('')
+  const [passengerCount, setPassengerCount] = useState('')
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  const isLegalPage = enquiryType === 'legal'
-  const isFaqPage = interestPreset.toLowerCase().includes('faq')
-  const isNewsletterPage = enquiryType === 'newsletter'
-  const isTestimonialPage = enquiryType === 'testimonial'
-  const isGuidePage = interestPreset.toLowerCase().includes('guidance') || interestPreset.toLowerCase().includes('travel to')
-  const isBookingPage = enquiryType === 'booking'
-  const isSupportPage = enquiryType === 'support' || isFaqPage
+  const resolvedVariant = useMemo<MarketingFormVariant>(() => {
+    if (formVariant) {
+      return formVariant
+    }
+
+    if (enquiryType === 'legal') return 'legal'
+    if (enquiryType === 'newsletter') return 'newsletter'
+    if (enquiryType === 'testimonial') return 'testimonial'
+    if (enquiryType === 'support') return 'support'
+
+    const preset = interestPreset.toLowerCase()
+    if (preset.includes('golf club rental')) return 'club-rental'
+    if (preset.includes('accommodation') || preset.includes('hotel')) return 'accommodation'
+    if (preset.includes('transport')) return 'transport'
+    if (preset.includes('course') || preset.includes('tee time')) return 'courses'
+    if (preset.includes('guidance') || preset.includes('travel to')) return 'guide'
+    return 'quote'
+  }, [enquiryType, formVariant, interestPreset])
+
+  const isLegalPage = resolvedVariant === 'legal'
+  const isNewsletterPage = resolvedVariant === 'newsletter'
+  const isTestimonialPage = resolvedVariant === 'testimonial'
+  const isGuidePage = resolvedVariant === 'guide'
+  const isSupportPage = resolvedVariant === 'support'
+  const isClubRentalPage = resolvedVariant === 'club-rental'
+  const isCoursesPage = resolvedVariant === 'courses'
+  const isAccommodationPage = resolvedVariant === 'accommodation'
+  const isTransportPage = resolvedVariant === 'transport'
+  const isItineraryPage = resolvedVariant === 'itinerary'
+  const isQuotePage = resolvedVariant === 'quote'
+  const isPlanningVariant =
+    isQuotePage || isItineraryPage || isClubRentalPage || isCoursesPage || isAccommodationPage || isTransportPage
 
   const notesPlaceholder = useMemo(() => {
     if (isLegalPage) return 'Tell us your legal/privacy question.'
-    if (isFaqPage) return 'Tell us the exact question you need answered.'
+    if (isSupportPage) return 'Tell us exactly what you need help with.'
     if (isNewsletterPage) return 'Tell us what updates you care about most.'
     if (isTestimonialPage) return 'Share key highlights from your trip.'
     if (isGuidePage) return 'Tell us what travel guidance you need.'
-    if (isBookingPage) return 'Tell us what you need help booking.'
+    if (isClubRentalPage) {
+      return 'Delivery hotel, preferred brands, left-handed players, or anything else we should factor into the rental.'
+    }
+    if (isCoursesPage) {
+      return 'Tell us if you want marquee rounds, strong-value golf, buggy access, society-friendly pacing, or specific tee-time windows.'
+    }
+    if (isAccommodationPage) {
+      return 'Share room mix, nightlife vs quiet, board basis, location must-haves, or any hotel you already like.'
+    }
+    if (isTransportPage) {
+      return 'Add flight details, golf bag count, child seats, multiple stops, or anything else that affects the transfer plan.'
+    }
+    if (isItineraryPage || isQuotePage) {
+      return 'Tell us the must-play courses, hotel ideas, transfer needs, or how you want the week to feel.'
+    }
     return 'Tell us what matters most for your trip.'
-  }, [isBookingPage, isFaqPage, isGuidePage, isLegalPage, isNewsletterPage, isTestimonialPage])
+  }, [
+    isAccommodationPage,
+    isClubRentalPage,
+    isCoursesPage,
+    isGuidePage,
+    isItineraryPage,
+    isLegalPage,
+    isNewsletterPage,
+    isQuotePage,
+    isSupportPage,
+    isTestimonialPage,
+    isTransportPage
+  ])
 
   const notesLabel = useMemo(() => {
-    if (isLegalPage || isFaqPage || isGuidePage) return 'Question details'
+    if (isLegalPage || isSupportPage || isGuidePage) return 'Question details'
     if (isNewsletterPage) return 'Update request details'
     if (isTestimonialPage) return 'Testimonial details'
-    if (isBookingPage) return 'Booking notes'
+    if (isClubRentalPage) return 'Rental notes'
+    if (isCoursesPage) return 'Course brief'
+    if (isAccommodationPage) return 'Stay notes'
+    if (isTransportPage) return 'Transport notes'
+    if (isItineraryPage || isQuotePage) return 'Trip notes'
     return 'Notes (optional)'
-  }, [isBookingPage, isFaqPage, isGuidePage, isLegalPage, isNewsletterPage, isTestimonialPage])
+  }, [
+    isAccommodationPage,
+    isClubRentalPage,
+    isCoursesPage,
+    isGuidePage,
+    isItineraryPage,
+    isLegalPage,
+    isNewsletterPage,
+    isQuotePage,
+    isSupportPage,
+    isTestimonialPage,
+    isTransportPage
+  ])
+
+  const travelDatesLabel = isTransportPage ? 'Travel date / time' : 'Travel dates'
+  const travelDatesPlaceholder = isTransportPage ? 'e.g. 15 Sept 2026, 14:20 arrival' : 'e.g. 15–19 Sept 2026'
 
   const contextSummary = useMemo(() => {
     if (isLegalPage) {
       return `Legal topic: ${legalTopic}`
     }
-    if (isFaqPage || isSupportPage) {
-      return `FAQ category: ${questionType}`
+    if (isSupportPage) {
+      return `Support topic: ${questionType}`
     }
     if (isNewsletterPage) {
       return `Update preference: ${updateType}`
@@ -77,27 +165,78 @@ export function GeQuickEnquiryForm({
     if (isGuidePage) {
       return visitMonth.trim() ? `Planned travel month: ${visitMonth.trim()}` : 'Guide context: general'
     }
-    if (isBookingPage) {
-      const details = []
-      if (travelDates.trim()) details.push(`Travel dates: ${travelDates.trim()}`)
-      if (groupSize.trim()) details.push(`Group size: ${groupSize.trim()}`)
-      return details.length ? details.join(' | ') : 'Booking context: awaiting dates/group size'
+    if (isClubRentalPage) {
+      return compactLines([
+        travelDates.trim() ? `Travel dates: ${travelDates.trim()}` : null,
+        playersNeedingClubs.trim() ? `Players needing clubs: ${playersNeedingClubs.trim()}` : null,
+        `Rental tier: ${rentalTier}`,
+        `Handedness mix: ${handedness}`,
+        deliveryPoint.trim() ? `Delivery / handover point: ${deliveryPoint.trim()}` : null
+      ]).join(' | ')
+    }
+    if (isCoursesPage) {
+      return compactLines([
+        travelDates.trim() ? `Travel dates: ${travelDates.trim()}` : null,
+        groupSize.trim() ? `Group size: ${groupSize.trim()}` : null,
+        `Preferred course area: ${courseArea}`,
+        handicapMix.trim() ? `Handicap mix: ${handicapMix.trim()}` : null
+      ]).join(' | ')
+    }
+    if (isAccommodationPage) {
+      return compactLines([
+        travelDates.trim() ? `Travel dates: ${travelDates.trim()}` : null,
+        groupSize.trim() ? `Group size: ${groupSize.trim()}` : null,
+        `Stay level: ${accommodationTier}`,
+        `Preferred base: ${preferredArea}`
+      ]).join(' | ')
+    }
+    if (isTransportPage) {
+      return compactLines([
+        passengerCount.trim() ? `Passengers: ${passengerCount.trim()}` : null,
+        pickupPoint.trim() ? `Pickup point: ${pickupPoint.trim()}` : null,
+        destinationPoint.trim() ? `Destination: ${destinationPoint.trim()}` : null,
+        travelDates.trim() ? `Travel timing: ${travelDates.trim()}` : null
+      ]).join(' | ')
+    }
+    if (isItineraryPage || isQuotePage) {
+      return compactLines([
+        travelDates.trim() ? `Travel dates: ${travelDates.trim()}` : null,
+        groupSize.trim() ? `Group size: ${groupSize.trim()}` : null,
+        `Preferred base: ${preferredArea}`,
+        `Trip style: ${tripStyle}`
+      ]).join(' | ')
     }
     return ''
   }, [
-    isBookingPage,
-    isFaqPage,
+    accommodationTier,
+    courseArea,
+    deliveryPoint,
+    destinationPoint,
+    groupSize,
+    handicapMix,
+    handedness,
+    isAccommodationPage,
+    isClubRentalPage,
+    isCoursesPage,
     isGuidePage,
+    isItineraryPage,
     isLegalPage,
     isNewsletterPage,
+    isQuotePage,
     isSupportPage,
     isTestimonialPage,
+    isTransportPage,
     legalTopic,
+    passengerCount,
+    pickupPoint,
+    playersNeedingClubs,
+    preferredArea,
     questionType,
+    rentalTier,
+    travelDates,
+    tripStyle,
     updateType,
     travelPartyType,
-    travelDates,
-    groupSize,
     visitMonth
   ])
 
@@ -120,20 +259,59 @@ export function GeQuickEnquiryForm({
       setStatus('error')
       return
     }
+    if ((isQuotePage || isItineraryPage) && (!travelDates.trim() || !groupSize.trim())) {
+      setErrorMessage('Please add your travel dates and group size so we can shape the trip properly.')
+      setStatus('error')
+      return
+    }
+    if (isClubRentalPage && (!travelDates.trim() || !playersNeedingClubs.trim())) {
+      setErrorMessage('Please add the travel window and how many players need rental clubs.')
+      setStatus('error')
+      return
+    }
+    if (isCoursesPage && (!travelDates.trim() || !groupSize.trim())) {
+      setErrorMessage('Please add your dates and group size so we can send the right course shortlist.')
+      setStatus('error')
+      return
+    }
+    if (isAccommodationPage && (!travelDates.trim() || !groupSize.trim())) {
+      setErrorMessage('Please add your dates and group size so we can match the right hotels.')
+      setStatus('error')
+      return
+    }
+    if (isTransportPage && (!passengerCount.trim() || !pickupPoint.trim() || !destinationPoint.trim())) {
+      setErrorMessage('Please add passenger count, pickup point, and destination for transport planning.')
+      setStatus('error')
+      return
+    }
+    if ((isLegalPage || isSupportPage || isGuidePage || isTestimonialPage) && !notes.trim()) {
+      setErrorMessage('Please add a few details so we can respond properly.')
+      setStatus('error')
+      return
+    }
 
     setStatus('submitting')
     try {
-      const interestLines = [
-        interestPreset,
+      const interestLines = compactLines([
+        `Page intent: ${interestPreset}`,
         contextSummary || null,
-        !isLegalPage && !isSupportPage && !isNewsletterPage && !isTestimonialPage && !isGuidePage && travelDates.trim()
-          ? `Travel dates: ${travelDates.trim()}`
-          : null,
-        !isLegalPage && !isSupportPage && !isNewsletterPage && !isTestimonialPage && !isGuidePage && groupSize.trim()
-          ? `Group size: ${groupSize.trim()}`
-          : null,
+        isPlanningVariant && travelDates.trim() ? `${travelDatesLabel}: ${travelDates.trim()}` : null,
+        isPlanningVariant && groupSize.trim() ? `Group size: ${groupSize.trim()}` : null,
+        isClubRentalPage && playersNeedingClubs.trim() ? `Players needing clubs: ${playersNeedingClubs.trim()}` : null,
+        isClubRentalPage ? `Rental tier: ${rentalTier}` : null,
+        isClubRentalPage ? `Handedness mix: ${handedness}` : null,
+        isClubRentalPage && deliveryPoint.trim() ? `Delivery / handover point: ${deliveryPoint.trim()}` : null,
+        isCoursesPage ? `Preferred course area: ${courseArea}` : null,
+        isCoursesPage && handicapMix.trim() ? `Handicap mix: ${handicapMix.trim()}` : null,
+        isAccommodationPage ? `Stay level: ${accommodationTier}` : null,
+        isAccommodationPage ? `Preferred base: ${preferredArea}` : null,
+        isTransportPage && passengerCount.trim() ? `Passengers: ${passengerCount.trim()}` : null,
+        isTransportPage && pickupPoint.trim() ? `Pickup point: ${pickupPoint.trim()}` : null,
+        isTransportPage && destinationPoint.trim() ? `Destination: ${destinationPoint.trim()}` : null,
+        (isQuotePage || isItineraryPage) ? `Preferred base: ${preferredArea}` : null,
+        (isQuotePage || isItineraryPage) ? `Trip style: ${tripStyle}` : null,
         notes.trim() ? `Notes: ${notes.trim()}` : null
-      ].filter(Boolean)
+      ])
 
       const response = await fetch('/api/enquiry', {
         method: 'POST',
@@ -163,6 +341,18 @@ export function GeQuickEnquiryForm({
       setUpdateType('Course updates')
       setVisitMonth('')
       setTravelPartyType('Golf group')
+      setTripStyle('Group golf holiday')
+      setPreferredArea('Open to suggestions')
+      setAccommodationTier('4-star hotel')
+      setCourseArea('Open to suggestions')
+      setHandicapMix('')
+      setPlayersNeedingClubs('')
+      setRentalTier('Standard sets')
+      setHandedness('Mostly right-handed')
+      setDeliveryPoint('')
+      setPickupPoint('')
+      setDestinationPoint('')
+      setPassengerCount('')
     } catch (error) {
       setStatus('error')
       setErrorMessage(error instanceof Error ? error.message : 'Could not send your request right now.')
@@ -239,11 +429,13 @@ export function GeQuickEnquiryForm({
               </select>
             </label>
           ) : null}
-          {isFaqPage || isSupportPage ? (
+          {isSupportPage ? (
             <label className="block">
               <span className={labelClass}>Question category</span>
               <select className={inputClass} value={questionType} onChange={(e) => setQuestionType(e.target.value)}>
                 <option>General question</option>
+                <option>Quote and planning support</option>
+                <option>Existing booking help</option>
                 <option>Payments and deposits</option>
                 <option>Course availability</option>
                 <option>Transfers and logistics</option>
@@ -260,6 +452,191 @@ export function GeQuickEnquiryForm({
                 <option>All newsletter updates</option>
               </select>
             </label>
+          ) : null}
+          {isClubRentalPage ? (
+            <>
+              <label className="block">
+                <span className={labelClass}>Travel dates</span>
+                <input
+                  className={inputClass}
+                  value={travelDates}
+                  onChange={(e) => setTravelDates(e.target.value)}
+                  placeholder="e.g. 15–19 Sept 2026"
+                  required
+                />
+              </label>
+              <label className="block">
+                <span className={labelClass}>Players needing clubs</span>
+                <input
+                  className={inputClass}
+                  value={playersNeedingClubs}
+                  onChange={(e) => setPlayersNeedingClubs(e.target.value)}
+                  placeholder="e.g. 4 players"
+                  required
+                />
+              </label>
+              <label className="block">
+                <span className={labelClass}>Rental tier</span>
+                <select className={inputClass} value={rentalTier} onChange={(e) => setRentalTier(e.target.value)}>
+                  <option>Standard sets</option>
+                  <option>Premium sets</option>
+                  <option>Mix of standard and premium</option>
+                  <option>Open to recommendation</option>
+                </select>
+              </label>
+              <label className="block">
+                <span className={labelClass}>Handedness mix</span>
+                <select className={inputClass} value={handedness} onChange={(e) => setHandedness(e.target.value)}>
+                  <option>Mostly right-handed</option>
+                  <option>Includes left-handed players</option>
+                  <option>Women’s sets needed</option>
+                  <option>Mixed player profiles</option>
+                </select>
+              </label>
+              <label className="block">
+                <span className={labelClass}>Delivery / handover point (optional)</span>
+                <input
+                  className={inputClass}
+                  value={deliveryPoint}
+                  onChange={(e) => setDeliveryPoint(e.target.value)}
+                  placeholder="Hotel, resort, or arrival point"
+                />
+              </label>
+            </>
+          ) : null}
+          {isCoursesPage ? (
+            <>
+              <label className="block">
+                <span className={labelClass}>Travel dates</span>
+                <input
+                  className={inputClass}
+                  value={travelDates}
+                  onChange={(e) => setTravelDates(e.target.value)}
+                  placeholder="e.g. 15–19 Sept 2026"
+                  required
+                />
+              </label>
+              <label className="block">
+                <span className={labelClass}>Group size</span>
+                <input
+                  className={inputClass}
+                  value={groupSize}
+                  onChange={(e) => setGroupSize(e.target.value)}
+                  placeholder="e.g. 8 golfers"
+                  required
+                />
+              </label>
+              <label className="block">
+                <span className={labelClass}>Preferred course area</span>
+                <select className={inputClass} value={courseArea} onChange={(e) => setCourseArea(e.target.value)}>
+                  <option>Open to suggestions</option>
+                  <option>Marbella Golf Valley</option>
+                  <option>Sotogrande cluster</option>
+                  <option>Mijas and Fuengirola</option>
+                  <option>Mix across the coast</option>
+                </select>
+              </label>
+              <label className="block">
+                <span className={labelClass}>Handicap mix (optional)</span>
+                <input
+                  className={inputClass}
+                  value={handicapMix}
+                  onChange={(e) => setHandicapMix(e.target.value)}
+                  placeholder="e.g. 8–20 handicap mix"
+                />
+              </label>
+            </>
+          ) : null}
+          {isAccommodationPage ? (
+            <>
+              <label className="block">
+                <span className={labelClass}>Travel dates</span>
+                <input
+                  className={inputClass}
+                  value={travelDates}
+                  onChange={(e) => setTravelDates(e.target.value)}
+                  placeholder="e.g. 15–19 Sept 2026"
+                  required
+                />
+              </label>
+              <label className="block">
+                <span className={labelClass}>Group size</span>
+                <input
+                  className={inputClass}
+                  value={groupSize}
+                  onChange={(e) => setGroupSize(e.target.value)}
+                  placeholder="e.g. 8 golfers"
+                  required
+                />
+              </label>
+              <label className="block">
+                <span className={labelClass}>Stay level</span>
+                <select
+                  className={inputClass}
+                  value={accommodationTier}
+                  onChange={(e) => setAccommodationTier(e.target.value)}
+                >
+                  <option>3-star hotel</option>
+                  <option>4-star hotel</option>
+                  <option>5-star hotel</option>
+                  <option>Apartment-style stay</option>
+                  <option>Open to recommendation</option>
+                </select>
+              </label>
+              <label className="block">
+                <span className={labelClass}>Preferred base</span>
+                <select className={inputClass} value={preferredArea} onChange={(e) => setPreferredArea(e.target.value)}>
+                  <option>Open to suggestions</option>
+                  <option>Fuengirola</option>
+                  <option>Torremolinos</option>
+                  <option>Marbella / Nueva Andalucía</option>
+                  <option>Estepona / Sotogrande</option>
+                </select>
+              </label>
+            </>
+          ) : null}
+          {isTransportPage ? (
+            <>
+              <label className="block">
+                <span className={labelClass}>Passengers</span>
+                <input
+                  className={inputClass}
+                  value={passengerCount}
+                  onChange={(e) => setPassengerCount(e.target.value)}
+                  placeholder="e.g. 8 passengers with golf bags"
+                  required
+                />
+              </label>
+              <label className="block">
+                <span className={labelClass}>Pickup point</span>
+                <input
+                  className={inputClass}
+                  value={pickupPoint}
+                  onChange={(e) => setPickupPoint(e.target.value)}
+                  placeholder="Málaga Airport, hotel, or golf club"
+                  required
+                />
+              </label>
+              <label className="block">
+                <span className={labelClass}>Destination</span>
+                <input
+                  className={inputClass}
+                  value={destinationPoint}
+                  onChange={(e) => setDestinationPoint(e.target.value)}
+                  placeholder="Hotel, resort, or course"
+                  required
+                />
+              </label>
+              <label className="block">
+                <span className={labelClass}>{travelDatesLabel} (optional)</span>
+                <input
+                  className={inputClass}
+                  value={travelDates}
+                  onChange={(e) => setTravelDates(e.target.value)}
+                  placeholder={travelDatesPlaceholder}
+                />
+              </label>
+            </>
           ) : null}
           {isTestimonialPage ? (
             <label className="block">
@@ -283,25 +660,47 @@ export function GeQuickEnquiryForm({
               />
             </label>
           ) : null}
-          {!isLegalPage && !isSupportPage && !isNewsletterPage && !isTestimonialPage && !isGuidePage ? (
+          {isQuotePage || isItineraryPage ? (
             <>
               <label className="block">
-                <span className={labelClass}>Travel dates (optional)</span>
+                <span className={labelClass}>{travelDatesLabel}</span>
                 <input
                   className={inputClass}
                   value={travelDates}
                   onChange={(e) => setTravelDates(e.target.value)}
-                  placeholder="e.g. 15–19 Sept 2026"
+                  placeholder={travelDatesPlaceholder}
+                  required
                 />
               </label>
               <label className="block">
-                <span className={labelClass}>Group size (optional)</span>
+                <span className={labelClass}>Group size</span>
                 <input
                   className={inputClass}
                   value={groupSize}
                   onChange={(e) => setGroupSize(e.target.value)}
                   placeholder="e.g. 8 golfers"
+                  required
                 />
+              </label>
+              <label className="block">
+                <span className={labelClass}>Preferred base</span>
+                <select className={inputClass} value={preferredArea} onChange={(e) => setPreferredArea(e.target.value)}>
+                  <option>Open to suggestions</option>
+                  <option>Fuengirola</option>
+                  <option>Torremolinos</option>
+                  <option>Marbella / Nueva Andalucía</option>
+                  <option>Estepona / Sotogrande</option>
+                </select>
+              </label>
+              <label className="block">
+                <span className={labelClass}>Trip style</span>
+                <select className={inputClass} value={tripStyle} onChange={(e) => setTripStyle(e.target.value)}>
+                  <option>Group golf holiday</option>
+                  <option>Society trip</option>
+                  <option>Family golf holiday</option>
+                  <option>Corporate / incentive trip</option>
+                  <option>Open to recommendation</option>
+                </select>
               </label>
             </>
           ) : null}
@@ -312,6 +711,7 @@ export function GeQuickEnquiryForm({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder={notesPlaceholder}
+              required={isLegalPage || isSupportPage || isGuidePage || isTestimonialPage}
             />
           </label>
 

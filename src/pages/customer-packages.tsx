@@ -25,6 +25,7 @@ import {
 import { footerSocialLinks, heroBackgroundImage } from '../data/site-content'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { buildPackageConfig, defaultLabelForBuild } from '../lib/package-build'
+import { usePageSeo } from '../lib/use-page-seo'
 import { cx } from '../lib/utils'
 import { useAuth } from '../providers/auth-provider'
 import { CookieBanner, FloatingWhatsAppButton, formatEuro } from './packages'
@@ -194,6 +195,14 @@ const getInitialNumberParam = ({
 }
 
 function CustomerPackagePage() {
+  usePageSeo({
+    title: 'Golf Packages | Golf Sol Ireland',
+    description:
+      'Build Costa del Sol golf packages live with Golf Sol Ireland. Compare stays, rounds, transfers, and group totals on a premium package calculator.',
+    canonicalPath: '/packages',
+    ogImage: heroBackgroundImage
+  })
+
   const { session, isLoading: authLoading } = useAuth()
   const [selectedPackageName, setSelectedPackageName] = useState<string>(getInitialSelectedPackageName)
   const [selectedStayName, setSelectedStayName] = useState<string>(getInitialSelectedStayName)

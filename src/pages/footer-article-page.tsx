@@ -1,72 +1,113 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { motion } from 'framer-motion'
-import { CheckCircle2, Quote } from 'lucide-react'
-import { Navbar } from '../components/home/navbar'
-import { SiteFooter } from '../components/site-footer'
-import { LuxuryButton } from '../components/ui/button'
-import { AmbientGolfBall } from '../components/ui/ambient-golf-ball'
-import { AnimatedStepKicker } from '../components/ui/section-header'
-import { WaveDivider } from '../components/ui/wave-divider'
+import { useMemo } from 'react'
+import type { MarketingPageData } from '../data/marketing-page-types'
 import { getFooterArticlePage } from '../data/footer-article-pages'
-import { footerSocialLinks, heroBackgroundImage, navLinks, primaryActions } from '../data/site-content'
-import { cx } from '../lib/utils'
-import { CookieBanner, FloatingWhatsAppButton } from './packages'
+import { usePageSeo } from '../lib/use-page-seo'
+import { LuxuryButton } from '../components/ui/button'
+import { MarketingPageTemplate } from './golf-experience/components/marketing-page-template'
 
-const sectionShells = [
-  'section-shell bg-white pb-28 pt-24',
-  'section-shell bg-forest-50 pb-28 pt-24',
-  'section-shell bg-sky-muted pb-28 pt-24'
-] as const
+function toMarketingPageData(path: string, page: NonNullable<ReturnType<typeof getFooterArticlePage>>): MarketingPageData {
+  const isCoursePage =
+    path.includes('course') ||
+    path === '/featured-courses' ||
+    path === '/costa-del-sol-routing'
+  const isAccommodationPage = path.includes('hotel') || path.includes('accommodation')
+  const isTransportPage = path.includes('transfer') || path === '/airport-transfers'
+  const isLegalPage =
+    path === '/terms-and-conditions' || path === '/deposit-upfront' || path === '/final-balance-terms'
+  const isQuotePage = path === '/no-obligation-enquiry'
+
+  const formVariant = isLegalPage
+    ? 'legal'
+    : isTransportPage
+      ? 'transport'
+      : isCoursePage
+        ? 'courses'
+        : isAccommodationPage
+          ? 'accommodation'
+          : isQuotePage
+            ? 'quote'
+            : 'itinerary'
+
+  const heroImage = isTransportPage
+    ? '/images/transport-fleet-lineup.jpg'
+    : isAccommodationPage
+      ? '/images/transport-moment-resort.jpg'
+      : isCoursePage
+        ? '/images/about-golfsol-hero.jpg'
+        : '/images/transport-moment-arrivals.jpg'
+
+  const heroAlt = isTransportPage
+    ? 'GolfSol Ireland transport service for Costa del Sol golf groups.'
+    : isAccommodationPage
+      ? 'Costa del Sol accommodation for Irish golf groups.'
+      : isCoursePage
+        ? 'Costa del Sol golf course planning for Irish travellers.'
+        : 'GolfSol Ireland planning support for Costa del Sol golf trips.'
+
+  const highlights = isTransportPage
+    ? ['Irish-led transfer planning', 'Golf-bag friendly routing', 'Clear next-step support']
+    : isAccommodationPage
+      ? ['Hotel-fit advice for groups', 'Base selection without overload', 'Joined-up stay and golf planning']
+      : isCoursePage
+        ? ['Shortlists with real context', 'Routing that saves time', 'Fast replies for organisers']
+        : isLegalPage
+          ? ['Plain-language answers', 'Clear payment and change guidance', 'Irish-owned support']
+          : ['Irish-owned planning support', 'Clear next steps in plain English', 'Fast replies for organisers']
+
+  const formTitle = isTransportPage
+    ? 'Request transfer planning'
+    : isAccommodationPage
+      ? 'Request hotel options'
+      : isCoursePage
+        ? 'Request a course shortlist'
+        : isLegalPage
+          ? 'Ask about booking terms'
+          : isQuotePage
+            ? 'Start your no-obligation enquiry'
+            : 'Start planning your trip'
+
+  const formLead = isTransportPage
+    ? 'Tell us your route, dates, and group size and we will outline the cleanest transfer plan.'
+    : isAccommodationPage
+      ? 'Share your dates, group size, and preferred base and we will send hotel options that match the trip.'
+      : isCoursePage
+        ? 'Send your dates, group size, and preferred golf area and we will return a tighter shortlist.'
+        : isLegalPage
+          ? 'Send your question and we will clarify deposits, balances, or booking terms before you commit.'
+          : isQuotePage
+            ? 'Tell us the basics and we will come back with a clear next step without any pressure.'
+            : 'Share your dates, group profile, and priorities and we will shape the right next step.'
+
+  const interestPreset = page.interestPreset ?? page.heroTitle
+
+  return {
+    metaTitle: page.metaTitle,
+    metaDescription: page.metaDescription ?? page.heroBody,
+    canonicalPath: page.canonicalPath,
+    noIndex: page.noIndex,
+    eyebrow: page.kicker,
+    title: page.heroTitle,
+    subtitle: page.heroBody,
+    heroImage: page.heroImage ?? heroImage,
+    heroAlt: page.heroAlt ?? heroAlt,
+    highlights: page.highlights ?? highlights,
+    sections: page.sections,
+    formTitle: page.formTitle ?? formTitle,
+    formLead: page.formLead ?? formLead,
+    interestPreset,
+    enquiryType: page.enquiryType ?? (isLegalPage ? 'legal' : 'booking'),
+    formVariant: page.formVariant ?? formVariant,
+    asideQuote: page.asideQuote
+  }
+}
 
 function FooterArticlePage() {
-  const [hasAcceptedCookies, setHasAcceptedCookies] = useState(true)
-  const [isFooterInView, setIsFooterInView] = useState(false)
-  const footerRef = useRef<HTMLElement | null>(null)
-
   const path = useMemo(() => {
     const p = window.location.pathname.replace(/\/+$/, '')
     return p === '' ? '/' : p
   }, [])
 
   const page = useMemo(() => getFooterArticlePage(path), [path])
-  const whatsAppHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
-
-  useEffect(() => {
-    if (!page) {
-      return
-    }
-
-    document.title = page.metaTitle
-  }, [page])
-
-  useEffect(() => {
-    const dismissed = localStorage.getItem('gsol-cookie-banner-dismissed')
-    setHasAcceptedCookies(dismissed === 'true')
-  }, [])
-
-  useEffect(() => {
-    if (!footerRef.current) {
-      return
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsFooterInView(entry.isIntersecting)
-      },
-      { threshold: 0.2 }
-    )
-
-    observer.observe(footerRef.current)
-
-    return () => {
-      observer.disconnect()
-    }
-  }, [])
-
-  const handleAcceptCookies = () => {
-    localStorage.setItem('gsol-cookie-banner-dismissed', 'true')
-    setHasAcceptedCookies(true)
-  }
 
   if (!page) {
     return (
@@ -79,134 +120,17 @@ function FooterArticlePage() {
     )
   }
 
-  return (
-    <div className="overflow-x-hidden bg-offwhite">
-      <Navbar links={navLinks} primaryCta={primaryActions.planTrip} />
-      <FloatingWhatsAppButton hidden={isFooterInView} href={whatsAppHref} />
-      <CookieBanner hidden={hasAcceptedCookies} onAccept={handleAcceptCookies} />
+  const marketingPage: MarketingPageData = toMarketingPageData(path, page)
 
-      <main>
-        <section className="relative min-h-[56vh] overflow-hidden bg-forest-900 px-6 pb-28 pt-36 md:min-h-[60vh] md:pt-40">
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${heroBackgroundImage})` }}
-          />
-          <div aria-hidden="true" className="absolute inset-0 bg-hero-overlay" />
-          <div aria-hidden="true" className="absolute inset-0 bg-hero-bottom" />
-          <div
-            aria-hidden="true"
-            className="absolute inset-x-0 bottom-0 z-[1] h-32 bg-gradient-to-b from-transparent via-forest-950/40 to-forest-950/75"
-          />
-          <div aria-hidden="true" className="absolute right-[-100px] top-[-80px] h-72 w-72 rounded-full bg-fairway-500/18 blur-3xl md:h-80 md:w-80" />
-          <AmbientGolfBall className="right-[4%] top-[20%] opacity-90 lg:right-[7%]" size="md" tone="hero" variant="hero" />
+  usePageSeo({
+    title: marketingPage.metaTitle,
+    description: marketingPage.metaDescription,
+    canonicalPath: marketingPage.canonicalPath ?? path,
+    noIndex: marketingPage.noIndex,
+    ogImage: marketingPage.heroImage
+  })
 
-          <div className="relative z-10 mx-auto max-w-7xl">
-            <motion.div
-              animate={{ opacity: 1, y: 0 }}
-              initial={{ opacity: 0, y: 24 }}
-              transition={{ duration: 0.75, ease: 'easeOut' }}
-            >
-              <AnimatedStepKicker dark kicker={page.kicker} />
-              <h1 className="max-w-3xl font-display text-4xl font-black leading-tight tracking-tight text-white drop-shadow-[0_4px_28px_rgba(0,0,0,0.55)] md:text-5xl lg:text-6xl">
-                {page.heroTitle}
-              </h1>
-              <p className="mt-5 max-w-2xl text-base leading-relaxed text-white/90 drop-shadow-[0_2px_18px_rgba(0,0,0,0.5)] md:text-lg">
-                {page.heroBody}
-              </p>
-              <div className="mt-8 flex flex-wrap gap-4">
-                <LuxuryButton href="/packages" showArrow>
-                  View packages
-                </LuxuryButton>
-                <LuxuryButton href="/#plan-trip" variant="outline">
-                  {primaryActions.planTrip}
-                </LuxuryButton>
-              </div>
-            </motion.div>
-          </div>
-
-          <WaveDivider fill="#ffffff" />
-        </section>
-
-        {page.sections.map((section, index) => (
-          <section key={section.title} className={cx(sectionShells[index % sectionShells.length])}>
-            <div className="mx-auto max-w-7xl px-6">
-              <motion.div
-                className="max-w-3xl"
-                initial={{ opacity: 0, y: 28 }}
-                transition={{ duration: 0.65, ease: 'easeOut' }}
-                viewport={{ once: true, amount: 0.25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-              >
-                <p className="mb-3 text-base font-semibold uppercase tracking-[0.18em] text-gold-600">Golf Sol Ireland</p>
-                <h2 className="font-display text-3xl font-bold leading-tight tracking-[-0.03em] text-forest-900 md:text-4xl">{section.title}</h2>
-                <p className="mt-4 text-base leading-8 text-forest-900/70 md:text-lg">{section.body}</p>
-                {section.bullets && section.bullets.length > 0 ? (
-                  <ul className="mt-6 space-y-3">
-                    {section.bullets.map((line) => (
-                      <li key={line} className="flex items-start gap-3 text-base text-forest-900/74 md:text-lg">
-                        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-gold-500" aria-hidden="true" />
-                        <span>{line}</span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
-              </motion.div>
-            </div>
-          </section>
-        ))}
-
-        {page.asideQuote ? (
-          <section className="section-shell relative overflow-hidden bg-forest-900 pb-28 pt-24 text-white">
-            <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(80,163,45,0.2),transparent_42%),radial-gradient(circle_at_80%_80%,rgba(220,88,1,0.14),transparent_40%)]" />
-            <div className="relative z-10 mx-auto max-w-7xl px-6">
-              <motion.div
-                className="mx-auto max-w-3xl text-center"
-                initial={{ opacity: 0, y: 20 }}
-                transition={{ duration: 0.7 }}
-                viewport={{ once: true }}
-                whileInView={{ opacity: 1, y: 0 }}
-              >
-                <Quote className="mx-auto h-10 w-10 text-gold-300/80" aria-hidden="true" />
-                <p className="mt-6 font-display text-2xl font-semibold leading-snug text-white md:text-3xl">{page.asideQuote.text}</p>
-                <p className="mt-4 text-base font-medium uppercase tracking-[0.2em] text-white/52">{page.asideQuote.attribution}</p>
-              </motion.div>
-            </div>
-          </section>
-        ) : null}
-
-        <section className="section-shell bg-cream pb-28 pt-24">
-          <div className="mx-auto max-w-7xl px-6 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.65 }}
-              viewport={{ once: true }}
-              whileInView={{ opacity: 1, y: 0 }}
-            >
-              <h2 className="font-display text-3xl font-bold text-forest-900 md:text-4xl">Ready when you are</h2>
-              <p className="mx-auto mt-4 max-w-xl text-base leading-8 text-forest-900/68 md:text-lg">
-                Tell us your dates and group — we will come back with a sensible next step, usually by email, phone, or WhatsApp.
-              </p>
-              <div className="mt-8 flex flex-wrap justify-center gap-4">
-                <LuxuryButton href="/#plan-trip" showArrow>
-                  Start your enquiry
-                </LuxuryButton>
-                <LuxuryButton href="/" variant="white">
-                  Back to home
-                </LuxuryButton>
-              </div>
-            </motion.div>
-          </div>
-        </section>
-      </main>
-
-      <SiteFooter
-        copyrightNote="Golf travel planning for Irish groups heading to the Costa del Sol."
-        footerRef={footerRef}
-        intro="Golf Sol Ireland exists for golfers who want the Costa del Sol done properly: better courses, smarter stays, and a smoother trip from first enquiry to final round."
-      />
-    </div>
-  )
+  return <MarketingPageTemplate page={marketingPage} />
 }
 
 export { FooterArticlePage }

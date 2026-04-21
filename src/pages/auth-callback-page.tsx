@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { AUTH_NEXT_STORAGE_KEY, isSafeInternalPath } from '../lib/internal-redirect'
+import { usePageSeo } from '../lib/use-page-seo'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 
 const emailOtpTypes = ['signup', 'invite', 'magiclink', 'recovery', 'email_change', 'email'] as const
@@ -36,6 +37,13 @@ const resolvePostLoginPath = (search: URLSearchParams): string => {
 
 export function AuthCallbackPage() {
   const [message, setMessage] = useState('Completing sign-in…')
+
+  usePageSeo({
+    title: 'Completing sign-in | Golf Sol Ireland',
+    description: 'Completing your Golf Sol Ireland sign-in securely.',
+    canonicalPath: '/auth/callback',
+    noIndex: true
+  })
 
   useEffect(() => {
     const supabase = getSupabaseBrowserClient()

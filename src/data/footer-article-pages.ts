@@ -6,10 +6,32 @@ export type FooterArticleSection = {
 
 export type FooterArticleContent = {
   readonly metaTitle: string
+  readonly metaDescription?: string
+  readonly canonicalPath?: string
+  readonly noIndex?: boolean
   readonly kicker: string
   readonly heroTitle: string
   readonly heroBody: string
+  readonly heroImage?: string
+  readonly heroAlt?: string
+  readonly highlights?: readonly string[]
   readonly sections: readonly FooterArticleSection[]
+  readonly formTitle?: string
+  readonly formLead?: string
+  readonly interestPreset?: string
+  readonly enquiryType?: 'booking' | 'legal' | 'newsletter' | 'testimonial' | 'support'
+  readonly formVariant?:
+    | 'quote'
+    | 'club-rental'
+    | 'courses'
+    | 'accommodation'
+    | 'transport'
+    | 'itinerary'
+    | 'guide'
+    | 'legal'
+    | 'newsletter'
+    | 'testimonial'
+    | 'support'
   readonly asideQuote?: { readonly text: string; readonly attribution: string }
 }
 

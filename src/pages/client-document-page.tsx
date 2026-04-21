@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Download, LoaderCircle } from 'lucide-react'
 import { PdfSiteShell } from '../components/pdf-site-shell'
+import { usePageSeo } from '../lib/use-page-seo'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { saveElementAsPdf } from '../lib/save-element-as-pdf'
 import { useAuth } from '../providers/auth-provider'
@@ -67,6 +68,7 @@ export function ClientDocumentPage() {
     if (variant === 'welcome') {
       return {
         title: 'Thank you for choosing Golf Sol Ireland',
+        description: 'Private Golf Sol Ireland thank-you document for clients.',
         filename: 'golf-sol-ireland-thank-you',
         kicker: 'A note from our team'
       }
@@ -74,10 +76,18 @@ export function ClientDocumentPage() {
 
     return {
       title: 'Terms & conditions',
+      description: 'Private Golf Sol Ireland terms and conditions document for clients.',
       filename: 'golf-sol-ireland-terms-and-conditions',
       kicker: 'Important information'
     }
   }, [variant])
+
+  usePageSeo({
+    title: `${meta.title} | Golf Sol Ireland`,
+    description: meta.description,
+    canonicalPath: window.location.pathname,
+    noIndex: true
+  })
 
   const handleSavePdf = async () => {
     const node = rootRef.current
