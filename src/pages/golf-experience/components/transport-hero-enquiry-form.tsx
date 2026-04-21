@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Send } from 'lucide-react'
 import { GeButton } from './ge-button'
 import { contactInfo } from '../data/copy'
+import { SmartEnquiryButton } from './smart-enquiry-button'
 import { transportEnquiryFormCopy } from '../data/transport-service'
 
 const labelClass =
@@ -288,6 +289,18 @@ export function TransportHeroEnquiryForm() {
               <Send className="h-4 w-4" aria-hidden />
               {status === 'submitting' ? transportEnquiryFormCopy.sending : transportEnquiryFormCopy.submit}
             </GeButton>
+            <SmartEnquiryButton
+              intent="transport"
+              sourceLabel="Transport enquiry form"
+              from={collectionPoint}
+              to={destination}
+              passengers={passengers}
+              timing={asap ? 'ASAP (first available driver)' : collectionTime}
+              notes="Golf-bag friendly transfer enquiry"
+              variant="outline-gs-green"
+              size="md"
+              className="w-full"
+            />
           </form>
         )}
       </div>

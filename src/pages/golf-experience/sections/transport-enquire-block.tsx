@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { CheckCircle2, MessageCircle, Phone } from 'lucide-react'
 import { GeSection } from '../components/ge-section'
+import { SmartEnquiryButton } from '../components/smart-enquiry-button'
 import { TransportHeroEnquiryForm } from '../components/transport-hero-enquiry-form'
 import { contactInfo } from '../data/copy'
 import { transportEnquireBlockCopy } from '../data/transport-service'
@@ -20,10 +21,6 @@ const fadeUp = {
  * journey section above it.
  */
 export function TransportEnquireBlock() {
-  const whatsappHref = `https://wa.me/${contactInfo.phoneTel.replace('+', '')}?text=${encodeURIComponent(
-    'Hi GolfSol — looking for a Costa del Sol golf transfer.'
-  )}`
-
   return (
     <GeSection
       id="transport-enquire"
@@ -51,15 +48,31 @@ export function TransportEnquireBlock() {
               <Phone className="h-4 w-4" aria-hidden />
               <span>{contactInfo.phoneDisplay}</span>
             </a>
-            <a
-              href={whatsappHref}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2.5 rounded-xl border-2 border-gs-green bg-white px-5 font-ge text-base font-bold uppercase tracking-[0.12em] text-gs-green transition-all hover:bg-gs-green hover:text-white sm:text-[0.9rem]"
-            >
-              <MessageCircle className="h-4 w-4" aria-hidden />
-              WhatsApp us
-            </a>
+            <SmartEnquiryButton
+              intent="transport"
+              sourceLabel="Transport enquiry block"
+              label="WhatsApp a transfer brief"
+              notes="Looking for a Costa del Sol golf transfer"
+              variant="outline-gs-green"
+              size="md"
+              className="w-full flex-1 rounded-xl"
+              containerClassName="flex-1"
+            />
+          </div>
+
+          <div className="mt-4 rounded-2xl border border-gs-green/12 bg-white/80 p-4">
+            <div className="flex items-start gap-3">
+              <MessageCircle className="mt-1 h-5 w-5 shrink-0 text-gs-green" aria-hidden />
+              <div>
+                <p className="font-ge text-[0.8rem] font-bold uppercase tracking-[0.16em] text-ge-orange">
+                  Smart WhatsApp idea
+                </p>
+                <p className="mt-2 font-ge text-base leading-7 text-ge-gray500">
+                  Visitors can tap WhatsApp here for a prebuilt transfer brief, then simply edit from/to, date, and
+                  passenger count before sending.
+                </p>
+              </div>
+            </div>
           </div>
 
           <ul className="mt-8 space-y-3 border-t border-gs-dark/10 pt-6">

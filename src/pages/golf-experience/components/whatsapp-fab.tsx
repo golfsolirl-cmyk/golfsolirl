@@ -1,6 +1,11 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { contactInfo } from '../data/copy'
+import {
+  buildSmartWhatsAppUrl,
+  getSmartEnquiryMeta,
+  resolveSmartEnquiryIntent
+} from '../data/smart-enquiry'
 
 /**
  * Floating WhatsApp action button.
@@ -20,12 +25,6 @@ import { contactInfo } from '../data/copy'
  *     screaming for attention.
  */
 
-const WHATSAPP_NUMBER = contactInfo.phoneTel.replace(/[^0-9]/g, '')
-const WHATSAPP_MESSAGE = encodeURIComponent(
-  "Hi GolfSol Ireland — I'd like a quote for a Costa del Sol golf trip."
-)
-const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`
-
 const MOBILE_BREAKPOINT_PX = 768
 
 function WhatsappGlyph({ className }: { readonly className?: string }) {
@@ -44,6 +43,15 @@ function WhatsappGlyph({ className }: { readonly className?: string }) {
 export function WhatsappFab() {
   const [isVisible, setIsVisible] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const intent = typeof window !== 'undefined' ? resolveSmartEnquiryIntent(window.location.pathname) : 'trip-planning'
+  const meta = getSmartEnquiryMeta(intent)
+  const whatsappUrl =
+    typeof window !== 'undefined'
+      ? buildSmartWhatsAppUrl({
+          intent,
+          sourceLabel: `${meta.title} page`
+        })
+      : `https://wa.me/${contactInfo.phoneTel.replace(/[^0-9]/g, '')}`
 
   // Track viewport size + scroll position to decide visibility.
   useEffect(() => {
@@ -86,10 +94,10 @@ export function WhatsappFab() {
       {isVisible && (
         <motion.a
           key="whatsapp-fab"
-          href={WHATSAPP_URL}
+          href={whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`Chat with GolfSol Ireland on WhatsApp at ${contactInfo.phoneDisplay}`}
+          aria-label={`${meta.fabLabel} with GolfSol Ireland on WhatsApp at ${contactInfo.phoneDisplay}`}
           className="group fixed bottom-5 right-5 z-[60] inline-flex h-14 w-14 items-center justify-center rounded-full bg-gs-dark text-gs-gold shadow-[0_8px_24px_rgba(0,0,0,0.35),0_0_0_1px_rgba(255,199,44,0.55)] ring-1 ring-gs-gold/70 transition-all duration-300 hover:scale-105 hover:bg-[#063B2A] hover:text-gs-gold-light hover:shadow-[0_12px_32px_rgba(0,0,0,0.45),0_0_0_2px_rgba(255,226,122,0.7)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gs-gold focus-visible:ring-offset-2 focus-visible:ring-offset-gs-dark sm:bottom-6 sm:right-6 md:h-16 md:w-16"
           initial={{ opacity: 0, scale: 0.6, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -111,7 +119,7 @@ export function WhatsappFab() {
 
           {/* Optional label that only appears on hover, desktop+ */}
           <span className="pointer-events-none absolute right-full mr-3 hidden whitespace-nowrap rounded-md border border-gs-gold/40 bg-gs-dark/95 px-3 py-1.5 font-ge text-xs font-extrabold uppercase tracking-[0.16em] text-gs-gold opacity-0 shadow-lg backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 md:block">
-            Chat on WhatsApp
+            {meta.fabLabel}
           </span>
         </motion.a>
       )}

@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion'
+import { MessageCircle } from 'lucide-react'
 import { GeAlreadyBookedFlightPanel } from '../components/already-booked-flight-panel'
+import { SmartEnquiryButton } from '../components/smart-enquiry-button'
 import { designYourPackage } from '../data/copy'
 
 interface StepCard {
@@ -69,6 +71,36 @@ export function GeDesignYourPackage() {
             Choose your destination · Choose your golf course · Choose your accommodation
           </p>
           <p className="mt-3 font-ge text-[1.05rem] italic text-white/85">{designYourPackage.closer}</p>
+          <div className="mx-auto mt-8 max-w-3xl rounded-[1.6rem] border border-white/15 bg-white/10 p-5 text-left shadow-[0_20px_48px_rgba(0,0,0,0.18)] backdrop-blur-xl sm:p-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="max-w-xl">
+                <p className="font-ge text-sm font-bold uppercase tracking-[0.2em] text-gs-gold">Smart idea</p>
+                <h3 className="mt-2 font-ge text-[1.45rem] font-extrabold leading-tight text-white sm:text-[1.7rem]">
+                  Open WhatsApp with your trip brief already drafted
+                </h3>
+                <p className="mt-2 font-ge text-base leading-7 text-white/82">
+                  Great for mobile visitors who know roughly what they need but do not want to fill a long form yet.
+                </p>
+              </div>
+              <SmartEnquiryButton
+                intent="trip-planning"
+                sourceLabel="Homepage design-your-package"
+                notes="Golf, accommodation, and Malaga transfers"
+                label="Start a smart WhatsApp quote"
+                variant="gs-gold"
+                size="lg"
+                className="w-full sm:w-auto"
+              />
+            </div>
+            <div className="mt-4 grid gap-3 text-sm text-white/78 sm:grid-cols-3">
+              <p className="rounded-xl border border-white/10 bg-black/10 px-3 py-2 font-ge">
+                <MessageCircle className="mr-2 inline h-4 w-4 text-gs-gold" aria-hidden />
+                Prompt asks for dates
+              </p>
+              <p className="rounded-xl border border-white/10 bg-black/10 px-3 py-2 font-ge">Prompt asks for group size</p>
+              <p className="rounded-xl border border-white/10 bg-black/10 px-3 py-2 font-ge">Prompt asks what still needs booking</p>
+            </div>
+          </div>
         </motion.div>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">

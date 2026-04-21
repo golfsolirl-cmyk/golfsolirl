@@ -8,6 +8,7 @@ interface GeQuickEnquiryFormProps {
   readonly lead: string
   readonly interestPreset: string
   readonly enquiryType?: 'booking' | 'legal' | 'newsletter' | 'testimonial' | 'support'
+  readonly sourceLabel?: string
 }
 
 const labelClass =
@@ -19,7 +20,8 @@ export function GeQuickEnquiryForm({
   title,
   lead,
   interestPreset,
-  enquiryType
+  enquiryType,
+  sourceLabel
 }: GeQuickEnquiryFormProps) {
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
@@ -125,6 +127,7 @@ export function GeQuickEnquiryForm({
     try {
       const interestLines = [
         interestPreset,
+        sourceLabel ? `Page: ${sourceLabel}` : null,
         contextSummary || null,
         !isLegalPage && !isSupportPage && !isNewsletterPage && !isTestimonialPage && !isGuidePage && travelDates.trim()
           ? `Travel dates: ${travelDates.trim()}`

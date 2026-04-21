@@ -1,4 +1,4 @@
-import { GeButton } from '../components/ge-button'
+import { SmartEnquiryButton } from '../components/smart-enquiry-button'
 import { GeHotelCard } from '../components/hotel-card'
 import { GeSection } from '../components/ge-section'
 import { hotelListsCopy } from '../data/copy'
@@ -20,10 +20,18 @@ export function GeAccommodationSpain() {
         ))}
       </div>
 
-      <div className="mt-12 flex justify-center">
-        <GeButton href="/accommodation" variant="gs-gold" size="md">
-          {hotelListsCopy.cta}
-        </GeButton>
+      <div className="mt-12 flex flex-col items-center gap-3">
+        <SmartEnquiryButton
+          intent="accommodation"
+          sourceLabel="Homepage accommodation section"
+          label={hotelListsCopy.cta}
+          notes="Need hotel and stay-and-play ideas"
+          variant="gs-gold"
+          size="md"
+        />
+        <p className="max-w-xl text-center font-ge text-sm leading-6 text-ge-gray500">
+          Smart hotel brief opens with dates, group size, and preferred base already framed for WhatsApp.
+        </p>
       </div>
     </GeSection>
   )

@@ -1,4 +1,5 @@
 import { GeButton } from '../components/ge-button'
+import { SmartEnquiryButton } from '../components/smart-enquiry-button'
 import { GeCourseCard } from '../components/course-card'
 import { GeSection } from '../components/ge-section'
 import { courseListsCopy } from '../data/copy'
@@ -24,10 +25,17 @@ export function GeCoursesSpain() {
         {courseListsCopy.manyMore}
       </p>
 
-      <div className="mt-8 flex justify-center">
+      <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
         <GeButton href="/golf-courses" variant="gs-gold" size="md">
           {courseListsCopy.cta}
         </GeButton>
+        <SmartEnquiryButton
+          intent="courses"
+          sourceLabel="Homepage course shortlist"
+          notes="We want help choosing the right Costa del Sol courses"
+          label="WhatsApp our course shortlist"
+          size="md"
+        />
       </div>
     </GeSection>
   )

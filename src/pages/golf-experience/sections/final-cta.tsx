@@ -1,4 +1,5 @@
 import { GeButton } from '../components/ge-button'
+import { SmartEnquiryButton } from '../components/smart-enquiry-button'
 import { GeSection } from '../components/ge-section'
 import { contactInfo, finalCtaCopy } from '../data/copy'
 
@@ -12,10 +13,17 @@ export function GeFinalCta() {
         <p className="mx-auto mt-5 max-w-2xl font-ge text-[1.03rem] leading-7 text-white/86 sm:text-[1.1rem] sm:leading-8">
           Send your dates and group size and we will come back with a clear plan, quickly.
         </p>
-        <div className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
+        <div className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row sm:flex-wrap">
           <GeButton href={`mailto:${contactInfo.email}`} variant="gs-gold" size="lg">
             {finalCtaCopy.cta}
           </GeButton>
+          <SmartEnquiryButton
+            intent="trip-planning"
+            sourceLabel="Final CTA"
+            label="WhatsApp your trip brief"
+            variant="outline-gs-white"
+            size="lg"
+          />
           <GeButton href={`tel:${contactInfo.phoneTel}`} variant="outline-gs-white" size="lg">
             Call {contactInfo.phoneDisplay}
           </GeButton>

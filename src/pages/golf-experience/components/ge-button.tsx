@@ -17,6 +17,9 @@ type Variant =
   | 'outline-gs-green'
 type Size = 'sm' | 'md' | 'lg'
 
+export type GeButtonVariant = Variant
+export type GeButtonSize = Size
+
 interface CommonProps {
   readonly children: ReactNode
   readonly variant?: Variant

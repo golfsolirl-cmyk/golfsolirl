@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { GeButton } from '../components/ge-button'
+import { SmartEnquiryButton } from '../components/smart-enquiry-button'
 import { GeSection } from '../components/ge-section'
 import { aboutCopy } from '../data/copy'
 
@@ -58,10 +59,17 @@ export function GeAboutBlock() {
               </p>
             ))}
           </div>
-          <div className="mt-10">
+          <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <GeButton href="/contact" variant="gs-gold" size="lg">
               {aboutCopy.cta}
             </GeButton>
+            <SmartEnquiryButton
+              intent="booking-support"
+              sourceLabel="About GolfSol block"
+              label="WhatsApp the team"
+              variant="outline-gs-green"
+              size="lg"
+            />
           </div>
         </motion.div>
       </div>

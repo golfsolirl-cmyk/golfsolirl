@@ -5,8 +5,10 @@ import { cx } from '../../lib/utils'
 import { GeFooter } from './sections/ge-footer'
 import { GeNavbar } from './sections/ge-navbar'
 import { GeQuickEnquiryForm } from './components/ge-quick-enquiry-form'
+import { SmartEnquiryButton } from './components/smart-enquiry-button'
 import { contactInfo } from './data/copy'
 import { getGeContentPage } from './data/content-pages'
+import { resolveSmartEnquiryIntent } from './data/smart-enquiry'
 import { WhatsappFab } from './components/whatsapp-fab'
 
 function normalisePath() {
@@ -17,6 +19,7 @@ function normalisePath() {
 export function GeContentPage() {
   const path = useMemo(() => normalisePath(), [])
   const page = useMemo(() => getGeContentPage(path), [path])
+  const smartIntent = useMemo(() => resolveSmartEnquiryIntent(path), [path])
 
   if (!page) {
     return (
@@ -129,6 +132,7 @@ export function GeContentPage() {
                 lead={page.formLead}
                 enquiryType={page.enquiryType ?? 'booking'}
                 interestPreset={page.interestPreset}
+                sourceLabel={page.title}
               />
               <div className="mt-5 rounded-2xl border border-ge-gray100 bg-white p-5 shadow-[0_8px_20px_rgba(6,59,42,0.06)]">
                 <p className="font-ge text-sm font-bold uppercase tracking-[0.16em] text-ge-orange">Prefer to call?</p>
@@ -139,6 +143,21 @@ export function GeContentPage() {
                   <Phone className="h-4 w-4" aria-hidden />
                   {contactInfo.phoneDisplay}
                 </a>
+              </div>
+              <div className="mt-5 rounded-2xl border border-gs-green/15 bg-[linear-gradient(180deg,#F6FBF8_0%,#FFFFFF_100%)] p-5 shadow-[0_12px_30px_rgba(6,59,42,0.08)]">
+                <p className="font-ge text-sm font-bold uppercase tracking-[0.16em] text-gs-green">Prefer to WhatsApp?</p>
+                <p className="mt-2 font-ge text-base leading-7 text-ge-gray500">
+                  Open a page-aware message with the main topic already in place, then tweak any detail before you send it.
+                </p>
+                <SmartEnquiryButton
+                  intent={smartIntent}
+                  sourceLabel={page.title}
+                  notes={page.interestPreset}
+                  showHelperText
+                  variant="outline-gs-green"
+                  size="md"
+                  className="mt-4 w-full"
+                />
               </div>
             </aside>
           </div>

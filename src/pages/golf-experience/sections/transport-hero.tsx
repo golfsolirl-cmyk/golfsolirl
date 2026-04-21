@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion'
-import { ArrowRight, ChevronDown, Clock3, PlaneLanding, Phone, ShieldCheck } from 'lucide-react'
+import { ArrowRight, ChevronDown, Clock3, Phone, PlaneLanding, ShieldCheck } from 'lucide-react'
 import { GeButton } from '../components/ge-button'
 import { contactInfo } from '../data/copy'
+import { SmartEnquiryButton } from '../components/smart-enquiry-button'
 import { transportHeroCopy } from '../data/transport-service'
 import { cx } from '../../../lib/utils'
 
@@ -86,6 +87,15 @@ export function TransportHero() {
                   {transportHeroCopy.primaryCta}
                   <ArrowRight className="h-4 w-4" aria-hidden />
                 </GeButton>
+                <SmartEnquiryButton
+                  intent="transport"
+                  sourceLabel="Transport hero"
+                  label="WhatsApp your route"
+                  notes="Flying into Malaga and need a golf-bag friendly transfer."
+                  variant="outline-gs-white"
+                  size="lg"
+                  className="w-full"
+                />
                 <GeButton href={`tel:${contactInfo.phoneTel}`} variant="outline-gs-white" size="lg" className="w-full">
                   <Phone className="h-4 w-4" aria-hidden />
                   {contactInfo.phoneDisplay}
@@ -151,6 +161,14 @@ export function TransportHero() {
                     {transportHeroCopy.primaryCta}
                     <ArrowRight className="h-4 w-4" aria-hidden />
                   </GeButton>
+                  <SmartEnquiryButton
+                    intent="transport"
+                    sourceLabel="Transport hero"
+                    label="WhatsApp your route"
+                    notes="Flying into Malaga and need a golf-bag friendly transfer."
+                    variant="outline-gs-white"
+                    size="lg"
+                  />
                   <GeButton href={`tel:${contactInfo.phoneTel}`} variant="outline-gs-white" size="lg">
                     <Phone className="h-4 w-4" aria-hidden />
                     {contactInfo.phoneDisplay}
