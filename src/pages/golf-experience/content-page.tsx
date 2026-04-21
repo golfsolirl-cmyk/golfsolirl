@@ -53,7 +53,7 @@ export function GeContentPage() {
             />
             <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-r from-gs-dark/88 via-gs-dark/66 to-gs-dark/48" />
             <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gs-dark/70 via-transparent to-transparent" />
-            <div className={cx('absolute inset-0 z-10 flex items-end pb-20 sm:pb-24')}>
+            <div className={cx('absolute inset-0 z-10 flex items-end pb-8 sm:pb-10')}>
               <div className="mx-auto w-full max-w-[1180px] px-5 sm:px-8">
                 <motion.div
                   initial={{ opacity: 0, y: 18 }}
@@ -61,30 +61,16 @@ export function GeContentPage() {
                   transition={{ duration: 0.55, ease: 'easeOut' }}
                   className="max-w-3xl"
                 >
-                  <h1 className="font-ge text-[2.15rem] font-extrabold leading-[1.03] tracking-[-0.01em] text-white sm:text-[2.8rem] md:text-[3.25rem]">
+                  <span className="inline-flex items-center rounded-full border border-gs-gold/50 bg-gs-dark/40 px-3 py-1.5 font-ge text-[0.72rem] font-bold uppercase tracking-[0.16em] text-gs-gold">
+                    {page.eyebrow}
+                  </span>
+                  <h1 className="mt-4 font-ge text-[2.15rem] font-extrabold leading-[1.03] tracking-[-0.01em] text-white sm:text-[2.8rem] md:text-[3.25rem]">
                     {page.title}
                   </h1>
                   <p className="mt-4 max-w-2xl font-ge text-[1.04rem] leading-7 text-white/92 sm:text-[1.12rem] sm:leading-8">
                     {page.subtitle}
                   </p>
                 </motion.div>
-              </div>
-            </div>
-            <div className="absolute inset-x-0 bottom-0 z-20">
-              <div
-                aria-hidden
-                className="h-[3px]"
-                style={{
-                  background:
-                    'linear-gradient(90deg, transparent 0%, rgba(184,137,0,0.5) 12%, #FFC72C 28%, #FFE27A 50%, #FFC72C 72%, rgba(184,137,0,0.5) 88%, transparent 100%)'
-                }}
-              />
-              <div className="border-y border-[#b88900]/45 bg-[linear-gradient(90deg,#ffc72c_0%,#ffe27a_45%,#ffc72c_100%)]">
-                <div className="mx-auto flex w-full max-w-[1180px] items-center justify-center px-5 py-2.5 sm:px-8 sm:py-3">
-                  <span className="font-ge text-[0.78rem] font-extrabold uppercase tracking-[0.28em] text-gs-dark sm:text-[0.88rem]">
-                    {page.eyebrow}
-                  </span>
-                </div>
               </div>
             </div>
           </div>
