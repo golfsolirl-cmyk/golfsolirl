@@ -511,6 +511,33 @@ const geContentPages: Record<string, GeContentPageData> = {
     interestPreset: 'Travel to Malaga AGP'
   },
   '/golf-courses': coursesPage,
+  '/golf-courses/sotogrande': {
+    ...coursesPage,
+    metaTitle: 'Sotogrande Golf Courses | GolfSol Ireland',
+    eyebrow: 'Golf Courses',
+    title: 'Sotogrande golf cluster for premium trip planning',
+    subtitle:
+      'Plan around Sotogrande with practical routing, balanced challenge, and polished course options that suit Irish groups.',
+    interestPreset: 'Sotogrande golf cluster'
+  },
+  '/golf-courses/marbella-golf-valley': {
+    ...coursesPage,
+    metaTitle: 'Marbella Golf Valley | GolfSol Ireland',
+    eyebrow: 'Golf Courses',
+    title: 'Marbella Golf Valley options with clear routing logic',
+    subtitle:
+      'Build a smarter week around Marbella Golf Valley with practical travel times, pace balance, and cleaner day flow.',
+    interestPreset: 'Marbella Golf Valley'
+  },
+  '/golf-courses/mijas-fuengirola': {
+    ...coursesPage,
+    metaTitle: 'Mijas & Fuengirola Golf Courses | GolfSol Ireland',
+    eyebrow: 'Golf Courses',
+    title: 'Mijas and Fuengirola golf routes made straightforward',
+    subtitle:
+      'Compare Mijas and Fuengirola clusters with simple guidance on course mix, transfer rhythm, and group-friendly sequencing.',
+    interestPreset: 'Mijas and Fuengirola golf cluster'
+  },
   '/accommodation': accommodationPage,
   '/golf-map': {
     ...coursesPage,
