@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { LuxuryButton } from '../ui/button'
 import { Logo } from '../ui/logo'
 import { integrationRegistry } from '../../config/integrations'
-import { isFooterArticlePath } from '../../data/footer-article-pages'
 import { cx } from '../../lib/utils'
 import { useAuth } from '../../providers/auth-provider'
 
@@ -24,8 +23,7 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
   const isPublicPackagePage = normalizedPath === '/packages' || normalizedPath === '/package'
   const isAdminPackagePage = normalizedPath === '/packages-admin' || normalizedPath === '/package-admin'
   const isPackagesRoute = isPublicPackagePage || isAdminPackagePage
-  const isArticlePage = isFooterArticlePath(normalizedPath)
-  const homeHref = isPackagesRoute || isArticlePage ? '/' : isHome ? '#home' : '/'
+  const homeHref = isPackagesRoute ? '/' : isHome ? '#home' : '/'
   const navHrefForLink = (link: string) => (isHome ? `#${link.toLowerCase()}` : `/#${link.toLowerCase()}`)
   const primaryHref = isPackagesRoute ? '#plan-trip' : '/packages'
 
