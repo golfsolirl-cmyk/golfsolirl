@@ -1,3 +1,5 @@
+import { footerArticlePages, type FooterArticleContent } from '../../../data/footer-article-pages'
+
 export interface GeContentPageSection {
   readonly title: string
   readonly body: string
@@ -24,6 +26,105 @@ const trustHighlights = [
   'Clear next steps in plain English',
   'Fast replies for group organisers'
 ] as const
+
+function getFooterArticleEyebrow(kicker: string) {
+  const [prefix] = kicker.split('—')
+  return prefix.trim() || 'Planning'
+}
+
+function getFooterArticleHighlights(content: FooterArticleContent) {
+  const articleBullets = content.sections.flatMap((section) => section.bullets ?? [])
+  return [...articleBullets, ...trustHighlights].slice(0, 3)
+}
+
+function getFooterArticleHeroImage(path: string) {
+  if (path.includes('airport') || path.includes('transfer') || path.includes('routing')) {
+    return '/images/transport-hero-coastal-drive.jpg'
+  }
+  if (path.includes('hotel') || path.includes('accommodation')) {
+    return '/images/transport-moment-resort.jpg'
+  }
+  if (path.includes('course')) {
+    return '/images/about-golfsol-hero.jpg'
+  }
+  if (
+    path.includes('package') ||
+    path.includes('itinerary') ||
+    path.includes('group') ||
+    path.includes('deposit') ||
+    path.includes('balance') ||
+    path.includes('enquiry')
+  ) {
+    return '/images/transport-fleet-lineup.jpg'
+  }
+  return '/images/about-golfsol-hero.jpg'
+}
+
+function getFooterArticleHeroAlt(path: string, content: FooterArticleContent) {
+  if (path.includes('airport') || path.includes('transfer') || path.includes('routing')) {
+    return 'Golf Sol Ireland transport planning and Costa del Sol route support.'
+  }
+  if (path.includes('hotel') || path.includes('accommodation')) {
+    return 'Costa del Sol hotel and resort options for Irish golf groups.'
+  }
+  if (path.includes('course')) {
+    return 'Costa del Sol golf course planning and shortlist guidance.'
+  }
+  return `${content.heroTitle} - Golf Sol Ireland planning page.`
+}
+
+function getFooterArticleFormTitle(path: string) {
+  if (path.includes('airport') || path.includes('transfer') || path.includes('routing')) {
+    return 'Request transport guidance'
+  }
+  if (path.includes('hotel') || path.includes('accommodation')) {
+    return 'Get matched hotel options'
+  }
+  if (path.includes('course')) {
+    return 'Build your course shortlist'
+  }
+  if (path.includes('terms')) {
+    return 'Ask about terms'
+  }
+  return 'Talk this through with us'
+}
+
+function getFooterArticleFormLead(path: string) {
+  if (path.includes('airport') || path.includes('transfer') || path.includes('routing')) {
+    return 'Share your dates, airport, or route questions and we will map the cleanest next step.'
+  }
+  if (path.includes('hotel') || path.includes('accommodation')) {
+    return 'Tell us the trip dates and preferred base and we will come back with the right stay options.'
+  }
+  if (path.includes('course')) {
+    return 'Send your dates and group details and we will point you toward the right rounds quickly.'
+  }
+  if (path.includes('terms')) {
+    return 'Send the clause or question you want clarified and we will answer directly.'
+  }
+  return 'Send a short brief and we will come back with a practical next step.'
+}
+
+function convertFooterArticlePage(path: string, content: FooterArticleContent): GeContentPageData {
+  return {
+    metaTitle: content.metaTitle,
+    eyebrow: getFooterArticleEyebrow(content.kicker),
+    title: content.heroTitle,
+    subtitle: content.heroBody,
+    heroImage: getFooterArticleHeroImage(path),
+    heroAlt: getFooterArticleHeroAlt(path, content),
+    highlights: getFooterArticleHighlights(content),
+    sections: content.sections,
+    formTitle: getFooterArticleFormTitle(path),
+    formLead: getFooterArticleFormLead(path),
+    interestPreset: content.heroTitle,
+    enquiryType: path.includes('terms') ? 'legal' : 'support'
+  }
+}
+
+const convertedFooterArticlePages: Record<string, GeContentPageData> = Object.fromEntries(
+  Object.entries(footerArticlePages).map(([path, content]) => [path, convertFooterArticlePage(path, content)])
+) as Record<string, GeContentPageData>
 
 const contactPage: GeContentPageData = {
   metaTitle: 'Contact | GolfSol Ireland',
@@ -460,7 +561,7 @@ const newsletterPage: GeContentPageData = {
   enquiryType: 'newsletter'
 }
 
-const geContentPages: Record<string, GeContentPageData> = {
+const coreGeContentPages: Record<string, GeContentPageData> = {
   '/about': aboutPage,
   '/booking': bookingPage,
   '/transport': transportOverviewPage,
@@ -611,6 +712,11 @@ const geContentPages: Record<string, GeContentPageData> = {
   '/services/tee-time-bookings': teeTimeOnlyPage,
   '/services/family-holidays': familyHolidaysPage,
   '/services/society-group-trips': bookingPage
+}
+
+const geContentPages: Record<string, GeContentPageData> = {
+  ...convertedFooterArticlePages,
+  ...coreGeContentPages
 }
 
 export { geContentPages }

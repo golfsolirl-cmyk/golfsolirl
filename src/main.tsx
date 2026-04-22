@@ -1,5 +1,4 @@
 import ReactDOM from 'react-dom/client'
-import App from './App'
 import { AuthProvider } from './providers/auth-provider'
 import { LogoPreviewPage } from './pages/logo-preview'
 import { CustomerPackagePage } from './pages/customer-packages'
@@ -7,13 +6,11 @@ import { PackageAdminPage } from './pages/packages'
 import { EnquiryPdfTemplatePage } from './pages/enquiry-pdf-template'
 import { ProposalTemplatePage } from './pages/proposal-template'
 import { LogoCapturePage } from './pages/logo-capture'
-import { FooterArticlePage } from './pages/footer-article-page'
 import { LoginPage } from './pages/login-page'
 import { AuthCallbackPage } from './pages/auth-callback-page'
 import { ClientDashboardPage } from './pages/client-dashboard-page'
 import { AdminDashboardPage } from './pages/admin-dashboard-page'
 import { ClientDocumentPage } from './pages/client-document-page'
-import { isFooterArticlePath } from './data/footer-article-pages'
 import { GolfExperienceHome } from './pages/golf-experience/golf-experience-home'
 import { TransportServicePage } from './pages/golf-experience/transport-service-page'
 import { GeContentPage } from './pages/golf-experience/content-page'
@@ -41,7 +38,7 @@ function resolvePage() {
   }
 
   if (normalizedPath === '/golf-sol') {
-    return App
+    return GolfExperienceHome
   }
 
   if (normalizedPath === '/logo-preview') {
@@ -93,11 +90,7 @@ function resolvePage() {
     return EnquiryPdfTemplatePage
   }
 
-  if (isFooterArticlePath(normalizedPath)) {
-    return FooterArticlePage
-  }
-
-  return App
+  return GolfExperienceHome
 }
 
 const ActivePage = resolvePage()
