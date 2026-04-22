@@ -1,12 +1,19 @@
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { CheckCircle2, ChevronRight, Phone } from 'lucide-react'
+import { ArrowRight, CheckCircle2, ChevronRight, Mail, MessageCircle, Phone } from 'lucide-react'
 import { cx } from '../../lib/utils'
 import { GeFooter } from './sections/ge-footer'
 import { GeNavbar } from './sections/ge-navbar'
 import { GeQuickEnquiryForm } from './components/ge-quick-enquiry-form'
 import { contactInfo } from './data/copy'
 import { getGeContentPage } from './data/content-pages'
+import {
+  getContentPageFormConfig,
+  getContentPageHeroMedia,
+  getContentPageSmartActions,
+  type ContentSmartAction
+} from './content-page-context'
+import { GeButton } from './components/ge-button'
 import { WhatsappFab } from './components/whatsapp-fab'
 
 function normalisePath() {
@@ -17,6 +24,9 @@ function normalisePath() {
 export function GeContentPage() {
   const path = useMemo(() => normalisePath(), [])
   const page = useMemo(() => getGeContentPage(path), [path])
+  const formConfig = useMemo(() => (page ? getContentPageFormConfig(path, page) : null), [page, path])
+  const heroMedia = useMemo(() => (page ? getContentPageHeroMedia(path, page) : null), [page, path])
+  const smartActions = useMemo(() => (page ? getContentPageSmartActions(path, page) : []), [page, path])
 
   if (!page) {
     return (
@@ -45,9 +55,9 @@ export function GeContentPage() {
           <div aria-hidden="true" className="h-[134px] w-full bg-white sm:h-[148px] md:h-[164px] lg:h-[130px] xl:h-[142px]" />
           <div className="relative">
             <img
-              src={page.heroImage}
-              alt={page.heroAlt}
-              className="h-[42vh] min-h-[300px] w-full object-cover object-[center_38%] md:h-[50vh] md:min-h-[420px] lg:h-[54vh]"
+              src={heroMedia?.image ?? page.heroImage}
+              alt={heroMedia?.alt ?? page.heroAlt}
+              className="h-[44vh] min-h-[320px] w-full object-cover object-center md:h-[52vh] md:min-h-[440px] lg:h-[58vh]"
               width={2200}
               height={1100}
             />
@@ -70,8 +80,22 @@ export function GeContentPage() {
                   <p className="mt-4 max-w-2xl font-ge text-[1.04rem] leading-7 text-white/92 sm:text-[1.12rem] sm:leading-8">
                     {page.subtitle}
                   </p>
+                  <div className="mt-6 grid gap-3 sm:max-w-2xl sm:grid-cols-3">
+                    {smartActions.map((action) => (
+                      <SmartActionCard key={action.label} action={action} />
+                    ))}
+                  </div>
                 </motion.div>
               </div>
+            </div>
+          </div>
+          <div className="border-t border-gs-gold/35 bg-[#08271a]">
+            <div className="mx-auto flex max-w-[1180px] items-center gap-3 px-5 py-3 sm:px-8">
+              <span aria-hidden="true" className="h-px flex-1 bg-gs-gold/55" />
+              <span className="font-ge text-[0.74rem] font-extrabold uppercase tracking-[0.22em] text-gs-gold">
+                {heroMedia?.stripeLabel ?? page.eyebrow}
+              </span>
+              <span aria-hidden="true" className="h-px flex-1 bg-gs-gold/55" />
             </div>
           </div>
         </section>
@@ -110,21 +134,32 @@ export function GeContentPage() {
             </div>
 
             <aside className="lg:sticky lg:top-36">
-              <GeQuickEnquiryForm
-                title={page.formTitle}
-                lead={page.formLead}
-                enquiryType={page.enquiryType ?? 'booking'}
-                interestPreset={page.interestPreset}
-              />
+              {formConfig ? (
+                <GeQuickEnquiryForm
+                  title={page.formTitle}
+                  lead={page.formLead}
+                  interestPreset={page.interestPreset}
+                  routeLabel={heroMedia?.stripeLabel ?? page.eyebrow}
+                  formConfig={formConfig}
+                />
+              ) : null}
               <div className="mt-5 rounded-2xl border border-ge-gray100 bg-white p-5 shadow-[0_8px_20px_rgba(6,59,42,0.06)]">
-                <p className="font-ge text-sm font-bold uppercase tracking-[0.16em] text-ge-orange">Prefer to call?</p>
-                <a
-                  href={`tel:${contactInfo.phoneTel}`}
-                  className="mt-3 inline-flex min-h-[44px] items-center gap-2 rounded-full border-2 border-gs-green px-4 py-2.5 font-ge text-base font-bold uppercase tracking-[0.12em] text-gs-green transition-colors hover:bg-gs-green hover:text-white"
-                >
-                  <Phone className="h-4 w-4" aria-hidden />
-                  {contactInfo.phoneDisplay}
-                </a>
+                <p className="font-ge text-sm font-bold uppercase tracking-[0.16em] text-ge-orange">Smart next steps</p>
+                <div className="mt-4 space-y-3">
+                  {smartActions.map((action) => (
+                    <SmartSidebarAction key={action.label} action={action} />
+                  ))}
+                </div>
+                <div className="mt-5 rounded-2xl border border-ge-gray100 bg-ge-gray50 p-4">
+                  <p className="font-ge text-[0.74rem] font-bold uppercase tracking-[0.16em] text-ge-gray500">Prefer to call?</p>
+                  <a
+                    href={`tel:${contactInfo.phoneTel}`}
+                    className="mt-3 inline-flex min-h-[44px] items-center gap-2 rounded-full border-2 border-gs-green px-4 py-2.5 font-ge text-base font-bold uppercase tracking-[0.12em] text-gs-green transition-colors hover:bg-gs-green hover:text-white"
+                  >
+                    <Phone className="h-4 w-4" aria-hidden />
+                    {contactInfo.phoneDisplay}
+                  </a>
+                </div>
               </div>
             </aside>
           </div>
@@ -132,6 +167,65 @@ export function GeContentPage() {
       </main>
       <GeFooter />
       <WhatsappFab />
+    </div>
+  )
+}
+
+function SmartActionCard({ action }: { readonly action: ContentSmartAction }) {
+  const tones = {
+    gold: 'border-gs-gold/50 bg-gs-gold/12 text-white hover:bg-gs-gold/18',
+    dark: 'border-white/18 bg-gs-dark/52 text-white hover:bg-gs-dark/62',
+    light: 'border-white/15 bg-white/10 text-white hover:bg-white/14'
+  } as const
+
+  return (
+    <a
+      href={action.href}
+      rel={action.external ? 'noreferrer' : undefined}
+      target={action.external ? '_blank' : undefined}
+      className={cx(
+        'group rounded-2xl border p-4 backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5',
+        tones[action.tone]
+      )}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <p className="font-ge text-[0.86rem] font-extrabold uppercase tracking-[0.14em]">{action.label}</p>
+        <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden />
+      </div>
+      <p className="mt-2 font-ge text-sm leading-6 text-white/82">{action.description}</p>
+    </a>
+  )
+}
+
+function SmartSidebarAction({ action }: { readonly action: ContentSmartAction }) {
+  const icon =
+    action.kind === 'whatsapp' ? (
+      <MessageCircle className="h-4 w-4" aria-hidden />
+    ) : action.kind === 'call' ? (
+      <Phone className="h-4 w-4" aria-hidden />
+    ) : action.kind === 'email' ? (
+      <Mail className="h-4 w-4" aria-hidden />
+    ) : (
+      <ArrowRight className="h-4 w-4" aria-hidden />
+    )
+
+  const variant = action.tone === 'gold' ? 'gs-gold' : action.tone === 'dark' ? 'gs-green' : 'outline-gs-green'
+
+  return (
+    <div className="rounded-2xl border border-ge-gray100 p-4">
+      <p className="font-ge text-sm font-extrabold uppercase tracking-[0.12em] text-gs-dark">{action.label}</p>
+      <p className="mt-2 font-ge text-sm leading-6 text-ge-gray500">{action.description}</p>
+      <GeButton
+        href={action.href}
+        rel={action.external ? 'noreferrer' : undefined}
+        size="sm"
+        target={action.external ? '_blank' : undefined}
+        variant={variant}
+        className="mt-3 w-full"
+      >
+        {icon}
+        Open
+      </GeButton>
     </div>
   )
 }

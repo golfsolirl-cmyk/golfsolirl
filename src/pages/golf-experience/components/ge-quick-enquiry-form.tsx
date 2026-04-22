@@ -1,13 +1,15 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Send } from 'lucide-react'
 import { GeButton } from './ge-button'
 import { contactInfo } from '../data/copy'
+import type { ContentFormConfig, ContentFormField } from '../content-page-context'
 
 interface GeQuickEnquiryFormProps {
   readonly title: string
   readonly lead: string
   readonly interestPreset: string
-  readonly enquiryType?: 'booking' | 'legal' | 'newsletter' | 'testimonial' | 'support'
+  readonly routeLabel: string
+  readonly formConfig: ContentFormConfig
 }
 
 const labelClass =
@@ -15,91 +17,46 @@ const labelClass =
 const inputClass =
   'h-12 w-full rounded-xl border border-ge-gray200 bg-white px-3.5 font-ge text-[1rem] text-gs-dark outline-none transition-shadow placeholder:text-ge-gray300 focus:border-gs-green focus:ring-2 focus:ring-gs-green/25'
 
+function createInitialFieldValues(fields: readonly ContentFormField[]) {
+  return fields.reduce<Record<string, string>>((accumulator, field) => {
+    accumulator[field.id] = ''
+    return accumulator
+  }, {})
+}
+
+function getFieldPlaceholder(field: ContentFormField) {
+  if (field.placeholder) return field.placeholder
+  if (field.type === 'select') return `Select ${field.label.toLowerCase()}`
+  return `Enter ${field.label.toLowerCase()}`
+}
+
 export function GeQuickEnquiryForm({
   title,
   lead,
   interestPreset,
-  enquiryType
+  routeLabel,
+  formConfig
 }: GeQuickEnquiryFormProps) {
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [phoneWhatsApp, setPhoneWhatsApp] = useState('')
-  const [travelDates, setTravelDates] = useState('')
-  const [groupSize, setGroupSize] = useState('')
-  const [notes, setNotes] = useState('')
-  const [questionType, setQuestionType] = useState('General question')
-  const [legalTopic, setLegalTopic] = useState('Privacy policy')
-  const [updateType, setUpdateType] = useState('Course updates')
-  const [visitMonth, setVisitMonth] = useState('')
-  const [travelPartyType, setTravelPartyType] = useState('Golf group')
+  const initialFieldValues = useMemo(() => createInitialFieldValues(formConfig.fields), [formConfig.fields])
+  const [fieldValues, setFieldValues] = useState<Record<string, string>>(initialFieldValues)
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  const isLegalPage = enquiryType === 'legal'
-  const isFaqPage = interestPreset.toLowerCase().includes('faq')
-  const isNewsletterPage = enquiryType === 'newsletter'
-  const isTestimonialPage = enquiryType === 'testimonial'
-  const isGuidePage = interestPreset.toLowerCase().includes('guidance') || interestPreset.toLowerCase().includes('travel to')
-  const isBookingPage = enquiryType === 'booking'
-  const isSupportPage = enquiryType === 'support' || isFaqPage
+  useEffect(() => {
+    setFieldValues(initialFieldValues)
+    setStatus('idle')
+    setErrorMessage(null)
+  }, [initialFieldValues])
 
-  const notesPlaceholder = useMemo(() => {
-    if (isLegalPage) return 'Tell us your legal/privacy question.'
-    if (isFaqPage) return 'Tell us the exact question you need answered.'
-    if (isNewsletterPage) return 'Tell us what updates you care about most.'
-    if (isTestimonialPage) return 'Share key highlights from your trip.'
-    if (isGuidePage) return 'Tell us what travel guidance you need.'
-    if (isBookingPage) return 'Tell us what you need help booking.'
-    return 'Tell us what matters most for your trip.'
-  }, [isBookingPage, isFaqPage, isGuidePage, isLegalPage, isNewsletterPage, isTestimonialPage])
-
-  const notesLabel = useMemo(() => {
-    if (isLegalPage || isFaqPage || isGuidePage) return 'Question details'
-    if (isNewsletterPage) return 'Update request details'
-    if (isTestimonialPage) return 'Testimonial details'
-    if (isBookingPage) return 'Booking notes'
-    return 'Notes (optional)'
-  }, [isBookingPage, isFaqPage, isGuidePage, isLegalPage, isNewsletterPage, isTestimonialPage])
-
-  const contextSummary = useMemo(() => {
-    if (isLegalPage) {
-      return `Legal topic: ${legalTopic}`
-    }
-    if (isFaqPage || isSupportPage) {
-      return `FAQ category: ${questionType}`
-    }
-    if (isNewsletterPage) {
-      return `Update preference: ${updateType}`
-    }
-    if (isTestimonialPage) {
-      return `Trip type: ${travelPartyType}`
-    }
-    if (isGuidePage) {
-      return visitMonth.trim() ? `Planned travel month: ${visitMonth.trim()}` : 'Guide context: general'
-    }
-    if (isBookingPage) {
-      const details = []
-      if (travelDates.trim()) details.push(`Travel dates: ${travelDates.trim()}`)
-      if (groupSize.trim()) details.push(`Group size: ${groupSize.trim()}`)
-      return details.length ? details.join(' | ') : 'Booking context: awaiting dates/group size'
-    }
-    return ''
-  }, [
-    isBookingPage,
-    isFaqPage,
-    isGuidePage,
-    isLegalPage,
-    isNewsletterPage,
-    isSupportPage,
-    isTestimonialPage,
-    legalTopic,
-    questionType,
-    updateType,
-    travelPartyType,
-    travelDates,
-    groupSize,
-    visitMonth
-  ])
+  const handleFieldChange = (fieldId: string, value: string) => {
+    setFieldValues((current) => ({
+      ...current,
+      [fieldId]: value
+    }))
+  }
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -120,19 +77,22 @@ export function GeQuickEnquiryForm({
       setStatus('error')
       return
     }
+    const missingField = formConfig.fields.find((field) => field.required && !fieldValues[field.id]?.trim())
+    if (missingField) {
+      setErrorMessage(`Please complete ${missingField.label.toLowerCase()}.`)
+      setStatus('error')
+      return
+    }
 
     setStatus('submitting')
     try {
       const interestLines = [
         interestPreset,
-        contextSummary || null,
-        !isLegalPage && !isSupportPage && !isNewsletterPage && !isTestimonialPage && !isGuidePage && travelDates.trim()
-          ? `Travel dates: ${travelDates.trim()}`
-          : null,
-        !isLegalPage && !isSupportPage && !isNewsletterPage && !isTestimonialPage && !isGuidePage && groupSize.trim()
-          ? `Group size: ${groupSize.trim()}`
-          : null,
-        notes.trim() ? `Notes: ${notes.trim()}` : null
+        `Page: ${routeLabel}`,
+        ...formConfig.fields.map((field) => {
+          const value = fieldValues[field.id]?.trim()
+          return value ? `${field.label}: ${value}` : null
+        })
       ].filter(Boolean)
 
       const response = await fetch('/api/enquiry', {
@@ -155,14 +115,7 @@ export function GeQuickEnquiryForm({
       setFullName('')
       setEmail('')
       setPhoneWhatsApp('')
-      setTravelDates('')
-      setGroupSize('')
-      setNotes('')
-      setQuestionType('General question')
-      setLegalTopic('Privacy policy')
-      setUpdateType('Course updates')
-      setVisitMonth('')
-      setTravelPartyType('Golf group')
+      setFieldValues(initialFieldValues)
     } catch (error) {
       setStatus('error')
       setErrorMessage(error instanceof Error ? error.message : 'Could not send your request right now.')
@@ -170,22 +123,28 @@ export function GeQuickEnquiryForm({
   }
 
   return (
-    <div className="rounded-2xl border border-gs-dark/10 bg-white p-5 shadow-[0_20px_50px_rgba(6,59,42,0.12)] sm:p-6">
+    <div
+      id="ge-enquiry-form"
+      className="rounded-[1.75rem] border border-gs-dark/10 bg-white p-5 shadow-[0_24px_60px_rgba(6,59,42,0.12)] sm:p-6"
+    >
       <p className="font-ge text-[0.78rem] font-bold uppercase tracking-[0.16em] text-ge-orange">
-        Quick form
+        {formConfig.badge}
       </p>
       <h2 className="mt-3 font-ge text-[1.8rem] font-extrabold leading-tight tracking-[-0.01em] text-gs-green">
         {title}
       </h2>
       <p className="mt-3 font-ge text-[1rem] leading-7 text-ge-gray500">{lead}</p>
+      <p className="mt-3 text-[0.95rem] font-medium leading-6 text-gs-dark/72">
+        We reply from Ireland by email, phone, or WhatsApp with a clear next step.
+      </p>
 
       {status === 'success' ? (
         <div className="mt-6 rounded-xl border border-gs-green/30 bg-gs-green/5 px-4 py-4">
           <p className="font-ge text-[0.82rem] font-bold uppercase tracking-[0.14em] text-gs-green">
-            Request received
+            {formConfig.successTitle}
           </p>
           <p className="mt-2 font-ge text-[1rem] leading-7 text-gs-dark">
-            Thanks — we will reply shortly from Ireland.
+            {formConfig.successBody}
           </p>
           <GeButton href={`mailto:${contactInfo.email}`} variant="outline-gs-green" size="sm" className="mt-4">
             Email us directly
@@ -228,92 +187,60 @@ export function GeQuickEnquiryForm({
               placeholder={contactInfo.phoneDisplay}
             />
           </label>
-          {isLegalPage ? (
-            <label className="block">
-              <span className={labelClass}>Legal topic</span>
-              <select className={inputClass} value={legalTopic} onChange={(e) => setLegalTopic(e.target.value)}>
-                <option>Privacy policy</option>
-                <option>Terms and conditions</option>
-                <option>Data removal request</option>
-                <option>Consent and communications</option>
-              </select>
-            </label>
-          ) : null}
-          {isFaqPage || isSupportPage ? (
-            <label className="block">
-              <span className={labelClass}>Question category</span>
-              <select className={inputClass} value={questionType} onChange={(e) => setQuestionType(e.target.value)}>
-                <option>General question</option>
-                <option>Payments and deposits</option>
-                <option>Course availability</option>
-                <option>Transfers and logistics</option>
-              </select>
-            </label>
-          ) : null}
-          {isNewsletterPage ? (
-            <label className="block">
-              <span className={labelClass}>Update preference</span>
-              <select className={inputClass} value={updateType} onChange={(e) => setUpdateType(e.target.value)}>
-                <option>Course updates</option>
-                <option>Planning tips</option>
-                <option>Special offers</option>
-                <option>All newsletter updates</option>
-              </select>
-            </label>
-          ) : null}
-          {isTestimonialPage ? (
-            <label className="block">
-              <span className={labelClass}>Trip type</span>
-              <select className={inputClass} value={travelPartyType} onChange={(e) => setTravelPartyType(e.target.value)}>
-                <option>Golf group</option>
-                <option>Society trip</option>
-                <option>Family holiday</option>
-                <option>Corporate incentive</option>
-              </select>
-            </label>
-          ) : null}
-          {isGuidePage ? (
-            <label className="block">
-              <span className={labelClass}>Planned travel month (optional)</span>
-              <input
-                className={inputClass}
-                value={visitMonth}
-                onChange={(e) => setVisitMonth(e.target.value)}
-                placeholder="e.g. September 2026"
-              />
-            </label>
-          ) : null}
-          {!isLegalPage && !isSupportPage && !isNewsletterPage && !isTestimonialPage && !isGuidePage ? (
-            <>
-              <label className="block">
-                <span className={labelClass}>Travel dates (optional)</span>
+
+          {formConfig.fields.map((field) => {
+            const value = fieldValues[field.id] ?? ''
+
+            if (field.type === 'textarea') {
+              return (
+                <label key={field.id} className="block">
+                  <span className={labelClass}>{field.label}</span>
+                  <textarea
+                    className="w-full rounded-xl border border-ge-gray200 bg-white px-3.5 py-3 font-ge text-[1rem] leading-7 text-gs-dark outline-none transition-shadow placeholder:text-ge-gray300 focus:border-gs-green focus:ring-2 focus:ring-gs-green/25"
+                    value={value}
+                    onChange={(e) => handleFieldChange(field.id, e.target.value)}
+                    placeholder={getFieldPlaceholder(field)}
+                    rows={field.rows ?? 5}
+                  />
+                </label>
+              )
+            }
+
+            if (field.type === 'select') {
+              return (
+                <label key={field.id} className="block">
+                  <span className={labelClass}>{field.label}</span>
+                  <select
+                    className={inputClass}
+                    value={value}
+                    onChange={(e) => handleFieldChange(field.id, e.target.value)}
+                    required={field.required}
+                  >
+                    <option value="">{getFieldPlaceholder(field)}</option>
+                    {field.options?.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )
+            }
+
+            return (
+              <label key={field.id} className="block">
+                <span className={labelClass}>{field.label}</span>
                 <input
                   className={inputClass}
-                  value={travelDates}
-                  onChange={(e) => setTravelDates(e.target.value)}
-                  placeholder="e.g. 15–19 Sept 2026"
+                  value={value}
+                  onChange={(e) => handleFieldChange(field.id, e.target.value)}
+                  autoComplete={field.autoComplete}
+                  required={field.required}
+                  placeholder={getFieldPlaceholder(field)}
                 />
               </label>
-              <label className="block">
-                <span className={labelClass}>Group size (optional)</span>
-                <input
-                  className={inputClass}
-                  value={groupSize}
-                  onChange={(e) => setGroupSize(e.target.value)}
-                  placeholder="e.g. 8 golfers"
-                />
-              </label>
-            </>
-          ) : null}
-          <label className="block">
-            <span className={labelClass}>{notesLabel}</span>
-            <textarea
-              className="min-h-[120px] w-full rounded-xl border border-ge-gray200 bg-white px-3.5 py-3 font-ge text-[1rem] leading-7 text-gs-dark outline-none transition-shadow placeholder:text-ge-gray300 focus:border-gs-green focus:ring-2 focus:ring-gs-green/25"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder={notesPlaceholder}
-            />
-          </label>
+            )
+          })}
 
           {status === 'error' && errorMessage ? (
             <p className="rounded-lg border border-ge-orange/50 bg-orange-50 px-3 py-2 font-ge text-[1rem] text-gs-dark">
@@ -323,7 +250,7 @@ export function GeQuickEnquiryForm({
 
           <GeButton className="w-full" type="submit" variant="gs-gold" size="lg" disabled={status === 'submitting'}>
             <Send className="h-4 w-4" aria-hidden />
-            {status === 'submitting' ? 'Sending...' : 'Send request'}
+            {status === 'submitting' ? 'Sending...' : formConfig.submitLabel}
           </GeButton>
         </form>
       )}
