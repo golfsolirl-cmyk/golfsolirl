@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ArrowLeft, CheckCircle2 } from 'lucide-react'
 import { GOLF_SOL_TRIP_FLIGHT_PREFILL_KEY } from './golf-experience/components/already-booked-flight-panel'
+import { PageIdentityBar } from '../components/page-identity-bar'
 import { GeFooter } from './golf-experience/sections/ge-footer'
 import { GeNavbar } from './golf-experience/sections/ge-navbar'
 import { GePaymentsIreland } from './golf-experience/sections/payments-ireland'
@@ -91,7 +92,13 @@ export function ContinueTripPage() {
     return (
       <div className="ge-page min-h-screen overflow-x-hidden bg-white">
         <GeNavbar />
-        <main id="main" className="flex min-h-[50vh] items-center justify-center bg-ge-gray50 px-5 font-ge text-ge-gray500">
+        <PageIdentityBar
+          compact
+          label="Continue your trip"
+          description="Pick up your saved arrival details and move into the next planning step."
+          offsetHeader
+        />
+        <main id="main" className="flex min-h-[50vh] items-center justify-center bg-ge-gray50 px-5 py-16 font-ge text-ge-gray500">
           Loading…
         </main>
         <GeFooter />
@@ -110,6 +117,12 @@ export function ContinueTripPage() {
         </a>
         <GeNavbar />
         <main id="main">
+          <PageIdentityBar
+            compact
+            label="Continue your trip"
+            description="No saved arrival details yet, so the fastest route is back through the homepage trip planner."
+            offsetHeader
+          />
           <GeServiceStyleHero
             srTitle="Continue your trip"
             eyebrow="Trip planner"
@@ -157,6 +170,12 @@ export function ContinueTripPage() {
       <GeNavbar />
 
       <main id="main">
+        <PageIdentityBar
+          compact
+          label="Continue your trip"
+          description="Your saved arrival snapshot is ready, so you can move straight into the next planning step."
+          offsetHeader
+        />
         <GeServiceStyleHero
           srTitle="Finish your trip brief"
           eyebrow="Step 2 of 2"

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { PageIdentityBar } from '../components/page-identity-bar'
 import { AUTH_NEXT_STORAGE_KEY, isSafeInternalPath } from '../lib/internal-redirect'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 
@@ -157,8 +158,16 @@ export function AuthCallbackPage() {
   }, [])
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-forest-950 px-4 text-sm text-white/80">
-      <p>{message}</p>
+    <div className="min-h-screen bg-forest-950 text-white">
+      <PageIdentityBar
+        compact
+        label="Signing you in"
+        eyebrow="Account access"
+        description="We are completing your secure login and sending you to the right page."
+      />
+      <div className="flex min-h-[calc(100vh-140px)] flex-col items-center justify-center px-4 text-center">
+        <p className="text-base font-medium tracking-[0.02em] text-white/84 sm:text-lg">{message}</p>
+      </div>
     </div>
   )
 }

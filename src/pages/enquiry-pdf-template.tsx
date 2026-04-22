@@ -1,4 +1,5 @@
 import { Download, CheckCircle2, MapPinned, CalendarRange, BedDouble, Bus, Users } from 'lucide-react'
+import { PageIdentityBar } from '../components/page-identity-bar'
 import { LuxuryButton } from '../components/ui/button'
 import { Logo } from '../components/ui/logo'
 import { buildEnquiryDocument, createEnquiryReferenceId, formatDocumentDate } from '../lib/document-templates'
@@ -28,9 +29,16 @@ function EnquiryPdfTemplatePage() {
 
   return (
     <div className="min-h-screen bg-[#eef2eb] px-4 py-8 text-forest-900 md:px-8 pdf-page-shell">
+      <PageIdentityBar
+        compact
+        label="Enquiry Record"
+        eyebrow="Operations document"
+        description="Print or save a clean summary of the submitted trip enquiry."
+        className="-mx-4 -mt-8 mb-8 md:-mx-8"
+      />
       <div className="mx-auto mb-6 flex max-w-[1100px] justify-end pdf-screen-only">
         <button
-          className="inline-flex items-center gap-2 rounded-full bg-forest-900 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-forest-800"
+          className="inline-flex items-center gap-2 rounded-full bg-forest-900 px-5 py-3 text-base font-semibold text-white transition-colors hover:bg-forest-800"
           onClick={handlePrint}
           type="button"
         >

@@ -32,7 +32,6 @@ export function TransportHero() {
       <h1 id="transport-hero-title" className="sr-only">
         {transportHeroCopy.title}
       </h1>
-      <div aria-hidden="true" className="h-[134px] w-full bg-white sm:h-[148px] md:h-[164px] lg:h-[130px] xl:h-[142px]" />
 
       <div className="relative w-full overflow-hidden bg-gs-dark">
         {/* Image — dedicated mobile stage + locked editorial aspect desktop */}

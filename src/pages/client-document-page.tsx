@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Download, LoaderCircle } from 'lucide-react'
 import { PdfSiteShell } from '../components/pdf-site-shell'
+import { PageIdentityBar } from '../components/page-identity-bar'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { saveElementAsPdf } from '../lib/save-element-as-pdf'
 import { useAuth } from '../providers/auth-provider'
@@ -109,13 +110,13 @@ export function ClientDocumentPage() {
     return (
       <div className="min-h-screen bg-offwhite px-6 py-16 text-forest-900">
         <div className="mx-auto max-w-lg text-center">
-          <h1 className="font-display text-2xl font-semibold text-forest-950">This document is not shared with your account</h1>
-          <p className="mt-4 text-sm leading-relaxed text-forest-600">
+          <h1 className="font-display text-[2.1rem] font-semibold text-forest-950 md:text-[2.35rem]">This document is not shared with your account</h1>
+          <p className="mt-4 text-base leading-8 text-forest-600 md:text-[1.05rem]">
             Golf Sol Ireland enables the terms and thank-you PDFs from the admin dashboard. Once we email you access, the link
             will appear on your client dashboard after you sign in.
           </p>
           <a
-            className="mt-8 inline-flex text-sm font-semibold text-gold-600 underline-offset-2 hover:text-gold-700 hover:underline"
+            className="mt-8 inline-flex text-base font-semibold text-gold-600 underline-offset-2 hover:text-gold-700 hover:underline"
             href="/dashboard"
           >
             Back to your dashboard
@@ -127,6 +128,12 @@ export function ClientDocumentPage() {
 
   return (
     <div className="min-h-screen bg-[#eef2eb] pdf-page-shell">
+      <PageIdentityBar
+        label={meta.title}
+        eyebrow={meta.kicker}
+        description="Read, save, and keep a clean PDF copy from your dashboard."
+        compact
+      />
       <div
         className="mx-auto mb-6 max-w-7xl px-4 pt-6 md:px-8 pdf-screen-only"
         data-html2canvas-ignore="true"
@@ -134,7 +141,7 @@ export function ClientDocumentPage() {
         <div className="flex flex-wrap items-center gap-3">
           <button
             aria-label="Save as PDF"
-            className="inline-flex min-h-11 items-center gap-2 rounded-full bg-forest-900 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-forest-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 disabled:opacity-70"
+            className="inline-flex min-h-11 items-center gap-2 rounded-full bg-forest-900 px-5 py-3 text-base font-semibold text-white transition-colors hover:bg-forest-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 disabled:opacity-70"
             disabled={pdfStatus === 'saving'}
             onClick={handleSavePdf}
             type="button"
@@ -147,13 +154,13 @@ export function ClientDocumentPage() {
             {pdfStatus === 'saving' ? 'Preparing PDF…' : 'Save PDF'}
           </button>
           <a
-            className="text-sm font-semibold text-gold-600 underline-offset-2 hover:text-gold-700 hover:underline"
+            className="text-base font-semibold text-gold-600 underline-offset-2 hover:text-gold-700 hover:underline"
             href="/dashboard"
           >
             Back to dashboard
           </a>
           {pdfMessage ? (
-            <p className="text-sm text-forest-700" role="status">
+            <p className="text-base text-forest-700" role="status">
               {pdfMessage}
             </p>
           ) : null}

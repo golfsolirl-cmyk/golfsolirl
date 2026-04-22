@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { ArrowLeft, Sparkles } from 'lucide-react'
 import logoIcon from '../golf-sol-ireland-logo.svg'
+import { PageIdentityBar } from '../components/page-identity-bar'
 import { cx } from '../lib/utils'
 
 const wordmarkToneMap = {
@@ -61,6 +62,14 @@ export function LogoPreviewPage() {
       <div aria-hidden="true" className="absolute left-[-8rem] top-24 h-72 w-72 rounded-full bg-fairway-500/15 blur-3xl" />
       <div aria-hidden="true" className="absolute bottom-[-6rem] right-[-4rem] h-80 w-80 rounded-full bg-gold-400/10 blur-3xl" />
       <AnimatedBlobGolfBall />
+      <div className="relative z-20">
+        <PageIdentityBar
+          compact
+          description="Logo concept studies and creative directions."
+          eyebrow="Design lab"
+          label="Logo Preview"
+        />
+      </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 pb-20 pt-8 md:px-8 md:pb-24">
         <header className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">

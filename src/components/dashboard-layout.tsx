@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { useRef } from 'react'
+import { PageIdentityBar } from './page-identity-bar'
 import { SiteFooter } from './site-footer'
 import { LuxuryButton } from './ui/button'
 import { Logo } from './ui/logo'
@@ -98,6 +99,8 @@ export function DashboardLayout({ title, subtitle, kicker, variant, children }: 
           <WaveDivider fill="#f7f9f5" />
         </div>
       </section>
+
+      <PageIdentityBar compact description={subtitle} label={title} />
 
       <main className="relative z-[1] mx-auto w-full max-w-7xl flex-1 px-4 pb-20 pt-10 md:px-6 md:pb-28 md:pt-12">
         {children}

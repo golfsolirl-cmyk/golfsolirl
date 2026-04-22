@@ -122,10 +122,10 @@ export function SectionHeader({
       transition={{ duration: 0.7, ease: 'easeOut' }}
     >
       <AnimatedStepKicker centered={centered} dark={dark} kicker={kicker} />
-      <h2 className={cx('mb-4 font-display text-[2.5rem] font-black leading-[1.05] tracking-[-0.02em] md:text-[3.25rem]', dark && 'text-white')}>
+      <h2 className={cx('mb-4 font-display text-[2.7rem] font-black leading-[1.03] tracking-[-0.024em] md:text-[3.45rem]', dark && 'text-white')}>
         {title}
       </h2>
-      <p className={cx('max-w-2xl text-[1.03rem] leading-8 md:text-[1.1rem]', dark ? 'text-white/74' : 'text-forest-900/72', centered && 'mx-auto')}>
+      <p className={cx('max-w-2xl text-[1.08rem] leading-8 md:text-[1.16rem]', dark ? 'text-white/74' : 'text-forest-900/72', centered && 'mx-auto')}>
         {body}
       </p>
     </motion.div>

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { LuxuryButton } from '../components/ui/button'
 import { Logo } from '../components/ui/logo'
+import { PageIdentityBar } from '../components/page-identity-bar'
 import { SiteFooter } from '../components/site-footer'
 import { WaveDivider } from '../components/ui/wave-divider'
 import { integrationRegistry } from '../config/integrations'
@@ -172,6 +173,12 @@ export function LoginPage() {
           <WaveDivider fill="#f7f9f5" />
         </div>
       </section>
+
+      <PageIdentityBar
+        compact
+        description="Secure magic-link sign-in for saved trips, proposals, and account access."
+        label="Sign in"
+      />
 
       <main className="relative z-[1] mx-auto w-full max-w-lg flex-1 px-4 pb-20 pt-4 md:px-6 md:pb-28 md:pt-6">
         <div className="relative overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-soft">

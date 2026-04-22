@@ -11,6 +11,7 @@ import {
   ShieldCheck
 } from 'lucide-react'
 import { Navbar } from '../components/home/navbar'
+import { PageIdentityBar } from '../components/page-identity-bar'
 import { LuxuryButton } from '../components/ui/button'
 import { SiteFooter } from '../components/site-footer'
 import { AmbientGolfBall } from '../components/ui/ambient-golf-ball'
@@ -226,6 +227,12 @@ function PackageAdminPage() {
     return (
       <div className="min-h-screen overflow-x-hidden bg-forest-950 px-6 pb-16 pt-32 text-white">
         <Navbar links={packagePageLinks} primaryCta="Admin access" />
+        <PageIdentityBar
+          label="Admin Package Studio"
+          eyebrow="Internal page"
+          description="Protected pricing workspace for building premium golf packages, checking margins, and shaping quotes with confidence."
+          offsetHeader
+        />
         <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[0.95fr_1.05fr]">
           <div>
             <p className="text-base font-semibold uppercase tracking-[0.18em] text-gold-200 drop-shadow-[0_4px_18px_rgba(8,27,8,0.35)] md:text-lg">
@@ -297,9 +304,15 @@ function PackageAdminPage() {
       <Navbar links={packagePageLinks} primaryCta="Make Enquiry" />
       <FloatingWhatsAppButton hidden={isFooterInView} href={whatsAppHref} />
       <CookieBanner hidden={hasAcceptedCookies} onAccept={handleAcceptCookies} />
+      <PageIdentityBar
+        label="Admin Package Studio"
+        eyebrow="Internal page"
+        description="Live pricing, clearer inputs, and margin visibility for package planning."
+        offsetHeader
+      />
 
       <main>
-        <section className="relative min-h-screen overflow-hidden bg-forest-900 px-6 pb-28 pt-36 md:pt-40" id="home">
+        <section className="relative min-h-screen overflow-hidden bg-forest-900 px-6 pb-28 pt-24 md:pt-28" id="home">
           <div
             aria-hidden="true"
             className="absolute inset-0 bg-cover bg-center opacity-45"

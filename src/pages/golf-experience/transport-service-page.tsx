@@ -8,6 +8,7 @@ import { TransportHero } from './sections/transport-hero'
 import { TransportPromise } from './sections/transport-promise'
 import { TransportRouteStory } from './sections/transport-route-story'
 import { WhatsappFab } from './components/whatsapp-fab'
+import { PageIdentityBar } from '../../components/page-identity-bar'
 
 /**
  * Dedicated Transport service page — same shell as {@link GolfExperienceHome}
@@ -27,6 +28,12 @@ export function TransportServicePage() {
       <GeNavbar />
 
       <main id="main">
+        <PageIdentityBar
+          compact
+          label="Transport Service"
+          description="Airport, golf-day, and resort transfers for Irish golfers heading to the Costa del Sol."
+          offsetHeader
+        />
         <TransportHero />
         <TransportPromise />
         <GePaymentsIreland />

@@ -25,6 +25,7 @@ export type GeServiceStyleHeroProps = {
   readonly imageAlt: string
   readonly primaryCta: { readonly label: string; readonly href: string }
   readonly showPhoneCta?: boolean
+  readonly showNavbarSpacer?: boolean
   readonly nextSectionId?: string
   readonly mobileHighlights?: readonly GeServiceStyleHeroHighlight[]
   readonly trustLine?: string
@@ -44,6 +45,7 @@ export function GeServiceStyleHero({
   imageAlt,
   primaryCta,
   showPhoneCta = true,
+  showNavbarSpacer = true,
   nextSectionId = '#ge-content-promise',
   mobileHighlights,
   trustLine = 'Irish-owned · Costa del Sol specialists · Replies inside 2 hours'
@@ -60,7 +62,9 @@ export function GeServiceStyleHero({
   return (
     <section className="relative isolate overflow-hidden bg-gs-dark text-white" aria-labelledby={`${id}-title`} id={id}>
       <h1 className="sr-only">{srTitle}</h1>
-      <div aria-hidden="true" className="h-[134px] w-full bg-white sm:h-[148px] md:h-[164px] lg:h-[130px] xl:h-[142px]" />
+      {showNavbarSpacer ? (
+        <div aria-hidden="true" className="h-[134px] w-full bg-white sm:h-[148px] md:h-[164px] lg:h-[130px] xl:h-[142px]" />
+      ) : null}
 
       <div className="relative w-full overflow-hidden bg-gs-dark">
         <picture className="block md:absolute md:inset-0 md:h-full md:w-full">

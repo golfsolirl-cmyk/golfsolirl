@@ -8,6 +8,7 @@ import { GeContentEnquireBlock } from './sections/ge-content-enquire-block'
 import { GeContentPromiseBand } from './sections/ge-content-promise-band'
 import { GeContentStoryGrid, type GeContentStoryCard } from './sections/ge-content-story-grid'
 import { GeServiceStyleHero } from './sections/ge-service-style-hero'
+import { PageIdentityBar } from '../../components/page-identity-bar'
 import { getGeContentPage } from './data/content-pages'
 import { getContentPageFormConfig, getContentPageHeroMedia, getContentStorySectionMedia } from './content-page-context'
 import { WhatsappFab } from './components/whatsapp-fab'
@@ -75,6 +76,13 @@ export function GeContentPage() {
         Skip to content
       </a>
       <GeNavbar />
+      <PageIdentityBar
+        compact
+        description={page.subtitle}
+        eyebrow={page.eyebrow}
+        label={routeLabel}
+        offsetHeader
+      />
 
       <main id="main">
         <GeServiceStyleHero
@@ -85,6 +93,7 @@ export function GeContentPage() {
           image={heroImage}
           imageAlt={heroAlt}
           primaryCta={{ label: 'Start your enquiry', href: '#ge-content-enquire' }}
+          showNavbarSpacer={false}
           mobileHighlights={mobileHighlights}
         />
 

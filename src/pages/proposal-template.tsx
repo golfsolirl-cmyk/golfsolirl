@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 import { Download, CheckCircle2, MapPinned, CalendarRange, BedDouble, Bus, Users, Printer, Share2, LoaderCircle, Send } from 'lucide-react'
+import { PageIdentityBar } from '../components/page-identity-bar'
 import { LuxuryButton } from '../components/ui/button'
 import { Logo } from '../components/ui/logo'
 import { integrationRegistry } from '../config/integrations'
@@ -291,6 +292,13 @@ function ProposalTemplatePage() {
 
   return (
     <div className="min-h-screen bg-[#eef2eb] px-4 py-8 text-forest-900 md:px-8 pdf-page-shell">
+      <PageIdentityBar
+        compact
+        label={isAdminProposal ? 'Admin Proposal Template' : 'Proposal Template'}
+        eyebrow={isAdminProposal ? 'Internal page' : 'Client page'}
+        description="Preview, save, share, and send a polished package proposal."
+        className="-mx-4 -mt-8 mb-8 md:-mx-8"
+      />
       <div className="mx-auto mb-6 max-w-[1100px] pdf-screen-only" data-html2canvas-ignore="true">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-wrap gap-3">

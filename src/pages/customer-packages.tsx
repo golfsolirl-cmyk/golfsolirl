@@ -10,6 +10,7 @@ import {
   Users
 } from 'lucide-react'
 import { Navbar } from '../components/home/navbar'
+import { PageIdentityBar } from '../components/page-identity-bar'
 import { LuxuryButton } from '../components/ui/button'
 import { SiteFooter } from '../components/site-footer'
 import { AmbientGolfBall } from '../components/ui/ambient-golf-ball'
@@ -503,6 +504,12 @@ function CustomerPackagePage() {
   return (
     <div className="overflow-x-hidden bg-offwhite">
       <Navbar links={packagePageLinks} primaryCta="Make enquiry" />
+      <PageIdentityBar
+        compact
+        description="Build a clear package, compare stay levels, and understand the trip cost live."
+        label="Packages"
+        offsetHeader
+      />
       <FloatingWhatsAppButton hidden={isFooterInView} href={packageEnquiryWhatsAppHref} />
       <CookieBanner hidden={hasAcceptedCookies} onAccept={handleAcceptCookies} />
 
