@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { PageIdentityBar } from '../components/page-identity-bar'
 import { LuxuryButton } from '../components/ui/button'
 import { Logo } from '../components/ui/logo'
 import { PageIdentityBar } from '../components/page-identity-bar'
