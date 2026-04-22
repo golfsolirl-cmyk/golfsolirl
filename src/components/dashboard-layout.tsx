@@ -117,11 +117,14 @@ export function DashboardLayout({ title, subtitle, kicker, variant, children }: 
 
 export function DashboardLoadingShell({ label }: { readonly label: string }) {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-forest-950 px-6 text-center">
-      <div className="mb-10 scale-90">
-        <Logo size="large" tone="scrolled" />
+    <div className="min-h-screen bg-forest-950 text-white">
+      <PageIdentityBar compact label={label} eyebrow="Loading" description="Preparing your dashboard workspace." />
+      <div className="flex min-h-[calc(100vh-140px)] flex-col items-center justify-center px-6 text-center">
+        <div className="mb-10 scale-90">
+          <Logo size="large" tone="scrolled" />
+        </div>
+        <p className="text-base font-medium tracking-[0.02em] text-white/72">{label}</p>
       </div>
-      <p className="text-sm font-medium tracking-wide text-white/55">{label}</p>
     </div>
   )
 }

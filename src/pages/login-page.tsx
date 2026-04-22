@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { PageIdentityBar } from '../components/page-identity-bar'
 import { LuxuryButton } from '../components/ui/button'
 import { Logo } from '../components/ui/logo'
 import { PageIdentityBar } from '../components/page-identity-bar'
@@ -115,6 +116,11 @@ export function LoginPage() {
             <WaveDivider fill="#f7f9f5" />
           </div>
         </section>
+        <PageIdentityBar
+          compact
+          description="Secure magic-link sign-in for saved trips, proposals, and account access."
+          label="Sign in"
+        />
         <main className="relative z-[1] mx-auto w-full max-w-lg flex-1 px-4 pb-20 pt-8 md:px-6 md:pb-28">
           <div className="rounded-[2rem] border border-forest-100 bg-white p-8 shadow-soft md:p-10">
             <p className="text-sm leading-relaxed text-forest-700">
@@ -136,6 +142,11 @@ export function LoginPage() {
   if (isLoading) {
     return (
       <div className="flex min-h-screen flex-col bg-forest-950">
+        <PageIdentityBar
+          compact
+          description="Secure magic-link sign-in for saved trips, proposals, and account access."
+          label="Sign in"
+        />
         <div className="flex flex-1 flex-col items-center justify-center px-6">
           <div className="mb-10 scale-90">
             <Logo size="large" tone="scrolled" />
