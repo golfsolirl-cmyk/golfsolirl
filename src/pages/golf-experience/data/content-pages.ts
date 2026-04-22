@@ -539,6 +539,42 @@ const geContentPages: Record<string, GeContentPageData> = {
     interestPreset: 'Mijas and Fuengirola golf cluster'
   },
   '/accommodation': accommodationPage,
+  '/accommodation/fuengirola-hotels': {
+    ...accommodationPage,
+    metaTitle: 'Fuengirola Hotels | GolfSol Ireland',
+    eyebrow: 'Accommodation',
+    title: 'Fuengirola hotels for golf groups who want easy pacing',
+    subtitle:
+      'Compare Fuengirola stay options with clear guidance on location, social rhythm, and practical access to Costa del Sol golf days.',
+    interestPreset: 'Fuengirola hotels'
+  },
+  '/accommodation/torremolinos-hotels': {
+    ...accommodationPage,
+    metaTitle: 'Torremolinos Hotels | GolfSol Ireland',
+    eyebrow: 'Accommodation',
+    title: 'Torremolinos hotels matched to smoother golf itineraries',
+    subtitle:
+      'Choose Torremolinos bases with straightforward advice on airport convenience, hotel feel, and how the week runs for Irish groups.',
+    interestPreset: 'Torremolinos hotels'
+  },
+  '/accommodation-tiers': {
+    ...accommodationPage,
+    metaTitle: 'Accommodation Tiers | GolfSol Ireland',
+    eyebrow: 'Accommodation',
+    title: 'Accommodation tiers explained with practical trade-offs',
+    subtitle:
+      'Understand what changes between 3-star, 4-star, and 5-star Costa del Sol stays so your group picks the right level first time.',
+    interestPreset: 'Accommodation tiers'
+  },
+  '/hotel-matching': {
+    ...accommodationPage,
+    metaTitle: 'Hotel Matching | GolfSol Ireland',
+    eyebrow: 'Accommodation',
+    title: 'Hotel matching that fits the golf plan and the group',
+    subtitle:
+      'We match your base to travel dates, group style, and course rhythm so the stay supports the trip instead of complicating it.',
+    interestPreset: 'Hotel matching'
+  },
   '/golf-map': {
     ...coursesPage,
     metaTitle: 'Costa del Sol Golf Map | GolfSol Ireland',
