@@ -1,20 +1,17 @@
-import { useMemo } from 'react'
-import { motion } from 'framer-motion'
-import { ArrowRight, CheckCircle2, ChevronRight, Mail, MessageCircle, Phone } from 'lucide-react'
-import { cx } from '../../lib/utils'
+import { useEffect, useMemo } from 'react'
+import { CheckCircle2, ChevronRight } from 'lucide-react'
 import { GeFooter } from './sections/ge-footer'
 import { GeNavbar } from './sections/ge-navbar'
-import { GeQuickEnquiryForm } from './components/ge-quick-enquiry-form'
-import { contactInfo } from './data/copy'
+import { GePaymentsIreland } from './sections/payments-ireland'
+import { GeFinalCta } from './sections/final-cta'
+import { GeContentEnquireBlock } from './sections/ge-content-enquire-block'
+import { GeContentPromiseBand } from './sections/ge-content-promise-band'
+import { GeContentStoryGrid, type GeContentStoryCard } from './sections/ge-content-story-grid'
+import { GeServiceStyleHero } from './sections/ge-service-style-hero'
 import { getGeContentPage } from './data/content-pages'
-import {
-  getContentPageFormConfig,
-  getContentPageHeroMedia,
-  getContentPageSmartActions,
-  type ContentSmartAction
-} from './content-page-context'
-import { GeButton } from './components/ge-button'
+import { getContentPageFormConfig, getContentPageHeroMedia, getContentStorySectionMedia } from './content-page-context'
 import { WhatsappFab } from './components/whatsapp-fab'
+import { GeSection } from './components/ge-section'
 
 function normalisePath() {
   const path = window.location.pathname.replace(/\/+$/, '')
@@ -26,7 +23,20 @@ export function GeContentPage() {
   const page = useMemo(() => getGeContentPage(path), [path])
   const formConfig = useMemo(() => (page ? getContentPageFormConfig(path, page) : null), [page, path])
   const heroMedia = useMemo(() => (page ? getContentPageHeroMedia(path, page) : null), [page, path])
-  const smartActions = useMemo(() => (page ? getContentPageSmartActions(path, page) : []), [page, path])
+
+  const storyCards: readonly GeContentStoryCard[] = useMemo(() => {
+    if (!page) return []
+    return page.sections.slice(0, 3).map((section, index) => {
+      const media = getContentStorySectionMedia(path, page, index)
+      const badge = index === 0 ? 'Step 01' : index === 1 ? 'Step 02' : 'Step 03'
+      return { section, badge, image: media.image, imageAlt: media.alt }
+    })
+  }, [page, path])
+
+  useEffect(() => {
+    if (!page) return
+    document.title = page.metaTitle
+  }, [page])
 
   if (!page) {
     return (
@@ -45,78 +55,63 @@ export function GeContentPage() {
     )
   }
 
-  document.title = page.metaTitle
+  const extraSections = page.sections.length > 3 ? page.sections.slice(3) : []
+  const promiseBody = page.sections[0]?.body ?? page.subtitle
+  const heroImage = heroMedia?.image ?? page.heroImage
+  const heroAlt = heroMedia?.alt ?? page.heroAlt
+  const routeLabel = heroMedia?.stripeLabel ?? page.eyebrow
+
+  const mobileHighlights = page.highlights.slice(0, 3).map((label) => ({
+    icon: CheckCircle2,
+    label
+  }))
 
   return (
     <div className="ge-page min-h-screen overflow-x-hidden bg-white">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-gs-gold focus:px-4 focus:py-2 focus:font-ge focus:text-sm focus:font-bold focus:uppercase focus:tracking-[0.14em] focus:text-gs-dark"
+      >
+        Skip to content
+      </a>
       <GeNavbar />
-      <main>
-        <section className="relative isolate overflow-hidden bg-gs-dark text-white">
-          <div aria-hidden="true" className="h-[134px] w-full bg-white sm:h-[148px] md:h-[164px] lg:h-[130px] xl:h-[142px]" />
-          <div className="relative">
-            <img
-              src={heroMedia?.image ?? page.heroImage}
-              alt={heroMedia?.alt ?? page.heroAlt}
-              className="h-[44vh] min-h-[320px] w-full object-cover object-center md:h-[52vh] md:min-h-[440px] lg:h-[58vh]"
-              width={2200}
-              height={1100}
-            />
-            <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-r from-gs-dark/88 via-gs-dark/66 to-gs-dark/48" />
-            <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gs-dark/70 via-transparent to-transparent" />
-            <div className={cx('absolute inset-0 z-10 flex items-end pb-8 sm:pb-10')}>
-              <div className="mx-auto w-full max-w-[1180px] px-5 sm:px-8">
-                <motion.div
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.55, ease: 'easeOut' }}
-                  className="max-w-3xl"
+
+      <main id="main">
+        <GeServiceStyleHero
+          srTitle={page.title}
+          eyebrow={page.eyebrow}
+          title={page.title}
+          subtitle={page.subtitle}
+          image={heroImage}
+          imageAlt={heroAlt}
+          primaryCta={{ label: 'Start your enquiry', href: '#ge-content-enquire' }}
+          mobileHighlights={mobileHighlights}
+        />
+
+        <GeContentPromiseBand
+          eyebrow="The promise"
+          title="Plain guidance. One Irish team. Zero guesswork."
+          body={promiseBody}
+          bullets={page.highlights}
+        />
+
+        <GePaymentsIreland />
+
+        <GeContentStoryGrid
+          eyebrow="The detail"
+          title="How we support your week."
+          lead={page.subtitle}
+          cards={storyCards}
+        />
+
+        {extraSections.length > 0 ? (
+          <GeSection background="white" innerClassName="py-14 sm:py-16">
+            <div className="mx-auto max-w-[1180px] space-y-8 px-5 sm:px-8">
+              {extraSections.map((section) => (
+                <article
+                  key={section.title}
+                  className="rounded-2xl border border-ge-gray100 bg-ge-gray50/40 p-5 shadow-[0_10px_30px_rgba(6,59,42,0.06)] sm:p-7"
                 >
-                  <span className="inline-flex items-center rounded-full border border-gs-gold/50 bg-gs-dark/40 px-3 py-1.5 font-ge text-[0.72rem] font-bold uppercase tracking-[0.16em] text-gs-gold">
-                    {page.eyebrow}
-                  </span>
-                  <h1 className="mt-4 font-ge text-[2.15rem] font-extrabold leading-[1.03] tracking-[-0.01em] text-white sm:text-[2.8rem] md:text-[3.25rem]">
-                    {page.title}
-                  </h1>
-                  <p className="mt-4 max-w-2xl font-ge text-[1.04rem] leading-7 text-white/92 sm:text-[1.12rem] sm:leading-8">
-                    {page.subtitle}
-                  </p>
-                  <div className="mt-6 grid gap-3 sm:max-w-2xl sm:grid-cols-3">
-                    {smartActions.map((action) => (
-                      <SmartActionCard key={action.label} action={action} />
-                    ))}
-                  </div>
-                </motion.div>
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-gs-gold/35 bg-[#08271a]">
-            <div className="mx-auto flex max-w-[1180px] items-center gap-3 px-5 py-3 sm:px-8">
-              <span aria-hidden="true" className="h-px flex-1 bg-gs-gold/55" />
-              <span className="font-ge text-[0.74rem] font-extrabold uppercase tracking-[0.22em] text-gs-gold">
-                {heroMedia?.stripeLabel ?? page.eyebrow}
-              </span>
-              <span aria-hidden="true" className="h-px flex-1 bg-gs-gold/55" />
-            </div>
-          </div>
-        </section>
-
-        <section className="bg-white py-14 sm:py-16">
-          <div className="mx-auto grid max-w-[1180px] gap-10 px-5 sm:px-8 lg:grid-cols-[1.06fr_0.94fr] lg:items-start">
-            <div className="space-y-6">
-              <div className="rounded-2xl border border-ge-gray100 bg-ge-gray50 p-5 sm:p-6">
-                <p className="font-ge text-sm font-bold uppercase tracking-[0.16em] text-ge-orange">Why this helps</p>
-                <ul className="mt-4 space-y-3">
-                  {page.highlights.map((item) => (
-                    <li key={item} className="flex items-start gap-2.5 font-ge text-base leading-7 text-gs-dark">
-                      <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-gs-green" aria-hidden />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {page.sections.map((section) => (
-                <article key={section.title} className="rounded-2xl border border-ge-gray100 bg-white p-5 shadow-[0_10px_30px_rgba(6,59,42,0.06)] sm:p-7">
                   <h2 className="font-ge text-[1.58rem] font-extrabold leading-tight text-gs-green sm:text-[1.9rem]">{section.title}</h2>
                   <p className="mt-3 font-ge text-base leading-7 text-ge-gray500">{section.body}</p>
                   {section.bullets ? (
@@ -132,100 +127,28 @@ export function GeContentPage() {
                 </article>
               ))}
             </div>
+          </GeSection>
+        ) : null}
 
-            <aside className="lg:sticky lg:top-36">
-              {formConfig ? (
-                <GeQuickEnquiryForm
-                  title={page.formTitle}
-                  lead={page.formLead}
-                  interestPreset={page.interestPreset}
-                  routeLabel={heroMedia?.stripeLabel ?? page.eyebrow}
-                  formConfig={formConfig}
-                />
-              ) : null}
-              <div className="mt-5 rounded-2xl border border-ge-gray100 bg-white p-5 shadow-[0_8px_20px_rgba(6,59,42,0.06)]">
-                <p className="font-ge text-sm font-bold uppercase tracking-[0.16em] text-ge-orange">Smart next steps</p>
-                <div className="mt-4 space-y-3">
-                  {smartActions.map((action) => (
-                    <SmartSidebarAction key={action.label} action={action} />
-                  ))}
-                </div>
-                <div className="mt-5 rounded-2xl border border-ge-gray100 bg-ge-gray50 p-4">
-                  <p className="font-ge text-[0.74rem] font-bold uppercase tracking-[0.16em] text-ge-gray500">Prefer to call?</p>
-                  <a
-                    href={`tel:${contactInfo.phoneTel}`}
-                    className="mt-3 inline-flex min-h-[44px] items-center gap-2 rounded-full border-2 border-gs-green px-4 py-2.5 font-ge text-base font-bold uppercase tracking-[0.12em] text-gs-green transition-colors hover:bg-gs-green hover:text-white"
-                  >
-                    <Phone className="h-4 w-4" aria-hidden />
-                    {contactInfo.phoneDisplay}
-                  </a>
-                </div>
-              </div>
-            </aside>
-          </div>
-        </section>
+        {formConfig ? (
+          <GeContentEnquireBlock
+            eyebrow="Get in touch"
+            title={page.formTitle}
+            body={page.formLead}
+            formTitle={page.formTitle}
+            formLead={page.formLead}
+            interestPreset={page.interestPreset}
+            routeLabel={routeLabel}
+            formConfig={formConfig}
+          />
+        ) : null}
+
+        <GeFinalCta />
       </main>
+
       <GeFooter />
+
       <WhatsappFab />
-    </div>
-  )
-}
-
-function SmartActionCard({ action }: { readonly action: ContentSmartAction }) {
-  const tones = {
-    gold: 'border-gs-gold/50 bg-gs-gold/12 text-white hover:bg-gs-gold/18',
-    dark: 'border-white/18 bg-gs-dark/52 text-white hover:bg-gs-dark/62',
-    light: 'border-white/15 bg-white/10 text-white hover:bg-white/14'
-  } as const
-
-  return (
-    <a
-      href={action.href}
-      rel={action.external ? 'noreferrer' : undefined}
-      target={action.external ? '_blank' : undefined}
-      className={cx(
-        'group rounded-2xl border p-4 backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5',
-        tones[action.tone]
-      )}
-    >
-      <div className="flex items-start justify-between gap-3">
-        <p className="font-ge text-[0.86rem] font-extrabold uppercase tracking-[0.14em]">{action.label}</p>
-        <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden />
-      </div>
-      <p className="mt-2 font-ge text-sm leading-6 text-white/82">{action.description}</p>
-    </a>
-  )
-}
-
-function SmartSidebarAction({ action }: { readonly action: ContentSmartAction }) {
-  const icon =
-    action.kind === 'whatsapp' ? (
-      <MessageCircle className="h-4 w-4" aria-hidden />
-    ) : action.kind === 'call' ? (
-      <Phone className="h-4 w-4" aria-hidden />
-    ) : action.kind === 'email' ? (
-      <Mail className="h-4 w-4" aria-hidden />
-    ) : (
-      <ArrowRight className="h-4 w-4" aria-hidden />
-    )
-
-  const variant = action.tone === 'gold' ? 'gs-gold' : action.tone === 'dark' ? 'gs-green' : 'outline-gs-green'
-
-  return (
-    <div className="rounded-2xl border border-ge-gray100 p-4">
-      <p className="font-ge text-sm font-extrabold uppercase tracking-[0.12em] text-gs-dark">{action.label}</p>
-      <p className="mt-2 font-ge text-sm leading-6 text-ge-gray500">{action.description}</p>
-      <GeButton
-        href={action.href}
-        rel={action.external ? 'noreferrer' : undefined}
-        size="sm"
-        target={action.external ? '_blank' : undefined}
-        variant={variant}
-        className="mt-3 w-full"
-      >
-        {icon}
-        Open
-      </GeButton>
     </div>
   )
 }

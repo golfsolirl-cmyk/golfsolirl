@@ -109,27 +109,26 @@ export function getContentPageHeroMedia(path: string, page: GeContentPageData): 
   switch (kind) {
     case 'rental':
       return {
-        image:
-          'https://plus.unsplash.com/premium_photo-1678858024245-8a891b301ad3?auto=format&fit=crop&w=1600&q=80',
-        alt: 'Golf bag filled with clubs on a Costa del Sol practice ground, representing club rental and ready-to-play equipment.',
+        image: '/images/ge-premium-golf-club-rental-hero.png',
+        alt: 'Premium golf club rental display — polished irons and driver in a luxury Costa del Sol golf travel setting, warm golden light.',
         stripeLabel
       }
     case 'courses':
       return {
-        image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1600&q=80',
-        alt: 'A wide Costa del Sol golf course view used for course planning and tee-time pages.',
+        image: '/images/ge-premium-golf-fairway-coastal.png',
+        alt: 'Championship Costa del Sol fairway toward the Mediterranean — emerald grass, bunkers, and coastal haze at sunrise.',
         stripeLabel
       }
     case 'accommodation':
       return {
-        image: '/images/transport-moment-resort.jpg',
-        alt: 'Costa del Sol resort and hotel setting suited to golf groups.',
+        image: '/images/ge-premium-resort-hotel-hero.png',
+        alt: 'Boutique resort pool terrace at dusk on the Costa del Sol — luxury stay for Irish golf groups.',
         stripeLabel
       }
     case 'family':
       return {
-        image: '/images/transport-moment-resort.jpg',
-        alt: 'Relaxed Costa del Sol resort environment for a family golf holiday.',
+        image: '/images/ge-premium-family-golf-vacation.png',
+        alt: 'Family-friendly resort with golf bags and pool — relaxed Costa del Sol golf holiday pacing.',
         stripeLabel
       }
     case 'transport':
@@ -146,15 +145,15 @@ export function getContentPageHeroMedia(path: string, page: GeContentPageData): 
       }
     case 'testimonial':
       return {
-        image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=80',
-        alt: 'Golf travellers enjoying a sunny fairway walk on the Costa del Sol.',
+        image: '/images/ge-premium-golf-group-testimonial.png',
+        alt: 'Irish golf society toasting a successful round on a sunny Costa del Sol terrace overlooking fairways.',
         stripeLabel
       }
     case 'news':
     case 'newsletter':
       return {
-        image: 'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&w=1600&q=80',
-        alt: 'Costa del Sol fairway scene used for golf travel updates and newsletter pages.',
+        image: '/images/ge-premium-editorial-travel-news.png',
+        alt: 'Editorial flat lay — passport, tee sheet, and luxury travel notes for Costa del Sol golf trip planning.',
         stripeLabel
       }
     case 'about':
@@ -164,6 +163,11 @@ export function getContentPageHeroMedia(path: string, page: GeContentPageData): 
         stripeLabel
       }
     case 'legal':
+      return {
+        image: '/images/ge-premium-trust-legal-hero.png',
+        alt: 'Elegant desk with signed documents and soft light — trusted legal and privacy context for Golf Sol Ireland.',
+        stripeLabel
+      }
     case 'support':
     default:
       return {
@@ -172,6 +176,36 @@ export function getContentPageHeroMedia(path: string, page: GeContentPageData): 
         stripeLabel
       }
   }
+}
+
+/** Imagery for the dark “route story” cards — cycles premium art + fleet photography. */
+export function getContentStorySectionMedia(
+  path: string,
+  page: GeContentPageData,
+  index: number
+): { readonly image: string; readonly alt: string } {
+  const hero = getContentPageHeroMedia(path, page)
+  const pool = [
+    { image: hero.image, alt: hero.alt },
+    {
+      image: '/images/transport-moment-arrivals.jpg',
+      alt: 'Málaga airport arrivals hall with golf travel bags coordinated by a chauffeur.'
+    },
+    {
+      image: '/images/transport-moment-resort.jpg',
+      alt: 'Luxury Costa del Sol resort entrance with golf luggage and transfer vehicle.'
+    },
+    {
+      image: '/images/transport-fleet-lineup.jpg',
+      alt: 'Mercedes transfer fleet ready for Irish golf groups on the Costa del Sol.'
+    },
+    {
+      image: '/images/transport-hero-coastal-drive.jpg',
+      alt: 'Coastal motorway drive at golden hour — route between golf courses and your base.'
+    }
+  ] as const
+  const slot = (index + path.replace(/\//g, '').length) % pool.length
+  return pool[slot]!
 }
 
 export function getContentPageFormConfig(path: string, page: GeContentPageData): ContentFormConfig {

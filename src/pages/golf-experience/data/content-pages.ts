@@ -42,10 +42,10 @@ function getFooterArticleHeroImage(path: string) {
     return '/images/transport-hero-coastal-drive.jpg'
   }
   if (path.includes('hotel') || path.includes('accommodation')) {
-    return '/images/transport-moment-resort.jpg'
+    return '/images/ge-premium-resort-hotel-hero.png'
   }
   if (path.includes('course')) {
-    return '/images/about-golfsol-hero.jpg'
+    return '/images/ge-premium-golf-fairway-coastal.png'
   }
   if (
     path.includes('package') ||
@@ -57,7 +57,7 @@ function getFooterArticleHeroImage(path: string) {
   ) {
     return '/images/transport-fleet-lineup.jpg'
   }
-  return '/images/about-golfsol-hero.jpg'
+  return '/images/ge-premium-golf-fairway-coastal.png'
 }
 
 function getFooterArticleHeroAlt(path: string, content: FooterArticleContent) {

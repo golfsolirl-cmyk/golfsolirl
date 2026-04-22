@@ -15,6 +15,9 @@ type Variant =
   | 'gs-electric'
   | 'outline-gs-white'
   | 'outline-gs-green'
+  /** Neutral editorial CTAs (e.g. club rental) */
+  | 'ink'
+  | 'outline-ink'
 type Size = 'sm' | 'md' | 'lg'
 
 interface CommonProps {
@@ -61,7 +64,10 @@ const variants: Record<Variant, string> = {
   'outline-gs-white':
     'border-2 border-white bg-transparent text-white hover:bg-gs-gold hover:text-gs-dark hover:border-gs-gold',
   'outline-gs-green':
-    'border-2 border-gs-green bg-transparent text-gs-green hover:bg-gs-green hover:text-white'
+    'border-2 border-gs-green bg-transparent text-gs-green hover:bg-gs-green hover:text-white',
+  ink: 'bg-neutral-900 text-white hover:bg-neutral-800 shadow-sm',
+  'outline-ink':
+    'border-2 border-neutral-900 bg-transparent text-neutral-900 hover:bg-neutral-900 hover:text-white'
 }
 
 const baseClasses =

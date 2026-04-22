@@ -8,3 +8,6 @@ dist/
 *.tsbuildinfo
 .DS_Store
 Thumbs.db
+
+# Local snapshot of upstream repo (do not version)
+_import_golfsolirl/

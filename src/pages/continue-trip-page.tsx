@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react'
 import { ArrowLeft, CheckCircle2 } from 'lucide-react'
 import { GOLF_SOL_TRIP_FLIGHT_PREFILL_KEY } from './golf-experience/components/already-booked-flight-panel'
+import { GeFooter } from './golf-experience/sections/ge-footer'
+import { GeNavbar } from './golf-experience/sections/ge-navbar'
+import { GePaymentsIreland } from './golf-experience/sections/payments-ireland'
+import { GeFinalCta } from './golf-experience/sections/final-cta'
+import { GeServiceStyleHero } from './golf-experience/sections/ge-service-style-hero'
+import { WhatsappFab } from './golf-experience/components/whatsapp-fab'
+import { GeSection } from './golf-experience/components/ge-section'
 
 type TravelMode = 'flight' | 'arrived'
 
@@ -76,121 +83,179 @@ export function ContinueTripPage() {
     }
   }, [])
 
+  useEffect(() => {
+    document.title = 'Continue your trip | GolfSol Ireland'
+  }, [])
+
   if (snap === undefined) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-ge-gray50 font-ge text-ge-gray500">
-        Loading…
+      <div className="ge-page min-h-screen overflow-x-hidden bg-white">
+        <GeNavbar />
+        <main id="main" className="flex min-h-[50vh] items-center justify-center bg-ge-gray50 px-5 font-ge text-ge-gray500">
+          Loading…
+        </main>
+        <GeFooter />
       </div>
     )
   }
 
   if (!snap) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gs-dark to-gs-green px-5 py-16 text-white">
-        <div className="mx-auto max-w-lg rounded-2xl border border-white/15 bg-white/10 p-8 backdrop-blur-md">
-          <p className="font-ge text-lg font-bold">No flight details found</p>
-          <p className="mt-3 font-ge text-sm leading-relaxed text-white/80">
-            Start from the homepage — use the &ldquo;Hotel already booked?&rdquo; card under{' '}
-            <strong className="text-gs-gold-light">Design Your Costa del Sol Golf Trip</strong>, then submit the quick
-            form.
-          </p>
-          <a
-            href="/"
-            className="mt-8 inline-flex items-center gap-2 rounded-full border-2 border-gs-gold/60 bg-gs-gold px-5 py-2.5 font-ge text-sm font-extrabold uppercase tracking-[0.14em] text-gs-dark transition-colors hover:bg-gs-gold-light"
-          >
-            <ArrowLeft className="h-4 w-4" aria-hidden />
-            Back to homepage
-          </a>
-        </div>
+      <div className="ge-page min-h-screen overflow-x-hidden bg-white">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-gs-gold focus:px-4 focus:py-2 focus:font-ge focus:text-sm focus:font-bold focus:uppercase focus:tracking-[0.14em] focus:text-gs-dark"
+        >
+          Skip to content
+        </a>
+        <GeNavbar />
+        <main id="main">
+          <GeServiceStyleHero
+            srTitle="Continue your trip"
+            eyebrow="Trip planner"
+            title="No flight details found yet"
+            subtitle="Start from the homepage — use the Hotel already booked card under Design Your Costa del Sol Golf Trip, then submit the quick form."
+            image="/images/transport-moment-arrivals.jpg"
+            imageAlt="Málaga airport arrivals — start your trip brief from the homepage."
+            primaryCta={{ label: 'Back to homepage', href: '/' }}
+            showPhoneCta={false}
+            nextSectionId="#continue-help"
+            mobileHighlights={[
+              { label: 'Save your flight or arrival time first' },
+              { label: 'We pre-fill the next step for you' },
+              { label: 'Irish team replies fast' }
+            ]}
+          />
+          <GeSection id="continue-help" background="white" innerClassName="py-14 sm:py-16">
+            <div className="mx-auto max-w-lg px-5 text-center sm:px-8">
+              <a
+                href="/"
+                className="inline-flex min-h-[48px] items-center gap-2 rounded-full border-2 border-gs-gold/60 bg-gs-gold px-6 py-3 font-ge text-sm font-extrabold uppercase tracking-[0.14em] text-gs-dark transition-colors hover:bg-gs-gold-light"
+              >
+                <ArrowLeft className="h-4 w-4" aria-hidden />
+                Back to homepage
+              </a>
+            </div>
+          </GeSection>
+          <GePaymentsIreland />
+          <GeFinalCta />
+        </main>
+        <GeFooter />
+        <WhatsappFab />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-ge-gray50 pb-16 pt-8 font-ge text-gs-dark sm:pt-12">
-      <div className="mx-auto max-w-2xl px-5">
-        <a
-          href="/"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-gs-green transition-colors hover:text-gs-gold"
-        >
-          <ArrowLeft className="h-4 w-4" aria-hidden />
-          Back to GolfSol Ireland
-        </a>
+    <div className="ge-page min-h-screen overflow-x-hidden bg-white">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-gs-gold focus:px-4 focus:py-2 focus:font-ge focus:text-sm focus:font-bold focus:uppercase focus:tracking-[0.14em] focus:text-gs-dark"
+      >
+        Skip to content
+      </a>
+      <GeNavbar />
 
-        <header className="mt-8">
-          <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-ge-orange">Step 2 of 2</p>
-          <h1 className="mt-2 text-3xl font-extrabold leading-tight tracking-tight text-gs-dark sm:text-4xl">
-            Finish your trip brief
-          </h1>
-          <p className="mt-3 text-base leading-relaxed text-ge-gray500">
-            We have your arrival snapshot. Add the pieces below (or jump straight to a full quote) — a planner will
-            reply with tee times, transfers and extras matched to your hotel.
-          </p>
-        </header>
+      <main id="main">
+        <GeServiceStyleHero
+          srTitle="Finish your trip brief"
+          eyebrow="Step 2 of 2"
+          title="Finish your trip brief"
+          subtitle="We have your arrival snapshot. Add the pieces below (or jump straight to a full quote) — a planner will reply with tee times, transfers and extras matched to your hotel."
+          image="/images/transport-hero-coastal-drive.jpg"
+          imageAlt="Black Mercedes V-Class on the AP-7 coastal motorway — Golf Sol Ireland transfer planning."
+          primaryCta={{ label: 'Open full quote form', href: '/#enquire' }}
+          nextSectionId="#continue-carried"
+          mobileHighlights={[
+            { label: 'Arrival details carried forward' },
+            { label: 'One Irish coordinator end-to-end' },
+            { label: 'Clear next steps in plain English' }
+          ]}
+        />
 
-        <section className="mt-10 rounded-2xl border border-ge-gray200 bg-white p-6 shadow-soft sm:p-8">
-          <h2 className="flex items-center gap-2 text-sm font-extrabold uppercase tracking-[0.16em] text-gs-green">
-            <CheckCircle2 className="h-5 w-5 text-gs-gold" aria-hidden />
-            Carried from last screen
-          </h2>
-          <dl className="mt-5 grid gap-4 sm:grid-cols-2">
-            <div>
-              <dt className="text-[0.7rem] font-bold uppercase tracking-[0.14em] text-ge-gray500">Name</dt>
-              <dd className="mt-1 text-base font-semibold text-gs-dark">{snap.fullName}</dd>
-            </div>
-            <div>
-              <dt className="text-[0.7rem] font-bold uppercase tracking-[0.14em] text-ge-gray500">Mobile</dt>
-              <dd className="mt-1 text-base font-semibold text-gs-dark">{snap.mobile}</dd>
-            </div>
-            <div className="sm:col-span-2">
-              <dt className="text-[0.7rem] font-bold uppercase tracking-[0.14em] text-ge-gray500">Arrival type</dt>
-              <dd className="mt-1 text-base font-semibold text-gs-dark">
-                {snap.travelMode === 'flight' ? 'Inbound flight' : 'Already arrived — collection'}
-              </dd>
-            </div>
-            {snap.travelMode === 'flight' ? (
-              <>
-                <div>
-                  <dt className="text-[0.7rem] font-bold uppercase tracking-[0.14em] text-ge-gray500">Flight</dt>
-                  <dd className="mt-1 text-base font-semibold text-gs-dark">{snap.flightNo}</dd>
-                </div>
-                <div>
-                  <dt className="text-[0.7rem] font-bold uppercase tracking-[0.14em] text-ge-gray500">Landing (local)</dt>
-                  <dd className="mt-1 text-base font-semibold text-gs-dark">{snap.arrivalTime}</dd>
-                </div>
-              </>
-            ) : (
-              <div className="sm:col-span-2">
-                <dt className="text-[0.7rem] font-bold uppercase tracking-[0.14em] text-ge-gray500">Collection time</dt>
-                <dd className="mt-1 text-base font-semibold text-gs-dark">{snap.collectionTime}</dd>
-              </div>
-            )}
-          </dl>
-        </section>
+        <GePaymentsIreland />
 
-        <section className="mt-8 rounded-2xl border border-dashed border-gs-green/35 bg-white/80 p-6 sm:p-8">
-          <p className="text-sm font-extrabold uppercase tracking-[0.18em] text-gs-green/80">Next — full itinerary</p>
-          <p className="mt-2 text-sm leading-relaxed text-ge-gray500">
-            This section is ready for your longer form: hotel confirmation, dates, party size, handicap spread, course
-            wish-list and transfer notes. Wire it to your CRM or enquiry API when you are ready.
-          </p>
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        <GeSection background="white" innerClassName="py-14 sm:py-16">
+          <div className="mx-auto max-w-2xl px-5 sm:px-8">
             <a
-              href="/#enquire"
-              className="inline-flex min-h-[48px] items-center justify-center rounded-full bg-gradient-to-br from-gs-gold to-[#f4b41a] px-6 font-ge text-sm font-extrabold uppercase tracking-[0.12em] text-gs-dark shadow-gs-gold transition-transform hover:scale-[1.02]"
+              href="/"
+              className="inline-flex items-center gap-2 font-ge text-sm font-semibold text-gs-green transition-colors hover:text-gs-gold"
             >
-              Open full quote form
+              <ArrowLeft className="h-4 w-4" aria-hidden />
+              Back to GolfSol Ireland
             </a>
-            <button
-              type="button"
-              disabled
-              className="inline-flex min-h-[48px] cursor-not-allowed items-center justify-center rounded-full border-2 border-ge-gray200 px-6 font-ge text-sm font-bold uppercase tracking-[0.1em] text-ge-gray300"
-            >
-              Save draft (soon)
-            </button>
+
+            <section id="continue-carried" className="mt-10 scroll-mt-28 rounded-2xl border border-ge-gray100 bg-ge-gray50/50 p-6 shadow-[0_10px_30px_rgba(6,59,42,0.06)] sm:p-8">
+              <h2 className="flex items-center gap-2 font-ge text-sm font-extrabold uppercase tracking-[0.16em] text-gs-green">
+                <CheckCircle2 className="h-5 w-5 text-gs-gold" aria-hidden />
+                Carried from last screen
+              </h2>
+              <dl className="mt-5 grid gap-4 sm:grid-cols-2">
+                <div>
+                  <dt className="font-ge text-[0.7rem] font-bold uppercase tracking-[0.14em] text-ge-gray500">Name</dt>
+                  <dd className="mt-1 font-ge text-base font-semibold text-gs-dark">{snap.fullName}</dd>
+                </div>
+                <div>
+                  <dt className="font-ge text-[0.7rem] font-bold uppercase tracking-[0.14em] text-ge-gray500">Mobile</dt>
+                  <dd className="mt-1 font-ge text-base font-semibold text-gs-dark">{snap.mobile}</dd>
+                </div>
+                <div className="sm:col-span-2">
+                  <dt className="font-ge text-[0.7rem] font-bold uppercase tracking-[0.14em] text-ge-gray500">Arrival type</dt>
+                  <dd className="mt-1 font-ge text-base font-semibold text-gs-dark">
+                    {snap.travelMode === 'flight' ? 'Inbound flight' : 'Already arrived — collection'}
+                  </dd>
+                </div>
+                {snap.travelMode === 'flight' ? (
+                  <>
+                    <div>
+                      <dt className="font-ge text-[0.7rem] font-bold uppercase tracking-[0.14em] text-ge-gray500">Flight</dt>
+                      <dd className="mt-1 font-ge text-base font-semibold text-gs-dark">{snap.flightNo}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-ge text-[0.7rem] font-bold uppercase tracking-[0.14em] text-ge-gray500">Landing (local)</dt>
+                      <dd className="mt-1 font-ge text-base font-semibold text-gs-dark">{snap.arrivalTime}</dd>
+                    </div>
+                  </>
+                ) : (
+                  <div className="sm:col-span-2">
+                    <dt className="font-ge text-[0.7rem] font-bold uppercase tracking-[0.14em] text-ge-gray500">Collection time</dt>
+                    <dd className="mt-1 font-ge text-base font-semibold text-gs-dark">{snap.collectionTime}</dd>
+                  </div>
+                )}
+              </dl>
+            </section>
+
+            <section className="mt-8 rounded-2xl border border-dashed border-gs-green/35 bg-[linear-gradient(180deg,_#FAF8F4_0%,_#FFFFFF_70%)] p-6 sm:p-8">
+              <p className="font-ge text-sm font-extrabold uppercase tracking-[0.18em] text-gs-green/90">Next — full itinerary</p>
+              <p className="mt-2 font-ge text-sm leading-relaxed text-ge-gray500">
+                This section is ready for your longer form: hotel confirmation, dates, party size, handicap spread, course wish-list and transfer
+                notes. Wire it to your CRM or enquiry API when you are ready.
+              </p>
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <a
+                  href="/#enquire"
+                  className="inline-flex min-h-[48px] items-center justify-center rounded-full bg-gradient-to-br from-gs-gold to-[#f4b41a] px-6 font-ge text-sm font-extrabold uppercase tracking-[0.12em] text-gs-dark shadow-gs-gold transition-transform hover:scale-[1.02]"
+                >
+                  Open full quote form
+                </a>
+                <button
+                  type="button"
+                  disabled
+                  className="inline-flex min-h-[48px] cursor-not-allowed items-center justify-center rounded-full border-2 border-ge-gray200 px-6 font-ge text-sm font-bold uppercase tracking-[0.1em] text-ge-gray300"
+                >
+                  Save draft (soon)
+                </button>
+              </div>
+            </section>
           </div>
-        </section>
-      </div>
+        </GeSection>
+
+        <GeFinalCta />
+      </main>
+
+      <GeFooter />
+
+      <WhatsappFab />
     </div>
   )
 }
