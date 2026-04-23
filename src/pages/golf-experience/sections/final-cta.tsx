@@ -29,7 +29,8 @@ export function GeFinalCta() {
               {finalCtaCopy.cta}
             </GeButton>
             <GeButton href={`tel:${contactInfo.phoneTel}`} variant="outline-gs-green" size="lg">
-              Call {contactInfo.phoneDisplay}
+              <span className="sm:hidden">Call us</span>
+              <span className="hidden sm:inline">Call {contactInfo.phoneDisplay}</span>
             </GeButton>
           </div>
         </div>
