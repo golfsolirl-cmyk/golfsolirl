@@ -10,6 +10,48 @@ const fadeUp = {
   transition: { duration: 0.6, ease: 'easeOut' }
 } as const
 
+function getMobileHeroTitleStyle(title: string) {
+  const length = title.trim().length
+
+  if (length > 72) {
+    return {
+      fontSize: 'clamp(1.96rem, 7.9vw, 2.56rem)',
+      lineHeight: 1.08,
+      letterSpacing: '-0.02em',
+      maxWidth: '13ch',
+      textWrap: 'balance' as const
+    }
+  }
+
+  if (length > 56) {
+    return {
+      fontSize: 'clamp(2.08rem, 8.4vw, 2.82rem)',
+      lineHeight: 1.07,
+      letterSpacing: '-0.018em',
+      maxWidth: '13.5ch',
+      textWrap: 'balance' as const
+    }
+  }
+
+  if (length > 40) {
+    return {
+      fontSize: 'clamp(2.18rem, 8.9vw, 2.96rem)',
+      lineHeight: 1.06,
+      letterSpacing: '-0.016em',
+      maxWidth: '14.25ch',
+      textWrap: 'balance' as const
+    }
+  }
+
+  return {
+    fontSize: 'clamp(2.5rem, 9.8vw, 3.35rem)',
+    lineHeight: 1.04,
+    letterSpacing: '-0.02em',
+    maxWidth: '14.5ch',
+    textWrap: 'balance' as const
+  }
+}
+
 export type GeServiceStyleHeroHighlight = {
   readonly icon?: LucideIcon
   readonly label: string
@@ -50,6 +92,7 @@ export function GeServiceStyleHero({
   mobileHighlights,
   trustLine = 'Irish-owned · Costa del Sol specialists · Replies inside 2 hours'
 }: GeServiceStyleHeroProps) {
+  const mobileTitleStyle = getMobileHeroTitleStyle(title)
   const highlights =
     mobileHighlights && mobileHighlights.length > 0
       ? mobileHighlights.slice(0, 3)
@@ -93,7 +136,11 @@ export function GeServiceStyleHero({
                 <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-gs-gold shadow-[0_0_10px_rgba(255,199,44,0.68)]" />
                 {eyebrow}
               </span>
-              <h2 id={`${id}-title`} className="mt-4 font-ge text-[2.22rem] font-extrabold leading-[1.04] tracking-[-0.01em] text-white">
+              <h2
+                id={`${id}-title`}
+                className="mt-4 font-ge font-extrabold text-white"
+                style={mobileTitleStyle}
+              >
                 {title}
               </h2>
               <p className="mt-3 font-ge text-[1.08rem] leading-8 text-white/88">{subtitle}</p>
