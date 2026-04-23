@@ -102,7 +102,7 @@ export function GeAlreadyBookedFlightPanel() {
             transition={{ duration: 0.28, ease: 'easeOut' }}
             className="mx-auto flex w-full max-w-xl flex-col items-center gap-3 lg:max-w-2xl"
           >
-            <p className="text-center font-ge text-sm leading-relaxed text-white/75 sm:text-[0.95rem]">
+            <p className="max-w-[42rem] text-center font-ge text-sm font-semibold leading-relaxed text-ge-gray500 sm:text-[0.95rem]">
               {alreadyBookedHotelCopy.toggleSub}
             </p>
             <button
@@ -110,11 +110,11 @@ export function GeAlreadyBookedFlightPanel() {
               aria-expanded={false}
               aria-controls="already-booked-flight-panel"
               onClick={() => setOpen(true)}
-              className="group flex w-full max-w-md items-center justify-center gap-3 rounded-full border-2 border-gs-gold/70 bg-gs-dark/40 px-5 py-3.5 font-ge text-sm font-extrabold uppercase tracking-[0.12em] text-gs-gold-light shadow-[0_0_0_1px_rgba(255,199,44,0.15)] transition-all hover:border-gs-gold hover:bg-white/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gs-gold focus-visible:ring-offset-2 focus-visible:ring-offset-gs-green sm:px-8 sm:py-4 sm:text-[0.8rem]"
+              className="group flex w-full max-w-md items-center justify-center gap-3 rounded-full border border-gs-dark/12 bg-gs-dark px-5 py-3.5 font-ge text-sm font-extrabold uppercase tracking-[0.12em] text-white shadow-[0_18px_40px_rgba(6,59,42,0.18)] transition-all hover:border-gs-green hover:bg-gs-green hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gs-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#f6f0e2] sm:px-8 sm:py-4 sm:text-[0.8rem]"
             >
               <Hotel className="h-5 w-5 shrink-0 text-gs-gold transition-transform group-hover:scale-110" aria-hidden />
               <span className="text-balance">{alreadyBookedHotelCopy.toggleCta}</span>
-              <ChevronDown className="h-4 w-4 shrink-0 opacity-80" aria-hidden />
+              <ChevronDown className="h-4 w-4 shrink-0 text-white/72 transition-colors group-hover:text-white" aria-hidden />
             </button>
           </motion.div>
         ) : (
