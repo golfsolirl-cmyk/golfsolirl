@@ -38,9 +38,9 @@ export function GeContentStoryGrid({ eyebrow, title, lead, cards }: GeContentSto
       className="relative"
     >
       <motion.div className="mx-auto max-w-3xl text-center" {...fadeUp}>
-        <p className="font-ge text-sm font-bold uppercase tracking-[0.2em] text-gs-gold sm:text-[0.85rem]">{eyebrow}</p>
-        <h2 className="mt-3 font-ge text-[2rem] font-extrabold leading-[1.08] tracking-[0.01em] text-white sm:text-[2.4rem] lg:text-[2.7rem]">{title}</h2>
-        <p className="mx-auto mt-4 max-w-2xl font-ge text-base leading-8 text-white/85 sm:text-[1.05rem]">{lead}</p>
+        <p className="font-ge text-[0.95rem] font-bold uppercase tracking-[0.18em] text-gs-gold sm:text-[1rem]">{eyebrow}</p>
+        <h2 className="mt-3 font-ge text-[2.12rem] font-extrabold leading-[1.06] tracking-[0.01em] text-white sm:text-[2.45rem] lg:text-[2.7rem]">{title}</h2>
+        <p className="mx-auto mt-4 max-w-2xl font-ge text-[1.06rem] leading-8 text-white/85 sm:text-[1.12rem]">{lead}</p>
       </motion.div>
 
       <div
@@ -75,17 +75,17 @@ export function GeContentStoryGrid({ eyebrow, title, lead, cards }: GeContentSto
                     'linear-gradient(90deg, transparent 0%, #B88900 15%, #FFC72C 35%, #FFE27A 50%, #FFC72C 65%, #B88900 85%, transparent 100%)'
                 }}
               />
-              <span className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-gs-dark/60 px-3 py-1.5 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.18em] text-gs-gold backdrop-blur-md sm:text-[0.78rem]">
+              <span className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-gs-dark/60 px-3 py-1.5 font-ge text-[0.82rem] font-extrabold uppercase tracking-[0.16em] text-gs-gold backdrop-blur-md sm:text-[0.86rem]">
                 <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-gs-gold" />
                 {card.badge}
               </span>
             </div>
 
             <div className="flex flex-1 flex-col px-6 pb-7 pt-6">
-              <h3 className="font-ge text-[1.35rem] font-extrabold leading-tight text-white sm:text-[1.5rem]">{card.section.title}</h3>
-              <p className="mt-3 flex-1 font-ge text-base leading-7 text-white/85 sm:text-[1rem]">{card.section.body}</p>
+              <h3 className="font-ge text-[1.48rem] font-extrabold leading-tight text-white sm:text-[1.58rem]">{card.section.title}</h3>
+              <p className="mt-3 flex-1 font-ge text-[1.04rem] leading-8 text-white/85 sm:text-[1.08rem]">{card.section.body}</p>
               {card.section.bullets?.[0] ? (
-                <p className="mt-5 inline-flex items-center gap-2 border-t border-white/15 pt-4 font-ge text-sm font-bold uppercase tracking-[0.14em] text-gs-gold sm:text-[0.78rem]">
+                <p className="mt-5 inline-flex items-center gap-2 border-t border-white/15 pt-4 font-ge text-[0.92rem] font-bold uppercase tracking-[0.12em] text-gs-gold sm:text-[0.86rem]">
                   <ArrowRight className="h-3.5 w-3.5" aria-hidden />
                   {card.section.bullets[0]}
                 </p>

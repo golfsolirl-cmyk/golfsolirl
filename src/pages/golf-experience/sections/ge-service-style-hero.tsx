@@ -89,20 +89,20 @@ export function GeServiceStyleHero({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55, ease: 'easeOut' }}
             >
-              <span className="inline-flex items-center gap-2 rounded-full border border-gs-gold/35 bg-gs-dark/45 px-3 py-1.5 font-ge text-[0.66rem] font-bold uppercase tracking-[0.18em] text-gs-gold">
+              <span className="inline-flex items-center gap-2 rounded-full border border-gs-gold/35 bg-gs-dark/45 px-3 py-1.5 font-ge text-[0.78rem] font-bold uppercase tracking-[0.16em] text-gs-gold">
                 <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-gs-gold shadow-[0_0_10px_rgba(255,199,44,0.68)]" />
                 {eyebrow}
               </span>
-              <h2 id={`${id}-title`} className="mt-4 font-ge text-[2.05rem] font-extrabold leading-[1.04] tracking-[-0.01em] text-white">
+              <h2 id={`${id}-title`} className="mt-4 font-ge text-[2.22rem] font-extrabold leading-[1.04] tracking-[-0.01em] text-white">
                 {title}
               </h2>
-              <p className="mt-3 font-ge text-[1.02rem] leading-7 text-white/85">{subtitle}</p>
+              <p className="mt-3 font-ge text-[1.08rem] leading-8 text-white/88">{subtitle}</p>
 
               <ul className="mt-5 space-y-2">
                 {highlights.map(({ icon: Icon = CheckCircle2, label }) => (
                   <li
                     key={label}
-                    className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 font-ge text-[0.82rem] font-semibold uppercase tracking-[0.08em] text-white/82"
+                    className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 font-ge text-[0.92rem] font-semibold uppercase tracking-[0.06em] text-white/84"
                   >
                     <Icon className="h-4 w-4 shrink-0 text-gs-gold" aria-hidden />
                     {label}
@@ -123,7 +123,7 @@ export function GeServiceStyleHero({
                 ) : null}
               </div>
 
-              <p className="mt-4 font-ge text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-white/68">{trustLine}</p>
+              <p className="mt-4 font-ge text-[0.82rem] font-semibold uppercase tracking-[0.12em] text-white/74">{trustLine}</p>
             </motion.div>
           </div>
 

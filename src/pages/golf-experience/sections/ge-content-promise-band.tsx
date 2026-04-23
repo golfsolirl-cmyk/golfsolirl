@@ -30,13 +30,13 @@ export function GeContentPromiseBand({ eyebrow, title, body, bullets }: GeConten
     >
       <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16">
         <motion.div {...fadeUp}>
-          <p className="font-ge text-sm font-bold uppercase tracking-[0.18em] text-ge-orange sm:text-[0.85rem]">{eyebrow}</p>
-          <h2 className="mt-3 font-ge text-[2rem] font-extrabold leading-[1.08] tracking-[0.01em] text-gs-green sm:text-[2.4rem] lg:text-[2.6rem]">{title}</h2>
-          <p className="mt-5 font-ge text-base leading-7 text-ge-gray500 sm:text-[1.05rem] sm:leading-8">{body}</p>
+          <p className="font-ge text-[0.98rem] font-bold uppercase tracking-[0.16em] text-ge-orange sm:text-[0.9rem]">{eyebrow}</p>
+          <h2 className="mt-3 font-ge text-[2.12rem] font-extrabold leading-[1.06] tracking-[0.005em] text-gs-green sm:text-[2.4rem] lg:text-[2.6rem]">{title}</h2>
+          <p className="mt-5 font-ge text-[1.06rem] leading-8 text-ge-gray500 sm:text-[1.08rem] sm:leading-8">{body}</p>
 
           <ul className="mt-7 grid gap-3">
             {bullets.map((bullet) => (
-              <li key={bullet} className="flex items-start gap-3 font-ge text-base leading-7 text-gs-dark sm:text-[1rem]">
+              <li key={bullet} className="flex items-start gap-3 font-ge text-[1.04rem] leading-8 text-gs-dark sm:text-[1.02rem]">
                 <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gs-green text-white shadow-sm">
                   <Check className="h-3.5 w-3.5" strokeWidth={3} aria-hidden />
                 </span>
@@ -62,8 +62,8 @@ export function GeContentPromiseBand({ eyebrow, title, body, bullets }: GeConten
                 aria-hidden
                 className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-gs-gold via-gs-gold-light to-gs-gold"
               />
-              <p className="font-ge text-[2rem] font-extrabold leading-none tracking-[-0.01em] text-gs-green sm:text-[2.4rem]">{stat.value}</p>
-              <p className="mt-2 font-ge text-sm font-bold uppercase tracking-[0.14em] text-ge-gray500 sm:text-[0.8rem]">{stat.label}</p>
+              <p className="font-ge text-[2.05rem] font-extrabold leading-none tracking-[-0.01em] text-gs-green sm:text-[2.4rem]">{stat.value}</p>
+              <p className="mt-2 font-ge text-[0.95rem] font-bold uppercase tracking-[0.12em] text-ge-gray500 sm:text-[0.82rem]">{stat.label}</p>
             </div>
           ))}
         </motion.div>

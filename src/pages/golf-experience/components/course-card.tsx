@@ -42,10 +42,10 @@ export function GeCourseCard({ course }: CourseCardProps) {
         />
         {/* Top row: flex + wrap stops character badge and area chip colliding on narrow columns */}
         <div className="pointer-events-none absolute left-2 right-2 top-2 z-10 flex flex-wrap items-start justify-between gap-2 sm:left-3 sm:right-3 sm:top-3">
-          <span className="inline-flex min-w-0 max-w-[min(100%,11.5rem)] items-center gap-1 rounded-full border border-gs-gold/60 bg-gs-dark/90 px-2.5 py-1 font-ge text-[0.65rem] font-extrabold uppercase leading-tight tracking-[0.06em] text-gs-gold shadow-[0_8px_18px_rgba(0,0,0,0.45)] backdrop-blur-sm sm:max-w-[13rem] sm:gap-1.5 sm:px-3 sm:py-1.5 sm:text-[0.72rem] sm:tracking-[0.08em]">
+          <span className="inline-flex min-w-0 max-w-[min(100%,11.5rem)] items-center gap-1 rounded-full border border-gs-gold/60 bg-gs-dark/90 px-3 py-1.5 font-ge text-[0.76rem] font-extrabold uppercase leading-tight tracking-[0.08em] text-gs-gold shadow-[0_8px_18px_rgba(0,0,0,0.45)] backdrop-blur-sm sm:max-w-[13rem] sm:gap-1.5 sm:px-3 sm:py-1.5 sm:text-[0.8rem] sm:tracking-[0.1em]">
             <span className="truncate">{course.badge}</span>
           </span>
-          <span className="inline-flex min-w-0 max-w-[min(100%,10.5rem)] items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 font-ge text-[0.65rem] font-bold uppercase leading-tight tracking-[0.06em] text-gs-green shadow-[0_4px_12px_rgba(0,0,0,0.18)] sm:max-w-[12rem] sm:text-[0.7rem] sm:tracking-[0.08em]">
+          <span className="inline-flex min-w-0 max-w-[min(100%,10.5rem)] items-center gap-1 rounded-full bg-white/95 px-3 py-1.5 font-ge text-[0.76rem] font-bold uppercase leading-tight tracking-[0.08em] text-gs-green shadow-[0_4px_12px_rgba(0,0,0,0.18)] sm:max-w-[12rem] sm:text-[0.8rem] sm:tracking-[0.1em]">
             <MapPin className="h-3 w-3 shrink-0" aria-hidden="true" />
             <span className="truncate">{course.area}</span>
           </span>
@@ -57,12 +57,12 @@ export function GeCourseCard({ course }: CourseCardProps) {
       </div>
 
       <div className="flex flex-1 flex-col p-5 sm:p-6">
-        <p className="font-ge text-base leading-7 text-ge-gray500 sm:text-[0.95rem]">
+        <p className="font-ge text-[1.04rem] leading-7 text-ge-gray500 sm:text-[1rem]">
           {course.description}
         </p>
         <a
           href={course.href}
-          className="mt-5 inline-flex min-h-[44px] items-center gap-2 self-start rounded-full bg-gs-dark/5 px-4 py-2 font-ge text-base font-bold uppercase tracking-[0.12em] text-gs-green transition-all duration-300 hover:bg-gs-gold hover:text-gs-dark group-hover:bg-gs-gold group-hover:text-gs-dark sm:text-[0.85rem]"
+          className="mt-5 inline-flex min-h-[44px] items-center gap-2 self-start rounded-full bg-gs-dark/5 px-4 py-2.5 font-ge text-[0.96rem] font-bold uppercase tracking-[0.12em] text-gs-green transition-all duration-300 hover:bg-gs-gold hover:text-gs-dark group-hover:bg-gs-gold group-hover:text-gs-dark sm:text-[0.92rem]"
         >
           Get Tee-Time Quote
           <ArrowRight

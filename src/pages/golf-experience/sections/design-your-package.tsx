@@ -65,10 +65,10 @@ export function GeDesignYourPackage() {
           >
             {designYourPackage.title}
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl font-ge text-[1rem] font-semibold uppercase tracking-[0.16em] text-white/80 sm:text-[1.05rem]">
+          <p className="mx-auto mt-4 max-w-2xl font-ge text-[1.08rem] font-semibold uppercase tracking-[0.14em] text-white/82 sm:text-[1.05rem]">
             Choose your destination · Choose your golf course · Choose your accommodation
           </p>
-          <p className="mt-3 font-ge text-[1.05rem] italic text-white/85">{designYourPackage.closer}</p>
+          <p className="mt-3 font-ge text-[1.12rem] italic leading-8 text-white/88 sm:text-[1.08rem]">{designYourPackage.closer}</p>
         </motion.div>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -91,20 +91,20 @@ export function GeDesignYourPackage() {
                   className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gs-dark/60 via-transparent to-transparent"
                 />
                 {/* Gold step badge */}
-                <span className="absolute left-3 top-3 inline-flex min-h-[32px] items-center rounded-full bg-gradient-to-br from-gs-gold to-[#f4b41a] px-3.5 py-1 font-ge text-sm font-extrabold uppercase tracking-[0.12em] text-gs-dark shadow-[0_6px_16px_rgba(255,199,44,0.45)] sm:text-[0.8rem]">
+                <span className="absolute left-3 top-3 inline-flex min-h-[36px] items-center rounded-full bg-gradient-to-br from-gs-gold to-[#f4b41a] px-3.5 py-1.5 font-ge text-[0.92rem] font-extrabold uppercase tracking-[0.1em] text-gs-dark shadow-[0_6px_16px_rgba(255,199,44,0.45)] sm:min-h-[32px] sm:py-1 sm:text-[0.8rem]">
                   {step.badge}
                 </span>
               </div>
               <div className="flex flex-1 flex-col p-5">
-                <h3 className="font-ge text-lg font-extrabold leading-snug text-gs-green sm:text-[1.1rem]">
+                <h3 className="font-ge text-[1.24rem] font-extrabold leading-snug text-gs-green sm:text-[1.1rem]">
                   {step.title}
                 </h3>
-                <p className="mt-2 line-clamp-4 font-ge text-base leading-6 text-ge-gray500 sm:text-[0.95rem]">
+                <p className="mt-2 line-clamp-4 font-ge text-[1.02rem] leading-7 text-ge-gray500 sm:text-[0.95rem]">
                   {step.body}
                 </p>
                 <a
                   href={step.link}
-                  className="mt-4 inline-flex min-h-[44px] items-center gap-2 self-start rounded-full bg-gs-dark/5 px-4 py-2 font-ge text-base font-bold uppercase tracking-[0.12em] text-gs-green transition-all duration-300 hover:bg-gs-gold hover:text-gs-dark group-hover:bg-gs-gold group-hover:text-gs-dark sm:text-[0.85rem]"
+                  className="mt-4 inline-flex min-h-[48px] items-center gap-2 self-start rounded-full bg-gs-dark/5 px-4 py-2.5 font-ge text-[0.98rem] font-bold uppercase tracking-[0.1em] text-gs-green transition-all duration-300 hover:bg-gs-gold hover:text-gs-dark group-hover:bg-gs-gold group-hover:text-gs-dark sm:min-h-[44px] sm:py-2 sm:text-[0.85rem]"
                 >
                   Get a Quote →
                 </a>

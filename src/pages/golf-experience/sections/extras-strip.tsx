@@ -26,10 +26,10 @@ export function GeExtrasStrip() {
   return (
     <GeSection background="gray" id="extras" className="pt-20 pb-20 sm:pt-24 sm:pb-24">
       <div className="text-center">
-        <h2 className="font-ge text-[2rem] font-extrabold uppercase tracking-[0.04em] text-gs-green sm:text-[2.4rem]">
+        <h2 className="font-ge text-[2.15rem] font-extrabold uppercase tracking-[0.04em] text-gs-green sm:text-[2.4rem]">
           {extrasCopy.title}
         </h2>
-        <p className="mt-3 font-ge text-[1.05rem] italic leading-7 text-ge-gray500 sm:text-[1.1rem]">{extrasCopy.subtitle}</p>
+        <p className="mt-3 font-ge text-[1.12rem] italic leading-8 text-ge-gray500 sm:text-[1.16rem]">{extrasCopy.subtitle}</p>
       </div>
 
       <div className="mt-14 grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3">
@@ -42,11 +42,11 @@ export function GeExtrasStrip() {
             <span className="inline-flex h-20 w-20 items-center justify-center rounded-full border-2 border-gs-green bg-white text-gs-green shadow-[0_8px_24px_rgba(38,146,224,0.18)] sm:h-24 sm:w-24">
               <Icon className="h-9 w-9" aria-hidden="true" />
             </span>
-            <h4 className="mt-5 font-ge text-[1.2rem] font-bold uppercase tracking-[0.06em] text-gs-dark sm:text-[1.05rem]">
+            <h4 className="mt-5 font-ge text-[1.3rem] font-bold uppercase tracking-[0.06em] text-gs-dark sm:text-[1.18rem]">
               {title}
             </h4>
             {note ? (
-              <p className="mt-1 font-ge text-sm uppercase tracking-[0.12em] text-gs-green sm:text-[0.85rem]">
+              <p className="mt-1 font-ge text-[0.95rem] uppercase tracking-[0.12em] text-gs-green sm:text-[0.9rem]">
                 ({note})
               </p>
             ) : null}

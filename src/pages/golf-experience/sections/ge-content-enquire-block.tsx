@@ -58,14 +58,14 @@ export function GeContentEnquireBlock({
     >
       <div className="grid gap-10 lg:grid-cols-[1fr_1.05fr] lg:items-start lg:gap-14">
         <motion.div {...fadeUp}>
-          <p className="font-ge text-sm font-bold uppercase tracking-[0.18em] text-ge-orange sm:text-[0.85rem]">{eyebrow}</p>
-          <h2 className="mt-3 font-ge text-[2rem] font-extrabold leading-[1.08] tracking-[0.01em] text-gs-green sm:text-[2.4rem] lg:text-[2.6rem]">{title}</h2>
-          <p className="mt-5 font-ge text-base leading-7 text-ge-gray500 sm:text-[1.05rem] sm:leading-8">{body}</p>
+          <p className="font-ge text-[0.95rem] font-bold uppercase tracking-[0.16em] text-ge-orange sm:text-[1rem]">{eyebrow}</p>
+          <h2 className="mt-3 font-ge text-[2.15rem] font-extrabold leading-[1.05] tracking-[0.005em] text-gs-green sm:text-[2.55rem] lg:text-[2.75rem]">{title}</h2>
+          <p className="mt-5 font-ge text-[1.08rem] leading-8 text-ge-gray500 sm:text-[1.12rem] sm:leading-8">{body}</p>
 
           <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:gap-3">
             <a
               href={`tel:${contactInfo.phoneTel}`}
-              className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2.5 rounded-xl bg-gs-green px-5 font-ge text-base font-bold uppercase tracking-[0.12em] text-white shadow-[0_12px_28px_rgba(6,59,42,0.25)] transition-all hover:bg-gs-electric hover:text-gs-dark sm:text-[0.9rem]"
+              className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2.5 rounded-xl bg-gs-green px-5 font-ge text-[1rem] font-bold uppercase tracking-[0.11em] text-white shadow-[0_12px_28px_rgba(6,59,42,0.25)] transition-all hover:bg-gs-electric hover:text-gs-dark sm:text-[1rem]"
             >
               <Phone className="h-4 w-4" aria-hidden />
               <span>{contactInfo.phoneDisplay}</span>
@@ -74,7 +74,7 @@ export function GeContentEnquireBlock({
               href={whatsappHref}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2.5 rounded-xl border-2 border-gs-green bg-white px-5 font-ge text-base font-bold uppercase tracking-[0.12em] text-gs-green transition-all hover:bg-gs-green hover:text-white sm:text-[0.9rem]"
+              className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2.5 rounded-xl border-2 border-gs-green bg-white px-5 font-ge text-[1rem] font-bold uppercase tracking-[0.11em] text-gs-green transition-all hover:bg-gs-green hover:text-white sm:text-[1rem]"
             >
               <MessageCircle className="h-4 w-4" aria-hidden />
               WhatsApp us
@@ -83,7 +83,7 @@ export function GeContentEnquireBlock({
 
           <ul className="mt-8 space-y-3 border-t border-gs-dark/10 pt-6">
             {reassurances.map((line) => (
-              <li key={line} className="flex items-start gap-3 font-ge text-base leading-7 text-gs-dark sm:text-[1rem]">
+              <li key={line} className="flex items-start gap-3 font-ge text-[1.04rem] leading-7 text-gs-dark sm:text-[1.06rem]">
                 <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-gs-green" aria-hidden />
                 <span>{line}</span>
               </li>
