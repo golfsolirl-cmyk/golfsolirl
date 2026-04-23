@@ -11,7 +11,7 @@ interface DividerSpec {
 interface GeSectionProps {
   readonly id?: string
   readonly children: ReactNode
-  readonly background?: 'white' | 'gray' | 'teal' | 'tealDark' | 'blue' | 'ink'
+  readonly background?: 'white' | 'gray' | 'soft' | 'cream' | 'sky' | 'brand' | 'brandDark' | 'teal' | 'tealDark' | 'blue' | 'ink'
   readonly className?: string
   readonly innerClassName?: string
   readonly topDivider?: DividerSpec
@@ -22,11 +22,16 @@ interface GeSectionProps {
 const backgrounds = {
   white: 'bg-white text-gs-dark',
   gray: 'bg-ge-gray50 text-gs-dark',
-  // Legacy "teal" / "tealDark" / "blue" all map onto the GolfSol green
-  // palette so any older references render in brand colour automatically.
+  soft: 'bg-gs-bg text-gs-dark',
+  cream: 'bg-[#f6f0e2] text-gs-dark',
+  sky: 'bg-sky-muted text-gs-dark',
+  brand: 'bg-gs-green text-white',
+  brandDark: 'bg-gs-dark text-white',
+  // Legacy aliases kept so older sections still render, but "blue" now maps
+  // to a lighter editorial surface rather than another green slab.
   teal: 'bg-gs-green text-white',
   tealDark: 'bg-gs-dark text-white',
-  blue: 'bg-gs-green text-white',
+  blue: 'bg-sky-muted text-gs-dark',
   ink: 'bg-gs-dark text-white'
 } as const
 
