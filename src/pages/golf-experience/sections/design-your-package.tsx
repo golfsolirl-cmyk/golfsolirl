@@ -95,10 +95,10 @@ export function GeDesignYourPackage() {
             >
               {designYourPackage.title}
             </h2>
-            <p className="mx-auto mt-5 max-w-3xl text-balance font-ge text-[0.86rem] font-semibold uppercase tracking-[0.22em] text-white/88 drop-shadow-[0_2px_12px_rgba(0,0,0,0.3)] sm:text-[0.96rem]">
+            <p className="mx-auto mt-5 max-w-3xl text-balance font-ge text-[0.86rem] font-semibold uppercase tracking-[0.22em] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.3)] sm:text-[0.96rem]">
               Choose your destination · Choose your golf course · Choose your accommodation
             </p>
-            <p className="mx-auto mt-4 max-w-2xl font-ge text-[1.05rem] leading-8 text-white/94 drop-shadow-[0_2px_12px_rgba(0,0,0,0.28)] sm:text-[1.12rem]">
+            <p className="mx-auto mt-4 max-w-2xl font-ge text-[1.05rem] leading-8 text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.28)] sm:text-[1.12rem]">
               {designYourPackage.closer}{' '}
               <span className="font-semibold text-gs-gold-light">We shape the full Sol itinerary around your group.</span>
             </p>
