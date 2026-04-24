@@ -77,27 +77,27 @@ export function HomeAirportTransfersCta() {
             transition={reduceMotion ? undefined : { duration: 4.8, ease: 'easeInOut', repeat: Infinity, repeatDelay: 1.2 }}
           />
 
-          <div className="relative grid gap-5 sm:gap-6 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:gap-8">
+          <div className="relative grid gap-4 sm:gap-6 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:gap-8">
             <div className="max-w-3xl">
               <div className="flex flex-col items-start gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2.5">
-                <span className="inline-flex min-h-[38px] items-center gap-2 rounded-full border border-gs-gold/40 bg-white/85 px-3 py-1.5 font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-gs-dark shadow-[0_8px_20px_rgba(69,53,24,0.08)] backdrop-blur-sm sm:min-h-[38px] sm:px-3.5 sm:py-1.5 sm:text-[0.72rem] sm:tracking-[0.22em]">
+                <span className="inline-flex min-h-[36px] items-center gap-2 rounded-full border border-gs-gold/40 bg-white/85 px-3 py-1.5 font-ge text-[0.66rem] font-extrabold uppercase tracking-[0.14em] text-gs-dark shadow-[0_8px_20px_rgba(69,53,24,0.08)] backdrop-blur-sm sm:min-h-[38px] sm:px-3.5 sm:py-1.5 sm:text-[0.72rem] sm:tracking-[0.22em]">
                   <span aria-hidden className="h-2 w-2 rounded-full bg-gs-electric shadow-[0_0_14px_rgba(30,215,96,0.95)]" />
                   Airport transfer desk
                 </span>
-                <span className="inline-flex min-h-[38px] items-center rounded-full border border-[#e4d6b6] bg-[#fffaf0] px-3 py-1.5 font-ge text-[0.68rem] font-bold uppercase tracking-[0.14em] text-gs-dark/80 shadow-[0_8px_20px_rgba(69,53,24,0.05)] sm:min-h-[38px] sm:px-3.5 sm:py-1.5 sm:text-[0.72rem] sm:tracking-[0.18em]">
+                <span className="inline-flex min-h-[36px] items-center rounded-full border border-[#e4d6b6] bg-[#fffaf0] px-3 py-1.5 font-ge text-[0.66rem] font-bold uppercase tracking-[0.12em] text-gs-dark/80 shadow-[0_8px_20px_rgba(69,53,24,0.05)] sm:min-h-[38px] sm:px-3.5 sm:py-1.5 sm:text-[0.72rem] sm:tracking-[0.18em]">
                   AGP arrivals / Costa del Sol
                 </span>
               </div>
 
               <h2
                 id="home-airport-transfers-title"
-                className="mt-4 max-w-2xl font-ge text-[2rem] font-extrabold leading-[1.03] text-gs-dark sm:text-[2.8rem] lg:text-[3.1rem]"
+                className="mt-4 max-w-2xl font-ge text-[1.88rem] font-extrabold leading-[1.04] text-gs-dark sm:text-[2.8rem] lg:text-[3.1rem]"
               >
                 Land in Malaga.
                 <span className="block text-gs-gold">Ride out like VIP departures.</span>
               </h2>
 
-              <p className="mt-4 max-w-2xl font-ge text-[0.96rem] leading-7 text-gs-dark/82 sm:text-[1.14rem] sm:leading-8">
+              <p className="mt-3.5 max-w-2xl font-ge text-[0.92rem] leading-6 text-gs-dark/82 sm:mt-4 sm:text-[1.14rem] sm:leading-8">
                 Meet and greet at the airport, live flight awareness, room for clubs, then straight on to your hotel.
               </p>
 
@@ -108,7 +108,7 @@ export function HomeAirportTransfersCta() {
                 viewport={{ once: true, amount: 0.25 }}
                 transition={{ duration: 0.5, ease: 'easeOut', delay: 0.06 }}
               >
-                <div className="relative aspect-[16/10] min-h-[220px] sm:aspect-[21/10] sm:min-h-0">
+                <div className="relative aspect-[16/10] min-h-[205px] sm:aspect-[21/10] sm:min-h-0">
                   <img
                     src="/images/transport-fleet-lineup.jpg"
                     alt="Mercedes E-Class, V-Class and Sprinter parked together on a Costa del Sol forecourt with mountains behind."
@@ -123,20 +123,20 @@ export function HomeAirportTransfersCta() {
                     className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gs-dark/18 via-transparent to-transparent"
                   />
                   <div className="absolute left-3 top-3 sm:left-5 sm:top-5">
-                    <span className="inline-flex items-center gap-2 rounded-full border border-white/35 bg-gs-dark/72 px-3 py-1.5 font-ge text-[0.66rem] font-extrabold uppercase tracking-[0.12em] text-white backdrop-blur-sm sm:px-3.5 sm:py-2 sm:text-[0.72rem] sm:tracking-[0.16em]">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-white/35 bg-gs-dark/72 px-3 py-1.5 font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.1em] text-white backdrop-blur-sm sm:px-3.5 sm:py-2 sm:text-[0.72rem] sm:tracking-[0.16em]">
                       Fleet ready for golf bags
                     </span>
                   </div>
                 </div>
                 <div className="border-t border-[#ece1c5] bg-[#fffaf2] px-4 py-3.5 sm:px-5 sm:py-4">
-                  <p className="font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.14em] text-gs-green sm:text-[0.7rem] sm:tracking-[0.16em]">Mercedes fleet</p>
-                  <p className="mt-1.5 font-ge text-[0.92rem] font-semibold leading-6 text-gs-dark/82 sm:mt-1 sm:text-[0.96rem] sm:leading-6">
+                  <p className="font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.12em] text-gs-green sm:text-[0.7rem] sm:tracking-[0.16em]">Mercedes fleet</p>
+                  <p className="mt-1.5 font-ge text-[0.88rem] font-semibold leading-5 text-gs-dark/82 sm:mt-1 sm:text-[0.96rem] sm:leading-6">
                     E-Class, V-Class and Sprinter options matched to the group and the bag count.
                   </p>
                 </div>
               </motion.div>
 
-              <div className="mt-5 grid gap-2.5 sm:grid-cols-3 sm:gap-3">
+              <div className="mt-4 grid gap-2 sm:mt-5 sm:grid-cols-3 sm:gap-3">
                 {transferSignals.map(({ icon: Icon, title, detail }, index) => (
                   <motion.div
                     key={title}
@@ -144,15 +144,15 @@ export function HomeAirportTransfersCta() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, amount: 0.35 }}
                     transition={{ duration: 0.45, ease: 'easeOut', delay: 0.1 + index * 0.08 }}
-                    className="rounded-[1.2rem] border border-[#e4d6b6] bg-white/86 px-3.5 py-3 shadow-[0_16px_30px_rgba(69,53,24,0.08)] backdrop-blur-sm sm:rounded-[1.35rem] sm:px-4 sm:py-4"
+                    className="rounded-[1.1rem] border border-[#e4d6b6] bg-white/86 px-3 py-2.5 shadow-[0_16px_30px_rgba(69,53,24,0.08)] backdrop-blur-sm sm:rounded-[1.35rem] sm:px-4 sm:py-4"
                   >
                     <div className="flex items-center gap-2.5">
-                      <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-gs-gold to-gs-gold-light text-gs-dark shadow-[0_8px_18px_rgba(255,199,44,0.22)] sm:h-10 sm:w-10">
+                      <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-gs-gold to-gs-gold-light text-gs-dark shadow-[0_8px_18px_rgba(255,199,44,0.22)] sm:h-10 sm:w-10 sm:rounded-xl">
                         <Icon className="h-5 w-5 sm:h-5 sm:w-5" aria-hidden />
                       </span>
                       <div className="min-w-0">
-                        <p className="font-ge text-[0.84rem] font-extrabold uppercase tracking-[0.08em] text-gs-dark sm:text-[0.92rem] sm:tracking-[0.12em]">{title}</p>
-                        <p className="mt-1 font-ge text-[0.82rem] leading-5 text-gs-dark/72 sm:text-[0.9rem] sm:leading-6">{detail}</p>
+                        <p className="font-ge text-[0.78rem] font-extrabold tracking-[0.02em] text-gs-dark sm:text-[0.92rem] sm:uppercase sm:tracking-[0.12em]">{title}</p>
+                        <p className="mt-0.5 font-ge text-[0.76rem] leading-5 text-gs-dark/72 sm:mt-1 sm:text-[0.9rem] sm:leading-6">{detail}</p>
                       </div>
                     </div>
                   </motion.div>
@@ -161,37 +161,37 @@ export function HomeAirportTransfersCta() {
             </div>
 
             <div className="w-full max-w-full self-stretch lg:max-w-[24rem]">
-              <div className="relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-[#d9c99e] bg-white/92 p-4 shadow-[0_24px_60px_rgba(69,53,24,0.12)] backdrop-blur-sm sm:p-5">
+              <div className="relative flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-[#d9c99e] bg-white/92 p-3.5 shadow-[0_24px_60px_rgba(69,53,24,0.12)] backdrop-blur-sm sm:rounded-[1.75rem] sm:p-5">
                 <div
                   aria-hidden="true"
                   className="pointer-events-none absolute inset-x-5 top-[4.75rem] h-px bg-gradient-to-r from-transparent via-gs-gold/75 to-transparent"
                 />
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="font-ge text-[0.72rem] font-bold uppercase tracking-[0.16em] text-gs-green sm:text-[0.72rem] sm:tracking-[0.22em]">Now boarding</p>
-                    <p className="mt-2 font-ge text-[1.36rem] font-extrabold leading-tight text-gs-dark sm:text-[1.48rem]">Airport transfers</p>
+                    <p className="font-ge text-[0.68rem] font-bold uppercase tracking-[0.14em] text-gs-green sm:text-[0.72rem] sm:tracking-[0.22em]">Now boarding</p>
+                    <p className="mt-2 font-ge text-[1.24rem] font-extrabold leading-tight text-gs-dark sm:text-[1.48rem]">Airport transfers</p>
                   </div>
-                  <div className="rounded-full border border-gs-gold/30 bg-gs-gold/10 px-3 py-1.5 font-ge text-[0.66rem] font-extrabold uppercase tracking-[0.14em] text-gs-gold sm:py-1 sm:text-[0.68rem] sm:tracking-[0.18em]">
+                  <div className="rounded-full border border-gs-gold/30 bg-gs-gold/10 px-2.5 py-1.5 font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.12em] text-gs-gold sm:px-3 sm:py-1 sm:text-[0.68rem] sm:tracking-[0.18em]">
                     LIVE
                   </div>
                 </div>
 
                 <div className="mt-5 grid grid-cols-[auto,1fr] gap-x-3 gap-y-2.5 text-gs-dark/[0.88]">
-                  <span className="font-ge text-[0.68rem] font-bold uppercase tracking-[0.14em] text-gs-dark/[0.54] sm:text-[0.72rem] sm:tracking-[0.18em]">Route</span>
-                  <span className="font-ge text-[0.84rem] font-semibold uppercase tracking-[0.06em] text-gs-dark/[0.92] sm:text-[0.92rem] sm:tracking-[0.12em]">Malaga Airport to your resort</span>
-                  <span className="font-ge text-[0.68rem] font-bold uppercase tracking-[0.14em] text-gs-dark/[0.54] sm:text-[0.72rem] sm:tracking-[0.18em]">Status</span>
-                  <span className="inline-flex items-center gap-2 font-ge text-[0.84rem] font-semibold uppercase tracking-[0.06em] text-gs-dark/[0.92] sm:text-[0.92rem] sm:tracking-[0.12em]">
+                  <span className="font-ge text-[0.66rem] font-bold uppercase tracking-[0.12em] text-gs-dark/[0.54] sm:text-[0.72rem] sm:tracking-[0.18em]">Route</span>
+                  <span className="font-ge text-[0.8rem] font-semibold tracking-[0.01em] text-gs-dark/[0.92] sm:text-[0.92rem] sm:uppercase sm:tracking-[0.12em]">Malaga Airport to your resort</span>
+                  <span className="font-ge text-[0.66rem] font-bold uppercase tracking-[0.12em] text-gs-dark/[0.54] sm:text-[0.72rem] sm:tracking-[0.18em]">Status</span>
+                  <span className="inline-flex items-center gap-2 font-ge text-[0.8rem] font-semibold tracking-[0.01em] text-gs-dark/[0.92] sm:text-[0.92rem] sm:uppercase sm:tracking-[0.12em]">
                     <Clock3 className="h-4 w-4 text-gs-gold" aria-hidden />
                     Ready on landing
                   </span>
-                  <span className="font-ge text-[0.68rem] font-bold uppercase tracking-[0.14em] text-gs-dark/[0.54] sm:text-[0.72rem] sm:tracking-[0.18em]">Desk</span>
-                  <span className="font-ge text-[0.84rem] font-semibold uppercase tracking-[0.06em] text-gs-dark/[0.92] sm:text-[0.92rem] sm:tracking-[0.12em]">Irish support line active</span>
+                  <span className="font-ge text-[0.66rem] font-bold uppercase tracking-[0.12em] text-gs-dark/[0.54] sm:text-[0.72rem] sm:tracking-[0.18em]">Desk</span>
+                  <span className="font-ge text-[0.8rem] font-semibold tracking-[0.01em] text-gs-dark/[0.92] sm:text-[0.92rem] sm:uppercase sm:tracking-[0.12em]">Irish support line active</span>
                 </div>
 
                 <div className="mt-6">
                   <motion.a
                     href="/services/transport"
-                    className="group relative inline-flex min-h-[66px] w-full items-center justify-center gap-3 overflow-hidden rounded-full border border-[#fff4c6]/20 bg-[linear-gradient(135deg,#FFE27A_0%,#FFC72C_38%,#f4b41a_100%)] px-6 py-4 text-center font-ge text-[1.04rem] font-extrabold uppercase tracking-[0.16em] text-gs-dark shadow-[0_18px_40px_rgba(255,199,44,0.3)] transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_50px_rgba(255,199,44,0.38)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-gs-dark sm:min-h-[62px] sm:text-[0.98rem]"
+                    className="group relative inline-flex min-h-[60px] w-full items-center justify-center gap-3 overflow-hidden rounded-full border border-[#fff4c6]/20 bg-[linear-gradient(135deg,#FFE27A_0%,#FFC72C_38%,#f4b41a_100%)] px-5 py-3.5 text-center font-ge text-[0.92rem] font-extrabold uppercase tracking-[0.12em] text-gs-dark shadow-[0_18px_40px_rgba(255,199,44,0.3)] transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_50px_rgba(255,199,44,0.38)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-gs-dark sm:min-h-[62px] sm:px-6 sm:py-4 sm:text-[0.98rem] sm:tracking-[0.16em]"
                     animate={
                       reduceMotion
                         ? undefined
@@ -220,7 +220,7 @@ export function HomeAirportTransfersCta() {
                 </div>
 
                 <div className="mt-4 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="max-w-none font-ge text-[0.78rem] font-semibold uppercase tracking-[0.1em] text-gs-dark/[0.68] sm:max-w-[16rem] sm:text-[0.82rem] sm:tracking-[0.16em]">
+                  <p className="max-w-none font-ge text-[0.74rem] font-semibold uppercase tracking-[0.08em] text-gs-dark/[0.68] sm:max-w-[16rem] sm:text-[0.82rem] sm:tracking-[0.16em]">
                     Meet & greet · Resort drop-off · Golf bag friendly
                   </p>
                   <a
