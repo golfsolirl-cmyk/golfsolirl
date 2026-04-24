@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { ArrowRight, MapPin, Star } from 'lucide-react'
+import { cx } from '../../../lib/utils'
 import type { GeHotel } from '../data/hotels'
 
 interface HotelCardProps {
@@ -20,10 +21,17 @@ const fadeUp = {
  *  - Hover: lift, image zoom, gold underline reveal, CTA fills gold
  */
 export function GeHotelCard({ hotel }: HotelCardProps) {
+  const isHighlight = Boolean(hotel.highlight)
+
   return (
     <motion.a
       href={hotel.href}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-ge-gray100 bg-white shadow-[0_6px_20px_rgba(6,59,42,0.08)] transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_22px_50px_rgba(6,59,42,0.18)]"
+      className={cx(
+        'group relative flex flex-col overflow-hidden rounded-2xl bg-white transition-all duration-500 hover:-translate-y-1.5',
+        isHighlight
+          ? 'border-[3px] border-gs-green shadow-[0_10px_32px_rgba(11,107,69,0.22)] ring-2 ring-gs-green/25 hover:shadow-[0_22px_56px_rgba(11,107,69,0.28)]'
+          : 'border border-ge-gray100 shadow-[0_6px_20px_rgba(6,59,42,0.08)] hover:shadow-[0_22px_50px_rgba(6,59,42,0.18)]'
+      )}
       {...fadeUp}
     >
       <div className="relative aspect-[4/3] overflow-hidden">

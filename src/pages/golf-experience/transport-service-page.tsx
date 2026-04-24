@@ -7,6 +7,7 @@ import { TransportFleet } from './sections/transport-fleet'
 import { TransportHero } from './sections/transport-hero'
 import { TransportPromise } from './sections/transport-promise'
 import { TransportRouteStory } from './sections/transport-route-story'
+import { GeTransfersInsuranceBanner } from './components/ge-transfers-insurance-banner'
 import { WhatsappFab } from './components/whatsapp-fab'
 import { PageIdentityBar } from '../../components/page-identity-bar'
 
@@ -37,6 +38,11 @@ export function TransportServicePage() {
         <TransportHero />
         <TransportPromise />
         <GePaymentsIreland />
+        <div className="bg-white px-5 py-6 sm:px-8 sm:py-7">
+          <div className="mx-auto max-w-[1180px]">
+            <GeTransfersInsuranceBanner variant="inline" />
+          </div>
+        </div>
         <TransportRouteStory />
         <TransportFleet />
         <TransportEnquireBlock />

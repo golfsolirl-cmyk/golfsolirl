@@ -12,6 +12,8 @@ export interface GeHotel {
   readonly stars: 3 | 4 | 5
   /** Optional editorial badge for standout properties. */
   readonly badge?: string
+  /** Strong green frame on the card (homepage / listings). */
+  readonly highlight?: boolean
   /** One-line USP shown beneath the area on the upgraded card. */
   readonly tagline: string
   /** Distance to nearest Costa del Sol golf cluster, shown as a chip. */
@@ -96,10 +98,11 @@ export const hotelsSpain: readonly GeHotel[] = [
     area: 'Benalmadena',
     stars: 4,
     badge: 'Highly recommended',
+    highlight: true,
     tagline: 'Seafront 4* hotel-apartments with spacious suites for golf groups',
     nearestCourse: '20 min · Torrequebrada Golf',
     image:
       'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80',
     href: 'https://www.sunsetbeachclub.com/en'
   }
-] as const
+] as const satisfies readonly GeHotel[]

@@ -152,7 +152,16 @@ export const hotelListsCopy = {
 export const extrasCopy = {
   eyebrow: 'One itinerary · Irish team on the ground',
   title: 'The full Costa del Sol package.',
-  subtitle: 'And we also handle:'
+  subtitle: 'And we also handle',
+  /** Second tile — transfers capacity (extras strip). */
+  transfersCapacityBody:
+    'Most vehicles cover 1–8 people. Need more seats? Tell us in advance and we’ll line up the right Mercedes capacity.',
+  transfersCapacityBadge: '1–8 people per vehicle',
+  /** Third tile in the extras strip (replaces former car rental line). */
+  transferInsuredTitle: 'Airport & golf course transfers',
+  transferInsuredBody:
+    'All airport transfers fully insured and golf course transfers fully insured.',
+  transferInsuredBadge: 'Fully insured on all transfers'
 } as const
 
 export const aboutFooterCopy =

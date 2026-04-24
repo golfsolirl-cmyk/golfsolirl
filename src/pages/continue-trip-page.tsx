@@ -8,6 +8,7 @@ import { GePaymentsIreland } from './golf-experience/sections/payments-ireland'
 import { GeFinalCta } from './golf-experience/sections/final-cta'
 import { GeServiceStyleHero } from './golf-experience/sections/ge-service-style-hero'
 import { WhatsappFab } from './golf-experience/components/whatsapp-fab'
+import { GeTransfersInsuranceBanner } from './golf-experience/components/ge-transfers-insurance-banner'
 import { GeSection } from './golf-experience/components/ge-section'
 
 type TravelMode = 'flight' | 'arrived'
@@ -193,6 +194,12 @@ export function ContinueTripPage() {
         />
 
         <GePaymentsIreland />
+
+        <div className="bg-white px-5 py-6 sm:px-8 sm:py-7">
+          <div className="mx-auto max-w-[1180px]">
+            <GeTransfersInsuranceBanner variant="inline" />
+          </div>
+        </div>
 
         <GeSection background="white" innerClassName="py-14 sm:py-16">
           <div className="mx-auto max-w-2xl px-5 sm:px-8">

@@ -11,6 +11,7 @@ import { GeServiceStyleHero } from './sections/ge-service-style-hero'
 import { PageIdentityBar } from '../../components/page-identity-bar'
 import { getGeContentPage } from './data/content-pages'
 import { getContentPageFormConfig, getContentPageHeroMedia, getContentStorySectionMedia } from './content-page-context'
+import { GeTransfersInsuranceBanner } from './components/ge-transfers-insurance-banner'
 import { WhatsappFab } from './components/whatsapp-fab'
 import { GeSection } from './components/ge-section'
 
@@ -105,6 +106,12 @@ export function GeContentPage() {
         />
 
         <GePaymentsIreland />
+
+        <div className="bg-white px-5 py-6 sm:px-8 sm:py-7">
+          <div className="mx-auto max-w-[1180px]">
+            <GeTransfersInsuranceBanner variant="inline" />
+          </div>
+        </div>
 
         <GeContentStoryGrid
           eyebrow="The detail"

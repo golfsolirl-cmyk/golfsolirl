@@ -68,9 +68,16 @@ export const transportRouteStory = [
 
 export const transportFleetIntroCopy = {
   eyebrow: 'The fleet',
-  title: 'Three vehicles. Sized to the group.',
+  title: 'All vehicles. Sized to the group.',
   body:
     'Every transfer is matched to the four-ball, society or family travelling. Premium Mercedes only — leather, aircon, and proper room for travel covers, trolleys and shoe bags.'
+} as const
+
+/** Homepage fleet image — banner sits below the photo, not overlaid. */
+export const transportFleetInsuranceBannerCopy = {
+  kicker: 'Fully covered',
+  headline: 'All transfers are fully insured',
+  detail: 'Airport, hotel & golf course legs — commercial cover on every run.'
 } as const
 
 export const transportFleetTiers = [
@@ -90,7 +97,7 @@ export const transportFleetTiers = [
   },
   {
     name: 'Mercedes Sprinter',
-    seats: '8 – 16 passengers',
+    seats: 'Up to 8 passengers',
     bagsLine: 'Society-sized luggage hold',
     bullets: ['Full minibus comfort', 'Reclining seats · onboard usb', 'Built for societies & corporates'],
     accent: 'Group strength'

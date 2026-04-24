@@ -1,18 +1,29 @@
 import { motion } from 'framer-motion'
-import { Briefcase, Bus, Car, type LucideIcon } from 'lucide-react'
+import { Briefcase, Bus, ShieldCheck, type LucideIcon } from 'lucide-react'
 import { GeSection } from '../components/ge-section'
 import { extrasCopy } from '../data/copy'
 
 interface Extra {
   readonly title: string
   readonly icon: LucideIcon
+  readonly detail?: string
   readonly note?: string
 }
 
 const extras: readonly Extra[] = [
   { title: 'Golf Club Rental', icon: Briefcase, note: 'Costa del Sol Only' },
-  { title: 'Transfers', icon: Bus },
-  { title: 'Car Rental', icon: Car }
+  {
+    title: 'Transfers',
+    icon: Bus,
+    detail: extrasCopy.transfersCapacityBody,
+    note: extrasCopy.transfersCapacityBadge
+  },
+  {
+    title: extrasCopy.transferInsuredTitle,
+    icon: ShieldCheck,
+    detail: extrasCopy.transferInsuredBody,
+    note: extrasCopy.transferInsuredBadge
+  }
 ]
 
 const fadeUp = {
@@ -89,7 +100,7 @@ export function GeExtrasStrip() {
       </div>
 
       <div className="relative z-[1] mx-auto mt-14 grid max-w-[1040px] grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-6">
-        {extras.map(({ title, icon: Icon, note }, index) => (
+        {extras.map(({ title, icon: Icon, detail, note }, index) => (
           <motion.article
             key={title}
             className="group relative flex flex-col items-center rounded-[1.65rem] border border-white/12 bg-white/[0.06] px-6 py-8 text-center shadow-[0_22px_50px_rgba(0,0,0,0.22)] ring-1 ring-white/[0.04] backdrop-blur-md transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-gs-gold/35 hover:shadow-[0_28px_60px_rgba(0,0,0,0.28)] sm:px-5 sm:py-9"
@@ -106,6 +117,11 @@ export function GeExtrasStrip() {
             <h3 className="mt-6 font-ge text-[1.05rem] font-extrabold uppercase tracking-[0.08em] text-white sm:text-[1.08rem]">
               {title}
             </h3>
+            {detail ? (
+              <p className="mt-3 max-w-[17.5rem] font-ge text-[0.88rem] font-semibold leading-snug tracking-[0.02em] text-white/82 sm:max-w-[19rem] sm:text-[0.92rem]">
+                {detail}
+              </p>
+            ) : null}
             <div className="mt-3 flex min-h-[2.25rem] items-center justify-center">
               {note ? (
                 <p className="inline-flex items-center rounded-full border border-gs-gold/25 bg-gs-gold/10 px-3 py-1 font-ge text-[0.68rem] font-bold uppercase tracking-[0.16em] text-gs-gold-light">

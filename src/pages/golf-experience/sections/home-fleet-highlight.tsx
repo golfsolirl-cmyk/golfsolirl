@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { ArrowRight, Briefcase, Users } from 'lucide-react'
 import { GeButton } from '../components/ge-button'
+import { GeTransfersInsuranceBanner } from '../components/ge-transfers-insurance-banner'
 import { GeSection } from '../components/ge-section'
 import { transportFleetIntroCopy, transportFleetTiers } from '../data/transport-service'
 
@@ -21,37 +22,36 @@ export function GeHomeFleetHighlight() {
   return (
     <GeSection background="cream" className="pt-20 pb-20 sm:pt-24 sm:pb-24">
       <div className="grid gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-start lg:gap-12">
-        <motion.div
-          className="relative overflow-hidden rounded-[2rem] border border-[#d6ccb8] bg-gs-dark shadow-[0_26px_70px_rgba(6,59,42,0.18)]"
-          {...fadeUp}
-        >
-          <img
-            src="/images/transport-fleet-lineup.jpg"
-            alt="Mercedes E-Class, V-Class and Sprinter parked together on a Costa del Sol forecourt with mountains behind."
-            className="block h-full w-full object-cover"
-            loading="lazy"
-            decoding="async"
-            width={1800}
-            height={1010}
-          />
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gs-dark/78 via-gs-dark/14 to-transparent"
-          />
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-[4px]"
-            style={{
-              background:
-                'linear-gradient(90deg, transparent 0%, #B88900 15%, #FFC72C 35%, #FFE27A 50%, #FFC72C 65%, #B88900 85%, transparent 100%)'
-            }}
-          />
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gs-dark/95 via-gs-dark/55 to-transparent p-5 pt-12 sm:p-6 sm:pt-16">
-            <div className="inline-flex items-center gap-2 rounded-full border border-gs-gold/40 bg-gs-dark/55 px-3.5 py-2 font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.18em] text-gs-gold-light backdrop-blur-sm">
-              Premium Mercedes only
+        <div className="flex min-w-0 flex-col gap-4 sm:gap-5">
+          <motion.div
+            className="relative isolate aspect-[4/3] min-h-[220px] w-full overflow-hidden rounded-[2rem] border border-[#d6ccb8] bg-gs-dark shadow-[0_26px_70px_rgba(6,59,42,0.18)] sm:aspect-[5/4] sm:min-h-[260px] lg:min-h-[300px]"
+            {...fadeUp}
+          >
+            <img
+              src="/images/transport-fleet-lineup.jpg"
+              alt="Mercedes E-Class, V-Class and Sprinter parked together on a Costa del Sol forecourt with mountains behind."
+              className="absolute inset-0 h-full w-full object-cover"
+              loading="lazy"
+              decoding="async"
+              width={1800}
+              height={1010}
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-br from-gs-dark/25 via-transparent to-gs-dark/40"
+            />
+            <div className="absolute left-4 top-4 z-[1] sm:left-5 sm:top-5">
+              <div className="inline-flex items-center gap-2 rounded-full border border-gs-gold/45 bg-gs-dark/70 px-3.5 py-2 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.18em] text-gs-gold-light shadow-lg backdrop-blur-sm sm:text-[0.72rem]">
+                Premium Mercedes only
+              </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+
+          <GeTransfersInsuranceBanner
+            variant="featured"
+            motionTransition={{ ...fadeUp.transition, delay: 0.06 }}
+          />
+        </div>
 
         <motion.div
           className="relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/92 p-6 shadow-[0_24px_55px_rgba(69,53,24,0.1)] ring-1 ring-[#e5dcc8] backdrop-blur-sm sm:p-8"
@@ -109,7 +109,7 @@ export function GeHomeFleetHighlight() {
             </div>
             <div className="border-t border-gs-gold/35 bg-gs-dark px-4 py-3.5 sm:px-5 sm:py-4">
               <p className="text-center font-ge text-[0.8rem] font-extrabold uppercase leading-snug tracking-[0.14em] text-gs-gold-light sm:text-[0.88rem] sm:tracking-[0.16em]">
-                <span className="text-white">1 to 16 passengers</span>
+                <span className="text-white">1 to 8 max</span>
                 <span className="mx-2 text-gs-gold sm:mx-2.5" aria-hidden="true">
                   ·
                 </span>
