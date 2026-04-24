@@ -40,18 +40,25 @@ export function GeHotelCard({ hotel }: HotelCardProps) {
         />
         {/* Top row: flex keeps stars + area chip from colliding on narrow 4-up grids */}
         <div className="pointer-events-none absolute left-2 right-2 top-2 z-10 flex flex-wrap items-start justify-between gap-2 sm:left-3 sm:right-3 sm:top-3">
-          <span className="inline-flex shrink-0 items-center gap-0.5 rounded-full border border-gs-gold/60 bg-gs-dark/90 px-2 py-0.5 shadow-[0_8px_18px_rgba(0,0,0,0.45)] backdrop-blur-sm sm:px-2.5 sm:py-1">
-            {Array.from({ length: hotel.stars }).map((_, idx) => (
-              <Star
-                key={idx}
-                className="h-3 w-3 sm:h-3.5 sm:w-3.5"
-                aria-hidden="true"
-                fill="#FFC72C"
-                stroke="#FFC72C"
-                strokeWidth={1.5}
-              />
-            ))}
-          </span>
+          <div className="flex flex-wrap items-start gap-2">
+            <span className="inline-flex shrink-0 items-center gap-0.5 rounded-full border border-gs-gold/60 bg-gs-dark/90 px-2 py-0.5 shadow-[0_8px_18px_rgba(0,0,0,0.45)] backdrop-blur-sm sm:px-2.5 sm:py-1">
+              {Array.from({ length: hotel.stars }).map((_, idx) => (
+                <Star
+                  key={idx}
+                  className="h-3 w-3 sm:h-3.5 sm:w-3.5"
+                  aria-hidden="true"
+                  fill="#FFC72C"
+                  stroke="#FFC72C"
+                  strokeWidth={1.5}
+                />
+              ))}
+            </span>
+            {hotel.badge ? (
+              <span className="inline-flex max-w-[11rem] items-center rounded-full border border-[#0f8a48]/18 bg-[#ecfff4] px-2.5 py-1 font-ge text-[0.62rem] font-extrabold uppercase leading-tight tracking-[0.12em] text-[#0f8a48] shadow-[0_8px_18px_rgba(15,138,72,0.14)] sm:max-w-none sm:text-[0.68rem]">
+                {hotel.badge}
+              </span>
+            ) : null}
+          </div>
           <span className="inline-flex min-w-0 max-w-[min(100%,10.5rem)] items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 font-ge text-[0.65rem] font-bold uppercase leading-tight tracking-[0.08em] text-gs-green shadow-[0_4px_12px_rgba(0,0,0,0.18)] sm:max-w-[12rem] sm:px-3 sm:text-[0.75rem] sm:tracking-[0.1em]">
             <MapPin className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" aria-hidden="true" />
             <span className="truncate">{hotel.area}</span>

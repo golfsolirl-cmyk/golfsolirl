@@ -50,9 +50,6 @@ export function GeHomeFleetHighlight() {
             <div className="inline-flex items-center gap-2 rounded-full border border-gs-gold/40 bg-gs-dark/55 px-3.5 py-2 font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.18em] text-gs-gold-light backdrop-blur-sm">
               Premium Mercedes only
             </div>
-            <p className="mt-3 max-w-xl font-ge text-[0.98rem] font-bold leading-relaxed text-gs-gold-light drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] sm:text-[1.06rem] sm:leading-8">
-              Sized for the four-ball, society or family, with proper room for travel covers, trolleys and shoe bags.
-            </p>
           </div>
         </motion.div>
 
