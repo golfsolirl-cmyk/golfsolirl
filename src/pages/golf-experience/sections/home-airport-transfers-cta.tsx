@@ -100,7 +100,7 @@ export function HomeAirportTransfersCta() {
               </h2>
 
               <p className="mt-4 max-w-2xl font-ge text-[1.14rem] leading-8 text-gs-dark/82 sm:text-[1.14rem] sm:leading-8">
-                Meet-and-greet airport transfers for Irish golfers, with luggage space for clubs, live flight awareness, and a straight run from terminal to hotel.
+                Meet and greet with all groups at the airport, live flight awareness, luggage space for clubs, then on to your hotel of choice.
               </p>
 
               <motion.div
