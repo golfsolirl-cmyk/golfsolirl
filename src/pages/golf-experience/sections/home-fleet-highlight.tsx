@@ -46,11 +46,11 @@ export function GeHomeFleetHighlight() {
                 'linear-gradient(90deg, transparent 0%, #B88900 15%, #FFC72C 35%, #FFE27A 50%, #FFC72C 65%, #B88900 85%, transparent 100%)'
             }}
           />
-          <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6">
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gs-dark/95 via-gs-dark/55 to-transparent p-5 pt-12 sm:p-6 sm:pt-16">
             <div className="inline-flex items-center gap-2 rounded-full border border-gs-gold/40 bg-gs-dark/55 px-3.5 py-2 font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.18em] text-gs-gold-light backdrop-blur-sm">
               Premium Mercedes only
             </div>
-            <p className="mt-3 max-w-xl font-ge text-[1rem] leading-7 text-white/86 sm:text-[1.05rem]">
+            <p className="mt-3 max-w-xl font-ge text-[0.98rem] font-bold leading-relaxed text-gs-gold-light drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] sm:text-[1.06rem] sm:leading-8">
               Sized for the four-ball, society or family, with proper room for travel covers, trolleys and shoe bags.
             </p>
           </div>
@@ -98,16 +98,27 @@ export function GeHomeFleetHighlight() {
             ))}
           </div>
 
-          <div className="relative z-[1] mt-8 flex flex-col gap-4 rounded-[1.4rem] border border-[#e6dcc8] bg-[#fffcf6] p-4 sm:flex-row sm:items-center sm:justify-between">
-            <GeButton href="/transport" variant="gs-gold" size="md" className="w-full sm:w-auto">
-              See the fleet
-              <ArrowRight className="h-4 w-4" aria-hidden />
-            </GeButton>
-            <p className="font-ge text-[0.74rem] font-bold uppercase tracking-[0.18em] text-gs-green/72 sm:text-right">
-              1 to 16 passengers
-              <span className="mx-2 hidden sm:inline text-gs-gold/80">·</span>
-              <span className="block sm:inline">Golf-bag friendly</span>
-            </p>
+          <div className="relative z-[1] mt-8 overflow-hidden rounded-[1.4rem] border border-[#e6dcc8] bg-[#fffcf6] shadow-[0_12px_32px_rgba(69,53,24,0.08)]">
+            <div className="p-4 sm:p-5">
+              <GeButton
+                href="/transport"
+                variant="gs-gold"
+                size="md"
+                className="w-full justify-center px-4 text-[0.78rem] tracking-[0.1em] sm:text-[0.9rem] sm:tracking-[0.14em]"
+              >
+                See the fleet
+                <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
+              </GeButton>
+            </div>
+            <div className="border-t border-gs-gold/35 bg-gs-dark px-4 py-3.5 sm:px-5 sm:py-4">
+              <p className="text-center font-ge text-[0.8rem] font-extrabold uppercase leading-snug tracking-[0.14em] text-gs-gold-light sm:text-[0.88rem] sm:tracking-[0.16em]">
+                <span className="text-white">1 to 16 passengers</span>
+                <span className="mx-2 text-gs-gold sm:mx-2.5" aria-hidden="true">
+                  ·
+                </span>
+                <span className="text-white">Golf-bag friendly</span>
+              </p>
+            </div>
           </div>
         </motion.div>
       </div>

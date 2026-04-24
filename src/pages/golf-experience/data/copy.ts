@@ -112,6 +112,10 @@ export const factsCopy = {
 export const aboutCopy = {
   eyebrow: 'About Us',
   title: 'About GolfSol Ireland',
+  /** Short line under the logo on the photo plate. */
+  imageTagline: 'Irish-owned · Costa del Sol golf',
+  /** Small brand line beside the CTA on desktop. */
+  ctaAside: 'Málaga to Sotogrande · One crew',
   paragraphs: [
     'GolfSol Ireland is an Irish-owned, Costa del Sol-based golf travel specialist built for Irish societies, four-balls and family groups travelling out of Dublin, Cork, Shannon and Belfast.',
     'We are licensed and bonded as a tour operator in full compliance with Spanish and EU travel law, with airport meet-and-greet, golf-bag-friendly Mercedes transfers and pre-booked tee times wrapped into every package.',
@@ -146,6 +150,7 @@ export const hotelListsCopy = {
 } as const
 
 export const extrasCopy = {
+  eyebrow: 'One itinerary · Irish team on the ground',
   title: 'The full Costa del Sol package.',
   subtitle: 'And we also handle:'
 } as const
