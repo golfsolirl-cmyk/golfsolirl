@@ -99,8 +99,8 @@ export function HomeAirportTransfersCta() {
                 <span className="block text-gs-gold">Ride out like VIP departures.</span>
               </h2>
 
-              <p className="mt-4 max-w-2xl font-ge text-[1.14rem] leading-8 text-gs-dark/82 sm:text-[1.14rem] sm:leading-8">
-                Meet and greet with all groups at the airport, live flight awareness, luggage space for clubs, then on to your hotel of choice.
+              <p className="mt-4 max-w-2xl pr-1 font-ge text-[1.08rem] leading-8 text-gs-dark/82 sm:pr-0 sm:text-[1.14rem] sm:leading-8">
+                Meet and greet at the airport, live flight awareness, room for clubs, then straight on to your hotel.
               </p>
 
               <motion.div
