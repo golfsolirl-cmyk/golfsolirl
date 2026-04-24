@@ -122,21 +122,19 @@ export function HomeAirportTransfersCta() {
                   />
                   <div
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gs-dark/50 via-gs-dark/12 to-transparent"
+                    className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gs-dark/18 via-transparent to-transparent"
                   />
                   <div className="absolute left-4 top-4 sm:left-5 sm:top-5">
                     <span className="inline-flex items-center gap-2 rounded-full border border-white/35 bg-gs-dark/72 px-3.5 py-2 font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.18em] text-white backdrop-blur-sm">
                       Fleet ready for golf bags
                     </span>
                   </div>
-                  <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
-                    <div className="rounded-[1.2rem] border border-white/18 bg-gs-dark/70 px-4 py-3 text-white shadow-[0_14px_30px_rgba(0,0,0,0.22)] backdrop-blur-md">
-                      <p className="font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.18em] text-gs-gold-light">Mercedes fleet</p>
-                      <p className="mt-1 font-ge text-[0.98rem] font-semibold leading-6 text-white/92">
-                        E-Class, V-Class and Sprinter options matched to the group and the bag count.
-                      </p>
-                    </div>
-                  </div>
+                </div>
+                <div className="border-t border-[#ece1c5] bg-[#fffaf2] px-4 py-3.5 sm:px-5 sm:py-4">
+                  <p className="font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.18em] text-gs-green">Mercedes fleet</p>
+                  <p className="mt-1 font-ge text-[0.96rem] font-semibold leading-6 text-gs-dark/82">
+                    E-Class, V-Class and Sprinter options matched to the group and the bag count.
+                  </p>
                 </div>
               </motion.div>
 
