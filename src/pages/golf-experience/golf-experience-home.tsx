@@ -8,9 +8,9 @@ import { GeFacts } from './sections/facts'
 import { GeFinalCta } from './sections/final-cta'
 import { GeFooter } from './sections/ge-footer'
 import { GeHero } from './sections/hero'
+import { HomeAirportTransfersCta } from './sections/home-airport-transfers-cta'
 import { GeHomeFleetHighlight } from './sections/home-fleet-highlight'
 import { GeNavbar } from './sections/ge-navbar'
-import { GePaymentsIreland } from './sections/payments-ireland'
 import { WhatsappFab } from './components/whatsapp-fab'
 
 export function GolfExperienceHome() {
@@ -26,7 +26,7 @@ export function GolfExperienceHome() {
 
       <main id="main">
         <GeHero />
-        <GePaymentsIreland />
+        <HomeAirportTransfersCta />
         <GeDesignYourPackage />
         <GeCoursesSpain />
         <GeAccommodationIntro />
