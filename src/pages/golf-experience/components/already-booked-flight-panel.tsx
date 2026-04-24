@@ -133,11 +133,11 @@ export function GeAlreadyBookedFlightPanel() {
               aria-hidden
               className="pointer-events-none absolute -left-6 top-1/2 hidden h-[118%] w-24 -translate-y-1/2 rotate-[-8deg] rounded-full bg-gradient-to-b from-gs-gold/25 via-transparent to-ge-orange/20 blur-2xl md:block"
             />
-            <div className="relative overflow-hidden rounded-[1.75rem] border border-white/20 bg-white/[0.09] p-6 pt-14 shadow-[0_24px_60px_rgba(0,0,0,0.28)] backdrop-blur-md sm:p-8 sm:pt-14 lg:p-10 lg:pt-16">
+            <div className="relative overflow-hidden rounded-[1.75rem] border border-[#d9cfbb] bg-[#fffaf1] p-6 pt-14 shadow-[0_24px_60px_rgba(40,33,19,0.16)] ring-1 ring-white/75 sm:p-8 sm:pt-14 lg:p-10 lg:pt-16">
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="absolute right-3 top-3 z-20 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-gs-dark/40 text-white/90 transition-colors hover:border-gs-gold/60 hover:bg-white/10 hover:text-gs-gold-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gs-gold sm:right-4 sm:top-4"
+                className="absolute right-3 top-3 z-20 inline-flex h-10 w-10 items-center justify-center rounded-full border border-gs-dark/12 bg-white/88 text-gs-dark transition-colors hover:border-gs-green hover:bg-gs-dark hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gs-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#fffaf1] sm:right-4 sm:top-4"
               >
                 <span className="sr-only">{alreadyBookedHotelCopy.closeForm}</span>
                 <X className="h-5 w-5" aria-hidden />
@@ -148,25 +148,25 @@ export function GeAlreadyBookedFlightPanel() {
               />
               <div
                 aria-hidden
-                className="pointer-events-none absolute -bottom-10 left-1/2 h-32 w-[120%] -translate-x-1/2 bg-gradient-to-t from-gs-dark/40 to-transparent"
+                className="pointer-events-none absolute -bottom-10 left-1/2 h-32 w-[120%] -translate-x-1/2 bg-gradient-to-t from-[#eadfca]/90 to-transparent"
               />
 
               <div className="relative grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start lg:gap-10 xl:gap-14">
                 <div className="min-w-0 lg:col-span-5 xl:col-span-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-gs-gold/45 bg-gs-dark/35 px-3 py-1.5 font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.22em] text-gs-gold-light shadow-[0_0_24px_rgba(255,199,44,0.18)]">
+            <div className="inline-flex items-center gap-2 rounded-full border border-gs-green/16 bg-white px-3 py-1.5 font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.22em] text-gs-green shadow-[0_12px_24px_rgba(6,59,42,0.08)]">
               <Hotel className="h-3.5 w-3.5 text-gs-gold" aria-hidden />
               {alreadyBookedHotelCopy.badge}
             </div>
             <h3
               id="already-booked-flight-heading"
-              className="mt-4 font-ge text-xl font-extrabold leading-tight text-white sm:text-2xl lg:text-[1.65rem] lg:leading-snug"
+              className="mt-4 font-ge text-xl font-extrabold leading-tight text-gs-dark sm:text-2xl lg:text-[1.65rem] lg:leading-snug"
             >
               {alreadyBookedHotelCopy.title}
             </h3>
-            <p className="mt-3 max-w-prose font-ge text-sm leading-relaxed text-white/82 sm:text-[0.95rem]">
+            <p className="mt-3 max-w-prose font-ge text-sm leading-relaxed text-gs-dark/78 sm:text-[0.95rem]">
               {alreadyBookedHotelCopy.subtitle}
             </p>
-            <p className="mt-5 flex items-start gap-2 font-ge text-xs font-semibold uppercase leading-relaxed tracking-[0.18em] text-white/55">
+            <p className="mt-5 flex items-start gap-2 font-ge text-xs font-semibold uppercase leading-relaxed tracking-[0.18em] text-gs-dark/68">
               <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gs-gold" aria-hidden />
               {alreadyBookedHotelCopy.footnote}
             </p>
@@ -174,17 +174,17 @@ export function GeAlreadyBookedFlightPanel() {
 
                 <form
                   onSubmit={handleSubmit}
-                  className="relative min-w-0 space-y-5 rounded-2xl border border-white/15 bg-gs-dark/25 p-5 shadow-inner sm:p-6 lg:col-span-7 lg:p-8 xl:col-span-8"
+                  className="relative min-w-0 space-y-5 rounded-2xl border border-[#e4d9c3] bg-white/96 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_18px_40px_rgba(69,53,24,0.08)] sm:p-6 lg:col-span-7 lg:p-8 xl:col-span-8"
                   noValidate
                 >
-                  <div className="flex items-center gap-2 border-b border-white/10 pb-3 font-ge text-xs font-bold uppercase tracking-[0.2em] text-gs-gold-light/90">
+                  <div className="flex items-center gap-2 border-b border-ge-gray100 pb-3 font-ge text-xs font-bold uppercase tracking-[0.2em] text-gs-dark/72">
                     <PlaneLanding className="h-4 w-4 shrink-0 text-gs-gold" aria-hidden />
                     Arrival snapshot
                   </div>
 
                   <div className="grid grid-cols-1 gap-4 lg:grid-cols-6 lg:gap-x-5">
                     <label className="block min-w-0 lg:col-span-6">
-                      <span className="mb-1.5 block font-ge text-[0.72rem] font-bold uppercase tracking-[0.14em] text-white/70">
+                      <span className="mb-1.5 block font-ge text-[0.72rem] font-bold uppercase tracking-[0.14em] text-gs-dark/72">
                         {alreadyBookedHotelCopy.nameLabel}
                       </span>
                       <input
@@ -198,7 +198,7 @@ export function GeAlreadyBookedFlightPanel() {
                       />
                     </label>
                     <label className="block min-w-0 lg:col-span-6">
-                      <span className="mb-1.5 block font-ge text-[0.72rem] font-bold uppercase tracking-[0.14em] text-white/70">
+                      <span className="mb-1.5 block font-ge text-[0.72rem] font-bold uppercase tracking-[0.14em] text-gs-dark/72">
                         {alreadyBookedHotelCopy.mobileLabel}
                       </span>
                       <input
@@ -211,13 +211,13 @@ export function GeAlreadyBookedFlightPanel() {
                         className="h-11 w-full rounded-xl border border-white/20 bg-white/95 px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-gs-gold/40 transition-shadow placeholder:text-ge-gray300 focus:border-gs-gold focus:ring-2"
                         placeholder="+353 87 000 0000"
                       />
-                      <span className="mt-1.5 block max-w-xl font-ge text-[0.68rem] leading-snug text-white/50">
+                      <span className="mt-1.5 block max-w-xl font-ge text-[0.68rem] leading-snug text-gs-dark/68">
                         {alreadyBookedHotelCopy.mobileHint}
                       </span>
                     </label>
 
                     <div className="space-y-3 lg:col-span-6">
-                      <p className="font-ge text-[0.72rem] font-bold uppercase tracking-[0.14em] text-white/70">
+                      <p className="font-ge text-[0.72rem] font-bold uppercase tracking-[0.14em] text-gs-dark/72">
                         {alreadyBookedHotelCopy.travelModePrompt}
                       </p>
                       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -227,8 +227,8 @@ export function GeAlreadyBookedFlightPanel() {
                           className={cx(
                             'flex min-h-[48px] items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.12em] transition-all',
                             travelMode === 'flight'
-                              ? 'border-gs-gold bg-white/15 text-white shadow-[0_0_0_1px_rgba(255,199,44,0.35)]'
-                              : 'border-white/20 bg-white/[0.04] text-white/85 hover:border-gs-gold/50 hover:bg-white/[0.08]'
+                              ? 'border-gs-green bg-gs-dark text-white shadow-[0_0_0_1px_rgba(6,59,42,0.16)]'
+                              : 'border-[#e4d9c3] bg-[#faf5ea] text-gs-dark hover:border-gs-green/45 hover:bg-white'
                           )}
                         >
                           <PlaneLanding className="h-4 w-4 shrink-0 text-gs-gold" aria-hidden />
@@ -240,8 +240,8 @@ export function GeAlreadyBookedFlightPanel() {
                           className={cx(
                             'flex min-h-[48px] items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.12em] transition-all',
                             travelMode === 'arrived'
-                              ? 'border-gs-gold bg-white/15 text-white shadow-[0_0_0_1px_rgba(255,199,44,0.35)]'
-                              : 'border-white/20 bg-white/[0.04] text-white/85 hover:border-gs-gold/50 hover:bg-white/[0.08]'
+                              ? 'border-gs-green bg-gs-dark text-white shadow-[0_0_0_1px_rgba(6,59,42,0.16)]'
+                              : 'border-[#e4d9c3] bg-[#faf5ea] text-gs-dark hover:border-gs-green/45 hover:bg-white'
                           )}
                         >
                           <MapPin className="h-4 w-4 shrink-0 text-gs-gold" aria-hidden />
@@ -262,7 +262,7 @@ export function GeAlreadyBookedFlightPanel() {
                         className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-x-4 lg:grid-cols-6 lg:gap-x-5"
                       >
                         <label className="block min-w-0 sm:col-span-1 lg:col-span-3">
-                          <span className="mb-1.5 block font-ge text-[0.72rem] font-bold uppercase tracking-[0.14em] text-white/70">
+                          <span className="mb-1.5 block font-ge text-[0.72rem] font-bold uppercase tracking-[0.14em] text-gs-dark/72">
                             {alreadyBookedHotelCopy.flightLabel}
                           </span>
                           <input
@@ -276,7 +276,7 @@ export function GeAlreadyBookedFlightPanel() {
                           />
                         </label>
                         <label className="block min-w-0 sm:col-span-1 lg:col-span-3">
-                          <span className="mb-1.5 block font-ge text-[0.72rem] font-bold uppercase tracking-[0.14em] text-white/70">
+                          <span className="mb-1.5 block font-ge text-[0.72rem] font-bold uppercase tracking-[0.14em] text-gs-dark/72">
                             {alreadyBookedHotelCopy.arrivalLabel}
                           </span>
                           <input
@@ -299,7 +299,7 @@ export function GeAlreadyBookedFlightPanel() {
                         className="space-y-2"
                       >
                         <label className="block min-w-0 max-w-md">
-                          <span className="mb-1.5 block font-ge text-[0.72rem] font-bold uppercase tracking-[0.14em] text-white/70">
+                          <span className="mb-1.5 block font-ge text-[0.72rem] font-bold uppercase tracking-[0.14em] text-gs-dark/72">
                             {alreadyBookedHotelCopy.collectionTimeLabel}
                           </span>
                           <input
@@ -310,7 +310,7 @@ export function GeAlreadyBookedFlightPanel() {
                             onChange={(e) => setCollectionTime(e.target.value)}
                             className="h-11 w-full min-w-0 rounded-xl border border-white/20 bg-white/95 px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-gs-gold/40 transition-shadow focus:border-gs-gold focus:ring-2"
                           />
-                          <span className="mt-1.5 block font-ge text-[0.68rem] leading-snug text-white/50">
+                          <span className="mt-1.5 block font-ge text-[0.68rem] leading-snug text-gs-dark/68">
                             {alreadyBookedHotelCopy.collectionTimeHint}
                           </span>
                         </label>
