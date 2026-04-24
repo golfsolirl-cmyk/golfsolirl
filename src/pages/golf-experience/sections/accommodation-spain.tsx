@@ -20,6 +20,18 @@ export function GeAccommodationSpain() {
         ))}
       </div>
 
+      <div
+        id="hotels-not-limited"
+        className="mx-auto mt-12 max-w-[42rem] scroll-mt-28 rounded-2xl border-2 border-gs-green bg-white px-6 py-6 text-center shadow-[0_16px_44px_rgba(6,59,42,0.12)] ring-2 ring-gs-gold/25 sm:px-8 sm:py-7"
+      >
+        <p className="font-ge text-[0.74rem] font-extrabold uppercase tracking-[0.2em] text-gs-dark sm:text-[0.78rem]">
+          {hotelListsCopy.beyondTitle}
+        </p>
+        <p className="mt-3 font-ge text-[1rem] font-medium leading-relaxed text-gs-dark/88 sm:text-[1.05rem]">
+          {hotelListsCopy.beyondBody}
+        </p>
+      </div>
+
       <div className="mt-12 flex justify-center">
         <GeButton href="/accommodation" variant="gs-gold" size="md">
           {hotelListsCopy.cta}

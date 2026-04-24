@@ -259,6 +259,18 @@ const teeTimeOnlyPage: GeContentPageData = {
       bullets: ['Premium and value course mixes', 'Single-day or full-week blocks', 'Backup options for full tee sheets']
     },
     {
+      title: 'Early bird, twilight, and the full day sheet',
+      body:
+        'Sol courses price and pace differently across the day. We line up earlies when you want cool air and a long lunch after, twilights when value and golden-hour golf matter, and prime mid-morning blocks when only the flagship tee sheet will do.',
+      bullets: [
+        'Early bird — first off, quiet fairways, ideal after a late Dublin / Cork arrival',
+        'Twilight — softer green fees, forgiving light, easier run to dinner in Puerto Banús or Fuengirola',
+        'Prime morning (≈08:30–10:30) — championship courses at their best; we hold alternates if the diary moves',
+        'Midday / shoulder slots — smart for mixed-handicap groups or a second nine without a crack-of-dawn repeat',
+        'Society spacing — buffer between matches, buggies pre-requested, shotgun vs tee-start explained in plain English'
+      ]
+    },
+    {
       title: 'Booking flow',
       body:
         'You get straightforward options and timings, then we confirm what is available and lock it in once you approve.',

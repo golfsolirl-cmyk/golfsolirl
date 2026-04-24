@@ -135,7 +135,7 @@ export const accommodationIntroCopy = {
   eyebrow: 'STEP 3',
   title: 'The Costa del Sol hotels Irish groups love',
   body:
-    'These are the seven Costa del Sol properties Irish societies and four-balls return to season after season — beachfront in Fuengirola, classic Torremolinos resorts and apartment-style stays for big groups. Better rates, friendlier cancellation terms, every detail looked after by our team on the ground.'
+    'These are hand-picked Costa del Sol bases Irish societies and four-balls book again and again — beachfront in Fuengirola, classic Torremolinos resorts and apartment-style stays for big groups. Better rates, friendlier cancellation terms, every detail looked after by our team on the ground.'
 } as const
 
 export const courseListsCopy = {
@@ -146,7 +146,11 @@ export const courseListsCopy = {
 
 export const hotelListsCopy = {
   spainHeading: 'Hotels Irish Groups Love on the Costa del Sol',
-  cta: 'GET A STAY-AND-PLAY QUOTE'
+  cta: 'GET A STAY-AND-PLAY QUOTE',
+  /** Shown under the grid — we book far beyond this sample. */
+  beyondTitle: 'Not limited to what you see here',
+  beyondBody:
+    'This grid is a snapshot of properties Irish groups use often — not a closed list. If you already have a hotel, villa, or apartment in mind anywhere on the Sol (Marbella, Benalmádena, Estepona, Sotogrande, inland bases), send the name or link and we’ll build transfers, tee times and pricing around it.'
 } as const
 
 export const extrasCopy = {
