@@ -9,6 +9,7 @@ import { GeFinalCta } from './sections/final-cta'
 import { GeFooter } from './sections/ge-footer'
 import { GeHero } from './sections/hero'
 import { HomeAirportTransfersCta } from './sections/home-airport-transfers-cta'
+import { GeHomeEnquiry } from './sections/home-enquiry'
 import { GeHomeFleetHighlight } from './sections/home-fleet-highlight'
 import { GeNavbar } from './sections/ge-navbar'
 import { WhatsappFab } from './components/whatsapp-fab'
@@ -35,6 +36,7 @@ export function GolfExperienceHome() {
         <GeHomeFleetHighlight />
         <GeFacts />
         <GeAboutBlock />
+        <GeHomeEnquiry />
         <GeFinalCta />
       </main>
 

@@ -7,6 +7,7 @@ import sharp from 'sharp'
 import { createEnquiryReferenceId, formatDocumentDate } from '../shared/document-templates.mjs'
 import { gsolEmailBrand, logoLockupEmailContentId, shamrockInlineContentId, socialContentIds } from './email-constants.mjs'
 import { buildGsolTransactionalEmail, finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
+import { buildBrandedEnquiryEmailHtml } from './branded-enquiry-email.mjs'
 
 const pageWidth = 595.28
 const pageHeight = 841.89
@@ -34,6 +35,14 @@ const missingConfigMessage =
 const currentFilePath = fileURLToPath(import.meta.url)
 const currentDirectory = path.dirname(currentFilePath)
 const brandLockupAssetPath = path.resolve(currentDirectory, '../src/gsol-brand-lockup-exact.png')
+const publicImagesDirectory = path.resolve(currentDirectory, '../public/images')
+const brandedPdfAssetPaths = {
+  logo: path.join(publicImagesDirectory, 'golfsol-header-logo-bitmap.png'),
+  fleetLineup: path.join(publicImagesDirectory, 'transport-fleet-lineup.jpg'),
+  arrivals: path.join(publicImagesDirectory, 'transport-moment-arrivals.jpg'),
+  resort: path.join(publicImagesDirectory, 'transport-moment-resort.jpg'),
+  coastalDrive: path.join(publicImagesDirectory, 'transport-hero-coastal-drive.jpg')
+}
 
 let brandLockupPngBufferPromise
 let emailTransactionalLockupPngPromise
@@ -691,6 +700,301 @@ export const createEnquiryPdf = async ({
   return pdfDocument.save()
 }
 
+const pdfEmailTheme = {
+  green: rgb(6 / 255, 59 / 255, 42 / 255),
+  greenSoft: rgb(15 / 255, 81 / 255, 60 / 255),
+  gold: rgb(255 / 255, 199 / 255, 44 / 255),
+  goldDeep: rgb(217 / 255, 154 / 255, 0),
+  cream: rgb(247 / 255, 240 / 255, 226 / 255),
+  sand: rgb(233 / 255, 217 / 255, 182 / 255),
+  ink: rgb(22 / 255, 35 / 255, 29 / 255),
+  muted: rgb(102 / 255, 115 / 255, 109 / 255),
+  white: rgb(1, 1, 1),
+  paleGreen: rgb(246 / 255, 251 / 255, 248 / 255),
+  paleGold: rgb(1, 249 / 255, 234 / 255)
+}
+
+const fitAssetForPdf = (assetPath, width, height) =>
+  sharp(readFileSync(assetPath))
+    .resize(width, height, { fit: 'cover', kernel: sharp.kernel.lanczos3 })
+    .jpeg({ quality: 86, mozjpeg: true })
+    .toBuffer()
+
+const embedPdfJpg = async (pdfDocument, assetPath, width, height) =>
+  pdfDocument.embedJpg(await fitAssetForPdf(assetPath, width, height))
+
+const drawPdfLine = (page, x1, y, x2, color = pdfEmailTheme.sand) => {
+  page.drawLine({ start: { x: x1, y }, end: { x: x2, y }, color, thickness: 0.7 })
+}
+
+const drawPdfPill = (page, text, x, y, font, color = pdfEmailTheme.gold) => {
+  page.drawRectangle({
+    x,
+    y: y - 18,
+    width: Math.min(210, font.widthOfTextAtSize(text, 8) + 26),
+    height: 24,
+    color: pdfEmailTheme.greenSoft,
+    borderColor: color,
+    borderWidth: 0.7
+  })
+  page.drawText(text, { x: x + 12, y: y - 10, font, size: 8, color })
+}
+
+const drawPdfInfoCard = ({ page, x, y, width, height, kicker, title, body, font, boldFont, fill }) => {
+  page.drawRectangle({ x, y, width, height, color: fill, borderColor: pdfEmailTheme.sand, borderWidth: 0.8 })
+  page.drawText(kicker.toUpperCase(), { x: x + 14, y: y + height - 22, font: boldFont, size: 7.5, color: pdfEmailTheme.goldDeep })
+  page.drawText(title, { x: x + 14, y: y + height - 45, font: boldFont, size: 12, color: pdfEmailTheme.ink })
+  drawTextBlock({
+    page,
+    text: body,
+    x: x + 14,
+    y: y + height - 64,
+    font,
+    fontSize: 8.8,
+    color: pdfEmailTheme.muted,
+    maxWidth: width - 28,
+    lineHeight: 11.5
+  })
+}
+
+export const createBrandedEnquiryPdf = async ({
+  fullName,
+  email,
+  interest,
+  phoneWhatsApp,
+  bestTimeToCall,
+  enquiryId,
+  enquiryDate
+}) => {
+  const pdfDocument = await PDFDocument.create()
+  const regularFont = await pdfDocument.embedFont(StandardFonts.Helvetica)
+  const boldFont = await pdfDocument.embedFont(StandardFonts.HelveticaBold)
+  const logoImage = await pdfDocument.embedPng(readFileSync(brandedPdfAssetPaths.logo))
+  const fleetImage = await embedPdfJpg(pdfDocument, brandedPdfAssetPaths.fleetLineup, 1280, 720)
+  const arrivalsImage = await embedPdfJpg(pdfDocument, brandedPdfAssetPaths.arrivals, 640, 360)
+  const resortImage = await embedPdfJpg(pdfDocument, brandedPdfAssetPaths.resort, 640, 360)
+  const coastalImage = await embedPdfJpg(pdfDocument, brandedPdfAssetPaths.coastalDrive, 640, 360)
+
+  const margin = 34
+  const contentW = pageWidth - margin * 2
+
+  const addPage = () => {
+    const page = pdfDocument.addPage([pageWidth, pageHeight])
+    page.drawRectangle({ x: 0, y: 0, width: pageWidth, height: pageHeight, color: pdfEmailTheme.cream })
+    return page
+  }
+
+  const page = addPage()
+  page.drawText('IRISH-OWNED · COSTA DEL SOL GOLF SPECIALISTS', {
+    x: margin,
+    y: pageHeight - 30,
+    font: boldFont,
+    size: 8,
+    color: pdfEmailTheme.green
+  })
+  page.drawText('GolfSol Ireland', {
+    x: pageWidth - margin - boldFont.widthOfTextAtSize('GolfSol Ireland', 8),
+    y: pageHeight - 30,
+    font: boldFont,
+    size: 8,
+    color: pdfEmailTheme.muted
+  })
+
+  const heroY = 592
+  const heroH = 206
+  page.drawRectangle({ x: margin, y: heroY, width: contentW, height: heroH, color: pdfEmailTheme.green })
+  page.drawRectangle({ x: margin, y: heroY, width: contentW, height: 5, color: pdfEmailTheme.gold })
+  const logoDims = logoImage.scale(0.165)
+  page.drawImage(logoImage, { x: margin + 18, y: heroY + heroH - logoDims.height - 12, width: logoDims.width, height: logoDims.height })
+  drawPdfPill(page, 'TRIP PLAN RECEIVED', margin + 22, heroY + 94, boldFont)
+  drawTextBlock({
+    page,
+    text: 'Your golf escape is taking shape.',
+    x: margin + 22,
+    y: heroY + 68,
+    font: boldFont,
+    fontSize: 28,
+    color: pdfEmailTheme.white,
+    maxWidth: 330,
+    lineHeight: 31
+  })
+  drawTextBlock({
+    page,
+    text:
+      'Thanks for sending your Costa del Sol trip details. We will review your dates, group shape, transfers and tee-time needs before replying.',
+    x: margin + 22,
+    y: heroY + 8,
+    font: regularFont,
+    fontSize: 10.5,
+    color: rgb(220 / 255, 232 / 255, 226 / 255),
+    maxWidth: 335,
+    lineHeight: 14
+  })
+  page.drawRectangle({ x: margin + contentW - 168, y: heroY + 40, width: 142, height: 92, color: pdfEmailTheme.greenSoft, borderColor: pdfEmailTheme.gold, borderWidth: 0.7 })
+  page.drawText('NOW BOARDING', { x: margin + contentW - 150, y: heroY + 105, font: boldFont, size: 8, color: pdfEmailTheme.gold })
+  page.drawText('Malaga Airport', { x: margin + contentW - 150, y: heroY + 82, font: boldFont, size: 17, color: pdfEmailTheme.white })
+  drawTextBlock({
+    page,
+    text: 'Meet & greet transfer with golf-bag room reserved.',
+    x: margin + contentW - 150,
+    y: heroY + 61,
+    font: regularFont,
+    fontSize: 8.5,
+    color: rgb(207 / 255, 224 / 255, 216 / 255),
+    maxWidth: 110,
+    lineHeight: 11
+  })
+
+  const fleetY = 322
+  page.drawRectangle({ x: margin, y: fleetY, width: contentW, height: 236, color: pdfEmailTheme.white, borderColor: pdfEmailTheme.sand, borderWidth: 0.8 })
+  page.drawImage(fleetImage, { x: margin, y: fleetY + 76, width: contentW, height: 160 })
+  page.drawRectangle({ x: margin, y: fleetY, width: contentW, height: 76, color: pdfEmailTheme.paleGold })
+  page.drawText('GOLF-BAG FRIENDLY MERCEDES FLEET', { x: margin + 18, y: fleetY + 52, font: boldFont, size: 8, color: pdfEmailTheme.goldDeep })
+  drawTextBlock({
+    page,
+    text: 'E-Class, V-Class and Sprinter options matched to your group.',
+    x: margin + 18,
+    y: fleetY + 32,
+    font: boldFont,
+    fontSize: 17,
+    color: pdfEmailTheme.ink,
+    maxWidth: contentW - 36,
+    lineHeight: 20
+  })
+
+  const summaryY = 82
+  page.drawRectangle({ x: margin, y: summaryY, width: contentW, height: 206, color: pdfEmailTheme.white, borderColor: pdfEmailTheme.sand, borderWidth: 0.8 })
+  page.drawText('RECOMMENDED ITINERARY SNAPSHOT', { x: margin + 20, y: summaryY + 172, font: boldFont, size: 8, color: pdfEmailTheme.greenSoft })
+  page.drawText('Built around the details you sent.', { x: margin + 20, y: summaryY + 148, font: boldFont, size: 18, color: pdfEmailTheme.ink })
+  const cardW = (contentW - 54) / 2
+  drawPdfInfoCard({ page, x: margin + 18, y: summaryY + 82, width: cardW, height: 52, kicker: 'Transfer', title: 'Private AGP pickup', body: 'Flight-aware driver and room for clubs.', font: regularFont, boldFont, fill: pdfEmailTheme.paleGold })
+  drawPdfInfoCard({ page, x: margin + 36 + cardW, y: summaryY + 82, width: cardW, height: 52, kicker: 'Stay', title: 'Golf-friendly base', body: 'Hotel or resort matched to the group.', font: regularFont, boldFont, fill: pdfEmailTheme.paleGreen })
+  drawPdfInfoCard({ page, x: margin + 18, y: summaryY + 18, width: cardW, height: 52, kicker: 'Golf', title: 'Preferred rounds', body: 'Courses selected around ability and daylight.', font: regularFont, boldFont, fill: pdfEmailTheme.paleGreen })
+  drawPdfInfoCard({ page, x: margin + 36 + cardW, y: summaryY + 18, width: cardW, height: 52, kicker: 'Support', title: 'Irish phone line', body: 'Email, phone or WhatsApp follow-up.', font: regularFont, boldFont, fill: pdfEmailTheme.paleGold })
+
+  let detailPage = addPage()
+  let y = pageHeight - 62
+  detailPage.drawText('SUBMITTED TRIP DETAILS', { x: margin, y, font: boldFont, size: 8.5, color: pdfEmailTheme.greenSoft })
+  y -= 28
+  detailPage.drawText('Your GolfSol Ireland enquiry record', { x: margin, y, font: boldFont, size: 22, color: pdfEmailTheme.ink })
+  y -= 20
+  drawTextBlock({
+    page: detailPage,
+    text: 'These are the details sent through the same branded Resend workflow as the email.',
+    x: margin,
+    y,
+    font: regularFont,
+    fontSize: 10.5,
+    color: pdfEmailTheme.muted,
+    maxWidth: contentW,
+    lineHeight: 14
+  })
+  y -= 28
+
+  const rows = [
+    ['Full name', fullName],
+    ['Email', email],
+    ['Phone / WhatsApp', phoneWhatsApp],
+    ['Best time to call', bestTimeToCall],
+    ['Enquiry ID', enquiryId],
+    ['Submitted', enquiryDate],
+    ['Trip interest', interest]
+  ]
+
+  rows.forEach(([label, value], index) => {
+    const valueLines = wrapText({ text: value, font: regularFont, fontSize: 9.6, maxWidth: contentW - 175 })
+    const rowH = Math.max(42, valueLines.length * 12 + 24)
+    if (y - rowH < 72) {
+      detailPage = addPage()
+      y = pageHeight - 62
+      detailPage.drawText('SUBMITTED TRIP DETAILS CONTINUED', { x: margin, y, font: boldFont, size: 8.5, color: pdfEmailTheme.greenSoft })
+      y -= 30
+    }
+    detailPage.drawRectangle({
+      x: margin,
+      y: y - rowH,
+      width: contentW,
+      height: rowH,
+      color: index % 2 === 0 ? pdfEmailTheme.white : pdfEmailTheme.paleGold,
+      borderColor: pdfEmailTheme.sand,
+      borderWidth: 0.6
+    })
+    detailPage.drawText(label.toUpperCase(), { x: margin + 14, y: y - 22, font: boldFont, size: 7.4, color: pdfEmailTheme.muted })
+    drawTextBlock({
+      page: detailPage,
+      text: value,
+      x: margin + 150,
+      y: y - 18,
+      font: regularFont,
+      fontSize: 9.6,
+      color: pdfEmailTheme.ink,
+      maxWidth: contentW - 170,
+      lineHeight: 12
+    })
+    y -= rowH
+  })
+
+  const finalPage = addPage()
+  finalPage.drawText('TRANSFER EXPERIENCE', { x: margin, y: pageHeight - 62, font: boldFont, size: 8.5, color: pdfEmailTheme.greenSoft })
+  finalPage.drawText('From arrivals hall to resort door.', { x: margin, y: pageHeight - 92, font: boldFont, size: 22, color: pdfEmailTheme.ink })
+  const imageCardW = (contentW - 22) / 3
+  const imageCardY = 542
+  const imageCards = [
+    [arrivalsImage, 'Arrivals tracked', 'Driver ready when your flight lands.'],
+    [resortImage, 'Resort drop-off', 'Straight to hotel, villa or course.'],
+    [coastalImage, 'Sol corridor', 'Malaga, Marbella and beyond.']
+  ]
+  imageCards.forEach(([image, title, body], index) => {
+    const x = margin + index * (imageCardW + 11)
+    finalPage.drawRectangle({ x, y: imageCardY, width: imageCardW, height: 178, color: index === 1 ? pdfEmailTheme.paleGold : pdfEmailTheme.paleGreen, borderColor: pdfEmailTheme.sand, borderWidth: 0.8 })
+    finalPage.drawImage(image, { x, y: imageCardY + 72, width: imageCardW, height: 106 })
+    finalPage.drawText(title, { x: x + 12, y: imageCardY + 48, font: boldFont, size: 11, color: pdfEmailTheme.ink })
+    drawTextBlock({ page: finalPage, text: body, x: x + 12, y: imageCardY + 30, font: regularFont, fontSize: 8.5, color: pdfEmailTheme.muted, maxWidth: imageCardW - 24, lineHeight: 11 })
+  })
+
+  finalPage.drawRectangle({ x: margin, y: 286, width: contentW, height: 184, color: pdfEmailTheme.green })
+  finalPage.drawText('NEXT STEP', { x: margin + 28, y: 430, font: boldFont, size: 9, color: pdfEmailTheme.gold })
+  finalPage.drawText('Tell us what to tune.', { x: margin + 28, y: 398, font: boldFont, size: 22, color: pdfEmailTheme.white })
+  drawTextBlock({
+    page: finalPage,
+    text:
+      'Reply with any dates, group changes or must-play courses. We will shape the quote around the group rather than forcing you into a fixed package.',
+    x: margin + 28,
+    y: 372,
+    font: regularFont,
+    fontSize: 10.5,
+    color: rgb(220 / 255, 232 / 255, 226 / 255),
+    maxWidth: contentW - 56,
+    lineHeight: 14
+  })
+  finalPage.drawRectangle({ x: margin + 28, y: 314, width: 142, height: 32, color: pdfEmailTheme.gold })
+  finalPage.drawText('REFINE MY QUOTE', { x: margin + 46, y: 326, font: boldFont, size: 9, color: pdfEmailTheme.ink })
+
+  finalPage.drawRectangle({ x: margin, y: 92, width: contentW, height: 158, color: pdfEmailTheme.white, borderColor: pdfEmailTheme.sand, borderWidth: 0.8 })
+  finalPage.drawText('IMPORTANT DISCLAIMER', { x: margin + 20, y: 222, font: boldFont, size: 8, color: pdfEmailTheme.goldDeep })
+  drawTextBlock({
+    page: finalPage,
+    text: disclaimerParagraphs.join('\n\n'),
+    x: margin + 20,
+    y: 202,
+    font: regularFont,
+    fontSize: 8.8,
+    color: pdfEmailTheme.muted,
+    maxWidth: contentW - 40,
+    lineHeight: 11.5
+  })
+  finalPage.drawText('GolfSol Ireland · Irish-owned Costa del Sol golf travel · Transfers, accommodation and tee times in one place.', {
+    x: margin,
+    y: 52,
+    font: regularFont,
+    size: 8.5,
+    color: pdfEmailTheme.muted
+  })
+  drawPdfLine(finalPage, margin, 72, margin + contentW)
+
+  return pdfDocument.save()
+}
+
 const buildEnquiryTransactionalEmailHtml = (payload, variant) => {
   const { fullName, email, interest, phoneWhatsApp, bestTimeToCall, enquiryId, enquiryDate } = payload
   const telDigits = phoneWhatsApp.replace(/[^\d+]/g, '')
@@ -732,8 +1036,8 @@ const buildEnquiryTransactionalEmailHtml = (payload, variant) => {
   return finalizeGsolEmailHtml(raw)
 }
 
-const buildCustomerHtml = (payload) => buildEnquiryTransactionalEmailHtml(payload, 'customer')
-const buildOwnerHtml = (payload) => buildEnquiryTransactionalEmailHtml(payload, 'admin')
+const buildCustomerHtml = (payload) => buildBrandedEnquiryEmailHtml(payload, 'customer')
+const buildOwnerHtml = (payload) => buildBrandedEnquiryEmailHtml(payload, 'admin')
 
 const attachmentFromBuffer = (filename, buffer, contentType, contentId) => ({
   filename,
@@ -810,7 +1114,7 @@ export const handleEnquirySubmission = async (payload, env = process.env) => {
   const resend = new Resend(resendApiKey)
   const imageAttachments = await getTransactionalEmailImageAttachments()
 
-  const pdfBytes = await createEnquiryPdf({ ...enquiry, enquiryId, enquiryDate })
+  const pdfBytes = await createBrandedEnquiryPdf({ ...enquiry, enquiryId, enquiryDate })
   const pdfAttachment = {
     filename: `golf-sol-ireland-enquiry-${slugify(enquiryId)}.pdf`,
     content: Buffer.from(pdfBytes).toString('base64'),

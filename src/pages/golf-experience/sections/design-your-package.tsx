@@ -26,21 +26,21 @@ export function GeDesignYourPackage() {
       title: 'Pick Your Sol Base',
       body: designYourPackage.step1.body,
       image: designYourPackage.step1.image,
-      link: '/accommodation'
+      link: '/#enquire'
     },
     {
       badge: 'Step 2',
       title: 'Pick Your Tee Times',
       body: designYourPackage.step2.body,
       image: designYourPackage.step2.image,
-      link: '/golf-courses'
+      link: '/#enquire'
     },
     {
       badge: 'Step 3',
       title: 'Pick Your Hotel',
       body: designYourPackage.step3.body,
       image: designYourPackage.step3.image,
-      link: '/accommodation'
+      link: '/#enquire'
     },
     {
       badge: 'Step 4',
@@ -48,7 +48,7 @@ export function GeDesignYourPackage() {
       body: 'We design the itinerary, book the tees, lock in golf-bag-friendly Mercedes transfers and meet you at AGP arrivals — every detail from arrivals hall to final putt.',
       image:
         'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&w=1200&q=80',
-      link: '/contact'
+      link: '/#enquire'
     }
   ]
 

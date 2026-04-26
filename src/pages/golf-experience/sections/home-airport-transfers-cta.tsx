@@ -219,16 +219,26 @@ export function HomeAirportTransfersCta() {
                   </motion.a>
                 </div>
 
-                <div className="mt-4 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="max-w-none font-ge text-[0.74rem] font-semibold uppercase tracking-[0.08em] text-gs-dark/[0.68] sm:max-w-[16rem] sm:text-[0.82rem] sm:tracking-[0.16em]">
+                <div className="mt-4 flex flex-col items-stretch gap-3">
+                  <p className="font-ge text-[0.74rem] font-semibold uppercase tracking-[0.08em] text-gs-dark/[0.68] sm:text-[0.82rem] sm:tracking-[0.16em]">
                     Meet & greet · Resort drop-off · Golf bag friendly
                   </p>
                   <a
                     href={`tel:${contactInfo.phoneTel}`}
-                    className="inline-flex min-h-[56px] w-full items-center justify-center gap-2 rounded-full border border-[#ddd0b0] bg-[#fffaf0] px-5 py-3 font-ge text-[1.1rem] font-extrabold tracking-[0.01em] text-gs-dark transition-colors hover:border-gs-gold/[0.45] hover:text-gs-green sm:min-h-[46px] sm:w-auto sm:justify-start sm:px-4 sm:py-2 sm:text-[0.82rem] sm:uppercase sm:tracking-[0.14em]"
+                    aria-label={`Call GolfSol Ireland on ${contactInfo.phoneDisplay}`}
+                    className="group inline-flex min-h-[62px] w-full items-center justify-center gap-3 rounded-full border border-[#ddd0b0] bg-[#fffaf0] px-4 py-3 font-ge font-extrabold text-gs-dark shadow-[0_14px_28px_rgba(69,53,24,0.08)] transition-colors hover:border-gs-gold/[0.5] hover:text-gs-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gs-gold focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[64px] sm:px-5"
                   >
-                    <Phone className="h-4 w-4" aria-hidden />
-                    {contactInfo.phoneDisplay}
+                    <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gs-green text-white shadow-[0_10px_22px_rgba(6,59,42,0.18)] transition-transform duration-300 group-hover:scale-105 sm:h-12 sm:w-12">
+                      <Phone className="h-5 w-5 sm:h-5 sm:w-5" aria-hidden />
+                    </span>
+                    <span className="min-w-0 text-left">
+                      <span className="block text-[0.62rem] uppercase tracking-[0.16em] text-gs-dark/55 sm:text-[0.68rem]">
+                        Call Irish support
+                      </span>
+                      <span className="mt-0.5 block whitespace-nowrap text-[1.08rem] tracking-[0.01em] text-gs-dark sm:text-[1.18rem]">
+                        {contactInfo.phoneDisplay}
+                      </span>
+                    </span>
                   </a>
                 </div>
               </div>

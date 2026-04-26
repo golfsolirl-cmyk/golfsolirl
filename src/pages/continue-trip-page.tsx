@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { ArrowLeft, CheckCircle2 } from 'lucide-react'
+import { useEffect, useState, type FormEvent } from 'react'
+import { ArrowLeft, CheckCircle2, Send } from 'lucide-react'
 import { GOLF_SOL_TRIP_FLIGHT_PREFILL_KEY } from './golf-experience/components/already-booked-flight-panel'
 import { PageIdentityBar } from '../components/page-identity-bar'
 import { GeFooter } from './golf-experience/sections/ge-footer'
@@ -68,8 +68,31 @@ function parseFlightSnap(raw: string): FlightSnap | null {
 
 type SnapState = FlightSnap | null | undefined
 
+const continueLabelClass = 'mb-1.5 block font-ge text-[0.72rem] font-bold uppercase tracking-[0.14em] text-gs-dark/72'
+const continueInputClass =
+  'h-12 w-full rounded-xl border border-ge-gray200 bg-white px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-gs-gold/40 transition-shadow placeholder:text-ge-gray300 focus:border-gs-gold focus:ring-2'
+
+function formatSnapForInterest(snap: FlightSnap) {
+  const arrival =
+    snap.travelMode === 'flight'
+      ? [`Arrival type: Inbound flight`, `Flight number: ${snap.flightNo}`, `Landing time: ${snap.arrivalTime}`]
+      : [`Arrival type: Already arrived / collection`, `Collection time: ${snap.collectionTime}`]
+
+  return [`Carried from homepage`, `Name: ${snap.fullName}`, `Mobile: ${snap.mobile}`, ...arrival]
+}
+
 export function ContinueTripPage() {
   const [snap, setSnap] = useState<SnapState>(undefined)
+  const [email, setEmail] = useState('')
+  const [travelDates, setTravelDates] = useState('')
+  const [groupSize, setGroupSize] = useState('')
+  const [hotelStatus, setHotelStatus] = useState('')
+  const [roundCount, setRoundCount] = useState('')
+  const [courseWishlist, setCourseWishlist] = useState('')
+  const [notes, setNotes] = useState('')
+  const [bestTimeToCall, setBestTimeToCall] = useState('Any time')
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   useEffect(() => {
     try {
@@ -88,6 +111,77 @@ export function ContinueTripPage() {
   useEffect(() => {
     document.title = 'Continue your trip | GolfSol Ireland'
   }, [])
+
+  const handleContinueSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setSubmitStatus('idle')
+    setSubmitError(null)
+
+    if (!snap) {
+      setSubmitStatus('error')
+      setSubmitError('Your saved arrival details are missing. Start again from the homepage.')
+      return
+    }
+
+    const mail = email.trim().toLowerCase()
+    const dates = travelDates.trim()
+    const size = groupSize.trim()
+    const hotel = hotelStatus.trim()
+    const rounds = roundCount.trim()
+
+    if (!mail || !dates || !size || !hotel || !rounds) {
+      setSubmitStatus('error')
+      setSubmitError('Please complete email, dates, group size, hotel status and number of rounds.')
+      return
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) {
+      setSubmitStatus('error')
+      setSubmitError('Please enter a valid email address.')
+      return
+    }
+
+    const interest = [
+      'CONTINUE TRIP — completed itinerary brief',
+      ...formatSnapForInterest(snap),
+      `Email: ${mail}`,
+      `Travel dates: ${dates}`,
+      `Group size: ${size}`,
+      `Hotel / accommodation status: ${hotel}`,
+      `Preferred number of rounds: ${rounds}`,
+      courseWishlist.trim() ? `Course wishlist: ${courseWishlist.trim()}` : null,
+      notes.trim() ? `Extra notes: ${notes.trim()}` : null
+    ].filter(Boolean)
+
+    setSubmitStatus('submitting')
+    try {
+      const response = await fetch('/api/enquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: snap.fullName,
+          email: mail,
+          phoneWhatsApp: snap.mobile,
+          interest: interest.join('\n'),
+          bestTimeToCall: bestTimeToCall.trim() || 'Any time'
+        })
+      })
+      const data = (await response.json().catch(() => ({}))) as { message?: string }
+      if (!response.ok) {
+        throw new Error(data.message ?? 'Could not send your trip brief right now.')
+      }
+
+      setSubmitStatus('success')
+      try {
+        sessionStorage.removeItem(GOLF_SOL_TRIP_FLIGHT_PREFILL_KEY)
+      } catch {
+        // Ignore browser storage failures after a successful API submission.
+      }
+    } catch (error) {
+      setSubmitStatus('error')
+      setSubmitError(error instanceof Error ? error.message : 'Could not send your trip brief right now.')
+    }
+  }
 
   if (snap === undefined) {
     return (
@@ -251,27 +345,136 @@ export function ContinueTripPage() {
               </dl>
             </section>
 
-            <section className="mt-8 rounded-2xl border border-dashed border-gs-green/35 bg-[linear-gradient(180deg,_#FAF8F4_0%,_#FFFFFF_70%)] p-6 sm:p-8">
-              <p className="font-ge text-sm font-extrabold uppercase tracking-[0.18em] text-gs-green/90">Next — full itinerary</p>
-              <p className="mt-2 font-ge text-sm leading-relaxed text-ge-gray500">
-                This section is ready for your longer form: hotel confirmation, dates, party size, handicap spread, course wish-list and transfer
-                notes. Wire it to your CRM or enquiry API when you are ready.
-              </p>
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <a
-                  href="/#enquire"
-                  className="inline-flex min-h-[48px] items-center justify-center rounded-full bg-gradient-to-br from-gs-gold to-[#f4b41a] px-6 font-ge text-sm font-extrabold uppercase tracking-[0.12em] text-gs-dark shadow-gs-gold transition-transform hover:scale-[1.02]"
-                >
-                  Open full quote form
-                </a>
-                <button
-                  type="button"
-                  disabled
-                  className="inline-flex min-h-[48px] cursor-not-allowed items-center justify-center rounded-full border-2 border-ge-gray200 px-6 font-ge text-sm font-bold uppercase tracking-[0.1em] text-ge-gray300"
-                >
-                  Save draft (soon)
-                </button>
-              </div>
+            <section className="mt-8 rounded-2xl border border-gs-green/20 bg-[linear-gradient(180deg,_#FAF8F4_0%,_#FFFFFF_70%)] p-6 shadow-[0_18px_45px_rgba(6,59,42,0.08)] sm:p-8">
+              {submitStatus === 'success' ? (
+                <div className="rounded-2xl border border-gs-green/25 bg-gs-green/5 p-5 text-center sm:p-7">
+                  <CheckCircle2 className="mx-auto h-9 w-9 text-gs-green" aria-hidden />
+                  <p className="mt-4 font-ge text-sm font-extrabold uppercase tracking-[0.18em] text-gs-green/90">Trip brief sent</p>
+                  <p className="mx-auto mt-3 max-w-xl font-ge text-sm leading-relaxed text-ge-gray500">
+                    Thanks. Your arrival details and full itinerary brief have been sent to GolfSol Ireland. We will reply by email, phone or
+                    WhatsApp with the next step.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <p className="font-ge text-sm font-extrabold uppercase tracking-[0.18em] text-gs-green/90">Next — full itinerary</p>
+                  <h2 className="mt-2 font-ge text-[1.8rem] font-extrabold leading-tight text-gs-dark sm:text-[2.2rem]">
+                    Finish the quote request
+                  </h2>
+                  <p className="mt-3 font-ge text-sm leading-relaxed text-ge-gray500">
+                    These details submit with the arrival snapshot above, so the team gets one clean enquiry instead of disconnected messages.
+                  </p>
+
+                  <form className="mt-6 grid gap-4 sm:grid-cols-2" onSubmit={handleContinueSubmit} noValidate>
+                    <label className="block sm:col-span-2">
+                      <span className={continueLabelClass}>Email</span>
+                      <input
+                        value={email}
+                        onChange={(event) => setEmail(event.target.value)}
+                        type="email"
+                        autoComplete="email"
+                        required
+                        placeholder="you@example.com"
+                        className={continueInputClass}
+                      />
+                    </label>
+                    <label className="block">
+                      <span className={continueLabelClass}>Travel dates</span>
+                      <input
+                        value={travelDates}
+                        onChange={(event) => setTravelDates(event.target.value)}
+                        required
+                        placeholder="e.g. 15-19 Sept 2026"
+                        className={continueInputClass}
+                      />
+                    </label>
+                    <label className="block">
+                      <span className={continueLabelClass}>Group size</span>
+                      <select value={groupSize} onChange={(event) => setGroupSize(event.target.value)} required className={continueInputClass}>
+                        <option value="">Select group size</option>
+                        <option value="2 golfers">2 golfers</option>
+                        <option value="4 golfers">4 golfers</option>
+                        <option value="8 golfers">8 golfers</option>
+                        <option value="12+ golfers">12+ golfers</option>
+                      </select>
+                    </label>
+                    <label className="block">
+                      <span className={continueLabelClass}>Hotel / accommodation</span>
+                      <select
+                        value={hotelStatus}
+                        onChange={(event) => setHotelStatus(event.target.value)}
+                        required
+                        className={continueInputClass}
+                      >
+                        <option value="">Select hotel status</option>
+                        <option value="Hotel already booked">Hotel already booked</option>
+                        <option value="Need hotel options">Need hotel options</option>
+                        <option value="Villa / apartment booked">Villa / apartment booked</option>
+                        <option value="Need advice">Need advice</option>
+                      </select>
+                    </label>
+                    <label className="block">
+                      <span className={continueLabelClass}>Preferred rounds</span>
+                      <select value={roundCount} onChange={(event) => setRoundCount(event.target.value)} required className={continueInputClass}>
+                        <option value="">Select rounds</option>
+                        <option value="1 round">1 round</option>
+                        <option value="2 rounds">2 rounds</option>
+                        <option value="3 rounds">3 rounds</option>
+                        <option value="4+ rounds">4+ rounds</option>
+                      </select>
+                    </label>
+                    <label className="block">
+                      <span className={continueLabelClass}>Best time to call</span>
+                      <input
+                        value={bestTimeToCall}
+                        onChange={(event) => setBestTimeToCall(event.target.value)}
+                        placeholder="Any time"
+                        className={continueInputClass}
+                      />
+                    </label>
+                    <label className="block">
+                      <span className={continueLabelClass}>Course wishlist</span>
+                      <input
+                        value={courseWishlist}
+                        onChange={(event) => setCourseWishlist(event.target.value)}
+                        placeholder="Optional: La Cala, Mijas, Santana..."
+                        className={continueInputClass}
+                      />
+                    </label>
+                    <label className="block sm:col-span-2">
+                      <span className={continueLabelClass}>Notes</span>
+                      <textarea
+                        value={notes}
+                        onChange={(event) => setNotes(event.target.value)}
+                        rows={5}
+                        placeholder="Tell us anything useful: handicaps, rooming, luggage, preferred resort, transfer notes or budget."
+                        className="w-full rounded-xl border border-ge-gray200 bg-white px-3.5 py-3 font-ge text-sm leading-7 text-gs-dark shadow-sm outline-none ring-gs-gold/40 transition-shadow placeholder:text-ge-gray300 focus:border-gs-gold focus:ring-2"
+                      />
+                    </label>
+
+                    {submitStatus === 'error' && submitError ? (
+                      <p className="rounded-lg border border-ge-orange/50 bg-orange-50 px-3 py-2.5 font-ge text-sm leading-6 text-gs-dark sm:col-span-2">
+                        {submitError}
+                      </p>
+                    ) : null}
+
+                    <button
+                      type="submit"
+                      disabled={submitStatus === 'submitting'}
+                      className="group relative min-h-[52px] overflow-hidden rounded-full bg-gradient-to-r from-gs-gold via-[#f4b41a] to-gs-gold-light px-6 font-ge text-sm font-extrabold uppercase tracking-[0.14em] text-gs-dark shadow-gs-gold transition-transform duration-300 hover:scale-[1.02] active:scale-[0.99] disabled:cursor-wait disabled:opacity-70 sm:col-span-2"
+                    >
+                      <span className="relative z-[1] inline-flex items-center justify-center gap-2">
+                        <Send className="h-4 w-4" aria-hidden />
+                        {submitStatus === 'submitting' ? 'Sending trip brief...' : 'Send full trip brief'}
+                      </span>
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute inset-0 translate-x-[-100%] bg-white/25 transition-transform duration-500 group-hover:translate-x-0"
+                      />
+                    </button>
+                  </form>
+                </>
+              )}
             </section>
           </div>
         </GeSection>
