@@ -72,6 +72,14 @@ export const footerColumns = [
     ]
   },
   {
+    title: 'Docs',
+    links: [
+      { label: 'Terms & Conditions PDF', href: '/docs/terms-and-conditions.pdf' },
+      { label: 'Traveller Contacts PDF', href: '/docs/traveller-contacts.pdf' },
+      { label: 'Packing Checklist PDF', href: '/docs/packing-checklist.pdf' }
+    ]
+  },
+  {
     title: 'Navigation',
     links: [
       { label: 'Home', href: '/#top' },

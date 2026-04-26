@@ -3,6 +3,7 @@ import { ArrowDown, ArrowRight, Phone } from 'lucide-react'
 import { GeButton } from '../components/ge-button'
 import { GeRentalBagEmbroideredLogo } from '../components/ge-rental-bag-embroidered-logo'
 import { contactInfo } from '../data/copy'
+import { handleScrollToFormTarget } from '../../../lib/scroll-to-form-target'
 
 export interface RentalEditorialHeroProps {
   readonly eyebrow: string
@@ -61,6 +62,7 @@ export function RentalEditorialHero({ eyebrow, title, subtitle, heroImage, heroA
 
             <a
               href="#rental-content"
+              onClick={(event) => handleScrollToFormTarget(event, '#rental-content')}
               className="mt-8 inline-flex items-center gap-2 font-ge text-sm font-semibold text-neutral-600 underline decoration-neutral-300 decoration-2 underline-offset-4 transition-colors hover:text-neutral-900"
             >
               How rental works

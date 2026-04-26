@@ -14,7 +14,7 @@ export const gsolEmailBrand = {
   phoneDisplay: '087 446 4766',
   phoneTel: '+353874464766',
   whatsappHref: 'https://wa.me/353874464766',
-  email: 'hello@golfsolirl.com',
+  email: 'info@golfsolirl.com',
   addressLines: ['6 Richmond Road', 'Drumcondra, Dublin 3'],
   eircode: 'D03 C434'
 }

@@ -16,7 +16,7 @@ export function GeFooter() {
   return (
     <footer className="bg-gs-dark text-white">
       <div className="mx-auto max-w-[1180px] px-5 py-14">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           {footerColumns.map((column) => (
             <div key={column.title}>
               <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-gs-gold drop-shadow-[0_0_12px_rgba(255,199,44,0.22)] sm:text-[0.82rem]">

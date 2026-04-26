@@ -8,6 +8,7 @@ import { GeContentEnquireBlock } from './sections/ge-content-enquire-block'
 import { GeContentPromiseBand } from './sections/ge-content-promise-band'
 import { GeContentStoryGrid, type GeContentStoryCard } from './sections/ge-content-story-grid'
 import { GeServiceStyleHero } from './sections/ge-service-style-hero'
+import { TermsEmailRequest } from './sections/terms-email-request'
 import { PageIdentityBar } from '../../components/page-identity-bar'
 import { getGeContentPage } from './data/content-pages'
 import { getContentPageFormConfig, getContentPageHeroMedia, getContentStorySectionMedia } from './content-page-context'
@@ -62,6 +63,7 @@ export function GeContentPage() {
   const heroImage = heroMedia?.image ?? page.heroImage
   const heroAlt = heroMedia?.alt ?? page.heroAlt
   const routeLabel = heroMedia?.stripeLabel ?? page.eyebrow
+  const isTermsPage = path.includes('terms')
 
   const mobileHighlights = page.highlights.slice(0, 3).map((label) => ({
     icon: CheckCircle2,
@@ -96,6 +98,7 @@ export function GeContentPage() {
           primaryCta={{ label: 'Start your enquiry', href: '#ge-content-enquire' }}
           showNavbarSpacer={false}
           mobileHighlights={mobileHighlights}
+          imageFit={isTermsPage ? 'contain' : 'cover'}
         />
 
         <GeContentPromiseBand
@@ -145,6 +148,8 @@ export function GeContentPage() {
             </div>
           </GeSection>
         ) : null}
+
+        {isTermsPage ? <TermsEmailRequest /> : null}
 
         {formConfig ? (
           <GeContentEnquireBlock

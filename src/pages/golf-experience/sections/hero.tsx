@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
+import { handleScrollToFormTarget } from '../../../lib/scroll-to-form-target'
 
 /**
  * Hero displays the brand-composed Málaga → Costa del Sol creative
@@ -75,6 +76,7 @@ export function GeHero() {
             doesn't collide with the phone number on portrait mobile. */}
         <motion.a
           href="#design-package"
+          onClick={(event) => handleScrollToFormTarget(event, '#design-package')}
           aria-label="Scroll to next section"
           className="absolute bottom-4 right-4 z-20 inline-flex h-11 w-11 items-center justify-center rounded-full border-2 border-white/85 bg-gs-dark/55 text-white backdrop-blur-md transition-colors hover:border-gs-gold hover:bg-gs-dark/75 hover:text-gs-gold md:bottom-6 md:left-1/2 md:right-auto md:h-12 md:w-12 md:-translate-x-1/2"
           animate={{ y: [0, 6, 0] }}

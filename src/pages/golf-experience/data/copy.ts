@@ -9,7 +9,7 @@ export const contactInfo = {
   tagline: 'IRISH-OWNED · COSTA DEL SOL GOLF SPECIALISTS',
   phoneDisplay: '+353 87 446 4766',
   phoneTel: '+353874464766',
-  email: 'hello@golfsolireland.ie'
+  email: 'info@golfsolirl.com'
 } as const
 
 /** Alt text for the brand-composed Malaga hero raster (homepage). */

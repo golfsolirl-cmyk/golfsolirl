@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type ChangeEvent, type FormEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
 import { LuxuryButton } from '../components/ui/button'
 import {
@@ -16,6 +16,7 @@ import {
 } from '../lib/package-build'
 import { fetchPackageBuildsClientList, isMissingClientDetailsColumnError } from '../lib/fetch-package-builds'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
+import { formatTravelDateInput } from '../lib/format-travel-date'
 import { useAuth } from '../providers/auth-provider'
 import { cx } from '../lib/utils'
 
@@ -59,6 +60,7 @@ const readOnlyCalcHintClass = 'mt-1 text-xs text-forest-500'
 
 export function ClientDashboardPage() {
   const { session, isLoading } = useAuth()
+  const detailsMessageRef = useRef<HTMLParagraphElement>(null)
   const [proposals, setProposals] = useState<ProposalRow[]>([])
   const [packageBuilds, setPackageBuilds] = useState<PackageBuildRow[]>([])
   const [proposalsError, setProposalsError] = useState<string | null>(null)
@@ -160,8 +162,15 @@ export function ClientDashboardPage() {
     }
   }, [packageBuilds, selectedBuildId])
 
+  useEffect(() => {
+    if (detailsStatus === 'saved') {
+      detailsMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }, [detailsStatus])
+
   const handleTripFieldChange = (field: TripDetailsFieldKey) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setTripForm((prev) => ({ ...prev, [field]: event.target.value }))
+    const value = field === 'preferredTravelDates' ? formatTravelDateInput(event.target.value) : event.target.value
+    setTripForm((prev) => ({ ...prev, [field]: value }))
     setDetailsStatus('idle')
     setDetailsMessage(null)
   }
@@ -518,6 +527,7 @@ export function ClientDashboardPage() {
 
                         {detailsMessage ? (
                           <p
+                            ref={detailsMessageRef}
                             className={cx(
                               'text-sm font-medium',
                               detailsStatus === 'error' ? 'text-red-700' : 'text-forest-800'

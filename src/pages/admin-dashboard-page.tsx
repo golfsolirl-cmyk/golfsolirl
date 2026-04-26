@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
 import { LuxuryButton } from '../components/ui/button'
 import { fetchPackageBuildsAdminList, isMissingClientDetailsColumnError } from '../lib/fetch-package-builds'
@@ -16,6 +16,7 @@ import {
 } from '../lib/package-build'
 import { integrationRegistry } from '../config/integrations'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
+import { formatTravelDateInput } from '../lib/format-travel-date'
 import { useAuth } from '../providers/auth-provider'
 import { cx } from '../lib/utils'
 
@@ -97,6 +98,7 @@ export function AdminDashboardPage() {
   const [adminTripForm, setAdminTripForm] = useState<PackageTripDetailsForm>(() => emptyTripDetailsForm())
   const [adminSaveStatus, setAdminSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [adminSaveMessage, setAdminSaveMessage] = useState<string | null>(null)
+  const adminSaveMessageRef = useRef<HTMLParagraphElement>(null)
 
   useEffect(() => {
     if (isLoading) {
@@ -187,7 +189,8 @@ export function AdminDashboardPage() {
   }, [detailMergedTrip, detailRow])
 
   const handleAdminTripFieldChange = (field: TripDetailsFieldKey) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setAdminTripForm((prev) => ({ ...prev, [field]: event.target.value }))
+    const value = field === 'preferredTravelDates' ? formatTravelDateInput(event.target.value) : event.target.value
+    setAdminTripForm((prev) => ({ ...prev, [field]: value }))
     setAdminSaveStatus('idle')
     setAdminSaveMessage(null)
   }
@@ -239,6 +242,12 @@ export function AdminDashboardPage() {
     setAdminSaveStatus('idle')
     setAdminSaveMessage(null)
   }, [])
+
+  useEffect(() => {
+    if (adminSaveStatus === 'saved') {
+      adminSaveMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }, [adminSaveStatus])
 
   useEffect(() => {
     if (!detailBuildId) {
@@ -835,6 +844,7 @@ export function AdminDashboardPage() {
                 </LuxuryButton>
                 {adminSaveMessage ? (
                   <p
+                    ref={adminSaveMessageRef}
                     className={cx(
                       'text-sm font-medium',
                       adminSaveStatus === 'error' ? 'text-red-700' : 'text-forest-800'

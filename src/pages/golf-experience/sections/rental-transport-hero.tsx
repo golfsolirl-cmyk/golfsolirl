@@ -7,6 +7,7 @@ import { GeRentalPremiumHeroOverlay } from '../components/ge-rental-premium-hero
 import { GeSmartActionCard } from '../components/ge-smart-action-card'
 import { contactInfo } from '../data/copy'
 import type { ContentSmartAction } from '../content-page-context'
+import { handleScrollToFormTarget } from '../../../lib/scroll-to-form-target'
 
 const fadeUp = {
   initial: { opacity: 0, y: 18 },
@@ -168,6 +169,7 @@ export function RentalTransportHero({
           >
             <a
               href="#rental-content"
+              onClick={(event) => handleScrollToFormTarget(event, '#rental-content')}
               aria-label="Scroll to club rental details"
               className="inline-flex h-11 w-11 items-center justify-center rounded-full border-2 border-white/85 bg-gs-dark/55 text-white backdrop-blur-md transition-colors hover:border-gs-gold hover:bg-gs-dark/75 hover:text-gs-gold md:h-12 md:w-12"
             >

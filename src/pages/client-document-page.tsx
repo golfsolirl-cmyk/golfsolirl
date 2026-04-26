@@ -178,69 +178,166 @@ export function ClientDocumentPage() {
   )
 }
 
+const termsClauses = [
+  {
+    title: '1. Who we are and what we arrange',
+    body:
+      'Golf Sol Ireland arranges Costa del Sol golf travel services for Irish groups, including golf course bookings, accommodation introductions or reservations, airport transfers, itinerary planning and related concierge support. Unless we expressly state otherwise in writing, we act as a booking coordinator and disclosed agent for third-party suppliers rather than the owner or operator of hotels, golf courses, transport companies, airlines or resorts.',
+    points: [
+      'We use reasonable care and skill when preparing quotes, requesting reservations and passing information between you and suppliers.',
+      'The actual delivery of hotel stays, golf rounds, buggies, transfers and venue services remains the responsibility of the relevant supplier.',
+      'Flights are not arranged by Golf Sol Ireland unless a written proposal specifically says otherwise.'
+    ]
+  },
+  {
+    title: '2. Quotes, availability and confirmation',
+    body:
+      'Quotes are based on the information supplied by you and availability/pricing available to us at the time. A quote is not a confirmed booking. A booking becomes confirmed only when we confirm in writing that the relevant supplier space has been secured and the required payment has been received.',
+    points: [
+      'Prices, tee times, room types, transfer costs and package inclusions can change before written confirmation.',
+      'Once your deposit is accepted and the booking is confirmed, we will not change the Golf Sol Ireland package price unless taxes, supplier charges, group numbers or requested itinerary changes alter the confirmed arrangement.',
+      'If a supplier cannot confirm part of your requested trip, we may offer alternatives; you are not obliged to accept an alternative unless you approve it in writing.'
+    ]
+  },
+  {
+    title: '3. Deposit and balance payment',
+    body:
+      'Unless your proposal states a different written payment schedule, a 20% deposit is payable upfront to proceed with the booking and the remaining 80% balance is due within five days of booking confirmation. Bookings close to travel may require full payment immediately.',
+    points: [
+      'The 20% deposit is used to secure supplier space and cover administration, planning and booking work.',
+      'If you cancel within 48 hours of paying the deposit, the deposit will be refunded provided we have not already committed non-refundable supplier costs on your instruction.',
+      'After 48 hours, the 20% deposit is non-refundable. Balance payments may also become non-refundable to the extent suppliers have applied charges or released no refund terms.',
+      'If the balance is not paid on time, suppliers may release rooms, tee times or vehicles. We will try to warn you, but we cannot guarantee availability after missed payment deadlines.'
+    ]
+  },
+  {
+    title: '4. Cancellations by you',
+    body:
+      'If you need to cancel, tell us in writing immediately. We will then check the supplier rules that apply to your hotel, golf, transport and package elements and will try to reduce loss where possible.',
+    points: [
+      'Cancellations made within 48 hours of deposit payment qualify for a deposit refund unless non-refundable supplier costs have already been committed.',
+      'Cancellations after 48 hours may result in loss of the 20% deposit plus any supplier cancellation charges, no-show fees or non-refundable balances.',
+      'Any refund depends on the rules of the hotels, golf courses, transport providers and other suppliers used for your booking.',
+      'Travel insurance should be your first protection for illness, flight disruption, family emergencies, injury, bereavement or other cancellation reasons.'
+    ]
+  },
+  {
+    title: '5. Reductions in group numbers and itinerary changes',
+    body:
+      'Group prices are normally based on the number of travellers, golfers, rooms, vehicles, tee times and nights requested. If numbers reduce, the cost for remaining travellers may increase because fixed costs are shared by fewer people and some suppliers remove group discounts.',
+    points: [
+      'Name changes, room changes, golf changes and transfer changes are subject to supplier approval.',
+      'We will help modify a booking where possible, but any supplier fees, rate increases or lost discounts are payable by the group.',
+      'The group organiser is responsible for collecting accurate names, dates, flight details, room requirements, golf handicaps and other information from travellers.'
+    ]
+  },
+  {
+    title: '6. Hotels and accommodation failures',
+    body:
+      'Accommodation is provided by third-party hotels, resorts, apartments or accommodation suppliers. We are not responsible for their acts, omissions, overbooking, maintenance failures, room allocation decisions, service issues, facility closures, staffing problems or changes to amenities.',
+    points: [
+      'If an accommodation provider fails to deliver the confirmed service, we will assist with escalation and, where practical, seek an alternative or supplier remedy.',
+      'Room views, adjoining rooms, floors, bed types and special requests are never guaranteed unless the supplier confirms them as guaranteed in writing.',
+      'Local taxes, deposits, city charges, resort rules and damage policies may be payable locally where applied by the accommodation provider.'
+    ]
+  },
+  {
+    title: '7. Golf course bookings, tee times and buggies',
+    body:
+      'Golf courses control their own tee sheets, course condition, buggy rules, dress codes, handicap requirements, pace-of-play decisions, grouping, closures and refund policies. We cannot guarantee that a course will never alter a tee time, pairing, buggy allocation or operational rule.',
+    points: [
+      'If a golf course changes a tee time, we will try to minimise disruption and adjust the wider itinerary where possible.',
+      'If a course officially closes because of weather or course conditions, the available remedy is the refund, credit, voucher or replacement round offered by that course.',
+      'If the course remains open and your group does not attend, the round will normally be treated as a no-show and charged in full.',
+      'Buggy inclusion varies by course and by even/odd player numbers. Extra buggies may need to be paid locally and are subject to availability.'
+    ]
+  },
+  {
+    title: '8. Transfers, flight delays and missed services',
+    body:
+      'Transfers are delivered by licensed third-party transport providers. We request vehicles suitable for the group details supplied, including golf bags where notified, but the transport provider is responsible for vehicle operation and driver performance.',
+    points: [
+      'You must provide accurate flight numbers, arrival times, collection points, passenger numbers and luggage/golf bag details.',
+      'Late passengers, incorrect flight details, missed flights, excessive waiting time or last-minute changes may create extra charges.',
+      'If a supplier vehicle issue occurs, we will assist with replacement arrangements where practical, but we are not liable for the transport provider’s failure beyond any remedy legally recoverable from that provider.'
+    ]
+  },
+  {
+    title: '9. Supplier responsibility and limitation of liability',
+    body:
+      'Golf Sol Ireland is not liable for mistakes, failures, delays, cancellations, overbooking, negligence or service issues caused by hotels, accommodation providers, golf courses, transport providers, airlines, restaurants, venues or other third-party suppliers. We remain responsible only for our own proven failure to use reasonable care and skill in arranging the services.',
+    points: [
+      'We are not liable for indirect loss, loss of enjoyment, loss of profit, consequential loss, missed flights, unused services, personal decisions not to travel, or costs not approved by us in advance.',
+      'Where Golf Sol Ireland is legally liable, our liability is limited to the amount paid to us for the affected service, except where Irish law does not allow such a limitation.',
+      'Nothing in these terms excludes liability for fraud, deliberate wrongdoing, death or personal injury caused by negligence, or any rights that cannot legally be excluded.'
+    ]
+  },
+  {
+    title: '10. Force majeure and events outside our control',
+    body:
+      'We are not liable for events outside our reasonable control, including severe weather, natural disaster, strike, airport disruption, flight cancellation, war, civil unrest, terrorism, pandemic, government restriction, supplier insolvency, utility failure, course closure or emergency safety decisions.',
+    points: [
+      'In these cases, supplier terms and available remedies will apply.',
+      'We will try to help rearrange the affected parts of the trip, but extra costs may be payable by the group.',
+      'Travel insurance is essential for disruption outside any company’s control.'
+    ]
+  },
+  {
+    title: '11. Behaviour, damage and local rules',
+    body:
+      'Travellers must behave respectfully towards hotel staff, drivers, golf course staff, other guests and local residents. Suppliers may refuse service or remove guests for unsafe, abusive, intoxicated, destructive or unlawful behaviour.',
+    points: [
+      'No refund is due where a supplier refuses service because of traveller misconduct.',
+      'The group is responsible for damage, fines, cleaning charges, lost keys, buggy damage or other costs caused by its members.',
+      'Golf dress codes, handicap rules, buggy safety rules and hotel house rules must be followed.'
+    ]
+  },
+  {
+    title: '12. Questions and written terms',
+    body:
+      'These terms should be read with your written quote, invoice, confirmation email and any supplier-specific terms we send you. If there is a conflict, supplier-specific terms or the written proposal for your trip may apply to that specific service.',
+    points: [
+      'Ask us to explain anything before paying a deposit.',
+      'Keep copies of your proposal, confirmation, payment records and travel insurance documents.',
+      'These terms are drafted for practical clarity and should be reviewed by a qualified solicitor for formal legal reliance.'
+    ]
+  }
+] as const
+
 function TermsBody({ kicker, title }: { readonly kicker: string; readonly title: string }) {
   return (
     <article className="rounded-[2rem] border border-forest-100 bg-white p-8 shadow-soft md:p-12">
       <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">{kicker}</p>
       <h1 className="font-display mt-3 text-3xl font-bold text-forest-950 md:text-4xl">{title}</h1>
       <p className="mt-4 text-sm leading-relaxed text-forest-600">
-        Plain-language terms for travelling with Golf Sol Ireland. They protect both your group and our ability to deliver
-        the courses, hotels, and transfers you expect on the Costa del Sol.
+        Plain-language booking terms for Golf Sol Ireland groups. They explain deposits, balance payments, cancellations,
+        supplier responsibility, hotel issues, golf course changes, transfers and the limits of our liability where another
+        company controls the service.
       </p>
 
-      <section className="mt-10 space-y-4">
-        <h2 className="font-display text-xl font-semibold text-forest-900">1. Who we are</h2>
-        <p className="text-sm leading-relaxed text-forest-700">
-          Golf Sol Ireland arranges golf travel experiences in partnership with vetted suppliers. We act as your planning
-          partner — not the hotel, airline, or golf club operator — unless a document explicitly states otherwise.
-        </p>
-      </section>
-
-      <section className="mt-10 space-y-4">
-        <h2 className="font-display text-xl font-semibold text-forest-900">2. Quotes and proposals</h2>
-        <p className="text-sm leading-relaxed text-forest-700">
-          Indicative pricing depends on availability, seasonality, and supplier rates at the time of issue. A formal quote
-          becomes binding only after you confirm in writing and we confirm supplier space in return.
-        </p>
-      </section>
-
-      <section className="mt-10 space-y-4">
-        <h2 className="font-display text-xl font-semibold text-forest-900">3. Deposits and payment</h2>
-        <p className="text-sm leading-relaxed text-forest-700">
-          Deposits secure tee times, rooms, and transport. Balance due dates follow the schedule on your proposal. Late
-          payment may mean released inventory — we will always try to warn you first.
-        </p>
-      </section>
-
-      <section className="mt-10 space-y-4">
-        <h2 className="font-display text-xl font-semibold text-forest-900">4. Changes and cancellations</h2>
-        <p className="text-sm leading-relaxed text-forest-700">
-          Supplier rules apply. Where we can move dates or names without penalty, we will. Where suppliers charge fees,
-          those pass through unless we agree otherwise in writing.
-        </p>
-      </section>
-
-      <section className="mt-10 space-y-4">
-        <h2 className="font-display text-xl font-semibold text-forest-900">5. Travel insurance and conduct</h2>
-        <p className="text-sm leading-relaxed text-forest-700">
-          Adequate travel insurance is strongly recommended. Respectful conduct toward staff, venues, and other guests is
-          expected; providers may refuse service for serious misconduct without refund.
-        </p>
-      </section>
-
-      <section className="mt-10 space-y-4">
-        <h2 className="font-display text-xl font-semibold text-forest-900">6. Liability</h2>
-        <p className="text-sm leading-relaxed text-forest-700">
-          We are not liable for events outside our reasonable control (weather, closures, industrial action, pandemics, etc.).
-          Our liability is limited to fees paid to us for our planning service except where Irish law does not allow that
-          limit.
-        </p>
-      </section>
+      <div className="mt-10 space-y-8">
+        {termsClauses.map((clause) => (
+          <section key={clause.title} className="space-y-4">
+            <h2 className="font-display text-xl font-semibold text-forest-900">{clause.title}</h2>
+            <p className="text-sm leading-relaxed text-forest-700">{clause.body}</p>
+            <ul className="space-y-2.5">
+              {clause.points.map((point) => (
+                <li key={point} className="flex gap-3 text-sm leading-relaxed text-forest-700">
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold-500" aria-hidden="true" />
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
 
       <section className="mt-10 rounded-2xl border border-gold-200/60 bg-gold-50/40 p-6">
-        <h2 className="font-display text-xl font-semibold text-forest-900">7. Questions</h2>
+        <h2 className="font-display text-xl font-semibold text-forest-900">Important legal note</h2>
         <p className="mt-3 text-sm leading-relaxed text-forest-700">
-          Prefer a conversation to a PDF? Reach us through the contact details in the footer — we actually answer.
+          This document is a practical business draft for customer clarity. Before relying on it as your final enforceable
+          terms, have an Irish solicitor review it against your exact business model, licensing position, insurance cover and
+          supplier contracts.
         </p>
       </section>
 

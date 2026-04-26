@@ -3,6 +3,7 @@ import type { LucideIcon } from 'lucide-react'
 import { ArrowRight, CheckCircle2, ChevronDown, Phone } from 'lucide-react'
 import { GeButton } from '../components/ge-button'
 import { contactInfo } from '../data/copy'
+import { handleScrollToFormTarget } from '../../../lib/scroll-to-form-target'
 
 const fadeUp = {
   initial: { opacity: 0, y: 18 },
@@ -71,6 +72,7 @@ export type GeServiceStyleHeroProps = {
   readonly nextSectionId?: string
   readonly mobileHighlights?: readonly GeServiceStyleHeroHighlight[]
   readonly trustLine?: string
+  readonly imageFit?: 'cover' | 'contain'
 }
 
 /**
@@ -90,7 +92,8 @@ export function GeServiceStyleHero({
   showNavbarSpacer = true,
   nextSectionId = '#ge-content-promise',
   mobileHighlights,
-  trustLine = 'Irish-owned · Costa del Sol specialists · Replies inside 2 hours'
+  trustLine = 'Irish-owned · Costa del Sol specialists · Replies inside 2 hours',
+  imageFit = 'cover'
 }: GeServiceStyleHeroProps) {
   const mobileTitleStyle = getMobileHeroTitleStyle(title)
   const highlights =
@@ -114,7 +117,11 @@ export function GeServiceStyleHero({
           <img
             src={image}
             alt={imageAlt}
-            className="block h-[54vh] min-h-[360px] w-full select-none object-cover object-[58%_42%] md:absolute md:inset-0 md:h-full md:min-h-0 md:w-full md:object-[center_45%]"
+            className={
+              imageFit === 'contain'
+                ? 'block h-[54vh] min-h-[360px] w-full select-none object-contain object-center md:absolute md:inset-0 md:h-full md:min-h-0 md:w-full md:object-contain'
+                : 'block h-[54vh] min-h-[360px] w-full select-none object-cover object-[58%_42%] md:absolute md:inset-0 md:h-full md:min-h-0 md:w-full md:object-[center_45%]'
+            }
             fetchPriority="high"
             decoding="async"
             width={2400}
@@ -243,6 +250,7 @@ export function GeServiceStyleHero({
 
           <motion.a
             href={nextSectionId}
+            onClick={(event) => handleScrollToFormTarget(event, nextSectionId)}
             aria-label="Scroll to the next section"
             className="absolute bottom-4 right-4 z-20 inline-flex h-11 w-11 items-center justify-center rounded-full border-2 border-white/85 bg-gs-dark/55 text-white backdrop-blur-md transition-colors hover:border-gs-gold hover:bg-gs-dark/75 hover:text-gs-gold md:bottom-6 md:left-1/2 md:right-auto md:h-12 md:w-12 md:-translate-x-1/2"
             animate={{ y: [0, 6, 0] }}

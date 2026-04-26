@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { motion } from 'framer-motion'
 import {
   BedDouble,
@@ -210,7 +210,14 @@ function CustomerPackagePage() {
   const [isSavingBuild, setIsSavingBuild] = useState(false)
   const [saveBuildError, setSaveBuildError] = useState<string | null>(null)
   const [saveBuildOk, setSaveBuildOk] = useState(false)
+  const [enquiryName, setEnquiryName] = useState('')
+  const [enquiryEmail, setEnquiryEmail] = useState('')
+  const [enquiryPhone, setEnquiryPhone] = useState('')
+  const [enquiryBestTime, setEnquiryBestTime] = useState('Any time')
+  const [enquiryStatus, setEnquiryStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
+  const [enquiryError, setEnquiryError] = useState<string | null>(null)
   const footerRef = useRef<HTMLElement | null>(null)
+  const enquiryConfirmationRef = useRef<HTMLDivElement>(null)
   const whatsAppHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
 
   const selectedPackage = packageStyles.find((item) => item.name === selectedPackageName) ?? packageStyles[1]
@@ -365,8 +372,61 @@ function CustomerPackagePage() {
       subject,
       body: packageEnquirySummary
     })
-    return `mailto:hello@golfsolireland.com?${params.toString()}`
+    return `mailto:info@golfsolirl.com?${params.toString()}`
   }, [packageEnquirySummary, selectedPackage.name])
+
+  const handlePackageEnquirySubmit = useCallback(
+    async (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault()
+      setEnquiryStatus('idle')
+      setEnquiryError(null)
+
+      const name = enquiryName.trim()
+      const email = enquiryEmail.trim().toLowerCase()
+      const phone = enquiryPhone.trim()
+
+      if (!name || !email || !phone) {
+        setEnquiryStatus('error')
+        setEnquiryError('Please add your name, email and phone / WhatsApp.')
+        return
+      }
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        setEnquiryStatus('error')
+        setEnquiryError('Please enter a valid email address.')
+        return
+      }
+
+      setEnquiryStatus('submitting')
+      try {
+        const response = await fetch('/api/enquiry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fullName: name,
+            email,
+            phoneWhatsApp: phone,
+            interest: `PACKAGE BUILDER — customer package enquiry\n${packageEnquirySummary}`,
+            bestTimeToCall: enquiryBestTime.trim() || 'Any time'
+          })
+        })
+        const data = (await response.json().catch(() => ({}))) as { message?: string }
+        if (!response.ok) {
+          throw new Error(data.message ?? 'Could not send your package enquiry right now.')
+        }
+
+        setEnquiryStatus('success')
+        setEnquiryName('')
+        setEnquiryEmail('')
+        setEnquiryPhone('')
+        setEnquiryBestTime('Any time')
+      } catch (error) {
+        setEnquiryStatus('error')
+        setEnquiryError(error instanceof Error ? error.message : 'Could not send your package enquiry right now.')
+      }
+    },
+    [enquiryBestTime, enquiryEmail, enquiryName, enquiryPhone, packageEnquirySummary]
+  )
 
   const handleSavePackageToAccount = useCallback(async () => {
     setSaveBuildError(null)
@@ -479,6 +539,12 @@ function CustomerPackagePage() {
     const dismissed = localStorage.getItem('gsol-cookie-banner-dismissed')
     setHasAcceptedCookies(dismissed === 'true')
   }, [])
+
+  useEffect(() => {
+    if (enquiryStatus === 'success') {
+      enquiryConfirmationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }, [enquiryStatus])
 
   useEffect(() => {
     if (!footerRef.current) {
@@ -933,26 +999,85 @@ function CustomerPackagePage() {
                     View proposal (print / PDF)
                   </LuxuryButton>
                   <LuxuryButton href={packageEnquiryMailtoHref} variant="outline">
-                    Email package request
+                    Email fallback
                   </LuxuryButton>
                 </div>
               </div>
 
               <motion.div className="rounded-[2rem] border border-white/10 bg-white/6 p-6 text-white backdrop-blur-sm" {...revealUp}>
-                <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">What customers can do here</p>
-                <div className="mt-5 space-y-4">
-                  {[
-                    'Price the trip from 1 to 8 golfers',
-                    'Compare package style, stay level, and transfers',
-                    'See a deposit estimate before enquiring',
-                    'Understand the package before speaking to you'
-                  ].map((item) => (
-                    <div key={item} className="flex items-start gap-3 text-base text-white/82">
-                      <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-gold-300" aria-hidden="true" />
-                      <span>{item}</span>
+                {enquiryStatus === 'success' ? (
+                  <div ref={enquiryConfirmationRef} className="rounded-[1.5rem] border border-gold-300/40 bg-gold-300/10 p-5 text-center">
+                    <CheckCircle2 className="mx-auto h-8 w-8 text-gold-300" aria-hidden="true" />
+                    <p className="mt-4 text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">Package enquiry sent</p>
+                    <p className="mt-3 text-base leading-7 text-white/78">
+                      Check your inbox for the branded GolfSol confirmation and PDF. We will reply with the next step.
+                    </p>
+                  </div>
+                ) : (
+                  <form className="space-y-4" onSubmit={handlePackageEnquirySubmit} noValidate>
+                    <div>
+                      <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">Send package request</p>
+                      <p className="mt-2 text-base leading-7 text-white/72">
+                        This sends your selected package shape through the same branded email and PDF workflow as the main enquiry forms.
+                      </p>
                     </div>
-                  ))}
-                </div>
+
+                    <label className="block">
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Full name</span>
+                      <input
+                        autoComplete="name"
+                        className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3.5 text-base text-white outline-none transition placeholder:text-white/35 focus:border-gold-300 focus:ring-2 focus:ring-gold-300/25"
+                        onChange={(event) => setEnquiryName(event.target.value)}
+                        placeholder="Your name"
+                        required
+                        value={enquiryName}
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Email</span>
+                      <input
+                        autoComplete="email"
+                        className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3.5 text-base text-white outline-none transition placeholder:text-white/35 focus:border-gold-300 focus:ring-2 focus:ring-gold-300/25"
+                        onChange={(event) => setEnquiryEmail(event.target.value)}
+                        placeholder="you@example.com"
+                        required
+                        type="email"
+                        value={enquiryEmail}
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Phone / WhatsApp</span>
+                      <input
+                        autoComplete="tel"
+                        className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3.5 text-base text-white outline-none transition placeholder:text-white/35 focus:border-gold-300 focus:ring-2 focus:ring-gold-300/25"
+                        onChange={(event) => setEnquiryPhone(event.target.value)}
+                        placeholder="+353 87 000 0000"
+                        required
+                        type="tel"
+                        value={enquiryPhone}
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Best time to call</span>
+                      <input
+                        className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3.5 text-base text-white outline-none transition placeholder:text-white/35 focus:border-gold-300 focus:ring-2 focus:ring-gold-300/25"
+                        onChange={(event) => setEnquiryBestTime(event.target.value)}
+                        placeholder="Any time"
+                        value={enquiryBestTime}
+                      />
+                    </label>
+
+                    {enquiryStatus === 'error' && enquiryError ? (
+                      <p className="rounded-xl border border-gold-300/40 bg-gold-300/10 px-3 py-2.5 text-sm leading-6 text-white" role="alert">
+                        {enquiryError}
+                      </p>
+                    ) : null}
+
+                    <LuxuryButton className="w-full" disabled={enquiryStatus === 'submitting'} type="submit">
+                      {enquiryStatus === 'submitting' ? 'Sending package...' : 'Send branded enquiry'}
+                    </LuxuryButton>
+                  </form>
+                )}
               </motion.div>
             </div>
           </div>

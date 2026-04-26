@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { ArrowLeft, CheckCircle2, Send } from 'lucide-react'
 import { GOLF_SOL_TRIP_FLIGHT_PREFILL_KEY } from './golf-experience/components/already-booked-flight-panel'
 import { PageIdentityBar } from '../components/page-identity-bar'
@@ -10,11 +10,14 @@ import { GeServiceStyleHero } from './golf-experience/sections/ge-service-style-
 import { WhatsappFab } from './golf-experience/components/whatsapp-fab'
 import { GeTransfersInsuranceBanner } from './golf-experience/components/ge-transfers-insurance-banner'
 import { GeSection } from './golf-experience/components/ge-section'
+import { contactInfo } from './golf-experience/data/copy'
+import { formatTravelDateInput } from '../lib/format-travel-date'
 
 type TravelMode = 'flight' | 'arrived'
 
 type FlightSnap = {
   fullName: string
+  email?: string
   mobile: string
   travelMode: TravelMode
   flightNo: string
@@ -54,6 +57,7 @@ function parseFlightSnap(raw: string): FlightSnap | null {
 
     return {
       fullName: parsed.fullName,
+      email: typeof parsed.email === 'string' ? parsed.email : undefined,
       mobile: parsed.mobile,
       travelMode,
       flightNo,
@@ -93,6 +97,7 @@ export function ContinueTripPage() {
   const [bestTimeToCall, setBestTimeToCall] = useState('Any time')
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const confirmationRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     try {
@@ -103,6 +108,9 @@ export function ContinueTripPage() {
       }
       const parsed = parseFlightSnap(raw)
       setSnap(parsed)
+      if (parsed?.email) {
+        setEmail(parsed.email)
+      }
     } catch {
       setSnap(null)
     }
@@ -111,6 +119,16 @@ export function ContinueTripPage() {
   useEffect(() => {
     document.title = 'Continue your trip | GolfSol Ireland'
   }, [])
+
+  useEffect(() => {
+    if (submitStatus === 'success') {
+      confirmationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }, [submitStatus])
+
+  const whatsappHref = `https://wa.me/${contactInfo.phoneTel.replace('+', '')}?text=${encodeURIComponent(
+    'Hi GolfSol Ireland — I have started my trip brief and would like to WhatsApp my enquiry.'
+  )}`
 
   const handleContinueSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -275,10 +293,11 @@ export function ContinueTripPage() {
           srTitle="Finish your trip brief"
           eyebrow="Step 2 of 2"
           title="Finish your trip brief"
-          subtitle="We have your arrival snapshot. Add the pieces below (or jump straight to a full quote) — a planner will reply with tee times, transfers and extras matched to your hotel."
+          subtitle="We have your arrival snapshot. Add the pieces below (or WhatsApp your enquiry) — a planner will reply with tee times, transfers and extras matched to your hotel."
           image="/images/transport-hero-coastal-drive.jpg"
           imageAlt="Black Mercedes V-Class on the AP-7 coastal motorway — Golf Sol Ireland transfer planning."
-          primaryCta={{ label: 'Open full quote form', href: '/#enquire' }}
+          primaryCta={{ label: 'WhatsApp us', href: whatsappHref }}
+          showNavbarSpacer={false}
           nextSectionId="#continue-carried"
           mobileHighlights={[
             { label: 'Arrival details carried forward' },
@@ -286,8 +305,6 @@ export function ContinueTripPage() {
             { label: 'Clear next steps in plain English' }
           ]}
         />
-
-        <GePaymentsIreland />
 
         <div className="bg-white px-5 py-6 sm:px-8 sm:py-7">
           <div className="mx-auto max-w-[1180px]">
@@ -345,9 +362,9 @@ export function ContinueTripPage() {
               </dl>
             </section>
 
-            <section className="mt-8 rounded-2xl border border-gs-green/20 bg-[linear-gradient(180deg,_#FAF8F4_0%,_#FFFFFF_70%)] p-6 shadow-[0_18px_45px_rgba(6,59,42,0.08)] sm:p-8">
+            <section id="continue-trip-form" className="mt-8 scroll-mt-28 rounded-2xl border border-gs-green/20 bg-[linear-gradient(180deg,_#FAF8F4_0%,_#FFFFFF_70%)] p-6 shadow-[0_18px_45px_rgba(6,59,42,0.08)] sm:p-8">
               {submitStatus === 'success' ? (
-                <div className="rounded-2xl border border-gs-green/25 bg-gs-green/5 p-5 text-center sm:p-7">
+                <div ref={confirmationRef} className="rounded-2xl border border-gs-green/25 bg-gs-green/5 p-5 text-center sm:p-7">
                   <CheckCircle2 className="mx-auto h-9 w-9 text-gs-green" aria-hidden />
                   <p className="mt-4 font-ge text-sm font-extrabold uppercase tracking-[0.18em] text-gs-green/90">Trip brief sent</p>
                   <p className="mx-auto mt-3 max-w-xl font-ge text-sm leading-relaxed text-ge-gray500">
@@ -382,7 +399,7 @@ export function ContinueTripPage() {
                       <span className={continueLabelClass}>Travel dates</span>
                       <input
                         value={travelDates}
-                        onChange={(event) => setTravelDates(event.target.value)}
+                        onChange={(event) => setTravelDates(formatTravelDateInput(event.target.value))}
                         required
                         placeholder="e.g. 15-19 Sept 2026"
                         className={continueInputClass}
@@ -478,6 +495,8 @@ export function ContinueTripPage() {
             </section>
           </div>
         </GeSection>
+
+        <GePaymentsIreland />
 
         <GeFinalCta />
       </main>

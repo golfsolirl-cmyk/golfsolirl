@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { Send } from 'lucide-react'
 import { GeButton } from './ge-button'
 import { contactInfo } from '../data/copy'
 import type { ContentFormConfig, ContentFormField } from '../content-page-context'
+import { formatTravelDateInput } from '../../../lib/format-travel-date'
 
 interface GeQuickEnquiryFormProps {
   readonly title: string
@@ -44,6 +45,7 @@ export function GeQuickEnquiryForm({
   const [fieldValues, setFieldValues] = useState<Record<string, string>>(initialFieldValues)
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const confirmationRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     setFieldValues(initialFieldValues)
@@ -51,10 +53,16 @@ export function GeQuickEnquiryForm({
     setErrorMessage(null)
   }, [initialFieldValues])
 
+  useEffect(() => {
+    if (status === 'success') {
+      confirmationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }, [status])
+
   const handleFieldChange = (fieldId: string, value: string) => {
     setFieldValues((current) => ({
       ...current,
-      [fieldId]: value
+      [fieldId]: fieldId === 'travelDates' ? formatTravelDateInput(value) : value
     }))
   }
 
@@ -139,7 +147,7 @@ export function GeQuickEnquiryForm({
       </p>
 
       {status === 'success' ? (
-        <div className="mt-6 rounded-xl border border-gs-green/30 bg-gs-green/5 px-4 py-4">
+        <div ref={confirmationRef} className="mt-6 rounded-xl border border-gs-green/30 bg-gs-green/5 px-4 py-4">
           <p className="font-ge text-[0.92rem] font-bold uppercase tracking-[0.12em] text-gs-green sm:text-[0.96rem]">
             {formConfig.successTitle}
           </p>

@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { motion } from 'framer-motion'
 import { Send } from 'lucide-react'
 import { GeButton } from './ge-button'
@@ -34,6 +34,13 @@ export function TransportHeroEnquiryForm() {
   const [asap, setAsap] = useState(false)
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const confirmationRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (status === 'success') {
+      confirmationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }, [status])
 
   const resetIdle = () => {
     setStatus('idle')
@@ -130,7 +137,7 @@ export function TransportHeroEnquiryForm() {
         <div className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-gs-gold via-gs-gold-light to-gs-gold" aria-hidden />
 
         {status === 'success' ? (
-          <div className="px-5 py-8 text-center sm:px-7 sm:py-9">
+          <div ref={confirmationRef} className="px-5 py-8 text-center sm:px-7 sm:py-9">
             <p className="font-ge text-sm font-bold uppercase tracking-[0.18em] text-gs-green sm:text-[0.85rem]">
               {transportEnquiryFormCopy.successTitle}
             </p>

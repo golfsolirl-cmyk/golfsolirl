@@ -11,12 +11,14 @@ const STORAGE_KEY = 'golfSolTripFlightPrefill'
 export function GeAlreadyBookedFlightPanel() {
   const [open, setOpen] = useState(false)
   const [fullName, setFullName] = useState('')
+  const [email, setEmail] = useState('')
   const [mobile, setMobile] = useState('')
   const [travelMode, setTravelMode] = useState<TravelMode | null>(null)
   const [flightNo, setFlightNo] = useState('')
   const [arrivalTime, setArrivalTime] = useState('')
   const [collectionTime, setCollectionTime] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
   const firstFieldRef = useRef<HTMLInputElement>(null)
   const flightFieldRef = useRef<HTMLInputElement>(null)
   const collectionFieldRef = useRef<HTMLInputElement>(null)
@@ -50,10 +52,18 @@ export function GeAlreadyBookedFlightPanel() {
     }
   }
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if (!fullName.trim() || !mobile.trim()) {
-      setError('Please add your name and mobile so we can reach you.')
+    const name = fullName.trim()
+    const mail = email.trim().toLowerCase()
+    const phone = mobile.trim()
+
+    if (!name || !mail || !phone) {
+      setError('Please add your name, email and mobile so we can reach you.')
+      return
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) {
+      setError('Please enter a valid email address.')
       return
     }
     if (!travelMode) {
@@ -70,10 +80,12 @@ export function GeAlreadyBookedFlightPanel() {
       return
     }
     setError(null)
+    setSubmitting(true)
     try {
       const base = {
-        fullName: fullName.trim(),
-        mobile: mobile.trim(),
+        fullName: name,
+        email: mail,
+        mobile: phone,
         travelMode,
         savedAt: new Date().toISOString()
       }
@@ -83,8 +95,39 @@ export function GeAlreadyBookedFlightPanel() {
           : { ...base, flightNo: '', arrivalTime: '', collectionTime: collectionTime.trim() }
 
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
+
+      const interest =
+        travelMode === 'flight'
+          ? [
+              'HOMEPAGE — hotel already booked arrival snapshot',
+              `Travel mode: Flight number`,
+              `Flight number: ${flightNo.trim()}`,
+              `Expected landing time: ${arrivalTime.trim()}`
+            ].join('\n')
+          : [
+              'HOMEPAGE — hotel already booked arrival snapshot',
+              `Travel mode: Already arrived`,
+              `Collection time: ${collectionTime.trim()}`
+            ].join('\n')
+
+      const response = await fetch('/api/enquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: name,
+          email: mail,
+          phoneWhatsApp: phone,
+          interest,
+          bestTimeToCall: travelMode === 'flight' ? `Landing: ${arrivalTime.trim()}` : `Collection: ${collectionTime.trim()}`
+        })
+      })
+      const data = (await response.json().catch(() => ({}))) as { message?: string }
+      if (!response.ok) {
+        throw new Error(data.message ?? 'Could not send your arrival snapshot right now.')
+      }
     } catch {
-      setError('Could not save your details in this browser. Try again or call us directly.')
+      setSubmitting(false)
+      setError('Could not send your details right now. Try again or call us directly.')
       return
     }
     window.location.assign('/continue-trip')
@@ -195,6 +238,20 @@ export function GeAlreadyBookedFlightPanel() {
                         onChange={(e) => setFullName(e.target.value)}
                         className="h-11 w-full rounded-xl border border-white/20 bg-white/95 px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-gs-gold/40 transition-shadow placeholder:text-ge-gray300 focus:border-gs-gold focus:ring-2"
                         placeholder="Pádraig Murphy"
+                      />
+                    </label>
+                    <label className="block min-w-0 lg:col-span-6">
+                      <span className="mb-1.5 block font-ge text-[0.72rem] font-bold uppercase tracking-[0.14em] text-gs-dark/72">
+                        Email
+                      </span>
+                      <input
+                        name="email"
+                        type="email"
+                        autoComplete="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="h-11 w-full rounded-xl border border-white/20 bg-white/95 px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-gs-gold/40 transition-shadow placeholder:text-ge-gray300 focus:border-gs-gold focus:ring-2"
+                        placeholder="you@example.com"
                       />
                     </label>
                     <label className="block min-w-0 lg:col-span-6">
@@ -329,9 +386,10 @@ export function GeAlreadyBookedFlightPanel() {
 
                   <button
                     type="submit"
+                    disabled={submitting}
                     className="group relative w-full overflow-hidden rounded-full bg-gradient-to-r from-gs-gold via-[#f4b41a] to-gs-gold-light py-3.5 font-ge text-sm font-extrabold uppercase tracking-[0.16em] text-gs-dark shadow-[0_10px_28px_rgba(255,199,44,0.35)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.99]"
                   >
-                    <span className="relative z-[1]">{alreadyBookedHotelCopy.submit}</span>
+                    <span className="relative z-[1]">{submitting ? 'Sending...' : alreadyBookedHotelCopy.submit}</span>
                     <span
                       aria-hidden
                       className="pointer-events-none absolute inset-0 translate-x-[-100%] bg-white/25 transition-transform duration-500 group-hover:translate-x-0"

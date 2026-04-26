@@ -3,6 +3,7 @@ import { ArrowRight, ChevronDown, Clock3, PlaneLanding, Phone, ShieldCheck } fro
 import { GeButton } from '../components/ge-button'
 import { contactInfo } from '../data/copy'
 import { transportHeroCopy } from '../data/transport-service'
+import { handleScrollToFormTarget } from '../../../lib/scroll-to-form-target'
 
 const fadeUp = {
   initial: { opacity: 0, y: 18 },
@@ -170,6 +171,7 @@ export function TransportHero() {
 
           <motion.a
             href="#transport-promise"
+            onClick={(event) => handleScrollToFormTarget(event, '#transport-promise')}
             aria-label="Scroll to the GolfSol Ireland transport promise"
             className="absolute bottom-4 right-4 z-20 inline-flex h-11 w-11 items-center justify-center rounded-full border-2 border-white/85 bg-gs-dark/55 text-white backdrop-blur-md transition-colors hover:border-gs-gold hover:bg-gs-dark/75 hover:text-gs-gold md:bottom-6 md:left-1/2 md:right-auto md:h-12 md:w-12 md:-translate-x-1/2"
             animate={{ y: [0, 6, 0] }}

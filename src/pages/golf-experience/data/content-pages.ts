@@ -158,24 +158,62 @@ const contactPage: GeContentPageData = {
 const termsPage: GeContentPageData = {
   metaTitle: 'Terms & Conditions | GolfSol Ireland',
   eyebrow: 'Legal',
-  title: 'Terms and conditions overview before you book',
+  title: 'Terms and conditions for GolfSol Ireland bookings',
   subtitle:
-    'We keep terms practical and readable so organisers understand key points before deposits are made.',
+    'Clear booking terms for deposits, supplier changes, golf course issues, accommodation problems, cancellations and liability before your group commits.',
   heroImage: '/images/transport-fleet-lineup.jpg',
   heroAlt: 'Clear terms and reliable service for golf travel planning.',
   highlights: trustHighlights,
   sections: [
     {
-      title: 'Booking and payment points',
+      title: 'Booking, deposit and balance',
       body:
-        'Your written proposal outlines payment schedule, booking status, and key supplier terms that apply to your selected package.',
-      bullets: ['Deposit and balance milestones', 'Change/cancellation framework', 'Supplier-specific clauses where relevant']
+        'Your booking is not confirmed until GolfSol Ireland confirms supplier availability in writing and receives the required payment. Unless your written proposal states otherwise, a 20% deposit is payable upfront and the remaining 80% balance is due within five days of booking confirmation.',
+      bullets: [
+        'The 20% deposit holds requested golf, accommodation, transfer and itinerary arrangements while suppliers confirm space.',
+        'The deposit is refundable only when you cancel within 48 hours of paying it and before supplier non-refundable costs have been committed.',
+        'After the 48-hour cooling-off period, the 20% deposit is non-refundable because supplier work, availability holds and administration have started.'
+      ]
     },
     {
-      title: 'Clarity first',
+      title: 'Hotels, accommodation and third-party suppliers',
       body:
-        'If any clause is unclear, we explain it before you commit. The goal is confidence, not fine-print surprises.',
-      bullets: ['Direct support for organisers', 'Plain-language explanations', 'Clear next-step confirmations']
+        'GolfSol Ireland plans and coordinates your trip using hotels, resorts, golf courses, transport providers and other third-party suppliers. We are responsible for using reasonable care when arranging your booking, but we do not own or control those suppliers.',
+      bullets: [
+        'If a hotel, resort or accommodation provider changes room type, facilities, allocation, pricing, service level or availability, we will help seek a practical alternative but cannot be liable for the supplier failure itself.',
+        'If a golf course changes a tee time, closes a course, changes buggy policy, alters pricing or refuses play under its own rules, the course terms apply.',
+        'Supplier cancellation, refund and amendment rules may be stricter than GolfSol Ireland terms and will apply where they are part of the confirmed booking.'
+      ]
+    },
+    {
+      title: 'Cancellations, reductions and no-shows',
+      body:
+        'Cancellations and group reductions affect tee times, hotel rooms, transfers and package pricing. Tell us as early as possible so we can reduce cost where suppliers allow it.',
+      bullets: [
+        'Any cancellation after the 48-hour deposit refund window may result in loss of deposit and any additional supplier charges already committed.',
+        'If group numbers reduce, fixed costs such as transfers and group-priced golf or accommodation may increase the per-person price for remaining travellers.',
+        'Golf no-shows, missed transfers, late arrivals and unused accommodation nights are normally charged in full unless the relevant supplier agrees otherwise.'
+      ]
+    },
+    {
+      title: 'Weather, course conditions and buggies',
+      body:
+        'Golf courses make final decisions on course closure, course condition, buggy use, pace of play and grouping on the day. Do not assume a course is closed or skip a tee time without checking with us or the course first.',
+      bullets: [
+        'If a course officially closes, we will seek the refund, credit or replacement round made available by that course.',
+        'If the course remains open and your group chooses not to play, the tee time is usually treated as used.',
+        'Buggy inclusion depends on each course offer and player numbers; odd-player groups may need to share, walk or pay locally for an extra buggy.'
+      ]
+    },
+    {
+      title: 'Liability and protection',
+      body:
+        'We do not accept responsibility for losses caused by suppliers, airlines, hotels, golf courses, transport operators, weather, strikes, illness, force majeure, guest conduct or events outside our reasonable control. Nothing in these terms limits liability where Irish law does not allow it.',
+      bullets: [
+        'Travel insurance is strongly recommended for every traveller and should cover cancellation, medical issues, missed flights, baggage, golf equipment and supplier disruption.',
+        'Our maximum liability, where a legal claim is proven against GolfSol Ireland, is limited to the amount paid to us for the affected service, except where law requires otherwise.',
+        'We will always try to assist with supplier issues, but assistance does not mean we accept liability for another company’s mistake.'
+      ]
     }
   ],
   formTitle: 'Ask about terms',

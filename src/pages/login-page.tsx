@@ -32,6 +32,7 @@ const LoginHeroBackdrop = () => (
 
 export function LoginPage() {
   const footerRef = useRef<HTMLElement | null>(null)
+  const sentConfirmationRef = useRef<HTMLDivElement>(null)
   const { signInWithMagicLink, session, profile, isLoading, isSupabaseConfigured } = useAuth()
   const [email, setEmail] = useState('')
   const [formError, setFormError] = useState<string | null>(null)
@@ -61,6 +62,12 @@ export function LoginPage() {
 
     window.location.replace('/dashboard')
   }, [isLoading, session, profile?.role, safeReturnPath])
+
+  useEffect(() => {
+    if (sent) {
+      sentConfirmationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }, [sent])
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
@@ -221,7 +228,7 @@ export function LoginPage() {
             ) : null}
 
             {sent ? (
-              <div className="rounded-2xl border border-forest-200 bg-white px-4 py-4 text-base leading-8 text-forest-900">
+              <div ref={sentConfirmationRef} className="rounded-2xl border border-forest-200 bg-white px-4 py-4 text-base leading-8 text-forest-900">
                 <p className="font-semibold text-forest-950">Check your inbox</p>
                 <p className="mt-2 text-forest-700">
                   Open the link from Golf Sol Ireland to finish signing in. You can close this tab — the link opens in

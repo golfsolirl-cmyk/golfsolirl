@@ -330,24 +330,24 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
   '/terms-and-conditions': {
     metaTitle: 'Terms & conditions | Golf Sol Ireland',
     kicker: 'Booking details — legal clarity',
-    heroTitle: 'Terms & conditions — plain-language overview',
+    heroTitle: 'Terms & conditions for GolfSol Ireland bookings',
     heroBody:
-      'This page summarises how Golf Sol Ireland approaches bookings, changes, and liability. It is not a substitute for the formal terms attached to your proposal — read those carefully before you pay.',
+      'This page summarises deposits, balance payments, cancellations, supplier responsibility and liability where hotels, golf courses, transport providers or other third parties control the service.',
     sections: [
       {
-        title: 'Agency role',
-        body: 'We arrange travel elements with third-party suppliers. Contracts for flights, hotels, golf, and transport typically sit between you and those suppliers once confirmed, while we coordinate on your behalf.',
-        bullets: ['Supplier rules on changes and refunds win where they exist', 'We pass through material updates as soon as we receive them', 'Questions on a live booking go through your named contact']
+        title: 'Deposit and balance',
+        body: 'Unless your written proposal says otherwise, bookings require a 20% upfront deposit and the remaining 80% balance within five days of booking confirmation.',
+        bullets: ['Deposit refunded only if cancelled within 48 hours and before non-refundable supplier costs are committed', 'After 48 hours the 20% deposit is non-refundable', 'Late balances may cause suppliers to release rooms, tee times or vehicles']
       },
       {
-        title: 'Pricing & changes',
-        body: 'Quotes reflect availability at the time of enquiry. Until deposit and written confirmation, prices and inventory can move — especially for prime tee times and peak weeks.',
-        bullets: ['Taxes and resort fees disclosed when known', 'Force majeure handled per supplier policy', 'Travel insurance strongly recommended']
+        title: 'Supplier responsibility',
+        body: 'GolfSol Ireland coordinates your trip but does not own hotels, golf courses, transport providers or resorts. Supplier rules and remedies apply to supplier failures.',
+        bullets: ['Hotel/accommodation changes are handled through the accommodation provider', 'Golf course tee-time, closure, buggy and no-show rules are set by the course', 'We assist with issues but do not accept liability for another company’s mistake']
       },
       {
-        title: 'Full wording',
-        body: 'Your proposal and confirmation emails contain the enforceable terms for your specific trip, including cancellation and payment clauses. Keep them with your travel documents.',
-        bullets: ['Ask us to explain any clause you are unsure about', 'Escalate disputes early — dates rarely improve when delayed', 'Irish and EU consumer frameworks may apply depending on services booked']
+        title: 'Cancellations and protection',
+        body: 'Cancellations, group reductions, weather disruption, missed services and force majeure events are subject to the relevant supplier terms. Travel insurance is strongly recommended.',
+        bullets: ['No-shows are normally charged in full', 'Reduced group numbers can increase per-person costs', 'Nothing limits rights that cannot legally be excluded under Irish law']
       }
     ]
   }

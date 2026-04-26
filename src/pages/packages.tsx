@@ -674,7 +674,7 @@ function PackageAdminPage() {
                   <LuxuryButton href={whatsAppHref} rel="noreferrer" target="_blank">
                     WhatsApp enquiry
                   </LuxuryButton>
-                  <LuxuryButton href="mailto:hello@golfsolireland.com" variant="outline">
+                  <LuxuryButton href="mailto:info@golfsolirl.com" variant="outline">
                     Email package request
                   </LuxuryButton>
                 </div>

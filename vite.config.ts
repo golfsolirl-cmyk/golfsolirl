@@ -1,6 +1,6 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
-import { handleEnquirySubmission } from './server/enquiry-service.mjs'
+import { handleEnquirySubmission, handleTermsEmailRequest } from './server/enquiry-service.mjs'
 import { handleMagicLinkRequest } from './server/magic-link-service.mjs'
 import { createProposalFilename, createProposalPdf } from './server/proposal-service.mjs'
 import { handleSendClientDocument } from './server/send-client-document-service.mjs'
@@ -54,6 +54,38 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
         response.end(JSON.stringify(result))
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Unable to send enquiry right now.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/terms-email', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const rawBody = await readRequestBody(request)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const result = await handleTermsEmailRequest(payload, {
+          ...process.env,
+          ...serverEnv
+        })
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unable to send terms email right now.'
         const statusCode =
           error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
             ? error.statusCode
