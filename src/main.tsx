@@ -19,8 +19,24 @@ import { EmailTemplatePreviewPage } from './pages/email-template-preview'
 import { isGeContentPagePath } from './pages/golf-experience/data/content-pages'
 import './index.css'
 
+function syncReadableTypePageClass(path: string) {
+  const nonReadableTypePaths = new Set([
+    '/proposal-template',
+    '/package-proposal',
+    '/proposal-template/admin',
+    '/package-proposal/admin',
+    '/enquiry-pdf-template',
+    '/enquiry-record',
+    '/documents/terms',
+    '/documents/welcome'
+  ])
+
+  document.body.classList.toggle('readable-type-page', !nonReadableTypePaths.has(path))
+}
+
 function resolvePage() {
   const normalizedPath = window.location.pathname === '/' ? '/' : window.location.pathname.replace(/\/+$/, '')
+  syncReadableTypePageClass(normalizedPath)
 
   if (normalizedPath === '/') {
     return GolfExperienceHome

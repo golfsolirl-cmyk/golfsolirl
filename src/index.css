@@ -5,6 +5,11 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --readable-min-font-size: 1rem;
+    --readable-min-line-height: 1.5;
+  }
+
   html {
     scroll-behavior: smooth;
     font-size: clamp(17px, 0.3vw + 16px, 18.8px);
@@ -23,6 +28,28 @@
   ::selection {
     background: rgba(220, 88, 1, 0.28);
     color: #163a13;
+  }
+
+  body.readable-type-page :is(p, li, dt, dd, label, input, textarea, select, a, button, th, td, small):is(
+    [class*='text-xs'],
+    [class*='text-sm'],
+    [class*='text-[0.'],
+    [class*=' text-[0.'],
+    [class*='text-[10px]'],
+    [class*=' text-[10px]'],
+    [class*='text-[11px]'],
+    [class*=' text-[11px]'],
+    [class*='text-[12px]'],
+    [class*=' text-[12px]'],
+    [class*='text-[13px]'],
+    [class*=' text-[13px]'],
+    [class*='text-[14px]'],
+    [class*=' text-[14px]'],
+    [class*='text-[15px]'],
+    [class*=' text-[15px]']
+  ) {
+    font-size: var(--readable-min-font-size) !important;
+    line-height: var(--readable-min-line-height) !important;
   }
 }
 
