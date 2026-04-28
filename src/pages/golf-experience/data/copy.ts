@@ -151,6 +151,8 @@ export const accommodationIntroCopy = {
 
 export const courseListsCopy = {
   spainHeading: 'Costa del Sol Golf Courses',
+  intro:
+    'We cater for golf at every course across the Costa del Sol — these are some of our favourites when Irish groups want the week to feel properly special.',
   manyMore: '…and many more across the Sol corridor.',
   cta: 'GET TEE-TIME PRICING'
 } as const
