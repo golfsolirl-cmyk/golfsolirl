@@ -106,7 +106,11 @@ export function GeServiceStyleHero({
         ] satisfies readonly GeServiceStyleHeroHighlight[])
 
   return (
-    <section className="relative isolate overflow-hidden bg-gs-dark text-white" aria-labelledby={`${id}-title`} id={id}>
+    <section
+      className="relative isolate z-[38] overflow-hidden bg-gs-dark text-white"
+      aria-labelledby={`${id}-title`}
+      id={id}
+    >
       <h1 className="sr-only">{srTitle}</h1>
       {showNavbarSpacer ? (
         <div aria-hidden="true" className="h-[134px] w-full bg-white sm:h-[148px] md:h-[164px] lg:h-[130px] xl:h-[142px]" />
@@ -215,7 +219,7 @@ export function GeServiceStyleHero({
             className="pointer-events-none absolute bottom-[10%] right-0 top-[10%] z-[7] hidden w-px bg-gradient-to-b from-transparent via-gs-gold/45 to-transparent md:block"
           />
 
-          <div className="absolute inset-0 z-[10] hidden items-end pb-12 sm:items-center sm:pb-0 md:flex">
+          <div className="absolute inset-0 z-[12] hidden items-end pb-12 sm:items-center sm:pb-0 md:flex md:pt-8 lg:pt-12">
             <div className="mx-auto w-full max-w-[1180px] px-5 sm:px-8">
               <motion.div className="max-w-2xl" {...fadeUp}>
                 <span className="inline-flex items-center gap-2 rounded-full border border-gs-gold/40 bg-gs-dark/35 px-3 py-1.5 font-ge text-[0.7rem] font-bold uppercase tracking-[0.18em] text-gs-gold backdrop-blur-sm sm:text-[0.78rem]">

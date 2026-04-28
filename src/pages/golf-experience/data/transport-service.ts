@@ -14,8 +14,8 @@ export const transportHeroCopy = {
 
 /** Numbered facts strip under the hero — tight, magazine-style stats. */
 export const transportPromiseStats = [
-  { value: '8 yrs', label: 'On the Sol corridor' },
-  { value: '24/7', label: 'Irish phone line' },
+  { value: 'Local & Irish', label: 'Phone numbers' },
+  { value: '9 to 5', label: 'Irish phone line' },
   { value: '< 2 hr', label: 'Quote turnaround' },
   { value: '100%', label: 'Golf-bag friendly' }
 ] as const

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Briefcase, Bus, ShieldCheck, type LucideIcon } from 'lucide-react'
+import { Bus, CalendarDays, ShieldCheck, type LucideIcon } from 'lucide-react'
 import { GeSection } from '../components/ge-section'
 import { extrasCopy } from '../data/copy'
 
@@ -11,7 +11,12 @@ interface Extra {
 }
 
 const extras: readonly Extra[] = [
-  { title: 'Golf Club Rental', icon: Briefcase, note: 'Costa del Sol Only' },
+  {
+    title: extrasCopy.teeTimesStripTitle,
+    icon: CalendarDays,
+    detail: extrasCopy.teeTimesStripBody,
+    note: extrasCopy.teeTimesStripBadge
+  },
   {
     title: 'Transfers',
     icon: Bus,

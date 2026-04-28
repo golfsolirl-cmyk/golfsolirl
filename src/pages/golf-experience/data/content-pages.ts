@@ -94,7 +94,7 @@ function getFooterArticleFormLead(path: string) {
     return 'Share your dates, airport, or route questions and we will map the cleanest next step.'
   }
   if (path.includes('hotel') || path.includes('accommodation')) {
-    return 'Tell us the trip dates and preferred base and we will come back with the right stay options.'
+    return 'Tell us the trip dates and preferred location and we will come back with the right stay options.'
   }
   if (path.includes('course')) {
     return 'Send your dates and group details and we will point you toward the right rounds quickly.'
@@ -251,35 +251,6 @@ const privacyPage: GeContentPageData = {
   enquiryType: 'legal'
 }
 
-const golfClubRentalPage: GeContentPageData = {
-  metaTitle: 'Golf Club Rental | GolfSol Ireland',
-  eyebrow: 'Services',
-  title: 'Golf club rental on the Sol, ready when you land',
-  subtitle:
-    'Skip airline stress and rent quality sets that match your handicap range. We coordinate drop-off and collection around your hotel and tee schedule.',
-  heroImage: '/images/transport-moment-arrivals.jpg',
-  heroAlt: 'Golf bags prepared for arriving players at Malaga airport.',
-  highlights: trustHighlights,
-  sections: [
-    {
-      title: 'Set quality and fit',
-      body:
-        'Rental clubs are selected by player profile and availability window so nobody shows up to the first tee with unsuitable equipment.',
-      bullets: ['Men, women, and left-handed options', 'Premium and standard set tiers', 'Early confirmation for larger groups']
-    },
-    {
-      title: 'Logistics that make sense',
-      body:
-        'We align rental handover with transfers and check-in flow, then collect at the agreed point so your return day stays clean.',
-      bullets: ['Hotel delivery where available', 'Simple damage/loss guidance', 'One point of contact for changes']
-    }
-  ],
-  formTitle: 'Request club rental options',
-  formLead: 'Share player count and travel window. We send suitable rental choices quickly.',
-  interestPreset: 'Golf club rental',
-  enquiryType: 'booking'
-}
-
 const teeTimeOnlyPage: GeContentPageData = {
   metaTitle: 'Tee Time Bookings Only | GolfSol Ireland',
   eyebrow: 'Services',
@@ -321,32 +292,43 @@ const teeTimeOnlyPage: GeContentPageData = {
   enquiryType: 'booking'
 }
 
-const familyHolidaysPage: GeContentPageData = {
-  metaTitle: 'Family Golf Holidays | GolfSol Ireland',
+const twilightGolfPage: GeContentPageData = {
+  metaTitle: 'Twilight Golf Costa del Sol | GolfSol Ireland',
   eyebrow: 'Services',
-  title: 'Family golf holidays with less friction and better pacing',
+  title: 'Twilight golf on the Costa del Sol — golden-hour rounds, smarter pacing',
   subtitle:
-    'Some play every day, some do not. We design plans that keep golfers happy while giving non-golfers easy, enjoyable options.',
-  heroImage: '/images/transport-moment-resort.jpg',
-  heroAlt: 'Luxury Costa del Sol resort suitable for family golf holidays.',
+    'Late-afternoon tee times pair softer green fees with forgiving light and an easier run to dinner in Marbella, Fuengirola or Puerto Banús. We shortlist courses that run twilight sheets well for Irish groups.',
+  heroImage: '/images/twilight-golf-hero.jpg',
+  heroAlt:
+    'Costa del Sol golf fairway at twilight — long shadows on manicured grass, warm golden sky above the Mediterranean horizon.',
   highlights: trustHighlights,
   sections: [
     {
-      title: 'Family-first structure',
+      title: 'Why twilight works for travelling groups',
       body:
-        'We avoid overpacked schedules and choose hotel bases where both golfers and non-golfers can enjoy the week without long commutes.',
-      bullets: ['Mix of golf and downtime', 'Transfer plans built around children', 'Simple day-by-day guidance']
+        'After an early flight or a travel day, a prime morning tee is not always realistic. Twilight slots keep the first full day flexible while still getting a quality round in before sunset.',
+      bullets: [
+        'Softer light for mixed-handicap groups',
+        'Often better value than mid-morning championship slots',
+        'Easier handover to evening plans — tapas, hotel dinners, early night before a big round'
+      ]
     },
     {
-      title: 'Accommodation and activities',
+      title: 'Course choice matters at dusk',
       body:
-        'From beach-friendly stays to resort pools and easy evening routes, the trip is shaped so nobody feels dragged around.',
-      bullets: ['Board options explained simply', 'Airport flow that reduces stress', 'One team managing all details']
+        'Not every layout finishes comfortably before dark in winter months. We factor sunset tables, buggy policy, and how fast your four-ball really plays.',
+      bullets: ['Realistic last-tee advice for your month', 'Backup options if the diary shifts', 'Plain-English pace notes for captains']
+    },
+    {
+      title: 'Pair twilight with prime morning rounds',
+      body:
+        'Most weeks mix one or two twilights with flagship morning rounds — same trip, better rhythm. Tell us your hotel base and we sequence driving time sensibly.',
+      bullets: ['Route-aware day planning', 'Transfers aligned to tee windows', 'One Irish coordinator for the week']
     }
   ],
-  formTitle: 'Plan a family golf holiday',
-  formLead: 'Share your travel dates and family mix. We propose a practical, easy-to-run trip.',
-  interestPreset: 'Family golf holidays',
+  formTitle: 'Request twilight tee-time options',
+  formLead: 'Share dates, group size and area on the Sol — we return twilight-friendly shortlists with clear times and next steps.',
+  interestPreset: 'Twilight golf Costa del Sol',
   enquiryType: 'booking'
 }
 
@@ -461,7 +443,7 @@ const coursesPage: GeContentPageData = {
     }
   ],
   formTitle: 'Get a course shortlist',
-  formLead: 'Share your base and dates and we will send suitable rounds quickly.',
+  formLead: 'Share your dates, group size, and the course(s) you want — or ask us to shortlist — and we will reply with clear options.',
   interestPreset: 'Costa del Sol courses',
   enquiryType: 'booking'
 }
@@ -615,9 +597,7 @@ const coreGeContentPages: Record<string, GeContentPageData> = {
   '/about': aboutPage,
   '/booking': bookingPage,
   '/transport': transportOverviewPage,
-  '/golf-club-rental': golfClubRentalPage,
   '/tee-time-bookings-only': teeTimeOnlyPage,
-  '/family-holidays': familyHolidaysPage,
   '/testimonials': testimonialsPage,
   '/faq': faqPage,
   '/news': newsPage,
@@ -758,9 +738,8 @@ const coreGeContentPages: Record<string, GeContentPageData> = {
     subtitle: 'Use route-led planning to decide base, courses, and transfer rhythm quickly.',
     interestPreset: 'Promo maps'
   },
-  '/services/golf-club-rental': golfClubRentalPage,
   '/services/tee-time-bookings': teeTimeOnlyPage,
-  '/services/family-holidays': familyHolidaysPage,
+  '/services/twilight-golf': twilightGolfPage,
   '/services/society-group-trips': bookingPage
 }
 

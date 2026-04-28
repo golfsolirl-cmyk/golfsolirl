@@ -3,11 +3,9 @@ import { ChevronDown } from 'lucide-react'
 import { handleScrollToFormTarget } from '../../../lib/scroll-to-form-target'
 
 /**
- * Hero displays the brand-composed Málaga → Costa del Sol creative
- * (`public/images/hero-malaga-transfers.{webp,jpg}`) at its native 2:1
- * aspect ratio, directly under the white navbar. The crest in the navbar
- * sits flush above the image's gold ribbon banner — same green / gold
- * palette, same shield/banner motifs — so they read as one unified piece.
+ * Hero displays the brand Málaga → Costa del Sol creative at 2:1
+ * (`public/images/hero-sample-sunny-mercedes-03.webp`, PNG fallback)
+ * directly under the white navbar.
  *
  * The image is fully self-contained: headline, CTA, checklist, 24/7 seal,
  * phone number, and wayfinding badges are all part of the composition.
@@ -24,45 +22,17 @@ export function GeHero() {
           lg shrinks back so the desktop nav menu fits comfortably). */}
       <div aria-hidden="true" className="h-[134px] w-full bg-white sm:h-[148px] md:h-[164px] lg:h-[130px] xl:h-[142px]" />
 
-      {/* Full-width brand creative. Two compositions:
-          - Portrait 2:3 for narrow viewports (< 768px) — the headline,
-            seal, badges, checklist + CTA all stack vertically and remain
-            legible at phone width.
-          - Landscape 2:1 for tablet+ (>= 768px) — hero-cinema scale. */}
       <div className="relative w-full">
         <picture>
-          {/* Mobile portrait — preferred when viewport is narrow */}
-          <source
-            media="(max-width: 767px)"
-            type="image/webp"
-            srcSet="/images/hero-malaga-transfers-mobile-720.webp 720w, /images/hero-malaga-transfers-mobile.webp 1080w"
-            sizes="100vw"
-          />
-          <source
-            media="(max-width: 767px)"
-            type="image/jpeg"
-            srcSet="/images/hero-malaga-transfers-mobile-720.jpg 720w, /images/hero-malaga-transfers-mobile.jpg 1080w"
-            sizes="100vw"
-          />
-          {/* Desktop / tablet landscape */}
-          <source
-            type="image/webp"
-            srcSet="/images/hero-malaga-transfers-1600.webp 1600w, /images/hero-malaga-transfers.webp 2200w"
-            sizes="100vw"
-          />
-          <source
-            type="image/jpeg"
-            srcSet="/images/hero-malaga-transfers-1600.jpg 1600w, /images/hero-malaga-transfers.jpg 2200w"
-            sizes="100vw"
-          />
+          <source type="image/webp" srcSet="/images/hero-sample-sunny-mercedes-03.webp" />
           <img
-            src="/images/hero-malaga-transfers-1600.jpg"
+            src="/images/hero-sample-sunny-mercedes-03.png"
             alt="GolfSol Ireland — From plane to fairway. Meet-and-greet at Málaga, golf-bag friendly Mercedes transfers, tee times pre-booked. Call +353 87 446 4766."
             className="block h-auto w-full select-none"
             fetchPriority="high"
             decoding="async"
-            width={2200}
-            height={1100}
+            width={1600}
+            height={800}
           />
         </picture>
 

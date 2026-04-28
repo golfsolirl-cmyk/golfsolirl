@@ -60,12 +60,19 @@ export const designYourPackage = {
   }
 } as const
 
+/** Band above the “hotel booked” panel on the homepage — reinforces snapshot → continue flow. */
+export const homeTripSnapshotBand = {
+  title: 'Hotel sorted — add golf next',
+  body:
+    'Opens a quick arrival snapshot; we carry it to the next page where you can add Costa del Sol course ideas, prime tee times or twilight rounds, transfers and the rest of your week in one enquiry.'
+} as const
+
 /** Quick path for guests who already have a hotel — flight snapshot → continue page. */
 export const alreadyBookedHotelCopy = {
   badge: 'Hotel already booked?',
   title: 'Send us your flight snapshot first',
   subtitle:
-    'If your stay is already locked in, skip the hotel hunt — drop your arrival details here. On the next screen you can add courses, transfers and the rest of your week.',
+    'If your stay is already locked in, skip the hotel hunt — drop your arrival details here. On the next screen you can add Costa del Sol golf courses, choose prime tee times or twilight slots, transfers and the rest of your week.',
   flightLabel: 'Flight number',
   flightPlaceholder: 'e.g. FR 7044',
   arrivalLabel: 'Arrival time (local)',
@@ -82,6 +89,10 @@ export const alreadyBookedHotelCopy = {
   footnote: 'Takes ~20 seconds · No payment · Same Irish team on the other side',
   toggleCta: 'Already booked your hotel? Add flight details',
   toggleSub: 'Opens a quick snapshot — we carry it to the next page for the rest of your trip.',
+  /** Shown under the CTA when the panel is closed — deep links for golf-only planners. */
+  quickBookingIntro: 'Prefer to skip the flight step?',
+  quickBookingTeeTimes: 'Tee time bookings',
+  quickBookingTwilight: 'Twilight golf',
   closeForm: 'Hide form'
 } as const
 
@@ -157,6 +168,11 @@ export const extrasCopy = {
   eyebrow: 'One itinerary · Irish team on the ground',
   title: 'The full Costa del Sol package.',
   subtitle: 'And we also handle',
+  /** First tile — tee times & course planning (extras strip). */
+  teeTimesStripTitle: 'Tee times & courses',
+  teeTimesStripBody:
+    'Society rounds, four-balls, and shortlists across the Sol — paced to your transfers and hotel base.',
+  teeTimesStripBadge: 'Irish groups · Plain English',
   /** Second tile — transfers capacity (extras strip). */
   transfersCapacityBody:
     'Most vehicles cover 1–8 people. Need more seats? Tell us in advance and we’ll line up the right Mercedes capacity.',

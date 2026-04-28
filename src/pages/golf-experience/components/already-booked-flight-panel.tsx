@@ -159,6 +159,26 @@ export function GeAlreadyBookedFlightPanel() {
               <span className="text-balance">{alreadyBookedHotelCopy.toggleCta}</span>
               <ChevronDown className="h-4 w-4 shrink-0 text-white/72 transition-colors group-hover:text-white" aria-hidden />
             </button>
+            <p className="mt-4 text-center font-ge text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-ge-gray500">
+              {alreadyBookedHotelCopy.quickBookingIntro}
+            </p>
+            <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 font-ge text-sm font-semibold">
+              <a
+                href="/tee-time-bookings-only"
+                className="text-gs-green underline decoration-gs-gold/50 decoration-2 underline-offset-4 transition-colors hover:text-gs-dark"
+              >
+                {alreadyBookedHotelCopy.quickBookingTeeTimes}
+              </a>
+              <span className="select-none text-ge-gray300" aria-hidden>
+                ·
+              </span>
+              <a
+                href="/twilight-golf"
+                className="text-gs-green underline decoration-gs-gold/50 decoration-2 underline-offset-4 transition-colors hover:text-gs-dark"
+              >
+                {alreadyBookedHotelCopy.quickBookingTwilight}
+              </a>
+            </div>
           </motion.div>
         ) : (
           <motion.div

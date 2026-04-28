@@ -26,10 +26,11 @@ export function TransportHero() {
 
   return (
     <section
-      className="relative isolate overflow-hidden bg-gs-dark text-white"
+      className="relative isolate z-[38] overflow-hidden bg-gs-dark text-white"
       aria-labelledby="transport-hero-title"
       id="transport-top"
     >
+      {/* z-[38]: above PageIdentityBar (z-20); below GeNavbar (z-40). */}
       <h1 id="transport-hero-title" className="sr-only">
         {transportHeroCopy.title}
       </h1>
@@ -136,7 +137,7 @@ export function TransportHero() {
           />
 
           {/* Overlay copy */}
-          <div className="absolute inset-0 z-[10] hidden items-end pb-12 sm:items-center sm:pb-0 md:flex">
+          <div className="absolute inset-0 z-[12] hidden items-end pb-12 sm:items-center sm:pb-0 md:flex md:pt-8 lg:pt-12">
             <div className="mx-auto w-full max-w-[1180px] px-5 sm:px-8">
               <motion.div className="max-w-2xl" {...fadeUp}>
                 <span className="inline-flex items-center gap-2 rounded-full border border-gs-gold/40 bg-gs-dark/35 px-3 py-1.5 font-ge text-[0.7rem] font-bold uppercase tracking-[0.18em] text-gs-gold backdrop-blur-sm sm:text-[0.78rem]">

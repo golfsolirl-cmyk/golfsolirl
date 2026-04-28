@@ -270,7 +270,7 @@ export const planningSteps: readonly PlanningStep[] = [
   {
     step: '01',
     title: 'Tell us your group style',
-    description: 'Dates, budget band, handicap mix, preferred base, and the kind of trip energy you want.',
+    description: 'Dates, budget band, handicap mix, preferred location, and the kind of trip energy you want.',
     image:
       'https://images.unsplash.com/photo-1526772662000-3f88f10405ff?auto=format&fit=crop&w=1200&q=80'
   },

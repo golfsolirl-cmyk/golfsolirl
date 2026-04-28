@@ -37,20 +37,20 @@ const homeQuoteFormConfig = {
       type: 'select',
       required: true,
       options: [
-        { label: 'Full package: golf, hotel and transfers', value: 'Full package: golf, hotel and transfers' },
+        { label: 'Full trip: golf, transfers and planning', value: 'Full trip: golf, transfers and planning' },
         { label: 'Airport transfers only', value: 'Airport transfers only' },
-        { label: 'Golf and tee times', value: 'Golf and tee times' },
-        { label: 'Accommodation advice', value: 'Accommodation advice' }
+        { label: 'Golf and tee times', value: 'Golf and tee times' }
       ]
     },
     {
       id: 'preferredBase',
-      label: 'Preferred base',
+      label: 'Preferred location',
       type: 'select',
       options: [
         { label: 'Fuengirola', value: 'Fuengirola' },
         { label: 'Torremolinos', value: 'Torremolinos' },
         { label: 'Marbella', value: 'Marbella' },
+        { label: 'Vélez-Málaga', value: 'Vélez-Málaga' },
         { label: 'Sotogrande', value: 'Sotogrande' },
         { label: 'Need advice', value: 'Need advice' }
       ]
@@ -59,14 +59,14 @@ const homeQuoteFormConfig = {
       id: 'notes',
       label: 'Trip brief',
       type: 'textarea',
-      placeholder: 'Tell us the hotel level, number of rounds, must-play courses, airport transfer needs, or anything already booked.',
+      placeholder: 'Tell us number of rounds, must-play courses, airport transfer needs, budget band, or anything already booked.',
       rows: 5
     }
   ]
 } as const satisfies ContentFormConfig
 
 const reassuranceLines = [
-  'Airport transfers, courses and hotels handled together',
+  'Airport transfers, tee times and routing handled together',
   'Irish phone and WhatsApp follow-up',
   'No-obligation quote before anything is booked'
 ] as const

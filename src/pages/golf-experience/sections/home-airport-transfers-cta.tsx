@@ -93,8 +93,8 @@ export function HomeAirportTransfersCta() {
                 id="home-airport-transfers-title"
                 className="mt-4 max-w-2xl font-ge text-[1.88rem] font-extrabold leading-[1.04] text-gs-dark sm:text-[2.8rem] lg:text-[3.1rem]"
               >
-                Land in Malaga.
-                <span className="block text-gs-gold">Ride out like VIP departures.</span>
+                Arrive in Malaga.
+                <span className="block text-gs-gold">Let Us Do The Rest.</span>
               </h2>
 
               <p className="mt-3.5 max-w-2xl font-ge text-[0.92rem] leading-6 text-gs-dark/82 sm:mt-4 sm:text-[1.14rem] sm:leading-8">

@@ -92,6 +92,7 @@ export function ContinueTripPage() {
   const [groupSize, setGroupSize] = useState('')
   const [hotelStatus, setHotelStatus] = useState('')
   const [roundCount, setRoundCount] = useState('')
+  const [roundTiming, setRoundTiming] = useState('')
   const [courseWishlist, setCourseWishlist] = useState('')
   const [notes, setNotes] = useState('')
   const [bestTimeToCall, setBestTimeToCall] = useState('Any time')
@@ -146,10 +147,13 @@ export function ContinueTripPage() {
     const size = groupSize.trim()
     const hotel = hotelStatus.trim()
     const rounds = roundCount.trim()
+    const timing = roundTiming.trim()
 
-    if (!mail || !dates || !size || !hotel || !rounds) {
+    if (!mail || !dates || !size || !hotel || !rounds || !timing) {
       setSubmitStatus('error')
-      setSubmitError('Please complete email, dates, group size, hotel status and number of rounds.')
+      setSubmitError(
+        'Please complete email, dates, group size, hotel status, number of rounds, and tee-time preference (prime, twilight, mix, or not sure).'
+      )
       return
     }
 
@@ -167,6 +171,7 @@ export function ContinueTripPage() {
       `Group size: ${size}`,
       `Hotel / accommodation status: ${hotel}`,
       `Preferred number of rounds: ${rounds}`,
+      `Tee-time preference: ${timing}`,
       courseWishlist.trim() ? `Course wishlist: ${courseWishlist.trim()}` : null,
       notes.trim() ? `Extra notes: ${notes.trim()}` : null
     ].filter(Boolean)
@@ -293,7 +298,7 @@ export function ContinueTripPage() {
           srTitle="Finish your trip brief"
           eyebrow="Step 2 of 2"
           title="Finish your trip brief"
-          subtitle="We have your arrival snapshot. Add the pieces below (or WhatsApp your enquiry) — a planner will reply with tee times, transfers and extras matched to your hotel."
+          subtitle="We have your arrival snapshot. Add the pieces below — including whether you want prime morning tee times, twilight rounds, or a mix — and a planner will reply with Costa del Sol course options, transfers and extras matched to your hotel."
           image="/images/transport-hero-coastal-drive.jpg"
           imageAlt="Black Mercedes V-Class on the AP-7 coastal motorway — Golf Sol Ireland transfer planning."
           primaryCta={{ label: 'WhatsApp us', href: whatsappHref }}
@@ -360,6 +365,35 @@ export function ContinueTripPage() {
                   </div>
                 )}
               </dl>
+            </section>
+
+            <section
+              aria-labelledby="continue-booking-routes"
+              className="mt-8 scroll-mt-28 rounded-2xl border border-ge-gray100 bg-white p-6 shadow-[0_10px_30px_rgba(6,59,42,0.06)] sm:p-8"
+            >
+              <h2 id="continue-booking-routes" className="font-ge text-sm font-extrabold uppercase tracking-[0.16em] text-gs-green">
+                Costa del Sol golf — tee times & twilight
+              </h2>
+              <p className="mt-3 font-ge text-sm leading-relaxed text-ge-gray500">
+                Hotel is sorted and your arrival snapshot is saved. If you want dedicated pages for golf-only planning, jump in here — you
+                can still send the full brief below and we merge everything for the Irish team.
+              </p>
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                <a
+                  href="/tee-time-bookings-only"
+                  className="flex min-h-[52px] flex-col justify-center rounded-xl border border-gs-green/25 bg-ge-gray50/80 px-4 py-3 font-ge text-sm font-bold text-gs-dark transition-colors hover:border-gs-gold hover:bg-white"
+                >
+                  <span className="text-gs-green">Tee time bookings only</span>
+                  <span className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-ge-gray500">Prime &amp; full-day sheets</span>
+                </a>
+                <a
+                  href="/twilight-golf"
+                  className="flex min-h-[52px] flex-col justify-center rounded-xl border border-gs-green/25 bg-ge-gray50/80 px-4 py-3 font-ge text-sm font-bold text-gs-dark transition-colors hover:border-gs-gold hover:bg-white"
+                >
+                  <span className="text-gs-green">Twilight golf</span>
+                  <span className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-ge-gray500">Golden-hour rounds</span>
+                </a>
+              </div>
             </section>
 
             <section id="continue-trip-form" className="mt-8 scroll-mt-28 rounded-2xl border border-gs-green/20 bg-[linear-gradient(180deg,_#FAF8F4_0%,_#FFFFFF_70%)] p-6 shadow-[0_18px_45px_rgba(6,59,42,0.08)] sm:p-8">
@@ -438,6 +472,21 @@ export function ContinueTripPage() {
                         <option value="2 rounds">2 rounds</option>
                         <option value="3 rounds">3 rounds</option>
                         <option value="4+ rounds">4+ rounds</option>
+                      </select>
+                    </label>
+                    <label className="block sm:col-span-2">
+                      <span className={continueLabelClass}>Tee times — prime, twilight, or mix</span>
+                      <select
+                        value={roundTiming}
+                        onChange={(event) => setRoundTiming(event.target.value)}
+                        required
+                        className={continueInputClass}
+                      >
+                        <option value="">Select preference</option>
+                        <option value="Prime morning (≈08:00–10:30)">Prime morning (≈08:00–10:30)</option>
+                        <option value="Twilight / late afternoon">Twilight / late afternoon</option>
+                        <option value="Mix of prime morning and twilight">Mix of prime morning and twilight</option>
+                        <option value="Not sure — recommend for our group">Not sure — recommend for our group</option>
                       </select>
                     </label>
                     <label className="block">

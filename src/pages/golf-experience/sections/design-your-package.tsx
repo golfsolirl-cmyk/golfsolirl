@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import { GeAlreadyBookedFlightPanel } from '../components/already-booked-flight-panel'
-import { designYourPackage } from '../data/copy'
+import { designYourPackage, homeTripSnapshotBand } from '../data/copy'
 
 interface StepCard {
   readonly badge: string
@@ -157,6 +157,16 @@ export function GeDesignYourPackage() {
             </motion.article>
           ))}
         </div>
+
+        <motion.div
+          className="mx-auto mt-16 max-w-3xl rounded-2xl border border-gs-dark/10 bg-white/90 px-6 py-6 text-center shadow-[0_18px_50px_rgba(6,59,42,0.08)] backdrop-blur-sm sm:px-8 sm:py-7"
+          {...fadeUp}
+        >
+          <p className="font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.22em] text-gs-green">{homeTripSnapshotBand.title}</p>
+          <p className="mt-3 font-ge text-sm font-medium leading-relaxed text-gs-dark/85 sm:text-[0.95rem] sm:leading-7">
+            {homeTripSnapshotBand.body}
+          </p>
+        </motion.div>
 
         <GeAlreadyBookedFlightPanel />
       </div>

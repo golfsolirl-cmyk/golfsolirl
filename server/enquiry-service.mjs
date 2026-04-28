@@ -12,6 +12,10 @@ import { buildBrandedEnquiryEmailHtml } from './branded-enquiry-email.mjs'
 const pageWidth = 595.28
 const pageHeight = 841.89
 
+/** Minimum body / reading text size (pt) on generated PDFs. */
+const PDF_READING_PT = 16
+const PDF_READING_LH = 22
+
 const colors = {
   pageBg: rgb(238 / 255, 242 / 255, 235 / 255),
   forest950: rgb(10 / 255, 32 / 255, 8 / 255),
@@ -298,9 +302,9 @@ export const validateEnquiryPayload = (payload) => {
 }
 
 const rowHeightForValue = (value, font, maxW) => {
-  const lines = wrapText({ text: value, font, fontSize: 11, maxWidth: maxW })
-  const inner = Math.max(22, lines.length * 13 + 10)
-  return inner + 18
+  const lines = wrapText({ text: value, font, fontSize: PDF_READING_PT, maxWidth: maxW })
+  const inner = Math.max(28, lines.length * (PDF_READING_LH + 4) + 14)
+  return inner + 20
 }
 
 export const createEnquiryPdf = async ({
@@ -354,7 +358,7 @@ export const createEnquiryPdf = async ({
     opacity: 0.16
   })
 
-  const lockScale = 0.19
+  const lockScale = 0.32
   const ld = brandLockupImage.scale(lockScale)
   const lockX = innerLeft
   const lockY = innerTop - 24 - ld.height
@@ -370,9 +374,9 @@ export const createEnquiryPdf = async ({
   const metaPad = 14
   page.drawRectangle({
     x: metaX,
-    y: innerTop - 24 - 80,
+    y: innerTop - 24 - 112,
     width: metaW,
-    height: 80,
+    height: 112,
     color: colors.white,
     opacity: 0.12,
     borderColor: colors.white,
@@ -381,23 +385,23 @@ export const createEnquiryPdf = async ({
 
   page.drawText(`Enquiry ID: ${enquiryId}`, {
     x: metaX + metaPad,
-    y: innerTop - 44,
+    y: innerTop - 48,
     font: boldFont,
-    size: 9.5,
+    size: PDF_READING_PT,
     color: colors.white
   })
   page.drawText(`Submitted: ${enquiryDate}`, {
     x: metaX + metaPad,
-    y: innerTop - 60,
+    y: innerTop - 76,
     font: regularFont,
-    size: 9,
+    size: PDF_READING_PT,
     color: colors.white
   })
   page.drawText('Source: golfsolirl.com', {
     x: metaX + metaPad,
-    y: innerTop - 76,
+    y: innerTop - 104,
     font: regularFont,
-    size: 8.5,
+    size: PDF_READING_PT,
     color: colors.white
   })
 
@@ -408,10 +412,10 @@ export const createEnquiryPdf = async ({
     x: innerLeft,
     y: ty,
     font: boldFont,
-    fontSize: 8,
+    fontSize: PDF_READING_PT,
     color: colors.gold300,
     maxWidth: 360,
-    lineHeight: 10
+    lineHeight: PDF_READING_LH
   })
   ty -= 6
   ty = drawTextBlock({
@@ -420,10 +424,10 @@ export const createEnquiryPdf = async ({
     x: innerLeft,
     y: ty,
     font: boldFont,
-    fontSize: 17,
+    fontSize: 20,
     color: colors.white,
     maxWidth: metaX - innerLeft - 20,
-    lineHeight: 20
+    lineHeight: 24
   })
   ty -= 10
   ty = drawTextBlock({
@@ -433,10 +437,10 @@ export const createEnquiryPdf = async ({
     x: innerLeft,
     y: ty,
     font: regularFont,
-    fontSize: 9.5,
+    fontSize: PDF_READING_PT,
     color: colors.white,
     maxWidth: metaX - innerLeft - 20,
-    lineHeight: 12.5
+    lineHeight: PDF_READING_LH
   })
 
   const rows = [
@@ -463,7 +467,7 @@ export const createEnquiryPdf = async ({
     x: innerLeft,
     y: cursorY,
     font: boldFont,
-    size: 8,
+    size: PDF_READING_PT,
     color: colors.gold400
   })
   cursorY -= 20
@@ -486,7 +490,7 @@ export const createEnquiryPdf = async ({
       x: innerLeft,
       y: rowY - 14,
       font: boldFont,
-      size: 9,
+      size: PDF_READING_PT,
       color: colors.slate500
     })
     drawTextBlock({
@@ -495,10 +499,10 @@ export const createEnquiryPdf = async ({
       x: valueX,
       y: rowY - 14,
       font: regularFont,
-      fontSize: 11,
+      fontSize: PDF_READING_PT,
       color: colors.slate700,
       maxWidth: maxVw,
-      lineHeight: 13
+      lineHeight: PDF_READING_LH
     })
     page.drawLine({
       start: { x: innerLeft - 4, y: rowY - rh + 8 },
@@ -511,8 +515,8 @@ export const createEnquiryPdf = async ({
   }
 
   let blockY = rowY - 22
-  const discFontSize = 8.5
-  const discLH = 10.5
+  const discFontSize = PDF_READING_PT
+  const discLH = PDF_READING_LH
   const discText = disclaimerParagraphs.join('\n\n')
   const discLines = wrapText({
     text: discText,
@@ -539,7 +543,7 @@ export const createEnquiryPdf = async ({
     x: innerLeft,
     y: blockY - 18,
     font: boldFont,
-    size: 8,
+    size: PDF_READING_PT,
     color: colors.gold400
   })
   drawTextBlock({
@@ -557,12 +561,12 @@ export const createEnquiryPdf = async ({
   const p2 = pdfDocument.addPage([pageWidth, pageHeight])
   p2.drawRectangle({ x: 0, y: 0, width: pageWidth, height: pageHeight, color: colors.pageBg })
 
-  const bandH = 288
+  const bandH = 340
   const termsMargin = 44
   const termsPadX = 20
   const termsMaxW = pageWidth - 2 * termsMargin - 2 * termsPadX
-  const termsFontSize = 10
-  const termsLH = 12
+  const termsFontSize = PDF_READING_PT
+  const termsLH = PDF_READING_LH
   const termsBody = `${termsSummaryParagraphs.join('\n\n')}\n\nFull terms: https://golfsolirl.com/terms-and-conditions`
   const termsLines = wrapText({
     text: termsBody,
@@ -593,7 +597,7 @@ export const createEnquiryPdf = async ({
     x: termsMargin + termsPadX,
     y: termsBoxTop - 20,
     font: boldFont,
-    size: 10,
+    size: 18,
     color: colors.forest900
   })
   drawTextBlock({
@@ -612,7 +616,7 @@ export const createEnquiryPdf = async ({
   footerPage.drawRectangle({ x: 0, y: 0, width: pageWidth, height: bandH, color: colors.forestFooter })
   footerPage.drawRectangle({ x: 48, y: bandH - 36, width: 44, height: 3, color: colors.gold400 })
 
-  const footLockSmall = brandLockupImage.scale(0.1)
+  const footLockSmall = brandLockupImage.scale(0.24)
   footerPage.drawImage(brandLockupImage, {
     x: 48,
     y: bandH - 48 - footLockSmall.height,
@@ -627,12 +631,12 @@ export const createEnquiryPdf = async ({
     x: 48,
     y: fy,
     font: regularFont,
-    fontSize: 9.5,
+    fontSize: PDF_READING_PT,
     color: colors.white,
     maxWidth: pageWidth - 96,
-    lineHeight: 12
+    lineHeight: PDF_READING_LH
   })
-  fy -= 16
+  fy -= 18
 
   const col1X = 48
   const col2X = pageWidth / 2 + 8
@@ -640,21 +644,21 @@ export const createEnquiryPdf = async ({
     x: col1X,
     y: fy,
     font: boldFont,
-    size: 7.5,
+    size: PDF_READING_PT,
     color: colors.gold300
   })
-  footerPage.drawText('CONTACT', { x: col2X, y: fy, font: boldFont, size: 7.5, color: colors.gold300 })
-  fy -= 14
+  footerPage.drawText('CONTACT', { x: col2X, y: fy, font: boldFont, size: PDF_READING_PT, color: colors.gold300 })
+  fy -= 18
   const fyLeft = drawTextBlock({
     page: footerPage,
     text: `${gsolEmailBrand.addressLines[0]}\n${gsolEmailBrand.addressLines[1]}\n${gsolEmailBrand.eircode}`,
     x: col1X,
     y: fy,
     font: regularFont,
-    fontSize: 10,
+    fontSize: PDF_READING_PT,
     color: colors.white,
     maxWidth: 220,
-    lineHeight: 12
+    lineHeight: PDF_READING_LH
   })
   const fyRight = drawTextBlock({
     page: footerPage,
@@ -662,12 +666,12 @@ export const createEnquiryPdf = async ({
     x: col2X,
     y: fy,
     font: regularFont,
-    fontSize: 10,
+    fontSize: PDF_READING_PT,
     color: colors.white,
     maxWidth: 240,
-    lineHeight: 12
+    lineHeight: PDF_READING_LH
   })
-  fy = Math.min(fyLeft, fyRight) - 18
+  fy = Math.min(fyLeft, fyRight) - 20
 
   fy = drawTextBlock({
     page: footerPage,
@@ -675,25 +679,25 @@ export const createEnquiryPdf = async ({
     x: 48,
     y: fy,
     font: regularFont,
-    fontSize: 8,
+    fontSize: PDF_READING_PT,
     color: colors.gold300,
     maxWidth: pageWidth - 96,
-    lineHeight: 11
+    lineHeight: PDF_READING_LH
   })
-  fy -= 10
+  fy -= 12
   footerPage.drawText('Terms: https://golfsolirl.com/terms-and-conditions', {
     x: 48,
     y: fy,
     font: regularFont,
-    size: 9,
+    size: PDF_READING_PT,
     color: colors.white
   })
-  fy -= 18
+  fy -= 22
   footerPage.drawText(`© ${new Date().getFullYear()} Golf Sol Ireland. All rights reserved.`, {
     x: 48,
     y: fy,
     font: regularFont,
-    size: 8,
+    size: PDF_READING_PT,
     color: rgb(180 / 255, 190 / 255, 175 / 255)
   })
 
@@ -728,32 +732,33 @@ const drawPdfLine = (page, x1, y, x2, color = pdfEmailTheme.sand) => {
 }
 
 const drawPdfPill = (page, text, x, y, font, color = pdfEmailTheme.gold) => {
+  const pillTextSize = PDF_READING_PT
   page.drawRectangle({
     x,
-    y: y - 18,
-    width: Math.min(210, font.widthOfTextAtSize(text, 8) + 26),
-    height: 24,
+    y: y - 24,
+    width: Math.min(280, font.widthOfTextAtSize(text, pillTextSize) + 34),
+    height: 34,
     color: pdfEmailTheme.greenSoft,
     borderColor: color,
     borderWidth: 0.7
   })
-  page.drawText(text, { x: x + 12, y: y - 10, font, size: 8, color })
+  page.drawText(text, { x: x + 14, y: y - 12, font, size: pillTextSize, color })
 }
 
 const drawPdfInfoCard = ({ page, x, y, width, height, kicker, title, body, font, boldFont, fill }) => {
   page.drawRectangle({ x, y, width, height, color: fill, borderColor: pdfEmailTheme.sand, borderWidth: 0.8 })
-  page.drawText(kicker.toUpperCase(), { x: x + 14, y: y + height - 17, font: boldFont, size: 7.2, color: pdfEmailTheme.goldDeep })
-  page.drawText(title, { x: x + 14, y: y + height - 35, font: boldFont, size: 11.5, color: pdfEmailTheme.ink })
+  page.drawText(kicker.toUpperCase(), { x: x + 14, y: y + height - 18, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.goldDeep })
+  page.drawText(title, { x: x + 14, y: y + height - 42, font: boldFont, size: 18, color: pdfEmailTheme.ink })
   drawTextBlock({
     page,
     text: body,
     x: x + 14,
-    y: y + height - 50,
+    y: y + height - 64,
     font,
-    fontSize: 8.2,
+    fontSize: PDF_READING_PT,
     color: pdfEmailTheme.muted,
     maxWidth: width - 28,
-    lineHeight: 10.5
+    lineHeight: PDF_READING_LH
   })
 }
 
@@ -789,14 +794,14 @@ export const createBrandedEnquiryPdf = async ({
     x: margin,
     y: pageHeight - 30,
     font: boldFont,
-    size: 8,
+    size: PDF_READING_PT,
     color: pdfEmailTheme.green
   })
   page.drawText('GolfSol Ireland', {
-    x: pageWidth - margin - boldFont.widthOfTextAtSize('GolfSol Ireland', 8),
+    x: pageWidth - margin - boldFont.widthOfTextAtSize('GolfSol Ireland', PDF_READING_PT),
     y: pageHeight - 30,
     font: boldFont,
-    size: 8,
+    size: PDF_READING_PT,
     color: pdfEmailTheme.muted
   })
 
@@ -804,7 +809,7 @@ export const createBrandedEnquiryPdf = async ({
   const heroH = 258
   page.drawRectangle({ x: margin, y: heroY, width: contentW, height: heroH, color: pdfEmailTheme.green })
   page.drawRectangle({ x: margin, y: heroY, width: contentW, height: 5, color: pdfEmailTheme.gold })
-  const logoDims = logoImage.scale(0.145)
+  const logoDims = logoImage.scale(0.26)
   page.drawImage(logoImage, { x: margin + 18, y: heroY + heroH - logoDims.height - 10, width: logoDims.width, height: logoDims.height })
   drawPdfPill(page, 'TRIP PLAN RECEIVED', margin + 22, heroY + 138, boldFont)
   drawTextBlock({
@@ -825,56 +830,59 @@ export const createBrandedEnquiryPdf = async ({
     x: margin + 22,
     y: heroY + 46,
     font: regularFont,
-    fontSize: 7.8,
+    fontSize: PDF_READING_PT,
     color: rgb(220 / 255, 232 / 255, 226 / 255),
     maxWidth: 275,
-    lineHeight: 9.6
+    lineHeight: PDF_READING_LH
   })
   page.drawRectangle({ x: margin + contentW - 168, y: heroY + 82, width: 142, height: 92, color: pdfEmailTheme.greenSoft, borderColor: pdfEmailTheme.gold, borderWidth: 0.7 })
-  page.drawText('NOW BOARDING', { x: margin + contentW - 150, y: heroY + 147, font: boldFont, size: 8, color: pdfEmailTheme.gold })
-  page.drawText('Malaga Airport', { x: margin + contentW - 150, y: heroY + 124, font: boldFont, size: 17, color: pdfEmailTheme.white })
+  page.drawText('NOW BOARDING', { x: margin + contentW - 150, y: heroY + 147, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.gold })
+  page.drawText('Malaga Airport', { x: margin + contentW - 150, y: heroY + 124, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.white })
   drawTextBlock({
     page,
     text: 'Meet & greet transfer with golf-bag room reserved.',
     x: margin + contentW - 150,
     y: heroY + 103,
     font: regularFont,
-    fontSize: 8.5,
+    fontSize: PDF_READING_PT,
     color: rgb(207 / 255, 224 / 255, 216 / 255),
     maxWidth: 110,
-    lineHeight: 11
+    lineHeight: PDF_READING_LH
   })
 
   const fleetY = 322
   page.drawRectangle({ x: margin, y: fleetY, width: contentW, height: 236, color: pdfEmailTheme.white, borderColor: pdfEmailTheme.sand, borderWidth: 0.8 })
   page.drawImage(fleetImage, { x: margin, y: fleetY + 76, width: contentW, height: 160 })
   page.drawRectangle({ x: margin, y: fleetY, width: contentW, height: 76, color: pdfEmailTheme.paleGold })
-  page.drawText('GOLF-BAG FRIENDLY MERCEDES FLEET', { x: margin + 18, y: fleetY + 52, font: boldFont, size: 8, color: pdfEmailTheme.goldDeep })
+  page.drawText('GOLF-BAG FRIENDLY MERCEDES FLEET', { x: margin + 18, y: fleetY + 52, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.goldDeep })
   drawTextBlock({
     page,
     text: 'E-Class, V-Class and Sprinter options matched to your group.',
     x: margin + 18,
     y: fleetY + 32,
     font: boldFont,
-    fontSize: 17,
+    fontSize: PDF_READING_PT,
     color: pdfEmailTheme.ink,
     maxWidth: contentW - 36,
-    lineHeight: 20
+    lineHeight: PDF_READING_LH
   })
 
   const summaryY = 56
-  page.drawRectangle({ x: margin, y: summaryY, width: contentW, height: 232, color: pdfEmailTheme.white, borderColor: pdfEmailTheme.sand, borderWidth: 0.8 })
-  page.drawText('RECOMMENDED ITINERARY SNAPSHOT', { x: margin + 20, y: summaryY + 198, font: boldFont, size: 8, color: pdfEmailTheme.greenSoft })
-  page.drawText('Built around the details you sent.', { x: margin + 20, y: summaryY + 174, font: boldFont, size: 18, color: pdfEmailTheme.ink })
+  /** Keep summary band below fleet block (fleet bottom ≈ 322) to avoid overlap. */
+  const summaryBandH = 248
+  page.drawRectangle({ x: margin, y: summaryY, width: contentW, height: summaryBandH, color: pdfEmailTheme.white, borderColor: pdfEmailTheme.sand, borderWidth: 0.8 })
+  page.drawText('RECOMMENDED ITINERARY SNAPSHOT', { x: margin + 20, y: summaryY + summaryBandH - 34, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.greenSoft })
+  page.drawText('Built around the details you sent.', { x: margin + 20, y: summaryY + summaryBandH - 64, font: boldFont, size: 20, color: pdfEmailTheme.ink })
   const cardW = (contentW - 54) / 2
-  drawPdfInfoCard({ page, x: margin + 18, y: summaryY + 86, width: cardW, height: 66, kicker: 'Transfer', title: 'Private AGP pickup', body: 'Flight-aware driver and room for clubs.', font: regularFont, boldFont, fill: pdfEmailTheme.paleGold })
-  drawPdfInfoCard({ page, x: margin + 36 + cardW, y: summaryY + 86, width: cardW, height: 66, kicker: 'Stay', title: 'Golf-friendly base', body: 'Hotel or resort matched to the group.', font: regularFont, boldFont, fill: pdfEmailTheme.paleGreen })
-  drawPdfInfoCard({ page, x: margin + 18, y: summaryY + 14, width: cardW, height: 66, kicker: 'Golf', title: 'Preferred rounds', body: 'Courses selected around ability and daylight.', font: regularFont, boldFont, fill: pdfEmailTheme.paleGreen })
-  drawPdfInfoCard({ page, x: margin + 36 + cardW, y: summaryY + 14, width: cardW, height: 66, kicker: 'Support', title: 'Irish phone line', body: 'Email, phone or WhatsApp follow-up.', font: regularFont, boldFont, fill: pdfEmailTheme.paleGold })
+  const infoCardH = 102
+  drawPdfInfoCard({ page, x: margin + 18, y: summaryY + 118, width: cardW, height: infoCardH, kicker: 'Transfer', title: 'Private AGP pickup', body: 'Flight-aware driver and room for clubs.', font: regularFont, boldFont, fill: pdfEmailTheme.paleGold })
+  drawPdfInfoCard({ page, x: margin + 36 + cardW, y: summaryY + 118, width: cardW, height: infoCardH, kicker: 'Stay', title: 'Golf-friendly base', body: 'Hotel or resort matched to the group.', font: regularFont, boldFont, fill: pdfEmailTheme.paleGreen })
+  drawPdfInfoCard({ page, x: margin + 18, y: summaryY + 10, width: cardW, height: infoCardH, kicker: 'Golf', title: 'Preferred rounds', body: 'Courses selected around ability and daylight.', font: regularFont, boldFont, fill: pdfEmailTheme.paleGreen })
+  drawPdfInfoCard({ page, x: margin + 36 + cardW, y: summaryY + 10, width: cardW, height: infoCardH, kicker: 'Support', title: 'Irish phone line', body: 'Email, phone or WhatsApp follow-up.', font: regularFont, boldFont, fill: pdfEmailTheme.paleGold })
 
   let detailPage = addPage()
   let y = pageHeight - 62
-  detailPage.drawText('SUBMITTED TRIP DETAILS', { x: margin, y, font: boldFont, size: 8.5, color: pdfEmailTheme.greenSoft })
+  detailPage.drawText('SUBMITTED TRIP DETAILS', { x: margin, y, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.greenSoft })
   y -= 28
   detailPage.drawText('Your GolfSol Ireland enquiry record', { x: margin, y, font: boldFont, size: 22, color: pdfEmailTheme.ink })
   y -= 20
@@ -884,12 +892,12 @@ export const createBrandedEnquiryPdf = async ({
     x: margin,
     y,
     font: regularFont,
-    fontSize: 10.5,
+    fontSize: PDF_READING_PT,
     color: pdfEmailTheme.muted,
     maxWidth: contentW,
-    lineHeight: 14
+    lineHeight: PDF_READING_LH
   })
-  y -= 28
+  y -= 32
 
   const rows = [
     ['Full name', fullName],
@@ -902,12 +910,12 @@ export const createBrandedEnquiryPdf = async ({
   ]
 
   rows.forEach(([label, value], index) => {
-    const valueLines = wrapText({ text: value, font: regularFont, fontSize: 9.6, maxWidth: contentW - 175 })
-    const rowH = Math.max(42, valueLines.length * 12 + 24)
+    const valueLines = wrapText({ text: value, font: regularFont, fontSize: PDF_READING_PT, maxWidth: contentW - 175 })
+    const rowH = Math.max(52, valueLines.length * PDF_READING_LH + 30)
     if (y - rowH < 72) {
       detailPage = addPage()
       y = pageHeight - 62
-      detailPage.drawText('SUBMITTED TRIP DETAILS CONTINUED', { x: margin, y, font: boldFont, size: 8.5, color: pdfEmailTheme.greenSoft })
+      detailPage.drawText('SUBMITTED TRIP DETAILS CONTINUED', { x: margin, y, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.greenSoft })
       y -= 30
     }
     detailPage.drawRectangle({
@@ -919,23 +927,23 @@ export const createBrandedEnquiryPdf = async ({
       borderColor: pdfEmailTheme.sand,
       borderWidth: 0.6
     })
-    detailPage.drawText(label.toUpperCase(), { x: margin + 14, y: y - 22, font: boldFont, size: 7.4, color: pdfEmailTheme.muted })
+    detailPage.drawText(label.toUpperCase(), { x: margin + 14, y: y - 24, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.muted })
     drawTextBlock({
       page: detailPage,
       text: value,
       x: margin + 150,
       y: y - 18,
       font: regularFont,
-      fontSize: 9.6,
+      fontSize: PDF_READING_PT,
       color: pdfEmailTheme.ink,
       maxWidth: contentW - 170,
-      lineHeight: 12
+      lineHeight: PDF_READING_LH
     })
     y -= rowH
   })
 
   const finalPage = addPage()
-  finalPage.drawText('TRANSFER EXPERIENCE', { x: margin, y: pageHeight - 62, font: boldFont, size: 8.5, color: pdfEmailTheme.greenSoft })
+  finalPage.drawText('TRANSFER EXPERIENCE', { x: margin, y: pageHeight - 62, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.greenSoft })
   finalPage.drawText('From arrivals hall to resort door.', { x: margin, y: pageHeight - 92, font: boldFont, size: 22, color: pdfEmailTheme.ink })
   const imageCardW = (contentW - 22) / 3
   const imageCardY = 542
@@ -948,12 +956,22 @@ export const createBrandedEnquiryPdf = async ({
     const x = margin + index * (imageCardW + 11)
     finalPage.drawRectangle({ x, y: imageCardY, width: imageCardW, height: 178, color: index === 1 ? pdfEmailTheme.paleGold : pdfEmailTheme.paleGreen, borderColor: pdfEmailTheme.sand, borderWidth: 0.8 })
     finalPage.drawImage(image, { x, y: imageCardY + 72, width: imageCardW, height: 106 })
-    finalPage.drawText(title, { x: x + 12, y: imageCardY + 48, font: boldFont, size: 11, color: pdfEmailTheme.ink })
-    drawTextBlock({ page: finalPage, text: body, x: x + 12, y: imageCardY + 30, font: regularFont, fontSize: 8.5, color: pdfEmailTheme.muted, maxWidth: imageCardW - 24, lineHeight: 11 })
+    finalPage.drawText(title, { x: x + 12, y: imageCardY + 48, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.ink })
+    drawTextBlock({
+      page: finalPage,
+      text: body,
+      x: x + 12,
+      y: imageCardY + 28,
+      font: regularFont,
+      fontSize: PDF_READING_PT,
+      color: pdfEmailTheme.muted,
+      maxWidth: imageCardW - 24,
+      lineHeight: PDF_READING_LH
+    })
   })
 
   finalPage.drawRectangle({ x: margin, y: 286, width: contentW, height: 184, color: pdfEmailTheme.green })
-  finalPage.drawText('NEXT STEP', { x: margin + 28, y: 430, font: boldFont, size: 9, color: pdfEmailTheme.gold })
+  finalPage.drawText('NEXT STEP', { x: margin + 28, y: 430, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.gold })
   finalPage.drawText('Tell us what to tune.', { x: margin + 28, y: 398, font: boldFont, size: 22, color: pdfEmailTheme.white })
   drawTextBlock({
     page: finalPage,
@@ -962,32 +980,32 @@ export const createBrandedEnquiryPdf = async ({
     x: margin + 28,
     y: 372,
     font: regularFont,
-    fontSize: 10.5,
+    fontSize: PDF_READING_PT,
     color: rgb(220 / 255, 232 / 255, 226 / 255),
     maxWidth: contentW - 56,
-    lineHeight: 14
+    lineHeight: PDF_READING_LH
   })
-  finalPage.drawRectangle({ x: margin + 28, y: 314, width: 142, height: 32, color: pdfEmailTheme.gold })
-  finalPage.drawText('REFINE MY QUOTE', { x: margin + 46, y: 326, font: boldFont, size: 9, color: pdfEmailTheme.ink })
+  finalPage.drawRectangle({ x: margin + 28, y: 310, width: 158, height: 36, color: pdfEmailTheme.gold })
+  finalPage.drawText('REFINE MY QUOTE', { x: margin + 46, y: 326, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.ink })
 
   finalPage.drawRectangle({ x: margin, y: 92, width: contentW, height: 158, color: pdfEmailTheme.white, borderColor: pdfEmailTheme.sand, borderWidth: 0.8 })
-  finalPage.drawText('IMPORTANT DISCLAIMER', { x: margin + 20, y: 222, font: boldFont, size: 8, color: pdfEmailTheme.goldDeep })
+  finalPage.drawText('IMPORTANT DISCLAIMER', { x: margin + 20, y: 222, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.goldDeep })
   drawTextBlock({
     page: finalPage,
     text: disclaimerParagraphs.join('\n\n'),
     x: margin + 20,
-    y: 202,
+    y: 198,
     font: regularFont,
-    fontSize: 8.8,
+    fontSize: PDF_READING_PT,
     color: pdfEmailTheme.muted,
     maxWidth: contentW - 40,
-    lineHeight: 11.5
+    lineHeight: PDF_READING_LH
   })
   finalPage.drawText(`© ${new Date().getFullYear()} GolfSol Ireland · Irish-owned Costa del Sol golf travel · Transfers, accommodation and tee times in one place.`, {
     x: margin,
     y: 52,
     font: regularFont,
-    size: 8.5,
+    size: PDF_READING_PT,
     color: pdfEmailTheme.muted
   })
   drawPdfLine(finalPage, margin, 72, margin + contentW)
@@ -1193,9 +1211,9 @@ const createSupplementalPdf = async ({ title, kicker, subtitle, sections, footer
     page.drawRectangle({ x: 0, y: 0, width: pageWidth, height: pageHeight, color: pdfEmailTheme.cream })
     page.drawRectangle({ x: margin, y: pageHeight - 206, width: contentW, height: 160, color: pdfEmailTheme.green })
     page.drawRectangle({ x: margin, y: pageHeight - 206, width: contentW, height: 5, color: pdfEmailTheme.gold })
-    const logoDims = logoImage.scale(0.105)
+    const logoDims = logoImage.scale(0.24)
     page.drawImage(logoImage, { x: margin + 18, y: pageHeight - 126, width: logoDims.width, height: logoDims.height })
-    page.drawText(pageKicker.toUpperCase(), { x: margin + 20, y: pageHeight - 158, font: boldFont, size: 8.5, color: pdfEmailTheme.gold })
+    page.drawText(pageKicker.toUpperCase(), { x: margin + 20, y: pageHeight - 158, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.gold })
     drawTextBlock({
       page,
       text: title,
@@ -1217,19 +1235,19 @@ const createSupplementalPdf = async ({ title, kicker, subtitle, sections, footer
     x: margin,
     y,
     font: regularFont,
-    fontSize: 10,
+    fontSize: PDF_READING_PT,
     color: pdfEmailTheme.muted,
     maxWidth: contentW,
-    lineHeight: 13.5
-  }) - 16
+    lineHeight: PDF_READING_LH
+  }) - 18
 
   sections.forEach((section) => {
-    const bodyLines = wrapText({ text: section.body, font: regularFont, fontSize: 9.2, maxWidth: contentW - 34 })
+    const bodyLines = wrapText({ text: section.body, font: regularFont, fontSize: PDF_READING_PT, maxWidth: contentW - 34 })
     const pointLineCount = section.points.reduce(
-      (sum, point) => sum + wrapText({ text: point, font: regularFont, fontSize: 8.8, maxWidth: contentW - 54 }).length,
+      (sum, point) => sum + wrapText({ text: point, font: regularFont, fontSize: PDF_READING_PT, maxWidth: contentW - 54 }).length,
       0
     )
-    const sectionH = Math.max(96, 48 + bodyLines.length * 12 + pointLineCount * 11 + section.points.length * 6)
+    const sectionH = Math.max(112, 52 + bodyLines.length * PDF_READING_LH + pointLineCount * PDF_READING_LH + section.points.length * 8)
 
     if (y - sectionH < 72) {
       ;({ page, y } = addPage(`${kicker} continued`))
@@ -1244,32 +1262,32 @@ const createSupplementalPdf = async ({ title, kicker, subtitle, sections, footer
       borderColor: pdfEmailTheme.sand,
       borderWidth: 0.8
     })
-    page.drawText(section.title, { x: margin + 16, y: y - 24, font: boldFont, size: 13.5, color: pdfEmailTheme.ink })
+    page.drawText(section.title, { x: margin + 16, y: y - 24, font: boldFont, size: 18, color: pdfEmailTheme.ink })
     let cursor = drawTextBlock({
       page,
       text: section.body,
       x: margin + 16,
-      y: y - 44,
+      y: y - 46,
       font: regularFont,
-      fontSize: 9.2,
+      fontSize: PDF_READING_PT,
       color: pdfEmailTheme.muted,
       maxWidth: contentW - 32,
-      lineHeight: 12
-    }) - 7
+      lineHeight: PDF_READING_LH
+    }) - 8
 
     section.points.forEach((point) => {
-      page.drawCircle({ x: margin + 22, y: cursor + 3, size: 2.1, color: pdfEmailTheme.goldDeep })
+      page.drawCircle({ x: margin + 22, y: cursor + 3, size: 2.4, color: pdfEmailTheme.goldDeep })
       cursor = drawTextBlock({
         page,
         text: point,
         x: margin + 34,
         y: cursor,
         font: regularFont,
-        fontSize: 8.8,
+        fontSize: PDF_READING_PT,
         color: pdfEmailTheme.ink,
         maxWidth: contentW - 54,
-        lineHeight: 11
-      }) - 5
+        lineHeight: PDF_READING_LH
+      }) - 6
     })
 
     y -= sectionH + 14
@@ -1278,12 +1296,12 @@ const createSupplementalPdf = async ({ title, kicker, subtitle, sections, footer
   const pages = pdfDocument.getPages()
   pages.forEach((pdfPage, index) => {
     drawPdfLine(pdfPage, margin, 48, margin + contentW)
-    pdfPage.drawText(footerText, { x: margin, y: 30, font: regularFont, size: 7.7, color: pdfEmailTheme.muted })
+    pdfPage.drawText(footerText, { x: margin, y: 30, font: regularFont, size: PDF_READING_PT, color: pdfEmailTheme.muted })
     pdfPage.drawText(`Page ${index + 1} of ${pages.length}`, {
-      x: pageWidth - margin - 54,
+      x: pageWidth - margin - 72,
       y: 30,
       font: regularFont,
-      size: 7.7,
+      size: PDF_READING_PT,
       color: pdfEmailTheme.muted
     })
   })
@@ -1324,13 +1342,13 @@ export const createPackingChecklistPdf = async () => {
     page.drawRectangle({ x: 0, y: 0, width: pageWidth, height: pageHeight, color: pdfEmailTheme.cream })
     page.drawRectangle({ x: margin, y: pageHeight - 206, width: contentW, height: 160, color: pdfEmailTheme.green })
     page.drawRectangle({ x: margin, y: pageHeight - 206, width: contentW, height: 5, color: pdfEmailTheme.gold })
-    const logoDims = logoImage.scale(0.1)
+    const logoDims = logoImage.scale(0.24)
     page.drawImage(logoImage, { x: margin + 18, y: pageHeight - 126, width: logoDims.width, height: logoDims.height })
     page.drawText(continued ? 'PACKING CHECKLIST CONTINUED' : 'PACKING CHECKLIST', {
       x: margin + 20,
       y: pageHeight - 158,
       font: boldFont,
-      size: 8.5,
+      size: PDF_READING_PT,
       color: pdfEmailTheme.gold
     })
     drawTextBlock({
@@ -1354,14 +1372,14 @@ export const createPackingChecklistPdf = async () => {
     x: margin,
     y,
     font: regularFont,
-    fontSize: 10,
+    fontSize: PDF_READING_PT,
     color: pdfEmailTheme.muted,
     maxWidth: contentW,
-    lineHeight: 13.5
-  }) - 18
+    lineHeight: PDF_READING_LH
+  }) - 20
 
   packingChecklistSections.forEach((section) => {
-    const sectionH = 58 + section.points.length * 29
+    const sectionH = 64 + section.points.length * 34
     if (y - sectionH < 70) {
       ;({ page, y } = addPage(true))
     }
@@ -1375,31 +1393,31 @@ export const createPackingChecklistPdf = async () => {
       borderColor: pdfEmailTheme.sand,
       borderWidth: 0.9
     })
-    page.drawText(section.title, { x: margin + 16, y: y - 24, font: boldFont, size: 13.5, color: pdfEmailTheme.ink })
+    page.drawText(section.title, { x: margin + 16, y: y - 24, font: boldFont, size: 18, color: pdfEmailTheme.ink })
     let cursor = drawTextBlock({
       page,
       text: section.body,
       x: margin + 16,
-      y: y - 43,
+      y: y - 46,
       font: regularFont,
-      fontSize: 8.8,
+      fontSize: PDF_READING_PT,
       color: pdfEmailTheme.muted,
       maxWidth: contentW - 32,
-      lineHeight: 11
-    }) - 8
+      lineHeight: PDF_READING_LH
+    }) - 10
 
     section.points.forEach((point) => {
       page.drawRectangle({
         x: margin + 18,
         y: cursor - 3,
-        width: 15,
-        height: 15,
+        width: 17,
+        height: 17,
         borderColor: pdfEmailTheme.green,
         borderWidth: 2.2,
         color: pdfEmailTheme.white
       })
-      page.drawText(point, { x: margin + 44, y: cursor, font: regularFont, size: 10, color: pdfEmailTheme.ink })
-      cursor -= 29
+      page.drawText(point, { x: margin + 46, y: cursor, font: regularFont, size: PDF_READING_PT, color: pdfEmailTheme.ink })
+      cursor -= 34
     })
 
     y -= sectionH + 14
@@ -1412,14 +1430,14 @@ export const createPackingChecklistPdf = async () => {
       x: margin,
       y: 30,
       font: regularFont,
-      size: 7.7,
+      size: PDF_READING_PT,
       color: pdfEmailTheme.muted
     })
     pdfPage.drawText(`Page ${index + 1} of ${pages.length}`, {
-      x: pageWidth - margin - 54,
+      x: pageWidth - margin - 72,
       y: 30,
       font: regularFont,
-      size: 7.7,
+      size: PDF_READING_PT,
       color: pdfEmailTheme.muted
     })
   })

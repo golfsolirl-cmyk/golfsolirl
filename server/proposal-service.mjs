@@ -20,6 +20,10 @@ const getBrandLockupPngBuffer = async () => {
 const pageWidth = 595.28
 const pageHeight = 841.89
 
+/** Minimum reading size (pt) on proposal PDFs — matches enquiry PDFs. */
+const PDF_READING_PT = 16
+const PDF_READING_LH = 22
+
 const colors = {
   forest950: rgb(10 / 255, 32 / 255, 8 / 255),
   forest900: rgb(22 / 255, 58 / 255, 19 / 255),
@@ -130,9 +134,9 @@ const drawTile = ({ page, x, y, width, height, label, value, boldFont, regularFo
 
   page.drawText(label, {
     x: x + 12,
-    y: y + height - 20,
+    y: y + height - 22,
     font: boldFont,
-    size: 8,
+    size: PDF_READING_PT,
     color: colors.gold400
   })
 
@@ -140,12 +144,12 @@ const drawTile = ({ page, x, y, width, height, label, value, boldFont, regularFo
     page,
     text: value,
     x: x + 12,
-    y: y + height - 34,
+    y: y + height - 40,
     font: regularFont,
-    fontSize: 9.5,
+    fontSize: PDF_READING_PT,
     color: colors.forest900,
     maxWidth: width - 24,
-    lineHeight: 11
+    lineHeight: PDF_READING_LH
   })
 }
 
@@ -154,12 +158,12 @@ const drawChecklistLine = ({ page, label, x, y, width, dark = false, regularFont
     x,
     y,
     font: regularFont,
-    size: 10,
+    size: PDF_READING_PT,
     color: dark ? colors.white : colors.slate700
   })
 
   page.drawLine({
-    start: { x, y: y - 8 },
+    start: { x, y: y - 10 },
     end: { x: x + width, y: y - 8 },
     color: dark ? colors.white : colors.forest900,
     thickness: 1,
@@ -168,8 +172,8 @@ const drawChecklistLine = ({ page, label, x, y, width, dark = false, regularFont
 }
 
 const infoCardTextMaxWidth = 219
-const infoItemFontSize = 10
-const infoItemLineHeight = 12
+const infoItemFontSize = PDF_READING_PT
+const infoItemLineHeight = PDF_READING_LH
 
 const measureInfoItemsHeight = (items, font) => {
   let total = 0
@@ -181,7 +185,7 @@ const measureInfoItemsHeight = (items, font) => {
 }
 
 const getInfoRowHeight = (leftItems, rightItems, font) =>
-  Math.max(120, 34 + measureInfoItemsHeight(leftItems, font) + 14, 34 + measureInfoItemsHeight(rightItems, font) + 14)
+  Math.max(140, 40 + measureInfoItemsHeight(leftItems, font) + 16, 40 + measureInfoItemsHeight(rightItems, font) + 16)
 
 const drawInfoCardRow = ({
   page,
@@ -203,12 +207,12 @@ const drawInfoCardRow = ({
   const paintCard = (card, x) => {
     page.drawText(card.title, {
       x: x + 14,
-      y: topY - 20,
+      y: topY - 22,
       font: boldFont,
-      size: 11,
+      size: PDF_READING_PT,
       color: colors.forest900
     })
-    let cursorY = topY - 36
+    let cursorY = topY - 42
     for (const item of card.items) {
       cursorY = drawTextBlock({
         page,
@@ -241,7 +245,7 @@ export const createProposalPdf = async (rawPayload = {}) => {
   const regularFont = await pdfDocument.embedFont(StandardFonts.Helvetica)
   const boldFont = await pdfDocument.embedFont(StandardFonts.HelveticaBold)
   const brandLockupImage = await pdfDocument.embedPng(await getBrandLockupPngBuffer())
-  const brandLockupScale = 0.168
+  const brandLockupScale = 0.26
   const brandLockupDimensions = brandLockupImage.scale(brandLockupScale)
   const lockupTopMargin = 18
   const lockupY = pageHeight - lockupTopMargin - brandLockupDimensions.height
@@ -277,7 +281,7 @@ export const createProposalPdf = async (rawPayload = {}) => {
     x: 44,
     y: subtitleY,
     font: boldFont,
-    size: 11,
+    size: PDF_READING_PT,
     color: colors.gold300
   })
 
@@ -287,9 +291,10 @@ export const createProposalPdf = async (rawPayload = {}) => {
     x: 44,
     y: descriptionStartY,
     font: regularFont,
-    fontSize: 10,
+    fontSize: PDF_READING_PT,
     color: colors.white,
-    maxWidth: 320
+    maxWidth: 320,
+    lineHeight: PDF_READING_LH
   })
 
   page.drawRectangle({
@@ -305,7 +310,7 @@ export const createProposalPdf = async (rawPayload = {}) => {
     x: pageWidth - 178,
     y: pageHeight - 82,
     font: boldFont,
-    size: 10,
+    size: PDF_READING_PT,
     color: colors.gold300
   })
 
@@ -313,7 +318,7 @@ export const createProposalPdf = async (rawPayload = {}) => {
     x: pageWidth - 178,
     y: pageHeight - 101,
     font: regularFont,
-    size: 12,
+    size: PDF_READING_PT,
     color: colors.white
   })
 
@@ -321,7 +326,7 @@ export const createProposalPdf = async (rawPayload = {}) => {
     x: pageWidth - 178,
     y: pageHeight - 118,
     font: regularFont,
-    size: 10,
+    size: PDF_READING_PT,
     color: colors.white
   })
 
@@ -356,14 +361,14 @@ export const createProposalPdf = async (rawPayload = {}) => {
 
   const page2 = pdfDocument.addPage([pageWidth, pageHeight])
   const summaryTopY = pageHeight - 52
-  const summaryCardH = 228
+  const summaryCardH = 268
   drawCard({ page: page2, x: 44, topY: summaryTopY, width: pageWidth - 88, height: summaryCardH, fillColor: colors.offwhite })
 
   page2.drawText(documentTemplate.summary.kicker, {
     x: 58,
     y: summaryTopY - 20,
     font: boldFont,
-    size: 10,
+    size: PDF_READING_PT,
     color: colors.gold400
   })
 
@@ -386,15 +391,15 @@ export const createProposalPdf = async (rawPayload = {}) => {
     x: 58,
     y: summaryCursorY - 8,
     font: regularFont,
-    fontSize: 9,
+    fontSize: PDF_READING_PT,
     color: colors.slate700,
     maxWidth: pageWidth - 116,
-    lineHeight: 11
+    lineHeight: PDF_READING_LH
   })
 
   const tileWidth = 116
   const tileGap = 10
-  const tileH = 72
+  const tileH = 88
   const topTileY = summaryCursorY - 16 - tileH
   const bottomTileY = topTileY - 12 - tileH
 
@@ -427,24 +432,24 @@ export const createProposalPdf = async (rawPayload = {}) => {
   })
 
   const lowerCardsTopY = bottomTileY - 28
-  const lowerLeftH = 142
-  const lowerRightH = 158
+  const lowerLeftH = 220
+  const lowerRightH = 200
 
   drawCard({ page: page2, x: leftCardX, topY: lowerCardsTopY, width: cardWidth, height: lowerLeftH })
   page2.drawText(documentTemplate.lower.left.kicker, {
     x: leftCardX + 14,
     y: lowerCardsTopY - 20,
     font: boldFont,
-    size: 11,
+    size: PDF_READING_PT,
     color: colors.gold400
   })
 
   documentTemplate.lower.left.items.forEach((line, index) => {
     page2.drawText(`• ${line}`, {
       x: leftCardX + 14,
-      y: lowerCardsTopY - 44 - index * 18,
+      y: lowerCardsTopY - 46 - index * 22,
       font: regularFont,
-      size: 10,
+      size: PDF_READING_PT,
       color: colors.slate700
     })
   })
@@ -454,7 +459,7 @@ export const createProposalPdf = async (rawPayload = {}) => {
       page: page2,
       label: line,
       x: leftCardX + 14,
-      y: lowerCardsTopY - 118 - index * 20,
+      y: lowerCardsTopY - 146 - index * 28,
       width: 210,
       regularFont
     })
@@ -474,7 +479,7 @@ export const createProposalPdf = async (rawPayload = {}) => {
     x: rightCardX + 14,
     y: lowerCardsTopY - 20,
     font: boldFont,
-    size: 11,
+    size: PDF_READING_PT,
     color: colors.gold300
   })
 
@@ -482,17 +487,17 @@ export const createProposalPdf = async (rawPayload = {}) => {
     page: page2,
     text: documentTemplate.lower.right.paragraphs.join('\n\n'),
     x: rightCardX + 14,
-    y: lowerCardsTopY - 42,
+    y: lowerCardsTopY - 44,
     font: regularFont,
-    fontSize: 9.5,
+    fontSize: PDF_READING_PT,
     color: colors.white,
     maxWidth: cardWidth - 28,
-    lineHeight: 12
+    lineHeight: PDF_READING_LH
   })
 
   const darkCardBottomY = lowerCardsTopY - lowerRightH
   const signoffPad = 10
-  const signoffBoxH = 52
+  const signoffBoxH = 58
   const signoffBoxBottomY = darkCardBottomY + signoffPad
 
   page2.drawRectangle({
@@ -512,7 +517,7 @@ export const createProposalPdf = async (rawPayload = {}) => {
     x: rightCardX + 26,
     y: signoffInnerTopY - 18,
     font: boldFont,
-    size: 10,
+    size: PDF_READING_PT,
     color: colors.white
   })
 
@@ -521,7 +526,7 @@ export const createProposalPdf = async (rawPayload = {}) => {
       page: page2,
       label: line,
       x: rightCardX + 26,
-      y: signoffInnerTopY - 36 - index * 18,
+      y: signoffInnerTopY - 38 - index * 24,
       width: 180,
       dark: true,
       regularFont
@@ -530,12 +535,12 @@ export const createProposalPdf = async (rawPayload = {}) => {
 
   const lowerBlockBottom = lowerCardsTopY - Math.max(lowerLeftH, lowerRightH)
   const sectionGap = 18
-  const disclaimerCardH = 86
+  const disclaimerCardH = 200
 
   let disclaimerAnchorTopY = lowerBlockBottom
 
   if (documentTemplate.messageBlock) {
-    const messageCardH = 56
+    const messageCardH = 72
     const messageTopY = lowerBlockBottom - sectionGap - messageCardH
 
     disclaimerAnchorTopY = messageTopY
@@ -554,7 +559,7 @@ export const createProposalPdf = async (rawPayload = {}) => {
       x: 58,
       y: messageTopY - 18,
       font: boldFont,
-      size: 10,
+      size: PDF_READING_PT,
       color: colors.forest900
     })
 
@@ -562,12 +567,12 @@ export const createProposalPdf = async (rawPayload = {}) => {
       page: page2,
       text: documentTemplate.messageBlock.body,
       x: 58,
-      y: messageTopY - 34,
+      y: messageTopY - 36,
       font: regularFont,
-      fontSize: 9,
+      fontSize: PDF_READING_PT,
       color: colors.slate700,
       maxWidth: pageWidth - 116,
-      lineHeight: 11
+      lineHeight: PDF_READING_LH
     })
   }
 
@@ -587,7 +592,7 @@ export const createProposalPdf = async (rawPayload = {}) => {
     x: 58,
     y: disclaimerTopY - 18,
     font: boldFont,
-    size: 10,
+    size: PDF_READING_PT,
     color: colors.gold400
   })
 
@@ -595,12 +600,12 @@ export const createProposalPdf = async (rawPayload = {}) => {
     page: page2,
     text: documentTemplate.disclaimer.paragraphs.join('\n\n'),
     x: 58,
-    y: disclaimerTopY - 34,
+    y: disclaimerTopY - 38,
     font: regularFont,
-    fontSize: 8.2,
+    fontSize: PDF_READING_PT,
     color: colors.slate700,
     maxWidth: pageWidth - 116,
-    lineHeight: 10
+    lineHeight: PDF_READING_LH
   })
 
   return {

@@ -15,7 +15,7 @@ type Variant =
   | 'gs-electric'
   | 'outline-gs-white'
   | 'outline-gs-green'
-  /** Neutral editorial CTAs (e.g. club rental) */
+  /** Neutral editorial CTAs */
   | 'ink'
   | 'outline-ink'
 type Size = 'sm' | 'md' | 'lg'

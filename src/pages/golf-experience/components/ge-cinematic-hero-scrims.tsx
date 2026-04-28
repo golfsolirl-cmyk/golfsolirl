@@ -3,7 +3,7 @@ export type GeCinematicHeroScrimCoverage = 'full' | 'left'
 interface GeCinematicHeroScrimsProps {
   /**
    * `full` — uniform veil + gradients (transport / default).
-   * `left` — readability only on the leading side; right side of the photo stays clear (rental).
+   * `left` — readability only on the leading side; right side of the photo stays clear.
    */
   readonly coverage?: GeCinematicHeroScrimCoverage
 }

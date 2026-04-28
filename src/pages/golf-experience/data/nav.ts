@@ -15,9 +15,8 @@ export const primaryNav: readonly GeNavLink[] = [
     href: '/services/transport',
     children: [
       { label: 'Transport', href: '/services/transport' },
-      { label: 'Golf Club Rental', href: '/golf-club-rental' },
       { label: 'Tee Time Bookings only', href: '/tee-time-bookings-only' },
-      { label: 'Family Holidays', href: '/family-holidays' }
+      { label: 'Twilight Golf', href: '/twilight-golf' }
     ]
   },
   {
@@ -55,10 +54,9 @@ export const footerColumns = [
   {
     title: 'Quick Links',
     links: [
-      { label: 'Golf Club Rental – Costa del Sol', href: '/golf-club-rental' },
       { label: 'Tee Time Bookings Only', href: '/tee-time-bookings-only' },
+      { label: 'Twilight Golf — Costa del Sol', href: '/twilight-golf' },
       { label: 'Society & Group Trips', href: '/booking' },
-      { label: 'Family Golf Holidays', href: '/family-holidays' },
       { label: 'Dress Code on the Costa del Sol', href: '/guides/dress-code-costa-del-sol' },
       { label: 'Travelling to Málaga (AGP)', href: '/guides/travelling-to-malaga-agp' },
       { label: 'Costa del Sol Golf Map', href: '/golf-map' }
@@ -74,9 +72,9 @@ export const footerColumns = [
   {
     title: 'Docs',
     links: [
-      { label: 'Terms & Conditions PDF', href: '/docs/terms-and-conditions.pdf' },
-      { label: 'Traveller Contacts PDF', href: '/docs/traveller-contacts.pdf' },
-      { label: 'Packing Checklist PDF', href: '/docs/packing-checklist.pdf' }
+      { label: 'Terms & Conditions', href: '/docs/terms-and-conditions.pdf' },
+      { label: 'Traveller Contacts', href: '/docs/traveller-contacts.pdf' },
+      { label: 'Packing Checklist', href: '/docs/packing-checklist.pdf' }
     ]
   },
   {

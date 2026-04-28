@@ -26,7 +26,8 @@ export function PageIdentityBar({
     <section
       aria-label={`${label} page banner`}
       className={cx(
-        'relative z-30 overflow-hidden border-b border-[#9a6f08]/30 bg-[linear-gradient(135deg,#c48916_0%,#f7d978_44%,#dea41d_100%)] text-forest-950 shadow-[0_16px_38px_rgba(203,148,26,0.18)]',
+        /** z-20: stay below cinematic heroes (z-[38]) and fixed nav (z-40) so eyebrow pills are never covered. */
+        'relative z-20 overflow-hidden border-b border-[#9a6f08]/30 bg-[linear-gradient(135deg,#c48916_0%,#f7d978_44%,#dea41d_100%)] text-forest-950 shadow-[0_16px_38px_rgba(203,148,26,0.18)]',
         offsetHeader && headerOffsetClassName,
         className
       )}

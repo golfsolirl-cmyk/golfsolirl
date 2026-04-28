@@ -41,10 +41,9 @@ export interface ContentHeroMedia {
 }
 
 type ContentPageKind =
-  | 'rental'
+  | 'twilight'
   | 'courses'
   | 'accommodation'
-  | 'family'
   | 'transport'
   | 'booking'
   | 'legal'
@@ -77,12 +76,13 @@ function buildMailToHref(subject: string) {
 
 function inferPageKind(path: string, page: GeContentPageData): ContentPageKind {
   const haystack = `${path} ${page.title} ${page.interestPreset}`.toLowerCase()
+  const pathLower = path.toLowerCase()
+
+  if (pathLower.includes('twilight')) return 'twilight'
 
   if (page.enquiryType === 'legal') return 'legal'
   if (page.enquiryType === 'newsletter') return 'newsletter'
   if (page.enquiryType === 'testimonial') return 'testimonial'
-  if (haystack.includes('golf-club-rental') || /\brental\b/.test(haystack)) return 'rental'
-  if (haystack.includes('family')) return 'family'
   if (haystack.includes('tee-time') || haystack.includes('golf-courses') || haystack.includes('course')) return 'courses'
   if (haystack.includes('transport') || haystack.includes('airport') || haystack.includes('malaga')) return 'transport'
   if (haystack.includes('accommodation') || haystack.includes('hotel')) return 'accommodation'
@@ -107,10 +107,10 @@ export function getContentPageHeroMedia(path: string, page: GeContentPageData): 
   const stripeLabel = formatContentPageRouteLabel(path)
 
   switch (kind) {
-    case 'rental':
+    case 'twilight':
       return {
-        image: '/images/ge-premium-golf-club-rental-hero.png',
-        alt: 'Premium golf club rental display — polished irons and driver in a luxury Costa del Sol golf travel setting, warm golden light.',
+        image: '/images/twilight-golf-hero.jpg',
+        alt: 'Costa del Sol golf fairway at twilight — golden-hour light over manicured fairways toward the Mediterranean.',
         stripeLabel
       }
     case 'courses':
@@ -123,12 +123,6 @@ export function getContentPageHeroMedia(path: string, page: GeContentPageData): 
       return {
         image: '/images/ge-premium-resort-hotel-hero.png',
         alt: 'Boutique resort pool terrace at dusk on the Costa del Sol — luxury stay for Irish golf groups.',
-        stripeLabel
-      }
-    case 'family':
-      return {
-        image: '/images/ge-premium-family-golf-vacation.png',
-        alt: 'Family-friendly resort with golf bags and pool — relaxed Costa del Sol golf holiday pacing.',
         stripeLabel
       }
     case 'transport':
@@ -212,52 +206,61 @@ export function getContentPageFormConfig(path: string, page: GeContentPageData):
   const kind = inferPageKind(path, page)
 
   switch (kind) {
-    case 'rental':
+    case 'twilight':
       return {
-        badge: 'Rental brief',
-        submitLabel: 'Request rental options',
-        successTitle: 'Rental brief received',
-        successBody: 'We will come back with suitable set options, timing, and next steps.',
+        badge: 'Twilight brief',
+        submitLabel: 'Get twilight options',
+        successTitle: 'Twilight brief received',
+        successBody: 'We will come back with twilight-friendly slots, realistic sunset timing, and backup options for your dates.',
         fields: [
           { id: 'travelDates', label: 'Travel dates', placeholder: 'e.g. 15–19 Sept 2026', required: true },
           {
-            id: 'playerCount',
-            label: 'How many sets do you need?',
+            id: 'groupSize',
+            label: 'Group size',
             type: 'select',
             required: true,
             options: [
-              { label: '1 set', value: '1 set' },
-              { label: '2–4 sets', value: '2–4 sets' },
-              { label: '5–8 sets', value: '5–8 sets' },
-              { label: '9+ sets', value: '9+ sets' }
+              { label: '2 golfers', value: '2 golfers' },
+              { label: '4 golfers', value: '4 golfers' },
+              { label: '8 golfers', value: '8 golfers' },
+              { label: '12+ golfers', value: '12+ golfers' }
             ]
           },
           {
-            id: 'setTier',
-            label: 'Preferred set tier',
+            id: 'golfCourses',
+            label: 'Courses or area (optional)',
+            type: 'textarea',
+            placeholder: 'e.g. Mijas, Marbella, open to suggestions — say if you want mostly twilight or a mix with morning rounds.',
+            rows: 4
+          },
+          {
+            id: 'preferredArea',
+            label: 'Preferred area',
             type: 'select',
             options: [
-              { label: 'Standard sets', value: 'Standard sets' },
-              { label: 'Premium sets', value: 'Premium sets' },
+              { label: 'Sotogrande', value: 'Sotogrande' },
+              { label: 'Marbella Golf Valley', value: 'Marbella Golf Valley' },
+              { label: 'Mijas / Fuengirola', value: 'Mijas / Fuengirola' },
+              { label: 'Vélez-Málaga', value: 'Vélez-Málaga' },
               { label: 'Need advice', value: 'Need advice' }
             ]
           },
           {
-            id: 'handedness',
-            label: 'Any handedness note?',
+            id: 'handicapMix',
+            label: 'Handicap mix',
             type: 'select',
             options: [
-              { label: 'Mostly right-handed', value: 'Mostly right-handed' },
-              { label: 'Need left-handed sets too', value: 'Need left-handed sets too' },
-              { label: 'Ladies sets required', value: 'Ladies sets required' },
-              { label: 'Mixed requirements', value: 'Mixed requirements' }
+              { label: 'Mostly single-digit to 15', value: 'Mostly single-digit to 15' },
+              { label: 'Mixed 10 to 24', value: 'Mixed 10 to 24' },
+              { label: 'Casual social golfers', value: 'Casual social golfers' },
+              { label: 'Need help choosing challenge level', value: 'Need help choosing challenge level' }
             ]
           },
           {
             id: 'notes',
-            label: 'Rental details',
+            label: 'Twilight / evening preferences',
             type: 'textarea',
-            placeholder: 'Tell us hotel, handicap range, or anything else that matters.',
+            placeholder: 'Earliest you can tee, buggy needs, dinner plans after golf, or must-avoid courses.',
             rows: 5
           }
         ]
@@ -283,6 +286,14 @@ export function getContentPageFormConfig(path: string, page: GeContentPageData):
             ]
           },
           {
+            id: 'golfCourses',
+            label: 'Choose your golf course(s)',
+            type: 'textarea',
+            required: true,
+            placeholder: 'Name the courses you want to play, or say you are open to suggestions and we will shortlist for you.',
+            rows: 4
+          },
+          {
             id: 'preferredArea',
             label: 'Preferred area',
             type: 'select',
@@ -290,6 +301,7 @@ export function getContentPageFormConfig(path: string, page: GeContentPageData):
               { label: 'Sotogrande', value: 'Sotogrande' },
               { label: 'Marbella Golf Valley', value: 'Marbella Golf Valley' },
               { label: 'Mijas / Fuengirola', value: 'Mijas / Fuengirola' },
+              { label: 'Vélez-Málaga', value: 'Vélez-Málaga' },
               { label: 'Need advice', value: 'Need advice' }
             ]
           },
@@ -308,7 +320,7 @@ export function getContentPageFormConfig(path: string, page: GeContentPageData):
             id: 'notes',
             label: 'Round brief',
             type: 'textarea',
-            placeholder: 'Tell us where you are staying, pace preferences, or must-play courses.',
+            placeholder: 'Tell us your location on the coast, pace preferences, or must-play courses.',
             rows: 5
           }
         ]
@@ -335,12 +347,13 @@ export function getContentPageFormConfig(path: string, page: GeContentPageData):
           },
           {
             id: 'preferredBase',
-            label: 'Preferred base',
+            label: 'Preferred location',
             type: 'select',
             options: [
               { label: 'Fuengirola', value: 'Fuengirola' },
               { label: 'Torremolinos', value: 'Torremolinos' },
               { label: 'Marbella', value: 'Marbella' },
+              { label: 'Vélez-Málaga', value: 'Vélez-Málaga' },
               { label: 'Need advice', value: 'Need advice' }
             ]
           },
@@ -360,46 +373,6 @@ export function getContentPageFormConfig(path: string, page: GeContentPageData):
             label: 'Stay details',
             type: 'textarea',
             placeholder: 'Tell us if nightlife, quiet rooms, twin rooms, or location matters most.',
-            rows: 5
-          }
-        ]
-      }
-    case 'family':
-      return {
-        badge: 'Family brief',
-        submitLabel: 'Plan family trip',
-        successTitle: 'Family brief received',
-        successBody: 'We will shape a calmer, better-paced family golf plan for your dates.',
-        fields: [
-          { id: 'travelDates', label: 'Travel dates', placeholder: 'e.g. Easter 2027', required: true },
-          {
-            id: 'travellers',
-            label: 'Who is travelling?',
-            type: 'select',
-            required: true,
-            options: [
-              { label: '2 adults', value: '2 adults' },
-              { label: 'Adults and children', value: 'Adults and children' },
-              { label: 'Two families together', value: 'Two families together' },
-              { label: 'Need advice', value: 'Need advice' }
-            ]
-          },
-          {
-            id: 'preferredBase',
-            label: 'Preferred base',
-            type: 'select',
-            options: [
-              { label: 'Beach resort feel', value: 'Beach resort feel' },
-              { label: 'Town base with restaurants', value: 'Town base with restaurants' },
-              { label: 'Quiet premium hotel', value: 'Quiet premium hotel' },
-              { label: 'Open to ideas', value: 'Open to ideas' }
-            ]
-          },
-          {
-            id: 'notes',
-            label: 'Family trip details',
-            type: 'textarea',
-            placeholder: 'Tell us how much golf, downtime, and child-friendly structure you need.',
             rows: 5
           }
         ]
@@ -424,7 +397,7 @@ export function getContentPageFormConfig(path: string, page: GeContentPageData):
               { label: '12+ travellers', value: '12+ travellers' }
             ]
           },
-          { id: 'routeBrief', label: 'Route or base', placeholder: 'e.g. Málaga Airport to Fuengirola', required: true },
+          { id: 'routeBrief', label: 'Route or location', placeholder: 'e.g. Málaga Airport to Fuengirola', required: true },
           {
             id: 'bags',
             label: 'Golf bags and luggage',
@@ -439,7 +412,7 @@ export function getContentPageFormConfig(path: string, page: GeContentPageData):
             id: 'notes',
             label: 'Transfer details',
             type: 'textarea',
-            placeholder: 'Tell us airport, hotel, tee times, or anything that affects routing.',
+            placeholder: 'Tell us airport, stops, tee times, or anything that affects routing.',
             rows: 5
           }
         ]
@@ -518,7 +491,7 @@ export function getContentPageFormConfig(path: string, page: GeContentPageData):
             options: [
               { label: 'Golf group', value: 'Golf group' },
               { label: 'Society trip', value: 'Society trip' },
-              { label: 'Family holiday', value: 'Family holiday' },
+              { label: 'Family trip', value: 'Family trip' },
               { label: 'Corporate trip', value: 'Corporate trip' }
             ]
           },
@@ -586,12 +559,13 @@ export function getContentPageFormConfig(path: string, page: GeContentPageData):
           },
           {
             id: 'basePreference',
-            label: 'Preferred base',
+            label: 'Preferred location',
             type: 'select',
             options: [
               { label: 'Fuengirola', value: 'Fuengirola' },
               { label: 'Torremolinos', value: 'Torremolinos' },
               { label: 'Marbella', value: 'Marbella' },
+              { label: 'Vélez-Málaga', value: 'Vélez-Málaga' },
               { label: 'Sotogrande', value: 'Sotogrande' },
               { label: 'Need advice', value: 'Need advice' }
             ]
@@ -600,7 +574,7 @@ export function getContentPageFormConfig(path: string, page: GeContentPageData):
             id: 'notes',
             label: 'Trip brief',
             type: 'textarea',
-            placeholder: 'Tell us what kind of week, hotel level, or golf rhythm you have in mind.',
+            placeholder: 'Tell us what kind of week, budget band, or golf rhythm you have in mind.',
             rows: 5
           }
         ]
@@ -614,29 +588,29 @@ export function getContentPageSmartActions(path: string, page: GeContentPageData
   const genericWhatsApp = `Hi GolfSol Ireland — I'm on the ${routeLabel} page and I want help with this trip.`
 
   switch (kind) {
-    case 'rental':
+    case 'twilight':
       return [
         {
           kind: 'form',
-          label: 'Check rental sets',
-          description: 'Tell us dates, set count, and handedness in one quick brief.',
+          label: 'Request twilight slots',
+          description: 'Tell us dates and base — we return sunset-safe options with clear tee windows.',
           href: '#ge-enquiry-form',
           tone: 'gold'
         },
         {
           kind: 'whatsapp',
-          label: 'WhatsApp about club rental',
-          description: 'Ask about premium sets, left-handed options, or delivery timing.',
+          label: 'WhatsApp twilight question',
+          description: 'Quick steer on which courses run the best late sheets for your month.',
           href: buildWhatsAppHref(
-            "Hi GolfSol Ireland — I'm looking at golf club rental and want to check rental set options for our trip."
+            `Hi GolfSol Ireland — I'm looking at twilight golf on the Costa del Sol and want to check slot options for our group.`
           ),
           tone: 'dark',
           external: true
         },
         {
           kind: 'call',
-          label: 'Call the Irish team',
-          description: 'Best if you want a fast answer on availability or group fit.',
+          label: 'Call about evening rounds',
+          description: 'Useful if you want to balance twilight with prime morning rounds in one call.',
           href: `tel:${contactInfo.phoneTel}`,
           tone: 'light'
         }
@@ -691,33 +665,6 @@ export function getContentPageSmartActions(path: string, page: GeContentPageData
           kind: 'call',
           label: 'Call about accommodation',
           description: 'Ideal if you want to compare Fuengirola, Torremolinos, or Marbella fast.',
-          href: `tel:${contactInfo.phoneTel}`,
-          tone: 'light'
-        }
-      ]
-    case 'family':
-      return [
-        {
-          kind: 'form',
-          label: 'Plan the family week',
-          description: 'Build a calmer mix of golf time, downtime, and the right base.',
-          href: '#ge-enquiry-form',
-          tone: 'gold'
-        },
-        {
-          kind: 'whatsapp',
-          label: 'Ask about family-friendly stays',
-          description: 'Quick help on resorts, pacing, and non-golfer-friendly options.',
-          href: buildWhatsAppHref(
-            'Hi GolfSol Ireland — I want help planning a family golf holiday on the Costa del Sol.'
-          ),
-          tone: 'dark',
-          external: true
-        },
-        {
-          kind: 'call',
-          label: 'Talk through family fit',
-          description: 'Best for parents who want a quick steer before filling in a longer brief.',
           href: `tel:${contactInfo.phoneTel}`,
           tone: 'light'
         }
