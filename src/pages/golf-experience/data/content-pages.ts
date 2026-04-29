@@ -598,6 +598,7 @@ const coreGeContentPages: Record<string, GeContentPageData> = {
   '/booking': bookingPage,
   '/transport': transportOverviewPage,
   '/tee-time-bookings-only': teeTimeOnlyPage,
+  '/twilight-golf': twilightGolfPage,
   '/testimonials': testimonialsPage,
   '/faq': faqPage,
   '/news': newsPage,
