@@ -740,7 +740,6 @@ const coreGeContentPages: Record<string, GeContentPageData> = {
     interestPreset: 'Promo maps'
   },
   '/services/tee-time-bookings': teeTimeOnlyPage,
-  '/twilight-golf': twilightGolfPage,
   '/services/twilight-golf': twilightGolfPage,
   '/services/society-group-trips': bookingPage
 }
