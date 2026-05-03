@@ -1,4 +1,19 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/api/enquiry", "destination": "/api/gateway?r=enquiry" },
+    { "source": "/api/terms-email", "destination": "/api/gateway?r=terms-email" },
+    { "source": "/api/sync-portal-profile", "destination": "/api/gateway?r=sync-portal-profile" },
+    { "source": "/api/portal-contact-setup", "destination": "/api/gateway?r=portal-contact-setup" },
+    { "source": "/api/auth/magic-link", "destination": "/api/gateway?r=magic-link" },
+    { "source": "/api/proposal-pdf", "destination": "/api/gateway?r=proposal-pdf" },
+    { "source": "/api/send-client-document", "destination": "/api/gateway?r=send-client-document" },
+    { "source": "/api/send-proposal-to-client", "destination": "/api/gateway?r=send-proposal-to-client" },
+    { "source": "/api/send-client-portal-email", "destination": "/api/gateway?r=send-client-portal-email" },
+    { "source": "/api/send-hotel-brief", "destination": "/api/gateway?r=send-hotel-brief" },
+    { "source": "/api/send-workspace-proposal", "destination": "/api/gateway?r=send-workspace-proposal" },
+    { "source": "/api/admin-portal-client", "destination": "/api/gateway?r=admin-portal-client" },
+    { "source": "/api/portal-interest-ticket-reply", "destination": "/api/gateway?r=portal-interest-ticket-reply" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
