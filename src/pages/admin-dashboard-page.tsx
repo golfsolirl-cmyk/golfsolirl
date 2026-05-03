@@ -2194,6 +2194,11 @@ export function AdminDashboardPage() {
       return
     }
 
+    if (!session?.access_token) {
+      setManualProposalMessage('Session expired. Sign in again.')
+      return
+    }
+
     setManualProposalPdfLoading(true)
     setManualProposalMessage(null)
     revokeManualProposalPdfObjectUrl()
@@ -2201,7 +2206,10 @@ export function AdminDashboardPage() {
     try {
       const res = await fetch('/api/proposal-pdf', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
         body: JSON.stringify(buildManualProposalPayload({ forPreview: true }))
       })
 
@@ -2605,6 +2613,11 @@ export function AdminDashboardPage() {
       return
     }
 
+    if (!session?.access_token) {
+      setWorkspacePdfError('Session expired. Sign in again.')
+      return
+    }
+
     const active =
       workspaceDraft.stages.transfer || workspaceDraft.stages.golf || workspaceDraft.stages.hotel
     if (!active) {
@@ -2630,7 +2643,10 @@ export function AdminDashboardPage() {
       })
       const res = await fetch('/api/proposal-pdf', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
         body: JSON.stringify(payload)
       })
 

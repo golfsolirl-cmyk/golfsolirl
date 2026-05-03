@@ -662,8 +662,12 @@ export function ClientDashboardPage() {
 
   const handleDownloadLinkedBuildProposalPdf = async (build: PackageBuildRow) => {
     const lp = build.linked_proposal
-    if (!lp?.payload || typeof lp.payload !== 'object') {
+    if (!lp?.proposal_id) {
       window.alert('This formal proposal has no saved PDF data. Ask Golf Sol Ireland to re-send from the admin tool.')
+      return
+    }
+    if (!session?.access_token) {
+      window.alert('Session expired. Sign in again.')
       return
     }
 
@@ -671,8 +675,8 @@ export function ClientDashboardPage() {
       setLinkedProposalPdfLoadingBuildId(build.id)
       const res = await fetch('/api/proposal-pdf', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(lp.payload)
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({ proposalId: lp.proposal_id })
       })
 
       if (!res.ok) {
@@ -707,8 +711,12 @@ export function ClientDashboardPage() {
   }
 
   const handleDownloadProposalPdf = async (row: ProposalRow) => {
-    if (!row.payload || typeof row.payload !== 'object') {
+    if (!row.proposal_id) {
       window.alert('This proposal has no saved PDF data. Ask Golf Sol to re-send from the admin proposal tool.')
+      return
+    }
+    if (!session?.access_token) {
+      window.alert('Session expired. Sign in again.')
       return
     }
 
@@ -716,8 +724,8 @@ export function ClientDashboardPage() {
       setProposalPdfLoadingId(row.id)
       const res = await fetch('/api/proposal-pdf', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(row.payload)
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({ proposalId: row.proposal_id })
       })
 
       if (!res.ok) {
