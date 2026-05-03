@@ -158,6 +158,22 @@ const tripStageOptionRows: readonly (readonly [TripStageKey, string, string])[] 
   ['hotel', 'Hotel / villa base', 'Notes for 1–8 guests; we match star level and location.']
 ]
 
+const formatWebsiteFormFieldLabel = (key: string) => {
+  const k = key.replace(/^form\./i, '').replace(/_/g, ' ').trim()
+  return k || key
+}
+
+const websiteFormFieldValueText = (v: unknown) => {
+  if (v === null || v === undefined) return '—'
+  if (typeof v === 'string') return v.trim() || '—'
+  if (typeof v === 'number' || typeof v === 'boolean') return String(v)
+  try {
+    return JSON.stringify(v)
+  } catch {
+    return String(v)
+  }
+}
+
 export function ClientDashboardPage() {
   const { session, profile, isLoading, refreshProfile } = useAuth()
   const contactSyncAttempted = useRef(false)
@@ -171,8 +187,7 @@ export function ClientDashboardPage() {
   const [tripForm, setTripForm] = useState<PackageTripDetailsForm>(() => emptyTripDetailsForm())
   const [detailsStatus, setDetailsStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [detailsMessage, setDetailsMessage] = useState<string | null>(null)
-  const [deletingId, setDeletingId] = useState<string | null>(null)
-  const [removeError, setRemoveError] = useState<string | null>(null)
+  const [teamMessagingOpen, setTeamMessagingOpen] = useState(false)
   const [proposalPdfLoadingId, setProposalPdfLoadingId] = useState<string | null>(null)
   const [linkedProposalPdfLoadingBuildId, setLinkedProposalPdfLoadingBuildId] = useState<string | null>(null)
   const [expandedFormalProposalBuildId, setExpandedFormalProposalBuildId] = useState<string | null>(null)
@@ -736,38 +751,6 @@ export function ClientDashboardPage() {
     }
   }
 
-  const handleRemoveBuild = async (id: string) => {
-    if (!window.confirm('Remove this saved package from your account? This cannot be undone.')) {
-      return
-    }
-
-    const supabase = getSupabaseBrowserClient()
-    if (!supabase) {
-      return
-    }
-
-    setRemoveError(null)
-    setDeletingId(id)
-    const { error } = await supabase.from('package_builds').delete().eq('id', id)
-    setDeletingId(null)
-
-    if (error) {
-      const msg = error.message
-      const hint =
-        /permission|policy|rls|42501/i.test(msg) || msg.toLowerCase().includes('row-level security')
-          ? ' Ask your admin to run supabase/run-in-sql-editor-add-client-details.sql (delete policy) in Supabase SQL.'
-          : ''
-      setRemoveError(`${msg}${hint}`)
-      return
-    }
-
-    if (selectedBuildId === id) {
-      setSelectedBuildId('')
-    }
-
-    await loadData()
-  }
-
   const persistTripDraft = (next: TripWorkspaceDraft) => {
     saveTripWorkspaceDraft(next)
     setTripDraft(next)
@@ -843,6 +826,50 @@ export function ClientDashboardPage() {
       setOnboardingStatus('error')
       setOnboardingMessage(err instanceof Error ? err.message : 'Could not save contact details.')
     }
+  }
+
+  const handleConfirmImportedContact = async () => {
+    if (!session?.access_token) {
+      return
+    }
+
+    const fullName = profile?.full_name?.trim() ?? ''
+    const phone = profile?.phone?.trim() ?? ''
+    if (!fullName || !phone) {
+      return
+    }
+
+    setOnboardingStatus('saving')
+    setOnboardingMessage(null)
+
+    try {
+      const res = await fetch('/api/portal-contact-setup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ fullName, phone })
+      })
+      const json = (await res.json().catch(() => ({}))) as { message?: string }
+
+      if (!res.ok) {
+        throw new Error(json.message ?? 'Could not confirm contact details.')
+      }
+
+      setOnboardingStatus('idle')
+      await refreshProfile()
+    } catch (err) {
+      setOnboardingStatus('error')
+      setOnboardingMessage(err instanceof Error ? err.message : 'Could not confirm contact details.')
+    }
+  }
+
+  const openTeamMessagingAndScroll = () => {
+    setTeamMessagingOpen(true)
+    window.requestAnimationFrame(() => {
+      document.getElementById('portal-interest')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    })
   }
 
   const openInterestModal = (category: PortalInterestCategory) => {
@@ -991,6 +1018,19 @@ export function ClientDashboardPage() {
   const clientDisplayPhone = resolveClientPhone(session, profile)
   const accountRef = profile?.account_reference_id?.trim() ?? ''
   const contactOnboardingDone = Boolean(profile?.portal_contact_completed_at)
+  const hasImportedContactDetails =
+    Boolean(profile?.full_name?.trim()) && Boolean(profile?.phone?.trim())
+  const needsManualContactForm = !contactOnboardingDone && !hasImportedContactDetails
+  const needsConfirmImportedContact = !contactOnboardingDone && hasImportedContactDetails
+  const greetingFirst =
+    profile?.full_name?.trim().split(/\s+/).filter(Boolean)[0] ??
+    clientDisplayFullName.split(/\s+/).filter(Boolean)[0] ??
+    ''
+  const dashboardTitle = greetingFirst ? `Hello, ${greetingFirst}` : 'Hello'
+  const hasAdminPricedPackage = packageBuilds.some((row) => {
+    const c = parseAnyPackageBuildRowConfig(row.config)
+    return c?.type === 'manual' || c?.type === 'calculator'
+  })
   const showProposalsPortal =
     profile?.portal_proposals_enabled === true || profile?.portal_pdf_library_enabled === true
   const showFormalProposalsList = profile?.portal_proposals_enabled === true
@@ -1008,9 +1048,10 @@ export function ClientDashboardPage() {
 
   const interestHeroAdornment =
     contactOnboardingDone && hasUnreadInterestReplies ? (
-      <a
-        className="group relative flex max-w-full items-center gap-3 rounded-2xl border border-emerald-400/45 bg-gradient-to-br from-emerald-900/80 via-[#0c3d2c]/85 to-gs-green/90 px-4 py-2.5 shadow-[0_0_0_1px_rgba(255,199,44,0.12),0_12px_40px_rgba(16,185,129,0.28)] ring-1 ring-white/10 backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:border-gs-gold/50 hover:shadow-[0_0_0_1px_rgba(255,199,44,0.35),0_16px_48px_rgba(16,185,129,0.35)]"
-        href="#portal-interest"
+      <button
+        className="group relative flex max-w-full cursor-pointer items-center gap-3 rounded-2xl border border-emerald-400/45 bg-gradient-to-br from-emerald-900/80 via-[#0c3d2c]/85 to-gs-green/90 px-4 py-2.5 text-left shadow-[0_0_0_1px_rgba(255,199,44,0.12),0_12px_40px_rgba(16,185,129,0.28)] ring-1 ring-white/10 backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:border-gs-gold/50 hover:shadow-[0_0_0_1px_rgba(255,199,44,0.35),0_16px_48px_rgba(16,185,129,0.35)]"
+        onClick={() => openTeamMessagingAndScroll()}
+        type="button"
       >
         <span className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10">
           <MessageCircle className="relative z-[1] h-5 w-5 text-emerald-50 drop-shadow-sm" aria-hidden />
@@ -1024,14 +1065,14 @@ export function ClientDashboardPage() {
           <span className="block text-[0.62rem] font-extrabold uppercase tracking-[0.22em] text-emerald-100/95">New reply</span>
           <span className="block truncate text-sm font-bold leading-snug text-white">In your interest messages</span>
         </span>
-      </a>
+      </button>
     ) : null
 
   return (
     <DashboardLayout
       kicker="Your client area"
-      subtitle="Your transfers, golf course, and hotel packages from Golf Sol Ireland appear below when published."
-      title="Dashboard"
+      subtitle="Your transfers, golf, and hotel packages appear below when published. Your website enquiry snapshot is shown on each line; trip notes unlock after we publish a priced package for you."
+      title={dashboardTitle}
       titleAdornment={interestHeroAdornment}
       variant="client"
     >
@@ -1162,7 +1203,7 @@ export function ClientDashboardPage() {
             >
               Save preferences
             </LuxuryButton>
-            <LuxuryButton href="/#enquire" variant="outline">
+            <LuxuryButton onClick={() => openTeamMessagingAndScroll()} type="button" variant="outline">
               Message the team
             </LuxuryButton>
           </div>
@@ -1173,12 +1214,11 @@ export function ClientDashboardPage() {
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Your contact details</p>
         <h2 className="font-display mt-2 text-xl font-semibold text-forest-950 md:text-2xl">How we reach you</h2>
 
-        {!contactOnboardingDone ? (
+        {needsManualContactForm ? (
           <>
             <p className="mt-2 max-w-2xl text-sm text-forest-600">
-              One-time setup: confirm the name and phone we should keep on file for this login. Your email is the one you signed
-              in with. Later enquiry forms using the same email still appear in your dashboard; we use what you save here as the
-              default contact details on this page.
+              You signed in directly — add your name and phone once so we can reach you. Your email is the one you used to sign
+              in. Website enquiries you submit later with the same email still show as packages below.
             </p>
             <form className="mt-6 max-w-xl space-y-4" noValidate onSubmit={(e) => void handlePortalOnboardingSubmit(e)}>
               <div>
@@ -1235,12 +1275,16 @@ export function ClientDashboardPage() {
               </LuxuryButton>
             </form>
           </>
-        ) : (
+        ) : needsConfirmImportedContact ? (
           <>
+            <p className="mt-2 max-w-2xl text-sm text-forest-600">
+              We imported your name and phone from your website enquiry. Confirm they are correct for this account — we then
+              assign your account number and unlock messaging the team.
+            </p>
             <dl className="mt-5 grid gap-4 text-sm text-forest-800 sm:grid-cols-2">
               <div>
                 <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-500">Name</dt>
-                <dd className="mt-1 font-medium text-forest-950">{clientDisplayFullName || '—'}</dd>
+                <dd className="mt-1 font-medium text-forest-950">{profile?.full_name?.trim() || '—'}</dd>
               </div>
               <div>
                 <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-500">Email</dt>
@@ -1248,26 +1292,78 @@ export function ClientDashboardPage() {
               </div>
               <div>
                 <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-500">Phone</dt>
-                <dd className="mt-1 font-medium text-forest-950">{clientDisplayPhone || '—'}</dd>
+                <dd className="mt-1 font-medium text-forest-950">{profile?.phone?.trim() || '—'}</dd>
               </div>
               <div className="sm:col-span-2">
                 <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-500">Account number</dt>
-                <dd className="mt-1 font-mono text-base font-semibold text-forest-950">{accountRef || '— pending'}</dd>
-                {!accountRef ? (
-                  <p className="mt-2 max-w-xl text-xs text-forest-600">
-                    This is the same style of ID as on your enquiry confirmation. Golf Sol Ireland can add it from admin when
-                    your trip is on file.
-                  </p>
-                ) : null}
+                <dd className="mt-1 font-mono text-base font-semibold text-forest-950">Assigned when you confirm</dd>
               </div>
             </dl>
-
-            <div className="mt-8 scroll-mt-28 border-t border-forest-100 pt-6" id="portal-interest" tabIndex={-1}>
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-700">Tell us what you are interested in</p>
-              <p className="mt-1 max-w-2xl text-sm text-forest-600">
-                Open a short ticket so we know whether you are focused on transfers, golf courses, or hotels. We reply in the
-                thread and you see updates here.
+            {onboardingMessage ? (
+              <p className="mt-4 text-sm text-red-800" role="alert">
+                {onboardingMessage}
               </p>
+            ) : null}
+            <div className="mt-6">
+              <LuxuryButton
+                disabled={onboardingStatus === 'saving'}
+                onClick={() => void handleConfirmImportedContact()}
+                type="button"
+                variant="primary"
+              >
+                {onboardingStatus === 'saving' ? 'Saving…' : 'Confirm on my account'}
+              </LuxuryButton>
+            </div>
+          </>
+        ) : (
+          <dl className="mt-5 grid gap-4 text-sm text-forest-800 sm:grid-cols-2">
+            <div>
+              <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-500">Name</dt>
+              <dd className="mt-1 font-medium text-forest-950">{clientDisplayFullName || '—'}</dd>
+            </div>
+            <div>
+              <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-500">Email</dt>
+              <dd className="mt-1 font-medium text-forest-950">{profile?.email ?? session.user.email ?? '—'}</dd>
+            </div>
+            <div>
+              <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-500">Phone</dt>
+              <dd className="mt-1 font-medium text-forest-950">{clientDisplayPhone || '—'}</dd>
+            </div>
+            <div className="sm:col-span-2">
+              <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-500">Account number</dt>
+              <dd className="mt-1 font-mono text-base font-semibold text-forest-950">{accountRef || '— pending'}</dd>
+              {!accountRef ? (
+                <p className="mt-2 max-w-xl text-xs text-forest-600">
+                  This is the same style of ID as on your enquiry confirmation. Golf Sol Ireland can add it from admin when your
+                  trip is on file.
+                </p>
+              ) : null}
+            </div>
+          </dl>
+        )}
+      </section>
+
+      {contactOnboardingDone ? (
+        <section className="relative mb-10 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Message the team</p>
+              <h2 className="font-display mt-2 text-xl font-semibold text-forest-950 md:text-2xl">Interest tickets</h2>
+              <p className="mt-1 max-w-2xl text-sm text-forest-600">
+                Open a ticket for transfers, golf courses, or hotels — we reply in the thread below.
+              </p>
+            </div>
+            <LuxuryButton
+              aria-expanded={teamMessagingOpen}
+              onClick={() => setTeamMessagingOpen((o) => !o)}
+              type="button"
+              variant="outline"
+            >
+              {teamMessagingOpen ? 'Hide ticketing' : 'Open ticketing'}
+            </LuxuryButton>
+          </div>
+          {teamMessagingOpen ? (
+            <div className="mt-6 scroll-mt-28 border-t border-forest-100 pt-6" id="portal-interest" tabIndex={-1}>
               <div className="mt-4 flex flex-wrap gap-3">
                 <LuxuryButton onClick={() => openInterestModal('transfers')} type="button" variant="secondary">
                   Transfers
@@ -1313,10 +1409,13 @@ export function ClientDashboardPage() {
                     </li>
                   ))}
                 </ul>
-              ) : null}
+              ) : (
+                <p className="mt-4 text-sm text-forest-600">No open tickets yet — use the buttons above to start one.</p>
+              )}
             </div>
-          </>
-        )}
+          ) : null}
+        </section>
+      ) : null}
 
         {interestThreadTicketId && selectedInterestThread ? (
           <div
@@ -1447,7 +1546,6 @@ export function ClientDashboardPage() {
             </div>
           </div>
         ) : null}
-      </section>
 
       <section className="mb-10 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Messages &amp; files</p>
@@ -1516,11 +1614,11 @@ export function ClientDashboardPage() {
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Your packages</p>
                 <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Transfers, golf courses &amp; hotel</h2>
                 <p className="mt-2 max-w-2xl text-sm text-forest-600">
-                  Golf Sol Ireland publishes fixed-price options for your trip here. Open a line to see the quote, any formal
-                  proposal we have linked, and add notes we should keep on file using the trip details form below.
+                  Each line is a snapshot of what you submitted or what we published for you — website forms show every field.
+                  Trip notes (below) unlock after we publish a calculator or quoted package with pricing.
                 </p>
               </div>
-              <LuxuryButton href="/#enquire" variant="outline">
+              <LuxuryButton onClick={() => openTeamMessagingAndScroll()} type="button" variant="outline">
                 Message the team
               </LuxuryButton>
             </div>
@@ -1542,16 +1640,6 @@ export function ClientDashboardPage() {
               </div>
             ) : (
               <>
-                {removeError ? (
-                  <div
-                    className="mb-6 rounded-2xl border-2 border-red-300 bg-red-50/95 px-5 py-4 text-sm text-red-900"
-                    role="alert"
-                  >
-                    <p className="font-semibold">Could not remove package</p>
-                    <p className="mt-1">{removeError}</p>
-                  </div>
-                ) : null}
-
                 <ul className="mb-8 overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-soft">
                   {packageBuilds.map((row, index) => {
                     const cfg = parseAnyPackageBuildRowConfig(row.config)
@@ -1560,19 +1648,13 @@ export function ClientDashboardPage() {
                       cfg?.type === 'calculator' ? cfg.config.totals.estimatedGroupTotal : cfg?.type === 'manual' ? cfg.config.priceEur : undefined
                     const hasLinkedFormal = Boolean(row.linked_proposal?.payload && typeof row.linked_proposal.payload === 'object')
                     const expanded = expandedFormalProposalBuildId === row.id
-                    let summaryPreview: string | null = null
+                    let manualSummaryPreview: string | null = null
+                    let websiteFormEntries: [string, unknown][] | null = null
                     if (cfg?.type === 'manual' && cfg.config.summary.trim()) {
                       const s = cfg.config.summary.trim()
-                      summaryPreview = s.slice(0, 160) + (s.length > 160 ? '…' : '')
+                      manualSummaryPreview = s.slice(0, 160) + (s.length > 160 ? '…' : '')
                     } else if (cfg?.type === 'website_form') {
-                      const entries = Object.entries(cfg.config.fields)
-                      summaryPreview = entries.length
-                        ? entries
-                            .slice(0, 5)
-                            .map(([k, v]) => `${k}: ${v}`)
-                            .join(' · ')
-                            .slice(0, 200) + (entries.length > 5 ? '…' : '')
-                        : null
+                      websiteFormEntries = Object.entries(cfg.config.fields ?? {})
                     }
 
                     return (
@@ -1598,8 +1680,27 @@ export function ClientDashboardPage() {
                                 minute: '2-digit'
                               })}
                             </p>
-                            {summaryPreview ? (
-                              <p className="mt-2 line-clamp-2 text-sm text-forest-700">{summaryPreview}</p>
+                            {manualSummaryPreview ? (
+                              <p className="mt-2 line-clamp-2 text-sm text-forest-700">{manualSummaryPreview}</p>
+                            ) : null}
+                            {websiteFormEntries && websiteFormEntries.length > 0 ? (
+                              <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
+                                {websiteFormEntries.map(([key, val]) => (
+                                  <div
+                                    className="min-w-0 rounded-xl border border-forest-100/90 bg-offwhite/60 px-3 py-2.5"
+                                    key={key}
+                                  >
+                                    <dt className="text-xs font-semibold uppercase tracking-wide text-gold-700">
+                                      {formatWebsiteFormFieldLabel(key)}
+                                    </dt>
+                                    <dd className="mt-0.5 whitespace-pre-wrap break-words text-forest-800">
+                                      {websiteFormFieldValueText(val)}
+                                    </dd>
+                                  </div>
+                                ))}
+                              </dl>
+                            ) : cfg?.type === 'website_form' ? (
+                              <p className="mt-2 text-sm text-forest-600">No form fields stored for this submission.</p>
                             ) : null}
                             {typeof total === 'number' ? (
                               <p className="mt-2 text-sm font-medium text-forest-700">
@@ -1625,16 +1726,6 @@ export function ClientDashboardPage() {
                                 Open in calculator
                               </LuxuryButton>
                             ) : null}
-                            <LuxuryButton
-                              aria-label={`Remove saved package ${row.label?.trim() || 'build'}`}
-                              className="!border-2 !border-red-600 !bg-white !text-red-800 hover:!bg-red-50"
-                              disabled={deletingId === row.id}
-                              onClick={() => handleRemoveBuild(row.id)}
-                              type="button"
-                              variant="outline"
-                            >
-                              {deletingId === row.id ? 'Removing…' : 'Remove from account'}
-                            </LuxuryButton>
                           </div>
                         </div>
                         {expanded && hasLinkedFormal && row.linked_proposal ? (
@@ -1652,6 +1743,7 @@ export function ClientDashboardPage() {
                   })}
                 </ul>
 
+                {hasAdminPricedPackage ? (
                 <div className="rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
                   <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Trip details</p>
                   <h3 className="font-display mt-2 text-xl font-semibold text-forest-950 md:text-2xl">
@@ -1779,16 +1871,6 @@ export function ClientDashboardPage() {
                           <LuxuryButton disabled={detailsStatus === 'saving'} type="submit" variant="primary">
                             {detailsStatus === 'saving' ? 'Saving…' : 'Save trip details'}
                           </LuxuryButton>
-                          <LuxuryButton
-                            aria-label="Remove the selected saved package"
-                            className="!border-2 !border-red-600 !bg-white !text-red-800 hover:!bg-red-50"
-                            disabled={deletingId === selectedBuildId}
-                            onClick={() => handleRemoveBuild(selectedBuildId)}
-                            type="button"
-                            variant="outline"
-                          >
-                            {deletingId === selectedBuildId ? 'Removing…' : 'Remove this package'}
-                          </LuxuryButton>
                         </div>
 
                         {detailsMessage ? (
@@ -1809,6 +1891,15 @@ export function ClientDashboardPage() {
                     )}
                   </form>
                 </div>
+                ) : (
+                  <div className="rounded-[2rem] border border-dashed border-forest-200 bg-offwhite/80 p-6 text-sm text-forest-700 shadow-soft md:p-8">
+                    <p className="font-medium text-forest-900">Trip details</p>
+                    <p className="mt-2 max-w-2xl">
+                      After Golf Sol Ireland publishes a calculator build or a fixed-price quote for your trip, you can add dates,
+                      notes, and other details here. Website-only enquiries stay in the package list above until we add pricing.
+                    </p>
+                  </div>
+                )}
               </>
             )}
           </section>
