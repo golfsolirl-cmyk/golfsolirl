@@ -4,6 +4,15 @@ import { AuthProvider } from './providers/auth-provider'
 import { isGeContentPagePath } from './pages/golf-experience/data/content-pages'
 import './index.css'
 
+/** Supabase implicit magic links often land on Site URL (/) with tokens in #hash — route to callback so we strip secrets and run one completion flow. */
+if (typeof window !== 'undefined') {
+  const path = window.location.pathname.replace(/\/+$/, '') || '/'
+  const hash = window.location.hash
+  if (path !== '/auth/callback' && hash.includes('access_token=')) {
+    window.location.replace(`${window.location.origin}/auth/callback${window.location.search}${hash}`)
+  }
+}
+
 const GolfExperienceHome = lazy(() =>
   import('./pages/golf-experience/golf-experience-home').then((m) => ({ default: m.GolfExperienceHome }))
 )

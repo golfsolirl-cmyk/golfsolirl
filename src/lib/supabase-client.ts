@@ -14,11 +14,6 @@ const serializedAuthLock = <R,>(_name: string, _acquireTimeout: number, fn: () =
   return run
 }
 
-const isAuthCallbackPathname = (pathname: string) => {
-  const path = pathname.replace(/\/+$/, '') || '/'
-  return path === '/auth/callback'
-}
-
 /** Clears persisted Supabase session keys for this project (fallback if signOut fails or throws). */
 export const clearSupabaseBrowserAuthStorage = () => {
   const url = import.meta.env.VITE_SUPABASE_URL
@@ -65,7 +60,9 @@ export const getSupabaseBrowserClient = (): SupabaseClient | null => {
         // in-app browser; PKCE requires the same browser tab that requested the link.
         flowType: 'implicit',
         lock: serializedAuthLock,
-        detectSessionInUrl: (link) => isAuthCallbackPathname(link.pathname),
+        // Must be true (or match any path that carries #access_token): Supabase often redirects
+        // to Site URL root with tokens in the hash; a pathname-only check misses those.
+        detectSessionInUrl: true,
         persistSession: true,
         storage: localStorage
       }
