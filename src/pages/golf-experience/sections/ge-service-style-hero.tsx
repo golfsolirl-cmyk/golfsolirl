@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion'
 import type { LucideIcon } from 'lucide-react'
-import { ArrowRight, CheckCircle2, ChevronDown, Phone } from 'lucide-react'
+import { ArrowRight, CheckCircle2, ChevronDown } from 'lucide-react'
 import { GeButton } from '../components/ge-button'
-import { contactInfo } from '../data/copy'
+import { GeDualPhoneHeroButtons } from '../components/ge-dual-phone-contact'
 import { handleScrollToFormTarget } from '../../../lib/scroll-to-form-target'
 
 const fadeUp = {
@@ -73,6 +73,8 @@ export type GeServiceStyleHeroProps = {
   readonly mobileHighlights?: readonly GeServiceStyleHeroHighlight[]
   readonly trustLine?: string
   readonly imageFit?: 'cover' | 'contain'
+  /** Light, sunny Costa treatment (cream + sky scrims) — golf course & map routes. */
+  readonly visualTone?: 'cinematic' | 'solstice'
 }
 
 /**
@@ -93,8 +95,10 @@ export function GeServiceStyleHero({
   nextSectionId = '#ge-content-promise',
   mobileHighlights,
   trustLine = 'Irish-owned · Costa del Sol specialists · Replies inside 2 hours',
-  imageFit = 'cover'
+  imageFit = 'cover',
+  visualTone = 'cinematic'
 }: GeServiceStyleHeroProps) {
+  const sunny = visualTone === 'solstice'
   const mobileTitleStyle = getMobileHeroTitleStyle(title)
   const highlights =
     mobileHighlights && mobileHighlights.length > 0
@@ -107,7 +111,7 @@ export function GeServiceStyleHero({
 
   return (
     <section
-      className="relative isolate z-[38] overflow-hidden bg-gs-dark text-white"
+      className={sunny ? 'relative isolate z-[38] overflow-hidden bg-[#fffbf5] text-gs-dark' : 'relative isolate z-[38] overflow-hidden bg-gs-dark text-white'}
       aria-labelledby={`${id}-title`}
       id={id}
     >
@@ -116,7 +120,7 @@ export function GeServiceStyleHero({
         <div aria-hidden="true" className="h-[134px] w-full bg-white sm:h-[148px] md:h-[164px] lg:h-[130px] xl:h-[142px]" />
       ) : null}
 
-      <div className="relative w-full overflow-hidden bg-gs-dark">
+      <div className={sunny ? 'relative w-full overflow-hidden bg-[#faf6ec]' : 'relative w-full overflow-hidden bg-gs-dark'}>
         <picture className="block md:absolute md:inset-0 md:h-full md:w-full">
           <img
             src={image}
@@ -134,33 +138,54 @@ export function GeServiceStyleHero({
         </picture>
 
         <div className="relative w-full pb-8 md:aspect-[16/9] md:pb-0 lg:aspect-[21/9]">
-          <div aria-hidden className="absolute inset-x-0 top-0 z-[5] h-[54vh] min-h-[360px] bg-gradient-to-t from-gs-dark via-gs-dark/15 to-transparent md:hidden" />
+          <div
+            aria-hidden
+            className={
+              sunny
+                ? 'absolute inset-x-0 top-0 z-[5] h-[54vh] min-h-[360px] bg-gradient-to-t from-[#fffbf5] via-[#fffbf5]/55 to-transparent md:hidden'
+                : 'absolute inset-x-0 top-0 z-[5] h-[54vh] min-h-[360px] bg-gradient-to-t from-gs-dark via-gs-dark/15 to-transparent md:hidden'
+            }
+          />
 
           <div className="relative z-[12] -mt-16 px-4 md:hidden">
             <motion.div
-              className="mx-auto w-full max-w-[34rem] overflow-hidden rounded-[1.75rem] border border-gs-gold/30 bg-gs-dark/95 p-5 shadow-[0_26px_60px_rgba(1,16,12,0.62)] backdrop-blur-xl"
+              className={
+                sunny
+                  ? 'mx-auto w-full max-w-[34rem] overflow-hidden rounded-[1.75rem] border border-amber-200/70 bg-white p-5 shadow-[0_22px_50px_rgba(203,148,26,0.18)]'
+                  : 'mx-auto w-full max-w-[34rem] overflow-hidden rounded-[1.75rem] border border-gs-gold/30 bg-gs-dark/95 p-5 shadow-[0_26px_60px_rgba(1,16,12,0.62)] backdrop-blur-xl'
+              }
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55, ease: 'easeOut' }}
             >
-              <span className="inline-flex items-center gap-2 rounded-full border border-gs-gold/35 bg-gs-dark/45 px-3 py-1.5 font-ge text-[0.78rem] font-bold uppercase tracking-[0.16em] text-gs-gold">
+              <span
+                className={
+                  sunny
+                    ? 'inline-flex items-center gap-2 rounded-full border border-gs-gold/45 bg-amber-50/90 px-3 py-1.5 font-ge text-[0.78rem] font-bold uppercase tracking-[0.16em] text-gs-green'
+                    : 'inline-flex items-center gap-2 rounded-full border border-gs-gold/35 bg-gs-dark/45 px-3 py-1.5 font-ge text-[0.78rem] font-bold uppercase tracking-[0.16em] text-gs-gold'
+                }
+              >
                 <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-gs-gold shadow-[0_0_10px_rgba(255,199,44,0.68)]" />
                 {eyebrow}
               </span>
               <h2
                 id={`${id}-title`}
-                className="mt-4 font-ge font-extrabold text-white"
+                className={sunny ? 'mt-4 font-ge font-extrabold text-gs-dark' : 'mt-4 font-ge font-extrabold text-white'}
                 style={mobileTitleStyle}
               >
                 {title}
               </h2>
-              <p className="mt-3 font-ge text-[1.08rem] leading-8 text-white/88">{subtitle}</p>
+              <p className={sunny ? 'mt-3 font-ge text-[1.08rem] leading-8 text-ge-gray500' : 'mt-3 font-ge text-[1.08rem] leading-8 text-white/88'}>{subtitle}</p>
 
               <ul className="mt-5 space-y-2">
                 {highlights.map(({ icon: Icon = CheckCircle2, label }) => (
                   <li
                     key={label}
-                    className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 font-ge text-[0.92rem] font-semibold uppercase tracking-[0.06em] text-white/84"
+                    className={
+                      sunny
+                        ? 'flex items-center gap-2.5 rounded-xl border border-amber-100 bg-[#fffef9] px-3 py-2.5 font-ge text-[0.92rem] font-semibold uppercase tracking-[0.06em] text-gs-dark'
+                        : 'flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 font-ge text-[0.92rem] font-semibold uppercase tracking-[0.06em] text-white/84'
+                    }
                   >
                     <Icon className="h-4 w-4 shrink-0 text-gs-gold" aria-hidden />
                     {label}
@@ -173,25 +198,36 @@ export function GeServiceStyleHero({
                   {primaryCta.label}
                   <ArrowRight className="h-4 w-4" aria-hidden />
                 </GeButton>
-                {showPhoneCta ? (
-                  <GeButton href={`tel:${contactInfo.phoneTel}`} variant="outline-gs-white" size="lg" className="w-full">
-                    <Phone className="h-4 w-4" aria-hidden />
-                    {contactInfo.phoneDisplay}
-                  </GeButton>
-                ) : null}
+                {showPhoneCta ? <GeDualPhoneHeroButtons tone={sunny ? 'sunny' : 'dark'} className="w-full" /> : null}
               </div>
 
-              <p className="mt-4 font-ge text-[0.82rem] font-semibold uppercase tracking-[0.12em] text-white/74">{trustLine}</p>
+              <p
+                className={
+                  sunny
+                    ? 'mt-4 font-ge text-[0.82rem] font-semibold uppercase tracking-[0.12em] text-ge-gray500'
+                    : 'mt-4 font-ge text-[0.82rem] font-semibold uppercase tracking-[0.12em] text-white/74'
+                }
+              >
+                {trustLine}
+              </p>
             </motion.div>
           </div>
 
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 z-[5] hidden bg-gradient-to-r from-gs-dark/85 via-gs-dark/55 to-transparent md:block md:from-gs-dark/80 md:via-gs-dark/40"
+            className={
+              sunny
+                ? 'pointer-events-none absolute inset-0 z-[5] hidden bg-gradient-to-r from-white/90 via-white/45 to-transparent md:block'
+                : 'pointer-events-none absolute inset-0 z-[5] hidden bg-gradient-to-r from-gs-dark/85 via-gs-dark/55 to-transparent md:block md:from-gs-dark/80 md:via-gs-dark/40'
+            }
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 z-[5] hidden bg-gradient-to-t from-gs-dark/75 via-transparent to-gs-dark/30 md:block"
+            className={
+              sunny
+                ? 'pointer-events-none absolute inset-0 z-[5] hidden bg-gradient-to-t from-[#fff8ed]/85 via-transparent to-sky-100/25 md:block'
+                : 'pointer-events-none absolute inset-0 z-[5] hidden bg-gradient-to-t from-gs-dark/75 via-transparent to-gs-dark/30 md:block'
+            }
           />
 
           <div
@@ -222,32 +258,55 @@ export function GeServiceStyleHero({
           <div className="absolute inset-0 z-[12] hidden items-end pb-12 sm:items-center sm:pb-0 md:flex md:pt-8 lg:pt-12">
             <div className="mx-auto w-full max-w-[1180px] px-5 sm:px-8">
               <motion.div className="max-w-2xl" {...fadeUp}>
-                <span className="inline-flex items-center gap-2 rounded-full border border-gs-gold/40 bg-gs-dark/35 px-3 py-1.5 font-ge text-[0.7rem] font-bold uppercase tracking-[0.18em] text-gs-gold backdrop-blur-sm sm:text-[0.78rem]">
+                <span
+                  className={
+                    sunny
+                      ? 'inline-flex items-center gap-2 rounded-full border border-gs-gold/50 bg-white px-3 py-1.5 font-ge text-[0.7rem] font-bold uppercase tracking-[0.18em] text-gs-green shadow-sm sm:text-[0.78rem]'
+                      : 'inline-flex items-center gap-2 rounded-full border border-gs-gold/40 bg-gs-dark/35 px-3 py-1.5 font-ge text-[0.7rem] font-bold uppercase tracking-[0.18em] text-gs-gold backdrop-blur-sm sm:text-[0.78rem]'
+                  }
+                >
                   <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-gs-gold shadow-[0_0_10px_rgba(255,199,44,0.7)]" />
                   {eyebrow}
                 </span>
-                <h2 className="mt-5 font-ge text-[2.25rem] font-extrabold leading-[1.05] tracking-[-0.005em] text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.55)] sm:text-[3rem] md:text-[3.5rem] lg:text-[4rem]">
+                <h2
+                  className={
+                    sunny
+                      ? 'mt-5 font-ge text-[2.25rem] font-extrabold leading-[1.05] tracking-[-0.005em] text-gs-dark drop-shadow-[0_1px_0_rgba(255,255,255,0.9)] sm:text-[3rem] md:text-[3.5rem] lg:text-[4rem]'
+                      : 'mt-5 font-ge text-[2.25rem] font-extrabold leading-[1.05] tracking-[-0.005em] text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.55)] sm:text-[3rem] md:text-[3.5rem] lg:text-[4rem]'
+                  }
+                >
                   {title}
                 </h2>
 
-                <p className="mt-5 max-w-xl font-ge text-base leading-7 text-white/90 drop-shadow-[0_1px_8px_rgba(0,0,0,0.5)] sm:text-[1.05rem] sm:leading-8 lg:text-[1.125rem]">
+                <p
+                  className={
+                    sunny
+                      ? 'mt-5 max-w-xl font-ge text-base leading-7 text-ge-gray600 sm:text-[1.05rem] sm:leading-8 lg:text-[1.125rem]'
+                      : 'mt-5 max-w-xl font-ge text-base leading-7 text-white/90 drop-shadow-[0_1px_8px_rgba(0,0,0,0.5)] sm:text-[1.05rem] sm:leading-8 lg:text-[1.125rem]'
+                  }
+                >
                   {subtitle}
                 </p>
 
-                <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
                   <GeButton href={primaryCta.href} variant="gs-gold" size="lg">
                     {primaryCta.label}
                     <ArrowRight className="h-4 w-4" aria-hidden />
                   </GeButton>
                   {showPhoneCta ? (
-                    <GeButton href={`tel:${contactInfo.phoneTel}`} variant="outline-gs-white" size="lg">
-                      <Phone className="h-4 w-4" aria-hidden />
-                      {contactInfo.phoneDisplay}
-                    </GeButton>
+                    <GeDualPhoneHeroButtons tone={sunny ? 'sunny' : 'dark'} className="w-full min-w-0 sm:w-auto sm:flex-1" />
                   ) : null}
                 </div>
 
-                <p className="mt-5 font-ge text-sm font-semibold uppercase tracking-[0.16em] text-white/70 sm:text-[0.78rem]">{trustLine}</p>
+                <p
+                  className={
+                    sunny
+                      ? 'mt-5 font-ge text-sm font-semibold uppercase tracking-[0.16em] text-ge-gray500 sm:text-[0.78rem]'
+                      : 'mt-5 font-ge text-sm font-semibold uppercase tracking-[0.16em] text-white/70 sm:text-[0.78rem]'
+                  }
+                >
+                  {trustLine}
+                </p>
               </motion.div>
             </div>
           </div>
@@ -256,7 +315,11 @@ export function GeServiceStyleHero({
             href={nextSectionId}
             onClick={(event) => handleScrollToFormTarget(event, nextSectionId)}
             aria-label="Scroll to the next section"
-            className="absolute bottom-4 right-4 z-20 inline-flex h-11 w-11 items-center justify-center rounded-full border-2 border-white/85 bg-gs-dark/55 text-white backdrop-blur-md transition-colors hover:border-gs-gold hover:bg-gs-dark/75 hover:text-gs-gold md:bottom-6 md:left-1/2 md:right-auto md:h-12 md:w-12 md:-translate-x-1/2"
+            className={
+              sunny
+                ? 'absolute bottom-4 right-4 z-20 inline-flex h-11 w-11 items-center justify-center rounded-full border-2 border-gs-gold/60 bg-white text-gs-green shadow-md transition-colors hover:border-gs-green hover:bg-amber-50 md:bottom-6 md:left-1/2 md:right-auto md:h-12 md:w-12 md:-translate-x-1/2'
+                : 'absolute bottom-4 right-4 z-20 inline-flex h-11 w-11 items-center justify-center rounded-full border-2 border-white/85 bg-gs-dark/55 text-white backdrop-blur-md transition-colors hover:border-gs-gold hover:bg-gs-dark/75 hover:text-gs-gold md:bottom-6 md:left-1/2 md:right-auto md:h-12 md:w-12 md:-translate-x-1/2'
+            }
             animate={{ y: [0, 6, 0] }}
             transition={{ duration: 2, ease: 'easeInOut', repeat: Infinity }}
           >

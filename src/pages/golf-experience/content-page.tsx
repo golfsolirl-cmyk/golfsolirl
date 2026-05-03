@@ -15,6 +15,11 @@ import { getContentPageFormConfig, getContentPageHeroMedia, getContentStorySecti
 import { GeTransfersInsuranceBanner } from './components/ge-transfers-insurance-banner'
 import { WhatsappFab } from './components/whatsapp-fab'
 import { GeSection } from './components/ge-section'
+import {
+  GeCoursesInteractiveCorridor,
+  GOLF_COURSES_MAP_SECTION_ID,
+  shouldShowInteractiveCourseMap
+} from './components/ge-courses-interactive-corridor'
 
 function normalisePath() {
   const path = window.location.pathname.replace(/\/+$/, '')
@@ -64,6 +69,7 @@ export function GeContentPage() {
   const heroAlt = heroMedia?.alt ?? page.heroAlt
   const routeLabel = heroMedia?.stripeLabel ?? page.eyebrow
   const isTermsPage = path.includes('terms')
+  const showCourseCorridorMap = shouldShowInteractiveCourseMap(path)
 
   const mobileHighlights = page.highlights.slice(0, 3).map((label) => ({
     icon: CheckCircle2,
@@ -85,6 +91,7 @@ export function GeContentPage() {
         eyebrow={page.eyebrow}
         label={routeLabel}
         offsetHeader
+        tone="ge"
       />
 
       <main id="main">
@@ -95,11 +102,19 @@ export function GeContentPage() {
           subtitle={page.subtitle}
           image={heroImage}
           imageAlt={heroAlt}
-          primaryCta={{ label: 'Start your enquiry', href: '#ge-content-enquire' }}
+          primaryCta={
+            showCourseCorridorMap
+              ? { label: 'Explore the course map', href: `#${GOLF_COURSES_MAP_SECTION_ID}` }
+              : { label: 'Start your enquiry', href: '#ge-content-enquire' }
+          }
           showNavbarSpacer={false}
           mobileHighlights={mobileHighlights}
           imageFit={isTermsPage ? 'contain' : 'cover'}
+          visualTone={showCourseCorridorMap ? 'solstice' : 'cinematic'}
+          nextSectionId={showCourseCorridorMap ? `#${GOLF_COURSES_MAP_SECTION_ID}` : '#ge-content-promise'}
         />
+
+        {showCourseCorridorMap ? <GeCoursesInteractiveCorridor path={path} routeLabel={routeLabel} /> : null}
 
         <GeContentPromiseBand
           eyebrow="The promise"

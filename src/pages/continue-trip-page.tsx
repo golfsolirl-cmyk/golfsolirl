@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { ArrowLeft, CheckCircle2, Send } from 'lucide-react'
 import { GOLF_SOL_TRIP_FLIGHT_PREFILL_KEY } from './golf-experience/components/already-booked-flight-panel'
+import { BookedDatesAvailabilityNotice } from '../components/booked-dates-availability-notice'
 import { PageIdentityBar } from '../components/page-identity-bar'
 import { GeFooter } from './golf-experience/sections/ge-footer'
 import { GeNavbar } from './golf-experience/sections/ge-navbar'
@@ -11,7 +12,16 @@ import { WhatsappFab } from './golf-experience/components/whatsapp-fab'
 import { GeTransfersInsuranceBanner } from './golf-experience/components/ge-transfers-insurance-banner'
 import { GeSection } from './golf-experience/components/ge-section'
 import { contactInfo } from './golf-experience/data/copy'
-import { formatTravelDateInput } from '../lib/format-travel-date'
+import { golferGroupSizeSelectOptions } from './golf-experience/data/form-people-options'
+import { assertDatesNotBooked, loadBookedServiceDayIsoSet } from '../lib/booked-service-days'
+import { getLocalDateIso } from '../lib/local-date-iso'
+import { plannedTravelDatesErrorMessage, travelEndMinIso, travelStartMinIso } from '../lib/travel-date-bounds'
+import {
+  ENQUIRY_STRUCTURED_FIELD_KEYS,
+  TRIP_ARRIVAL_MODE,
+  WEBSITE_ENQUIRY_FORM
+} from '../lib/enquiry-form-registry'
+import { getSupabaseBrowserClient } from '../lib/supabase-client'
 
 type TravelMode = 'flight' | 'arrived'
 
@@ -88,7 +98,11 @@ function formatSnapForInterest(snap: FlightSnap) {
 export function ContinueTripPage() {
   const [snap, setSnap] = useState<SnapState>(undefined)
   const [email, setEmail] = useState('')
-  const [travelDates, setTravelDates] = useState('')
+  const [tripArrivalMode, setTripArrivalMode] = useState<(typeof TRIP_ARRIVAL_MODE)[keyof typeof TRIP_ARRIVAL_MODE]>(
+    TRIP_ARRIVAL_MODE.planned
+  )
+  const [travelDateFrom, setTravelDateFrom] = useState('')
+  const [travelDateTo, setTravelDateTo] = useState('')
   const [groupSize, setGroupSize] = useState('')
   const [hotelStatus, setHotelStatus] = useState('')
   const [roundCount, setRoundCount] = useState('')
@@ -98,7 +112,49 @@ export function ContinueTripPage() {
   const [bestTimeToCall, setBestTimeToCall] = useState('Any time')
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [bookedDays, setBookedDays] = useState<Set<string>>(() => new Set())
   const confirmationRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      const booked = await loadBookedServiceDayIsoSet(getSupabaseBrowserClient())
+      if (!cancelled) {
+        setBookedDays(booked)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    if (tripArrivalMode !== TRIP_ARRIVAL_MODE.alreadyAtAgp) {
+      return
+    }
+    const iso = getLocalDateIso()
+    setTravelDateFrom(iso)
+    setTravelDateTo(iso)
+  }, [tripArrivalMode])
+
+  useEffect(() => {
+    if (tripArrivalMode !== TRIP_ARRIVAL_MODE.planned) {
+      return
+    }
+    const t = travelStartMinIso()
+    const df = travelDateFrom.trim().slice(0, 10)
+    const dt = travelDateTo.trim().slice(0, 10)
+    if (df.length === 10 && df < t) {
+      setTravelDateFrom(t)
+      return
+    }
+    if (df.length === 10 && dt.length === 10) {
+      const endMin = travelEndMinIso(df)
+      if (dt < endMin) {
+        setTravelDateTo(endMin)
+      }
+    }
+  }, [tripArrivalMode, travelDateFrom, travelDateTo])
 
   useEffect(() => {
     try {
@@ -131,6 +187,10 @@ export function ContinueTripPage() {
     'Hi GolfSol Ireland — I have started my trip brief and would like to WhatsApp my enquiry.'
   )}`
 
+  const continueAgpToday = getLocalDateIso()
+  const continuePlannedStartMin = tripArrivalMode === TRIP_ARRIVAL_MODE.planned ? travelStartMinIso() : undefined
+  const continuePlannedEndMin = tripArrivalMode === TRIP_ARRIVAL_MODE.planned ? travelEndMinIso(travelDateFrom) : undefined
+
   const handleContinueSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setSubmitStatus('idle')
@@ -143,18 +203,37 @@ export function ContinueTripPage() {
     }
 
     const mail = email.trim().toLowerCase()
-    const dates = travelDates.trim()
+    const df = travelDateFrom.trim()
+    const dt = travelDateTo.trim()
     const size = groupSize.trim()
     const hotel = hotelStatus.trim()
     const rounds = roundCount.trim()
     const timing = roundTiming.trim()
 
-    if (!mail || !dates || !size || !hotel || !rounds || !timing) {
+    if (!mail || !size || !hotel || !rounds || !timing) {
       setSubmitStatus('error')
       setSubmitError(
-        'Please complete email, dates, group size, hotel status, number of rounds, and tee-time preference (prime, twilight, mix, or not sure).'
+        'Please complete email, group size, hotel status, number of rounds, and tee-time preference (prime, twilight, mix, or not sure).'
       )
       return
+    }
+    if (tripArrivalMode === TRIP_ARRIVAL_MODE.planned && (!df || !dt)) {
+      setSubmitStatus('error')
+      setSubmitError('Add travel start and end dates, or choose “Already at Málaga (AGP)”.')
+      return
+    }
+    if (tripArrivalMode === TRIP_ARRIVAL_MODE.planned && df > dt) {
+      setSubmitStatus('error')
+      setSubmitError('Travel end date must be on or after the start date.')
+      return
+    }
+    if (tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp) {
+      const today = getLocalDateIso()
+      if (df !== today || dt !== today) {
+        setSubmitStatus('error')
+        setSubmitError('When you are already here, both travel dates must be set to today only.')
+        return
+      }
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) {
@@ -163,11 +242,25 @@ export function ContinueTripPage() {
       return
     }
 
+    const bookedDates = tripArrivalMode === TRIP_ARRIVAL_MODE.planned ? [df, dt] : [df, dt]
+    const bookedMsg = assertDatesNotBooked(bookedDays, bookedDates)
+    if (bookedMsg) {
+      setSubmitStatus('error')
+      setSubmitError(bookedMsg)
+      return
+    }
+
+    const carried = formatSnapForInterest(snap)
+    const datesSummary =
+      tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp
+        ? `Trip timing: Already at Málaga (AGP)${df || dt ? ` (${[df, dt].filter(Boolean).join(' → ')})` : ''}`
+        : `Trip timing: ${df} → ${dt}`
+
     const interest = [
       'CONTINUE TRIP — completed itinerary brief',
-      ...formatSnapForInterest(snap),
+      ...carried,
       `Email: ${mail}`,
-      `Travel dates: ${dates}`,
+      datesSummary,
       `Group size: ${size}`,
       `Hotel / accommodation status: ${hotel}`,
       `Preferred number of rounds: ${rounds}`,
@@ -175,6 +268,33 @@ export function ContinueTripPage() {
       courseWishlist.trim() ? `Course wishlist: ${courseWishlist.trim()}` : null,
       notes.trim() ? `Extra notes: ${notes.trim()}` : null
     ].filter(Boolean)
+    const formFields: Record<string, string> = {
+      Email: mail,
+      'Trip timing':
+        tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp
+          ? 'Already at Málaga (AGP) — need transfers now'
+          : 'Planned trip — dated',
+      [ENQUIRY_STRUCTURED_FIELD_KEYS.alreadyAtMalagaAgp]:
+        tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp ? 'yes' : 'no',
+      ...(df ? { [ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateFrom]: df, 'Travel start date': df } : {}),
+      ...(dt ? { [ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateTo]: dt, 'Travel end date': dt } : {}),
+      'Group size': size,
+      'Hotel / accommodation status': hotel,
+      'Preferred number of rounds': rounds,
+      'Tee-time preference': timing
+    }
+    if (courseWishlist.trim()) {
+      formFields['Course wishlist'] = courseWishlist.trim()
+    }
+    if (notes.trim()) {
+      formFields['Extra notes'] = notes.trim()
+    }
+    carried.forEach((line) => {
+      const idx = line.indexOf(': ')
+      if (idx > 0) {
+        formFields[line.slice(0, idx)] = line.slice(idx + 2)
+      }
+    })
 
     setSubmitStatus('submitting')
     try {
@@ -186,7 +306,11 @@ export function ContinueTripPage() {
           email: mail,
           phoneWhatsApp: snap.mobile,
           interest: interest.join('\n'),
-          bestTimeToCall: bestTimeToCall.trim() || 'Any time'
+          bestTimeToCall: bestTimeToCall.trim() || 'Any time',
+          formPayload: {
+            form: WEBSITE_ENQUIRY_FORM.continueTrip,
+            fields: formFields
+          }
         })
       })
       const data = (await response.json().catch(() => ({}))) as { message?: string }
@@ -380,14 +504,14 @@ export function ContinueTripPage() {
               </p>
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 <a
-                  href="/tee-time-bookings-only"
+                  href="/services/tee-time-bookings"
                   className="flex min-h-[52px] flex-col justify-center rounded-xl border border-gs-green/25 bg-ge-gray50/80 px-4 py-3 font-ge text-sm font-bold text-gs-dark transition-colors hover:border-gs-gold hover:bg-white"
                 >
                   <span className="text-gs-green">Tee time bookings only</span>
                   <span className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-ge-gray500">Prime &amp; full-day sheets</span>
                 </a>
                 <a
-                  href="/twilight-golf"
+                  href="/services/twilight-golf"
                   className="flex min-h-[52px] flex-col justify-center rounded-xl border border-gs-green/25 bg-ge-gray50/80 px-4 py-3 font-ge text-sm font-bold text-gs-dark transition-colors hover:border-gs-gold hover:bg-white"
                 >
                   <span className="text-gs-green">Twilight golf</span>
@@ -416,7 +540,14 @@ export function ContinueTripPage() {
                     These details submit with the arrival snapshot above, so the team gets one clean enquiry instead of disconnected messages.
                   </p>
 
-                  <form className="mt-6 grid gap-4 sm:grid-cols-2" onSubmit={handleContinueSubmit} noValidate>
+                  <BookedDatesAvailabilityNotice
+                    bookedDays={bookedDays}
+                    className="mt-6"
+                    tone="forest"
+                    watchDates={[travelDateFrom, travelDateTo]}
+                  />
+
+                  <form className="mt-4 grid gap-4 sm:grid-cols-2" onSubmit={handleContinueSubmit} noValidate>
                     <label className="block sm:col-span-2">
                       <span className={continueLabelClass}>Email</span>
                       <input
@@ -429,13 +560,59 @@ export function ContinueTripPage() {
                         className={continueInputClass}
                       />
                     </label>
+                    <label className="block sm:col-span-2">
+                      <span className={continueLabelClass}>Trip timing</span>
+                      <select
+                        value={tripArrivalMode}
+                        onChange={(event) => {
+                          const next =
+                            event.target.value === TRIP_ARRIVAL_MODE.alreadyAtAgp
+                              ? TRIP_ARRIVAL_MODE.alreadyAtAgp
+                              : TRIP_ARRIVAL_MODE.planned
+                          setTripArrivalMode(next)
+                          if (next === TRIP_ARRIVAL_MODE.alreadyAtAgp) {
+                            const t = getLocalDateIso()
+                            setTravelDateFrom(t)
+                            setTravelDateTo(t)
+                          }
+                        }}
+                        className={continueInputClass}
+                      >
+                        <option value={TRIP_ARRIVAL_MODE.planned}>I have travel dates (arrival and departure)</option>
+                        <option value={TRIP_ARRIVAL_MODE.alreadyAtAgp}>Already at Málaga (AGP) — need transfers now</option>
+                      </select>
+                    </label>
                     <label className="block">
-                      <span className={continueLabelClass}>Travel dates</span>
+                      <span className={continueLabelClass}>Travel start date</span>
                       <input
-                        value={travelDates}
-                        onChange={(event) => setTravelDates(formatTravelDateInput(event.target.value))}
-                        required
-                        placeholder="e.g. 15-19 Sept 2026"
+                        value={travelDateFrom}
+                        onChange={(event) => setTravelDateFrom(event.target.value)}
+                        type="date"
+                        min={
+                          tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp
+                            ? continueAgpToday
+                            : tripArrivalMode === TRIP_ARRIVAL_MODE.planned
+                              ? continuePlannedStartMin
+                              : undefined
+                        }
+                        max={tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp ? continueAgpToday : undefined}
+                        className={continueInputClass}
+                      />
+                    </label>
+                    <label className="block">
+                      <span className={continueLabelClass}>Travel end date</span>
+                      <input
+                        value={travelDateTo}
+                        onChange={(event) => setTravelDateTo(event.target.value)}
+                        type="date"
+                        min={
+                          tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp
+                            ? continueAgpToday
+                            : tripArrivalMode === TRIP_ARRIVAL_MODE.planned
+                              ? continuePlannedEndMin
+                              : undefined
+                        }
+                        max={tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp ? continueAgpToday : undefined}
                         className={continueInputClass}
                       />
                     </label>
@@ -443,10 +620,11 @@ export function ContinueTripPage() {
                       <span className={continueLabelClass}>Group size</span>
                       <select value={groupSize} onChange={(event) => setGroupSize(event.target.value)} required className={continueInputClass}>
                         <option value="">Select group size</option>
-                        <option value="2 golfers">2 golfers</option>
-                        <option value="4 golfers">4 golfers</option>
-                        <option value="8 golfers">8 golfers</option>
-                        <option value="12+ golfers">12+ golfers</option>
+                        {golferGroupSizeSelectOptions.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
                       </select>
                     </label>
                     <label className="block">

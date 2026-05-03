@@ -262,7 +262,7 @@ export function getGolfSolBrandedEmailHtml() {
                         <a class="cta-button" href="https://golfsolirl.com/#quote" style="display:inline-block; border-radius:999px; background:${brand.gold}; color:${brand.ink}; font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:18px; font-weight:900; letter-spacing:1.4px; text-transform:uppercase; padding:16px 24px;">
                           Get my quote refined
                         </a>
-                        <p style="margin:18px 0 0 0; font-family:Arial, Helvetica, sans-serif; color:#CFE0D8; font-size:14px; line-height:22px;">Prefer to call? <a href="tel:+353874464766" style="color:${brand.gold}; font-weight:800;">+353 87 446 4766</a></p>
+                        <p style="margin:18px 0 0 0; font-family:Arial, Helvetica, sans-serif; color:#CFE0D8; font-size:14px; line-height:22px;">Prefer to call? <a href="tel:+353874464766" style="color:${brand.gold}; font-weight:800;">+353 87 446 4766</a> (Ireland / WhatsApp) · <a href="tel:+34641815366" style="color:${brand.gold}; font-weight:800;">+34 641 81 53 66</a> (Spain)</p>
                       </td>
                     </tr>
                   </table>

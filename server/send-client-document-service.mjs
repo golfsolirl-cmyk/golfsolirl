@@ -1,5 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
+import { buildBrandedClientDocumentInviteEmailHtml } from './branded-client-portal-email.mjs'
+import { finalizeGsolEmailHtml } from './email-layout.mjs'
+import { getTransactionalEmailImageAttachments } from './enquiry-service.mjs'
 
 const getSiteOrigin = (env) => {
   const site = env.SITE_URL?.trim()
@@ -25,52 +28,6 @@ const getSiteOrigin = (env) => {
 const documentLabels = {
   terms: { subject: 'Your Golf Sol Ireland terms and conditions', title: 'Terms and conditions' },
   welcome: { subject: 'Thank you for choosing Golf Sol Ireland', title: 'Thank you from Golf Sol Ireland' }
-}
-
-const buildEmailHtml = ({ clientName, documentUrl, docTitle }) => {
-  const name = clientName?.trim() ? clientName.trim() : 'there'
-
-  return `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8" /></head>
-<body style="margin:0;font-family:Georgia,serif;background:#f4f6f1;color:#163a13;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f1;padding:32px 16px;">
-    <tr>
-      <td align="center">
-        <table role="presentation" width="100%" style="max-width:560px;background:#ffffff;border-radius:20px;overflow:hidden;border:1px solid #dfe8d8;">
-          <tr>
-            <td style="background:#0a2008;padding:28px 24px;">
-              <p style="margin:0;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#fdc874;">Golf Sol Ireland</p>
-              <p style="margin:12px 0 0;font-size:22px;font-weight:700;color:#ffffff;">${docTitle}</p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:28px 24px;">
-              <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">Hi ${name},</p>
-              <p style="margin:0 0 20px;font-size:15px;line-height:1.65;color:#2d4a28;">
-                We have shared this document with your account. Sign in to your dashboard area to open it and save a PDF anytime.
-              </p>
-              <p style="margin:0 0 24px;">
-                <a href="${documentUrl}" style="display:inline-block;background:#dc5801;color:#ffffff;text-decoration:none;font-weight:600;padding:14px 28px;border-radius:999px;font-size:15px;">Open document</a>
-              </p>
-              <p style="margin:0;font-size:13px;line-height:1.5;color:#5c6b58;">
-                If the button does not work, copy this link into your browser:<br />
-                <span style="word-break:break-all;color:#2d6a4a;">${documentUrl}</span>
-              </p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:0 24px 28px;">
-              <p style="margin:0;font-size:13px;color:#5c6b58;">Warm regards,<br /><strong>Golf Sol Ireland</strong></p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`
 }
 
 export const handleSendClientDocument = async (rawBody, env, { authHeader }) => {
@@ -167,16 +124,21 @@ export const handleSendClientDocument = async (rawBody, env, { authHeader }) => 
   const documentUrl = `${origin}${docPath}`
 
   const labels = documentLabels[documentKind]
+  const rawHtml = buildBrandedClientDocumentInviteEmailHtml({
+    greetingName: clientProfile.full_name ?? '',
+    docTitle: labels.title,
+    documentUrl: loginUrl
+  })
+  const html = finalizeGsolEmailHtml(rawHtml)
+  const imageAttachments = await getTransactionalEmailImageAttachments()
+
   const resend = new Resend(resendKey)
   const { error: sendError } = await resend.emails.send({
     from: fromEmail,
     to: clientEmail,
     subject: labels.subject,
-    html: buildEmailHtml({
-      clientName: clientProfile.full_name,
-      documentUrl: loginUrl,
-      docTitle: labels.title
-    })
+    html,
+    attachments: imageAttachments
   })
 
   if (sendError) {

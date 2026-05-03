@@ -1,23 +1,63 @@
 import ReactDOM from 'react-dom/client'
+import { lazy, Suspense, type LazyExoticComponent, type ComponentType } from 'react'
 import { AuthProvider } from './providers/auth-provider'
-import { LogoPreviewPage } from './pages/logo-preview'
-import { CustomerPackagePage } from './pages/customer-packages'
-import { PackageAdminPage } from './pages/packages'
-import { EnquiryPdfTemplatePage } from './pages/enquiry-pdf-template'
-import { ProposalTemplatePage } from './pages/proposal-template'
-import { LogoCapturePage } from './pages/logo-capture'
-import { LoginPage } from './pages/login-page'
-import { AuthCallbackPage } from './pages/auth-callback-page'
-import { ClientDashboardPage } from './pages/client-dashboard-page'
-import { AdminDashboardPage } from './pages/admin-dashboard-page'
-import { ClientDocumentPage } from './pages/client-document-page'
-import { GolfExperienceHome } from './pages/golf-experience/golf-experience-home'
-import { TransportServicePage } from './pages/golf-experience/transport-service-page'
-import { GeContentPage } from './pages/golf-experience/content-page'
-import { ContinueTripPage } from './pages/continue-trip-page'
-import { EmailTemplatePreviewPage } from './pages/email-template-preview'
 import { isGeContentPagePath } from './pages/golf-experience/data/content-pages'
 import './index.css'
+
+const GolfExperienceHome = lazy(() =>
+  import('./pages/golf-experience/golf-experience-home').then((m) => ({ default: m.GolfExperienceHome }))
+)
+const TransportServicePage = lazy(() =>
+  import('./pages/golf-experience/transport-service-page').then((m) => ({ default: m.TransportServicePage }))
+)
+const GeContentPage = lazy(() =>
+  import('./pages/golf-experience/content-page').then((m) => ({ default: m.GeContentPage }))
+)
+const ContinueTripPage = lazy(() =>
+  import('./pages/continue-trip-page').then((m) => ({ default: m.ContinueTripPage }))
+)
+const EmailTemplatePreviewPage = lazy(() =>
+  import('./pages/email-template-preview').then((m) => ({ default: m.EmailTemplatePreviewPage }))
+)
+const LogoPreviewPage = lazy(() => import('./pages/logo-preview').then((m) => ({ default: m.LogoPreviewPage })))
+const LoginPage = lazy(() => import('./pages/login-page').then((m) => ({ default: m.LoginPage })))
+const LoggedOutPage = lazy(() => import('./pages/logged-out-page').then((m) => ({ default: m.LoggedOutPage })))
+const AuthCallbackPage = lazy(() =>
+  import('./pages/auth-callback-page').then((m) => ({ default: m.AuthCallbackPage }))
+)
+const ClientDashboardPage = lazy(() =>
+  import('./pages/client-dashboard-page').then((m) => ({ default: m.ClientDashboardPage }))
+)
+const AdminDashboardPage = lazy(() =>
+  import('./pages/admin-dashboard-page').then((m) => ({ default: m.AdminDashboardPage }))
+)
+const ClientDocumentPage = lazy(() =>
+  import('./pages/client-document-page').then((m) => ({ default: m.ClientDocumentPage }))
+)
+const CustomerPackagePage = lazy(() =>
+  import('./pages/customer-packages').then((m) => ({ default: m.CustomerPackagePage }))
+)
+const PackageAdminPage = lazy(() => import('./pages/packages').then((m) => ({ default: m.PackageAdminPage })))
+const ProposalTemplatePage = lazy(() =>
+  import('./pages/proposal-template').then((m) => ({ default: m.ProposalTemplatePage }))
+)
+const LogoCapturePage = lazy(() => import('./pages/logo-capture').then((m) => ({ default: m.LogoCapturePage })))
+const EnquiryPdfTemplatePage = lazy(() =>
+  import('./pages/enquiry-pdf-template').then((m) => ({ default: m.EnquiryPdfTemplatePage }))
+)
+const ProposalPdfSamplePage = lazy(() =>
+  import('./pages/proposal-pdf-sample-page').then((m) => ({ default: m.ProposalPdfSamplePage }))
+)
+
+type PageComponent = LazyExoticComponent<ComponentType>
+
+function PageFallback() {
+  return (
+    <div className="flex min-h-[50vh] items-center justify-center bg-offwhite text-forest-600">
+      <p className="text-sm font-medium tracking-wide">Loading…</p>
+    </div>
+  )
+}
 
 function syncReadableTypePageClass(path: string) {
   const nonReadableTypePaths = new Set([
@@ -27,6 +67,7 @@ function syncReadableTypePageClass(path: string) {
     '/package-proposal/admin',
     '/enquiry-pdf-template',
     '/enquiry-record',
+    '/proposal-pdf-sample',
     '/documents/terms',
     '/documents/welcome'
   ])
@@ -34,7 +75,7 @@ function syncReadableTypePageClass(path: string) {
   document.body.classList.toggle('readable-type-page', !nonReadableTypePaths.has(path))
 }
 
-function resolvePage() {
+function resolvePage(): PageComponent {
   const normalizedPath = window.location.pathname === '/' ? '/' : window.location.pathname.replace(/\/+$/, '')
   syncReadableTypePageClass(normalizedPath)
 
@@ -68,6 +109,10 @@ function resolvePage() {
 
   if (normalizedPath === '/login') {
     return LoginPage
+  }
+
+  if (normalizedPath === '/logged-out') {
+    return LoggedOutPage
   }
 
   if (normalizedPath === '/auth/callback') {
@@ -111,6 +156,10 @@ function resolvePage() {
     return EnquiryPdfTemplatePage
   }
 
+  if (normalizedPath === '/proposal-pdf-sample') {
+    return ProposalPdfSamplePage
+  }
+
   return GolfExperienceHome
 }
 
@@ -118,6 +167,8 @@ const ActivePage = resolvePage()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <AuthProvider>
-    <ActivePage />
+    <Suspense fallback={<PageFallback />}>
+      <ActivePage />
+    </Suspense>
   </AuthProvider>
 )

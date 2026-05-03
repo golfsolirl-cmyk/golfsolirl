@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDown, Hotel, MapPin, PlaneLanding, Sparkles, X } from 'lucide-react'
 import { cx } from '../../../lib/utils'
+import { WEBSITE_ENQUIRY_FORM } from '../../../lib/enquiry-form-registry'
 import { alreadyBookedHotelCopy } from '../data/copy'
 
 type TravelMode = 'flight' | 'arrived'
@@ -110,6 +111,18 @@ export function GeAlreadyBookedFlightPanel() {
               `Collection time: ${collectionTime.trim()}`
             ].join('\n')
 
+      const formFields: Record<string, string> =
+        travelMode === 'flight'
+          ? {
+              'Travel mode': 'Flight number',
+              'Flight number': flightNo.trim(),
+              'Expected landing time': arrivalTime.trim()
+            }
+          : {
+              'Travel mode': 'Already arrived',
+              'Collection time': collectionTime.trim()
+            }
+
       const response = await fetch('/api/enquiry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -118,7 +131,11 @@ export function GeAlreadyBookedFlightPanel() {
           email: mail,
           phoneWhatsApp: phone,
           interest,
-          bestTimeToCall: travelMode === 'flight' ? `Landing: ${arrivalTime.trim()}` : `Collection: ${collectionTime.trim()}`
+          bestTimeToCall: travelMode === 'flight' ? `Landing: ${arrivalTime.trim()}` : `Collection: ${collectionTime.trim()}`,
+          formPayload: {
+            form: WEBSITE_ENQUIRY_FORM.homepageHotelBookedSnapshot,
+            fields: formFields
+          }
         })
       })
       const data = (await response.json().catch(() => ({}))) as { message?: string }
@@ -164,7 +181,7 @@ export function GeAlreadyBookedFlightPanel() {
             </p>
             <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 font-ge text-sm font-semibold">
               <a
-                href="/tee-time-bookings-only"
+                href="/services/tee-time-bookings"
                 className="text-gs-green underline decoration-gs-gold/50 decoration-2 underline-offset-4 transition-colors hover:text-gs-dark"
               >
                 {alreadyBookedHotelCopy.quickBookingTeeTimes}
@@ -173,7 +190,7 @@ export function GeAlreadyBookedFlightPanel() {
                 ·
               </span>
               <a
-                href="/twilight-golf"
+                href="/services/twilight-golf"
                 className="text-gs-green underline decoration-gs-gold/50 decoration-2 underline-offset-4 transition-colors hover:text-gs-dark"
               >
                 {alreadyBookedHotelCopy.quickBookingTwilight}

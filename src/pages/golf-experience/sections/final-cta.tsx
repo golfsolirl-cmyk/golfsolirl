@@ -1,4 +1,5 @@
 import { GeButton } from '../components/ge-button'
+import { GeDualPhoneFinalCtaRow } from '../components/ge-dual-phone-contact'
 import { GeSection } from '../components/ge-section'
 import { contactInfo, finalCtaCopy } from '../data/copy'
 
@@ -24,14 +25,11 @@ export function GeFinalCta() {
           <p className="mx-auto mt-5 max-w-2xl font-ge text-[1.03rem] leading-7 text-ge-gray500 sm:text-[1.1rem] sm:leading-8">
             Send your dates and group size and we will come back with a clear plan, quickly.
           </p>
-          <div className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <div className="mt-9 flex flex-col items-center justify-center gap-4">
             <GeButton href={`mailto:${contactInfo.email}`} variant="gs-gold" size="lg">
               {finalCtaCopy.cta}
             </GeButton>
-            <GeButton href={`tel:${contactInfo.phoneTel}`} variant="outline-gs-green" size="lg">
-              <span className="sm:hidden">Call us</span>
-              <span className="hidden sm:inline">Call {contactInfo.phoneDisplay}</span>
-            </GeButton>
+            <GeDualPhoneFinalCtaRow />
           </div>
         </div>
       </div>

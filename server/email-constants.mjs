@@ -13,6 +13,10 @@ export const socialContentIds = {
 export const gsolEmailBrand = {
   phoneDisplay: '087 446 4766',
   phoneTel: '+353874464766',
+  spanishPhoneDisplay: '+34 641 81 53 66',
+  spanishPhoneTel: '+34641815366',
+  phoneIrishLineLabel: 'Ireland',
+  phoneSpanishLineLabel: 'Spain',
   whatsappHref: 'https://wa.me/353874464766',
   email: 'info@golfsolirl.com',
   addressLines: ['6 Richmond Road', 'Drumcondra, Dublin 3'],

@@ -45,9 +45,8 @@ export function GeDesignYourPackage() {
     {
       badge: 'Step 4',
       title: 'Leave the rest to us',
-      body: 'We design the itinerary, book the tees, lock in golf-bag-friendly Mercedes transfers and meet you at AGP arrivals — every detail from arrivals hall to final putt.',
-      image:
-        'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&w=1200&q=80',
+      body: designYourPackage.step4.body,
+      image: designYourPackage.step4.image,
       link: '/#enquire'
     }
   ]

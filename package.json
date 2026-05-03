@@ -6,11 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate:sample-proposal-pdf": "node scripts/generate-sample-proposal-pdf.mjs"
   },
   "type": "module",
   "dependencies": {
     "@supabase/supabase-js": "^2.100.1",
+    "@vercel/functions": "^1.6.0",
     "framer-motion": "^12.38.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",

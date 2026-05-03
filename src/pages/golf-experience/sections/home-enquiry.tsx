@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion'
-import { CheckCircle2, MessageCircle, Phone } from 'lucide-react'
+import { CheckCircle2, MessageCircle } from 'lucide-react'
+import { GeDualPhoneEnquiryCallRow } from '../components/ge-dual-phone-contact'
 import { GeQuickEnquiryForm } from '../components/ge-quick-enquiry-form'
 import { GeSection } from '../components/ge-section'
 import { contactInfo } from '../data/copy'
 import type { ContentFormConfig } from '../content-page-context'
+import { golferGroupSizeSelectOptions } from '../data/form-people-options'
 
 const fadeUp = {
   initial: { opacity: 0, y: 18 },
@@ -18,18 +20,24 @@ const homeQuoteFormConfig = {
   successTitle: 'Trip brief received',
   successBody: 'Thanks. We will reply from Ireland with the clearest next step for your Costa del Sol golf trip.',
   fields: [
-    { id: 'travelDates', label: 'Travel dates', placeholder: 'e.g. 15-19 Sept 2026', required: true },
+    {
+      id: 'tripArrivalMode',
+      label: 'Trip timing',
+      type: 'select',
+      required: true,
+      options: [
+        { label: 'I have travel dates (arrival and departure)', value: 'planned' },
+        { label: 'Already at Málaga (AGP) — need transfers now', value: 'already_at_agp' }
+      ]
+    },
+    { id: 'travelDateFrom', label: 'Travel start date', type: 'date', required: false },
+    { id: 'travelDateTo', label: 'Travel end date', type: 'date', required: false },
     {
       id: 'groupSize',
       label: 'Group size',
       type: 'select',
       required: true,
-      options: [
-        { label: '2 golfers', value: '2 golfers' },
-        { label: '4 golfers', value: '4 golfers' },
-        { label: '8 golfers', value: '8 golfers' },
-        { label: '12+ golfers', value: '12+ golfers' }
-      ]
+      options: golferGroupSizeSelectOptions
     },
     {
       id: 'tripType',
@@ -67,7 +75,7 @@ const homeQuoteFormConfig = {
 
 const reassuranceLines = [
   'Airport transfers, tee times and routing handled together',
-  'Irish phone and WhatsApp follow-up',
+  'Irish & Spanish phone lines — WhatsApp on the Irish number',
   'No-obligation quote before anything is booked'
 ] as const
 
@@ -96,22 +104,16 @@ export function GeHomeEnquiry() {
             confirmation email and admin copy for follow-up.
           </p>
 
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:gap-3">
-            <a
-              href={`tel:${contactInfo.phoneTel}`}
-              className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2.5 rounded-xl bg-gs-green px-5 font-ge text-[1rem] font-bold uppercase tracking-[0.11em] text-white shadow-[0_12px_28px_rgba(6,59,42,0.25)] transition-all hover:bg-gs-electric hover:text-gs-dark"
-            >
-              <Phone className="h-4 w-4" aria-hidden />
-              {contactInfo.phoneDisplay}
-            </a>
+          <div className="mt-7 flex flex-col gap-3">
+            <GeDualPhoneEnquiryCallRow />
             <a
               href={whatsappHref}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2.5 rounded-xl border-2 border-gs-green bg-white px-5 font-ge text-[1rem] font-bold uppercase tracking-[0.11em] text-gs-green transition-all hover:bg-gs-green hover:text-white"
+              className="inline-flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-xl border-2 border-gs-green bg-white px-5 font-ge text-[1rem] font-bold uppercase tracking-[0.11em] text-gs-green transition-all hover:bg-gs-green hover:text-white sm:text-[1rem]"
             >
               <MessageCircle className="h-4 w-4" aria-hidden />
-              WhatsApp us
+              WhatsApp us (Irish number)
             </a>
           </div>
 

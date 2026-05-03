@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ChevronDown, Menu, Phone, X } from 'lucide-react'
+import { ChevronDown, Menu, X } from 'lucide-react'
 import { cx } from '../../../lib/utils'
 import { GeBrandLockup } from '../components/brand-lockup'
 import { GeButton } from '../components/ge-button'
-import { contactInfo } from '../data/copy'
 import { primaryNav, type GeNavLink } from '../data/nav'
+import { GeDualPhoneNavMobileButtons } from '../components/ge-dual-phone-contact'
 import { GeTopBar } from './top-bar'
 
 interface GeNavbarProps {
@@ -54,16 +54,12 @@ export function GeNavbar({ mode: _mode = 'auto' }: GeNavbarProps = {}) {
           isOverlay ? 'py-4' : 'py-1.5 lg:py-1'
         )}
       >
-        <a
-          href={`tel:${contactInfo.phoneTel}`}
-          aria-label={`Call ${contactInfo.phoneDisplay}`}
-          className={cx(
-            'absolute left-4 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border-2 transition-colors sm:left-5 lg:hidden',
-            'border-ge-gray200 text-gs-green hover:border-gs-gold/70 hover:text-gs-gold hover:shadow-[0_0_0_1px_rgba(255,199,44,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gs-gold focus-visible:ring-offset-2'
-          )}
-        >
-          <Phone className="h-5 w-5" aria-hidden="true" />
-        </a>
+        <div className="absolute left-2 top-1/2 flex -translate-y-1/2 sm:left-3 lg:hidden">
+          <GeDualPhoneNavMobileButtons
+            borderClass="border-ge-gray200 text-gs-green"
+            hoverClass="hover:border-gs-gold/70 hover:text-gs-gold hover:shadow-[0_0_0_1px_rgba(255,199,44,0.2)]"
+          />
+        </div>
 
         <a
           href="/#top"

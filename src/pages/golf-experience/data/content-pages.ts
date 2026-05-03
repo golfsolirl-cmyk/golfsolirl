@@ -740,6 +740,7 @@ const coreGeContentPages: Record<string, GeContentPageData> = {
   },
   '/services/tee-time-bookings': teeTimeOnlyPage,
   '/services/twilight-golf': twilightGolfPage,
+  '/twilight-golf': twilightGolfPage,
   '/services/society-group-trips': bookingPage
 }
 

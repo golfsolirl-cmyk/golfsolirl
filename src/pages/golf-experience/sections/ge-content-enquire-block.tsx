@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
-import { CheckCircle2, MessageCircle, Phone } from 'lucide-react'
+import { CheckCircle2, MessageCircle } from 'lucide-react'
+import { GeDualPhoneEnquiryCallRow } from '../components/ge-dual-phone-contact'
 import { GeSection } from '../components/ge-section'
 import { GeQuickEnquiryForm } from '../components/ge-quick-enquiry-form'
 import { contactInfo } from '../data/copy'
@@ -62,22 +63,16 @@ export function GeContentEnquireBlock({
           <h2 className="mt-3 font-ge text-[2.15rem] font-extrabold leading-[1.05] tracking-[0.005em] text-gs-green sm:text-[2.55rem] lg:text-[2.75rem]">{title}</h2>
           <p className="mt-5 font-ge text-[1.08rem] leading-8 text-ge-gray500 sm:text-[1.12rem] sm:leading-8">{body}</p>
 
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:gap-3">
-            <a
-              href={`tel:${contactInfo.phoneTel}`}
-              className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2.5 rounded-xl bg-gs-green px-5 font-ge text-[1rem] font-bold uppercase tracking-[0.11em] text-white shadow-[0_12px_28px_rgba(6,59,42,0.25)] transition-all hover:bg-gs-electric hover:text-gs-dark sm:text-[1rem]"
-            >
-              <Phone className="h-4 w-4" aria-hidden />
-              <span>{contactInfo.phoneDisplay}</span>
-            </a>
+          <div className="mt-7 flex flex-col gap-3">
+            <GeDualPhoneEnquiryCallRow />
             <a
               href={whatsappHref}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2.5 rounded-xl border-2 border-gs-green bg-white px-5 font-ge text-[1rem] font-bold uppercase tracking-[0.11em] text-gs-green transition-all hover:bg-gs-green hover:text-white sm:text-[1rem]"
+              className="inline-flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-xl border-2 border-gs-green bg-white px-5 font-ge text-[1rem] font-bold uppercase tracking-[0.11em] text-gs-green transition-all hover:bg-gs-green hover:text-white sm:text-[1rem]"
             >
               <MessageCircle className="h-4 w-4" aria-hidden />
-              WhatsApp us
+              WhatsApp us (Irish number)
             </a>
           </div>
 

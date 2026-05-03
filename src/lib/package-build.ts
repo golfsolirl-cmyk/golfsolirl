@@ -1,3 +1,4 @@
+/** Website `formPayload.form` string keys: see `src/lib/enquiry-form-registry.ts`. */
 export type PackageBuildSource = 'landing' | 'packages'
 
 export interface PackageBuildTotals {
@@ -120,6 +121,240 @@ export const parsePackageBuildConfig = (raw: unknown): PackageBuildConfig | null
   return o as PackageBuildConfig
 }
 
+// --- Admin-published manual packages (config version 2; DB source admin_transfer | admin_golf | admin_hotel) ---
+
+export type AdminManualPackageKind = 'transfer' | 'golf' | 'hotel'
+
+export type AdminManualBuildSource = 'admin_transfer' | 'admin_golf' | 'admin_hotel'
+
+export interface AdminManualPackageConfig {
+  readonly version: 2
+  readonly kind: AdminManualPackageKind
+  readonly title: string
+  readonly summary: string
+  readonly priceEur: number
+}
+
+export interface WebsiteFormPackageConfig {
+  readonly version: 3
+  readonly formKey: string
+  readonly enquiryReferenceId: string
+  readonly submittedAt: string
+  readonly fields: Readonly<Record<string, string>>
+}
+
+export type ParsedPackageBuildConfig =
+  | { readonly type: 'calculator'; readonly config: PackageBuildConfig }
+  | { readonly type: 'manual'; readonly config: AdminManualPackageConfig }
+  | { readonly type: 'website_form'; readonly config: WebsiteFormPackageConfig }
+
+export const humanizeFormKey = (key: string): string =>
+  key
+    .replace(/[_-]+/g, ' ')
+    .replace(/\b\w/g, (ch) => ch.toUpperCase())
+
+export const parseManualAdminPackageConfig = (raw: unknown): AdminManualPackageConfig | null => {
+  if (!raw || typeof raw !== 'object') {
+    return null
+  }
+
+  const o = raw as Record<string, unknown>
+  if (o.version !== 2) {
+    return null
+  }
+
+  const kind = o.kind
+  if (kind !== 'transfer' && kind !== 'golf' && kind !== 'hotel') {
+    return null
+  }
+
+  if (typeof o.title !== 'string' || !o.title.trim()) {
+    return null
+  }
+
+  const price = Number(o.priceEur)
+  if (!Number.isFinite(price) || price < 0) {
+    return null
+  }
+
+  const summary = typeof o.summary === 'string' ? o.summary : ''
+
+  return {
+    version: 2,
+    kind,
+    title: o.title.trim(),
+    summary,
+    priceEur: price
+  }
+}
+
+export const parseWebsiteFormPackageConfig = (raw: unknown): WebsiteFormPackageConfig | null => {
+  if (!raw || typeof raw !== 'object') {
+    return null
+  }
+
+  const o = raw as Record<string, unknown>
+  if (o.version !== 3) {
+    return null
+  }
+
+  if (typeof o.formKey !== 'string' || !o.formKey.trim()) {
+    return null
+  }
+
+  if (typeof o.enquiryReferenceId !== 'string' || !o.enquiryReferenceId.trim()) {
+    return null
+  }
+
+  const submittedAt = typeof o.submittedAt === 'string' && o.submittedAt.trim() ? o.submittedAt.trim() : new Date(0).toISOString()
+
+  const rawFields = o.fields
+  const fields: Record<string, string> = {}
+  if (rawFields && typeof rawFields === 'object') {
+    for (const [k, v] of Object.entries(rawFields as Record<string, unknown>)) {
+      if (typeof v === 'string') {
+        fields[k] = v
+      } else if (v != null) {
+        fields[k] = String(v)
+      }
+    }
+  }
+
+  return {
+    version: 3,
+    formKey: o.formKey.trim(),
+    enquiryReferenceId: o.enquiryReferenceId.trim(),
+    submittedAt,
+    fields
+  }
+}
+
+export const parseAnyPackageBuildRowConfig = (raw: unknown): ParsedPackageBuildConfig | null => {
+  const manual = parseManualAdminPackageConfig(raw)
+  if (manual) {
+    return { type: 'manual', config: manual }
+  }
+
+  const website = parseWebsiteFormPackageConfig(raw)
+  if (website) {
+    return { type: 'website_form', config: website }
+  }
+
+  const calc = parsePackageBuildConfig(raw)
+  if (calc) {
+    return { type: 'calculator', config: calc }
+  }
+
+  return null
+}
+
+export const adminKindFromBuildSource = (source: string): AdminManualPackageKind | null => {
+  if (source === 'admin_transfer') {
+    return 'transfer'
+  }
+  if (source === 'admin_golf') {
+    return 'golf'
+  }
+  if (source === 'admin_hotel') {
+    return 'hotel'
+  }
+  return null
+}
+
+export const buildSourceForAdminKind = (kind: AdminManualPackageKind): AdminManualBuildSource => {
+  if (kind === 'transfer') {
+    return 'admin_transfer'
+  }
+  if (kind === 'golf') {
+    return 'admin_golf'
+  }
+  return 'admin_hotel'
+}
+
+export const packageBuildDbSourceLabel = (source: string): string => {
+  switch (source) {
+    case 'landing':
+      return 'Homepage calculator'
+    case 'packages':
+      return 'Packages calculator'
+    case 'admin_transfer':
+      return 'Admin · Transfers'
+    case 'admin_golf':
+      return 'Admin · Golf courses'
+    case 'admin_hotel':
+      return 'Admin · Hotel'
+    case 'website_form':
+      return 'Website form'
+    default:
+      return source
+  }
+}
+
+export const buildManualAdminPackageConfig = (input: {
+  readonly kind: AdminManualPackageKind
+  readonly title: string
+  readonly summary: string
+  readonly priceEur: number
+}): AdminManualPackageConfig => ({
+  version: 2,
+  kind: input.kind,
+  title: input.title.trim(),
+  summary: input.summary.trim(),
+  priceEur: input.priceEur
+})
+
+/** Default trip form rows for a manual admin quote (calculator-locked fields mirror the published price). */
+export const tripDetailsFromManualPackage = (manual: AdminManualPackageConfig): PackageTripDetailsForm => {
+  const base = emptyTripDetailsForm()
+  const price = formatPackageEuro(manual.priceEur)
+  const scope =
+    manual.kind === 'transfer' ? 'Transfers (admin quote)' : manual.kind === 'golf' ? 'Golf courses (admin quote)' : 'Hotel (admin quote)'
+
+  return {
+    ...base,
+    packageName: manual.title,
+    stayName: scope,
+    transferName: scope,
+    perPersonPrice: price,
+    groupTotal: price,
+    depositAmount: 'TBC',
+    remainingBalance: 'TBC',
+    courseList: manual.kind === 'golf' ? manual.summary : base.courseList,
+    hotelNameArea: manual.kind === 'hotel' ? manual.summary : base.hotelNameArea,
+    airportTransfers: manual.kind === 'transfer' ? manual.summary : base.airportTransfers
+  }
+}
+
+export const tripDetailsFromWebsiteFormPackage = (cfg: WebsiteFormPackageConfig): PackageTripDetailsForm => {
+  const base = emptyTripDetailsForm()
+  const lines = Object.entries(cfg.fields)
+    .map(([k, v]) => `${k}: ${v}`)
+    .join('\n')
+  const snapshot = [`Enquiry ${cfg.enquiryReferenceId}`, lines].filter((block) => block.length > 0).join('\n\n')
+
+  return {
+    ...base,
+    packageName: `Form · ${humanizeFormKey(cfg.formKey)}`,
+    stayName: cfg.enquiryReferenceId,
+    transferName: 'Website submission',
+    notesForGsol: snapshot || base.notesForGsol
+  }
+}
+
+export const tripDefaultsForPackageRow = (configRaw: unknown): PackageTripDetailsForm => {
+  const parsed = parseAnyPackageBuildRowConfig(configRaw)
+  if (!parsed) {
+    return emptyTripDetailsForm()
+  }
+  if (parsed.type === 'calculator') {
+    return tripDetailsFromConfig(parsed.config)
+  }
+  if (parsed.type === 'website_form') {
+    return tripDetailsFromWebsiteFormPackage(parsed.config)
+  }
+  return tripDetailsFromManualPackage(parsed.config)
+}
+
 export const formatPackageEuro = (value: number): string =>
   new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value)
 
@@ -180,7 +415,7 @@ export const TRIP_DETAILS_SECTIONS: readonly TripDetailsSectionMeta[] = [
     ]
   },
   {
-    title: 'Pricing (from calculator)',
+    title: 'Pricing (quote)',
     fields: [
       { key: 'perPersonPrice', label: 'Est. per person' },
       { key: 'groupTotal', label: 'Est. group total' },
@@ -246,8 +481,15 @@ export const TRIP_DETAILS_CALCULATOR_LOCKED_KEYS: ReadonlySet<TripDetailsFieldKe
   'remainingBalance'
 ])
 
-export const isCalculatorLockedTripField = (key: TripDetailsFieldKey): boolean =>
-  TRIP_DETAILS_CALCULATOR_LOCKED_KEYS.has(key)
+/**
+ * @param buildSource — `package_builds.source`; `website_form` only locks the snapshot identity lines so clients can edit the rest.
+ */
+export const isCalculatorLockedTripField = (key: TripDetailsFieldKey, buildSource?: string | null): boolean => {
+  if (buildSource === 'website_form') {
+    return key === 'packageName' || key === 'stayName' || key === 'transferName'
+  }
+  return TRIP_DETAILS_CALCULATOR_LOCKED_KEYS.has(key)
+}
 
 export const emptyTripDetailsForm = (): PackageTripDetailsForm => ({
   packageName: '',

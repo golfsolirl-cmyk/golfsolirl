@@ -5,9 +5,11 @@ import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import { Resend } from 'resend'
 import sharp from 'sharp'
 import { createEnquiryReferenceId, formatDocumentDate } from '../shared/document-templates.mjs'
+import { sanitizeStandardFontText } from '../shared/pdf-winansi-sanitize.mjs'
 import { gsolEmailBrand, logoLockupEmailContentId, shamrockInlineContentId, socialContentIds } from './email-constants.mjs'
 import { buildGsolTransactionalEmail, finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
 import { buildBrandedEnquiryEmailHtml } from './branded-enquiry-email.mjs'
+import { runPostEnquiryPortalInviteJob } from './post-enquiry-portal-invite.mjs'
 
 const pageWidth = 595.28
 const pageHeight = 841.89
@@ -113,7 +115,7 @@ const getSocialIconPng = (key, viewBox, pathD) => {
 }
 
 const wrapText = ({ text, font, fontSize, maxWidth }) => {
-  const paragraphs = text.split('\n')
+  const paragraphs = sanitizeStandardFontText(text).split('\n')
   const lines = []
 
   paragraphs.forEach((paragraph, paragraphIndex) => {
@@ -148,6 +150,19 @@ const wrapText = ({ text, font, fontSize, maxWidth }) => {
   return lines
 }
 
+/** Vertical advance for wrapped lines — empty lines = paragraph gap (keeps font size, avoids overlap). */
+const measureWrappedDrawHeight = (lines, lineHeight) => {
+  let total = 0
+  for (const line of lines) {
+    if (line.trim() === '') {
+      total += lineHeight * 0.55
+    } else {
+      total += lineHeight
+    }
+  }
+  return Math.max(lineHeight * 0.85, total)
+}
+
 const drawTextBlock = ({
   page,
   text,
@@ -163,6 +178,10 @@ const drawTextBlock = ({
   let currentY = y
 
   lines.forEach((line) => {
+    if (line.trim() === '') {
+      currentY -= lineHeight * 0.55
+      return
+    }
     page.drawText(line, {
       x,
       y: currentY,
@@ -271,6 +290,51 @@ const iconPaths = {
   }
 }
 
+const MAX_FORM_PAYLOAD_KEYS = 40
+const MAX_FORM_ID_LEN = 64
+const MAX_FORM_FIELD_KEY_LEN = 56
+const MAX_FORM_FIELD_VALUE_LEN = 4000
+
+/**
+ * Normalises optional client `formPayload` for structured admin submission detail.
+ * Shape: { form: string, fields: Record<string, string> }
+ */
+const sanitizeFormPayload = (raw) => {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+    return null
+  }
+  const form = typeof raw.form === 'string' ? raw.form.trim().slice(0, MAX_FORM_ID_LEN) : ''
+  const fieldsRaw = raw.fields
+  if (!form || !fieldsRaw || typeof fieldsRaw !== 'object' || Array.isArray(fieldsRaw)) {
+    return null
+  }
+  const fields = {}
+  let count = 0
+  for (const [k0, v0] of Object.entries(fieldsRaw)) {
+    if (count >= MAX_FORM_PAYLOAD_KEYS) {
+      break
+    }
+    const k = typeof k0 === 'string' ? k0.trim().slice(0, MAX_FORM_FIELD_KEY_LEN) : ''
+    if (!k) {
+      continue
+    }
+    let v = ''
+    if (typeof v0 === 'string') {
+      v = v0.trim().slice(0, MAX_FORM_FIELD_VALUE_LEN)
+    } else if (typeof v0 === 'number' && Number.isFinite(v0)) {
+      v = String(v0)
+    } else if (typeof v0 === 'boolean') {
+      v = v0 ? 'yes' : 'no'
+    }
+    fields[k] = v
+    count++
+  }
+  if (count === 0) {
+    return null
+  }
+  return { form, fields }
+}
+
 export const validateEnquiryPayload = (payload) => {
   const fullName = typeof payload?.fullName === 'string' ? payload.fullName.trim() : ''
   const email = typeof payload?.email === 'string' ? payload.email.trim().toLowerCase() : ''
@@ -292,19 +356,23 @@ export const validateEnquiryPayload = (payload) => {
     throw error
   }
 
+  const formPayload = sanitizeFormPayload(payload?.formPayload)
+
   return {
     fullName,
     email,
     interest,
     phoneWhatsApp,
-    bestTimeToCall
+    bestTimeToCall,
+    ...(formPayload ? { formPayload } : {})
   }
 }
 
 const rowHeightForValue = (value, font, maxW) => {
   const lines = wrapText({ text: value, font, fontSize: PDF_READING_PT, maxWidth: maxW })
-  const inner = Math.max(28, lines.length * (PDF_READING_LH + 4) + 14)
-  return inner + 20
+  const bodyH = measureWrappedDrawHeight(lines, PDF_READING_LH)
+  // Label row (~22pt) + value block + breathing room above rule
+  return Math.max(48, bodyH + 34)
 }
 
 export const createEnquiryPdf = async ({
@@ -461,7 +529,9 @@ export const createEnquiryPdf = async ({
     tableH += rowHeightForValue(val, regularFont, maxVw)
   }
 
-  let cursorY = Math.min(ty - 28, heroBottomY - 22) - 16
+  // Keep the details table clearly below hero copy and inside the white card
+  const tableSectionTop = Math.min(ty - 36, heroBottomY - 28)
+  let cursorY = tableSectionTop - 22
 
   page.drawText('YOUR SUBMITTED DETAILS', {
     x: innerLeft,
@@ -470,7 +540,7 @@ export const createEnquiryPdf = async ({
     size: PDF_READING_PT,
     color: colors.gold400
   })
-  cursorY -= 20
+  cursorY -= 24
 
   let rowY = cursorY
   let rowIdx = 0
@@ -486,9 +556,10 @@ export const createEnquiryPdf = async ({
         color: colors.tableStripe
       })
     }
+    const valueTopBaseline = rowY - 20
     page.drawText(label, {
       x: innerLeft,
-      y: rowY - 14,
+      y: valueTopBaseline,
       font: boldFont,
       size: PDF_READING_PT,
       color: colors.slate500
@@ -497,7 +568,7 @@ export const createEnquiryPdf = async ({
       page,
       text: val,
       x: valueX,
-      y: rowY - 14,
+      y: valueTopBaseline,
       font: regularFont,
       fontSize: PDF_READING_PT,
       color: colors.slate700,
@@ -524,7 +595,7 @@ export const createEnquiryPdf = async ({
     fontSize: discFontSize,
     maxWidth: innerW
   })
-  const discH = Math.max(96, 36 + discLines.length * discLH + 18)
+  const discH = Math.max(108, 40 + measureWrappedDrawHeight(discLines, discLH) + 22)
   const discBottom = blockY - discH
   if (discBottom < m + 8) {
     const shift = m + 8 - discBottom
@@ -574,8 +645,8 @@ export const createEnquiryPdf = async ({
     fontSize: termsFontSize,
     maxWidth: termsMaxW
   })
-  const termsTitleBlockH = 26
-  const termsBoxH = termsTitleBlockH + termsLines.length * termsLH + 28
+  const termsTitleBlockH = 30
+  const termsBoxH = termsTitleBlockH + measureWrappedDrawHeight(termsLines, termsLH) + 32
   const termsBoxTop = pageHeight - termsMargin
   const termsBoxFloor = bandH + 32
   let termsBoxBottom = termsBoxTop - termsBoxH
@@ -662,7 +733,7 @@ export const createEnquiryPdf = async ({
   })
   const fyRight = drawTextBlock({
     page: footerPage,
-    text: '087 446 4766\ninfo@golfsolirl.com\ngolfsolirl.com',
+    text: '087 446 4766 (IE / WhatsApp)\n+34 641 81 53 66 (ES)\ninfo@golfsolirl.com\ngolfsolirl.com',
     x: col2X,
     y: fy,
     font: regularFont,
@@ -742,22 +813,32 @@ const drawPdfPill = (page, text, x, y, font, color = pdfEmailTheme.gold) => {
     borderColor: color,
     borderWidth: 0.7
   })
-  page.drawText(text, { x: x + 14, y: y - 12, font, size: pillTextSize, color })
+  page.drawText(sanitizeStandardFontText(text), { x: x + 14, y: y - 12, font, size: pillTextSize, color })
 }
 
 const drawPdfInfoCard = ({ page, x, y, width, height, kicker, title, body, font, boldFont, fill }) => {
   page.drawRectangle({ x, y, width, height, color: fill, borderColor: pdfEmailTheme.sand, borderWidth: 0.8 })
-  page.drawText(kicker.toUpperCase(), { x: x + 14, y: y + height - 18, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.goldDeep })
-  page.drawText(title, { x: x + 14, y: y + height - 42, font: boldFont, size: 18, color: pdfEmailTheme.ink })
+  const pad = 14
+  const kickerY = y + height - pad - 4
+  page.drawText(sanitizeStandardFontText(kicker).toUpperCase(), {
+    x: x + pad,
+    y: kickerY,
+    font: boldFont,
+    size: PDF_READING_PT,
+    color: pdfEmailTheme.goldDeep
+  })
+  const titleY = kickerY - 26
+  page.drawText(sanitizeStandardFontText(title), { x: x + pad, y: titleY, font: boldFont, size: 18, color: pdfEmailTheme.ink })
+  const bodyStartY = titleY - 30
   drawTextBlock({
     page,
     text: body,
-    x: x + 14,
-    y: y + height - 64,
+    x: x + pad,
+    y: bodyStartY,
     font,
     fontSize: PDF_READING_PT,
     color: pdfEmailTheme.muted,
-    maxWidth: width - 28,
+    maxWidth: width - pad * 2,
     lineHeight: PDF_READING_LH
   })
 }
@@ -850,7 +931,8 @@ export const createBrandedEnquiryPdf = async ({
     lineHeight: PDF_READING_LH
   })
 
-  const fleetY = 322
+  // Stack fleet strip directly under hero (hero occupies heroY → heroY+heroH) — was 322 and overlapped hero.
+  const fleetY = heroY - 236
   page.drawRectangle({ x: margin, y: fleetY, width: contentW, height: 236, color: pdfEmailTheme.white, borderColor: pdfEmailTheme.sand, borderWidth: 0.8 })
   page.drawImage(fleetImage, { x: margin, y: fleetY + 76, width: contentW, height: 160 })
   page.drawRectangle({ x: margin, y: fleetY, width: contentW, height: 76, color: pdfEmailTheme.paleGold })
@@ -868,17 +950,68 @@ export const createBrandedEnquiryPdf = async ({
   })
 
   const summaryY = 56
-  /** Keep summary band below fleet block (fleet bottom ≈ 322) to avoid overlap. */
+  /** Snapshot cards sit between fleet bottom (fleetY) and page footer margin. */
   const summaryBandH = 248
   page.drawRectangle({ x: margin, y: summaryY, width: contentW, height: summaryBandH, color: pdfEmailTheme.white, borderColor: pdfEmailTheme.sand, borderWidth: 0.8 })
   page.drawText('RECOMMENDED ITINERARY SNAPSHOT', { x: margin + 20, y: summaryY + summaryBandH - 34, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.greenSoft })
   page.drawText('Built around the details you sent.', { x: margin + 20, y: summaryY + summaryBandH - 64, font: boldFont, size: 20, color: pdfEmailTheme.ink })
   const cardW = (contentW - 54) / 2
-  const infoCardH = 102
-  drawPdfInfoCard({ page, x: margin + 18, y: summaryY + 118, width: cardW, height: infoCardH, kicker: 'Transfer', title: 'Private AGP pickup', body: 'Flight-aware driver and room for clubs.', font: regularFont, boldFont, fill: pdfEmailTheme.paleGold })
-  drawPdfInfoCard({ page, x: margin + 36 + cardW, y: summaryY + 118, width: cardW, height: infoCardH, kicker: 'Stay', title: 'Golf-friendly base', body: 'Hotel or resort matched to the group.', font: regularFont, boldFont, fill: pdfEmailTheme.paleGreen })
-  drawPdfInfoCard({ page, x: margin + 18, y: summaryY + 10, width: cardW, height: infoCardH, kicker: 'Golf', title: 'Preferred rounds', body: 'Courses selected around ability and daylight.', font: regularFont, boldFont, fill: pdfEmailTheme.paleGreen })
-  drawPdfInfoCard({ page, x: margin + 36 + cardW, y: summaryY + 10, width: cardW, height: infoCardH, kicker: 'Support', title: 'Irish phone line', body: 'Email, phone or WhatsApp follow-up.', font: regularFont, boldFont, fill: pdfEmailTheme.paleGold })
+  const infoCardH = 120
+  const snapshotTopRowBottom = summaryY + 118
+  const snapshotRowGap = 14
+  const snapshotBottomRowBottom = snapshotTopRowBottom - infoCardH - snapshotRowGap
+  drawPdfInfoCard({
+    page,
+    x: margin + 18,
+    y: snapshotTopRowBottom,
+    width: cardW,
+    height: infoCardH,
+    kicker: 'Transfer',
+    title: 'Private AGP pickup',
+    body: 'Flight-aware driver and room for clubs.',
+    font: regularFont,
+    boldFont,
+    fill: pdfEmailTheme.paleGold
+  })
+  drawPdfInfoCard({
+    page,
+    x: margin + 36 + cardW,
+    y: snapshotTopRowBottom,
+    width: cardW,
+    height: infoCardH,
+    kicker: 'Stay',
+    title: 'Golf-friendly base',
+    body: 'Hotel or resort matched to the group.',
+    font: regularFont,
+    boldFont,
+    fill: pdfEmailTheme.paleGreen
+  })
+  drawPdfInfoCard({
+    page,
+    x: margin + 18,
+    y: snapshotBottomRowBottom,
+    width: cardW,
+    height: infoCardH,
+    kicker: 'Golf',
+    title: 'Preferred rounds',
+    body: 'Courses selected around ability and daylight.',
+    font: regularFont,
+    boldFont,
+    fill: pdfEmailTheme.paleGreen
+  })
+  drawPdfInfoCard({
+    page,
+    x: margin + 36 + cardW,
+    y: snapshotBottomRowBottom,
+    width: cardW,
+    height: infoCardH,
+    kicker: 'Support',
+    title: 'Irish phone line',
+    body: 'Email, phone or WhatsApp follow-up.',
+    font: regularFont,
+    boldFont,
+    fill: pdfEmailTheme.paleGold
+  })
 
   let detailPage = addPage()
   let y = pageHeight - 62
@@ -956,7 +1089,13 @@ export const createBrandedEnquiryPdf = async ({
     const x = margin + index * (imageCardW + 11)
     finalPage.drawRectangle({ x, y: imageCardY, width: imageCardW, height: 178, color: index === 1 ? pdfEmailTheme.paleGold : pdfEmailTheme.paleGreen, borderColor: pdfEmailTheme.sand, borderWidth: 0.8 })
     finalPage.drawImage(image, { x, y: imageCardY + 72, width: imageCardW, height: 106 })
-    finalPage.drawText(title, { x: x + 12, y: imageCardY + 48, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.ink })
+    finalPage.drawText(sanitizeStandardFontText(title), {
+      x: x + 12,
+      y: imageCardY + 48,
+      font: boldFont,
+      size: PDF_READING_PT,
+      color: pdfEmailTheme.ink
+    })
     drawTextBlock({
       page: finalPage,
       text: body,
@@ -1128,7 +1267,8 @@ const travellerContactSections = [
     body:
       'For transfers, tee-time coordination, hotel notes or trip questions connected to your GolfSol Ireland enquiry, contact us directly.',
     points: [
-      'GolfSol Ireland phone / WhatsApp: +353 87 446 4766',
+      'GolfSol Ireland phone / WhatsApp (Ireland): +353 87 446 4766',
+      'GolfSol Ireland phone (Spain): +34 641 81 53 66',
       'GolfSol Ireland email: info@golfsolirl.com',
       'This guide is not an emergency service. In danger, call 112 first.'
     ]
@@ -1213,7 +1353,13 @@ const createSupplementalPdf = async ({ title, kicker, subtitle, sections, footer
     page.drawRectangle({ x: margin, y: pageHeight - 206, width: contentW, height: 5, color: pdfEmailTheme.gold })
     const logoDims = logoImage.scale(0.24)
     page.drawImage(logoImage, { x: margin + 18, y: pageHeight - 126, width: logoDims.width, height: logoDims.height })
-    page.drawText(pageKicker.toUpperCase(), { x: margin + 20, y: pageHeight - 158, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.gold })
+    page.drawText(sanitizeStandardFontText(pageKicker).toUpperCase(), {
+      x: margin + 20,
+      y: pageHeight - 158,
+      font: boldFont,
+      size: PDF_READING_PT,
+      color: pdfEmailTheme.gold
+    })
     drawTextBlock({
       page,
       text: title,
@@ -1262,7 +1408,13 @@ const createSupplementalPdf = async ({ title, kicker, subtitle, sections, footer
       borderColor: pdfEmailTheme.sand,
       borderWidth: 0.8
     })
-    page.drawText(section.title, { x: margin + 16, y: y - 24, font: boldFont, size: 18, color: pdfEmailTheme.ink })
+    page.drawText(sanitizeStandardFontText(section.title), {
+      x: margin + 16,
+      y: y - 24,
+      font: boldFont,
+      size: 18,
+      color: pdfEmailTheme.ink
+    })
     let cursor = drawTextBlock({
       page,
       text: section.body,
@@ -1296,7 +1448,13 @@ const createSupplementalPdf = async ({ title, kicker, subtitle, sections, footer
   const pages = pdfDocument.getPages()
   pages.forEach((pdfPage, index) => {
     drawPdfLine(pdfPage, margin, 48, margin + contentW)
-    pdfPage.drawText(footerText, { x: margin, y: 30, font: regularFont, size: PDF_READING_PT, color: pdfEmailTheme.muted })
+    pdfPage.drawText(sanitizeStandardFontText(footerText), {
+      x: margin,
+      y: 30,
+      font: regularFont,
+      size: PDF_READING_PT,
+      color: pdfEmailTheme.muted
+    })
     pdfPage.drawText(`Page ${index + 1} of ${pages.length}`, {
       x: pageWidth - margin - 72,
       y: 30,
@@ -1393,7 +1551,13 @@ export const createPackingChecklistPdf = async () => {
       borderColor: pdfEmailTheme.sand,
       borderWidth: 0.9
     })
-    page.drawText(section.title, { x: margin + 16, y: y - 24, font: boldFont, size: 18, color: pdfEmailTheme.ink })
+    page.drawText(sanitizeStandardFontText(section.title), {
+      x: margin + 16,
+      y: y - 24,
+      font: boldFont,
+      size: 18,
+      color: pdfEmailTheme.ink
+    })
     let cursor = drawTextBlock({
       page,
       text: section.body,
@@ -1416,7 +1580,13 @@ export const createPackingChecklistPdf = async () => {
         borderWidth: 2.2,
         color: pdfEmailTheme.white
       })
-      page.drawText(point, { x: margin + 46, y: cursor, font: regularFont, size: PDF_READING_PT, color: pdfEmailTheme.ink })
+      page.drawText(sanitizeStandardFontText(point), {
+        x: margin + 46,
+        y: cursor,
+        font: regularFont,
+        size: PDF_READING_PT,
+        color: pdfEmailTheme.ink
+      })
       cursor -= 34
     })
 
@@ -1530,14 +1700,27 @@ const recordEnquiryToSupabase = async (enquiry, enquiryId, env) => {
     const sb = createClient(url, key, {
       auth: { persistSession: false, autoRefreshToken: false }
     })
-    const { error } = await sb.from('enquiries').insert({
+    const row = {
       reference_id: enquiryId,
       email: enquiry.email,
       full_name: enquiry.fullName,
       interest: enquiry.interest,
       phone_whatsapp: enquiry.phoneWhatsApp,
       best_time_to_call: enquiry.bestTimeToCall
-    })
+    }
+    if (enquiry.formPayload) {
+      row.form_payload = enquiry.formPayload
+    }
+    let { error } = await sb.from('enquiries').insert(row)
+
+    if (error && enquiry.formPayload && String(error.message).toLowerCase().includes('form_payload')) {
+      delete row.form_payload
+      const retry = await sb.from('enquiries').insert(row)
+      error = retry.error
+      if (!retry.error) {
+        console.warn('[enquiry-service] enquiries row saved without form_payload; add column (see supabase migrations).')
+      }
+    }
 
     if (error) {
       console.error('[enquiry-service] Supabase enquiries insert failed:', error.message)
@@ -1547,7 +1730,83 @@ const recordEnquiryToSupabase = async (enquiry, enquiryId, env) => {
   }
 }
 
-export const handleEnquirySubmission = async (payload, env = process.env) => {
+/**
+ * When a profile already exists for the enquiry email, mirror the submission as a
+ * `package_builds` row (source website_form, config v3) so the client dashboard stays in sync with site forms.
+ */
+const insertWebsiteFormPackageBuildIfProfileExists = async (enquiry, enquiryId, env) => {
+  const url = typeof env.SUPABASE_URL === 'string' ? env.SUPABASE_URL.trim() : ''
+  const key = typeof env.SUPABASE_SERVICE_ROLE_KEY === 'string' ? env.SUPABASE_SERVICE_ROLE_KEY.trim() : ''
+  if (!url || !key) {
+    return
+  }
+
+  const email = (enquiry.email ?? '').toString().trim().toLowerCase()
+  if (!email || !email.includes('@')) {
+    return
+  }
+
+  try {
+    const { createClient } = await import('@supabase/supabase-js')
+    const sb = createClient(url, key, {
+      auth: { persistSession: false, autoRefreshToken: false }
+    })
+
+    const { data: prof, error: pErr } = await sb.from('profiles').select('id').ilike('email', email).maybeSingle()
+    if (pErr || !prof?.id) {
+      return
+    }
+
+    const fp = enquiry.formPayload
+    const formKey =
+      fp && typeof fp === 'object' && typeof fp.form === 'string' && fp.form.trim() ? fp.form.trim() : 'website_form'
+
+    const rawFields = fp && typeof fp === 'object' && fp.fields && typeof fp.fields === 'object' ? fp.fields : {}
+    const fields = {}
+    for (const [k, v] of Object.entries(rawFields)) {
+      if (typeof v === 'string') {
+        fields[k] = v
+      } else if (v != null && typeof v !== 'undefined') {
+        fields[k] = String(v)
+      }
+    }
+
+    const config = {
+      version: 3,
+      formKey,
+      enquiryReferenceId: enquiryId,
+      submittedAt: new Date().toISOString(),
+      fields
+    }
+
+    const label = `${formKey.replace(/_/g, ' ')} · ${enquiryId}`
+
+    const { error: insErr } = await sb.from('package_builds').insert({
+      owner_id: prof.id,
+      source: 'website_form',
+      label,
+      config,
+      client_details: {},
+      updated_at: new Date().toISOString()
+    })
+
+    if (insErr) {
+      const msg = String(insErr.message ?? '')
+      if (msg.toLowerCase().includes('source') || msg.toLowerCase().includes('check')) {
+        console.warn(
+          '[enquiry-service] website_form package_build skipped (apply migration 20260430140000_website_form_packages_portal_updates.sql):',
+          msg
+        )
+      } else {
+        console.error('[enquiry-service] website_form package_build insert failed:', msg)
+      }
+    }
+  } catch (err) {
+    console.error('[enquiry-service] website_form package_build error:', err)
+  }
+}
+
+export const handleEnquirySubmission = async (payload, env = process.env, runtime = {}) => {
   const enquiry = validateEnquiryPayload(payload)
   const enquiryId = createEnquiryReferenceId()
   const enquiryDate = formatDocumentDate()
@@ -1610,6 +1869,16 @@ export const handleEnquirySubmission = async (payload, env = process.env) => {
   ])
 
   await recordEnquiryToSupabase(enquiry, enquiryId, env)
+  await insertWebsiteFormPackageBuildIfProfileExists(enquiry, enquiryId, env)
+
+  const portalInviteTask = runPostEnquiryPortalInviteJob({ enquiry, enquiryId, enquiryDate, env })
+  if (typeof runtime.waitUntil === 'function') {
+    runtime.waitUntil(portalInviteTask)
+  } else {
+    void portalInviteTask.catch((err) => {
+      console.error('[enquiry-service] post-enquiry portal invite job failed:', err)
+    })
+  }
 
   return {
     success: true,

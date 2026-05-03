@@ -1,9 +1,22 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { motion } from 'framer-motion'
 import { Send } from 'lucide-react'
+import { BookedDatesAvailabilityNotice } from '../../../components/booked-dates-availability-notice'
 import { GeButton } from './ge-button'
 import { contactInfo } from '../data/copy'
 import { transportEnquiryFormCopy } from '../data/transport-service'
+import { COURSES } from '../../../data/coastal-golf-data'
+import { assertDatesNotBooked, loadBookedServiceDayIsoSet } from '../../../lib/booked-service-days'
+import { getLocalDateIso } from '../../../lib/local-date-iso'
+import { plannedTravelDatesErrorMessage, travelEndMinIso, travelStartMinIso } from '../../../lib/travel-date-bounds'
+import {
+  ENQUIRY_STRUCTURED_FIELD_KEYS,
+  PICKUP_DROPOFF_TYPES,
+  TRIP_ARRIVAL_MODE,
+  WEBSITE_ENQUIRY_FORM
+} from '../../../lib/enquiry-form-registry'
+import { getSupabaseBrowserClient } from '../../../lib/supabase-client'
+import { MAX_ENQUIRY_PEOPLE } from '../data/form-people-options'
 
 const labelClass =
   'mb-1 block font-ge text-sm font-bold uppercase tracking-[0.18em] text-ge-gray500 sm:text-[0.85rem]'
@@ -32,9 +45,92 @@ export function TransportHeroEnquiryForm() {
   const [destination, setDestination] = useState('')
   const [collectionTime, setCollectionTime] = useState('')
   const [asap, setAsap] = useState(false)
+  const [tripArrivalMode, setTripArrivalMode] = useState<(typeof TRIP_ARRIVAL_MODE)[keyof typeof TRIP_ARRIVAL_MODE]>(TRIP_ARRIVAL_MODE.planned)
+  const [travelDateFrom, setTravelDateFrom] = useState('')
+  const [travelDateTo, setTravelDateTo] = useState('')
+  const [bookedDays, setBookedDays] = useState<Set<string>>(() => new Set())
+  const [hideCollectionByAdmin, setHideCollectionByAdmin] = useState(false)
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const confirmationRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      const supabase = getSupabaseBrowserClient()
+      const booked = await loadBookedServiceDayIsoSet(supabase)
+      if (!cancelled) {
+        setBookedDays(booked)
+      }
+      if (!supabase || cancelled) {
+        return
+      }
+      const { data } = await supabase.from('transport_form_public_flags').select('hide_collection_datetime').eq('id', 1).maybeSingle()
+      if (!cancelled) {
+        setHideCollectionByAdmin(Boolean(data?.hide_collection_datetime))
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    if (tripArrivalMode !== TRIP_ARRIVAL_MODE.alreadyAtAgp || asap) {
+      return
+    }
+    const iso = getLocalDateIso()
+    setTravelDateFrom(iso)
+    setTravelDateTo(iso)
+    if (!hideCollectionByAdmin) {
+      setCollectionTime((prev) => {
+        const t = prev.trim()
+        if (t.length >= 16 && t.slice(0, 10) === iso) {
+          return prev
+        }
+        return `${iso}T12:00`
+      })
+    }
+  }, [tripArrivalMode, asap, hideCollectionByAdmin])
+
+  useEffect(() => {
+    if (asap || hideCollectionByAdmin || !travelDateFrom) {
+      return
+    }
+    const ct = collectionTime.trim()
+    if (!ct || ct.length < 16) {
+      return
+    }
+    const day = ct.slice(0, 10)
+    const anchor =
+      tripArrivalMode === TRIP_ARRIVAL_MODE.planned
+        ? travelDateFrom.slice(0, 10)
+        : tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp
+          ? getLocalDateIso()
+          : ''
+    if (anchor.length === 10 && day !== anchor) {
+      setCollectionTime(`${anchor}T12:00`)
+    }
+  }, [travelDateFrom, tripArrivalMode, asap, hideCollectionByAdmin, collectionTime])
+
+  useEffect(() => {
+    if (tripArrivalMode !== TRIP_ARRIVAL_MODE.planned || asap) {
+      return
+    }
+    const t = travelStartMinIso()
+    const df = travelDateFrom.trim().slice(0, 10)
+    const dt = travelDateTo.trim().slice(0, 10)
+    if (df.length === 10 && df < t) {
+      setTravelDateFrom(t)
+      return
+    }
+    if (df.length === 10 && dt.length === 10) {
+      const endMin = travelEndMinIso(df)
+      if (dt < endMin) {
+        setTravelDateTo(endMin)
+      }
+    }
+  }, [tripArrivalMode, asap, travelDateFrom, travelDateTo])
 
   useEffect(() => {
     if (status === 'success') {
@@ -67,27 +163,150 @@ export function TransportHeroEnquiryForm() {
       setStatus('error')
       return
     }
-    if (passengers < 1 || passengers > 16) {
+    if (passengers < 1 || passengers > MAX_ENQUIRY_PEOPLE) {
       setErrorMessage(transportEnquiryFormCopy.validationPassengers)
       setStatus('error')
       return
     }
-    if (!asap && !collectionTime.trim()) {
+
+    const relaxCollection = asap || hideCollectionByAdmin
+    if (!relaxCollection && !collectionTime.trim()) {
       setErrorMessage(transportEnquiryFormCopy.validationTime)
       setStatus('error')
       return
     }
 
-    const timing = asap ? 'ASAP (first available driver)' : collectionTime.trim()
+    const df = travelDateFrom.trim()
+    const dt = travelDateTo.trim()
+    const todayIso = getLocalDateIso()
+
+    if (tripArrivalMode === TRIP_ARRIVAL_MODE.planned && !asap) {
+      if (!df || !dt) {
+        setErrorMessage('Add travel start and end dates, or choose “Already at Málaga (AGP)”.')
+        setStatus('error')
+        return
+      }
+      const plannedErr = plannedTravelDatesErrorMessage(df, dt)
+      if (plannedErr) {
+        setErrorMessage(plannedErr)
+        setStatus('error')
+        return
+      }
+    }
+
+    if (tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp && !asap) {
+      if (df !== todayIso || dt !== todayIso) {
+        setErrorMessage('When you are already here, travel dates must be set to today only.')
+        setStatus('error')
+        return
+      }
+    }
+
+    if (!relaxCollection) {
+      const raw = collectionTime.trim()
+      const cday = raw.slice(0, 10)
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(cday)) {
+        setErrorMessage('Please choose a valid collection date and time.')
+        setStatus('error')
+        return
+      }
+      if (tripArrivalMode === TRIP_ARRIVAL_MODE.planned && !asap && cday !== df) {
+        setErrorMessage('Collection must be on the same calendar day as your travel start date.')
+        setStatus('error')
+        return
+      }
+      if (tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp && !asap && cday !== todayIso) {
+        setErrorMessage('Collection must be today — same day you are already in the area.')
+        setStatus('error')
+        return
+      }
+    }
+
+    const bookedCheckDates: string[] = []
+    if (!asap && tripArrivalMode === TRIP_ARRIVAL_MODE.planned) {
+      bookedCheckDates.push(df, dt)
+    }
+    if (!asap && tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp) {
+      bookedCheckDates.push(todayIso)
+    }
+    if (!relaxCollection) {
+      bookedCheckDates.push(collectionTime.trim().slice(0, 10))
+    }
+    const bookedMsg = assertDatesNotBooked(bookedDays, bookedCheckDates)
+    if (bookedMsg) {
+      setErrorMessage(bookedMsg)
+      setStatus('error')
+      return
+    }
+
+    const timing = relaxCollection
+      ? hideCollectionByAdmin
+        ? 'Collection time — to be confirmed with GolfSol (busy period)'
+        : 'ASAP (first available driver)'
+      : collectionTime.trim()
+    const tripTimingLine =
+      asap && tripArrivalMode === TRIP_ARRIVAL_MODE.planned
+        ? 'Trip timing: Planned trip — first available driver (dates to confirm with you)'
+        : tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp
+          ? `Trip timing: Already at Málaga (AGP)${!asap ? ` (${todayIso})` : ''}`
+          : `Trip timing: ${df} → ${dt}`
     const interest = [
       'TRANSPORT PAGE — transfer request',
+      tripTimingLine,
       `Passengers: ${passengers}`,
       `Collection point: ${from}`,
       `Destination: ${to}`,
       `Collection timing: ${timing}`
     ].join('\n')
 
-    const bestTimeToCall = asap ? 'ASAP — transfer' : `Collection: ${collectionTime.trim()}`
+    const bestTimeToCall = relaxCollection
+      ? hideCollectionByAdmin
+        ? 'Collection time to be confirmed'
+        : 'ASAP — transfer'
+      : `Collection: ${collectionTime.trim()}`
+
+    const looksLikeMalagaAirport = (s: string) => /m[áa]laga|agp|malaga airport|málaga airport|costa del sol airport/i.test(s)
+    const courseDest = COURSES.find(
+      (c) =>
+        to.length >= 4 &&
+        (to.toLowerCase().includes(c.name.toLowerCase()) || c.name.toLowerCase().includes(to.toLowerCase().slice(0, 8)))
+    )
+    let dropoffType: (typeof PICKUP_DROPOFF_TYPES)[keyof typeof PICKUP_DROPOFF_TYPES] = PICKUP_DROPOFF_TYPES.freeText
+    if (courseDest) {
+      dropoffType = PICKUP_DROPOFF_TYPES.golfCourse
+    } else if (looksLikeMalagaAirport(to)) {
+      dropoffType = PICKUP_DROPOFF_TYPES.malagaAirport
+    }
+
+    const formFields: Record<string, string> = {
+      'Trip timing':
+        tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp
+          ? 'Already at Málaga (AGP) — need transfers now'
+          : asap
+            ? 'Planned trip — first available driver'
+            : 'Planned trip — dated',
+      [ENQUIRY_STRUCTURED_FIELD_KEYS.alreadyAtMalagaAgp]:
+        tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp ? 'yes' : 'no',
+      ...(!asap && df ? { [ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateFrom]: df, 'Travel start date': df } : {}),
+      ...(!asap && dt ? { [ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateTo]: dt, 'Travel end date': dt } : {}),
+      ...(tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp && !asap
+        ? { 'Service date (already here)': todayIso }
+        : {}),
+      Passengers: String(passengers),
+      'Collection point': from,
+      Destination: to,
+      'Collection timing': timing,
+      ASAP: asap ? 'yes' : 'no',
+      ...(hideCollectionByAdmin ? { 'Public form': 'Collection date/time hidden (admin busy mode)' } : {}),
+      [ENQUIRY_STRUCTURED_FIELD_KEYS.pax]: String(passengers),
+      [ENQUIRY_STRUCTURED_FIELD_KEYS.pickupType]: looksLikeMalagaAirport(from)
+        ? PICKUP_DROPOFF_TYPES.malagaAirport
+        : PICKUP_DROPOFF_TYPES.freeText,
+      [ENQUIRY_STRUCTURED_FIELD_KEYS.pickupLabel]: from,
+      [ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffType]: dropoffType,
+      [ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffLabel]: to,
+      ...(courseDest ? { [ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffId]: courseDest.id } : {})
+    }
 
     setStatus('submitting')
     try {
@@ -99,7 +318,11 @@ export function TransportHeroEnquiryForm() {
           email: mail,
           phoneWhatsApp: phone,
           interest,
-          bestTimeToCall
+          bestTimeToCall,
+          formPayload: {
+            form: WEBSITE_ENQUIRY_FORM.transportServicePage,
+            fields: formFields
+          }
         })
       })
       const data = (await response.json().catch(() => ({}))) as { message?: string }
@@ -113,6 +336,7 @@ export function TransportHeroEnquiryForm() {
     }
   }
 
+  const relaxCollectionMailto = asap || hideCollectionByAdmin
   const mailtoHref = buildMailtoFallback({
     Name: fullName.trim(),
     Email: email.trim(),
@@ -120,8 +344,37 @@ export function TransportHeroEnquiryForm() {
     Passengers: String(passengers),
     'Collection point': collectionPoint.trim(),
     Destination: destination.trim(),
-    'Collection time / ASAP': asap ? 'ASAP' : collectionTime.trim()
+    'Collection time / ASAP': relaxCollectionMailto
+      ? hideCollectionByAdmin
+        ? 'To be confirmed (busy period)'
+        : 'ASAP'
+      : collectionTime.trim()
   })
+
+  const showTravelDateFields = tripArrivalMode === TRIP_ARRIVAL_MODE.planned && !asap
+  const showAgpTodayOnly = tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp && !asap
+  const todayIsoForPicker = getLocalDateIso()
+  const plannedStartMin = travelStartMinIso()
+  const plannedEndMin = travelEndMinIso(travelDateFrom)
+  const transportWatchDates = [
+    ...(showTravelDateFields ? [travelDateFrom, travelDateTo] : []),
+    ...(showAgpTodayOnly ? [todayIsoForPicker] : []),
+    ...(!asap && !hideCollectionByAdmin && collectionTime.trim().length >= 10 ? [collectionTime.trim().slice(0, 10)] : [])
+  ]
+  const collectionDayMinMax =
+    !asap && !hideCollectionByAdmin
+      ? tripArrivalMode === TRIP_ARRIVAL_MODE.planned && travelDateFrom.trim().length === 10
+        ? {
+            min: `${travelDateFrom.trim()}T00:00`,
+            max: `${travelDateFrom.trim()}T23:59`
+          }
+        : tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp
+          ? {
+              min: `${todayIsoForPicker}T00:00`,
+              max: `${todayIsoForPicker}T23:59`
+            }
+          : null
+      : null
 
   return (
     <motion.div
@@ -147,7 +400,9 @@ export function TransportHeroEnquiryForm() {
             </GeButton>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4 px-5 py-6 sm:px-6 sm:py-7" noValidate>
+          <>
+            <BookedDatesAvailabilityNotice bookedDays={bookedDays} className="px-5 pt-5 sm:px-6 sm:pt-6" watchDates={transportWatchDates} />
+            <form onSubmit={handleSubmit} className="space-y-4 px-5 pb-6 pt-2 sm:px-6 sm:pb-7 sm:pt-3" noValidate>
             <header className="border-b border-ge-gray100 pb-4">
               <p className="font-ge text-sm font-bold uppercase tracking-[0.18em] text-ge-orange sm:text-[0.85rem]">
                 {transportEnquiryFormCopy.sheetEyebrow}
@@ -196,7 +451,7 @@ export function TransportHeroEnquiryForm() {
                   value={phoneWhatsApp}
                   onChange={(e) => setPhoneWhatsApp(e.target.value)}
                   className={inputClass}
-                  placeholder={contactInfo.phoneDisplay}
+                  placeholder={contactInfo.phoneFieldPlaceholder}
                   required
                 />
               </label>
@@ -209,14 +464,89 @@ export function TransportHeroEnquiryForm() {
                   onChange={(e) => setPassengers(Number(e.target.value))}
                   className={inputClass}
                 >
-                  {Array.from({ length: 16 }, (_, i) => i + 1).map((n) => (
+                  {Array.from({ length: MAX_ENQUIRY_PEOPLE }, (_, i) => i + 1).map((n) => (
                     <option key={n} value={n}>
                       {n} {n === 1 ? 'person' : 'people'}
                     </option>
                   ))}
-                  <option value={20}>16+ — let’s talk</option>
                 </select>
               </label>
+
+              <label className="block min-w-0 md:col-span-2">
+                <span className={labelClass}>Trip timing</span>
+                <select
+                  name="tripArrivalMode"
+                  value={tripArrivalMode}
+                  onChange={(e) => {
+                    const next =
+                      e.target.value === TRIP_ARRIVAL_MODE.alreadyAtAgp
+                        ? TRIP_ARRIVAL_MODE.alreadyAtAgp
+                        : TRIP_ARRIVAL_MODE.planned
+                    setTripArrivalMode(next)
+                    if (next === TRIP_ARRIVAL_MODE.alreadyAtAgp) {
+                      setAsap(false)
+                      const t = getLocalDateIso()
+                      setTravelDateFrom(t)
+                      setTravelDateTo(t)
+                      if (!hideCollectionByAdmin) {
+                        setCollectionTime((prev) => {
+                          const p = prev.trim()
+                          return p.length >= 16 && p.slice(0, 10) === t ? prev : `${t}T12:00`
+                        })
+                      }
+                    }
+                  }}
+                  className={inputClass}
+                >
+                  <option value={TRIP_ARRIVAL_MODE.planned}>I have travel dates (arrival and departure)</option>
+                  <option value={TRIP_ARRIVAL_MODE.alreadyAtAgp}>Already at Málaga (AGP) — need transfers now</option>
+                </select>
+              </label>
+
+              {showAgpTodayOnly ? (
+                <label className="block min-w-0 md:col-span-2">
+                  <span className={labelClass}>Today&apos;s date (same-day pickup only)</span>
+                  <input
+                    name="agpServiceDay"
+                    type="date"
+                    readOnly
+                    value={travelDateFrom === todayIsoForPicker ? travelDateFrom : todayIsoForPicker}
+                    min={todayIsoForPicker}
+                    max={todayIsoForPicker}
+                    className={`${inputClass} cursor-not-allowed bg-ge-gray50 text-ge-gray600`}
+                  />
+                  <span className="mt-1 block font-ge text-sm leading-snug text-ge-gray400 sm:text-[0.95rem]">
+                    You can only request collection for today. Choose your pickup time below (or first available driver).
+                  </span>
+                </label>
+              ) : null}
+
+              {showTravelDateFields ? (
+                <>
+                  <label className="block min-w-0 md:col-span-1">
+                    <span className={labelClass}>Travel start date</span>
+                    <input
+                      name="travelDateFrom"
+                      type="date"
+                      value={travelDateFrom}
+                      min={plannedStartMin}
+                      onChange={(e) => setTravelDateFrom(e.target.value)}
+                      className={inputClass}
+                    />
+                  </label>
+                  <label className="block min-w-0 md:col-span-1">
+                    <span className={labelClass}>Travel end date</span>
+                    <input
+                      name="travelDateTo"
+                      type="date"
+                      value={travelDateTo}
+                      min={plannedEndMin}
+                      onChange={(e) => setTravelDateTo(e.target.value)}
+                      className={inputClass}
+                    />
+                  </label>
+                </>
+              ) : null}
 
               <label className="block min-w-0 md:col-span-2">
                 <span className={labelClass}>{transportEnquiryFormCopy.collectionLabel}</span>
@@ -249,34 +579,54 @@ export function TransportHeroEnquiryForm() {
                 </span>
               </label>
 
-              <fieldset className="min-w-0 space-y-2 border-0 p-0 md:col-span-2">
-                <legend className={`${labelClass} w-full`}>{transportEnquiryFormCopy.timeLabel}</legend>
-                <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-ge-gray200 bg-ge-gray50 px-3 py-2.5">
-                  <input
-                    type="checkbox"
-                    checked={asap}
-                    onChange={(e) => {
-                      setAsap(e.target.checked)
-                      if (e.target.checked) setCollectionTime('')
-                    }}
-                    className="mt-1 h-4 w-4 shrink-0 rounded border-ge-gray300 text-gs-green focus:ring-gs-green"
-                  />
-                  <span>
-                    <span className="block font-ge text-base font-semibold text-gs-dark">{transportEnquiryFormCopy.asapLabel}</span>
-                    <span className="mt-0.5 block font-ge text-base leading-snug text-ge-gray500 sm:text-[0.95rem]">
-                      {transportEnquiryFormCopy.asapHint}
+              {hideCollectionByAdmin ? (
+                <div className="md:col-span-2 rounded-lg border border-ge-gray200 bg-ge-gray50 px-3 py-2.5 font-ge text-base leading-snug text-ge-gray600 sm:text-[0.95rem]">
+                  Pickup date and time are confirmed directly with you for this period — add anything urgent in the collection
+                  point notes if needed.
+                </div>
+              ) : (
+                <fieldset className="min-w-0 space-y-2 border-0 p-0 md:col-span-2">
+                  <legend className={`${labelClass} w-full`}>{transportEnquiryFormCopy.timeLabel}</legend>
+                  <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-ge-gray200 bg-ge-gray50 px-3 py-2.5">
+                    <input
+                      type="checkbox"
+                      checked={asap}
+                      onChange={(e) => {
+                        const on = e.target.checked
+                        setAsap(on)
+                        if (on) {
+                          setCollectionTime('')
+                          setTravelDateFrom('')
+                          setTravelDateTo('')
+                        }
+                      }}
+                      className="mt-1 h-4 w-4 shrink-0 rounded border-ge-gray300 text-gs-green focus:ring-gs-green"
+                    />
+                    <span>
+                      <span className="block font-ge text-base font-semibold text-gs-dark">{transportEnquiryFormCopy.asapLabel}</span>
+                      <span className="mt-0.5 block font-ge text-base leading-snug text-ge-gray500 sm:text-[0.95rem]">
+                        {transportEnquiryFormCopy.asapHint}
+                      </span>
                     </span>
-                  </span>
-                </label>
-                <input
-                  type="datetime-local"
-                  name="collectionTime"
-                  value={collectionTime}
-                  onChange={(e) => setCollectionTime(e.target.value)}
-                  disabled={asap}
-                  className={`${inputClass} disabled:cursor-not-allowed disabled:bg-ge-gray100 disabled:text-ge-gray400`}
-                />
-              </fieldset>
+                  </label>
+                  <input
+                    type="datetime-local"
+                    name="collectionTime"
+                    value={collectionTime}
+                    onChange={(e) => setCollectionTime(e.target.value)}
+                    disabled={asap}
+                    min={collectionDayMinMax?.min}
+                    max={collectionDayMinMax?.max}
+                    className={`${inputClass} disabled:cursor-not-allowed disabled:bg-ge-gray100 disabled:text-ge-gray400`}
+                  />
+                  {collectionDayMinMax && !asap && tripArrivalMode === TRIP_ARRIVAL_MODE.planned ? (
+                    <p className="font-ge text-sm text-ge-gray500">Use the same day as travel start ({travelDateFrom.trim()}).</p>
+                  ) : null}
+                  {collectionDayMinMax && !asap && tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp ? (
+                    <p className="font-ge text-sm text-ge-gray500">Pickup must be today ({todayIsoForPicker}).</p>
+                  ) : null}
+                </fieldset>
+              )}
             </div>
 
             {status === 'error' && errorMessage ? (
@@ -296,6 +646,7 @@ export function TransportHeroEnquiryForm() {
               {status === 'submitting' ? transportEnquiryFormCopy.sending : transportEnquiryFormCopy.submit}
             </GeButton>
           </form>
+          </>
         )}
       </div>
     </motion.div>

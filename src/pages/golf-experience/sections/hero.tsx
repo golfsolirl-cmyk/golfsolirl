@@ -27,7 +27,7 @@ export function GeHero() {
           <source type="image/webp" srcSet="/images/hero-sample-sunny-mercedes-03.webp" />
           <img
             src="/images/hero-sample-sunny-mercedes-03.png"
-            alt="GolfSol Ireland — From plane to fairway. Meet-and-greet at Málaga, golf-bag friendly Mercedes transfers, tee times pre-booked. Call +353 87 446 4766."
+            alt="GolfSol Ireland — From plane to fairway. Meet-and-greet at Málaga, golf-bag friendly Mercedes transfers, tee times pre-booked. Irish and Spanish phone lines: +353 87 446 4766 and +34 641 81 53 66."
             className="block h-auto w-full select-none"
             fetchPriority="high"
             decoding="async"

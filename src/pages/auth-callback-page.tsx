@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { PageIdentityBar } from '../components/page-identity-bar'
+import { GeFooter } from '../pages/golf-experience/sections/ge-footer'
+import { GeNavbar } from '../pages/golf-experience/sections/ge-navbar'
 import { AUTH_NEXT_STORAGE_KEY, isSafeInternalPath } from '../lib/internal-redirect'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 
@@ -158,16 +160,20 @@ export function AuthCallbackPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-forest-950 text-white">
+    <div className="ge-page flex min-h-screen flex-col overflow-x-hidden bg-white font-ge text-gs-dark">
+      <GeNavbar />
       <PageIdentityBar
         compact
         label="Signing you in"
         eyebrow="Account access"
         description="We are completing your secure login and sending you to the right page."
+        offsetHeader
+        tone="ge"
       />
-      <div className="flex min-h-[calc(100vh-140px)] flex-col items-center justify-center px-4 text-center">
-        <p className="text-base font-medium tracking-[0.02em] text-white/84 sm:text-lg">{message}</p>
+      <div className="flex flex-1 flex-col items-center justify-center px-5 py-16 text-center sm:px-8">
+        <p className="max-w-md font-ge text-base font-medium leading-8 text-ge-gray600 sm:text-lg">{message}</p>
       </div>
+      <GeFooter />
     </div>
   )
 }

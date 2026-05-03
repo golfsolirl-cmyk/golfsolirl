@@ -24,7 +24,18 @@ export default async function handler(request, response) {
   try {
     const rawBody = await readRequestBody(request)
     const payload = rawBody ? JSON.parse(rawBody) : {}
-    const result = await handleEnquirySubmission(payload, process.env)
+
+    let waitUntilFn = null
+    try {
+      const vercelFns = await import('@vercel/functions')
+      waitUntilFn = typeof vercelFns.waitUntil === 'function' ? vercelFns.waitUntil : null
+    } catch {
+      /* local Node / non-Vercel */
+    }
+
+    const result = await handleEnquirySubmission(payload, process.env, {
+      waitUntil: waitUntilFn ?? undefined
+    })
 
     response.status(200).json(result)
   } catch (error) {

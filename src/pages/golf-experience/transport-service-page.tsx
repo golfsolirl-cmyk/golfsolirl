@@ -34,6 +34,7 @@ export function TransportServicePage() {
           label="Transport Service"
           description="Airport, golf-day, and resort transfers for Irish golfers heading to the Costa del Sol."
           offsetHeader
+          tone="ge"
         />
         <TransportHero />
         <TransportPromise />

@@ -1,49 +1,27 @@
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { normalizeProposalPayload } from '../shared/document-templates.mjs'
+import { requireAdminFromBearer } from './auth-verify-admin.mjs'
 import { createProposalFilename, createProposalPdf } from './proposal-service.mjs'
+import { buildBrandedProposalAttachedEmailHtml } from './branded-client-portal-email.mjs'
+import { finalizeGsolEmailHtml } from './email-layout.mjs'
+import { getTransactionalEmailImageAttachments } from './enquiry-service.mjs'
 
-const buildProposalEmailHtml = ({ proposalId, clientName }) => {
-  const name = clientName?.trim() ? clientName.trim() : 'there'
-
-  return `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8" /></head>
-<body style="margin:0;font-family:Georgia,serif;background:#f4f6f1;color:#163a13;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f1;padding:32px 16px;">
-    <tr>
-      <td align="center">
-        <table role="presentation" width="100%" style="max-width:560px;background:#ffffff;border-radius:20px;overflow:hidden;border:1px solid #dfe8d8;">
-          <tr>
-            <td style="background:#0a2008;padding:28px 24px;">
-              <p style="margin:0;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#fdc874;">Golf Sol Ireland</p>
-              <p style="margin:12px 0 0;font-size:22px;font-weight:700;color:#ffffff;">Your proposal is ready</p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:28px 24px;">
-              <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">Hi ${name},</p>
-              <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:#2d4a28;">
-                Please find your formal package proposal attached (${proposalId}). You can also download it anytime from
-                <strong>your dashboard</strong> after signing in at our site.
-              </p>
-              <p style="margin:0;font-size:15px;line-height:1.65;color:#2d4a28;">
-                If anything needs tweaking, just reply to this email — we&apos;re here to get the Costa del Sol right for your group.
-              </p>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:0 24px 28px;">
-              <p style="margin:0;font-size:13px;color:#5c6b58;">Fairways &amp; fair play,<br /><strong>Golf Sol Ireland</strong></p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`
+const getSiteOrigin = (env) => {
+  const site = env.SITE_URL?.trim()
+  if (site) {
+    try {
+      return new URL(site.startsWith('http') ? site : `https://${site}`).origin
+    } catch {
+      /* continue */
+    }
+  }
+  const vercel = env.VERCEL_URL?.trim()
+  if (vercel) {
+    const host = vercel.replace(/^https?:\/\//, '')
+    return `https://${host}`
+  }
+  return 'http://localhost:5173'
 }
 
 export const handleSendProposalToClient = async (rawBody, env, { authHeader }) => {
@@ -64,14 +42,6 @@ export const handleSendProposalToClient = async (rawBody, env, { authHeader }) =
     throw err
   }
 
-  const token = typeof authHeader === 'string' ? authHeader.replace(/^Bearer\s+/i, '').trim() : ''
-
-  if (!token) {
-    const err = new Error('Missing authorization.')
-    err.statusCode = 401
-    throw err
-  }
-
   const body = typeof rawBody === 'object' && rawBody !== null ? rawBody : {}
   const clientEmail = typeof body.clientEmail === 'string' ? body.clientEmail.trim().toLowerCase() : ''
   const title = typeof body.title === 'string' ? body.title.trim() : ''
@@ -89,28 +59,16 @@ export const handleSendProposalToClient = async (rawBody, env, { authHeader }) =
     throw err
   }
 
+  const auth = await requireAdminFromBearer(authHeader, env)
+  if (!auth.ok) {
+    const err = new Error(auth.message)
+    err.statusCode = auth.statusCode
+    throw err
+  }
+
   const supabase = createClient(supabaseUrl, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false }
   })
-
-  const {
-    data: { user },
-    error: userError
-  } = await supabase.auth.getUser(token)
-
-  if (userError || !user) {
-    const err = new Error('Invalid or expired session.')
-    err.statusCode = 401
-    throw err
-  }
-
-  const { data: adminProfile, error: adminErr } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
-
-  if (adminErr || adminProfile?.role !== 'admin') {
-    const err = new Error('Only admins can send proposals to clients.')
-    err.statusCode = 403
-    throw err
-  }
 
   const { data: clientProfile, error: clientErr } = await supabase
     .from('profiles')
@@ -149,13 +107,28 @@ export const handleSendProposalToClient = async (rawBody, env, { authHeader }) =
     throw err
   }
 
+  const origin = getSiteOrigin(env)
+  const dashboardLoginUrl = `${origin}/login?next=${encodeURIComponent('/dashboard')}`
+  const rawHtml = buildBrandedProposalAttachedEmailHtml({
+    greetingName: clientProfile.full_name ?? '',
+    proposalId: proposal.proposalId,
+    dashboardLoginUrl
+  })
+  const html = finalizeGsolEmailHtml(rawHtml)
+  const imageAttachments = await getTransactionalEmailImageAttachments()
+  const pdfAttachment = {
+    filename,
+    content: Buffer.from(pdfBytes).toString('base64'),
+    contentType: 'application/pdf'
+  }
+
   const resend = new Resend(resendKey)
   const { error: sendError } = await resend.emails.send({
     from: fromEmail,
     to: clientEmail,
     subject: `Your Golf Sol Ireland proposal — ${proposal.proposalId}`,
-    html: buildProposalEmailHtml({ proposalId: proposal.proposalId, clientName: clientProfile.full_name }),
-    attachments: [{ filename, content: Buffer.from(pdfBytes) }]
+    html,
+    attachments: [...imageAttachments, pdfAttachment]
   })
 
   if (sendError) {

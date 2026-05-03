@@ -7,6 +7,7 @@ import { LuxuryButton } from '../components/ui/button'
 import { Logo } from '../components/ui/logo'
 import { integrationRegistry } from '../config/integrations'
 import { buildProposalDocument, createProposalId, formatDocumentDate, parseNumberParam } from '../lib/document-templates'
+import { clampEnquiryPeopleCount } from './golf-experience/data/form-people-options'
 import { useAuth } from '../providers/auth-provider'
 
 function ProposalTemplatePage() {
@@ -58,7 +59,7 @@ function ProposalTemplatePage() {
       groupTotal: searchParams.get('groupTotal') ?? '________________',
       depositAmount: searchParams.get('depositAmount') ?? '________________',
       remainingBalance: searchParams.get('remainingBalance') ?? '________________',
-      groupSize: parseNumberParam(searchParams.get('groupSize'), 4),
+      groupSize: clampEnquiryPeopleCount(parseNumberParam(searchParams.get('groupSize'), 4)),
       nights: parseNumberParam(searchParams.get('nights'), 4),
       rounds: parseNumberParam(searchParams.get('rounds'), 3),
       courseName: searchParams.get('courseName') ?? '',

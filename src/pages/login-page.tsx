@@ -1,37 +1,32 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { LuxuryButton } from '../components/ui/button'
-import { Logo } from '../components/ui/logo'
 import { PageIdentityBar } from '../components/page-identity-bar'
-import { SiteFooter } from '../components/site-footer'
 import { WaveDivider } from '../components/ui/wave-divider'
+import { GeButton } from '../pages/golf-experience/components/ge-button'
+import { GeFooter } from '../pages/golf-experience/sections/ge-footer'
+import { GeNavbar } from '../pages/golf-experience/sections/ge-navbar'
+import { GeBrandLockup } from '../pages/golf-experience/components/brand-lockup'
 import { integrationRegistry } from '../config/integrations'
 import { AUTH_NEXT_STORAGE_KEY, isSafeInternalPath } from '../lib/internal-redirect'
 import { useAuth } from '../providers/auth-provider'
-
-const loginFooterIntro =
-  'Golf Sol Ireland exists for golfers who want the Costa del Sol done properly: better courses, smarter stays, and a smoother trip from first enquiry to final round.'
-
-const loginFooterCopyrightNote = 'Golf travel planning for Irish groups heading to the Costa del Sol.'
 
 const LoginHeroBackdrop = () => (
   <>
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute -left-32 top-0 h-80 w-80 rounded-full bg-fairway-600/25 blur-3xl"
+      className="pointer-events-none absolute -left-32 top-28 h-80 w-80 rounded-full bg-gs-green/25 blur-3xl"
     />
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute -right-24 top-20 h-72 w-72 rounded-full bg-gold-400/20 blur-3xl"
+      className="pointer-events-none absolute -right-24 top-36 h-72 w-72 rounded-full bg-gs-gold/20 blur-3xl"
     />
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute bottom-16 left-1/3 h-48 w-48 rounded-full bg-forest-700/30 blur-3xl"
+      className="pointer-events-none absolute bottom-32 left-1/3 h-48 w-48 rounded-full bg-ge-orange/20 blur-3xl"
     />
   </>
 )
 
 export function LoginPage() {
-  const footerRef = useRef<HTMLElement | null>(null)
   const sentConfirmationRef = useRef<HTMLDivElement>(null)
   const { signInWithMagicLink, session, profile, isLoading, isSupabaseConfigured } = useAuth()
   const [email, setEmail] = useState('')
@@ -105,89 +100,112 @@ export function LoginPage() {
 
   if (!integrationRegistry.supabase.enabled || !isSupabaseConfigured) {
     return (
-      <div className="flex min-h-screen flex-col bg-offwhite font-body text-forest-900">
-        <section className="relative overflow-hidden bg-forest-950 pb-0">
+      <div className="ge-page flex min-h-screen flex-col overflow-x-hidden bg-white font-ge text-gs-dark">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-gs-gold focus:px-4 focus:py-2 focus:font-ge focus:text-sm focus:font-bold focus:uppercase focus:tracking-[0.14em] focus:text-gs-dark"
+        >
+          Skip to content
+        </a>
+        <GeNavbar />
+        <section className="relative overflow-hidden bg-gs-dark pb-0" id="main">
+          <div aria-hidden="true" className="h-[134px] w-full bg-white sm:h-[148px] md:h-[164px] lg:h-[130px] xl:h-[142px]" />
           <LoginHeroBackdrop />
-          <div className="relative z-10 mx-auto max-w-7xl px-4 pb-16 pt-10 md:px-6 md:pb-20 md:pt-14">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gold-200">Account access</p>
-            <a aria-label="Golf Sol Ireland — home" className="mt-5 inline-block" href="/">
-              <Logo size="large" tone="scrolled" />
-            </a>
-            <h1 className="font-display mt-6 text-3xl font-bold tracking-tight text-white md:text-4xl">Sign in</h1>
-            <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/88">
+          <div className="relative z-10 mx-auto max-w-[1180px] px-5 pb-16 pt-6 sm:px-8 md:pb-20 md:pt-8">
+            <p className="font-ge text-xs font-bold uppercase tracking-[0.22em] text-gs-gold">Account access</p>
+            <h1 className="mt-5 max-w-3xl font-ge text-[2.1rem] font-extrabold leading-[1.08] tracking-[-0.02em] text-white md:text-[2.65rem]">
+              Sign in
+            </h1>
+            <p className="mt-4 max-w-xl font-ge text-base leading-8 text-white/86 md:text-[1.05rem]">
               Connect Supabase to enable secure magic-link sign-in.
             </p>
           </div>
           <div className="relative z-[2] -mb-px">
-            <WaveDivider fill="#f7f9f5" />
+            <WaveDivider fill="#ffffff" />
           </div>
         </section>
         <PageIdentityBar
           compact
           description="Secure magic-link sign-in for saved trips, proposals, and account access."
           label="Sign in"
+          offsetHeader
+          tone="ge"
         />
-        <main className="relative z-[1] mx-auto w-full max-w-lg flex-1 px-4 pb-20 pt-8 md:px-6 md:pb-28">
-          <div className="rounded-[2rem] border border-forest-100 bg-white p-8 shadow-soft md:p-10">
-            <p className="text-sm leading-relaxed text-forest-700">
-              Add <code className="rounded-md border border-forest-200 bg-white px-1.5 py-0.5 text-xs text-forest-900">VITE_SUPABASE_URL</code>{' '}
+        <main className="relative z-[1] mx-auto w-full max-w-lg flex-1 px-5 pb-20 pt-6 sm:px-8 md:pb-28 md:pt-8">
+          <div className="rounded-2xl border border-ge-gray100 bg-white p-8 shadow-[0_20px_50px_rgba(15,42,12,0.06)] md:p-10">
+            <p className="font-ge text-sm leading-relaxed text-ge-gray600 sm:text-[0.95rem]">
+              Add{' '}
+              <code className="rounded-md border border-ge-gray200 bg-ge-gray50 px-1.5 py-0.5 font-mono text-xs text-gs-dark">
+                VITE_SUPABASE_URL
+              </code>{' '}
               and{' '}
-              <code className="rounded-md border border-forest-200 bg-white px-1.5 py-0.5 text-xs text-forest-900">VITE_SUPABASE_ANON_KEY</code>{' '}
+              <code className="rounded-md border border-ge-gray200 bg-ge-gray50 px-1.5 py-0.5 font-mono text-xs text-gs-dark">
+                VITE_SUPABASE_ANON_KEY
+              </code>{' '}
               to your environment, then restart the dev server.
             </p>
-            <LuxuryButton className="mt-8" href="/" variant="primary">
+            <GeButton className="mt-8 w-full sm:w-auto" href="/" size="md" variant="gs-green">
               Back to home
-            </LuxuryButton>
+            </GeButton>
           </div>
         </main>
-        <SiteFooter copyrightNote={loginFooterCopyrightNote} footerRef={footerRef} intro={loginFooterIntro} />
+        <GeFooter />
       </div>
     )
   }
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen flex-col bg-forest-950">
+      <div className="ge-page flex min-h-screen flex-col overflow-x-hidden bg-white font-ge text-gs-dark">
+        <GeNavbar />
         <PageIdentityBar
           compact
           description="Secure magic-link sign-in for saved trips, proposals, and account access."
           label="Sign in"
+          offsetHeader
+          tone="ge"
         />
-        <div className="flex flex-1 flex-col items-center justify-center px-6">
-          <div className="mb-10 scale-90">
-            <Logo size="large" tone="scrolled" />
+        <div className="flex flex-1 flex-col items-center justify-center px-6 pb-24 pt-6">
+          <div className="mb-8 scale-[0.92] opacity-95">
+            <GeBrandLockup tone="on-light" mode="footer" />
           </div>
-          <p className="text-sm font-medium tracking-wide text-white/55">Loading…</p>
+          <p className="font-ge text-sm font-bold uppercase tracking-[0.16em] text-ge-gray500">Loading…</p>
         </div>
-        <SiteFooter copyrightNote={loginFooterCopyrightNote} footerRef={footerRef} intro={loginFooterIntro} />
+        <GeFooter />
       </div>
     )
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-offwhite font-body text-forest-900">
-      <section className="relative overflow-hidden bg-forest-950 pb-0">
+    <div className="ge-page flex min-h-screen flex-col overflow-x-hidden bg-white font-ge text-gs-dark">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-gs-gold focus:px-4 focus:py-2 focus:font-ge focus:text-sm focus:font-bold focus:uppercase focus:tracking-[0.14em] focus:text-gs-dark"
+      >
+        Skip to content
+      </a>
+      <GeNavbar />
+
+      <section className="relative overflow-hidden bg-gs-dark pb-0" id="main">
+        <div aria-hidden="true" className="h-[134px] w-full bg-white sm:h-[148px] md:h-[164px] lg:h-[130px] xl:h-[142px]" />
         <LoginHeroBackdrop />
-        <div className="relative z-10 mx-auto max-w-7xl px-4 pb-16 pt-10 md:px-6 md:pb-20 md:pt-14">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gold-200">Account access</p>
-          <a aria-label="Golf Sol Ireland — home" className="mt-5 inline-block transition-opacity hover:opacity-95" href="/">
-            <Logo size="large" tone="scrolled" />
-          </a>
-          <h1 className="font-display mt-6 text-[2.2rem] font-bold tracking-[-0.03em] text-white md:text-[2.85rem] md:leading-tight">
+        <div className="relative z-10 mx-auto max-w-[1180px] px-5 pb-16 pt-6 sm:px-8 md:pb-20 md:pt-8">
+          <p className="font-ge text-xs font-bold uppercase tracking-[0.22em] text-gs-gold">Account access</p>
+          <h1 className="mt-5 max-w-3xl font-ge text-[2.1rem] font-extrabold leading-[1.08] tracking-[-0.02em] text-white md:text-[2.85rem]">
             Sign in
           </h1>
-          <p className="mt-4 max-w-xl text-base leading-8 text-white md:text-lg">
-            We&apos;ll email you a secure magic link — the same premium Golf Sol Ireland experience as the rest of the
-            site. No password to remember.
+          <p className="mt-4 max-w-xl font-ge text-base leading-8 text-white/88 md:text-[1.08rem]">
+            We&apos;ll email you a secure magic link — the same GolfSol Ireland experience as the rest of the site. No
+            password to remember.
           </p>
           {safeReturnPath ? (
-            <p className="mt-3 max-w-xl rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-base text-white/90">
+            <p className="mt-4 max-w-xl rounded-2xl border border-white/18 bg-white/10 px-4 py-3 font-ge text-base leading-7 text-white/92">
               After you sign in, we&apos;ll bring you back to your package so you can save it to your account.
             </p>
           ) : null}
         </div>
         <div className="relative z-[2] -mb-px">
-          <WaveDivider fill="#f7f9f5" />
+          <WaveDivider fill="#ffffff" />
         </div>
       </section>
 
@@ -195,30 +213,32 @@ export function LoginPage() {
         compact
         description="Secure magic-link sign-in for saved trips, proposals, and account access."
         label="Sign in"
+        offsetHeader
+        tone="ge"
       />
 
-      <main className="relative z-[1] mx-auto w-full max-w-lg flex-1 px-4 pb-20 pt-4 md:px-6 md:pb-28 md:pt-6">
-        <div className="relative overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-soft">
+      <main className="relative z-[1] mx-auto w-full max-w-lg flex-1 px-5 pb-20 pt-4 sm:px-8 md:pb-28 md:pt-6">
+        <div className="relative overflow-hidden rounded-2xl border border-ge-gray100 bg-white shadow-[0_20px_50px_rgba(15,42,12,0.06)]">
           <div
             aria-hidden="true"
-            className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-gold-400 via-fairway-500 to-forest-700"
+            className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-gs-gold via-gs-green to-gs-electric"
           />
 
           <div className="px-6 py-9 md:px-10 md:py-11">
             {queryError ? (
-              <div className="mb-6 space-y-2 rounded-2xl border border-gold-200/90 bg-gold-50/90 px-4 py-3 text-base text-forest-900">
-                <p className="font-medium text-forest-950">
+              <div className="mb-6 space-y-2 rounded-2xl border border-gs-gold/50 bg-[#fff9e8] px-4 py-3 font-ge text-base text-gs-dark">
+                <p className="font-bold text-gs-dark">
                   {queryError === 'no_session'
                     ? 'We could not complete sign-in from that link. Request a new magic link below.'
                     : queryError === 'auth'
                       ? 'Supabase returned an error for this sign-in attempt.'
                       : 'Something went wrong. Try again.'}
                 </p>
-                {queryHint ? <p className="text-sm text-forest-700">{decodeURIComponent(queryHint)}</p> : null}
+                {queryHint ? <p className="text-sm text-ge-gray600">{decodeURIComponent(queryHint)}</p> : null}
                 {queryError === 'no_session' ? (
-                  <p className="text-sm text-forest-600">
+                  <p className="text-sm text-ge-gray600">
                     Check Supabase → Authentication → URL configuration: add{' '}
-                    <code className="rounded bg-white/80 px-1 py-0.5 text-xs text-forest-900 ring-1 ring-forest-100">
+                    <code className="rounded bg-white px-1 py-0.5 font-mono text-xs text-gs-dark ring-1 ring-ge-gray200">
                       {`${window.location.origin}/auth/callback`}
                     </code>{' '}
                     under Redirect URLs, then try again.
@@ -228,10 +248,13 @@ export function LoginPage() {
             ) : null}
 
             {sent ? (
-              <div ref={sentConfirmationRef} className="rounded-2xl border border-forest-200 bg-white px-4 py-4 text-base leading-8 text-forest-900">
-                <p className="font-semibold text-forest-950">Check your inbox</p>
-                <p className="mt-2 text-forest-700">
-                  Open the link from Golf Sol Ireland to finish signing in. You can close this tab — the link opens in
+              <div
+                ref={sentConfirmationRef}
+                className="rounded-2xl border border-ge-gray200 bg-ge-gray50 px-4 py-4 font-ge text-base leading-8 text-gs-dark"
+              >
+                <p className="font-bold text-gs-dark">Check your inbox</p>
+                <p className="mt-2 text-ge-gray600">
+                  Open the link from GolfSol Ireland to finish signing in. You can close this tab — the link opens in
                   your browser.
                 </p>
               </div>
@@ -239,14 +262,14 @@ export function LoginPage() {
               <form className="space-y-6" noValidate onSubmit={handleSubmit}>
                 <div>
                   <label
-                    className="mb-2 block text-sm font-semibold uppercase tracking-[0.16em] text-forest-900"
+                    className="mb-2 block font-ge text-sm font-bold uppercase tracking-[0.14em] text-gs-dark"
                     htmlFor="login-email"
                   >
                     Email
                   </label>
                   <input
                     autoComplete="email"
-                    className="w-full rounded-2xl border border-forest-200 bg-offwhite/90 px-4 py-4 text-base text-forest-900 placeholder:text-forest-400 outline-none ring-gold-400/40 transition-shadow focus:border-fairway-500 focus:ring-2"
+                    className="w-full rounded-xl border-2 border-ge-gray200 bg-white px-4 py-3.5 font-ge text-base text-gs-dark placeholder:text-ge-gray400 outline-none transition-[border-color,box-shadow] focus:border-gs-green focus:ring-2 focus:ring-gs-green/25"
                     id="login-email"
                     name="email"
                     onChange={(event) => setEmail(event.target.value)}
@@ -256,28 +279,23 @@ export function LoginPage() {
                     value={email}
                   />
                 </div>
-                {formError ? <p className="text-base font-medium text-red-700">{formError}</p> : null}
-                <LuxuryButton
-                  className="w-full justify-center"
-                  disabled={isSending}
-                  type="submit"
-                  variant="primary"
-                >
+                {formError ? <p className="font-ge text-base font-semibold text-ge-orange">{formError}</p> : null}
+                <GeButton className="w-full" disabled={isSending} size="md" type="submit" variant="gs-gold">
                   {isSending ? 'Sending link…' : 'Email me a magic link'}
-                </LuxuryButton>
+                </GeButton>
               </form>
             )}
 
-            <div className="mt-8 flex flex-col items-center gap-3 border-t border-forest-100 pt-8 sm:flex-row sm:justify-center sm:gap-4">
-              <LuxuryButton className="w-full sm:w-auto" href="/" variant="white">
+            <div className="mt-8 flex flex-col items-center gap-3 border-t border-ge-gray100 pt-8 sm:flex-row sm:justify-center sm:gap-4">
+              <GeButton className="w-full sm:w-auto" href="/" size="md" variant="outline-gs-green">
                 ← Back to website
-              </LuxuryButton>
+              </GeButton>
             </div>
           </div>
         </div>
       </main>
 
-      <SiteFooter copyrightNote={loginFooterCopyrightNote} footerRef={footerRef} intro={loginFooterIntro} />
+      <GeFooter />
     </div>
   )
 }

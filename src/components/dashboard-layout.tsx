@@ -1,18 +1,11 @@
 import type { ReactNode } from 'react'
-import { useRef } from 'react'
-import { Phone } from 'lucide-react'
 import { PageIdentityBar } from './page-identity-bar'
-import { SiteFooter } from './site-footer'
-import { LuxuryButton } from './ui/button'
 import { WaveDivider } from './ui/wave-divider'
 import { GeBrandLockup } from '../pages/golf-experience/components/brand-lockup'
-import { contactInfo } from '../pages/golf-experience/data/copy'
+import { GeButton } from '../pages/golf-experience/components/ge-button'
+import { GeFooter } from '../pages/golf-experience/sections/ge-footer'
+import { GeDualPhoneNavMobileButtons } from '../pages/golf-experience/components/ge-dual-phone-contact'
 import { useAuth } from '../providers/auth-provider'
-
-const dashboardFooterIntro =
-  'Golf Sol Ireland exists for golfers who want the Costa del Sol done properly: better courses, smarter stays, and a smoother trip from first enquiry to final round.'
-
-const dashboardFooterCopyrightNote = 'Golf travel planning for Irish groups heading to the Costa del Sol.'
 
 export type DashboardVariant = 'client' | 'admin'
 
@@ -21,12 +14,13 @@ interface DashboardLayoutProps {
   readonly subtitle?: string
   readonly kicker: string
   readonly variant: DashboardVariant
+  /** Optional badge / icon row shown beside the hero title (e.g. client notifications). */
+  readonly titleAdornment?: ReactNode
   readonly children: ReactNode
 }
 
-export function DashboardLayout({ title, subtitle, kicker, variant, children }: DashboardLayoutProps) {
+export function DashboardLayout({ title, subtitle, kicker, variant, titleAdornment, children }: DashboardLayoutProps) {
   const { signOut, user, profile } = useAuth()
-  const footerRef = useRef<HTMLElement | null>(null)
 
   const handleSignOut = async () => {
     await signOut()
@@ -35,16 +29,15 @@ export function DashboardLayout({ title, subtitle, kicker, variant, children }: 
   const showAdminNavLink = variant === 'admin' || profile?.role === 'admin'
 
   return (
-    <div className="ge-page flex min-h-screen flex-col bg-white font-ge text-gs-dark">
+    <div className="ge-page flex min-h-screen flex-col overflow-x-hidden bg-white font-ge text-gs-dark">
       <header className="fixed inset-x-0 top-0 z-40 bg-white/95 shadow-[0_2px_12px_rgba(0,0,0,0.06)] backdrop-blur">
         <div className="relative mx-auto flex max-w-[1340px] items-center px-4 py-1.5 sm:px-5 lg:justify-between lg:gap-4 lg:py-1">
-          <a
-            href={`tel:${contactInfo.phoneTel}`}
-            aria-label={`Call ${contactInfo.phoneDisplay}`}
-            className="absolute left-4 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border-2 border-ge-gray200 text-gs-green transition-colors hover:border-gs-gold/70 hover:text-gs-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gs-gold focus-visible:ring-offset-2 sm:left-5 lg:hidden"
-          >
-            <Phone className="h-5 w-5" aria-hidden="true" />
-          </a>
+          <div className="absolute left-2 top-1/2 flex -translate-y-1/2 sm:left-3 lg:hidden">
+            <GeDualPhoneNavMobileButtons
+              borderClass="border-ge-gray200 text-gs-green"
+              hoverClass="hover:border-gs-gold/70 hover:text-gs-gold hover:shadow-[0_0_0_1px_rgba(255,199,44,0.2)]"
+            />
+          </div>
 
           <a
             aria-label="GolfSol Ireland home"
@@ -56,29 +49,21 @@ export function DashboardLayout({ title, subtitle, kicker, variant, children }: 
 
           <nav aria-label="Dashboard navigation" className="hidden items-center gap-3 lg:flex">
             {showAdminNavLink ? (
-              <LuxuryButton
-                className="!border-gs-green/20 !bg-gs-green/5 !px-5 !py-2.5 !text-xs !text-gs-green hover:!bg-gs-green/10"
+              <GeButton
+                className="!min-h-0 !border-2 !border-gs-green/35 !bg-gs-green/8 !px-5 !py-2.5 !text-[0.72rem] !normal-case !tracking-[0.06em] !text-gs-green hover:!bg-gs-green/14"
                 href={variant === 'admin' ? '/dashboard' : '/dashboard/admin'}
-                variant="white"
+                size="sm"
+                variant="outline-gs-green"
               >
                 {variant === 'admin' ? 'Client dashboard' : 'Admin dashboard'}
-              </LuxuryButton>
+              </GeButton>
             ) : null}
-            <LuxuryButton
-              className="!border-gs-green/20 !bg-white !px-5 !py-2.5 !text-xs !text-gs-dark hover:!bg-ge-gray50"
-              href="/"
-              variant="white"
-            >
+            <GeButton className="!min-h-0 !px-5 !py-2.5 !text-[0.72rem] !normal-case !tracking-[0.06em]" href="/" size="sm" variant="outline-ink">
               Home
-            </LuxuryButton>
-            <LuxuryButton
-              className="!bg-gs-gold !px-5 !py-2.5 !text-xs !text-gs-dark hover:!bg-gs-gold-light"
-              type="button"
-              variant="primary"
-              onClick={handleSignOut}
-            >
+            </GeButton>
+            <GeButton className="!min-h-0 !px-5 !py-2.5 !text-[0.72rem]" size="sm" variant="gs-gold" type="button" onClick={handleSignOut}>
               Sign out
-            </LuxuryButton>
+            </GeButton>
           </nav>
         </div>
       </header>
@@ -104,9 +89,12 @@ export function DashboardLayout({ title, subtitle, kicker, variant, children }: 
               <p className="inline-flex rounded-full border border-gs-gold/35 bg-white/8 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.22em] text-gs-gold shadow-sm backdrop-blur">
                 {kicker}
               </p>
-              <h1 className="mt-6 max-w-3xl text-[2.35rem] font-extrabold leading-[1.04] tracking-[-0.015em] text-white md:text-[3.35rem]">
-                {title}
-              </h1>
+              <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-5">
+                <h1 className="max-w-3xl text-[2.35rem] font-extrabold leading-[1.04] tracking-[-0.015em] text-white md:text-[3.35rem]">
+                  {title}
+                </h1>
+                {titleAdornment ? <div className="shrink-0">{titleAdornment}</div> : null}
+              </div>
               {subtitle ? (
                 <p className="mt-5 max-w-2xl text-base leading-8 text-white/86 md:text-[1.08rem]">{subtitle}</p>
               ) : null}
@@ -117,59 +105,71 @@ export function DashboardLayout({ title, subtitle, kicker, variant, children }: 
 
             <div className="flex flex-wrap items-center gap-3 lg:hidden lg:shrink-0 lg:pb-1">
               {showAdminNavLink ? (
-                <LuxuryButton
-                  className="!border-white/25 !px-5 !py-2.5 !text-xs"
+                <GeButton
+                  className="!min-h-0 !border-2 !border-white/80 !bg-transparent !px-5 !py-2.5 !text-[0.72rem] !text-white hover:!border-gs-gold hover:!bg-gs-gold hover:!text-gs-dark"
                   href={variant === 'admin' ? '/dashboard' : '/dashboard/admin'}
-                  variant="outline"
+                  size="sm"
+                  variant="outline-gs-white"
                 >
                   {variant === 'admin' ? 'Client dashboard' : 'Admin dashboard'}
-                </LuxuryButton>
+                </GeButton>
               ) : null}
-              <LuxuryButton className="!border-white/25 !px-5 !py-2.5 !text-xs" href="/" variant="outline">
-                Home
-              </LuxuryButton>
-              <LuxuryButton
-                className="!bg-gs-gold !px-5 !py-2.5 !text-xs !text-gs-dark hover:!bg-gs-gold-light"
-                type="button"
-                variant="primary"
-                onClick={handleSignOut}
+              <GeButton
+                className="!min-h-0 !border-2 !border-white/80 !bg-transparent !px-5 !py-2.5 !text-[0.72rem] !text-white hover:!border-gs-gold hover:!bg-gs-gold hover:!text-gs-dark"
+                href="/"
+                size="sm"
+                variant="outline-gs-white"
               >
+                Home
+              </GeButton>
+              <GeButton className="!min-h-0 !px-5 !py-2.5 !text-[0.72rem]" size="sm" variant="gs-gold" type="button" onClick={handleSignOut}>
                 Sign out
-              </LuxuryButton>
+              </GeButton>
             </div>
           </div>
         </div>
 
         <div className="relative z-[2] -mb-px">
-          <WaveDivider fill="#f7f9f5" />
+          <WaveDivider fill="#ffffff" />
         </div>
       </section>
 
-      <PageIdentityBar compact description={subtitle} label={title} />
+      <PageIdentityBar compact description={subtitle} label={title} tone="ge" />
 
       <main className="relative z-[1] mx-auto w-full max-w-[1180px] flex-1 px-5 pb-20 pt-10 sm:px-8 md:pb-28 md:pt-12">
         {children}
       </main>
 
-      <SiteFooter
-        copyrightNote={dashboardFooterCopyrightNote}
-        footerRef={footerRef}
-        intro={dashboardFooterIntro}
-      />
+      <GeFooter />
     </div>
   )
 }
 
 export function DashboardLoadingShell({ label }: { readonly label: string }) {
   return (
-    <div className="ge-page min-h-screen bg-gs-dark text-white">
-      <PageIdentityBar compact label={label} eyebrow="Loading" description="Preparing your dashboard workspace." />
-      <div className="flex min-h-[calc(100vh-140px)] flex-col items-center justify-center px-6 text-center">
-        <div className="mb-10 scale-90">
-          <GeBrandLockup tone="on-dark" mode="footer" />
+    <div className="ge-page flex min-h-screen flex-col overflow-x-hidden bg-white text-gs-dark">
+      <header className="fixed inset-x-0 top-0 z-40 bg-white/95 shadow-[0_2px_12px_rgba(0,0,0,0.06)] backdrop-blur">
+        <div className="relative mx-auto flex max-w-[1340px] items-center justify-center px-4 py-1.5 sm:px-5 lg:py-1">
+          <a aria-label="GolfSol Ireland home" className="flex shrink-0 items-center" href="/#top">
+            <GeBrandLockup tone="on-light" mode="sticky" />
+          </a>
         </div>
-        <p className="text-base font-medium tracking-[0.02em] text-white/72">{label}</p>
+      </header>
+      <PageIdentityBar
+        compact
+        label={label}
+        eyebrow="Loading"
+        description="Preparing your dashboard workspace."
+        offsetHeader
+        tone="ge"
+      />
+      <div className="flex flex-1 flex-col items-center justify-center px-6 pb-24 pt-8 text-center">
+        <div className="mb-8 scale-[0.92] opacity-95">
+          <GeBrandLockup tone="on-light" mode="footer" />
+        </div>
+        <p className="font-ge text-sm font-bold uppercase tracking-[0.16em] text-ge-gray500">{label}</p>
       </div>
+      <GeFooter />
     </div>
   )
 }

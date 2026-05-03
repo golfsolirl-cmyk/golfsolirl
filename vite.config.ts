@@ -2,9 +2,18 @@ import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { handleEnquirySubmission, handleTermsEmailRequest } from './server/enquiry-service.mjs'
 import { handleMagicLinkRequest } from './server/magic-link-service.mjs'
+import { handleSyncPortalProfile } from './server/sync-portal-profile-service.mjs'
+import { handlePortalContactSetup } from './server/portal-contact-setup-service.mjs'
+import { handleSendClientPortalEmail } from './server/client-portal-email-service.mjs'
 import { createProposalFilename, createProposalPdf } from './server/proposal-service.mjs'
 import { handleSendClientDocument } from './server/send-client-document-service.mjs'
+import {
+  handleSendHotelReservationBrief,
+  handleSendWorkspaceProposalToClient
+} from './server/admin-workspace-email-service.mjs'
 import { handleSendProposalToClient } from './server/send-proposal-client-service.mjs'
+import { handleAdminPortalClient } from './server/admin-portal-client-service.mjs'
+import { handlePortalInterestTicketReply } from './server/portal-interest-ticket-reply-service.mjs'
 
 const readRequestBody = (request: NodeJS.ReadableStream) =>
   new Promise<string>((resolve, reject) => {
@@ -44,10 +53,14 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
       try {
         const rawBody = await readRequestBody(request)
         const payload = rawBody ? JSON.parse(rawBody) : {}
-        const result = await handleEnquirySubmission(payload, {
-          ...process.env,
-          ...serverEnv
-        })
+        const result = await handleEnquirySubmission(
+          payload,
+          {
+            ...process.env,
+            ...serverEnv
+          },
+          {}
+        )
 
         response.statusCode = 200
         response.setHeader('Content-Type', 'application/json')
@@ -86,6 +99,64 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
         response.end(JSON.stringify(result))
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Unable to send terms email right now.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/sync-portal-profile', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const authHeader = request.headers.authorization ?? ''
+        const result = await handleSyncPortalProfile({ ...process.env, ...serverEnv }, { authHeader })
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unable to sync profile right now.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/portal-contact-setup', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const rawBody = await readRequestBody(request)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const authHeader = request.headers.authorization ?? ''
+        const result = await handlePortalContactSetup(payload, { ...process.env, ...serverEnv }, { authHeader })
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unable to save contact details right now.'
         const statusCode =
           error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
             ? error.statusCode
@@ -208,6 +279,106 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
         response.end(JSON.stringify(result))
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Unable to send proposal right now.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    const workspaceEmailApi = (
+      path: string,
+      handler: (body: unknown, env: NodeJS.ProcessEnv, meta: { authHeader: string }) => Promise<unknown>
+    ) => {
+      server.middlewares.use(path, async (request, response) => {
+        if (request.method !== 'POST') {
+          response.statusCode = 405
+          response.setHeader('Content-Type', 'application/json')
+          response.end(JSON.stringify({ message: 'Method not allowed' }))
+          return
+        }
+
+        try {
+          const rawBody = await readRequestBody(request)
+          const payload = rawBody ? JSON.parse(rawBody) : {}
+          const authHeader = request.headers.authorization ?? ''
+          const result = await handler(payload, { ...process.env, ...serverEnv }, { authHeader })
+
+          response.statusCode = 200
+          response.setHeader('Content-Type', 'application/json')
+          response.end(JSON.stringify(result))
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Unable to send email right now.'
+          const statusCode =
+            error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+              ? error.statusCode
+              : 500
+
+          response.statusCode = statusCode
+          response.setHeader('Content-Type', 'application/json')
+          response.end(JSON.stringify({ message }))
+        }
+      })
+    }
+
+    workspaceEmailApi('/api/send-workspace-proposal', handleSendWorkspaceProposalToClient)
+    workspaceEmailApi('/api/send-hotel-brief', handleSendHotelReservationBrief)
+
+    workspaceEmailApi('/api/send-client-portal-email', handleSendClientPortalEmail)
+
+    server.middlewares.use('/api/admin-portal-client', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const rawBody = await readRequestBody(request)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const authHeader = typeof request.headers.authorization === 'string' ? request.headers.authorization : ''
+        const result = await handleAdminPortalClient(payload, { ...process.env, ...serverEnv }, { authHeader })
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Request failed.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/portal-interest-ticket-reply', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const rawBody = await readRequestBody(request)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const authHeader = typeof request.headers.authorization === 'string' ? request.headers.authorization : ''
+        const result = await handlePortalInterestTicketReply(payload, { ...process.env, ...serverEnv }, { authHeader })
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unable to send ticket reply right now.'
         const statusCode =
           error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
             ? error.statusCode

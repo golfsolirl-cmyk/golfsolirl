@@ -1,9 +1,20 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { Send } from 'lucide-react'
+import { BookedDatesAvailabilityNotice } from '../../../components/booked-dates-availability-notice'
 import { GeButton } from './ge-button'
 import { contactInfo } from '../data/copy'
 import type { ContentFormConfig, ContentFormField } from '../content-page-context'
+import {
+  ENQUIRY_STRUCTURED_FIELD_KEYS,
+  QUOTE_INTENTS,
+  TRIP_ARRIVAL_MODE,
+  WEBSITE_ENQUIRY_FORM
+} from '../../../lib/enquiry-form-registry'
+import { assertDatesNotBooked, loadBookedServiceDayIsoSet } from '../../../lib/booked-service-days'
 import { formatTravelDateInput } from '../../../lib/format-travel-date'
+import { getLocalDateIso } from '../../../lib/local-date-iso'
+import { plannedTravelDatesErrorMessage, travelEndMinIso, travelStartMinIso } from '../../../lib/travel-date-bounds'
+import { getSupabaseBrowserClient } from '../../../lib/supabase-client'
 
 interface GeQuickEnquiryFormProps {
   readonly title: string
@@ -45,13 +56,88 @@ export function GeQuickEnquiryForm({
   const [fieldValues, setFieldValues] = useState<Record<string, string>>(initialFieldValues)
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [bookedDays, setBookedDays] = useState<Set<string>>(() => new Set())
   const confirmationRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      const booked = await loadBookedServiceDayIsoSet(getSupabaseBrowserClient())
+      if (!cancelled) {
+        setBookedDays(booked)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   useEffect(() => {
     setFieldValues(initialFieldValues)
     setStatus('idle')
     setErrorMessage(null)
   }, [initialFieldValues])
+
+  useEffect(() => {
+    const mode = fieldValues.tripArrivalMode?.trim()
+    if (mode !== TRIP_ARRIVAL_MODE.alreadyAtAgp) {
+      return
+    }
+    const hasTravelDates = formConfig.fields.some((f) => f.id === 'travelDateFrom' || f.id === 'travelDateTo')
+    if (!hasTravelDates) {
+      return
+    }
+    const t = getLocalDateIso()
+    setFieldValues((prev) => {
+      if (prev.tripArrivalMode?.trim() !== TRIP_ARRIVAL_MODE.alreadyAtAgp) {
+        return prev
+      }
+      if (prev.travelDateFrom === t && prev.travelDateTo === t) {
+        return prev
+      }
+      return { ...prev, travelDateFrom: t, travelDateTo: t }
+    })
+  }, [fieldValues.tripArrivalMode, formConfig.fields])
+
+  useEffect(() => {
+    const mode = fieldValues.tripArrivalMode?.trim()
+    if (mode !== TRIP_ARRIVAL_MODE.planned) {
+      return
+    }
+    const hasTravelPair =
+      formConfig.fields.some((f) => f.id === 'travelDateFrom') && formConfig.fields.some((f) => f.id === 'travelDateTo')
+    if (!hasTravelPair) {
+      return
+    }
+    const t = travelStartMinIso()
+    setFieldValues((prev) => {
+      if (prev.tripArrivalMode?.trim() !== TRIP_ARRIVAL_MODE.planned) {
+        return prev
+      }
+      const dfs = prev.travelDateFrom?.trim().slice(0, 10) ?? ''
+      const dts = prev.travelDateTo?.trim().slice(0, 10) ?? ''
+      let nf = prev.travelDateFrom ?? ''
+      let nt = prev.travelDateTo ?? ''
+      let changed = false
+      if (dfs.length === 10 && dfs < t) {
+        nf = t
+        changed = true
+      }
+      const dfs2 = nf.trim().slice(0, 10)
+      const dts2 = nt.trim().slice(0, 10)
+      if (dfs2.length === 10 && dts2.length === 10) {
+        const em = travelEndMinIso(dfs2)
+        if (dts2 < em) {
+          nt = em
+          changed = true
+        }
+      }
+      if (!changed) {
+        return prev
+      }
+      return { ...prev, travelDateFrom: nf, travelDateTo: nt }
+    })
+  }, [fieldValues.tripArrivalMode, fieldValues.travelDateFrom, fieldValues.travelDateTo, formConfig.fields])
 
   useEffect(() => {
     if (status === 'success') {
@@ -92,6 +178,69 @@ export function GeQuickEnquiryForm({
       return
     }
 
+    const tripModeField = formConfig.fields.find((f) => f.id === 'tripArrivalMode')
+    if (tripModeField) {
+      const mode = fieldValues.tripArrivalMode?.trim() ?? ''
+      if (tripModeField.required && !mode) {
+        setErrorMessage('Please select trip timing.')
+        setStatus('error')
+        return
+      }
+      if (mode === TRIP_ARRIVAL_MODE.planned) {
+        const df = fieldValues.travelDateFrom?.trim() ?? ''
+        const dt = fieldValues.travelDateTo?.trim() ?? ''
+        if (!df || !dt) {
+          setErrorMessage('Add travel start and end dates, or choose “Already at Málaga (AGP)”.')
+          setStatus('error')
+          return
+        }
+        const plannedErr = plannedTravelDatesErrorMessage(df, dt)
+        if (plannedErr) {
+          setErrorMessage(plannedErr)
+          setStatus('error')
+          return
+        }
+      }
+      if (mode === TRIP_ARRIVAL_MODE.alreadyAtAgp) {
+        const hasTravelPair =
+          formConfig.fields.some((f) => f.id === 'travelDateFrom') && formConfig.fields.some((f) => f.id === 'travelDateTo')
+        if (hasTravelPair) {
+          const today = getLocalDateIso()
+          const df = fieldValues.travelDateFrom?.trim() ?? ''
+          const dt = fieldValues.travelDateTo?.trim() ?? ''
+          if (df !== today || dt !== today) {
+            setErrorMessage('When you are already here, set both travel dates to today’s date only.')
+            setStatus('error')
+            return
+          }
+        }
+      }
+      if (!tripModeField.required && mode === TRIP_ARRIVAL_MODE.planned) {
+        const df = fieldValues.travelDateFrom?.trim() ?? ''
+        const dt = fieldValues.travelDateTo?.trim() ?? ''
+        if (!df || !dt) {
+          setErrorMessage('Add both travel dates, or set trip timing back to “—”.')
+          setStatus('error')
+          return
+        }
+        const plannedErrOptional = plannedTravelDatesErrorMessage(df, dt)
+        if (plannedErrOptional) {
+          setErrorMessage(plannedErrOptional)
+          setStatus('error')
+          return
+        }
+      }
+    }
+
+    const dfCheck = fieldValues.travelDateFrom?.trim().slice(0, 10) ?? ''
+    const dtCheck = fieldValues.travelDateTo?.trim().slice(0, 10) ?? ''
+    const bookedMsg = assertDatesNotBooked(bookedDays, [dfCheck, dtCheck].filter((d) => d.length === 10))
+    if (bookedMsg) {
+      setErrorMessage(bookedMsg)
+      setStatus('error')
+      return
+    }
+
     setStatus('submitting')
     try {
       const interestLines = [
@@ -103,6 +252,41 @@ export function GeQuickEnquiryForm({
         })
       ].filter(Boolean)
 
+      const formFields: Record<string, string> = {
+        Page: routeLabel,
+        Topic: interestPreset
+      }
+      for (const field of formConfig.fields) {
+        const value = fieldValues[field.id]?.trim()
+        if (value) {
+          formFields[field.label] = value
+        }
+      }
+
+      const tripTypeVal = fieldValues.tripType?.trim() ?? ''
+      if (tripTypeVal.includes('Airport transfers only')) {
+        formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.quoteIntent] = QUOTE_INTENTS.airportOnly
+      }
+      const gs = fieldValues.groupSize?.trim() ?? ''
+      const paxMatch = gs.match(/^(\d+)/)
+      if (paxMatch) {
+        formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.pax] = paxMatch[1] ?? ''
+      }
+
+      if (tripModeField) {
+        const mode = fieldValues.tripArrivalMode?.trim() ?? ''
+        const df = fieldValues.travelDateFrom?.trim() ?? ''
+        const dt = fieldValues.travelDateTo?.trim() ?? ''
+        formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.alreadyAtMalagaAgp] =
+          mode === TRIP_ARRIVAL_MODE.alreadyAtAgp ? 'yes' : 'no'
+        if (df) {
+          formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateFrom] = df
+        }
+        if (dt) {
+          formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateTo] = dt
+        }
+      }
+
       const response = await fetch('/api/enquiry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -111,7 +295,11 @@ export function GeQuickEnquiryForm({
           email: mail,
           phoneWhatsApp: phone,
           interest: interestLines.join('\n'),
-          bestTimeToCall: 'Any time'
+          bestTimeToCall: 'Any time',
+          formPayload: {
+            form: WEBSITE_ENQUIRY_FORM.contentQuickEnquiry,
+            fields: formFields
+          }
         })
       })
       const data = (await response.json().catch(() => ({}))) as { message?: string }
@@ -129,6 +317,13 @@ export function GeQuickEnquiryForm({
       setErrorMessage(error instanceof Error ? error.message : 'Could not send your request right now.')
     }
   }
+
+  const tripTimingSelectValue = fieldValues.tripArrivalMode?.trim() ?? ''
+  const lockTravelDatesToToday = tripTimingSelectValue === TRIP_ARRIVAL_MODE.alreadyAtAgp
+  const todayIsoQuickForm = getLocalDateIso()
+  const plannedTravelDatePick = tripTimingSelectValue === TRIP_ARRIVAL_MODE.planned && !lockTravelDatesToToday
+  const plannedStartMinQuick = plannedTravelDatePick ? travelStartMinIso() : undefined
+  const plannedEndMinQuick = plannedTravelDatePick ? travelEndMinIso(fieldValues.travelDateFrom ?? '') : undefined
 
   return (
     <div
@@ -159,7 +354,13 @@ export function GeQuickEnquiryForm({
           </GeButton>
         </div>
       ) : (
-        <form className="mt-6 space-y-4" onSubmit={handleSubmit} noValidate>
+        <>
+          <BookedDatesAvailabilityNotice
+            bookedDays={bookedDays}
+            className="mt-6"
+            watchDates={[fieldValues.travelDateFrom, fieldValues.travelDateTo]}
+          />
+          <form className="mt-4 space-y-4" onSubmit={handleSubmit} noValidate>
           <label className="block">
             <span className={labelClass}>Full name</span>
             <input
@@ -192,12 +393,41 @@ export function GeQuickEnquiryForm({
               autoComplete="tel"
               type="tel"
               required
-              placeholder={contactInfo.phoneDisplay}
+              placeholder={contactInfo.phoneFieldPlaceholder}
             />
           </label>
 
           {formConfig.fields.map((field) => {
             const value = fieldValues[field.id] ?? ''
+
+            if (field.type === 'date') {
+              const agpTodayOnly =
+                lockTravelDatesToToday && (field.id === 'travelDateFrom' || field.id === 'travelDateTo')
+              const travelFrom = field.id === 'travelDateFrom'
+              const travelTo = field.id === 'travelDateTo'
+              const dateMin = agpTodayOnly
+                ? todayIsoQuickForm
+                : plannedTravelDatePick && travelFrom
+                  ? plannedStartMinQuick
+                  : plannedTravelDatePick && travelTo
+                    ? plannedEndMinQuick
+                    : undefined
+              const dateMax = agpTodayOnly ? todayIsoQuickForm : undefined
+              return (
+                <label key={field.id} className="block">
+                  <span className={labelClass}>{field.label}</span>
+                  <input
+                    className={inputClass}
+                    type="date"
+                    value={value}
+                    min={dateMin}
+                    max={dateMax}
+                    onChange={(e) => handleFieldChange(field.id, e.target.value)}
+                    required={field.required}
+                  />
+                </label>
+              )
+            }
 
             if (field.type === 'textarea') {
               return (
@@ -261,6 +491,7 @@ export function GeQuickEnquiryForm({
             {status === 'submitting' ? 'Sending...' : formConfig.submitLabel}
           </GeButton>
         </form>
+        </>
       )}
     </div>
   )

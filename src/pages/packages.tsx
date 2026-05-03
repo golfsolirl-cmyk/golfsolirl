@@ -353,7 +353,7 @@ function PackageAdminPage() {
               </div>
 
               <div className="mt-10 grid gap-4 sm:grid-cols-3">
-                <HeroStat label="Packages tuned for 4-8 golfers" value="4-8" />
+                <HeroStat label="Packages tuned for 1-8 golfers" value="1-8" />
                 <HeroStat label="Driver and diesel already counted" value="100%" />
                 <HeroStat label="Profit shown before you quote" value="EUR" />
               </div>
@@ -509,7 +509,7 @@ function PackageAdminPage() {
                     description="Smaller Irish group pricing sweet spot"
                     label="Group size"
                     max={8}
-                    min={4}
+                    min={1}
                     onChange={setGroupSize}
                     step={1}
                     value={groupSize}

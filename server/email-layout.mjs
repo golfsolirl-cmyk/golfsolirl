@@ -216,9 +216,15 @@ export const buildGsolTransactionalEmail = ({
                                 <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:rgba(253,186,116,0.85);">Contact</p>
                                 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin-top:12px;">
                                   <tr>
-                                    <td style="padding:0 0 12px 0;font-family:'DM Sans',Arial,sans-serif;font-size:12px;color:rgba(255,255,255,0.45);width:52px;vertical-align:top;">Phone</td>
-                                    <td style="padding:0 0 12px 0;font-family:'DM Sans',Arial,sans-serif;font-size:14px;vertical-align:top;">
+                                    <td style="padding:0 0 8px 0;font-family:'DM Sans',Arial,sans-serif;font-size:12px;color:rgba(255,255,255,0.45);width:52px;vertical-align:top;">${gsolEmailBrand.phoneIrishLineLabel}</td>
+                                    <td style="padding:0 0 8px 0;font-family:'DM Sans',Arial,sans-serif;font-size:14px;vertical-align:top;">
                                       <a href="tel:${gsolEmailBrand.phoneTel}" style="color:#fdba74;text-decoration:none;font-weight:600;">${gsolEmailBrand.phoneDisplay}</a>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td style="padding:0 0 12px 0;font-family:'DM Sans',Arial,sans-serif;font-size:12px;color:rgba(255,255,255,0.45);width:52px;vertical-align:top;">${gsolEmailBrand.phoneSpanishLineLabel}</td>
+                                    <td style="padding:0 0 12px 0;font-family:'DM Sans',Arial,sans-serif;font-size:14px;vertical-align:top;">
+                                      <a href="tel:${gsolEmailBrand.spanishPhoneTel}" style="color:#fdba74;text-decoration:none;font-weight:600;">${gsolEmailBrand.spanishPhoneDisplay}</a>
                                     </td>
                                   </tr>
                                   <tr>

@@ -67,6 +67,10 @@ export function buildBrandedEnquiryEmailHtml(payload, variant = 'customer') {
     ['Trip interest', payload.interest]
   ])
 
+  const saveToAccountHref = isAdmin
+    ? ''
+    : `${getGsolSiteUrl()}/login?next=${encodeURIComponent(`/dashboard?enquiry_ref=${payload.enquiryId}`)}`
+
   return `<!doctype html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
   <head>
@@ -211,6 +215,28 @@ export function buildBrandedEnquiryEmailHtml(payload, variant = 'customer') {
                 </td>
               </tr>
 
+              ${
+                isAdmin
+                  ? ''
+                  : `<tr>
+                <td style="padding:24px 0 0 0;">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F6FBF8; border:1px solid #C5E3D4; border-radius:26px;">
+                    <tr>
+                      <td class="mobile-pad" style="padding:26px 32px;">
+                        <p style="margin:0; font-family:Arial, Helvetica, sans-serif; color:${brand.greenSoft}; font-size:11px; line-height:15px; font-weight:900; letter-spacing:1.7px; text-transform:uppercase;">Your trip hub</p>
+                        <h2 class="section-title" style="margin:8px 0 10px 0; font-family:Georgia, 'Times New Roman', serif; color:${brand.ink}; font-size:24px; line-height:30px;">Save this enquiry to your account</h2>
+                        <p style="margin:0 0 18px 0; font-family:Arial, Helvetica, sans-serif; color:${brand.muted}; font-size:15px; line-height:24px;">Use the same email you entered on the form. After sign-in you can add airport transfers, golf rounds (including our interactive course map), and hotel notes for 1–8 guests — pick one, two, or all three.</p>
+                        <a class="cta-button" href="${escapeHtml(saveToAccountHref)}" style="display:inline-block; border-radius:999px; background:${brand.greenSoft}; color:${brand.white}; font-family:Arial, Helvetica, sans-serif; font-size:13px; line-height:18px; font-weight:900; letter-spacing:1.2px; text-transform:uppercase; padding:15px 22px;">
+                          Open my dashboard
+                        </a>
+                        <p style="margin:14px 0 0 0; font-family:Arial, Helvetica, sans-serif; color:${brand.muted}; font-size:12px; line-height:18px;">Reference <strong style="color:${brand.ink};">${escapeHtml(payload.enquiryId)}</strong> is carried into your workspace automatically.</p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>`
+              }
+
               <tr>
                 <td style="padding:24px 0 0 0;">
                   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${brand.white}; border:1px solid ${brand.sand}; border-radius:26px;">
@@ -257,7 +283,7 @@ export function buildBrandedEnquiryEmailHtml(payload, variant = 'customer') {
                         <a class="cta-button" href="${getGsolSiteUrl()}/#enquire" style="display:inline-block; border-radius:999px; background:${brand.gold}; color:${brand.ink}; font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:18px; font-weight:900; letter-spacing:1.4px; text-transform:uppercase; padding:16px 24px;">
                           Refine my quote
                         </a>
-                        <p style="margin:18px 0 0 0; font-family:Arial, Helvetica, sans-serif; color:#CFE0D8; font-size:14px; line-height:22px;">Prefer to call? <a href="tel:+353874464766" style="color:${brand.gold}; font-weight:800;">+353 87 446 4766</a></p>
+                        <p style="margin:18px 0 0 0; font-family:Arial, Helvetica, sans-serif; color:#CFE0D8; font-size:14px; line-height:22px;">Prefer to call? <a href="tel:+353874464766" style="color:${brand.gold}; font-weight:800;">+353 87 446 4766</a> (Ireland / WhatsApp) · <a href="tel:+34641815366" style="color:${brand.gold}; font-weight:800;">+34 641 81 53 66</a> (Spain)</p>
                       </td>
                     </tr>
                   </table>

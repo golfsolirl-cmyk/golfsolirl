@@ -15,8 +15,8 @@ export const primaryNav: readonly GeNavLink[] = [
     href: '/services/transport',
     children: [
       { label: 'Transport', href: '/services/transport' },
-      { label: 'Tee Time Bookings only', href: '/tee-time-bookings-only' },
-      { label: 'Twilight Golf', href: '/twilight-golf' }
+      { label: 'Tee Time Bookings only', href: '/services/tee-time-bookings' },
+      { label: 'Twilight Golf', href: '/services/twilight-golf' }
     ]
   },
   {
@@ -54,8 +54,8 @@ export const footerColumns = [
   {
     title: 'Quick Links',
     links: [
-      { label: 'Tee Time Bookings Only', href: '/tee-time-bookings-only' },
-      { label: 'Twilight Golf — Costa del Sol', href: '/twilight-golf' },
+      { label: 'Tee Time Bookings Only', href: '/services/tee-time-bookings' },
+      { label: 'Twilight Golf — Costa del Sol', href: '/services/twilight-golf' },
       { label: 'Society & Group Trips', href: '/booking' },
       { label: 'Dress Code on the Costa del Sol', href: '/guides/dress-code-costa-del-sol' },
       { label: 'Travelling to Málaga (AGP)', href: '/guides/travelling-to-malaga-agp' },

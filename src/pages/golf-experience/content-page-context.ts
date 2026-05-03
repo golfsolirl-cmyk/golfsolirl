@@ -1,5 +1,6 @@
 import { contactInfo } from './data/copy'
 import type { GeContentPageData } from './data/content-pages'
+import { golferGroupSizeSelectOptions, passengerCountSelectOptions } from './data/form-people-options'
 
 export interface ContentFormFieldOption {
   readonly label: string
@@ -9,7 +10,7 @@ export interface ContentFormFieldOption {
 export interface ContentFormField {
   readonly id: string
   readonly label: string
-  readonly type?: 'text' | 'select' | 'textarea'
+  readonly type?: 'text' | 'select' | 'textarea' | 'date'
   readonly placeholder?: string
   readonly required?: boolean
   readonly autoComplete?: string
@@ -32,6 +33,9 @@ export interface ContentSmartAction {
   readonly href: string
   readonly tone: 'gold' | 'dark' | 'light'
   readonly external?: boolean
+  /** Second voice line (Spain); primary {@link href} stays Irish. */
+  readonly secondaryTelHref?: string
+  readonly secondaryTelLabel?: string
 }
 
 export interface ContentHeroMedia {
@@ -213,18 +217,24 @@ export function getContentPageFormConfig(path: string, page: GeContentPageData):
         successTitle: 'Twilight brief received',
         successBody: 'We will come back with twilight-friendly slots, realistic sunset timing, and backup options for your dates.',
         fields: [
-          { id: 'travelDates', label: 'Travel dates', placeholder: 'e.g. 15–19 Sept 2026', required: true },
+          {
+            id: 'tripArrivalMode',
+            label: 'Trip timing',
+            type: 'select',
+            required: true,
+            options: [
+              { label: 'I have travel dates (arrival and departure)', value: 'planned' },
+              { label: 'Already at Málaga (AGP) — need transfers now', value: 'already_at_agp' }
+            ]
+          },
+          { id: 'travelDateFrom', label: 'Travel start date', type: 'date', required: false },
+          { id: 'travelDateTo', label: 'Travel end date', type: 'date', required: false },
           {
             id: 'groupSize',
             label: 'Group size',
             type: 'select',
             required: true,
-            options: [
-              { label: '2 golfers', value: '2 golfers' },
-              { label: '4 golfers', value: '4 golfers' },
-              { label: '8 golfers', value: '8 golfers' },
-              { label: '12+ golfers', value: '12+ golfers' }
-            ]
+            options: golferGroupSizeSelectOptions
           },
           {
             id: 'golfCourses',
@@ -272,18 +282,24 @@ export function getContentPageFormConfig(path: string, page: GeContentPageData):
         successTitle: 'Course brief received',
         successBody: 'We will come back with a smarter shortlist for your group and dates.',
         fields: [
-          { id: 'travelDates', label: 'Travel dates', placeholder: 'e.g. 15–19 Sept 2026', required: true },
+          {
+            id: 'tripArrivalMode',
+            label: 'Trip timing',
+            type: 'select',
+            required: true,
+            options: [
+              { label: 'I have travel dates (arrival and departure)', value: 'planned' },
+              { label: 'Already at Málaga (AGP) — need transfers now', value: 'already_at_agp' }
+            ]
+          },
+          { id: 'travelDateFrom', label: 'Travel start date', type: 'date', required: false },
+          { id: 'travelDateTo', label: 'Travel end date', type: 'date', required: false },
           {
             id: 'groupSize',
             label: 'Group size',
             type: 'select',
             required: true,
-            options: [
-              { label: '2 golfers', value: '2 golfers' },
-              { label: '4 golfers', value: '4 golfers' },
-              { label: '8 golfers', value: '8 golfers' },
-              { label: '12+ golfers', value: '12+ golfers' }
-            ]
+            options: golferGroupSizeSelectOptions
           },
           {
             id: 'golfCourses',
@@ -332,18 +348,24 @@ export function getContentPageFormConfig(path: string, page: GeContentPageData):
         successTitle: 'Stay brief received',
         successBody: 'We will return accommodation options that fit the trip and the group.',
         fields: [
-          { id: 'travelDates', label: 'Travel dates', placeholder: 'e.g. 15–19 Sept 2026', required: true },
+          {
+            id: 'tripArrivalMode',
+            label: 'Trip timing',
+            type: 'select',
+            required: true,
+            options: [
+              { label: 'I have travel dates (arrival and departure)', value: 'planned' },
+              { label: 'Already at Málaga (AGP) — need transfers now', value: 'already_at_agp' }
+            ]
+          },
+          { id: 'travelDateFrom', label: 'Travel start date', type: 'date', required: false },
+          { id: 'travelDateTo', label: 'Travel end date', type: 'date', required: false },
           {
             id: 'groupSize',
             label: 'Group size',
             type: 'select',
             required: true,
-            options: [
-              { label: '2 golfers', value: '2 golfers' },
-              { label: '4 golfers', value: '4 golfers' },
-              { label: '8 golfers', value: '8 golfers' },
-              { label: '12+ golfers', value: '12+ golfers' }
-            ]
+            options: golferGroupSizeSelectOptions
           },
           {
             id: 'preferredBase',
@@ -384,18 +406,24 @@ export function getContentPageFormConfig(path: string, page: GeContentPageData):
         successTitle: 'Transfer brief received',
         successBody: 'We will come back with a practical route and vehicle plan.',
         fields: [
-          { id: 'travelDates', label: 'Travel dates', placeholder: 'e.g. 15–19 Sept 2026', required: true },
+          {
+            id: 'tripArrivalMode',
+            label: 'Trip timing',
+            type: 'select',
+            required: true,
+            options: [
+              { label: 'I have travel dates (arrival and departure)', value: 'planned' },
+              { label: 'Already at Málaga (AGP) — need transfers now', value: 'already_at_agp' }
+            ]
+          },
+          { id: 'travelDateFrom', label: 'Travel start date', type: 'date', required: false },
+          { id: 'travelDateTo', label: 'Travel end date', type: 'date', required: false },
           {
             id: 'passengerCount',
             label: 'Passenger count',
             type: 'select',
             required: true,
-            options: [
-              { label: '1–4 travellers', value: '1–4 travellers' },
-              { label: '5–8 travellers', value: '5–8 travellers' },
-              { label: '9–12 travellers', value: '9–12 travellers' },
-              { label: '12+ travellers', value: '12+ travellers' }
-            ]
+            options: passengerCountSelectOptions
           },
           { id: 'routeBrief', label: 'Route or location', placeholder: 'e.g. Málaga Airport to Fuengirola', required: true },
           {
@@ -526,7 +554,19 @@ export function getContentPageFormConfig(path: string, page: GeContentPageData):
               { label: 'Need a callback', value: 'Need a callback' }
             ]
           },
-          { id: 'travelDates', label: 'Travel dates (optional)', placeholder: 'e.g. 15–19 Sept 2026' },
+          {
+            id: 'tripArrivalMode',
+            label: 'Trip timing (optional)',
+            type: 'select',
+            required: false,
+            options: [
+              { label: '—', value: '' },
+              { label: 'I have travel dates', value: 'planned' },
+              { label: 'Already at Málaga (AGP)', value: 'already_at_agp' }
+            ]
+          },
+          { id: 'travelDateFrom', label: 'Travel start date (optional)', type: 'date', required: false },
+          { id: 'travelDateTo', label: 'Travel end date (optional)', type: 'date', required: false },
           {
             id: 'notes',
             label: 'Question details',
@@ -544,18 +584,24 @@ export function getContentPageFormConfig(path: string, page: GeContentPageData):
         successTitle: 'Trip brief received',
         successBody: 'We will come back with a clear next step for your group.',
         fields: [
-          { id: 'travelDates', label: 'Travel dates', placeholder: 'e.g. 15–19 Sept 2026', required: true },
+          {
+            id: 'tripArrivalMode',
+            label: 'Trip timing',
+            type: 'select',
+            required: true,
+            options: [
+              { label: 'I have travel dates (arrival and departure)', value: 'planned' },
+              { label: 'Already at Málaga (AGP) — need transfers now', value: 'already_at_agp' }
+            ]
+          },
+          { id: 'travelDateFrom', label: 'Travel start date', type: 'date', required: false },
+          { id: 'travelDateTo', label: 'Travel end date', type: 'date', required: false },
           {
             id: 'groupSize',
             label: 'Group size',
             type: 'select',
             required: true,
-            options: [
-              { label: '2 golfers', value: '2 golfers' },
-              { label: '4 golfers', value: '4 golfers' },
-              { label: '8 golfers', value: '8 golfers' },
-              { label: '12+ golfers', value: '12+ golfers' }
-            ]
+            options: golferGroupSizeSelectOptions
           },
           {
             id: 'basePreference',
@@ -612,6 +658,8 @@ export function getContentPageSmartActions(path: string, page: GeContentPageData
           label: 'Call about evening rounds',
           description: 'Useful if you want to balance twilight with prime morning rounds in one call.',
           href: `tel:${contactInfo.phoneTel}`,
+          secondaryTelHref: `tel:${contactInfo.spanishPhoneTel}`,
+          secondaryTelLabel: contactInfo.spanishPhoneDisplay,
           tone: 'light'
         }
       ]
@@ -639,6 +687,8 @@ export function getContentPageSmartActions(path: string, page: GeContentPageData
           label: 'Talk through the route',
           description: 'Useful if you want to compare Marbella, Mijas, or Sotogrande quickly.',
           href: `tel:${contactInfo.phoneTel}`,
+          secondaryTelHref: `tel:${contactInfo.spanishPhoneTel}`,
+          secondaryTelLabel: contactInfo.spanishPhoneDisplay,
           tone: 'light'
         }
       ]
@@ -666,6 +716,8 @@ export function getContentPageSmartActions(path: string, page: GeContentPageData
           label: 'Call about accommodation',
           description: 'Ideal if you want to compare Fuengirola, Torremolinos, or Marbella fast.',
           href: `tel:${contactInfo.phoneTel}`,
+          secondaryTelHref: `tel:${contactInfo.spanishPhoneTel}`,
+          secondaryTelLabel: contactInfo.spanishPhoneDisplay,
           tone: 'light'
         }
       ]
@@ -693,6 +745,8 @@ export function getContentPageSmartActions(path: string, page: GeContentPageData
           label: 'Call about transfer timing',
           description: 'Useful if flights, golf, and hotel timings need a fast answer.',
           href: `tel:${contactInfo.phoneTel}`,
+          secondaryTelHref: `tel:${contactInfo.spanishPhoneTel}`,
+          secondaryTelLabel: contactInfo.spanishPhoneDisplay,
           tone: 'light'
         }
       ]
@@ -717,6 +771,8 @@ export function getContentPageSmartActions(path: string, page: GeContentPageData
           label: 'Call for plain-English clarity',
           description: 'If you would rather talk it through than decode a long paragraph.',
           href: `tel:${contactInfo.phoneTel}`,
+          secondaryTelHref: `tel:${contactInfo.spanishPhoneTel}`,
+          secondaryTelLabel: contactInfo.spanishPhoneDisplay,
           tone: 'light'
         }
       ]
@@ -767,6 +823,8 @@ export function getContentPageSmartActions(path: string, page: GeContentPageData
           label: 'Talk to the team',
           description: 'If you want to give feedback or ask about a future trip in one call.',
           href: `tel:${contactInfo.phoneTel}`,
+          secondaryTelHref: `tel:${contactInfo.spanishPhoneTel}`,
+          secondaryTelLabel: contactInfo.spanishPhoneDisplay,
           tone: 'light'
         }
       ]
@@ -793,6 +851,8 @@ export function getContentPageSmartActions(path: string, page: GeContentPageData
           label: 'Call GolfSol Ireland',
           description: 'Speak directly with the Irish team about your trip or question.',
           href: `tel:${contactInfo.phoneTel}`,
+          secondaryTelHref: `tel:${contactInfo.spanishPhoneTel}`,
+          secondaryTelLabel: contactInfo.spanishPhoneDisplay,
           tone: 'light'
         }
       ]
@@ -819,6 +879,8 @@ export function getContentPageSmartActions(path: string, page: GeContentPageData
           label: 'Call for a quick steer',
           description: 'Useful if you want to sanity-check the route before filling in details.',
           href: `tel:${contactInfo.phoneTel}`,
+          secondaryTelHref: `tel:${contactInfo.spanishPhoneTel}`,
+          secondaryTelLabel: contactInfo.spanishPhoneDisplay,
           tone: 'light'
         }
       ]

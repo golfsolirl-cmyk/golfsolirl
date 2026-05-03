@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
-import { CheckCircle2, MessageCircle, Phone } from 'lucide-react'
+import { CheckCircle2, MessageCircle } from 'lucide-react'
+import { GeDualPhoneEnquiryCallRow } from '../components/ge-dual-phone-contact'
 import { GeSection } from '../components/ge-section'
 import { TransportHeroEnquiryForm } from '../components/transport-hero-enquiry-form'
 import { contactInfo } from '../data/copy'
@@ -43,22 +44,16 @@ export function TransportEnquireBlock() {
             {transportEnquireBlockCopy.body}
           </p>
 
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:gap-3">
-            <a
-              href={`tel:${contactInfo.phoneTel}`}
-              className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2.5 rounded-xl bg-gs-green px-5 font-ge text-base font-bold uppercase tracking-[0.12em] text-white shadow-[0_12px_28px_rgba(6,59,42,0.25)] transition-all hover:bg-gs-electric hover:text-gs-dark sm:text-[0.9rem]"
-            >
-              <Phone className="h-4 w-4" aria-hidden />
-              <span>{contactInfo.phoneDisplay}</span>
-            </a>
+          <div className="mt-7 flex flex-col gap-3">
+            <GeDualPhoneEnquiryCallRow />
             <a
               href={whatsappHref}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2.5 rounded-xl border-2 border-gs-green bg-white px-5 font-ge text-base font-bold uppercase tracking-[0.12em] text-gs-green transition-all hover:bg-gs-green hover:text-white sm:text-[0.9rem]"
+              className="inline-flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-xl border-2 border-gs-green bg-white px-5 font-ge text-base font-bold uppercase tracking-[0.12em] text-gs-green transition-all hover:bg-gs-green hover:text-white sm:text-[0.9rem]"
             >
               <MessageCircle className="h-4 w-4" aria-hidden />
-              WhatsApp us
+              WhatsApp us (Irish number)
             </a>
           </div>
 

@@ -48,13 +48,23 @@ export function FooterCompanyContact() {
                 <Phone className="h-5 w-5" aria-hidden="true" />
               </div>
               <div className="min-w-0 space-y-3">
+                <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-white/50">{companyContact.phoneIrishLineLabel}</p>
                 <a
                   className="block font-display text-[1.9rem] font-bold tracking-[-0.03em] text-white transition-colors hover:text-gold-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950 md:text-[2.1rem]"
                   href={`tel:${companyContact.phoneTel}`}
                 >
                   {companyContact.phoneDisplay}
                 </a>
-                <p className="text-base leading-7 text-white/64">Irish mobile — same number on WhatsApp for quick trip questions.</p>
+                <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-white/50">{companyContact.phoneSpanishLineLabel}</p>
+                <a
+                  className="block font-display text-[1.65rem] font-bold tracking-[-0.03em] text-white transition-colors hover:text-gold-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950 md:text-[1.85rem]"
+                  href={`tel:${companyContact.spanishPhoneTel}`}
+                >
+                  {companyContact.spanishPhoneDisplay}
+                </a>
+                <p className="text-base leading-7 text-white/64">
+                  Irish mobile — same number on WhatsApp for quick trip questions. Spanish line is voice only.
+                </p>
                 <a
                   aria-label={`Message Golf Sol Ireland on WhatsApp at ${companyContact.phoneDisplay}`}
                   className="group inline-flex min-h-11 items-center gap-2.5 rounded-full border border-white/25 bg-white/10 px-5 py-3 text-base font-semibold text-white transition-all hover:border-white/40 hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"

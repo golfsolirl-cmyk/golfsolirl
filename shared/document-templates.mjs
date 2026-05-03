@@ -106,7 +106,103 @@ export const normalizeProposalPayload = (payload = {}) => {
     courseName: sanitizeOptionalText(typeof payload.courseName === 'string' ? payload.courseName : ''),
     hotelName: sanitizeOptionalText(typeof payload.hotelName === 'string' ? payload.hotelName : ''),
     hotelStars: parseOptionalHotelStars(payload.hotelStars),
-    hotelDist: sanitizeOptionalText(typeof payload.hotelDist === 'string' ? payload.hotelDist : '')
+    hotelDist: sanitizeOptionalText(typeof payload.hotelDist === 'string' ? payload.hotelDist : ''),
+    customerFullName: sanitizeOptionalText(typeof payload.customerFullName === 'string' ? payload.customerFullName : ''),
+    customerEmail: sanitizeOptionalText(typeof payload.customerEmail === 'string' ? payload.customerEmail : ''),
+    customerPhoneWhatsApp: sanitizeOptionalText(
+      typeof payload.customerPhoneWhatsApp === 'string' ? payload.customerPhoneWhatsApp : ''
+    ),
+    customerInterest: sanitizeOptionalText(typeof payload.customerInterest === 'string' ? payload.customerInterest : ''),
+    enquiryReferenceId: sanitizeOptionalText(typeof payload.enquiryReferenceId === 'string' ? payload.enquiryReferenceId : ''),
+    quoteScopeSummary: sanitizeOptionalText(typeof payload.quoteScopeSummary === 'string' ? payload.quoteScopeSummary : ''),
+    enquirySubmittedDisplay: sanitizeOptionalText(
+      typeof payload.enquirySubmittedDisplay === 'string' ? payload.enquirySubmittedDisplay : ''
+    ),
+    extraTripOverviewLines: Array.isArray(payload.extraTripOverviewLines)
+      ? payload.extraTripOverviewLines
+          .filter((x) => typeof x === 'string')
+          .map((x) => sanitizeOptionalText(x))
+          .filter(Boolean)
+          .slice(0, 16)
+      : [],
+    travelDates: sanitizeOptionalText(typeof payload.travelDates === 'string' ? payload.travelDates : ''),
+    departureAirportRoute: sanitizeOptionalText(
+      typeof payload.departureAirportRoute === 'string' ? payload.departureAirportRoute : ''
+    ),
+    leadTravellerContact: sanitizeOptionalText(
+      typeof payload.leadTravellerContact === 'string' ? payload.leadTravellerContact : ''
+    ),
+    resortArea: sanitizeOptionalText(typeof payload.resortArea === 'string' ? payload.resortArea : ''),
+    proposalSpecialRequests: sanitizeOptionalText(
+      typeof payload.proposalSpecialRequests === 'string' ? payload.proposalSpecialRequests : ''
+    ),
+    airportTransfersDetail: sanitizeOptionalText(
+      typeof payload.airportTransfersDetail === 'string' ? payload.airportTransfersDetail : ''
+    ),
+    golfDayTransportDetail: sanitizeOptionalText(
+      typeof payload.golfDayTransportDetail === 'string' ? payload.golfDayTransportDetail : ''
+    ),
+    boardBasis: sanitizeOptionalText(typeof payload.boardBasis === 'string' ? payload.boardBasis : ''),
+    upgradeNotes: sanitizeOptionalText(typeof payload.upgradeNotes === 'string' ? payload.upgradeNotes : ''),
+    /** When set, replaces the default “{nights} nights / {rounds} rounds” trip-shape line and pricing summary tile. */
+    tripShapeCustom: sanitizeOptionalText(typeof payload.tripShapeCustom === 'string' ? payload.tripShapeCustom : ''),
+    proposalProductKind: (() => {
+      const raw = typeof payload.proposalProductKind === 'string' ? payload.proposalProductKind.trim().toLowerCase() : ''
+      if (raw === 'airport_transfer' || raw === 'golf_transfer' || raw === 'hotel_accommodation') {
+        return raw
+      }
+      return ''
+    })(),
+    proposalHeroKicker: sanitizeOptionalText(typeof payload.proposalHeroKicker === 'string' ? payload.proposalHeroKicker : ''),
+    proposalHeroTitle: sanitizeOptionalText(typeof payload.proposalHeroTitle === 'string' ? payload.proposalHeroTitle : ''),
+    proposalHeroDescription: sanitizeOptionalText(
+      typeof payload.proposalHeroDescription === 'string' ? payload.proposalHeroDescription : ''
+    )
+  }
+}
+
+const proposalHeroByProductKind = {
+  airport_transfer: {
+    public: {
+      kicker: 'Golf Sol Ireland',
+      title: 'Airport Transfers',
+      description:
+        'Private Málaga (AGP) and Costa del Sol ground transport — golf-bag friendly vehicles, clear routing from the airport to your hotel or course.'
+    },
+    admin: {
+      kicker: 'Golf Sol Ireland',
+      title: 'Airport Transfers',
+      description:
+        'Internal proposal layout for arrival, departure, and corridor transfers. Confirm vehicle class, meet-and-greet, and pricing before sending to the client.'
+    }
+  },
+  golf_transfer: {
+    public: {
+      kicker: 'Golf Sol Ireland',
+      title: 'Golf Transfers',
+      description:
+        'Resort, hotel, and airport legs timed for tee sheets — one coordinated plan for golf-day transport across the Costa del Sol.'
+    },
+    admin: {
+      kicker: 'Golf Sol Ireland',
+      title: 'Golf Transfers',
+      description:
+        'Proposal shell for course-to-course and hotel ↔ golf legs. Align pickup windows, bag count, and repeat-day routing before issue.'
+    }
+  },
+  hotel_accommodation: {
+    public: {
+      kicker: 'Golf Sol Ireland',
+      title: 'Hotel Transfers / Accommodation',
+      description:
+        'Stay, board basis, and hotel-linked transfers in one view — so accommodation and ground transport stay aligned with your golf itinerary.'
+    },
+    admin: {
+      kicker: 'Golf Sol Ireland',
+      title: 'Hotel Transfers / Accommodation',
+      description:
+        'Internal layout for hotel nights, inclusions, and related transfer legs. Confirm star tier, board basis, and deposit terms before send.'
+    }
   }
 }
 
@@ -124,6 +220,17 @@ export const buildProposalDocument = (rawPayload = {}) => {
   const variant = resolveProposalVariant(rawPayload)
   const proposal = normalizeProposalPayload(rawPayload)
 
+  const proposalInfoLine = (label, text) => {
+    const v = typeof text === 'string' ? text.trim() : ''
+    return v ? `${label}: ${v}` : `${label}: ${proposalPlaceholder}`
+  }
+
+  const tripShapeSummaryText =
+    typeof proposal.tripShapeCustom === 'string' && proposal.tripShapeCustom.trim()
+      ? proposal.tripShapeCustom.trim()
+      : `${proposal.nights} nights / ${proposal.rounds} rounds`
+  const tripShapeCardFirstLine = `Trip shape: ${tripShapeSummaryText}`
+
   const hotelAreaLine = proposal.hotelName
     ? `Hotel name / area: ${proposal.hotelName}${
         typeof proposal.hotelStars === 'number' && proposal.hotelStars > 0
@@ -140,24 +247,78 @@ export const buildProposalDocument = (rawPayload = {}) => {
     ? `Golf course: ${proposal.courseName}`
     : `Golf course: ${proposalPlaceholder}`
 
-  const heroPublic = {
+  const heroPublicDefault = {
     kicker: 'Costa del Sol Proposal',
     title: 'Your Costa del Sol golf proposal',
     description:
       'Everything in one place: how we have shaped your trip, what is included, indicative pricing, and practical next steps — prepared by Golf Sol Ireland for your group.'
   }
 
-  const heroAdmin = {
+  const heroAdminDefault = {
     kicker: 'Costa del Sol Proposal',
     title: 'Premium trip proposal ready to tailor, confirm, and send',
     description:
       'A branded Golf Sol Ireland proposal document designed to turn a selected package into a cleaner, more professional client-facing trip outline.'
   }
 
+  const productKind = proposal.proposalProductKind
+  const productHeroPublic =
+    productKind && proposalHeroByProductKind[productKind] ? proposalHeroByProductKind[productKind].public : null
+  const productHeroAdmin =
+    productKind && proposalHeroByProductKind[productKind] ? proposalHeroByProductKind[productKind].admin : null
+
+  const explicitHero =
+    proposal.proposalHeroKicker || proposal.proposalHeroTitle || proposal.proposalHeroDescription
+      ? {
+          kicker: proposal.proposalHeroKicker || heroPublicDefault.kicker,
+          title: proposal.proposalHeroTitle || heroPublicDefault.title,
+          description: proposal.proposalHeroDescription || heroPublicDefault.description
+        }
+      : null
+
+  const heroPublic = explicitHero ?? productHeroPublic ?? heroPublicDefault
+  const heroAdmin = explicitHero ?? productHeroAdmin ?? heroAdminDefault
+
   const clientMessageBody =
     'Hi ________________________, attached is your Golf Sol Ireland proposal for the Costa del Sol trip. Have a look through the package outline, pricing, and notes, and let us know what you would like adjusted.'
 
   const metaCard = [`Proposal ID: ${proposal.proposalId}`, `Prepared date: ${proposal.proposalDate}`]
+
+  const tripOverviewLead = []
+  if (proposal.customerFullName) {
+    tripOverviewLead.push(`Client name: ${proposal.customerFullName}`)
+  }
+  if (proposal.customerEmail) {
+    tripOverviewLead.push(`Email: ${proposal.customerEmail}`)
+  }
+  if (proposal.customerPhoneWhatsApp) {
+    tripOverviewLead.push(`Phone / WhatsApp: ${proposal.customerPhoneWhatsApp}`)
+  }
+  if (proposal.enquiryReferenceId) {
+    tripOverviewLead.push(`Website enquiry ref: ${proposal.enquiryReferenceId}`)
+  }
+  if (proposal.enquirySubmittedDisplay) {
+    tripOverviewLead.push(`Enquiry submitted: ${proposal.enquirySubmittedDisplay}`)
+  }
+  if (proposal.customerInterest) {
+    tripOverviewLead.push(`Trip interest (from form): ${proposal.customerInterest}`)
+  }
+  if (proposal.quoteScopeSummary) {
+    tripOverviewLead.push(`Included in this quote: ${proposal.quoteScopeSummary}`)
+  }
+
+  for (const line of proposal.extraTripOverviewLines) {
+    tripOverviewLead.push(line)
+  }
+
+  const tripOverviewItems = [
+    ...tripOverviewLead,
+    `Package style: ${proposal.packageName}`,
+    `Stay level: ${proposal.stayName}`,
+    `Transfer style: ${proposal.transferName}`,
+    `Group size: ${proposal.groupSize} golfer${proposal.groupSize > 1 ? 's' : ''}`,
+    golfCourseOverviewLine
+  ]
 
   return {
     meta: proposal,
@@ -166,22 +327,16 @@ export const buildProposalDocument = (rawPayload = {}) => {
       {
         icon: 'users',
         title: 'Trip overview',
-        items: [
-          `Package style: ${proposal.packageName}`,
-          `Stay level: ${proposal.stayName}`,
-          `Transfer style: ${proposal.transferName}`,
-          `Group size: ${proposal.groupSize} golfer${proposal.groupSize > 1 ? 's' : ''}`,
-          golfCourseOverviewLine
-        ]
+        items: tripOverviewItems
       },
       {
         icon: 'calendar',
         title: 'Trip shape',
         items: [
-          `Trip shape: ${proposal.nights} nights / ${proposal.rounds} rounds`,
-          'Travel dates: ________________________',
-          'Departure airport / route: ________________________',
-          'Lead traveller / contact: ________________________'
+          tripShapeCardFirstLine,
+          proposalInfoLine('Travel dates', proposal.travelDates),
+          proposalInfoLine('Departure airport / route', proposal.departureAirportRoute),
+          proposalInfoLine('Lead traveller / contact', proposal.leadTravellerContact)
         ]
       },
       {
@@ -190,18 +345,18 @@ export const buildProposalDocument = (rawPayload = {}) => {
         items: [
           hotelAreaLine,
           courseListLine,
-          'Resort area: ________________________',
-          'Special requests: ________________________'
+          proposalInfoLine('Resort area', proposal.resortArea),
+          proposalInfoLine('Special requests', proposal.proposalSpecialRequests)
         ]
       },
       {
         icon: 'bus',
         title: 'Logistics and inclusions',
         items: [
-          'Airport transfers: ________________________',
-          'Golf-day transport: ________________________',
-          'Board basis: ________________________',
-          'Upgrade notes: ________________________'
+          proposalInfoLine('Airport transfers', proposal.airportTransfersDetail),
+          proposalInfoLine('Golf-day transport', proposal.golfDayTransportDetail),
+          proposalInfoLine('Board basis', proposal.boardBasis),
+          proposalInfoLine('Upgrade notes', proposal.upgradeNotes)
         ]
       }
     ],
@@ -219,7 +374,7 @@ export const buildProposalDocument = (rawPayload = {}) => {
         { label: 'Proposal ID', value: proposal.proposalId },
         { label: 'Prepared date', value: proposal.proposalDate },
         { label: 'Group size', value: `${proposal.groupSize} golfer${proposal.groupSize > 1 ? 's' : ''}` },
-        { label: 'Trip shape', value: `${proposal.nights} nights / ${proposal.rounds} rounds` }
+        { label: 'Trip shape', value: tripShapeSummaryText }
       ],
       notesTitle: 'Proposal pricing notes',
       noteLines: ['Golf courses included', 'Green fee notes', 'Hotel inclusions', 'Upgrade options']

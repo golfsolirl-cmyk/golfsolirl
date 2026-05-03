@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
-import { ArrowRight, ChevronDown, Clock3, PlaneLanding, Phone, ShieldCheck } from 'lucide-react'
+import { ArrowRight, ChevronDown, Clock3, PlaneLanding, ShieldCheck } from 'lucide-react'
 import { GeButton } from '../components/ge-button'
-import { contactInfo } from '../data/copy'
+import { GeDualPhoneHeroButtons } from '../components/ge-dual-phone-contact'
 import { transportHeroCopy } from '../data/transport-service'
 import { handleScrollToFormTarget } from '../../../lib/scroll-to-form-target'
 
@@ -88,10 +88,7 @@ export function TransportHero() {
                   {transportHeroCopy.primaryCta}
                   <ArrowRight className="h-4 w-4" aria-hidden />
                 </GeButton>
-                <GeButton href={`tel:${contactInfo.phoneTel}`} variant="outline-gs-white" size="lg" className="w-full">
-                  <Phone className="h-4 w-4" aria-hidden />
-                  {contactInfo.phoneDisplay}
-                </GeButton>
+                <GeDualPhoneHeroButtons tone="dark" className="w-full" />
               </div>
 
               <p className="mt-4 font-ge text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-white/68">
@@ -152,15 +149,12 @@ export function TransportHero() {
                   {transportHeroCopy.subtitle}
                 </p>
 
-                <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
                   <GeButton href="#transport-enquire" variant="gs-gold" size="lg">
                     {transportHeroCopy.primaryCta}
                     <ArrowRight className="h-4 w-4" aria-hidden />
                   </GeButton>
-                  <GeButton href={`tel:${contactInfo.phoneTel}`} variant="outline-gs-white" size="lg">
-                    <Phone className="h-4 w-4" aria-hidden />
-                    {contactInfo.phoneDisplay}
-                  </GeButton>
+                  <GeDualPhoneHeroButtons tone="dark" className="w-full min-w-0 sm:w-auto sm:flex-1" />
                 </div>
 
                 <p className="mt-5 font-ge text-sm font-semibold uppercase tracking-[0.16em] text-white/70 sm:text-[0.78rem]">

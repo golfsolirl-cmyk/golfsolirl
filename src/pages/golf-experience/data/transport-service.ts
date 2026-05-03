@@ -141,7 +141,7 @@ export const transportEnquiryFormCopy = {
   validationRequired: 'Please complete all required fields.',
   validationEmail: 'Please enter a valid email address.',
   validationTime: 'Choose a collection date and time, or tick ASAP.',
-  validationPassengers: 'Passengers must be between 1 and 16.'
+  validationPassengers: 'Passengers must be between 1 and 8.'
 } as const
 
 /** Legacy exports kept so older sections don’t break during migration. */

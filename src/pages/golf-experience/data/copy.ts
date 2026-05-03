@@ -9,12 +9,19 @@ export const contactInfo = {
   tagline: 'IRISH-OWNED · COSTA DEL SOL GOLF SPECIALISTS',
   phoneDisplay: '+353 87 446 4766',
   phoneTel: '+353874464766',
+  /** Voice line in Spain — same team; WhatsApp stays on the Irish number. */
+  spanishPhoneDisplay: '+34 641 81 53 66',
+  spanishPhoneTel: '+34641815366',
+  phoneIrishLineLabel: 'Irish support (WhatsApp)',
+  phoneSpanishLineLabel: 'Spanish line',
+  /** Hint for enquiry forms — your number, not ours. */
+  phoneFieldPlaceholder: '+353 or +34 mobile',
   email: 'info@golfsolirl.com'
 } as const
 
 /** Alt text for the brand-composed Malaga hero raster (homepage). */
 export const malagaHeroImageAlt =
-  'GolfSol Ireland — From plane to fairway. Meet-and-greet at Malaga, golf-bag friendly Mercedes transfers, tee times pre-booked. Call +353 87 446 4766.' as const
+  'GolfSol Ireland — From plane to fairway. Meet-and-greet at Malaga, golf-bag friendly Mercedes transfers, tee times pre-booked. Irish and Spanish phone lines: +353 87 446 4766 and +34 641 81 53 66.' as const
 
 /** Alt for the transport-page hero variant (premium van, chauffeur, golf bags at airport). */
 export const transportHeroImageAlt =
@@ -57,6 +64,15 @@ export const designYourPackage = {
     image:
       'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80',
     link: '/#accommodation-spain'
+  },
+  step4: {
+    eyebrow: 'STEP 4',
+    title: 'Leave the rest to us.',
+    body:
+      'We design the itinerary, book the tees, lock in golf-bag-friendly Mercedes transfers and meet you at AGP arrivals — every detail from arrivals hall to final putt.',
+    image:
+      'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80',
+    link: '/#enquire'
   }
 } as const
 

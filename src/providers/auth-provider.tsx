@@ -8,7 +8,17 @@ export interface Profile {
   id: string
   email: string | null
   full_name: string | null
+  /** Phone / WhatsApp; may be synced from enquiries or OAuth metadata. */
+  phone: string | null
   role: ProfileRole
+  /** Enquiry-style reference shown as “account number” on the client portal. */
+  account_reference_id: string | null
+  /** Admin enables the formal proposals list on the client dashboard. */
+  portal_proposals_enabled: boolean
+  /** Admin enables the “Your PDF library” (terms / thank-you) block when access rows exist. */
+  portal_pdf_library_enabled: boolean
+  /** After client completes one-time “How we reach you” on the dashboard; blocks enquiry auto-overwrite of name/phone. */
+  portal_contact_completed_at: string | null
   created_at: string
   updated_at: string
 }
@@ -56,7 +66,24 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         return null
       }
 
-      return data as Profile
+      const row = data as Record<string, unknown>
+      return {
+        id: String(row.id),
+        email: (row.email as string | null) ?? null,
+        full_name: (row.full_name as string | null) ?? null,
+        phone: (row.phone as string | null | undefined) ?? null,
+        role: row.role as Profile['role'],
+        account_reference_id: (row.account_reference_id as string | null | undefined) ?? null,
+        portal_proposals_enabled: Boolean(row.portal_proposals_enabled),
+        portal_pdf_library_enabled:
+          typeof row.portal_pdf_library_enabled === 'boolean'
+            ? Boolean(row.portal_pdf_library_enabled)
+            : Boolean(row.portal_proposals_enabled),
+        portal_contact_completed_at:
+          row.portal_contact_completed_at != null ? String(row.portal_contact_completed_at) : null,
+        created_at: String(row.created_at),
+        updated_at: String(row.updated_at)
+      }
     },
     [supabase]
   )
@@ -195,7 +222,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     setProfile(null)
 
     if (typeof window !== 'undefined') {
-      window.location.href = '/'
+      window.location.href = '/logged-out'
     }
   }, [supabase])
 

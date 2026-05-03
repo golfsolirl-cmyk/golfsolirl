@@ -1,7 +1,8 @@
-import { ChevronRight, Mail, Phone } from 'lucide-react'
+import { ChevronRight, Mail } from 'lucide-react'
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaXTwitter } from 'react-icons/fa6'
 import { GeBrandLockup } from '../components/brand-lockup'
 import { GeButton } from '../components/ge-button'
+import { GeDualPhoneFooterLines } from '../components/ge-dual-phone-contact'
 import { aboutFooterCopy, contactInfo } from '../data/copy'
 import { footerColumns } from '../data/nav'
 
@@ -43,15 +44,7 @@ export function GeFooter() {
               Contact Us
             </p>
             <ul className="mt-4 space-y-3">
-              <li className="flex items-start gap-2">
-                <Phone className="mt-1 h-4 w-4 shrink-0 text-gs-gold/85" aria-hidden="true" />
-                <a
-                  href={`tel:${contactInfo.phoneTel}`}
-                  className="font-ge text-[1.05rem] leading-7 text-white/95 hover:text-gs-green-light sm:text-[0.98rem]"
-                >
-                  {contactInfo.phoneDisplay}
-                </a>
-              </li>
+              <GeDualPhoneFooterLines />
               <li className="flex items-start gap-2">
                 <Mail className="mt-1 h-4 w-4 shrink-0 text-gs-gold/85" aria-hidden="true" />
                 <a

@@ -13,7 +13,7 @@ export const isMissingClientDetailsColumnError = (error: { message?: string } | 
 export const fetchPackageBuildsClientList = async (supabase: SupabaseClient, limit: number) => {
   const withCol = await supabase
     .from('package_builds')
-    .select('id, label, source, config, client_details, created_at')
+    .select('id, label, source, config, client_details, created_at, linked_proposal_id')
     .order('created_at', { ascending: false })
     .limit(limit)
 
@@ -27,7 +27,7 @@ export const fetchPackageBuildsClientList = async (supabase: SupabaseClient, lim
 
   const legacy = await supabase
     .from('package_builds')
-    .select('id, label, source, config, created_at')
+    .select('id, label, source, config, created_at, linked_proposal_id')
     .order('created_at', { ascending: false })
     .limit(limit)
 
@@ -36,7 +36,7 @@ export const fetchPackageBuildsClientList = async (supabase: SupabaseClient, lim
   }
 
   return {
-    data: (legacy.data ?? []).map((row) => ({ ...row, client_details: {} })),
+    data: (legacy.data ?? []).map((row) => ({ ...row, client_details: {}, linked_proposal_id: row.linked_proposal_id ?? null })),
     error: null
   }
 }
@@ -44,7 +44,7 @@ export const fetchPackageBuildsClientList = async (supabase: SupabaseClient, lim
 export const fetchPackageBuildsAdminList = async (supabase: SupabaseClient, limit: number) => {
   const withCol = await supabase
     .from('package_builds')
-    .select('id, owner_id, label, source, config, client_details, created_at, profiles(email, full_name)')
+    .select('id, owner_id, label, source, config, client_details, created_at, linked_proposal_id, profiles(email, full_name)')
     .order('created_at', { ascending: false })
     .limit(limit)
 
@@ -58,7 +58,7 @@ export const fetchPackageBuildsAdminList = async (supabase: SupabaseClient, limi
 
   const legacy = await supabase
     .from('package_builds')
-    .select('id, owner_id, label, source, config, created_at, profiles(email, full_name)')
+    .select('id, owner_id, label, source, config, created_at, linked_proposal_id, profiles(email, full_name)')
     .order('created_at', { ascending: false })
     .limit(limit)
 
@@ -67,7 +67,11 @@ export const fetchPackageBuildsAdminList = async (supabase: SupabaseClient, limi
   }
 
   return {
-    data: (legacy.data ?? []).map((row) => ({ ...row, client_details: {} })),
+    data: (legacy.data ?? []).map((row) => ({
+      ...row,
+      client_details: {},
+      linked_proposal_id: row.linked_proposal_id ?? null
+    })),
     error: null
   }
 }

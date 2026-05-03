@@ -25,6 +25,7 @@ import {
 } from '../data/coastal-golf-data'
 import { footerSocialLinks, heroBackgroundImage } from '../data/site-content'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
+import { WEBSITE_ENQUIRY_FORM } from '../lib/enquiry-form-registry'
 import { buildPackageConfig, defaultLabelForBuild } from '../lib/package-build'
 import { cx } from '../lib/utils'
 import { useAuth } from '../providers/auth-provider'
@@ -350,6 +351,38 @@ function CustomerPackagePage() {
     selectedTransfer.name
   ])
 
+  const packageEnquiryFormFields = useMemo(() => {
+    const fields: Record<string, string> = {
+      'Package style': selectedPackage.name,
+      'Stay level': selectedStay.name,
+      Transfer: selectedTransfer.name,
+      'Group size': `${groupSize} golfers`,
+      Trip: `${nights} nights / ${rounds} rounds`,
+      'Indicative per person': formatEuro(pricingSummary.estimatedPerPerson),
+      'Indicative group total': formatEuro(pricingSummary.estimatedGroupTotal),
+      'Deposit (20%)': formatEuro(pricingSummary.depositAmount)
+    }
+    const { selectedCourse, selectedHotel } = courseHotelPick
+    if (selectedCourse) {
+      fields['Preferred course'] = COURSES.find((c) => c.id === selectedCourse)?.name ?? selectedCourse
+    }
+    if (selectedHotel) {
+      fields['Preferred hotel'] = `${selectedHotel.name} (${selectedHotel.stars}★) · ${selectedHotel.dist}`
+    }
+    return fields
+  }, [
+    courseHotelPick,
+    groupSize,
+    nights,
+    rounds,
+    pricingSummary.depositAmount,
+    pricingSummary.estimatedGroupTotal,
+    pricingSummary.estimatedPerPerson,
+    selectedPackage.name,
+    selectedStay.name,
+    selectedTransfer.name
+  ])
+
   const packageEnquiryWhatsAppHref = useMemo(() => {
     const WHATSAPP_TEXT_LIMIT = 1800
     let text = packageEnquirySummary
@@ -407,7 +440,11 @@ function CustomerPackagePage() {
             email,
             phoneWhatsApp: phone,
             interest: `PACKAGE BUILDER — customer package enquiry\n${packageEnquirySummary}`,
-            bestTimeToCall: enquiryBestTime.trim() || 'Any time'
+            bestTimeToCall: enquiryBestTime.trim() || 'Any time',
+            formPayload: {
+              form: WEBSITE_ENQUIRY_FORM.packageBuilder,
+              fields: packageEnquiryFormFields
+            }
           })
         })
         const data = (await response.json().catch(() => ({}))) as { message?: string }
@@ -425,7 +462,7 @@ function CustomerPackagePage() {
         setEnquiryError(error instanceof Error ? error.message : 'Could not send your package enquiry right now.')
       }
     },
-    [enquiryBestTime, enquiryEmail, enquiryName, enquiryPhone, packageEnquirySummary]
+    [enquiryBestTime, enquiryEmail, enquiryName, enquiryPhone, packageEnquiryFormFields, packageEnquirySummary]
   )
 
   const handleSavePackageToAccount = useCallback(async () => {

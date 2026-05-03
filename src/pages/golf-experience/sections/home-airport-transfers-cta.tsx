@@ -1,6 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { ArrowRight, Clock3, MapPin, Phone, PlaneLanding, ShieldCheck } from 'lucide-react'
-import { contactInfo } from '../data/copy'
+import { ArrowRight, Clock3, MapPin, PlaneLanding, ShieldCheck } from 'lucide-react'
+import { GeDualPhoneAirportTransferCalls } from '../components/ge-dual-phone-contact'
 
 const transferSignals = [
   {
@@ -219,28 +219,7 @@ export function HomeAirportTransfersCta() {
                   </motion.a>
                 </div>
 
-                <div className="mt-4 flex flex-col items-stretch gap-3">
-                  <p className="font-ge text-[0.74rem] font-semibold uppercase tracking-[0.08em] text-gs-dark/[0.68] sm:text-[0.82rem] sm:tracking-[0.16em]">
-                    Meet & greet · Resort drop-off · Golf bag friendly
-                  </p>
-                  <a
-                    href={`tel:${contactInfo.phoneTel}`}
-                    aria-label={`Call GolfSol Ireland on ${contactInfo.phoneDisplay}`}
-                    className="group inline-flex min-h-[62px] w-full items-center justify-center gap-3 rounded-full border border-[#ddd0b0] bg-[#fffaf0] px-4 py-3 font-ge font-extrabold text-gs-dark shadow-[0_14px_28px_rgba(69,53,24,0.08)] transition-colors hover:border-gs-gold/[0.5] hover:text-gs-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gs-gold focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[64px] sm:px-5"
-                  >
-                    <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gs-green text-white shadow-[0_10px_22px_rgba(6,59,42,0.18)] transition-transform duration-300 group-hover:scale-105 sm:h-12 sm:w-12">
-                      <Phone className="h-5 w-5 sm:h-5 sm:w-5" aria-hidden />
-                    </span>
-                    <span className="min-w-0 text-left">
-                      <span className="block text-[0.62rem] uppercase tracking-[0.16em] text-gs-dark/55 sm:text-[0.68rem]">
-                        Call Irish support
-                      </span>
-                      <span className="mt-0.5 block whitespace-nowrap text-[1.08rem] tracking-[0.01em] text-gs-dark sm:text-[1.18rem]">
-                        {contactInfo.phoneDisplay}
-                      </span>
-                    </span>
-                  </a>
-                </div>
+                <GeDualPhoneAirportTransferCalls />
               </div>
             </div>
           </div>

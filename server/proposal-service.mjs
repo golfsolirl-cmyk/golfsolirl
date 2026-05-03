@@ -2,39 +2,66 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
+import sharp from 'sharp'
 import { buildProposalDocument } from '../shared/document-templates.mjs'
+import { sanitizeStandardFontText } from '../shared/pdf-winansi-sanitize.mjs'
 
 const currentFilePath = fileURLToPath(import.meta.url)
 const currentDirectory = path.dirname(currentFilePath)
-const brandLockupAssetPath = path.resolve(currentDirectory, '../src/gsol-brand-lockup-exact.png')
-let brandLockupPngBufferPromise
-
-const getBrandLockupPngBuffer = async () => {
-  if (!brandLockupPngBufferPromise) {
-    brandLockupPngBufferPromise = Promise.resolve(readFileSync(brandLockupAssetPath))
-  }
-
-  return brandLockupPngBufferPromise
+const publicImagesDirectory = path.resolve(currentDirectory, '../public/images')
+const brandedPdfAssetPaths = {
+  logo: path.join(publicImagesDirectory, 'golfsol-header-logo-bitmap.png'),
+  fleetLineup: path.join(publicImagesDirectory, 'transport-fleet-lineup.jpg')
 }
+
+const fitAssetForPdf = (assetPath, width, height) =>
+  sharp(readFileSync(assetPath))
+    .resize(width, height, { fit: 'cover', kernel: sharp.kernel.lanczos3 })
+    .jpeg({ quality: 86, mozjpeg: true })
+    .toBuffer()
+
+const embedPdfJpg = async (pdfDocument, assetPath, width, height) =>
+  pdfDocument.embedJpg(await fitAssetForPdf(assetPath, width, height))
 
 const pageWidth = 595.28
 const pageHeight = 841.89
 
-/** Minimum reading size (pt) on proposal PDFs — matches enquiry PDFs. */
+/** Minimum reading size (pt) on proposal PDFs — slightly roomier than legacy enquiry PDF for long copy. */
 const PDF_READING_PT = 16
-const PDF_READING_LH = 22
+const PDF_READING_LH = 25
+const BODY_LINE_HEIGHT = 27
 
-const colors = {
-  forest950: rgb(10 / 255, 32 / 255, 8 / 255),
-  forest900: rgb(22 / 255, 58 / 255, 19 / 255),
-  fairway600: rgb(61 / 255, 129 / 255, 32 / 255),
-  gold400: rgb(220 / 255, 88 / 255, 1 / 255),
-  gold300: rgb(253 / 255, 186 / 255, 116 / 255),
+/** Same palette as enquiry / terms PDFs (`createBrandedEnquiryPdf` in enquiry-service). */
+const pdfEmailTheme = {
+  green: rgb(6 / 255, 59 / 255, 42 / 255),
+  greenSoft: rgb(15 / 255, 81 / 255, 60 / 255),
+  gold: rgb(255 / 255, 199 / 255, 44 / 255),
+  goldDeep: rgb(217 / 255, 154 / 255, 0),
+  cream: rgb(247 / 255, 240 / 255, 226 / 255),
+  sand: rgb(233 / 255, 217 / 255, 182 / 255),
+  ink: rgb(22 / 255, 35 / 255, 29 / 255),
+  muted: rgb(102 / 255, 115 / 255, 109 / 255),
   white: rgb(1, 1, 1),
-  slate700: rgb(55 / 255, 65 / 255, 81 / 255),
-  border: rgb(223 / 255, 231 / 255, 219 / 255),
-  offwhite: rgb(247 / 255, 249 / 255, 245 / 255),
-  cream: rgb(242 / 255, 245 / 255, 239 / 255)
+  paleGreen: rgb(246 / 255, 251 / 255, 248 / 255),
+  paleGold: rgb(1, 249 / 255, 234 / 255)
+}
+
+const heroDescriptionColor = rgb(220 / 255, 232 / 255, 226 / 255)
+
+const drawBrandedPdfPill = (page, text, x, y, font) => {
+  const pillTextSize = PDF_READING_PT
+  const pillH = 38
+  const safe = sanitizeStandardFontText(text)
+  page.drawRectangle({
+    x,
+    y: y - pillH,
+    width: Math.min(300, font.widthOfTextAtSize(safe, pillTextSize) + 38),
+    height: pillH,
+    color: pdfEmailTheme.greenSoft,
+    borderColor: pdfEmailTheme.gold,
+    borderWidth: 0.7
+  })
+  page.drawText(safe, { x: x + 16, y: y - 14, font, size: pillTextSize, color: pdfEmailTheme.gold })
 }
 
 const slugify = (value) =>
@@ -45,7 +72,7 @@ const slugify = (value) =>
     .slice(0, 48) || 'proposal'
 
 const wrapText = ({ text, font, fontSize, maxWidth }) => {
-  const paragraphs = text.split('\n')
+  const paragraphs = sanitizeStandardFontText(text).split('\n')
   const lines = []
 
   paragraphs.forEach((paragraph, paragraphIndex) => {
@@ -80,6 +107,19 @@ const wrapText = ({ text, font, fontSize, maxWidth }) => {
   return lines
 }
 
+/** Empty lines = paragraph gap (keeps font size, avoids overlap). */
+const measureWrappedDrawHeight = (lines, lineHeight) => {
+  let total = 0
+  for (const line of lines) {
+    if (line.trim() === '') {
+      total += lineHeight * 0.55
+    } else {
+      total += lineHeight
+    }
+  }
+  return Math.max(lineHeight * 0.85, total)
+}
+
 const drawTextBlock = ({
   page,
   text,
@@ -95,6 +135,10 @@ const drawTextBlock = ({
   let currentY = y
 
   lines.forEach((line) => {
+    if (line.trim() === '') {
+      currentY -= lineHeight * 0.55
+      return
+    }
     page.drawText(line, {
       x,
       y: currentY,
@@ -109,7 +153,7 @@ const drawTextBlock = ({
   return currentY
 }
 
-const drawCard = ({ page, x, topY, width, height, fillColor = colors.white, borderColor = colors.border }) => {
+const drawCard = ({ page, x, topY, width, height, fillColor = pdfEmailTheme.white, borderColor = pdfEmailTheme.sand }) => {
   page.drawRectangle({
     x,
     y: topY - height,
@@ -117,8 +161,20 @@ const drawCard = ({ page, x, topY, width, height, fillColor = colors.white, bord
     height,
     color: fillColor,
     borderColor,
-    borderWidth: 1
+    borderWidth: 0.8
   })
+}
+
+const measureTileHeight = (value, regularFont, width) => {
+  const valueLines = wrapText({
+    text: value,
+    font: regularFont,
+    fontSize: PDF_READING_PT,
+    maxWidth: width - 24
+  })
+  const valueBlockH = measureWrappedDrawHeight(valueLines, PDF_READING_LH)
+  /** Label band (to baseline) + value block + inner bottom padding — matches drawTile geometry. */
+  return Math.max(100, 48 + valueBlockH + 22)
 }
 
 const drawTile = ({ page, x, y, width, height, label, value, boldFont, regularFont }) => {
@@ -127,47 +183,47 @@ const drawTile = ({ page, x, y, width, height, label, value, boldFont, regularFo
     y,
     width,
     height,
-    color: colors.white,
-    borderColor: colors.border,
-    borderWidth: 1
+    color: pdfEmailTheme.paleGold,
+    borderColor: pdfEmailTheme.sand,
+    borderWidth: 0.8
   })
 
-  page.drawText(label, {
-    x: x + 12,
-    y: y + height - 22,
+  page.drawText(sanitizeStandardFontText(label), {
+    x: x + 14,
+    y: y + height - 26,
     font: boldFont,
     size: PDF_READING_PT,
-    color: colors.gold400
+    color: pdfEmailTheme.goldDeep
   })
 
   drawTextBlock({
     page,
     text: value,
-    x: x + 12,
-    y: y + height - 40,
+    x: x + 14,
+    y: y + height - 50,
     font: regularFont,
     fontSize: PDF_READING_PT,
-    color: colors.forest900,
-    maxWidth: width - 24,
+    color: pdfEmailTheme.ink,
+    maxWidth: width - 28,
     lineHeight: PDF_READING_LH
   })
 }
 
 const drawChecklistLine = ({ page, label, x, y, width, dark = false, regularFont }) => {
-  page.drawText(label, {
+  page.drawText(sanitizeStandardFontText(label), {
     x,
     y,
     font: regularFont,
     size: PDF_READING_PT,
-    color: dark ? colors.white : colors.slate700
+    color: dark ? pdfEmailTheme.white : pdfEmailTheme.muted
   })
 
   page.drawLine({
     start: { x, y: y - 10 },
     end: { x: x + width, y: y - 8 },
-    color: dark ? colors.white : colors.forest900,
+    color: dark ? pdfEmailTheme.white : pdfEmailTheme.sand,
     thickness: 1,
-    opacity: dark ? 0.28 : 0.18
+    opacity: dark ? 0.28 : 0.45
   })
 }
 
@@ -175,17 +231,19 @@ const infoCardTextMaxWidth = 219
 const infoItemFontSize = PDF_READING_PT
 const infoItemLineHeight = PDF_READING_LH
 
+const infoItemLineHeightLoose = infoItemLineHeight + 2
+
 const measureInfoItemsHeight = (items, font) => {
   let total = 0
   for (const item of items) {
     const lines = wrapText({ text: item, font, fontSize: infoItemFontSize, maxWidth: infoCardTextMaxWidth })
-    total += lines.length * infoItemLineHeight + 6
+    total += measureWrappedDrawHeight(lines, infoItemLineHeightLoose) + 10
   }
   return total
 }
 
 const getInfoRowHeight = (leftItems, rightItems, font) =>
-  Math.max(140, 40 + measureInfoItemsHeight(leftItems, font) + 16, 40 + measureInfoItemsHeight(rightItems, font) + 16)
+  Math.max(172, 52 + measureInfoItemsHeight(leftItems, font) + 22, 52 + measureInfoItemsHeight(rightItems, font) + 22)
 
 const drawInfoCardRow = ({
   page,
@@ -199,33 +257,33 @@ const drawInfoCardRow = ({
   regularFont
 }) => {
   const rowH = getInfoRowHeight(leftCard.items, rightCard.items, regularFont)
-  const rowGap = 16
+  const rowGap = 26
 
   drawCard({ page, x: leftX, topY, width, height: rowH })
   drawCard({ page, x: rightX, topY, width, height: rowH })
 
   const paintCard = (card, x) => {
-    page.drawText(card.title, {
-      x: x + 14,
-      y: topY - 22,
+    page.drawText(sanitizeStandardFontText(card.title), {
+      x: x + 16,
+      y: topY - 26,
       font: boldFont,
       size: PDF_READING_PT,
-      color: colors.forest900
+      color: pdfEmailTheme.ink
     })
-    let cursorY = topY - 42
+    let cursorY = topY - 56
     for (const item of card.items) {
       cursorY = drawTextBlock({
         page,
         text: item,
-        x: x + 14,
+        x: x + 16,
         y: cursorY,
         font: regularFont,
         fontSize: infoItemFontSize,
-        color: colors.slate700,
+        color: pdfEmailTheme.muted,
         maxWidth: infoCardTextMaxWidth,
-        lineHeight: infoItemLineHeight
+        lineHeight: infoItemLineHeightLoose
       })
-      cursorY -= 6
+      cursorY -= 10
     }
   }
 
@@ -241,371 +299,373 @@ export const createProposalPdf = async (rawPayload = {}) => {
   const documentTemplate = buildProposalDocument(rawPayload)
   const proposal = documentTemplate.meta
   const pdfDocument = await PDFDocument.create()
-  const page = pdfDocument.addPage([pageWidth, pageHeight])
   const regularFont = await pdfDocument.embedFont(StandardFonts.Helvetica)
   const boldFont = await pdfDocument.embedFont(StandardFonts.HelveticaBold)
-  const brandLockupImage = await pdfDocument.embedPng(await getBrandLockupPngBuffer())
-  const brandLockupScale = 0.26
-  const brandLockupDimensions = brandLockupImage.scale(brandLockupScale)
-  const lockupTopMargin = 18
-  const lockupY = pageHeight - lockupTopMargin - brandLockupDimensions.height
-  const subtitleGap = 10
-  const subtitleY = lockupY - subtitleGap
-  const descriptionStartY = subtitleY - 20
+  const logoImage = await pdfDocument.embedPng(readFileSync(brandedPdfAssetPaths.logo))
+  const fleetImage = await embedPdfJpg(pdfDocument, brandedPdfAssetPaths.fleetLineup, 1280, 390)
 
-  page.drawRectangle({
-    x: 0,
-    y: pageHeight - 168,
-    width: pageWidth,
-    height: 168,
-    color: colors.forest950
-  })
+  const margin = 40
+  const contentW = pageWidth - margin * 2
+  const type = {
+    eyebrow: 8.5,
+    small: 9.25,
+    body: 11.25,
+    bodyLine: 16.8,
+    label: 9,
+    section: 14,
+    title: 22,
+    coverTitle: 26
+  }
+  const topLimit = pageHeight - 64
+  const bottomLimit = 74
 
-  page.drawRectangle({
-    x: 0,
-    y: pageHeight - 168,
-    width: pageWidth,
-    height: 168,
-    opacity: 0.18,
-    color: colors.fairway600
-  })
+  const textHeight = (text, font, size, width, lineHeight) =>
+    measureWrappedDrawHeight(wrapText({ text, font, fontSize: size, maxWidth: width }), lineHeight)
 
-  page.drawImage(brandLockupImage, {
-    x: 44,
-    y: lockupY,
-    width: brandLockupDimensions.width,
-    height: brandLockupDimensions.height
-  })
+  const addPage = (kicker = 'Proposal details', title = 'Your Costa del Sol golf proposal') => {
+    const page = pdfDocument.addPage([pageWidth, pageHeight])
+    page.drawRectangle({ x: 0, y: 0, width: pageWidth, height: pageHeight, color: pdfEmailTheme.cream })
+    page.drawRectangle({ x: margin, y: pageHeight - 112, width: contentW, height: 74, color: pdfEmailTheme.green })
+    page.drawRectangle({ x: margin, y: pageHeight - 112, width: contentW, height: 4, color: pdfEmailTheme.gold })
 
-  page.drawText(documentTemplate.hero.kicker, {
-    x: 44,
-    y: subtitleY,
-    font: boldFont,
-    size: PDF_READING_PT,
-    color: colors.gold300
-  })
-
-  const headerBottomY = drawTextBlock({
-    page,
-    text: documentTemplate.hero.description,
-    x: 44,
-    y: descriptionStartY,
-    font: regularFont,
-    fontSize: PDF_READING_PT,
-    color: colors.white,
-    maxWidth: 320,
-    lineHeight: PDF_READING_LH
-  })
-
-  page.drawRectangle({
-    x: pageWidth - 196,
-    y: pageHeight - 132,
-    width: 152,
-    height: 74,
-    color: colors.white,
-    opacity: 0.08
-  })
-
-  page.drawText('Proposal ID', {
-    x: pageWidth - 178,
-    y: pageHeight - 82,
-    font: boldFont,
-    size: PDF_READING_PT,
-    color: colors.gold300
-  })
-
-  page.drawText(proposal.proposalId, {
-    x: pageWidth - 178,
-    y: pageHeight - 101,
-    font: regularFont,
-    size: PDF_READING_PT,
-    color: colors.white
-  })
-
-  page.drawText(proposal.proposalDate, {
-    x: pageWidth - 178,
-    y: pageHeight - 118,
-    font: regularFont,
-    size: PDF_READING_PT,
-    color: colors.white
-  })
-
-  const topCardsY = headerBottomY - 10
-  const cardWidth = 247
-  const leftCardX = 44
-  const rightCardX = 304
-
-  const [c0, c1, c2, c3] = documentTemplate.infoCards
-  const afterRow1 = drawInfoCardRow({
-    page,
-    topY: topCardsY,
-    leftCard: { title: c0.title, items: c0.items },
-    rightCard: { title: c1.title, items: c1.items },
-    leftX: leftCardX,
-    rightX: rightCardX,
-    width: cardWidth,
-    boldFont,
-    regularFont
-  })
-  drawInfoCardRow({
-    page,
-    topY: afterRow1,
-    leftCard: { title: c2.title, items: c2.items },
-    rightCard: { title: c3.title, items: c3.items },
-    leftX: leftCardX,
-    rightX: rightCardX,
-    width: cardWidth,
-    boldFont,
-    regularFont
-  })
-
-  const page2 = pdfDocument.addPage([pageWidth, pageHeight])
-  const summaryTopY = pageHeight - 52
-  const summaryCardH = 268
-  drawCard({ page: page2, x: 44, topY: summaryTopY, width: pageWidth - 88, height: summaryCardH, fillColor: colors.offwhite })
-
-  page2.drawText(documentTemplate.summary.kicker, {
-    x: 58,
-    y: summaryTopY - 20,
-    font: boldFont,
-    size: PDF_READING_PT,
-    color: colors.gold400
-  })
-
-  let summaryCursorY = summaryTopY - 38
-  summaryCursorY = drawTextBlock({
-    page: page2,
-    text: documentTemplate.summary.title,
-    x: 58,
-    y: summaryCursorY,
-    font: boldFont,
-    fontSize: 16,
-    color: colors.forest900,
-    maxWidth: pageWidth - 116,
-    lineHeight: 20
-  })
-
-  summaryCursorY = drawTextBlock({
-    page: page2,
-    text: documentTemplate.summary.aside,
-    x: 58,
-    y: summaryCursorY - 8,
-    font: regularFont,
-    fontSize: PDF_READING_PT,
-    color: colors.slate700,
-    maxWidth: pageWidth - 116,
-    lineHeight: PDF_READING_LH
-  })
-
-  const tileWidth = 116
-  const tileGap = 10
-  const tileH = 88
-  const topTileY = summaryCursorY - 16 - tileH
-  const bottomTileY = topTileY - 12 - tileH
-
-  documentTemplate.summary.topTiles.forEach((tile, index) => {
-    drawTile({
-      page: page2,
-      x: 58 + index * (tileWidth + tileGap),
-      y: topTileY,
-      width: tileWidth,
-      height: tileH,
-      label: tile.label,
-      value: tile.value,
-      boldFont,
-      regularFont
-    })
-  })
-
-  documentTemplate.summary.bottomTiles.forEach((tile, index) => {
-    drawTile({
-      page: page2,
-      x: 58 + index * (tileWidth + tileGap),
-      y: bottomTileY,
-      width: tileWidth,
-      height: tileH,
-      label: tile.label,
-      value: tile.value,
-      boldFont,
-      regularFont
-    })
-  })
-
-  const lowerCardsTopY = bottomTileY - 28
-  const lowerLeftH = 220
-  const lowerRightH = 200
-
-  drawCard({ page: page2, x: leftCardX, topY: lowerCardsTopY, width: cardWidth, height: lowerLeftH })
-  page2.drawText(documentTemplate.lower.left.kicker, {
-    x: leftCardX + 14,
-    y: lowerCardsTopY - 20,
-    font: boldFont,
-    size: PDF_READING_PT,
-    color: colors.gold400
-  })
-
-  documentTemplate.lower.left.items.forEach((line, index) => {
-    page2.drawText(`• ${line}`, {
-      x: leftCardX + 14,
-      y: lowerCardsTopY - 46 - index * 22,
-      font: regularFont,
-      size: PDF_READING_PT,
-      color: colors.slate700
-    })
-  })
-
-  documentTemplate.lower.left.noteLines.forEach((line, index) => {
-    drawChecklistLine({
-      page: page2,
-      label: line,
-      x: leftCardX + 14,
-      y: lowerCardsTopY - 146 - index * 28,
-      width: 210,
-      regularFont
-    })
-  })
-
-  drawCard({
-    page: page2,
-    x: rightCardX,
-    topY: lowerCardsTopY,
-    width: cardWidth,
-    height: lowerRightH,
-    fillColor: colors.forest950,
-    borderColor: colors.forest950
-  })
-
-  page2.drawText(documentTemplate.lower.right.kicker, {
-    x: rightCardX + 14,
-    y: lowerCardsTopY - 20,
-    font: boldFont,
-    size: PDF_READING_PT,
-    color: colors.gold300
-  })
-
-  drawTextBlock({
-    page: page2,
-    text: documentTemplate.lower.right.paragraphs.join('\n\n'),
-    x: rightCardX + 14,
-    y: lowerCardsTopY - 44,
-    font: regularFont,
-    fontSize: PDF_READING_PT,
-    color: colors.white,
-    maxWidth: cardWidth - 28,
-    lineHeight: PDF_READING_LH
-  })
-
-  const darkCardBottomY = lowerCardsTopY - lowerRightH
-  const signoffPad = 10
-  const signoffBoxH = 58
-  const signoffBoxBottomY = darkCardBottomY + signoffPad
-
-  page2.drawRectangle({
-    x: rightCardX + 14,
-    y: signoffBoxBottomY,
-    width: cardWidth - 28,
-    height: signoffBoxH,
-    color: colors.white,
-    opacity: 0.06,
-    borderColor: colors.white,
-    borderWidth: 1
-  })
-
-  const signoffInnerTopY = signoffBoxBottomY + signoffBoxH
-
-  page2.drawText(documentTemplate.lower.right.signoffTitle, {
-    x: rightCardX + 26,
-    y: signoffInnerTopY - 18,
-    font: boldFont,
-    size: PDF_READING_PT,
-    color: colors.white
-  })
-
-  documentTemplate.lower.right.signoffLines.forEach((line, index) => {
-    drawChecklistLine({
-      page: page2,
-      label: line,
-      x: rightCardX + 26,
-      y: signoffInnerTopY - 38 - index * 24,
-      width: 180,
-      dark: true,
-      regularFont
-    })
-  })
-
-  const lowerBlockBottom = lowerCardsTopY - Math.max(lowerLeftH, lowerRightH)
-  const sectionGap = 18
-  const disclaimerCardH = 200
-
-  let disclaimerAnchorTopY = lowerBlockBottom
-
-  if (documentTemplate.messageBlock) {
-    const messageCardH = 72
-    const messageTopY = lowerBlockBottom - sectionGap - messageCardH
-
-    disclaimerAnchorTopY = messageTopY
-
-    drawCard({
-      page: page2,
-      x: 44,
-      topY: messageTopY,
-      width: pageWidth - 88,
-      height: messageCardH,
-      fillColor: colors.cream,
-      borderColor: colors.gold300
-    })
-
-    page2.drawText(documentTemplate.messageBlock.title, {
-      x: 58,
-      y: messageTopY - 18,
+    const logoDims = logoImage.scale(0.13)
+    page.drawImage(logoImage, { x: margin + 16, y: pageHeight - 96, width: logoDims.width, height: logoDims.height })
+    page.drawText(sanitizeStandardFontText(kicker).toUpperCase(), {
+      x: margin + 142,
+      y: pageHeight - 66,
       font: boldFont,
-      size: PDF_READING_PT,
-      color: colors.forest900
+      size: type.eyebrow,
+      color: pdfEmailTheme.gold
+    })
+    drawTextBlock({
+      page,
+      text: title,
+      x: margin + 142,
+      y: pageHeight - 82,
+      font: boldFont,
+      fontSize: 14,
+      color: pdfEmailTheme.white,
+      maxWidth: contentW - 160,
+      lineHeight: 18
     })
 
-    drawTextBlock({
-      page: page2,
-      text: documentTemplate.messageBlock.body,
-      x: 58,
-      y: messageTopY - 36,
-      font: regularFont,
-      fontSize: PDF_READING_PT,
-      color: colors.slate700,
-      maxWidth: pageWidth - 116,
-      lineHeight: PDF_READING_LH
+    return { page, y: pageHeight - 142 }
+  }
+
+  const ensurePage = (state, needed, kicker, title) => {
+    if (!state || state.y - needed < bottomLimit) {
+      return addPage(kicker, title)
+    }
+    return state
+  }
+
+  const drawRule = (page, y) => {
+    page.drawLine({
+      start: { x: margin, y },
+      end: { x: margin + contentW, y },
+      color: pdfEmailTheme.sand,
+      thickness: 0.7
     })
   }
 
-  const disclaimerTopY = disclaimerAnchorTopY - sectionGap - disclaimerCardH
+  const drawParagraph = (state, text, options = {}) => {
+    const {
+      x = margin,
+      width = contentW,
+      font = regularFont,
+      size = type.body,
+      lineHeight = type.bodyLine,
+      color = pdfEmailTheme.muted,
+      gap = 10,
+      kicker = 'Proposal details',
+      title = 'Your Costa del Sol golf proposal'
+    } = options
+    const h = textHeight(text, font, size, width, lineHeight)
+    state = ensurePage(state, h + gap, kicker, title)
+    const nextY = drawTextBlock({
+      page: state.page,
+      text,
+      x,
+      y: state.y,
+      font,
+      fontSize: size,
+      color,
+      maxWidth: width,
+      lineHeight
+    })
+    state.y = nextY - gap
+    return state
+  }
 
-  drawCard({
-    page: page2,
-    x: 44,
-    topY: disclaimerTopY,
-    width: pageWidth - 88,
-    height: disclaimerCardH,
-    fillColor: colors.offwhite,
-    borderColor: colors.gold400
-  })
+  const drawSection = (state, { kicker, title, sectionTitle, items, fill = pdfEmailTheme.white, dark = false }) => {
+    const pad = 18
+    const innerW = contentW - pad * 2
+    const titleH = textHeight(sectionTitle, boldFont, type.section, innerW, 18)
+    const itemHs = items.map((item) => textHeight(item, regularFont, type.body, innerW - 18, type.bodyLine))
+    const cardH = Math.max(92, pad + titleH + 14 + itemHs.reduce((sum, h) => sum + h + 8, 0) + pad)
+    state = ensurePage(state, cardH + 18, kicker, title)
 
-  page2.drawText(documentTemplate.disclaimer.title, {
-    x: 58,
-    y: disclaimerTopY - 18,
+    drawCard({
+      page: state.page,
+      x: margin,
+      topY: state.y,
+      width: contentW,
+      height: cardH,
+      fillColor: fill,
+      borderColor: dark ? pdfEmailTheme.greenSoft : pdfEmailTheme.sand
+    })
+
+    let cursor = state.y - pad
+    cursor = drawTextBlock({
+      page: state.page,
+      text: sectionTitle,
+      x: margin + pad,
+      y: cursor,
+      font: boldFont,
+      fontSize: type.section,
+      color: dark ? pdfEmailTheme.white : pdfEmailTheme.ink,
+      maxWidth: innerW,
+      lineHeight: 18
+    })
+    cursor -= 14
+
+    items.forEach((item) => {
+      state.page.drawCircle({
+        x: margin + pad + 3,
+        y: cursor + 4,
+        size: 2.2,
+        color: dark ? pdfEmailTheme.gold : pdfEmailTheme.goldDeep
+      })
+      cursor = drawTextBlock({
+        page: state.page,
+        text: item,
+        x: margin + pad + 18,
+        y: cursor,
+        font: regularFont,
+        fontSize: type.body,
+        color: dark ? pdfEmailTheme.white : pdfEmailTheme.muted,
+        maxWidth: innerW - 18,
+        lineHeight: type.bodyLine
+      })
+      cursor -= 8
+    })
+
+    state.y -= cardH + 18
+    return state
+  }
+
+  const cover = pdfDocument.addPage([pageWidth, pageHeight])
+  cover.drawRectangle({ x: 0, y: 0, width: pageWidth, height: pageHeight, color: pdfEmailTheme.cream })
+
+  const topBarY = pageHeight - 34
+  cover.drawText('IRISH-OWNED · COSTA DEL SOL GOLF SPECIALISTS', {
+    x: margin,
+    y: topBarY,
     font: boldFont,
-    size: PDF_READING_PT,
-    color: colors.gold400
+    size: type.eyebrow,
+    color: pdfEmailTheme.green
+  })
+  cover.drawText('GolfSol Ireland', {
+    x: pageWidth - margin - boldFont.widthOfTextAtSize('GolfSol Ireland', type.eyebrow),
+    y: topBarY,
+    font: boldFont,
+    size: type.eyebrow,
+    color: pdfEmailTheme.muted
   })
 
+  const heroY = 360
+  const heroH = 400
+  cover.drawRectangle({ x: margin, y: heroY, width: contentW, height: heroH, color: pdfEmailTheme.green })
+  cover.drawRectangle({ x: margin, y: heroY, width: contentW, height: 5, color: pdfEmailTheme.gold })
+
+  const logoDims = logoImage.scale(0.19)
+  cover.drawImage(logoImage, {
+    x: margin + 22,
+    y: heroY + heroH - logoDims.height - 18,
+    width: logoDims.width,
+    height: logoDims.height
+  })
+
+  const pillLabel = sanitizeStandardFontText(String(documentTemplate.hero.kicker || 'Proposal'))
+    .toUpperCase()
+    .slice(0, 42)
+  cover.drawText(pillLabel, {
+    x: margin + 24,
+    y: heroY + 250,
+    font: boldFont,
+    size: type.eyebrow,
+    color: pdfEmailTheme.gold
+  })
+
+  let heroTextY = drawTextBlock({
+    page: cover,
+    text: documentTemplate.hero.title,
+    x: margin + 24,
+    y: heroY + 224,
+    font: boldFont,
+    fontSize: type.coverTitle,
+    color: pdfEmailTheme.white,
+    maxWidth: 305,
+    lineHeight: 32
+  })
+  heroTextY -= 18
   drawTextBlock({
-    page: page2,
-    text: documentTemplate.disclaimer.paragraphs.join('\n\n'),
-    x: 58,
-    y: disclaimerTopY - 38,
+    page: cover,
+    text: documentTemplate.hero.description,
+    x: margin + 24,
+    y: heroTextY,
     font: regularFont,
-    fontSize: PDF_READING_PT,
-    color: colors.slate700,
-    maxWidth: pageWidth - 116,
-    lineHeight: PDF_READING_LH
+    fontSize: 12,
+    color: heroDescriptionColor,
+    maxWidth: 300,
+    lineHeight: 18
+  })
+
+  cover.drawRectangle({
+    x: margin + contentW - 158,
+    y: heroY + 176,
+    width: 130,
+    height: 106,
+    color: pdfEmailTheme.greenSoft,
+    borderColor: pdfEmailTheme.gold,
+    borderWidth: 0.7
+  })
+  cover.drawText('PROPOSAL', {
+    x: margin + contentW - 142,
+    y: heroY + 248,
+    font: boldFont,
+    size: type.eyebrow,
+    color: pdfEmailTheme.gold
+  })
+  drawTextBlock({
+    page: cover,
+    text: `${proposal.proposalId}\n${proposal.proposalDate}`,
+    x: margin + contentW - 142,
+    y: heroY + 222,
+    font: regularFont,
+    fontSize: type.small,
+    color: pdfEmailTheme.white,
+    maxWidth: 100,
+    lineHeight: 14
+  })
+
+  const fleetY = 82
+  cover.drawRectangle({
+    x: margin,
+    y: fleetY,
+    width: contentW,
+    height: 238,
+    color: pdfEmailTheme.white,
+    borderColor: pdfEmailTheme.sand,
+    borderWidth: 0.8
+  })
+  cover.drawImage(fleetImage, { x: margin, y: fleetY + 72, width: contentW, height: 166 })
+  cover.drawRectangle({ x: margin, y: fleetY, width: contentW, height: 72, color: pdfEmailTheme.paleGold })
+  cover.drawText('GOLF-BAG FRIENDLY MERCEDES FLEET', {
+    x: margin + 18,
+    y: fleetY + 48,
+    font: boldFont,
+    size: type.eyebrow,
+    color: pdfEmailTheme.goldDeep
+  })
+  drawTextBlock({
+    page: cover,
+    text: 'E-Class, V-Class and Sprinter options matched to your group.',
+    x: margin + 18,
+    y: fleetY + 28,
+    font: boldFont,
+    fontSize: 12,
+    color: pdfEmailTheme.ink,
+    maxWidth: contentW - 36,
+    lineHeight: 16
+  })
+
+  let state = null
+  documentTemplate.infoCards.forEach((card, index) => {
+    state = drawSection(state, {
+      kicker: index === 0 ? 'Proposal details' : 'Proposal details continued',
+      title: 'Your Costa del Sol golf proposal',
+      sectionTitle: card.title,
+      items: card.items,
+      fill: index % 2 === 0 ? pdfEmailTheme.white : pdfEmailTheme.paleGreen
+    })
+  })
+
+  state = drawSection(state, {
+    kicker: 'Pricing snapshot',
+    title: documentTemplate.summary.title,
+    sectionTitle: documentTemplate.summary.title,
+    items: [documentTemplate.summary.aside],
+    fill: pdfEmailTheme.paleGreen
+  })
+
+  ;[...documentTemplate.summary.topTiles, ...documentTemplate.summary.bottomTiles].forEach((tile) => {
+    state = drawSection(state, {
+      kicker: 'Pricing snapshot',
+      title: documentTemplate.summary.title,
+      sectionTitle: tile.label,
+      items: [tile.value],
+      fill: pdfEmailTheme.paleGold
+    })
+  })
+
+  state = drawSection(state, {
+    kicker: 'Next steps',
+    title: 'How to move from proposal to booking',
+    sectionTitle: documentTemplate.lower.left.kicker,
+    items: [...documentTemplate.lower.left.items, ...documentTemplate.lower.left.noteLines],
+    fill: pdfEmailTheme.white
+  })
+
+  state = drawSection(state, {
+    kicker: 'Next steps',
+    title: 'How to move from proposal to booking',
+    sectionTitle: documentTemplate.lower.right.kicker,
+    items: [...documentTemplate.lower.right.paragraphs, documentTemplate.lower.right.signoffTitle, ...documentTemplate.lower.right.signoffLines],
+    fill: pdfEmailTheme.green,
+    dark: true
+  })
+
+  if (documentTemplate.messageBlock) {
+    state = drawSection(state, {
+      kicker: 'Client message',
+      title: 'Client email copy',
+      sectionTitle: documentTemplate.messageBlock.title,
+      items: [documentTemplate.messageBlock.body],
+      fill: pdfEmailTheme.paleGold
+    })
+  }
+
+  state = drawSection(state, {
+    kicker: 'Important notes',
+    title: 'Important notes and disclaimers',
+    sectionTitle: documentTemplate.disclaimer.title,
+    items: documentTemplate.disclaimer.paragraphs,
+    fill: pdfEmailTheme.white
+  })
+
+  const pages = pdfDocument.getPages()
+  pages.forEach((pdfPage, index) => {
+    pdfPage.drawLine({
+      start: { x: margin, y: 48 },
+      end: { x: margin + contentW, y: 48 },
+      color: pdfEmailTheme.sand,
+      thickness: 0.7
+    })
+    pdfPage.drawText(`Golf Sol Ireland · Proposal ${proposal.proposalId}`, {
+      x: margin,
+      y: 30,
+      font: regularFont,
+      size: type.small,
+      color: pdfEmailTheme.muted
+    })
+    pdfPage.drawText(`Page ${index + 1} of ${pages.length}`, {
+      x: pageWidth - margin - 56,
+      y: 30,
+      font: regularFont,
+      size: type.small,
+      color: pdfEmailTheme.muted
+    })
   })
 
   return {
