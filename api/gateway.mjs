@@ -7,7 +7,7 @@ import { handleMagicLinkRequest } from '../server/magic-link-service.mjs'
 import { handleSyncPortalProfile } from '../server/sync-portal-profile-service.mjs'
 import { handlePortalContactSetup } from '../server/portal-contact-setup-service.mjs'
 import { handleSendClientPortalEmail } from '../server/client-portal-email-service.mjs'
-import { createProposalFilename, createProposalPdf } from '../server/proposal-service.mjs'
+import { handleProposalPdfRequest } from '../server/proposal-pdf-service.mjs'
 import { handleSendClientDocument } from '../server/send-client-document-service.mjs'
 import {
   handleSendHotelReservationBrief,
@@ -146,8 +146,8 @@ export default async function handler(req, res) {
         }
         const rawBody = await readIncomingMessageBodyUtf8(req)
         const payload = rawBody ? JSON.parse(rawBody) : {}
-        const { pdfBytes, proposal } = await createProposalPdf(payload)
-        const filename = createProposalFilename(proposal.proposalId)
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const { pdfBytes, filename } = await handleProposalPdfRequest(payload, process.env, { authHeader })
         res.statusCode = 200
         res.setHeader('Content-Type', 'application/pdf')
         res.setHeader('Content-Disposition', `attachment; filename="${filename}"`)

@@ -5,7 +5,7 @@ import { handleMagicLinkRequest } from './server/magic-link-service.mjs'
 import { handleSyncPortalProfile } from './server/sync-portal-profile-service.mjs'
 import { handlePortalContactSetup } from './server/portal-contact-setup-service.mjs'
 import { handleSendClientPortalEmail } from './server/client-portal-email-service.mjs'
-import { createProposalFilename, createProposalPdf } from './server/proposal-service.mjs'
+import { handleProposalPdfRequest } from './server/proposal-pdf-service.mjs'
 import { handleSendClientDocument } from './server/send-client-document-service.mjs'
 import {
   handleSendHotelReservationBrief,
@@ -210,8 +210,8 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
       try {
         const rawBody = await readRequestBody(request)
         const payload = rawBody ? JSON.parse(rawBody) : {}
-        const { pdfBytes, proposal } = await createProposalPdf(payload)
-        const filename = createProposalFilename(proposal.proposalId)
+        const authHeader = request.headers.authorization ?? ''
+        const { pdfBytes, filename } = await handleProposalPdfRequest(payload, { ...process.env, ...serverEnv }, { authHeader })
 
         response.statusCode = 200
         response.setHeader('Content-Type', 'application/pdf')
