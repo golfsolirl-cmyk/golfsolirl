@@ -1,6 +1,6 @@
 /**
- * Rebuilds `public/images/hero-sample-sunny-mercedes-03` from the fleet photo
- * with layout matching the prior sample; BOOK NOW is centered in the yellow CTA.
+ * Rebuilds `public/images/hero-sample-sunny-mercedes-03` (2:1 desktop) and
+ * `hero-sample-sunny-mercedes-03-mobile` (9:16 phone — simplified overlay vs desktop).
  *
  * Usage: node scripts/rebuild-hero-sample-03.mjs
  */
@@ -17,6 +17,10 @@ const outDir = join(root, 'public', 'images')
 const width = 1600
 const height = 800
 
+/** Portrait hero for narrow viewports (matches GeHero max-width:639px) */
+const mobileWidth = 1080
+const mobileHeight = 1920
+
 const variant = {
   tint: '#0b4934',
   accent: '#f4c934',
@@ -25,9 +29,8 @@ const variant = {
   background: { brightness: 1.12, saturation: 1.28, hue: 0 },
 }
 
-/** CTA bar — horizontal center for text */
+/** Call line — horizontal centre (BOOK NOW is a live HTML button on the page). */
 const ctaCenterX = 1160 + 360 / 2
-const ctaTextY = 625 + 72 / 2
 
 function overlaySvg() {
   const { tint, accent, titleY } = variant
@@ -100,8 +103,6 @@ function overlaySvg() {
   </g>
 
   <g filter="url(#softShadow)">
-    <rect x="1160" y="625" width="360" height="72" rx="13" fill="url(#goldBar)"/>
-    <text x="${ctaCenterX}" y="${ctaTextY}" text-anchor="middle" dominant-baseline="middle" font-family="Arial, Helvetica, sans-serif" font-size="33" font-weight="900" letter-spacing="8" fill="#063626">BOOK NOW</text>
     <text x="${ctaCenterX}" y="738" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="900" letter-spacing="5" fill="#fff2b1">CALL +353 87 446 4766</text>
   </g>
 
@@ -116,8 +117,95 @@ function overlaySvg() {
 </svg>`)
 }
 
-const rightWarmth = Buffer.from(`
-<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+/**
+ * Portrait 9:16 — **mobile-only** simplified art direction: fewer blocks, more air,
+ * centred type. Omits desktop pills, green strip, checklist wall, and 24/7 seal.
+ * Desktop `overlaySvg()` is unchanged.
+ */
+function overlaySvgMobile() {
+  const { tint, accent } = variant
+  const w = mobileWidth
+  const h = mobileHeight
+  const cx = w / 2
+  const barH = 96
+  return Buffer.from(`
+<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Softer than desktop left panel: let van + course show through -->
+    <linearGradient id="mLeftPanel" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="${tint}" stop-opacity="0.52"/>
+      <stop offset="0.38" stop-color="${tint}" stop-opacity="0.28"/>
+      <stop offset="0.62" stop-color="${tint}" stop-opacity="0.1"/>
+      <stop offset="1" stop-color="${tint}" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="mGoldBar" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#f8d84e"/>
+      <stop offset="0.5" stop-color="#ffe77a"/>
+      <stop offset="1" stop-color="#f0bf26"/>
+    </linearGradient>
+    <linearGradient id="mLowerWash" gradientUnits="userSpaceOnUse" x1="0" y1="720" x2="0" y2="${h}">
+      <stop offset="0" stop-color="${tint}" stop-opacity="0"/>
+      <stop offset="0.22" stop-color="${tint}" stop-opacity="0.38"/>
+      <stop offset="1" stop-color="${tint}" stop-opacity="0.82"/>
+    </linearGradient>
+    <filter id="mSoftShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="12" flood-color="#001f16" flood-opacity="0.32"/>
+    </filter>
+    <filter id="mTrustEmph" x="-30%" y="-40%" width="160%" height="180%">
+      <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#000a08" flood-opacity="0.95" result="sh"/>
+      <feMerge>
+        <feMergeNode in="sh"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="mHeadLeg" x="-15%" y="-15%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#02150f" flood-opacity="0.72"/>
+    </filter>
+  </defs>
+
+  <rect width="${w}" height="${h}" fill="url(#mLeftPanel)"/>
+  <rect x="0" y="0" width="${w}" height="${barH}" fill="url(#mGoldBar)"/>
+  <rect x="0" y="${barH}" width="${w}" height="2" fill="#ffffff" opacity="0.34"/>
+  <text x="${cx}" y="46" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="900" letter-spacing="7" fill="#073d2b">MALAGA → COSTA DEL SOL</text>
+  <text x="${cx}" y="80" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="900" letter-spacing="11" fill="#073d2b">GOLF TRANSFERS</text>
+
+  <g filter="url(#mHeadLeg)">
+    <text x="${cx}" y="280" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="108" font-weight="900" letter-spacing="0.5" fill="#ffffff">FROM PLANE</text>
+    <text x="${cx}" y="408" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="108" font-weight="900" letter-spacing="0.5">
+      <tspan fill="#ffffff">TO </tspan><tspan fill="${accent}">FAIRWAY.</tspan>
+    </text>
+    <text x="${cx}" y="520" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="800" fill="#ffffff">
+      <tspan x="${cx}" dy="0">Meet-and-greet at Málaga.</tspan>
+      <tspan x="${cx}" dy="52">Mercedes transfers · tee times booked.</tspan>
+      <tspan x="${cx}" dy="52">Your group looked after, gate to fairway.</tspan>
+    </text>
+  </g>
+
+  <line x1="0" y1="740" x2="${w}" y2="740" stroke="${accent}" stroke-width="5" opacity="0.95"/>
+  <rect x="0" y="744" width="${w}" height="${h - 744}" fill="url(#mLowerWash)"/>
+
+  <g filter="url(#mTrustEmph)" font-family="Arial, Helvetica, sans-serif" font-weight="900">
+    <text x="${cx}" y="808" text-anchor="middle" font-size="38" letter-spacing="5" fill="#fff8dc">IRISH-OWNED · GOLF-BAG FRIENDLY</text>
+    <text x="${cx}" y="872" text-anchor="middle" font-size="46" letter-spacing="3" fill="#ffffff">
+      <tspan x="${cx}" dy="0">ALL TRANSFERS</tspan>
+      <tspan x="${cx}" dy="52" font-size="46">FULLY INSURED</tspan>
+    </text>
+    <text x="${cx}" y="1008" text-anchor="middle" font-size="36" letter-spacing="3" fill="#ffe566">IRISH &amp; SPANISH PHONE SUPPORT</text>
+    <text x="${cx}" y="1082" text-anchor="middle" font-size="50" letter-spacing="3" fill="#ffffff">+353 87 446 4766</text>
+    <text x="${cx}" y="1168" text-anchor="middle" font-size="50" letter-spacing="3" fill="#ffffff">+34 641 81 53 66</text>
+  </g>
+
+  <g filter="url(#mSoftShadow)">
+    <text x="${cx}" y="1710" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="900" letter-spacing="5" fill="#fff2b1">CALL +353 87 446 4766</text>
+  </g>
+
+  <rect x="0" y="0" width="${w}" height="${h}" fill="none" stroke="#f1cf55" stroke-opacity="0.2" stroke-width="4"/>
+</svg>`)
+}
+
+function rightWarmth(w, h) {
+  return Buffer.from(`
+<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="sun" x1="0" x2="1" y1="0" y2="1">
       <stop offset="0" stop-color="#ffe28a" stop-opacity="0.28"/>
@@ -131,32 +219,68 @@ const rightWarmth = Buffer.from(`
       <stop offset="1" stop-color="#03291d" stop-opacity="0.08"/>
     </linearGradient>
   </defs>
-  <rect width="${width}" height="${height}" fill="url(#sun)"/>
-  <rect width="${width}" height="${height}" fill="url(#readability)"/>
+  <rect width="${w}" height="${h}" fill="url(#sun)"/>
+  <rect width="${w}" height="${h}" fill="url(#readability)"/>
 </svg>`)
+}
 
-async function main() {
-  mkdirSync(outDir, { recursive: true })
+/** Lighter warmth so the fleet + fairway photo stays vivid on portrait crops. */
+function rightWarmthMobile(w, h) {
+  return Buffer.from(`
+<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sunM" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ffe28a" stop-opacity="0.12"/>
+      <stop offset="0.45" stop-color="#ffffff" stop-opacity="0.02"/>
+      <stop offset="1" stop-color="#00643c" stop-opacity="0.04"/>
+    </linearGradient>
+    <linearGradient id="readabilityM" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#03291d" stop-opacity="0.38"/>
+      <stop offset="0.4" stop-color="#03291d" stop-opacity="0.14"/>
+      <stop offset="0.68" stop-color="#03291d" stop-opacity="0"/>
+      <stop offset="1" stop-color="#03291d" stop-opacity="0.04"/>
+    </linearGradient>
+  </defs>
+  <rect width="${w}" height="${h}" fill="url(#sunM)"/>
+  <rect width="${w}" height="${h}" fill="url(#readabilityM)"/>
+</svg>`)
+}
 
+async function writeHeroVariant(outW, outH, overlayBuf, warmthBuf, baseName, opts = {}) {
+  const coverPosition = opts.coverPosition ?? variant.crop
   const resizedBackground = await sharp(fleetPath)
-    .resize(width, height, { fit: 'cover', position: variant.crop })
+    .resize(outW, outH, { fit: 'cover', position: coverPosition })
     .modulate(variant.background)
     .blur(0.3)
     .toBuffer()
 
   const base = sharp(resizedBackground).composite([
-    { input: rightWarmth, blend: 'over' },
-    { input: overlaySvg(), blend: 'over' },
+    { input: warmthBuf, blend: 'over' },
+    { input: overlayBuf, blend: 'over' },
   ])
 
-  const pngPath = join(outDir, 'hero-sample-sunny-mercedes-03.png')
-  const webpPath = join(outDir, 'hero-sample-sunny-mercedes-03.webp')
+  const pngPath = join(outDir, `${baseName}.png`)
+  const webpPath = join(outDir, `${baseName}.webp`)
 
   await base.clone().png({ quality: 92, compressionLevel: 8 }).toFile(pngPath)
   await base.clone().webp({ quality: 90 }).toFile(webpPath)
 
   console.log('Wrote', pngPath)
   console.log('Wrote', webpPath)
+}
+
+async function main() {
+  mkdirSync(outDir, { recursive: true })
+
+  await writeHeroVariant(width, height, overlaySvg(), rightWarmth(width, height), 'hero-sample-sunny-mercedes-03')
+  await writeHeroVariant(
+    mobileWidth,
+    mobileHeight,
+    overlaySvgMobile(),
+    rightWarmthMobile(mobileWidth, mobileHeight),
+    'hero-sample-sunny-mercedes-03-mobile',
+    { coverPosition: 'south' }
+  )
 }
 
 main().catch((err) => {

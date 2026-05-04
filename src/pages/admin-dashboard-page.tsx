@@ -6,16 +6,23 @@ import { fetchPackageBuildsAdminList, isMissingClientDetailsColumnError } from '
 import {
   buildManualAdminPackageConfig,
   buildSourceForAdminKind,
+  buildWebsiteFormAdminQuote,
   emptyTripDetailsForm,
+  formatWebsiteFormFieldValueForDisplay,
+  getWebsiteFormFieldLabel,
   hasMeaningfulTripDetails,
+  IRISH_VAT_REDUCED_TOURISM_RATE,
+  IRISH_VAT_STANDARD_RATE,
   mergeTripDetailsWithSaved,
   packageBuildDbSourceLabel,
   parseAnyPackageBuildRowConfig,
   serializeTripDetailsForDb,
+  TRIP_DETAILS_DASHBOARD_EXCLUDED_SECTION_TITLES,
   TRIP_DETAILS_MULTILINE_KEYS,
   TRIP_DETAILS_SECTIONS,
   tripDefaultsForPackageRow,
   humanizeFormKey,
+  orderedWebsiteFormFieldEntries,
   type AdminManualPackageKind,
   type PackageTripDetailsForm,
   type TripDetailsFieldKey
@@ -596,13 +603,19 @@ export function AdminDashboardPage() {
   const [adminSaveStatus, setAdminSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [adminSaveMessage, setAdminSaveMessage] = useState<string | null>(null)
   const adminSaveMessageRef = useRef<HTMLParagraphElement>(null)
+  /** Avoid treating post-save `packageBuilds` updates as a new modal open (prevents save banner reset / disruptive re-sync). */
+  const prevAdminDetailOpenBuildIdRef = useRef<string | null>(null)
+  const [websiteQuoteGross, setWebsiteQuoteGross] = useState('')
+  const [websiteQuoteVatRate, setWebsiteQuoteVatRate] = useState(IRISH_VAT_STANDARD_RATE)
+  const [websiteQuoteBusy, setWebsiteQuoteBusy] = useState(false)
+  const [websiteQuoteMessage, setWebsiteQuoteMessage] = useState<string | null>(null)
 
   useEffect(() => {
     if (isLoading) {
       return
     }
 
-    if (!session) {
+    if (!session?.user) {
       window.location.replace('/login')
       return
     }
@@ -610,7 +623,7 @@ export function AdminDashboardPage() {
     if (profile?.role !== 'admin') {
       window.location.replace('/dashboard')
     }
-  }, [isLoading, session, profile?.role])
+  }, [isLoading, session?.user?.id, profile?.role])
 
   useEffect(() => {
     if (!session || profile?.role !== 'admin') {
@@ -743,6 +756,22 @@ export function AdminDashboardPage() {
     () => enquiries.find((row) => row.reference_id === selectedEnquiryDetailRef) ?? null,
     [enquiries, selectedEnquiryDetailRef]
   )
+
+  /** Website-form package rows mirror signed-in submissions; pricing is edited on that build, not on the enquiry card. */
+  const websiteFormPackageBuildForSelectedEnquiry = useMemo(() => {
+    if (!selectedEnquiryDetailRef) {
+      return null
+    }
+    const matches = packageBuilds.filter((row) => {
+      const cfg = parseAnyPackageBuildRowConfig(row.config)
+      return cfg?.type === 'website_form' && cfg.config.enquiryReferenceId === selectedEnquiryDetailRef
+    })
+    if (matches.length === 0) {
+      return null
+    }
+    const sorted = [...matches].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    return sorted[0] ?? null
+  }, [packageBuilds, selectedEnquiryDetailRef])
 
   const activeWorkspaceEnquiry = useMemo(
     () => enquiries.find((row) => row.reference_id === workspaceEnquiryRef) ?? null,
@@ -942,6 +971,36 @@ export function AdminDashboardPage() {
 
     const defaults = tripDefaultsForPackageRow(detailRow.config)
     return mergeTripDetailsWithSaved(detailRow.client_details, defaults)
+  }, [detailRow])
+
+  const websiteQuotePreview = useMemo(() => {
+    const g = Number(websiteQuoteGross.replace(/,/g, ''))
+    if (!detailWebsite || !Number.isFinite(g) || g <= 0) {
+      return null
+    }
+    return buildWebsiteFormAdminQuote(g, websiteQuoteVatRate)
+  }, [detailWebsite, websiteQuoteGross, websiteQuoteVatRate])
+
+  useEffect(() => {
+    if (!detailRow) {
+      return
+    }
+    const parsed = parseAnyPackageBuildRowConfig(detailRow.config)
+    if (parsed?.type !== 'website_form') {
+      setWebsiteQuoteGross('')
+      setWebsiteQuoteVatRate(IRISH_VAT_STANDARD_RATE)
+      setWebsiteQuoteMessage(null)
+      return
+    }
+    const q = parsed.config.adminQuote
+    if (q) {
+      setWebsiteQuoteGross(String(q.grossTotalEur))
+      setWebsiteQuoteVatRate(q.vatRate)
+    } else {
+      setWebsiteQuoteGross('')
+      setWebsiteQuoteVatRate(IRISH_VAT_STANDARD_RATE)
+    }
+    setWebsiteQuoteMessage(null)
   }, [detailRow])
 
   const normalizeEnquiryReferenceKey = (value: string) => value.trim().toLowerCase().replace(/\s+/g, '')
@@ -1335,14 +1394,24 @@ export function AdminDashboardPage() {
   }
 
   useEffect(() => {
+    if (!detailBuildId) {
+      prevAdminDetailOpenBuildIdRef.current = null
+      return
+    }
+
     if (!detailRow) {
       return
     }
 
+    const openedDifferentBuild = prevAdminDetailOpenBuildIdRef.current !== detailBuildId
+    if (openedDifferentBuild) {
+      prevAdminDetailOpenBuildIdRef.current = detailBuildId
+      setAdminSaveStatus('idle')
+      setAdminSaveMessage(null)
+    }
+
     setAdminTripForm(detailMergedTrip)
-    setAdminSaveStatus('idle')
-    setAdminSaveMessage(null)
-  }, [detailMergedTrip, detailRow])
+  }, [detailBuildId, detailMergedTrip, detailRow])
 
   const handleAdminTripFieldChange = (field: TripDetailsFieldKey) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = field === 'preferredTravelDates' ? formatTravelDateInput(event.target.value) : event.target.value
@@ -1393,10 +1462,91 @@ export function AdminDashboardPage() {
     )
   }
 
+  const handleSaveWebsiteFormQuote = async () => {
+    if (!detailRow || !session?.user) {
+      return
+    }
+    const parsed = parseAnyPackageBuildRowConfig(detailRow.config)
+    if (parsed?.type !== 'website_form') {
+      return
+    }
+    const gross = Number(websiteQuoteGross.replace(/,/g, ''))
+    if (!Number.isFinite(gross) || gross <= 0) {
+      setWebsiteQuoteMessage('Enter a VAT-inclusive total in EUR (greater than zero).')
+      return
+    }
+
+    const supabase = getSupabaseBrowserClient()
+    if (!supabase) {
+      setWebsiteQuoteMessage('Supabase is not configured.')
+      return
+    }
+
+    const quote = buildWebsiteFormAdminQuote(gross, websiteQuoteVatRate)
+    const nextConfig = {
+      version: 3 as const,
+      formKey: parsed.config.formKey,
+      enquiryReferenceId: parsed.config.enquiryReferenceId,
+      submittedAt: parsed.config.submittedAt,
+      fields: { ...parsed.config.fields },
+      adminQuote: quote
+    }
+
+    setWebsiteQuoteBusy(true)
+    setWebsiteQuoteMessage(null)
+
+    const { error } = await supabase
+      .from('package_builds')
+      .update({
+        config: nextConfig,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', detailRow.id)
+
+    if (error) {
+      setWebsiteQuoteBusy(false)
+      setWebsiteQuoteMessage(error.message)
+      return
+    }
+
+    setPackageBuilds((prev) => prev.map((b) => (b.id === detailRow.id ? { ...b, config: nextConfig } : b)))
+
+    let emailNote = ''
+    const token = session.access_token
+    if (token) {
+      try {
+        const res = await fetch('/api/send-website-quote-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({ packageBuildId: detailRow.id })
+        })
+        const data = (await res.json().catch(() => ({}))) as { message?: string }
+        if (!res.ok) {
+          emailNote = ` The branded PDF email did not send: ${data.message ?? res.statusText}.`
+        } else {
+          emailNote = ' We also emailed them a branded copy with the quote PDF attached.'
+        }
+      } catch {
+        emailNote = ' The branded PDF email did not send (network error).'
+      }
+    } else {
+      emailNote = ' Sign in again to trigger the branded PDF email automatically.'
+    }
+
+    setWebsiteQuoteMessage(
+      `Saved — the client dashboard shows this quote, itinerary iframe, and PDF download.${emailNote}`
+    )
+    setWebsiteQuoteBusy(false)
+  }
+
   const handleCloseBuildDetail = useCallback(() => {
     setDetailBuildId(null)
     setAdminSaveStatus('idle')
     setAdminSaveMessage(null)
+    setWebsiteQuoteMessage(null)
   }, [])
 
   const handleRemovePackageBuildRow = async (row: PackageBuildAdminRow) => {
@@ -2837,6 +2987,10 @@ export function AdminDashboardPage() {
                       Form answers including trip timing (dates or already at Málaga AGP), routes, and any structured fields sent from the
                       site.
                     </p>
+                    <p className="mt-2 text-xs text-forest-500">
+                      <strong className="font-medium text-forest-700">Quote &amp; VAT</strong> (totals, deposit, branded PDF email) live on
+                      the linked <strong className="font-medium text-forest-700">client package build</strong> (modal), not here.
+                    </p>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <LuxuryButton
@@ -2860,6 +3014,39 @@ export function AdminDashboardPage() {
                     </LuxuryButton>
                   </div>
                 </div>
+
+                {websiteFormPackageBuildForSelectedEnquiry ? (
+                  <div className="mt-5 rounded-2xl border border-emerald-200/90 bg-gradient-to-br from-emerald-50/90 to-white px-4 py-4 text-sm text-forest-900 shadow-sm">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-900">Linked client package</p>
+                    <p className="mt-2 text-sm text-forest-700">
+                      This enquiry is mirrored as a dashboard package row. Open it to enter the VAT-inclusive total, save the quote to
+                      the portal, and trigger the branded PDF email.
+                    </p>
+                    <LuxuryButton
+                      className="!mt-3"
+                      onClick={() => {
+                        setDetailBuildId(websiteFormPackageBuildForSelectedEnquiry.id)
+                        window.requestAnimationFrame(() => {
+                          document.getElementById('admin-build-detail-title')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+                        })
+                      }}
+                      type="button"
+                      variant="primary"
+                    >
+                      Open package &amp; add pricing
+                    </LuxuryButton>
+                  </div>
+                ) : (
+                  <div className="mt-5 rounded-2xl border border-amber-200/80 bg-amber-50/80 px-4 py-4 text-sm text-amber-950">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-900">No linked package for this ref in the list</p>
+                    <p className="mt-2 text-sm text-amber-950/90">
+                      A quotable <strong className="font-medium">website form</strong> package is created automatically only when the
+                      submitter&apos;s email already had a <strong className="font-medium">portal profile</strong> at submit time. If they
+                      were new, you still have this enquiry record — use <strong className="font-medium">Use in manual proposal</strong>, or
+                      find their row under <strong className="font-medium">Client package builds</strong> and click <strong className="font-medium">View</strong> when it appears after they sign in.
+                    </p>
+                  </div>
+                )}
 
                 <dl className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {submissionDetailRows(selectedEnquiryDetail).map(([label, value], rowIndex) => (
@@ -2897,6 +3084,9 @@ export function AdminDashboardPage() {
               <li>
                 <strong className="text-forest-900">Enquiries</strong> — click a <span className="font-mono text-xs">Ref</span> for{' '}
                 <strong className="font-medium text-forest-800">Submission detail</strong> (form answers, travel dates, already at AGP, routes).
+                VAT-inclusive <strong className="font-medium text-forest-800">quote pricing</strong> is not on this card: use{' '}
+                <strong className="font-medium text-forest-800">Open package in Details</strong> when shown, or{' '}
+                <strong className="font-medium text-forest-800">Client package builds</strong> → <strong className="font-medium text-forest-800">View</strong> on the row that lists this reference.
               </li>
               <li>
                 <strong className="text-forest-900">Transfer package builder</strong> — tie the client (Details, Reference ID, or email), choose{' '}
@@ -5747,15 +5937,156 @@ export function AdminDashboardPage() {
                     <p className="mt-1 text-xs text-forest-500">
                       Submitted {formatAdminDateTime(detailWebsite.submittedAt)}
                     </p>
-                    <dl className="mt-4 max-h-56 space-y-3 overflow-y-auto text-xs">
-                      {Object.entries(detailWebsite.fields).map(([k, v]) => (
-                        <div className="border-b border-forest-100/80 pb-2" key={k}>
-                          <dt className="font-semibold uppercase tracking-[0.08em] text-forest-500">{k}</dt>
-                          <dd className="mt-1 whitespace-pre-wrap text-forest-900">{v}</dd>
+                    <dl className="mt-4 grid max-h-72 gap-3 overflow-y-auto text-xs sm:grid-cols-2">
+                      {orderedWebsiteFormFieldEntries(detailWebsite.fields).map(([k, v]) => (
+                        <div className="rounded-2xl border-2 border-orange-400/70 bg-offwhite/50 px-3 py-2.5" key={k}>
+                          <dt className="text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-gold-600">
+                            {getWebsiteFormFieldLabel(k)}
+                          </dt>
+                          <dd className="mt-1 whitespace-pre-wrap text-sm font-medium text-forest-900">
+                            {formatWebsiteFormFieldValueForDisplay(k, v).trim() || '—'}
+                          </dd>
                         </div>
                       ))}
                     </dl>
                     <p className="mt-3 text-xs text-forest-600">Source: {packageBuildDbSourceLabel(detailRow.source)}</p>
+                  </div>
+                ) : null}
+
+                {detailWebsite?.portalTransferPlan &&
+                (detailWebsite.portalTransferPlan.golfLegs.some((l) => l.courseId.trim()) ||
+                  detailWebsite.portalTransferPlan.hotelLegs.some((l) => l.hotelName.trim())) ? (
+                  <div className="mb-8 rounded-2xl border border-fairway-200/90 bg-gradient-to-br from-[#f4faf6] to-white px-4 py-4 text-sm text-forest-900 shadow-sm">
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gs-green">Client transfer plan (portal)</p>
+                    <p className="mt-1 text-xs text-forest-600">
+                      Saved by the client from their dashboard — Costa del Sol courses and hotels for golf-day / hotel
+                      transfers.
+                    </p>
+                    {detailWebsite.portalTransferPlan.updatedAt ? (
+                      <p className="mt-2 text-xs text-forest-500">
+                        Updated {formatAdminDateTime(detailWebsite.portalTransferPlan.updatedAt)}
+                      </p>
+                    ) : null}
+                    {detailWebsite.portalTransferPlan.golfLegs.some((l) => l.courseId.trim()) ? (
+                      <ul className="mt-3 space-y-2 rounded-xl border border-forest-100 bg-white/90 px-3 py-2">
+                        {detailWebsite.portalTransferPlan.golfLegs
+                          .filter((l) => l.courseId.trim())
+                          .map((leg, gi) => {
+                            const course = COURSES.find((c) => c.id === leg.courseId)
+                            return (
+                              <li className="text-sm text-forest-800" key={`golf-${String(gi)}-${leg.courseId}`}>
+                                <span className="font-semibold text-forest-950">{course?.name ?? leg.courseId}</span>
+                                {course?.region ? (
+                                  <span className="text-forest-500"> · {course.region}</span>
+                                ) : null}
+                                {leg.notes.trim() ? (
+                                  <span className="mt-0.5 block text-xs text-forest-600">{leg.notes.trim()}</span>
+                                ) : null}
+                              </li>
+                            )
+                          })}
+                      </ul>
+                    ) : null}
+                    {detailWebsite.portalTransferPlan.hotelLegs.some((l) => l.hotelName.trim()) ? (
+                      <ul className="mt-3 space-y-2 rounded-xl border border-forest-100 bg-white/90 px-3 py-2">
+                        {detailWebsite.portalTransferPlan.hotelLegs
+                          .filter((l) => l.hotelName.trim())
+                          .map((leg, hi) => (
+                            <li className="text-sm text-forest-800" key={`hotel-${String(hi)}-${leg.hotelName}`}>
+                              <span className="font-semibold text-forest-950">{leg.hotelName.trim()}</span>
+                              {leg.notes.trim() ? (
+                                <span className="mt-0.5 block text-xs text-forest-600">{leg.notes.trim()}</span>
+                              ) : null}
+                            </li>
+                          ))}
+                      </ul>
+                    ) : null}
+                  </div>
+                ) : null}
+
+                {detailWebsite ? (
+                  <div className="mb-8 rounded-2xl border border-emerald-200/90 bg-gradient-to-br from-emerald-50/80 to-white px-4 py-5 text-sm text-forest-900 shadow-sm">
+                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-900">Client quote &amp; VAT</p>
+                    <p className="mt-2 text-xs text-forest-600">
+                      Enter the <strong className="font-medium text-forest-800">VAT-inclusive total</strong> the client pays. We
+                      show Irish VAT ex-works, then add it back. Deposit is 20% of the total; balance is the remainder.
+                    </p>
+                    <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                      <div>
+                        <label className={adminTripLabelClass} htmlFor="adm-web-quote-gross">
+                          Total (EUR, inc VAT)
+                        </label>
+                        <input
+                          className={adminTripInputClass}
+                          id="adm-web-quote-gross"
+                          inputMode="decimal"
+                          onChange={(e) => setWebsiteQuoteGross(e.target.value)}
+                          placeholder="e.g. 2450"
+                          value={websiteQuoteGross}
+                        />
+                      </div>
+                      <div>
+                        <label className={adminTripLabelClass} htmlFor="adm-web-quote-vat">
+                          Irish VAT rate
+                        </label>
+                        <select
+                          className={adminTripInputClass}
+                          id="adm-web-quote-vat"
+                          onChange={(e) => setWebsiteQuoteVatRate(Number(e.target.value))}
+                          value={websiteQuoteVatRate}
+                        >
+                          <option value={IRISH_VAT_STANDARD_RATE}>Standard 23% (services)</option>
+                          <option value={IRISH_VAT_REDUCED_TOURISM_RATE}>Reduced 13.5% (tourism / hospitality where applicable)</option>
+                          <option value={0}>Zero 0% (exempt / reverse charge — confirm with accountant)</option>
+                        </select>
+                      </div>
+                    </div>
+                    {websiteQuotePreview ? (
+                      <ul className="mt-4 space-y-2 rounded-xl border border-forest-200/80 bg-white/90 px-4 py-3 text-xs text-forest-800">
+                        <li className="flex justify-between gap-3">
+                          <span>Services (ex VAT)</span>
+                          <span className="font-semibold">{formatEur(websiteQuotePreview.netServicesEur)}</span>
+                        </li>
+                        <li className="flex justify-between gap-3">
+                          <span>VAT ({Math.round(websiteQuotePreview.vatRate * 1000) / 10}%)</span>
+                          <span className="font-semibold">{formatEur(websiteQuotePreview.vatAmountEur)}</span>
+                        </li>
+                        <li className="flex justify-between gap-3 border-t border-forest-100 pt-2 text-sm">
+                          <span className="font-medium">Total (inc VAT)</span>
+                          <span className="font-bold text-emerald-900">{formatEur(websiteQuotePreview.grossTotalEur)}</span>
+                        </li>
+                        <li className="flex justify-between gap-3">
+                          <span>Deposit 20%</span>
+                          <span className="font-semibold">{formatEur(websiteQuotePreview.deposit20Eur)}</span>
+                        </li>
+                        <li className="flex justify-between gap-3">
+                          <span>Balance</span>
+                          <span className="font-semibold">{formatEur(websiteQuotePreview.balance80Eur)}</span>
+                        </li>
+                      </ul>
+                    ) : (
+                      <p className="mt-3 text-xs text-forest-500">Enter a total above to preview VAT split and deposit.</p>
+                    )}
+                    <div className="mt-4 flex flex-wrap items-center gap-3">
+                      <LuxuryButton
+                        disabled={websiteQuoteBusy || !websiteQuotePreview}
+                        onClick={() => void handleSaveWebsiteFormQuote()}
+                        type="button"
+                        variant="primary"
+                      >
+                        {websiteQuoteBusy ? 'Saving & emailing…' : 'Save quote to client portal'}
+                      </LuxuryButton>
+                      {detailWebsite.adminQuote ? (
+                        <span className="text-xs text-forest-500">
+                          Last saved {formatAdminDateTime(detailWebsite.adminQuote.savedAt)}
+                        </span>
+                      ) : null}
+                    </div>
+                    {websiteQuoteMessage ? (
+                      <p className="mt-3 text-xs font-medium text-emerald-900" role="status">
+                        {websiteQuoteMessage}
+                      </p>
+                    ) : null}
                   </div>
                 ) : null}
 
@@ -5764,7 +6095,7 @@ export function AdminDashboardPage() {
                   {detailManual
                     ? 'Locked package lines on the client dashboard match this manual quote — adjust them here if the quote changes. The client can still edit open fields (dates, notes, etc.).'
                     : detailWebsite
-                      ? 'This row mirrors a live website form submission. Identity lines are locked for the client; expand notes and logistics here if you need to annotate before they reply.'
+                      ? 'Website enquiry: full field snapshot and client transfer plan are above. Pricing / proposal / logistics / notes blocks are hidden from the portal trip form — use internal processes if you must amend those lines.'
                       : 'Clients cannot edit calculator-sourced package, stay, group size, nights, rounds, or pricing on their dashboard — update those here.'}{' '}
                   {hasMeaningfulTripDetails(serializeTripDetailsForDb(adminTripForm))
                     ? 'Extra client-entered fields are included below.'
@@ -5772,7 +6103,15 @@ export function AdminDashboardPage() {
                 </p>
 
                 <div className="mt-6 space-y-8">
-                  {TRIP_DETAILS_SECTIONS.map((section) => (
+                  {TRIP_DETAILS_SECTIONS.filter((s) => {
+                    if (TRIP_DETAILS_DASHBOARD_EXCLUDED_SECTION_TITLES.includes(s.title)) {
+                      return false
+                    }
+                    if (detailWebsite && (s.title === 'Trip shape' || s.title === 'Trip overview')) {
+                      return false
+                    }
+                    return true
+                  }).map((section) => (
                     <div className="space-y-4" key={section.title}>
                       <h3 className="border-b border-orange-200/90 pb-2 font-display text-base font-semibold text-forest-900">
                         {section.title}

@@ -190,3 +190,86 @@ export const buildBrandedProposalAttachedEmailHtml = ({ greetingName, proposalId
     bodyHtml
   })
 }
+
+/**
+ * Passwordless dashboard link — same `buildGsolTransactionalEmail` shell as proposals / portal messages
+ * (finalize + CID images at send time).
+ * @param {{ actionLink: string; email: string; requestedAtDisplay: string }} opts
+ */
+export const buildBrandedPortalMagicLinkEmailHtml = ({ actionLink, email, requestedAtDisplay }) => {
+  const safeLink = escapeHtml(actionLink)
+  const safeEmail = escapeHtml(email)
+  const safeWhen = escapeHtml(requestedAtDisplay)
+  const emailCell = `<span style="color:#374151;font-weight:700;">${safeEmail}</span>`
+
+  const bodyHtml = `
+<tr>
+  <td style="padding:36px 40px 44px 40px;" class="p-m">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+      <tr>
+        <td style="padding:0 0 10px 0;">
+          <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:16px;line-height:1.75;color:#374151;">Hi,</p>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:0 0 20px 0;">
+          <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:16px;line-height:1.65;color:#374151;">
+            Tap the button below to open your Golf Sol Ireland client area — passwordless sign-in, same layout family as our proposal and enquiry emails.
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:0 0 16px 0;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #dfe7db;border-radius:18px;overflow:hidden;">
+            <tr style="background:#ffffff;">
+              <td style="padding:12px 16px;font-family:'DM Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#66736d;width:34%;vertical-align:top;">Signing in as</td>
+              <td style="padding:12px 16px;font-family:'DM Sans',Arial,sans-serif;font-size:14px;vertical-align:top;">${emailCell}</td>
+            </tr>
+            <tr style="background:#f7faf6;">
+              <td style="padding:12px 16px;font-family:'DM Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#66736d;vertical-align:top;">Method</td>
+              <td style="padding:12px 16px;font-family:'DM Sans',Arial,sans-serif;font-size:14px;vertical-align:top;">${escapeHtml('Secure magic link (no password)')}</td>
+            </tr>
+            <tr style="background:#ffffff;">
+              <td style="padding:12px 16px;font-family:'DM Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#66736d;vertical-align:top;">Requested</td>
+              <td style="padding:12px 16px;font-family:'DM Sans',Arial,sans-serif;font-size:14px;vertical-align:top;">${safeWhen}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:0 0 28px 0;">
+          <a href="${safeLink}" style="display:inline-block;background:#dc5801;color:#ffffff;text-decoration:none;font-weight:700;padding:14px 28px;border-radius:999px;font-size:15px;font-family:'DM Sans',Arial,sans-serif;">Sign in to Golf Sol Ireland</a>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:0 0 16px 0;border-radius:18px;background:#f7faf6;border:1px solid #dfe7db;">
+          <p style="margin:0;padding:16px 18px;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.65;color:#4b5e49;">
+            <strong style="color:#163a13;">Button not working?</strong><br />
+            <span style="word-break:break-all;color:#2d6a4a;">${safeLink}</span>
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:0;border-radius:18px;background:#fff9ea;border:1px solid #e9d9b6;">
+          <p style="margin:0;padding:16px 18px;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.65;color:#4b5e49;">
+            <strong style="color:#92400e;">Security:</strong> Do not forward this email. The link expires after a short time. If you did not request access, you can ignore this message.
+          </p>
+        </td>
+      </tr>
+    </table>
+  </td>
+</tr>`
+
+  return buildGsolTransactionalEmail({
+    documentTitle: 'Sign in to Golf Sol Ireland',
+    preheader: `Passwordless sign-in for ${safeEmail}. Use the button in this email — link expires shortly.`,
+    heroKicker: 'Client portal',
+    heroTitle: 'Your secure sign-in link',
+    heroLead:
+      'Open your dashboard with one tap — same premium Golf Sol Ireland email shell as proposals, terms access, and package updates.',
+    heroMetaHtml: `
+      <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.88);"><strong style="font-weight:700;">Magic link only</strong> — we never email passwords.</p>
+      <p style="margin:8px 0 0 0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.82);"><strong style="font-weight:700;">Need help?</strong> Reply to this message.</p>`,
+    bodyHtml
+  })
+}

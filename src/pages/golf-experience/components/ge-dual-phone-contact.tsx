@@ -2,6 +2,7 @@ import { Phone } from 'lucide-react'
 import { cx } from '../../../lib/utils'
 import { contactInfo } from '../data/copy'
 import { GeButton } from './ge-button'
+import { GeMobileGlintIconLink } from './ge-mobile-glint-icon'
 
 const topLinkClass =
   'flex min-h-[36px] items-center gap-2 transition-colors hover:text-gs-gold'
@@ -56,14 +57,45 @@ export function GeDualPhoneTopBarMobileIcons() {
 const navPhoneIconClass =
   'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gs-gold focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:h-11 sm:w-11'
 
-/** Mobile header: two tap targets (Irish / Spanish). */
+const glintPhoneIconClass = 'h-[1.35rem] w-[1.35rem] sm:h-6 sm:w-6 shrink-0 stroke-[2]'
+
+/** Mobile header: tap-to-call (Irish only, or Irish + Spanish). */
 export function GeDualPhoneNavMobileButtons({
   borderClass,
-  hoverClass
+  hoverClass,
+  lines = 'dual',
+  glint = false
 }: {
   readonly borderClass: string
   readonly hoverClass: string
+  /** `irish` — single icon, Irish line only (e.g. public site header). */
+  readonly lines?: 'dual' | 'irish'
+  /** Gold bezel + logo-style shimmer (Golf Experience public navbar). */
+  readonly glint?: boolean
 }) {
+  if (glint) {
+    return (
+      <div className="flex shrink-0 gap-2 sm:gap-2.5">
+        <GeMobileGlintIconLink
+          href={`tel:${contactInfo.phoneTel}`}
+          aria-label={`Call Irish support ${contactInfo.phoneDisplay}`}
+        >
+          <span className="sr-only">Ireland </span>
+          <Phone className={glintPhoneIconClass} aria-hidden="true" />
+        </GeMobileGlintIconLink>
+        {lines === 'dual' ? (
+          <GeMobileGlintIconLink
+            href={`tel:${contactInfo.spanishPhoneTel}`}
+            aria-label={`Call Spanish line ${contactInfo.spanishPhoneDisplay}`}
+          >
+            <span className="sr-only">Spain </span>
+            <Phone className={glintPhoneIconClass} aria-hidden="true" />
+          </GeMobileGlintIconLink>
+        ) : null}
+      </div>
+    )
+  }
+
   return (
     <div className="flex shrink-0 gap-1 sm:gap-1.5">
       <a
@@ -74,14 +106,16 @@ export function GeDualPhoneNavMobileButtons({
         <span className="sr-only">Ireland </span>
         <Phone className="h-4 w-4 sm:h-[1.15rem] sm:w-[1.15rem]" aria-hidden="true" />
       </a>
-      <a
-        href={`tel:${contactInfo.spanishPhoneTel}`}
-        aria-label={`Call Spanish line ${contactInfo.spanishPhoneDisplay}`}
-        className={cx(navPhoneIconClass, borderClass, hoverClass)}
-      >
-        <span className="sr-only">Spain </span>
-        <Phone className="h-4 w-4 sm:h-[1.15rem] sm:w-[1.15rem]" aria-hidden="true" />
-      </a>
+      {lines === 'dual' ? (
+        <a
+          href={`tel:${contactInfo.spanishPhoneTel}`}
+          aria-label={`Call Spanish line ${contactInfo.spanishPhoneDisplay}`}
+          className={cx(navPhoneIconClass, borderClass, hoverClass)}
+        >
+          <span className="sr-only">Spain </span>
+          <Phone className="h-4 w-4 sm:h-[1.15rem] sm:w-[1.15rem]" aria-hidden="true" />
+        </a>
+      ) : null}
     </div>
   )
 }

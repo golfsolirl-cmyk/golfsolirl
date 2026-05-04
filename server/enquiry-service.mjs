@@ -8,6 +8,7 @@ import { createEnquiryReferenceId, formatDocumentDate } from '../shared/document
 import { sanitizeStandardFontText } from '../shared/pdf-winansi-sanitize.mjs'
 import { gsolEmailBrand, logoLockupEmailContentId, shamrockInlineContentId, socialContentIds } from './email-constants.mjs'
 import { buildGsolTransactionalEmail, finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
+import { brandedPdfAssetPaths as sharedBrandedPdfImages } from './pdf-email-brand.mjs'
 import { buildBrandedEnquiryEmailHtml } from './branded-enquiry-email.mjs'
 import { runPostEnquiryPortalInviteJob } from './post-enquiry-portal-invite.mjs'
 
@@ -43,8 +44,7 @@ const currentDirectory = path.dirname(currentFilePath)
 const brandLockupAssetPath = path.resolve(currentDirectory, '../src/gsol-brand-lockup-exact.png')
 const publicImagesDirectory = path.resolve(currentDirectory, '../public/images')
 const brandedPdfAssetPaths = {
-  logo: path.join(publicImagesDirectory, 'golfsol-header-logo-bitmap.png'),
-  fleetLineup: path.join(publicImagesDirectory, 'transport-fleet-lineup.jpg'),
+  ...sharedBrandedPdfImages,
   arrivals: path.join(publicImagesDirectory, 'transport-moment-arrivals.jpg'),
   resort: path.join(publicImagesDirectory, 'transport-moment-resort.jpg'),
   coastalDrive: path.join(publicImagesDirectory, 'transport-hero-coastal-drive.jpg')
@@ -786,7 +786,7 @@ const pdfEmailTheme = {
   muted: rgb(102 / 255, 115 / 255, 109 / 255),
   white: rgb(1, 1, 1),
   paleGreen: rgb(246 / 255, 251 / 255, 248 / 255),
-  paleGold: rgb(1, 249 / 255, 234 / 255)
+  paleGold: rgb(255 / 255, 249 / 255, 234 / 255)
 }
 
 const fitAssetForPdf = (assetPath, width, height) =>

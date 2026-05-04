@@ -1,5 +1,54 @@
 /** Website `formPayload.form` string keys: see `src/lib/enquiry-form-registry.ts`. */
+import { ENQUIRY_STRUCTURED_FIELD_KEYS, PICKUP_DROPOFF_TYPES } from './enquiry-form-registry'
+
 export type PackageBuildSource = 'landing' | 'packages'
+
+/** Irish VAT standard rate (services) — confirm with your accountant for reduced / exempt lines. */
+export const IRISH_VAT_STANDARD_RATE = 0.23
+export const IRISH_VAT_REDUCED_TOURISM_RATE = 0.135
+
+const roundMoney2 = (n: number) => Math.round(n * 100) / 100
+
+export interface WebsiteFormAdminQuote {
+  readonly grossTotalEur: number
+  readonly vatRate: number
+  readonly netServicesEur: number
+  readonly vatAmountEur: number
+  readonly deposit20Eur: number
+  readonly balance80Eur: number
+  readonly savedAt: string
+}
+
+export const buildWebsiteFormAdminQuote = (grossTotalEur: number, vatRate: number): WebsiteFormAdminQuote => {
+  const safeRate = Number.isFinite(vatRate) && vatRate >= 0 && vatRate < 1 ? vatRate : IRISH_VAT_STANDARD_RATE
+  const gross = roundMoney2(grossTotalEur)
+  const netServicesEur = roundMoney2(gross / (1 + safeRate))
+  const vatAmountEur = roundMoney2(gross - netServicesEur)
+  return {
+    grossTotalEur: gross,
+    vatRate: safeRate,
+    netServicesEur,
+    vatAmountEur,
+    deposit20Eur: roundMoney2(gross * 0.2),
+    balance80Eur: roundMoney2(gross * 0.8),
+    savedAt: new Date().toISOString()
+  }
+}
+
+const parseWebsiteFormAdminQuote = (raw: unknown): WebsiteFormAdminQuote | undefined => {
+  if (!raw || typeof raw !== 'object') {
+    return undefined
+  }
+  const o = raw as Record<string, unknown>
+  const gross = Number(o.grossTotalEur)
+  const rate = Number(o.vatRate)
+  if (!Number.isFinite(gross) || gross <= 0 || !Number.isFinite(rate) || rate < 0 || rate >= 1) {
+    return undefined
+  }
+  const savedAt = typeof o.savedAt === 'string' && o.savedAt.trim() ? o.savedAt.trim() : new Date().toISOString()
+  const built = buildWebsiteFormAdminQuote(gross, rate)
+  return { ...built, savedAt }
+}
 
 export interface PackageBuildTotals {
   readonly estimatedPerPerson: number
@@ -135,13 +184,39 @@ export interface AdminManualPackageConfig {
   readonly priceEur: number
 }
 
+export interface PortalGolfTransferLeg {
+  readonly courseId: string
+  readonly notes: string
+}
+
+export interface PortalHotelTransferLeg {
+  readonly hotelName: string
+  readonly notes: string
+}
+
+/** Client-edited golf / hotel transfer legs; stored on `package_builds.config` (website_form v3). */
+export interface PortalTransferPlan {
+  readonly version: 1
+  readonly updatedAt: string
+  readonly golfLegs: readonly PortalGolfTransferLeg[]
+  readonly hotelLegs: readonly PortalHotelTransferLeg[]
+}
+
 export interface WebsiteFormPackageConfig {
   readonly version: 3
   readonly formKey: string
   readonly enquiryReferenceId: string
   readonly submittedAt: string
   readonly fields: Readonly<Record<string, string>>
+  /** Optional admin-published pricing (VAT-inclusive headline with deposit / balance). */
+  readonly adminQuote?: WebsiteFormAdminQuote
+  /** Client-saved transfer planning (Costa del Sol courses + hotels). */
+  readonly portalTransferPlan?: PortalTransferPlan
 }
+
+/** Human copy when pickup type is “match fleet to group” (stored as `free_text`). */
+export const WEBSITE_FORM_PICKUP_FREE_TEXT_DISPLAY =
+  'Mercedes fleet: E-Class, V-Class and Sprinter — matched to your group and bag count.'
 
 export type ParsedPackageBuildConfig =
   | { readonly type: 'calculator'; readonly config: PackageBuildConfig }
@@ -152,6 +227,230 @@ export const humanizeFormKey = (key: string): string =>
   key
     .replace(/[_-]+/g, ' ')
     .replace(/\b\w/g, (ch) => ch.toUpperCase())
+
+const WEBSITE_FORM_FIELD_LABELS: Readonly<Record<string, string>> = {
+  [ENQUIRY_STRUCTURED_FIELD_KEYS.pax]: 'Passengers',
+  [ENQUIRY_STRUCTURED_FIELD_KEYS.pickupType]: 'Pickup type',
+  [ENQUIRY_STRUCTURED_FIELD_KEYS.pickupId]: 'Pickup reference',
+  [ENQUIRY_STRUCTURED_FIELD_KEYS.pickupLabel]: 'Pickup location',
+  [ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffType]: 'Drop-off type',
+  [ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffId]: 'Drop-off reference',
+  [ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffLabel]: 'Drop-off location',
+  [ENQUIRY_STRUCTURED_FIELD_KEYS.quoteIntent]: 'Quote intent',
+  [ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateFrom]: 'Travel start date',
+  [ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateTo]: 'Travel end date',
+  [ENQUIRY_STRUCTURED_FIELD_KEYS.alreadyAtMalagaAgp]: 'Already at Málaga (AGP)',
+  Passengers: 'Passengers',
+  'Trip timing': 'Trip timing',
+  'Collection point': 'Collection point',
+  Destination: 'Destination',
+  'Collection timing': 'Collection timing',
+  ASAP: 'ASAP',
+  'Travel start date': 'Travel start date',
+  'Travel end date': 'Travel end date',
+  'Service date (already here)': 'Service date (already here)',
+  'Public form': 'Public form',
+  Interest: 'Interest',
+  interest: 'Interest'
+}
+
+const splitCamelToWords = (s: string) =>
+  s
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .replace(/[_-]+/g, ' ')
+    .trim()
+
+/** Human-readable label for a website enquiry `fields` key (matches on-page form wording where possible). */
+export const getWebsiteFormFieldLabel = (key: string): string => {
+  const k = key.replace(/^form\./i, '').trim()
+  if (WEBSITE_FORM_FIELD_LABELS[k]) {
+    return WEBSITE_FORM_FIELD_LABELS[k]
+  }
+  if (k.startsWith('_')) {
+    const words = splitCamelToWords(k.slice(1))
+    return humanizeFormKey(words || k.slice(1))
+  }
+  if (/[\s/]/.test(k) || /^[A-Z][a-z]/.test(k)) {
+    return k
+  }
+  return humanizeFormKey(splitCamelToWords(k) || k)
+}
+
+/** Display value for website form snapshot rows (PDF, dashboard, quote preview). */
+export const formatWebsiteFormFieldValueForDisplay = (key: string, raw: string): string => {
+  const k = key.replace(/^form\./i, '').trim()
+  const v = raw.trim()
+  if (k === ENQUIRY_STRUCTURED_FIELD_KEYS.pickupType && v === PICKUP_DROPOFF_TYPES.freeText) {
+    return WEBSITE_FORM_PICKUP_FREE_TEXT_DISPLAY
+  }
+  return raw
+}
+
+/** Preferred order for enquiry fields on the client dashboard card (remaining keys follow alphabetically). */
+export const WEBSITE_FORM_CLIENT_CARD_FIELD_ORDER: readonly string[] = [
+  'Interest',
+  'interest',
+  'ASAP',
+  'Passengers',
+  '_pax',
+  'Destination',
+  'Trip timing',
+  'Collection point',
+  'Collection timing',
+  '_travelDateFrom',
+  'Travel start date',
+  '_travelDateTo',
+  'Travel end date',
+  '_pickupType',
+  '_pickupLabel',
+  '_dropoffType',
+  '_dropoffLabel',
+  '_pickupId',
+  '_dropoffId',
+  '_quoteIntent',
+  '_alreadyAtMalagaAgp',
+  'Service date (already here)',
+  'Public form'
+]
+
+export const orderedWebsiteFormFieldEntries = (fields: Readonly<Record<string, string>>): [string, string][] => {
+  const used = new Set<string>()
+  const out: [string, string][] = []
+
+  const add = (key: string) => {
+    if (used.has(key)) {
+      return
+    }
+    const v = fields[key]
+    if (v === undefined) {
+      return
+    }
+    if (key === '_pax' && typeof fields.Passengers === 'string' && fields.Passengers.trim() === String(v).trim()) {
+      return
+    }
+    if (key === 'interest' && typeof fields.Interest === 'string' && fields.Interest.trim() === String(v).trim()) {
+      return
+    }
+    used.add(key)
+    out.push([key, String(v)])
+  }
+
+  for (const key of WEBSITE_FORM_CLIENT_CARD_FIELD_ORDER) {
+    if (key in fields) {
+      add(key)
+    }
+  }
+
+  const rest = Object.keys(fields)
+    .filter((k) => !used.has(k))
+    .sort((a, b) => {
+      const ua = a.startsWith('_') ? 1 : 0
+      const ub = b.startsWith('_') ? 1 : 0
+      if (ua !== ub) {
+        return ua - ub
+      }
+      return a.localeCompare(b, 'en')
+    })
+  for (const k of rest) {
+    add(k)
+  }
+
+  return out
+}
+
+export const emptyPortalTransferPlanDraft = (): PortalTransferPlan => ({
+  version: 1,
+  updatedAt: '',
+  golfLegs: [{ courseId: '', notes: '' }],
+  hotelLegs: [{ hotelName: '', notes: '' }]
+})
+
+export const normalizePortalTransferPlan = (raw: unknown): PortalTransferPlan => {
+  const empty = emptyPortalTransferPlanDraft()
+  if (!raw || typeof raw !== 'object') {
+    return empty
+  }
+  const o = raw as Record<string, unknown>
+  const golfRaw = Array.isArray(o.golfLegs) ? o.golfLegs : []
+  const hotelRaw = Array.isArray(o.hotelLegs) ? o.hotelLegs : []
+  const golfLegs = golfRaw
+    .map((item) => {
+      if (!item || typeof item !== 'object') {
+        return null
+      }
+      const g = item as Record<string, unknown>
+      const courseId = typeof g.courseId === 'string' ? g.courseId.trim() : ''
+      const notes = typeof g.notes === 'string' ? g.notes.trim() : ''
+      return { courseId, notes }
+    })
+    .filter((x): x is PortalGolfTransferLeg => Boolean(x))
+  const hotelLegs = hotelRaw
+    .map((item) => {
+      if (!item || typeof item !== 'object') {
+        return null
+      }
+      const h = item as Record<string, unknown>
+      const hotelName = typeof h.hotelName === 'string' ? h.hotelName.trim() : ''
+      const notes = typeof h.notes === 'string' ? h.notes.trim() : ''
+      return { hotelName, notes }
+    })
+    .filter((x): x is PortalHotelTransferLeg => Boolean(x))
+
+  const updatedAt = typeof o.updatedAt === 'string' && o.updatedAt.trim() ? o.updatedAt.trim() : ''
+
+  if (golfLegs.length === 0 && hotelLegs.length === 0) {
+    return empty
+  }
+
+  return {
+    version: 1,
+    updatedAt,
+    golfLegs: golfLegs.length ? golfLegs : [{ courseId: '', notes: '' }],
+    hotelLegs: hotelLegs.length ? hotelLegs : [{ hotelName: '', notes: '' }]
+  }
+}
+
+export const sanitizePortalTransferPlanForSave = (plan: PortalTransferPlan): PortalTransferPlan | null => {
+  const golfLegs = plan.golfLegs
+    .map((l) => ({
+      courseId: l.courseId.trim(),
+      notes: l.notes.trim()
+    }))
+    .filter((l) => l.courseId.length > 0)
+  const hotelLegs = plan.hotelLegs
+    .map((l) => ({
+      hotelName: l.hotelName.trim(),
+      notes: l.notes.trim()
+    }))
+    .filter((l) => l.hotelName.length > 0)
+  if (golfLegs.length === 0 && hotelLegs.length === 0) {
+    return null
+  }
+  return {
+    version: 1,
+    updatedAt: new Date().toISOString(),
+    golfLegs,
+    hotelLegs
+  }
+}
+
+/** Merge client portal transfer plan into existing website_form JSON (preserves `fields`, `adminQuote`, etc.). */
+export const mergePortalTransferPlanIntoWebsiteFormConfig = (
+  existingRaw: unknown,
+  plan: PortalTransferPlan
+): Record<string, unknown> => {
+  if (!existingRaw || typeof existingRaw !== 'object') {
+    throw new Error('Invalid package config')
+  }
+  const base = { ...(existingRaw as Record<string, unknown>) }
+  const cleaned = sanitizePortalTransferPlanForSave(plan)
+  if (!cleaned) {
+    delete base.portalTransferPlan
+  } else {
+    base.portalTransferPlan = cleaned
+  }
+  return base
+}
 
 export const parseManualAdminPackageConfig = (raw: unknown): AdminManualPackageConfig | null => {
   if (!raw || typeof raw !== 'object') {
@@ -220,12 +519,20 @@ export const parseWebsiteFormPackageConfig = (raw: unknown): WebsiteFormPackageC
     }
   }
 
+  const adminQuote = parseWebsiteFormAdminQuote(o.adminQuote)
+  const portalTransferPlanRaw = normalizePortalTransferPlan(o.portalTransferPlan)
+  const hasPortalPlan =
+    portalTransferPlanRaw.golfLegs.some((l) => l.courseId.trim()) ||
+    portalTransferPlanRaw.hotelLegs.some((l) => l.hotelName.trim())
+
   return {
     version: 3,
     formKey: o.formKey.trim(),
     enquiryReferenceId: o.enquiryReferenceId.trim(),
     submittedAt,
-    fields
+    fields,
+    ...(adminQuote ? { adminQuote } : {}),
+    ...(hasPortalPlan ? { portalTransferPlan: portalTransferPlanRaw } : {})
   }
 }
 
@@ -391,6 +698,14 @@ export interface TripDetailsSectionMeta {
   readonly title: string
   readonly fields: readonly { readonly key: TripDetailsFieldKey; readonly label: string }[]
 }
+
+/** Hidden on client “Save trip details” and admin trip editor (pricing / proposal / logistics / notes). */
+export const TRIP_DETAILS_DASHBOARD_EXCLUDED_SECTION_TITLES: readonly string[] = [
+  'Pricing (quote)',
+  'Proposal details',
+  'Logistics and inclusions',
+  'Notes'
+]
 
 /** Order and labels for client form + admin detail view */
 export const TRIP_DETAILS_SECTIONS: readonly TripDetailsSectionMeta[] = [

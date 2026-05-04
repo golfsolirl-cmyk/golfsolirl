@@ -7,6 +7,7 @@ import { handleMagicLinkRequest } from '../server/magic-link-service.mjs'
 import { handleSyncPortalProfile } from '../server/sync-portal-profile-service.mjs'
 import { handlePortalContactSetup } from '../server/portal-contact-setup-service.mjs'
 import { handleSendClientPortalEmail } from '../server/client-portal-email-service.mjs'
+import { handleSendWebsiteQuoteEmail } from '../server/website-quote-email.mjs'
 import { createProposalFilename, createProposalPdf } from '../server/proposal-service.mjs'
 import { handleSendClientDocument } from '../server/send-client-document-service.mjs'
 import {
@@ -190,6 +191,19 @@ export default async function handler(req, res) {
         const payload = raw ? JSON.parse(raw) : {}
         const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
         const result = await handleSendClientPortalEmail(payload, process.env, { authHeader })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'send-website-quote-email': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const result = await handleSendWebsiteQuoteEmail(payload, process.env, { authHeader })
         jsonEnd(res, 200, result)
         return
       }

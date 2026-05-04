@@ -1,6 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
-import { buildBrandedMagicLinkEmailHtml } from './branded-magic-link-email.mjs'
+import { buildBrandedPortalMagicLinkEmailHtml } from './branded-client-portal-email.mjs'
+import { finalizeGsolEmailHtml } from './email-layout.mjs'
+import { getTransactionalEmailImageAttachments } from './enquiry-service.mjs'
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
@@ -153,14 +155,17 @@ export const handleMagicLinkRequest = async (payload, env = process.env, meta = 
     minute: '2-digit'
   }).format(new Date())
 
-  const html = buildBrandedMagicLinkEmailHtml({ actionLink, email, requestedAtDisplay })
+  const rawHtml = buildBrandedPortalMagicLinkEmailHtml({ actionLink, email, requestedAtDisplay })
+  const html = finalizeGsolEmailHtml(rawHtml)
+  const imageAttachments = await getTransactionalEmailImageAttachments()
   const resend = new Resend(resendKey)
 
   const { error: sendError } = await resend.emails.send({
     from: fromEmail,
     to: [email],
     subject: 'Sign in to Golf Sol Ireland — your secure link',
-    html
+    html,
+    attachments: imageAttachments
   })
 
   if (sendError) {

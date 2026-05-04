@@ -193,3 +193,21 @@ export const writeLandingMapToSessionStorage = (value: CourseHotelPickerValue) =
     /* ignore quota / private mode */
   }
 }
+
+/** Unique hotel names from course vicinities — Costa del Sol picklist for portal transfer planning. */
+let costaHotelPicklistCache: readonly string[] | null = null
+export const getCostaDelSolHotelPicklist = (): readonly string[] => {
+  if (costaHotelPicklistCache) {
+    return costaHotelPicklistCache
+  }
+  const set = new Set<string>()
+  for (const hotels of Object.values(NEARBY_HOTELS)) {
+    for (const h of hotels) {
+      if (h.name?.trim()) {
+        set.add(h.name.trim())
+      }
+    }
+  }
+  costaHotelPicklistCache = [...set].sort((a, b) => a.localeCompare(b, 'en'))
+  return costaHotelPicklistCache
+}

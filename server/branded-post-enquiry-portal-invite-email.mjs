@@ -14,7 +14,7 @@ const brand = {
 
 const assets = {
   logo: '/images/golfsol-header-logo-bitmap.png',
-  fleetLineup: '/images/transport-fleet-lineup.jpg'
+  fleetLineup: '/images/gsol-airport-transfer-desk-hero.png'
 }
 
 const escapeHtml = (value) =>

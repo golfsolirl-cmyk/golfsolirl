@@ -10,6 +10,7 @@
     { "source": "/api/send-client-document", "destination": "/api/gateway?r=send-client-document" },
     { "source": "/api/send-proposal-to-client", "destination": "/api/gateway?r=send-proposal-to-client" },
     { "source": "/api/send-client-portal-email", "destination": "/api/gateway?r=send-client-portal-email" },
+    { "source": "/api/send-website-quote-email", "destination": "/api/gateway?r=send-website-quote-email" },
     { "source": "/api/send-hotel-brief", "destination": "/api/gateway?r=send-hotel-brief" },
     { "source": "/api/send-workspace-proposal", "destination": "/api/gateway?r=send-workspace-proposal" },
     { "source": "/api/admin-portal-client", "destination": "/api/gateway?r=admin-portal-client" },

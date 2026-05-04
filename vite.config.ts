@@ -5,6 +5,7 @@ import { handleMagicLinkRequest } from './server/magic-link-service.mjs'
 import { handleSyncPortalProfile } from './server/sync-portal-profile-service.mjs'
 import { handlePortalContactSetup } from './server/portal-contact-setup-service.mjs'
 import { handleSendClientPortalEmail } from './server/client-portal-email-service.mjs'
+import { handleSendWebsiteQuoteEmail } from './server/website-quote-email.mjs'
 import { createProposalFilename, createProposalPdf } from './server/proposal-service.mjs'
 import { handleSendClientDocument } from './server/send-client-document-service.mjs'
 import {
@@ -329,6 +330,7 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
     workspaceEmailApi('/api/send-hotel-brief', handleSendHotelReservationBrief)
 
     workspaceEmailApi('/api/send-client-portal-email', handleSendClientPortalEmail)
+    workspaceEmailApi('/api/send-website-quote-email', handleSendWebsiteQuoteEmail)
 
     server.middlewares.use('/api/admin-portal-client', async (request, response) => {
       if (request.method !== 'POST') {

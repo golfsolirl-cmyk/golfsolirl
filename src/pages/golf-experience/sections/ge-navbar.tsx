@@ -6,6 +6,7 @@ import { GeBrandLockup } from '../components/brand-lockup'
 import { GeButton } from '../components/ge-button'
 import { primaryNav, type GeNavLink } from '../data/nav'
 import { GeDualPhoneNavMobileButtons } from '../components/ge-dual-phone-contact'
+import { GeMobileGlintIconButton } from '../components/ge-mobile-glint-icon'
 import { GeTopBar } from './top-bar'
 
 interface GeNavbarProps {
@@ -45,17 +46,19 @@ export function GeNavbar({ mode: _mode = 'auto' }: GeNavbarProps = {}) {
       {isOverlay ? <GeTopBar /> : null}
       <div
         className={cx(
-          // Mobile (< lg): relative wrapper so the brand can centre via
-          //   mx-auto while phone (left) and hamburger (right) float absolutely.
-          // Desktop (lg+): standard flex row with brand on the left and
-          //   the full nav menu on the right.
-          'relative mx-auto flex max-w-[1340px] items-center px-4 transition-all duration-300 sm:px-5',
-          'lg:justify-between lg:gap-4',
-          isOverlay ? 'py-4' : 'py-1.5 lg:py-1'
+          // Mobile (< lg): 3-column grid — phone | crest | menu share one vertical
+          //   alignment axis (no absolute centering drift vs the scaled crest).
+          // Desktop (lg+): flex row, brand left, nav right.
+          'relative mx-auto w-full max-w-[1340px] px-3 transition-all duration-300 sm:px-5',
+          'max-lg:grid max-lg:grid-cols-[auto_minmax(0,1fr)_auto] max-lg:items-center max-lg:gap-x-2 max-lg:gap-y-0',
+          'lg:flex lg:items-center lg:justify-between lg:gap-4',
+          isOverlay ? 'py-4' : 'py-2 max-lg:py-2.5 lg:py-1'
         )}
       >
-        <div className="absolute left-2 top-1/2 flex -translate-y-1/2 sm:left-3 lg:hidden">
+        <div className="flex shrink-0 items-center justify-self-start lg:hidden">
           <GeDualPhoneNavMobileButtons
+            glint
+            lines="irish"
             borderClass="border-ge-gray200 text-gs-green"
             hoverClass="hover:border-gs-gold/70 hover:text-gs-gold hover:shadow-[0_0_0_1px_rgba(255,199,44,0.2)]"
           />
@@ -64,37 +67,51 @@ export function GeNavbar({ mode: _mode = 'auto' }: GeNavbarProps = {}) {
         <a
           href="/#top"
           aria-label="GolfSol Ireland home"
-          className="mx-auto flex shrink-0 items-center transition-transform duration-300 lg:mx-0"
+          className="mx-auto flex min-w-0 max-w-full shrink-0 justify-self-center transition-transform duration-300 max-lg:px-1 lg:mx-0 lg:justify-self-auto"
         >
           <GeBrandLockup tone={isOverlay ? 'on-dark' : 'on-light'} mode={isOverlay ? 'overlay' : 'sticky'} />
         </a>
 
-        <nav aria-label="Primary navigation" className="hidden items-center gap-x-4 xl:gap-x-5 lg:flex">
-          {primaryNav.map((link) => (
-            <DesktopNavItem key={link.label} link={link} colorClass={linkColor} />
-          ))}
-          <GeButton href="/contact" size="sm" variant={isOverlay ? 'outline-gs-white' : 'gs-gold'}>
-            Get Quote
-          </GeButton>
-        </nav>
+        <div className="flex shrink-0 items-center justify-self-end gap-2 lg:flex lg:flex-1 lg:items-center lg:justify-end lg:gap-4">
+          <nav
+            aria-label="Primary navigation"
+            className="hidden items-center gap-x-4 xl:gap-x-5 lg:flex"
+          >
+            {primaryNav.map((link) => (
+              <DesktopNavItem key={link.label} link={link} colorClass={linkColor} />
+            ))}
+            <GeButton href="/contact" size="sm" variant={isOverlay ? 'outline-gs-white' : 'gs-gold'}>
+              Get Quote
+            </GeButton>
+          </nav>
 
-        <button
-          type="button"
-          aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-          aria-expanded={isMenuOpen}
-          aria-controls="ge-mobile-menu"
-          className={cx(
-            // Absolute on mobile so the brand can be perfectly centred;
-            // hidden entirely on lg+ where the full nav takes over.
-            'absolute right-4 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border-2 transition-colors sm:right-5 lg:hidden',
-            isOverlay
-              ? 'border-white/60 text-white hover:border-white hover:bg-white/15'
-              : 'border-ge-gray200 text-gs-dark hover:border-gs-green hover:text-gs-green'
+          {isOverlay ? (
+            <button
+              type="button"
+              aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-expanded={isMenuOpen}
+              aria-controls="ge-mobile-menu"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-white/60 text-white transition-colors hover:border-white hover:bg-white/15 lg:hidden"
+              onClick={() => setIsMenuOpen((value) => !value)}
+            >
+              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          ) : (
+            <GeMobileGlintIconButton
+              aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-expanded={isMenuOpen}
+              aria-controls="ge-mobile-menu"
+              className="shrink-0 lg:hidden"
+              onClick={() => setIsMenuOpen((value) => !value)}
+            >
+              {isMenuOpen ? (
+                <X className="h-[1.35rem] w-[1.35rem] stroke-[2] sm:h-6 sm:w-6" aria-hidden="true" />
+              ) : (
+                <Menu className="h-[1.35rem] w-[1.35rem] stroke-[2] sm:h-6 sm:w-6" aria-hidden="true" />
+              )}
+            </GeMobileGlintIconButton>
           )}
-          onClick={() => setIsMenuOpen((value) => !value)}
-        >
-          {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        </div>
       </div>
 
       <AnimatePresence>

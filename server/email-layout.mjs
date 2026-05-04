@@ -186,6 +186,30 @@ export const buildGsolTransactionalEmail = ({
                     </table>
                   </td>
                 </tr>
+                <tr>
+                  <td style="padding:0;background-color:#F7F0E2;background:#F7F0E2;border-top:1px solid #E9D9B6;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;border-collapse:collapse;">
+                      <tr>
+                        <td style="padding:14px 20px 6px 20px;font-family:'DM Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#063B2A;" class="p-m">
+                          <span style="display:inline-block;margin-right:10px;">Airport transfer desk</span>
+                          <span style="color:#66736D;letter-spacing:0.16em;">AGP arrivals · Costa del Sol</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:0 20px 14px 20px;" class="p-m">
+                          <a href="${site}/airport-transfers" style="text-decoration:none;display:block;border-radius:22px;overflow:hidden;border:1px solid #E9D9B6;box-shadow:0 12px 32px rgba(6,59,42,0.08);">
+                            <img src="${site}/images/gsol-airport-transfer-desk-hero.png" width="1100" alt="GolfSol Ireland Mercedes fleet for Malaga airport transfers." style="display:block;width:100%;max-width:100%;height:auto;border:0;" />
+                          </a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:0 20px 22px 20px;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.55;color:#16231D;" class="p-m">
+                          <strong style="color:#063B2A;">Mercedes fleet</strong> — E-Class, V-Class and Sprinter matched to your group and golf bags. Private Malaga Airport transfers across the Sol corridor.
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
                 ${bodyHtml}
                 <tr>
                   <td style="padding:0;background-color:#0f2410;background:linear-gradient(180deg,#0f2410 0%,#0a1809 100%);" class="p-m">

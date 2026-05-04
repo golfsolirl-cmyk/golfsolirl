@@ -4,17 +4,25 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, ty
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
 import { LuxuryButton } from '../components/ui/button'
 import {
+  emptyPortalTransferPlanDraft,
   emptyTripDetailsForm,
+  formatWebsiteFormFieldValueForDisplay,
   isCalculatorLockedTripField,
+  mergePortalTransferPlanIntoWebsiteFormConfig,
   mergeTripDetailsWithSaved,
+  normalizePortalTransferPlan,
+  orderedWebsiteFormFieldEntries,
   packagesPagePathFromConfig,
   packageBuildDbSourceLabel,
+  getWebsiteFormFieldLabel,
   parseAnyPackageBuildRowConfig,
   serializeTripDetailsForDb,
   tripDefaultsForPackageRow,
+  TRIP_DETAILS_DASHBOARD_EXCLUDED_SECTION_TITLES,
   TRIP_DETAILS_MULTILINE_KEYS,
   TRIP_DETAILS_SECTIONS,
   type PackageTripDetailsForm,
+  type PortalTransferPlan,
   type TripDetailsFieldKey
 } from '../lib/package-build'
 import { COURSES } from '../data/coastal-golf-data'
@@ -27,14 +35,19 @@ import { formatTravelDateInput } from '../lib/format-travel-date'
 import {
   clearTripWorkspaceDraft,
   emptyTripWorkspaceDraft,
+  ensureTripWorkspaceDraftShape,
   illustrativeTripPriceRangeEur,
   isLikelyEnquiryReferenceId,
   loadTripWorkspaceDraft,
+  normalizeTransferStops,
   saveTripWorkspaceDraft,
+  type PortalTransferStop,
   type TripStageKey,
   type TripWorkspaceDraft
 } from '../lib/trip-workspace-draft'
 import { FormalProposalPayloadSummary, type FormalProposalPayload } from '../components/formal-proposal-payload-summary'
+import { PortalTransferPlanEditor } from '../components/portal-transfer-plan-editor'
+import { PortalTransferRouteBuilder } from '../components/portal-transfer-route-builder'
 import { useAuth, type Profile } from '../providers/auth-provider'
 import { cx } from '../lib/utils'
 import {
@@ -158,22 +171,6 @@ const tripStageOptionRows: readonly (readonly [TripStageKey, string, string])[] 
   ['hotel', 'Hotel / villa base', 'Notes for 1–8 guests; we match star level and location.']
 ]
 
-const formatWebsiteFormFieldLabel = (key: string) => {
-  const k = key.replace(/^form\./i, '').replace(/_/g, ' ').trim()
-  return k || key
-}
-
-const websiteFormFieldValueText = (v: unknown) => {
-  if (v === null || v === undefined) return '—'
-  if (typeof v === 'string') return v.trim() || '—'
-  if (typeof v === 'number' || typeof v === 'boolean') return String(v)
-  try {
-    return JSON.stringify(v)
-  } catch {
-    return String(v)
-  }
-}
-
 export function ClientDashboardPage() {
   const { session, profile, isLoading, refreshProfile } = useAuth()
   const contactSyncAttempted = useRef(false)
@@ -185,6 +182,7 @@ export function ClientDashboardPage() {
   const [listLoading, setListLoading] = useState(true)
   const [selectedBuildId, setSelectedBuildId] = useState('')
   const [tripForm, setTripForm] = useState<PackageTripDetailsForm>(() => emptyTripDetailsForm())
+  const [portalPlan, setPortalPlan] = useState<PortalTransferPlan>(() => emptyPortalTransferPlanDraft())
   const [detailsStatus, setDetailsStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [detailsMessage, setDetailsMessage] = useState<string | null>(null)
   const [teamMessagingOpen, setTeamMessagingOpen] = useState(false)
@@ -196,6 +194,7 @@ export function ClientDashboardPage() {
     welcome: false
   })
   const [tripDraft, setTripDraft] = useState<TripWorkspaceDraft | null>(null)
+  const [transferBuilderOpen, setTransferBuilderOpen] = useState(false)
   const [portalUpdates, setPortalUpdates] = useState<PortalClientUpdateRow[]>([])
   const [portalUpdatesError, setPortalUpdatesError] = useState<string | null>(null)
   const [onboardingName, setOnboardingName] = useState('')
@@ -215,6 +214,7 @@ export function ClientDashboardPage() {
   const [interestFollowUpBusy, setInterestFollowUpBusy] = useState(false)
   const [interestFollowUpError, setInterestFollowUpError] = useState<string | null>(null)
   const [interestTicketLatestAdminAt, setInterestTicketLatestAdminAt] = useState<Record<string, string>>({})
+  const listDataInflightRef = useRef(0)
 
   const loadData = useCallback(async () => {
     if (!session?.user) {
@@ -229,7 +229,11 @@ export function ClientDashboardPage() {
       return
     }
 
-    setListLoading(true)
+    listDataInflightRef.current += 1
+    if (listDataInflightRef.current === 1) {
+      setListLoading(true)
+    }
+    try {
     const [propRes, buildRes, docRes, portalRes] = await Promise.all([
       supabase.from('proposals').select('id, proposal_id, title, status, created_at, payload').order('created_at', { ascending: false }),
       fetchPackageBuildsClientList(supabase, 40),
@@ -300,9 +304,14 @@ export function ClientDashboardPage() {
         }))
       )
     }
-
-    setListLoading(false)
-  }, [session?.user])
+    } finally {
+      listDataInflightRef.current -= 1
+      if (listDataInflightRef.current <= 0) {
+        listDataInflightRef.current = 0
+        setListLoading(false)
+      }
+    }
+  }, [session?.user?.id])
 
   const refreshInterestAdminTimes = useCallback(async (supabase: BrowserSupabase, rows: PortalInterestTicketRow[]) => {
     const ids = rows.map((t) => t.id)
@@ -337,10 +346,10 @@ export function ClientDashboardPage() {
       return
     }
 
-    if (!session) {
+    if (!session?.user) {
       window.location.replace('/login')
     }
-  }, [isLoading, session])
+  }, [isLoading, session?.user?.id])
 
   useEffect(() => {
     void loadData()
@@ -354,6 +363,7 @@ export function ClientDashboardPage() {
 
   useEffect(() => {
     contactSyncAttempted.current = false
+    listDataInflightRef.current = 0
   }, [session?.user?.id])
 
   useEffect(() => {
@@ -397,7 +407,7 @@ export function ClientDashboardPage() {
     return () => {
       cancelled = true
     }
-  }, [isLoading, session, profile, profile?.portal_contact_completed_at, refreshProfile])
+  }, [isLoading, session?.user?.id, profile?.full_name, profile?.phone, profile?.portal_contact_completed_at, refreshProfile])
 
   useEffect(() => {
     if (!session || !profile) {
@@ -408,7 +418,7 @@ export function ClientDashboardPage() {
     }
     setOnboardingName(resolveClientDisplayFullName(session, profile))
     setOnboardingPhone(resolveClientPhone(session, profile))
-  }, [session, profile, profile?.portal_contact_completed_at, profile?.full_name, profile?.phone])
+  }, [session?.user?.id, profile?.portal_contact_completed_at, profile?.full_name, profile?.phone])
 
   useEffect(() => {
     if (!session?.user?.id || !profile?.portal_contact_completed_at) {
@@ -567,10 +577,11 @@ export function ClientDashboardPage() {
       const fromUrl = params.get('enquiry_ref')?.trim() ?? ''
       if (fromUrl && isLikelyEnquiryReferenceId(fromUrl)) {
         const existing = loadTripWorkspaceDraft()
-        const merged: TripWorkspaceDraft =
+        const merged: TripWorkspaceDraft = ensureTripWorkspaceDraftShape(
           existing?.referenceId === fromUrl
             ? { ...existing, updatedAt: new Date().toISOString() }
             : emptyTripWorkspaceDraft(fromUrl)
+        )
         saveTripWorkspaceDraft(merged)
         setTripDraft(merged)
         window.history.replaceState({}, document.title, '/dashboard')
@@ -580,12 +591,22 @@ export function ClientDashboardPage() {
       /* ignore */
     }
 
-    setTripDraft(loadTripWorkspaceDraft())
-  }, [isLoading, session])
+    const loaded = loadTripWorkspaceDraft()
+    const nextDraft = loaded ? ensureTripWorkspaceDraftShape(loaded) : null
+    setTripDraft((prev) => {
+      const prevJson = prev ? JSON.stringify(prev) : ''
+      const nextJson = nextDraft ? JSON.stringify(nextDraft) : ''
+      if (prevJson === nextJson) {
+        return prev
+      }
+      return nextDraft
+    })
+  }, [isLoading, session?.user?.id])
 
   useEffect(() => {
     if (!selectedBuildId) {
       setTripForm(emptyTripDetailsForm())
+      setPortalPlan(emptyPortalTransferPlanDraft())
       return
     }
 
@@ -596,6 +617,13 @@ export function ClientDashboardPage() {
 
     const defaults = tripDefaultsForPackageRow(row.config)
     setTripForm(mergeTripDetailsWithSaved(row.client_details, defaults))
+
+    const parsed = parseAnyPackageBuildRowConfig(row.config)
+    if (parsed?.type === 'website_form' && parsed.config.portalTransferPlan) {
+      setPortalPlan(normalizePortalTransferPlan(parsed.config.portalTransferPlan))
+    } else if (parsed?.type === 'website_form') {
+      setPortalPlan(emptyPortalTransferPlanDraft())
+    }
   }, [selectedBuildId, packageBuilds])
 
   useEffect(() => {
@@ -636,14 +664,31 @@ export function ClientDashboardPage() {
       return
     }
 
+    const row = packageBuilds.find((b) => b.id === selectedBuildId)
+    if (!row) {
+      setDetailsMessage('That package is no longer in your list. Refresh and try again.')
+      setDetailsStatus('error')
+      return
+    }
+
+    const parsed = parseAnyPackageBuildRowConfig(row.config)
+    const updatePayload: Record<string, unknown> = {
+      client_details: serializeTripDetailsForDb(tripForm),
+      updated_at: new Date().toISOString()
+    }
+
+    if (parsed?.type === 'website_form') {
+      try {
+        updatePayload.config = mergePortalTransferPlanIntoWebsiteFormConfig(row.config, portalPlan)
+      } catch {
+        setDetailsMessage('Could not save transfer plan into your package record.')
+        setDetailsStatus('error')
+        return
+      }
+    }
+
     setDetailsStatus('saving')
-    const { error } = await supabase
-      .from('package_builds')
-      .update({
-        client_details: serializeTripDetailsForDb(tripForm),
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', selectedBuildId)
+    const { error } = await supabase.from('package_builds').update(updatePayload).eq('id', selectedBuildId)
 
     if (error) {
       setDetailsMessage(
@@ -752,18 +797,61 @@ export function ClientDashboardPage() {
   }
 
   const persistTripDraft = (next: TripWorkspaceDraft) => {
-    saveTripWorkspaceDraft(next)
-    setTripDraft(next)
+    const shaped = ensureTripWorkspaceDraftShape(next)
+    saveTripWorkspaceDraft(shaped)
+    setTripDraft(shaped)
   }
 
   const handleTripStageToggle = (key: TripStageKey) => () => {
     if (!tripDraft) {
       return
     }
+    const nextOn = !tripDraft.stages[key]
+    if (key === 'transfer' && !nextOn) {
+      setTransferBuilderOpen(false)
+    }
     persistTripDraft({
       ...tripDraft,
-      stages: { ...tripDraft.stages, [key]: !tripDraft.stages[key] }
+      stages: { ...tripDraft.stages, [key]: nextOn }
     })
+  }
+
+  const handleOpenTransferBuilder = () => {
+    if (!tripDraft || !session) {
+      return
+    }
+    let next = tripDraft
+    if (!tripDraft.stages.transfer) {
+      next = {
+        ...tripDraft,
+        stages: { ...tripDraft.stages, transfer: true },
+        updatedAt: new Date().toISOString()
+      }
+    }
+    const hint = resolveClientPhone(session, profile).trim()
+    if (!(next.transferContactPhone ?? '').trim() && hint) {
+      next = { ...next, transferContactPhone: hint }
+    }
+    persistTripDraft({ ...next, updatedAt: new Date().toISOString() })
+    setTransferBuilderOpen(true)
+  }
+
+  const handleTransferStopsChange = (next: PortalTransferStop[]) => {
+    if (!tripDraft) {
+      return
+    }
+    persistTripDraft({
+      ...tripDraft,
+      transferStops: normalizeTransferStops(next),
+      updatedAt: new Date().toISOString()
+    })
+  }
+
+  const handleTransferContactChange = (value: string) => {
+    if (!tripDraft) {
+      return
+    }
+    persistTripDraft({ ...tripDraft, transferContactPhone: value, updatedAt: new Date().toISOString() })
   }
 
   const handleTripPartyChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -790,6 +878,7 @@ export function ClientDashboardPage() {
 
   const handleClearTripWorkspace = () => {
     clearTripWorkspaceDraft()
+    setTransferBuilderOpen(false)
     setTripDraft(null)
   }
 
@@ -1029,7 +1118,13 @@ export function ClientDashboardPage() {
   const dashboardTitle = greetingFirst ? `Hello, ${greetingFirst}` : 'Hello'
   const hasAdminPricedPackage = packageBuilds.some((row) => {
     const c = parseAnyPackageBuildRowConfig(row.config)
-    return c?.type === 'manual' || c?.type === 'calculator'
+    if (c?.type === 'manual' || c?.type === 'calculator') {
+      return true
+    }
+    if (c?.type === 'website_form' && c.config.adminQuote) {
+      return true
+    }
+    return false
   })
   const showProposalsPortal =
     profile?.portal_proposals_enabled === true || profile?.portal_pdf_library_enabled === true
@@ -1040,6 +1135,15 @@ export function ClientDashboardPage() {
   const selectedBuildParsed = selectedBuildRow ? parseAnyPackageBuildRowConfig(selectedBuildRow.config) : null
   const selectedTripIsManualQuote = selectedBuildParsed?.type === 'manual'
   const selectedTripIsWebsiteForm = selectedBuildParsed?.type === 'website_form'
+
+  const tripDetailsSectionsForForm = useMemo(() => {
+    const excluded = new Set(TRIP_DETAILS_DASHBOARD_EXCLUDED_SECTION_TITLES)
+    let sections = TRIP_DETAILS_SECTIONS.filter((s) => !excluded.has(s.title))
+    if (selectedTripIsWebsiteForm) {
+      sections = sections.filter((s) => s.title !== 'Trip shape' && s.title !== 'Trip overview')
+    }
+    return sections
+  }, [selectedTripIsWebsiteForm])
 
   const tripIllustrative =
     tripDraft && (tripDraft.stages.transfer || tripDraft.stages.golf || tripDraft.stages.hotel)
@@ -1071,11 +1175,360 @@ export function ClientDashboardPage() {
   return (
     <DashboardLayout
       kicker="Your client area"
-      subtitle="Your transfers, golf, and hotel packages appear below when published. Your website enquiry snapshot is shown on each line; trip notes unlock after we publish a priced package for you."
+      subtitle="Your packages and enquiry snapshots are at the top of this page. Trip notes unlock after we publish a priced package for you. The enquiry workspace below is for optional preferences saved in this browser."
       title={dashboardTitle}
       titleAdornment={interestHeroAdornment}
       variant="client"
     >
+      {listLoading ? (
+        <p className="text-sm font-medium text-forest-600">Loading your account…</p>
+      ) : (
+        <div className="mb-12 md:mb-14">
+          <section>
+            <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Your packages</p>
+                <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Transfers, golf courses &amp; hotel</h2>
+                <p className="mt-2 max-w-2xl text-sm text-forest-600">
+                  Each line is a snapshot of what you submitted or what we published for you — website forms show every field.
+                  Trip notes (below) unlock after we publish a calculator or quoted package with pricing.
+                </p>
+              </div>
+              <LuxuryButton onClick={() => openTeamMessagingAndScroll()} type="button" variant="outline">
+                Message the team
+              </LuxuryButton>
+            </div>
+
+            {buildsError ? (
+              <div className="rounded-3xl border border-amber-200/90 bg-amber-50/90 px-6 py-4 text-sm text-amber-950 shadow-soft">
+                <p className="font-medium">Could not load saved packages.</p>
+                <p className="mt-2 text-amber-900/85">{buildsError}</p>
+                <p className="mt-2 text-xs text-amber-900/70">
+                  Open <code className="rounded bg-white/80 px-1">supabase/run-in-sql-editor-add-client-details.sql</code> in this
+                  repo, copy it into Supabase → SQL → Run. That adds <code className="rounded bg-white/80 px-1">client_details</code>{' '}
+                  and the delete policy.
+                </p>
+              </div>
+            ) : packageBuilds.length === 0 ? (
+              <div className="rounded-[2rem] border border-dashed border-forest-200 bg-offwhite px-6 py-10 text-center text-sm text-forest-900 md:px-10">
+                No packages on your dashboard yet. When Golf Sol Ireland publishes your transfers, golf course options, or hotel
+                quote, they will appear here. Use message the team if you would like a follow-up.
+              </div>
+            ) : (
+              <>
+                <ul className="mb-8 overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-soft">
+                  {packageBuilds.map((row, index) => {
+                    const cfg = parseAnyPackageBuildRowConfig(row.config)
+                    const reopenHref = cfg?.type === 'calculator' ? packagesPagePathFromConfig(cfg.config) : null
+                    const total =
+                      cfg?.type === 'calculator'
+                        ? cfg.config.totals.estimatedGroupTotal
+                        : cfg?.type === 'manual'
+                          ? cfg.config.priceEur
+                          : cfg?.type === 'website_form' && cfg.config.adminQuote
+                            ? cfg.config.adminQuote.grossTotalEur
+                            : undefined
+                    const hasLinkedFormal = Boolean(row.linked_proposal?.payload && typeof row.linked_proposal.payload === 'object')
+                    const expanded = expandedFormalProposalBuildId === row.id
+                    let manualSummaryPreview: string | null = null
+                    let websiteFormEntries: [string, string][] | null = null
+                    if (cfg?.type === 'manual' && cfg.config.summary.trim()) {
+                      const s = cfg.config.summary.trim()
+                      manualSummaryPreview = s.slice(0, 160) + (s.length > 160 ? '…' : '')
+                    } else if (cfg?.type === 'website_form') {
+                      websiteFormEntries = orderedWebsiteFormFieldEntries(cfg.config.fields ?? {})
+                    }
+
+                    return (
+                      <li
+                        className={cx(
+                          'border-b border-forest-100/80 last:border-b-0',
+                          index % 2 === 1 ? 'bg-offwhite/90' : 'bg-white'
+                        )}
+                        key={row.id}
+                      >
+                        <div className="flex flex-col gap-4 px-5 py-5 md:px-7 lg:flex-row lg:items-center lg:justify-between">
+                          <div className="min-w-0 flex-1">
+                            <p className="font-display text-lg font-semibold text-forest-950">
+                              {row.label?.trim() || 'Package'}
+                            </p>
+                            <p className="mt-1 text-xs text-forest-500">
+                              {packageBuildDbSourceLabel(row.source)} ·{' '}
+                              {new Date(row.created_at).toLocaleString(undefined, {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </p>
+                            {manualSummaryPreview ? (
+                              <p className="mt-2 line-clamp-2 text-sm text-forest-700">{manualSummaryPreview}</p>
+                            ) : null}
+                            {websiteFormEntries && websiteFormEntries.length > 0 ? (
+                              <dl className="mt-4 grid gap-4 text-sm sm:grid-cols-2">
+                                {websiteFormEntries.map(([key, val]) => (
+                                  <div
+                                    className="min-w-0 rounded-2xl border-2 border-orange-400/80 bg-white px-4 py-3 shadow-sm"
+                                    key={key}
+                                  >
+                                    <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-gold-600">
+                                      {getWebsiteFormFieldLabel(key)}
+                                    </dt>
+                                    <dd className="mt-1.5 whitespace-pre-wrap break-words text-sm font-medium text-forest-900">
+                                      {formatWebsiteFormFieldValueForDisplay(key, String(val ?? '')).trim() || '—'}
+                                    </dd>
+                                  </div>
+                                ))}
+                              </dl>
+                            ) : cfg?.type === 'website_form' ? (
+                              <p className="mt-2 text-sm text-forest-600">No form fields stored for this submission.</p>
+                            ) : null}
+                            {cfg?.type === 'website_form' && cfg.config.adminQuote ? (
+                              <div className="mt-5 rounded-2xl border border-emerald-200/90 bg-gradient-to-br from-emerald-50/90 to-white px-4 py-4 text-sm text-forest-800 shadow-sm">
+                                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-800">Your quote</p>
+                                <p className="mt-2 font-display text-lg font-bold text-forest-950">
+                                  Total {formatEur(cfg.config.adminQuote.grossTotalEur)} inc. VAT
+                                </p>
+                                <p className="mt-1 text-xs text-forest-600">
+                                  Deposit {formatEur(cfg.config.adminQuote.deposit20Eur)} · Balance{' '}
+                                  {formatEur(cfg.config.adminQuote.balance80Eur)}
+                                </p>
+                                <div className="mt-4 overflow-hidden rounded-xl border border-forest-200/80 bg-white shadow-inner">
+                                  <iframe
+                                    className="h-[min(520px,70vh)] w-full"
+                                    src={`/dashboard/quote/${row.id}`}
+                                    title={`Quote ${cfg.config.enquiryReferenceId}`}
+                                  />
+                                </div>
+                                <p className="mt-2 text-xs text-forest-500">
+                                  Open full page or use your browser print / PDF from the quote view if you need a file copy.
+                                </p>
+                              </div>
+                            ) : null}
+                            {typeof total === 'number' &&
+                            !(cfg?.type === 'website_form' && cfg.config.adminQuote) ? (
+                              <p className="mt-2 text-sm font-medium text-forest-700">
+                                {cfg?.type === 'manual' ? 'Quoted total' : 'Group estimate'} {formatEur(total)}
+                              </p>
+                            ) : null}
+                          </div>
+                          <div className="flex flex-wrap items-center gap-3">
+                            {hasLinkedFormal ? (
+                              <LuxuryButton
+                                aria-expanded={expanded}
+                                onClick={() =>
+                                  setExpandedFormalProposalBuildId((prev) => (prev === row.id ? null : row.id))
+                                }
+                                type="button"
+                                variant="outline"
+                              >
+                                {expanded ? 'Hide formal proposal' : 'View formal proposal'}
+                              </LuxuryButton>
+                            ) : null}
+                            {reopenHref ? (
+                              <LuxuryButton href={reopenHref} variant="primary">
+                                Open in calculator
+                              </LuxuryButton>
+                            ) : null}
+                          </div>
+                        </div>
+                        {expanded && hasLinkedFormal && row.linked_proposal ? (
+                          <div className="border-t border-forest-100/80 bg-white px-5 pb-6 pt-2 md:px-7">
+                            <FormalProposalPayloadSummary
+                              onDownloadPdf={() => handleDownloadLinkedBuildProposalPdf(row)}
+                              payload={row.linked_proposal.payload as FormalProposalPayload}
+                              pdfLoading={linkedProposalPdfLoadingBuildId === row.id}
+                              proposalIdText={row.linked_proposal.proposal_id}
+                            />
+                          </div>
+                        ) : null}
+                      </li>
+                    )
+                  })}
+                </ul>
+
+                {hasAdminPricedPackage ? (
+                <div className="rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Trip details</p>
+                  <h3 className="font-display mt-2 text-xl font-semibold text-forest-950 md:text-2xl">
+                    Proposal-style information (saved to your account)
+                  </h3>
+                  <p className="mt-2 max-w-2xl text-sm text-forest-600">
+                    {selectedTripIsManualQuote
+                      ? 'Package name and pricing on this quote were set by Golf Sol Ireland — those lines are read-only here. You can edit the other fields and save; we will see your updates on our side.'
+                      : selectedTripIsWebsiteForm
+                        ? 'Your enquiry snapshot is in the package list above (read-only). Add golf and hotel transfer legs below, then save — pricing, proposal, logistics and long notes are not collected in this form; Golf Sol Ireland sees your snapshot and transfer plan on the admin dashboard.'
+                        : 'Package, stay, group size, nights, rounds, and pricing come from your saved package snapshot — those are read-only here. Edit the remaining sections and save; Golf Sol Ireland can adjust locked fields if needed.'}
+                  </p>
+
+                  <form className="mt-8 space-y-6" noValidate onSubmit={handleSaveTripDetails}>
+                    <div>
+                      <label className={labelClass} htmlFor="trip-select">
+                        Select saved trip
+                      </label>
+                      <select
+                        className={cx(inputClass, 'appearance-none bg-[length:1rem] bg-[right_1rem_center] bg-no-repeat pr-10')}
+                        id="trip-select"
+                        onChange={(e) => {
+                          setSelectedBuildId(e.target.value)
+                          setDetailsStatus('idle')
+                          setDetailsMessage(null)
+                        }}
+                        style={{
+                          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234a5c49'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`
+                        }}
+                        value={selectedBuildId}
+                      >
+                        <option value="">Choose a saved trip…</option>
+                        {packageBuilds.map((row) => (
+                          <option key={row.id} value={row.id}>
+                            {(row.label ?? 'Build').slice(0, 72)}
+                            {' · '}
+                            {new Date(row.created_at).toLocaleDateString()}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {selectedBuildId ? (
+                      <>
+                        <div className="space-y-10">
+                          {selectedTripIsWebsiteForm ? (
+                            <div className="space-y-4">
+                              <h4 className="border-b border-orange-200/80 pb-2 font-display text-base font-semibold text-forest-900">
+                                Golf &amp; hotel transfers
+                              </h4>
+                              <p className="text-sm text-forest-600">
+                                Choose Costa del Sol courses and hotels for golf-day and hotel transfers. Saves with{' '}
+                                <span className="font-semibold">Save trip details</span> — your Golf Sol Ireland team sees it on
+                                the admin dashboard.
+                              </p>
+                              <PortalTransferPlanEditor
+                                disabled={detailsStatus === 'saving'}
+                                onChange={setPortalPlan}
+                                value={portalPlan}
+                              />
+                            </div>
+                          ) : null}
+                          {tripDetailsSectionsForForm.map((section) => (
+                            <div className="space-y-4" key={section.title}>
+                              <h4 className="border-b border-orange-200/80 pb-2 font-display text-base font-semibold text-forest-900">
+                                {section.title}
+                              </h4>
+                              {section.title === 'Trip shape' ? (
+                                <p className="text-sm font-medium text-forest-700">
+                                  Trip shape: {tripForm.nights.trim() || '0'} nights / {tripForm.rounds.trim() || '0'} rounds
+                                  <span className="ml-2 font-normal text-forest-500">
+                                    {selectedTripIsManualQuote
+                                      ? '(from your Golf Sol Ireland package — read-only)'
+                                      : selectedTripIsWebsiteForm
+                                        ? '(website form snapshot — read-only)'
+                                        : '(from saved package — read-only)'}
+                                  </span>
+                                </p>
+                              ) : null}
+                              <div className="grid gap-5 md:grid-cols-2">
+                                {section.fields.map((field) => {
+                                  const id = `td-${field.key}`
+                                  const isMultiline = TRIP_DETAILS_MULTILINE_KEYS.has(field.key)
+                                  const locked = isCalculatorLockedTripField(field.key, selectedBuildRow?.source ?? null)
+                                  const displayValue = tripForm[field.key].trim() || '—'
+
+                                  return (
+                                    <div className={field.key === 'notesForGsol' ? 'md:col-span-2' : ''} key={field.key}>
+                                      <span className={labelClass} id={`${id}-label`}>
+                                        {field.label}
+                                      </span>
+                                      {locked ? (
+                                        <div>
+                                          <div
+                                            aria-labelledby={`${id}-label`}
+                                            className={readOnlyCalcClass}
+                                            role="group"
+                                          >
+                                            {displayValue}
+                                          </div>
+                                          <p className={readOnlyCalcHintClass}>
+                                            {selectedTripIsManualQuote
+                                              ? 'Set by Golf Sol Ireland — contact us if this needs to change.'
+                                              : selectedTripIsWebsiteForm
+                                                ? 'Captured from your website form — contact us if the reference is wrong.'
+                                                : 'From your saved package — admin can change if required.'}
+                                          </p>
+                                        </div>
+                                      ) : isMultiline ? (
+                                        <textarea
+                                          aria-labelledby={`${id}-label`}
+                                          className={cx(inputClass, 'min-h-[100px] resize-y')}
+                                          id={id}
+                                          onChange={handleTripFieldChange(field.key)}
+                                          value={tripForm[field.key]}
+                                        />
+                                      ) : (
+                                        <input
+                                          aria-labelledby={`${id}-label`}
+                                          autoComplete={
+                                            field.key === 'leadGuestName'
+                                              ? 'name'
+                                              : field.key === 'contactPhone'
+                                                ? 'tel'
+                                                : undefined
+                                          }
+                                          className={inputClass}
+                                          id={id}
+                                          onChange={handleTripFieldChange(field.key)}
+                                          value={tripForm[field.key]}
+                                        />
+                                      )}
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="mt-8 flex flex-col gap-4 border-t border-forest-100 pt-8 sm:flex-row sm:flex-wrap sm:items-center">
+                          <LuxuryButton disabled={detailsStatus === 'saving'} type="submit" variant="primary">
+                            {detailsStatus === 'saving' ? 'Saving…' : 'Save trip details'}
+                          </LuxuryButton>
+                        </div>
+
+                        {detailsMessage ? (
+                          <p
+                            ref={detailsMessageRef}
+                            className={cx(
+                              'text-sm font-medium',
+                              detailsStatus === 'error' ? 'text-red-700' : 'text-forest-800'
+                            )}
+                            role={detailsStatus === 'error' ? 'alert' : 'status'}
+                          >
+                            {detailsMessage}
+                          </p>
+                        ) : null}
+                      </>
+                    ) : (
+                      <p className="mt-4 text-sm text-forest-600">Select a trip above to edit and save details.</p>
+                    )}
+                  </form>
+                </div>
+                ) : (
+                  <div className="rounded-[2rem] border border-dashed border-forest-200 bg-offwhite/80 p-6 text-sm text-forest-700 shadow-soft md:p-8">
+                    <p className="font-medium text-forest-900">Trip details</p>
+                    <p className="mt-2 max-w-2xl">
+                      After Golf Sol Ireland publishes a calculator build or a fixed-price quote for your trip, you can add dates,
+                      notes, and other details here. Website-only enquiries stay in the package list above until we add pricing.
+                    </p>
+                  </div>
+                )}
+              </>
+            )}
+          </section>
+
+        </div>
+      )}
+
       {tripDraft ? (
         <section className="mb-12 rounded-[2rem] border border-fairway-200/90 bg-gradient-to-br from-offwhite via-white to-[#f4faf6] p-6 shadow-soft md:p-9">
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
@@ -1094,27 +1547,58 @@ export function ClientDashboardPage() {
             </LuxuryButton>
           </div>
 
-          <div className="mt-8 grid gap-8 lg:grid-cols-2">
+          <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(280px,400px)] lg:items-start">
             <div className="space-y-5">
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-700">What should we quote?</p>
               <div className="flex flex-col gap-3">
-                {tripStageOptionRows.map(([key, title, hint]) => (
-                  <label
-                    className="flex cursor-pointer gap-3 rounded-2xl border border-forest-100 bg-white/90 px-4 py-3 shadow-sm transition-colors hover:border-fairway-300"
-                    key={key}
-                  >
-                    <input
-                      checked={tripDraft.stages[key]}
-                      className="mt-1 h-4 w-4 rounded border-forest-300 text-fairway-600 focus:ring-fairway-400"
-                      onChange={handleTripStageToggle(key)}
-                      type="checkbox"
-                    />
-                    <span>
-                      <span className="block text-sm font-semibold text-forest-950">{title}</span>
-                      <span className="mt-0.5 block text-xs text-forest-600">{hint}</span>
-                    </span>
-                  </label>
-                ))}
+                {tripStageOptionRows.map(([key, title, hint]) =>
+                  key === 'transfer' ? (
+                    <div
+                      className={cx(
+                        'flex gap-3 rounded-2xl border px-4 py-3 shadow-sm transition-colors',
+                        transferBuilderOpen && tripDraft.stages.transfer
+                          ? 'border-fairway-400 bg-fairway-50/70'
+                          : 'border-forest-100 bg-white/90 hover:border-fairway-300'
+                      )}
+                      key={key}
+                    >
+                      <input
+                        checked={tripDraft.stages.transfer}
+                        className="mt-1 h-4 w-4 shrink-0 rounded border-forest-300 text-fairway-600 focus:ring-fairway-400"
+                        onChange={handleTripStageToggle('transfer')}
+                        onClick={(e) => e.stopPropagation()}
+                        type="checkbox"
+                      />
+                      <button
+                        className="min-w-0 flex-1 rounded-xl text-left outline-none ring-fairway-400 focus-visible:ring-2"
+                        onClick={handleOpenTransferBuilder}
+                        type="button"
+                      >
+                        <span className="block text-sm font-semibold text-forest-950">{title}</span>
+                        <span className="mt-0.5 block text-xs text-forest-600">{hint}</span>
+                        <span className="mt-1.5 block text-xs font-semibold text-fairway-800">
+                          Tap here to open the transfer planner (pick-up, drops, contact number).
+                        </span>
+                      </button>
+                    </div>
+                  ) : (
+                    <label
+                      className="flex cursor-pointer gap-3 rounded-2xl border border-forest-100 bg-white/90 px-4 py-3 shadow-sm transition-colors hover:border-fairway-300"
+                      key={key}
+                    >
+                      <input
+                        checked={tripDraft.stages[key]}
+                        className="mt-1 h-4 w-4 rounded border-forest-300 text-fairway-600 focus:ring-fairway-400"
+                        onChange={handleTripStageToggle(key)}
+                        type="checkbox"
+                      />
+                      <span>
+                        <span className="block text-sm font-semibold text-forest-950">{title}</span>
+                        <span className="mt-0.5 block text-xs text-forest-600">{hint}</span>
+                      </span>
+                    </label>
+                  )
+                )}
               </div>
               <div>
                 <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="trip-party">
@@ -1133,9 +1617,7 @@ export function ClientDashboardPage() {
                   ))}
                 </select>
               </div>
-            </div>
 
-            <div className="space-y-5">
               {tripDraft.stages.golf ? (
                 <div>
                   <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="trip-courses">
@@ -1175,6 +1657,34 @@ export function ClientDashboardPage() {
                   />
                 </div>
               ) : null}
+            </div>
+
+            <div className="lg:sticky lg:top-36">
+              {tripDraft.stages.transfer && transferBuilderOpen ? (
+                <PortalTransferRouteBuilder
+                  contactPhone={tripDraft.transferContactPhone ?? ''}
+                  onClose={() => setTransferBuilderOpen(false)}
+                  onContactPhoneChange={handleTransferContactChange}
+                  onStopsChange={handleTransferStopsChange}
+                  partySize={tripDraft.partySize}
+                  stops={normalizeTransferStops(tripDraft.transferStops)}
+                />
+              ) : tripDraft.stages.transfer ? (
+                <div className="rounded-2xl border border-dashed border-forest-200 bg-white/90 p-5 text-center shadow-sm">
+                  <p className="text-sm text-forest-700">
+                    Build your route: Málaga Airport or a corridor hotel as pick-up, then add up to eight stops including
+                    airports, hotels, and courses.
+                  </p>
+                  <LuxuryButton className="mt-4" onClick={() => setTransferBuilderOpen(true)} type="button" variant="outline">
+                    Open transfer planner
+                  </LuxuryButton>
+                </div>
+              ) : (
+                <p className="rounded-2xl border border-forest-100/80 bg-offwhite/60 p-4 text-sm text-forest-600 lg:max-w-none">
+                  Tick <strong className="font-medium text-forest-800">Airport &amp; golf-day transfers</strong> on the left to
+                  plan your corridor transfers here.
+                </p>
+              )}
             </div>
           </div>
 
@@ -1604,306 +2114,8 @@ export function ClientDashboardPage() {
         ) : null}
       </section>
 
-      {listLoading ? (
-        <p className="text-sm font-medium text-forest-600">Loading your account…</p>
-      ) : (
+      {!listLoading ? (
         <div className="space-y-14 md:space-y-16">
-          <section>
-            <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Your packages</p>
-                <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Transfers, golf courses &amp; hotel</h2>
-                <p className="mt-2 max-w-2xl text-sm text-forest-600">
-                  Each line is a snapshot of what you submitted or what we published for you — website forms show every field.
-                  Trip notes (below) unlock after we publish a calculator or quoted package with pricing.
-                </p>
-              </div>
-              <LuxuryButton onClick={() => openTeamMessagingAndScroll()} type="button" variant="outline">
-                Message the team
-              </LuxuryButton>
-            </div>
-
-            {buildsError ? (
-              <div className="rounded-3xl border border-amber-200/90 bg-amber-50/90 px-6 py-4 text-sm text-amber-950 shadow-soft">
-                <p className="font-medium">Could not load saved packages.</p>
-                <p className="mt-2 text-amber-900/85">{buildsError}</p>
-                <p className="mt-2 text-xs text-amber-900/70">
-                  Open <code className="rounded bg-white/80 px-1">supabase/run-in-sql-editor-add-client-details.sql</code> in this
-                  repo, copy it into Supabase → SQL → Run. That adds <code className="rounded bg-white/80 px-1">client_details</code>{' '}
-                  and the delete policy.
-                </p>
-              </div>
-            ) : packageBuilds.length === 0 ? (
-              <div className="rounded-[2rem] border border-dashed border-forest-200 bg-offwhite px-6 py-10 text-center text-sm text-forest-900 md:px-10">
-                No packages on your dashboard yet. When Golf Sol Ireland publishes your transfers, golf course options, or hotel
-                quote, they will appear here. Use message the team if you would like a follow-up.
-              </div>
-            ) : (
-              <>
-                <ul className="mb-8 overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-soft">
-                  {packageBuilds.map((row, index) => {
-                    const cfg = parseAnyPackageBuildRowConfig(row.config)
-                    const reopenHref = cfg?.type === 'calculator' ? packagesPagePathFromConfig(cfg.config) : null
-                    const total =
-                      cfg?.type === 'calculator' ? cfg.config.totals.estimatedGroupTotal : cfg?.type === 'manual' ? cfg.config.priceEur : undefined
-                    const hasLinkedFormal = Boolean(row.linked_proposal?.payload && typeof row.linked_proposal.payload === 'object')
-                    const expanded = expandedFormalProposalBuildId === row.id
-                    let manualSummaryPreview: string | null = null
-                    let websiteFormEntries: [string, unknown][] | null = null
-                    if (cfg?.type === 'manual' && cfg.config.summary.trim()) {
-                      const s = cfg.config.summary.trim()
-                      manualSummaryPreview = s.slice(0, 160) + (s.length > 160 ? '…' : '')
-                    } else if (cfg?.type === 'website_form') {
-                      websiteFormEntries = Object.entries(cfg.config.fields ?? {})
-                    }
-
-                    return (
-                      <li
-                        className={cx(
-                          'border-b border-forest-100/80 last:border-b-0',
-                          index % 2 === 1 ? 'bg-offwhite/90' : 'bg-white'
-                        )}
-                        key={row.id}
-                      >
-                        <div className="flex flex-col gap-4 px-5 py-5 md:px-7 lg:flex-row lg:items-center lg:justify-between">
-                          <div className="min-w-0 flex-1">
-                            <p className="font-display text-lg font-semibold text-forest-950">
-                              {row.label?.trim() || 'Package'}
-                            </p>
-                            <p className="mt-1 text-xs text-forest-500">
-                              {packageBuildDbSourceLabel(row.source)} ·{' '}
-                              {new Date(row.created_at).toLocaleString(undefined, {
-                                day: 'numeric',
-                                month: 'short',
-                                year: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })}
-                            </p>
-                            {manualSummaryPreview ? (
-                              <p className="mt-2 line-clamp-2 text-sm text-forest-700">{manualSummaryPreview}</p>
-                            ) : null}
-                            {websiteFormEntries && websiteFormEntries.length > 0 ? (
-                              <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
-                                {websiteFormEntries.map(([key, val]) => (
-                                  <div
-                                    className="min-w-0 rounded-xl border border-forest-100/90 bg-offwhite/60 px-3 py-2.5"
-                                    key={key}
-                                  >
-                                    <dt className="text-xs font-semibold uppercase tracking-wide text-gold-700">
-                                      {formatWebsiteFormFieldLabel(key)}
-                                    </dt>
-                                    <dd className="mt-0.5 whitespace-pre-wrap break-words text-forest-800">
-                                      {websiteFormFieldValueText(val)}
-                                    </dd>
-                                  </div>
-                                ))}
-                              </dl>
-                            ) : cfg?.type === 'website_form' ? (
-                              <p className="mt-2 text-sm text-forest-600">No form fields stored for this submission.</p>
-                            ) : null}
-                            {typeof total === 'number' ? (
-                              <p className="mt-2 text-sm font-medium text-forest-700">
-                                {cfg?.type === 'manual' ? 'Quoted total' : 'Group estimate'} {formatEur(total)}
-                              </p>
-                            ) : null}
-                          </div>
-                          <div className="flex flex-wrap items-center gap-3">
-                            {hasLinkedFormal ? (
-                              <LuxuryButton
-                                aria-expanded={expanded}
-                                onClick={() =>
-                                  setExpandedFormalProposalBuildId((prev) => (prev === row.id ? null : row.id))
-                                }
-                                type="button"
-                                variant="outline"
-                              >
-                                {expanded ? 'Hide formal proposal' : 'View formal proposal'}
-                              </LuxuryButton>
-                            ) : null}
-                            {reopenHref ? (
-                              <LuxuryButton href={reopenHref} variant="primary">
-                                Open in calculator
-                              </LuxuryButton>
-                            ) : null}
-                          </div>
-                        </div>
-                        {expanded && hasLinkedFormal && row.linked_proposal ? (
-                          <div className="border-t border-forest-100/80 bg-white px-5 pb-6 pt-2 md:px-7">
-                            <FormalProposalPayloadSummary
-                              onDownloadPdf={() => handleDownloadLinkedBuildProposalPdf(row)}
-                              payload={row.linked_proposal.payload as FormalProposalPayload}
-                              pdfLoading={linkedProposalPdfLoadingBuildId === row.id}
-                              proposalIdText={row.linked_proposal.proposal_id}
-                            />
-                          </div>
-                        ) : null}
-                      </li>
-                    )
-                  })}
-                </ul>
-
-                {hasAdminPricedPackage ? (
-                <div className="rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Trip details</p>
-                  <h3 className="font-display mt-2 text-xl font-semibold text-forest-950 md:text-2xl">
-                    Proposal-style information (saved to your account)
-                  </h3>
-                  <p className="mt-2 max-w-2xl text-sm text-forest-600">
-                    {selectedTripIsManualQuote
-                      ? 'Package name and pricing on this quote were set by Golf Sol Ireland — those lines are read-only here. You can edit the other fields and save; we will see your updates on our side.'
-                      : selectedTripIsWebsiteForm
-                        ? 'This card was created from a form you submitted on golfsolirl.com while signed in. The form snapshot and enquiry reference are fixed; add dates, notes, and anything else below and save so the team sees it on file.'
-                        : 'Package, stay, group size, nights, rounds, and pricing come from your saved package snapshot — those are read-only here. Everything else you can edit and save; Golf Sol Ireland can adjust locked fields if needed.'}
-                  </p>
-
-                  <form className="mt-8 space-y-6" noValidate onSubmit={handleSaveTripDetails}>
-                    <div>
-                      <label className={labelClass} htmlFor="trip-select">
-                        Select saved trip
-                      </label>
-                      <select
-                        className={cx(inputClass, 'appearance-none bg-[length:1rem] bg-[right_1rem_center] bg-no-repeat pr-10')}
-                        id="trip-select"
-                        onChange={(e) => {
-                          setSelectedBuildId(e.target.value)
-                          setDetailsStatus('idle')
-                          setDetailsMessage(null)
-                        }}
-                        style={{
-                          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234a5c49'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`
-                        }}
-                        value={selectedBuildId}
-                      >
-                        <option value="">Choose a saved trip…</option>
-                        {packageBuilds.map((row) => (
-                          <option key={row.id} value={row.id}>
-                            {(row.label ?? 'Build').slice(0, 72)}
-                            {' · '}
-                            {new Date(row.created_at).toLocaleDateString()}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {selectedBuildId ? (
-                      <>
-                        <div className="space-y-10">
-                          {TRIP_DETAILS_SECTIONS.map((section) => (
-                            <div className="space-y-4" key={section.title}>
-                              <h4 className="border-b border-orange-200/80 pb-2 font-display text-base font-semibold text-forest-900">
-                                {section.title}
-                              </h4>
-                              {section.title === 'Trip shape' ? (
-                                <p className="text-sm font-medium text-forest-700">
-                                  Trip shape: {tripForm.nights.trim() || '0'} nights / {tripForm.rounds.trim() || '0'} rounds
-                                  <span className="ml-2 font-normal text-forest-500">
-                                    {selectedTripIsManualQuote
-                                      ? '(from your Golf Sol Ireland package — read-only)'
-                                      : selectedTripIsWebsiteForm
-                                        ? '(website form snapshot — read-only)'
-                                        : '(from saved package — read-only)'}
-                                  </span>
-                                </p>
-                              ) : null}
-                              <div className="grid gap-5 md:grid-cols-2">
-                                {section.fields.map((field) => {
-                                  const id = `td-${field.key}`
-                                  const isMultiline = TRIP_DETAILS_MULTILINE_KEYS.has(field.key)
-                                  const locked = isCalculatorLockedTripField(field.key, selectedBuildRow?.source ?? null)
-                                  const displayValue = tripForm[field.key].trim() || '—'
-
-                                  return (
-                                    <div className={field.key === 'notesForGsol' ? 'md:col-span-2' : ''} key={field.key}>
-                                      <span className={labelClass} id={`${id}-label`}>
-                                        {field.label}
-                                      </span>
-                                      {locked ? (
-                                        <div>
-                                          <div
-                                            aria-labelledby={`${id}-label`}
-                                            className={readOnlyCalcClass}
-                                            role="group"
-                                          >
-                                            {displayValue}
-                                          </div>
-                                          <p className={readOnlyCalcHintClass}>
-                                            {selectedTripIsManualQuote
-                                              ? 'Set by Golf Sol Ireland — contact us if this needs to change.'
-                                              : selectedTripIsWebsiteForm
-                                                ? 'Captured from your website form — contact us if the reference is wrong.'
-                                                : 'From your saved package — admin can change if required.'}
-                                          </p>
-                                        </div>
-                                      ) : isMultiline ? (
-                                        <textarea
-                                          aria-labelledby={`${id}-label`}
-                                          className={cx(inputClass, 'min-h-[100px] resize-y')}
-                                          id={id}
-                                          onChange={handleTripFieldChange(field.key)}
-                                          value={tripForm[field.key]}
-                                        />
-                                      ) : (
-                                        <input
-                                          aria-labelledby={`${id}-label`}
-                                          autoComplete={
-                                            field.key === 'leadGuestName'
-                                              ? 'name'
-                                              : field.key === 'contactPhone'
-                                                ? 'tel'
-                                                : undefined
-                                          }
-                                          className={inputClass}
-                                          id={id}
-                                          onChange={handleTripFieldChange(field.key)}
-                                          value={tripForm[field.key]}
-                                        />
-                                      )}
-                                    </div>
-                                  )
-                                })}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-
-                        <div className="mt-8 flex flex-col gap-4 border-t border-forest-100 pt-8 sm:flex-row sm:flex-wrap sm:items-center">
-                          <LuxuryButton disabled={detailsStatus === 'saving'} type="submit" variant="primary">
-                            {detailsStatus === 'saving' ? 'Saving…' : 'Save trip details'}
-                          </LuxuryButton>
-                        </div>
-
-                        {detailsMessage ? (
-                          <p
-                            ref={detailsMessageRef}
-                            className={cx(
-                              'text-sm font-medium',
-                              detailsStatus === 'error' ? 'text-red-700' : 'text-forest-800'
-                            )}
-                            role={detailsStatus === 'error' ? 'alert' : 'status'}
-                          >
-                            {detailsMessage}
-                          </p>
-                        ) : null}
-                      </>
-                    ) : (
-                      <p className="mt-4 text-sm text-forest-600">Select a trip above to edit and save details.</p>
-                    )}
-                  </form>
-                </div>
-                ) : (
-                  <div className="rounded-[2rem] border border-dashed border-forest-200 bg-offwhite/80 p-6 text-sm text-forest-700 shadow-soft md:p-8">
-                    <p className="font-medium text-forest-900">Trip details</p>
-                    <p className="mt-2 max-w-2xl">
-                      After Golf Sol Ireland publishes a calculator build or a fixed-price quote for your trip, you can add dates,
-                      notes, and other details here. Website-only enquiries stay in the package list above until we add pricing.
-                    </p>
-                  </div>
-                )}
-              </>
-            )}
-          </section>
-
           {showProposalsPortal ? (
             <section>
               <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
@@ -2022,15 +2234,17 @@ export function ClientDashboardPage() {
               </ul>
             )}
               </>
-            ) : profile?.portal_proposals_enabled !== true && profile?.portal_pdf_library_enabled === true ? (
-              <div className="rounded-[2rem] border border-forest-100 bg-offwhite/90 px-6 py-8 text-sm text-forest-700 md:px-10">
-                <p className="font-semibold text-forest-900">Formal proposals</p>
-                <p className="mt-2 max-w-2xl">
-                  Your PDF library can be shown separately. Formal proposal downloads stay hidden until Golf Sol Ireland enables
-                  that option for your account.
-                </p>
-              </div>
-            ) : null}
+            ) : (
+              profile?.portal_proposals_enabled !== true && profile?.portal_pdf_library_enabled === true ? (
+                <div className="rounded-[2rem] border border-forest-100 bg-offwhite/90 px-6 py-8 text-sm text-forest-700 md:px-10">
+                  <p className="font-semibold text-forest-900">Formal proposals</p>
+                  <p className="mt-2 max-w-2xl">
+                    Your PDF library can be shown separately. Formal proposal downloads stay hidden until Golf Sol Ireland enables
+                    that option for your account.
+                  </p>
+                </div>
+              ) : null
+            )}
             </section>
           ) : (
             <section className="rounded-[2rem] border border-forest-100 bg-offwhite/80 px-6 py-8 text-sm text-forest-700 md:px-10">
@@ -2042,7 +2256,7 @@ export function ClientDashboardPage() {
             </section>
           )}
         </div>
-      )}
+      ) : null}
     </DashboardLayout>
   )
 }

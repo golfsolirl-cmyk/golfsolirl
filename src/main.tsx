@@ -1,5 +1,6 @@
 import ReactDOM from 'react-dom/client'
 import { lazy, Suspense, type LazyExoticComponent, type ComponentType } from 'react'
+import { AppRouteFallback } from './components/app-route-fallback'
 import { AuthProvider } from './providers/auth-provider'
 import { isGeContentPagePath } from './pages/golf-experience/data/content-pages'
 import './index.css'
@@ -37,6 +38,9 @@ const AuthCallbackPage = lazy(() =>
 const ClientDashboardPage = lazy(() =>
   import('./pages/client-dashboard-page').then((m) => ({ default: m.ClientDashboardPage }))
 )
+const ClientQuotePreviewPage = lazy(() =>
+  import('./pages/client-quote-preview-page').then((m) => ({ default: m.ClientQuotePreviewPage }))
+)
 const AdminDashboardPage = lazy(() =>
   import('./pages/admin-dashboard-page').then((m) => ({ default: m.AdminDashboardPage }))
 )
@@ -60,16 +64,9 @@ const ProposalPdfSamplePage = lazy(() =>
 
 type PageComponent = LazyExoticComponent<ComponentType>
 
-function PageFallback() {
-  return (
-    <div className="flex min-h-[50vh] items-center justify-center bg-offwhite text-forest-600">
-      <p className="text-sm font-medium tracking-wide">Loading…</p>
-    </div>
-  )
-}
-
 function syncReadableTypePageClass(path: string) {
   const nonReadableTypePaths = new Set([
+    '/dashboard/quote',
     '/proposal-template',
     '/package-proposal',
     '/proposal-template/admin',
@@ -128,6 +125,10 @@ function resolvePage(): PageComponent {
     return AuthCallbackPage
   }
 
+  if (normalizedPath.startsWith('/dashboard/quote/')) {
+    return ClientQuotePreviewPage
+  }
+
   if (normalizedPath === '/dashboard') {
     return ClientDashboardPage
   }
@@ -176,7 +177,7 @@ const ActivePage = resolvePage()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <AuthProvider>
-    <Suspense fallback={<PageFallback />}>
+    <Suspense fallback={<AppRouteFallback />}>
       <ActivePage />
     </Suspense>
   </AuthProvider>

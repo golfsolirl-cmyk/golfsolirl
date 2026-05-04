@@ -39,6 +39,28 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
+const profilesEqual = (a: Profile | null, b: Profile | null): boolean => {
+  if (a === b) {
+    return true
+  }
+  if (!a || !b) {
+    return false
+  }
+  return (
+    a.id === b.id &&
+    a.email === b.email &&
+    a.full_name === b.full_name &&
+    a.phone === b.phone &&
+    a.role === b.role &&
+    a.account_reference_id === b.account_reference_id &&
+    a.portal_proposals_enabled === b.portal_proposals_enabled &&
+    a.portal_pdf_library_enabled === b.portal_pdf_library_enabled &&
+    a.portal_contact_completed_at === b.portal_contact_completed_at &&
+    a.created_at === b.created_at &&
+    a.updated_at === b.updated_at
+  )
+}
+
 const isAuthCallbackPath = () => {
   if (typeof window === 'undefined') {
     return false
@@ -53,6 +75,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const sessionUserId = session?.user?.id
 
   const fetchProfileRow = useCallback(
     async (userId: string) => {
@@ -89,14 +112,14 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   )
 
   const refreshProfile = useCallback(async () => {
-    if (!supabase || !session?.user) {
+    if (!supabase || !sessionUserId) {
       setProfile(null)
       return
     }
 
-    const row = await fetchProfileRow(session.user.id)
-    setProfile(row)
-  }, [session?.user, supabase, fetchProfileRow])
+    const row = await fetchProfileRow(sessionUserId)
+    setProfile((prev) => (profilesEqual(prev, row) ? prev : row))
+  }, [sessionUserId, supabase, fetchProfileRow])
 
   useEffect(() => {
     if (!supabase) {
@@ -118,7 +141,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
 
       const row = await fetchProfileRow(nextSession.user.id)
       if (!cancelled) {
-        setProfile(row)
+        setProfile((prev) => (profilesEqual(prev, row) ? prev : row))
       }
     }
 
@@ -151,8 +174,22 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         return
       }
 
-      setIsLoading(true)
-      setSession(nextSession)
+      if (event === 'SIGNED_OUT') {
+        if (!cancelled) {
+          setSession(null)
+          setProfile(null)
+          setIsLoading(false)
+        }
+        return
+      }
+
+      /**
+       * SIGNED_IN, USER_UPDATED, MFA, etc. — never flip global `isLoading` here: that remounts the
+       * whole dashboard behind `DashboardLoadingShell` and causes a visible jump after magic-link login.
+       */
+      if (!cancelled) {
+        setSession(nextSession)
+      }
 
       if (cancelled) {
         return

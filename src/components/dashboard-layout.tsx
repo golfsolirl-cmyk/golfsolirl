@@ -6,6 +6,7 @@ import { GeButton } from '../pages/golf-experience/components/ge-button'
 import { GeFooter } from '../pages/golf-experience/sections/ge-footer'
 import { GeDualPhoneNavMobileButtons } from '../pages/golf-experience/components/ge-dual-phone-contact'
 import { useAuth } from '../providers/auth-provider'
+import { BrandFleetHeroPanel } from './brand-fleet-hero-panel'
 
 export type DashboardVariant = 'client' | 'admin'
 
@@ -90,16 +91,20 @@ export function DashboardLayout({ title, subtitle, kicker, variant, titleAdornme
                 {kicker}
               </p>
               <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-5">
-                <h1 className="max-w-3xl text-[2.35rem] font-extrabold leading-[1.04] tracking-[-0.015em] text-white md:text-[3.35rem]">
+                <h1 className="max-w-3xl text-[2.35rem] font-extrabold leading-[1.04] tracking-[-0.015em] text-white [text-shadow:0_2px_22px_rgba(0,0,0,0.45)] md:text-[3.35rem]">
                   {title}
                 </h1>
                 {titleAdornment ? <div className="shrink-0">{titleAdornment}</div> : null}
               </div>
               {subtitle ? (
-                <p className="mt-5 max-w-2xl text-base leading-8 text-white/86 md:text-[1.08rem]">{subtitle}</p>
+                <p className="mt-5 max-w-2xl text-base leading-8 text-emerald-50/95 [text-shadow:0_1px_18px_rgba(0,0,0,0.35)] md:text-[1.08rem] md:leading-relaxed">
+                  {subtitle}
+                </p>
               ) : null}
               {user?.email ? (
-                <p className="mt-5 truncate text-xs font-bold uppercase tracking-[0.16em] text-white/55 md:text-sm">{user.email}</p>
+                <p className="mt-5 truncate text-sm font-semibold normal-case tracking-normal text-white [text-shadow:0_1px_14px_rgba(0,0,0,0.4)] md:text-base">
+                  {user.email}
+                </p>
               ) : null}
             </div>
 
@@ -127,6 +132,8 @@ export function DashboardLayout({ title, subtitle, kicker, variant, titleAdornme
               </GeButton>
             </div>
           </div>
+
+          <BrandFleetHeroPanel className="mt-10 shadow-[0_24px_60px_rgba(0,0,0,0.35)] ring-white/20" />
         </div>
 
         <div className="relative z-[2] -mb-px">

@@ -4,6 +4,7 @@ import { WaveDivider } from '../components/ui/wave-divider'
 import { GeButton } from '../pages/golf-experience/components/ge-button'
 import { GeFooter } from '../pages/golf-experience/sections/ge-footer'
 import { GeNavbar } from '../pages/golf-experience/sections/ge-navbar'
+import { BrandFleetHeroPanel } from '../components/brand-fleet-hero-panel'
 import { GeBrandLockup } from '../pages/golf-experience/components/brand-lockup'
 import { integrationRegistry } from '../config/integrations'
 import { AUTH_NEXT_STORAGE_KEY, isSafeInternalPath } from '../lib/internal-redirect'
@@ -112,13 +113,19 @@ export function LoginPage() {
           <div aria-hidden="true" className="h-[134px] w-full bg-white sm:h-[148px] md:h-[164px] lg:h-[130px] xl:h-[142px]" />
           <LoginHeroBackdrop />
           <div className="relative z-10 mx-auto max-w-[1180px] px-5 pb-16 pt-6 sm:px-8 md:pb-20 md:pt-8">
-            <p className="font-ge text-xs font-bold uppercase tracking-[0.22em] text-gs-gold">Account access</p>
-            <h1 className="mt-5 max-w-3xl font-ge text-[2.1rem] font-extrabold leading-[1.08] tracking-[-0.02em] text-white md:text-[2.65rem]">
-              Sign in
-            </h1>
-            <p className="mt-4 max-w-xl font-ge text-base leading-8 text-white/86 md:text-[1.05rem]">
-              Connect Supabase to enable secure magic-link sign-in.
-            </p>
+            <div className="grid gap-10 lg:grid-cols-[1fr_minmax(260px,440px)] lg:items-start lg:gap-12">
+              <div className="min-w-0">
+                <p className="font-ge text-xs font-bold uppercase tracking-[0.22em] text-gs-gold">Account access</p>
+                <h1 className="mt-5 max-w-3xl font-ge text-[2.1rem] font-extrabold leading-[1.08] tracking-[-0.02em] text-white md:text-[2.65rem]">
+                  Sign in
+                </h1>
+                <p className="mt-4 max-w-xl font-ge text-base leading-8 text-white/86 md:text-[1.05rem]">
+                  Connect Supabase to enable secure magic-link sign-in.
+                </p>
+              </div>
+              <BrandFleetHeroPanel className="hidden shadow-[0_24px_60px_rgba(0,0,0,0.35)] ring-white/25 lg:block" variant="login" />
+            </div>
+            <BrandFleetHeroPanel className="mt-8 shadow-[0_20px_50px_rgba(0,0,0,0.28)] ring-white/20 lg:hidden" variant="login" />
           </div>
           <div className="relative z-[2] -mb-px">
             <WaveDivider fill="#ffffff" />
@@ -190,19 +197,25 @@ export function LoginPage() {
         <div aria-hidden="true" className="h-[134px] w-full bg-white sm:h-[148px] md:h-[164px] lg:h-[130px] xl:h-[142px]" />
         <LoginHeroBackdrop />
         <div className="relative z-10 mx-auto max-w-[1180px] px-5 pb-16 pt-6 sm:px-8 md:pb-20 md:pt-8">
-          <p className="font-ge text-xs font-bold uppercase tracking-[0.22em] text-gs-gold">Account access</p>
-          <h1 className="mt-5 max-w-3xl font-ge text-[2.1rem] font-extrabold leading-[1.08] tracking-[-0.02em] text-white md:text-[2.85rem]">
-            Sign in
-          </h1>
-          <p className="mt-4 max-w-xl font-ge text-base leading-8 text-white/88 md:text-[1.08rem]">
-            We&apos;ll email you a secure magic link — the same GolfSol Ireland experience as the rest of the site. No
-            password to remember.
-          </p>
-          {safeReturnPath ? (
-            <p className="mt-4 max-w-xl rounded-2xl border border-white/18 bg-white/10 px-4 py-3 font-ge text-base leading-7 text-white/92">
-              After you sign in, we&apos;ll bring you back to your package so you can save it to your account.
-            </p>
-          ) : null}
+          <div className="grid gap-10 lg:grid-cols-[1fr_minmax(260px,440px)] lg:items-start lg:gap-12">
+            <div className="min-w-0">
+              <p className="font-ge text-xs font-bold uppercase tracking-[0.22em] text-gs-gold">Account access</p>
+              <h1 className="mt-5 max-w-3xl font-ge text-[2.1rem] font-extrabold leading-[1.08] tracking-[-0.02em] text-white md:text-[2.85rem]">
+                Sign in
+              </h1>
+              <p className="mt-4 max-w-xl font-ge text-base leading-8 text-white/88 md:text-[1.08rem]">
+                We&apos;ll email you a secure magic link — the same GolfSol Ireland experience as the rest of the site. No
+                password to remember.
+              </p>
+              {safeReturnPath ? (
+                <p className="mt-4 max-w-xl rounded-2xl border border-white/18 bg-white/10 px-4 py-3 font-ge text-base leading-7 text-white/92">
+                  After you sign in, we&apos;ll bring you back to your package so you can save it to your account.
+                </p>
+              ) : null}
+            </div>
+            <BrandFleetHeroPanel className="hidden shadow-[0_24px_60px_rgba(0,0,0,0.35)] ring-white/25 lg:block" variant="login" />
+          </div>
+          <BrandFleetHeroPanel className="mt-8 shadow-[0_20px_50px_rgba(0,0,0,0.28)] ring-white/20 lg:hidden" variant="login" />
         </div>
         <div className="relative z-[2] -mb-px">
           <WaveDivider fill="#ffffff" />

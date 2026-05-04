@@ -1,4 +1,5 @@
 import { useRef, type ReactNode } from 'react'
+import { BrandFleetHeroPanel } from './brand-fleet-hero-panel'
 import { LuxuryButton } from './ui/button'
 import { Logo } from './ui/logo'
 import { SiteFooter } from './site-footer'
@@ -47,6 +48,12 @@ export function PdfSiteShell({ children }: PdfSiteShellProps) {
           </div>
         </div>
       </header>
+
+      <div className="border-b border-ge-gray100 bg-offwhite px-4 py-6 md:px-8">
+        <div className="mx-auto max-w-7xl">
+          <BrandFleetHeroPanel showBadges variant="pdf-shell" />
+        </div>
+      </div>
 
       {children}
 
