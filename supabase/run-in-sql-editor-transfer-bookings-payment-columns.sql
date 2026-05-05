@@ -5,6 +5,7 @@
 --   20260505270000_transfer_bookings_payment_reminders.sql
 --   20260505300000_transfer_bookings_admin_price_eur.sql
 --   20260505320000_transfer_bookings_admin_price_vat_treatment.sql
+--   20260505330000_transfer_bookings_payment_trigger_jwt_role.sql
 -- (idempotent: safe to re-run)
 
 -- --- 20260505270000 ---
@@ -97,6 +98,41 @@ begin
     public.is_admin()
     or coalesce(auth.role(), '') = 'service_role'
     or coalesce(nullif(current_setting('request.jwt.claim.role', true), ''), '') = 'service_role';
+
+  if privileged then
+    return new;
+  end if;
+
+  new.payment_status := old.payment_status;
+  new.deposit_percent := old.deposit_percent;
+  new.balance_remind_at := old.balance_remind_at;
+  new.balance_remind_sent_at := old.balance_remind_sent_at;
+  new.admin_price_eur := old.admin_price_eur;
+  new.admin_price_vat_treatment := old.admin_price_vat_treatment;
+  return new;
+end;
+$$;
+
+-- --- 20260505330000 --- (JWT role claim for service_role — Stripe webhooks)
+
+create or replace function public.transfer_bookings_payment_columns_privileged_only()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  privileged boolean;
+begin
+  if tg_op = 'INSERT' then
+    return new;
+  end if;
+
+  privileged :=
+    public.is_admin()
+    or coalesce(auth.role(), '') = 'service_role'
+    or coalesce(nullif(current_setting('request.jwt.claim.role', true), ''), '') = 'service_role'
+    or coalesce((auth.jwt() ->> 'role'), '') = 'service_role';
 
   if privileged then
     return new;

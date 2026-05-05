@@ -422,7 +422,9 @@ export function ClientDashboardPage() {
     }
 
     const uid = session.user.id
-    const channel = supabase
+    const emailRaw = session.user.email?.trim()
+    const emailLower = emailRaw ? emailRaw.toLowerCase() : ''
+    let channel = supabase
       .channel(`client-portal-live-${uid}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${uid}` }, refetchPortal)
       .on(
@@ -437,6 +439,19 @@ export function ClientDashboardPage() {
         { event: '*', schema: 'public', table: 'transfer_bookings', filter: `client_user_id=eq.${uid}` },
         refetchPortal
       )
+    if (emailLower) {
+      channel = channel.on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'transfer_bookings',
+          filter: `client_email=eq.${emailLower}`
+        },
+        refetchPortal
+      )
+    }
+    channel = channel
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'client_document_access', filter: `owner_id=eq.${uid}` },
@@ -458,7 +473,7 @@ export function ClientDashboardPage() {
     return () => {
       void supabase.removeChannel(channel)
     }
-  }, [isLoading, session?.user?.id, refetchPortal])
+  }, [isLoading, session?.user?.id, session?.user?.email, refetchPortal])
 
   useEffect(() => {
     if (isLoading || !session?.user?.id) {
@@ -535,10 +550,13 @@ export function ClientDashboardPage() {
     }
     const sp = new URLSearchParams(window.location.search)
     const parts: string[] = []
+    let stripeSuccessPoll = false
     if (sp.get('invoice_paid') === '1') {
       parts.push('Payment received — thank you. Your invoice card should show Paid within a few seconds.')
       sp.delete('invoice_paid')
       setInvoicePanelRefresh((n) => n + 1)
+      stripeSuccessPoll = true
+      void loadData()
     } else if (sp.get('invoice_cancel') === '1') {
       parts.push('Checkout was cancelled. You can open Pay again from your trip invoice card whenever you are ready.')
       sp.delete('invoice_cancel')
@@ -546,6 +564,7 @@ export function ClientDashboardPage() {
     if (sp.get('transfer_paid') === '1') {
       parts.push('Payment received — thank you. Your transfer will show as paid shortly.')
       sp.delete('transfer_paid')
+      stripeSuccessPoll = true
       void loadData()
     } else if (sp.get('transfer_pay_cancel') === '1') {
       parts.push('Checkout was cancelled. You can use Pay now on your transfer when you are ready.')
@@ -555,6 +574,20 @@ export function ClientDashboardPage() {
       setInvoiceUrlBanner(parts.join(' '))
       const qs = sp.toString()
       window.history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}${window.location.hash}`)
+    }
+    if (!stripeSuccessPoll) {
+      return undefined
+    }
+    const t1 = window.setTimeout(() => void loadData(), 1200)
+    const t2 = window.setTimeout(() => void loadData(), 3200)
+    const t3 = window.setTimeout(() => {
+      void loadData()
+      setInvoicePanelRefresh((n) => n + 1)
+    }, 6200)
+    return () => {
+      window.clearTimeout(t1)
+      window.clearTimeout(t2)
+      window.clearTimeout(t3)
     }
   }, [loadData])
 
