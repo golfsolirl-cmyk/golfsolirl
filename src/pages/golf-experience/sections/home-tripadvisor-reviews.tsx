@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
 import { Quote, Star } from 'lucide-react'
+import { getSupabaseBrowserClient } from '../../../lib/supabase-client'
 import { GeSection } from '../components/ge-section'
 import { tripadvisorReviewsSectionCopy, tripadvisorSampleReviews } from '../data/tripadvisor-sample-reviews'
 
@@ -10,18 +12,58 @@ const fadeUp = {
   transition: { duration: 0.52, ease: 'easeOut' }
 } as const
 
-function StarRow() {
+function StarRow({ count = 5 }: { readonly count?: number }) {
+  const n = Math.min(5, Math.max(0, Math.round(count)))
   return (
     <div className="flex gap-0.5" aria-hidden>
       {Array.from({ length: 5 }).map((_, i) => (
-        <Star key={i} className="h-4 w-4 fill-gs-gold text-gs-gold sm:h-[1.05rem] sm:w-[1.05rem]" strokeWidth={0} />
+        <Star
+          key={i}
+          className={
+            i < n
+              ? 'h-4 w-4 fill-gs-gold text-gs-gold sm:h-[1.05rem] sm:w-[1.05rem]'
+              : 'h-4 w-4 fill-transparent text-ge-gray200 sm:h-[1.05rem] sm:w-[1.05rem]'
+          }
+          strokeWidth={0}
+        />
       ))}
     </div>
   )
 }
 
+type PublishedGuestReview = {
+  id: string
+  rating: number
+  comment: string
+  display_name: string | null
+}
+
 export function GeHomeTripadvisorReviews() {
   const { eyebrow, title, lead, disclaimer, ctaLabel, ctaHref, ctaNote } = tripadvisorReviewsSectionCopy
+  const [guestReviews, setGuestReviews] = useState<PublishedGuestReview[]>([])
+
+  useEffect(() => {
+    const sb = getSupabaseBrowserClient()
+    if (!sb) {
+      return
+    }
+    let cancelled = false
+    void (async () => {
+      const { data, error } = await sb
+        .from('trip_reviews')
+        .select('id, rating, comment, display_name')
+        .not('published_at', 'is', null)
+        .order('published_at', { ascending: false })
+        .limit(9)
+      if (cancelled || error || !data) {
+        return
+      }
+      setGuestReviews(data as PublishedGuestReview[])
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   return (
     <GeSection
@@ -69,6 +111,37 @@ export function GeHomeTripadvisorReviews() {
         </motion.div>
 
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+          {guestReviews.map((review, index) => (
+            <motion.article
+              key={review.id}
+              className="group relative flex flex-col rounded-[1.65rem] border border-gs-gold/35 bg-gradient-to-b from-white to-gs-gold/[0.06] p-6 shadow-[0_18px_45px_rgba(6,59,42,0.07)] ring-1 ring-gs-dark/[0.04] transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-0.5 hover:border-gs-gold/60 hover:shadow-[0_24px_55px_rgba(6,59,42,0.1)] sm:p-7"
+              {...fadeUp}
+              transition={{ ...fadeUp.transition, delay: 0.05 * (index + 1) }}
+            >
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-gs-gold/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+              />
+              <div className="flex items-start justify-between gap-3">
+                <Quote className="h-8 w-8 shrink-0 text-gs-gold/90" aria-hidden strokeWidth={1.75} />
+                <span className="rounded-full bg-gs-dark/90 px-2 py-0.5 font-ge text-[0.6rem] font-extrabold uppercase tracking-[0.14em] text-white">
+                  Guest story
+                </span>
+              </div>
+              <div className="mt-4">
+                <StarRow count={review.rating} />
+                <p className="mt-4 font-ge text-[1.02rem] font-medium leading-7 text-gs-dark/92 sm:text-[1.05rem] sm:leading-[1.65rem]">
+                  “{review.comment || 'Great service.'}”
+                </p>
+              </div>
+              <div className="mt-auto border-t border-ge-gray100/90 pt-5">
+                <p className="font-ge text-sm font-extrabold text-gs-dark">{review.display_name ?? 'Golf Sol guest'}</p>
+                <p className="mt-1 font-ge text-xs font-semibold uppercase tracking-[0.12em] text-ge-gray500">
+                  Verified transfer review
+                </p>
+              </div>
+            </motion.article>
+          ))}
           {tripadvisorSampleReviews.map((review, index) => (
             <motion.article
               key={review.name}
@@ -94,7 +167,7 @@ export function GeHomeTripadvisorReviews() {
                 />
               </div>
               <div className="mt-4">
-                <StarRow />
+                <StarRow count={5} />
                 <p className="mt-4 font-ge text-[1.02rem] font-medium leading-7 text-gs-dark/92 sm:text-[1.05rem] sm:leading-[1.65rem]">
                   “{review.quote}”
                 </p>

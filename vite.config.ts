@@ -15,6 +15,17 @@ import {
 import { handleSendProposalToClient } from './server/send-proposal-client-service.mjs'
 import { handleAdminPortalClient } from './server/admin-portal-client-service.mjs'
 import { handlePortalInterestTicketReply } from './server/portal-interest-ticket-reply-service.mjs'
+import { handleTransferBookingNotify } from './server/transfer-booking-notify-service.mjs'
+import {
+  handleTransferBookingNoDriverSweep,
+  handleTransferRejectNoDriver
+} from './server/transfer-booking-no-driver-service.mjs'
+import { handleTransferBalanceReminderSweep, handleTransferPaymentAdmin } from './server/transfer-payment-service.mjs'
+import { handleTransferStripeCheckout } from './server/transfer-checkout-service.mjs'
+import { handlePortalInvoiceSend } from './server/portal-invoice-send-service.mjs'
+import { handleStripeWebhook } from './server/stripe-webhook-service.mjs'
+import { readIncomingMessageBodyBuffer } from './server/vercel-read-body.mjs'
+import { handlePortalLinkIssue, handlePortalLinkVerify } from './server/portal-link-context-service.mjs'
 
 const readRequestBody = (request: NodeJS.ReadableStream) =>
   new Promise<string>((resolve, reject) => {
@@ -391,6 +402,300 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
         response.end(JSON.stringify({ message }))
       }
     })
+
+    server.middlewares.use('/api/transfer-notify', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const rawBody = await readRequestBody(request)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const authHeader = typeof request.headers.authorization === 'string' ? request.headers.authorization : ''
+        const result = await handleTransferBookingNotify({ ...process.env, ...serverEnv }, { authHeader, payload })
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Request failed.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/transfer-reject-no-driver', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const rawBody = await readRequestBody(request)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const authHeader = typeof request.headers.authorization === 'string' ? request.headers.authorization : ''
+        const result = await handleTransferRejectNoDriver(payload, { ...process.env, ...serverEnv }, { authHeader })
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Request failed.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/portal-link-verify', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const rawBody = await readRequestBody(request)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const result = await handlePortalLinkVerify(payload, { ...process.env, ...serverEnv })
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Request failed.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/portal-link-issue', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const rawBody = await readRequestBody(request)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const authHeader = typeof request.headers.authorization === 'string' ? request.headers.authorization : ''
+        const result = await handlePortalLinkIssue(payload, { ...process.env, ...serverEnv }, { authHeader })
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Request failed.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/transfer-booking-sweep', async (request, response) => {
+      if (request.method !== 'GET' && request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const authHeader = typeof request.headers.authorization === 'string' ? request.headers.authorization : ''
+        const result = await handleTransferBookingNoDriverSweep({ ...process.env, ...serverEnv }, { authHeader })
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Request failed.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/transfer-balance-reminder-sweep', async (request, response) => {
+      if (request.method !== 'GET' && request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const authHeader = typeof request.headers.authorization === 'string' ? request.headers.authorization : ''
+        const result = await handleTransferBalanceReminderSweep({ ...process.env, ...serverEnv }, { authHeader })
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Request failed.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/transfer-payment-admin', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const rawBody = await readRequestBody(request)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const authHeader = typeof request.headers.authorization === 'string' ? request.headers.authorization : ''
+        const result = await handleTransferPaymentAdmin(payload, { ...process.env, ...serverEnv }, { authHeader })
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Request failed.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/transfer-checkout', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const rawBody = await readRequestBody(request)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const authHeader = typeof request.headers.authorization === 'string' ? request.headers.authorization : ''
+        const result = await handleTransferStripeCheckout(payload, { ...process.env, ...serverEnv }, { authHeader })
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Request failed.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/stripe-webhook', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const rawBuffer = await readIncomingMessageBodyBuffer(request)
+        const sig = request.headers['stripe-signature']
+        const result = await handleStripeWebhook(rawBuffer, sig, { ...process.env, ...serverEnv })
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Request failed.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/portal-invoice-send', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const rawBody = await readRequestBody(request)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const authHeader = typeof request.headers.authorization === 'string' ? request.headers.authorization : ''
+        const result = await handlePortalInvoiceSend(payload, { ...process.env, ...serverEnv }, { authHeader })
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Request failed.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
   }
 })
 
@@ -398,6 +703,24 @@ export default defineConfig(({ mode }) => {
   const serverEnv = loadEnv(mode, process.cwd(), '')
 
   return {
-    plugins: [react(), devEnquiryApiPlugin(serverEnv)]
+    plugins: [react(), devEnquiryApiPlugin(serverEnv)],
+    /**
+     * Rolldown emits PLUGIN_TIMINGS when the Rust build exceeds ~3s and plugin hooks dominate vs link.
+     * Informative only — suppress to keep CI logs readable (see https://rolldown.rs/options/checks).
+     */
+    build: {
+      rolldownOptions: {
+        checks: {
+          pluginTimings: false
+        }
+      }
+    },
+    optimizeDeps: {
+      rolldownOptions: {
+        checks: {
+          pluginTimings: false
+        }
+      }
+    }
   }
 })

@@ -3,6 +3,7 @@ import { Resend } from 'resend'
 import { buildBrandedPortalMagicLinkEmailHtml } from './branded-client-portal-email.mjs'
 import { finalizeGsolEmailHtml } from './email-layout.mjs'
 import { getTransactionalEmailImageAttachments } from './enquiry-service.mjs'
+import { isAuthEmailBlocked } from './email-address-registry.mjs'
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
@@ -127,6 +128,14 @@ export const handleMagicLinkRequest = async (payload, env = process.env, meta = 
   const admin = createClient(supabaseUrl, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false }
   })
+
+  if (await isAuthEmailBlocked(admin, email)) {
+    const error = new Error(
+      'This email address cannot receive sign-in links. Contact Golf Sol Ireland if you think this is a mistake.'
+    )
+    error.statusCode = 403
+    throw error
+  }
 
   const { data, error: genError } = await admin.auth.admin.generateLink({
     type: 'magiclink',

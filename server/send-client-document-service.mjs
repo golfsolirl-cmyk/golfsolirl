@@ -120,7 +120,7 @@ export const handleSendClientDocument = async (rawBody, env, { authHeader }) => 
 
   const origin = getSiteOrigin(env)
   const docPath = documentKind === 'welcome' ? '/documents/welcome' : '/documents/terms'
-  const loginUrl = `${origin}/login?next=${encodeURIComponent(docPath)}`
+  const loginUrl = `${origin}/dashboard/login?next=${encodeURIComponent(docPath)}`
   const documentUrl = `${origin}${docPath}`
 
   const labels = documentLabels[documentKind]

@@ -1,5 +1,15 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [
+    {
+      "path": "/api/transfer-booking-sweep",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/transfer-balance-reminder-sweep",
+      "schedule": "*/2 * * * *"
+    }
+  ],
   "rewrites": [
     { "source": "/api/enquiry", "destination": "/api/gateway?r=enquiry" },
     { "source": "/api/terms-email", "destination": "/api/gateway?r=terms-email" },
@@ -15,6 +25,17 @@
     { "source": "/api/send-workspace-proposal", "destination": "/api/gateway?r=send-workspace-proposal" },
     { "source": "/api/admin-portal-client", "destination": "/api/gateway?r=admin-portal-client" },
     { "source": "/api/portal-interest-ticket-reply", "destination": "/api/gateway?r=portal-interest-ticket-reply" },
+    { "source": "/api/portal-link-verify", "destination": "/api/gateway?r=portal-link-verify" },
+    { "source": "/api/portal-link-issue", "destination": "/api/gateway?r=portal-link-issue" },
+    { "source": "/api/transfer-notify", "destination": "/api/gateway?r=transfer-notify" },
+    { "source": "/api/transfer-reject-no-driver", "destination": "/api/gateway?r=transfer-reject-no-driver" },
+    { "source": "/api/transfer-booking-sweep", "destination": "/api/gateway?r=transfer-booking-sweep" },
+    { "source": "/api/transfer-balance-reminder-sweep", "destination": "/api/gateway?r=transfer-balance-reminder-sweep" },
+    { "source": "/api/transfer-payment-admin", "destination": "/api/gateway?r=transfer-payment-admin" },
+    { "source": "/api/transfer-checkout", "destination": "/api/gateway?r=transfer-checkout" },
+    { "source": "/api/trip-review-submit", "destination": "/api/gateway?r=trip-review-submit" },
+    { "source": "/api/portal-invoice-send", "destination": "/api/gateway?r=portal-invoice-send" },
+    { "source": "/api/stripe-webhook", "destination": "/api/gateway?r=stripe-webhook" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

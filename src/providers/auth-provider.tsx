@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import type { Session, User } from '@supabase/supabase-js'
 import { clearSupabaseBrowserAuthStorage, getSupabaseBrowserClient } from '../lib/supabase-client'
 
-export type ProfileRole = 'client' | 'admin'
+export type ProfileRole = 'client' | 'admin' | 'driver'
 
 export interface Profile {
   id: string
@@ -90,12 +90,15 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       }
 
       const row = data as Record<string, unknown>
+      const rawRole = row.role
+      const role: Profile['role'] =
+        rawRole === 'admin' || rawRole === 'client' || rawRole === 'driver' ? rawRole : 'client'
       return {
         id: String(row.id),
         email: (row.email as string | null) ?? null,
         full_name: (row.full_name as string | null) ?? null,
         phone: (row.phone as string | null | undefined) ?? null,
-        role: row.role as Profile['role'],
+        role,
         account_reference_id: (row.account_reference_id as string | null | undefined) ?? null,
         portal_proposals_enabled: Boolean(row.portal_proposals_enabled),
         portal_pdf_library_enabled:

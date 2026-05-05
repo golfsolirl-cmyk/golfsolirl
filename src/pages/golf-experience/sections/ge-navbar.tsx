@@ -9,14 +9,24 @@ import { GeDualPhoneNavMobileButtons } from '../components/ge-dual-phone-contact
 import { GeMobileGlintIconButton } from '../components/ge-mobile-glint-icon'
 import { GeTopBar } from './top-bar'
 
+/** Logged-in client/admin area: extra nav actions alongside primary marketing links. */
+export interface GeNavbarPortalSlot {
+  readonly variant: 'client' | 'admin' | 'driver'
+  /** When true (e.g. profile is admin while on client dashboard), show link to admin dashboard. */
+  readonly showAdminDashboardLink: boolean
+  readonly onSignOut: () => void | Promise<void>
+}
+
 interface GeNavbarProps {
   /** Render mode: 'auto' = sticky-white always (current). The legacy overlay
    *  was retired so the navbar's crest sits flush above the brand-composed
    *  hero image's gold ribbon and reads as one unified piece. */
   readonly mode?: 'auto'
+  /** Dashboard / driver portal: append account actions; keep primary site nav + Get Quote. */
+  readonly portalSlot?: GeNavbarPortalSlot
 }
 
-export function GeNavbar({ mode: _mode = 'auto' }: GeNavbarProps = {}) {
+export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {}) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null)
 
@@ -80,6 +90,7 @@ export function GeNavbar({ mode: _mode = 'auto' }: GeNavbarProps = {}) {
             {primaryNav.map((link) => (
               <DesktopNavItem key={link.label} link={link} colorClass={linkColor} />
             ))}
+            {portalSlot ? <PortalNavActions portalSlot={portalSlot} layout="desktop" /> : null}
             <GeButton href="/contact" size="sm" variant={isOverlay ? 'outline-gs-white' : 'gs-gold'}>
               Get Quote
             </GeButton>
@@ -183,6 +194,12 @@ export function GeNavbar({ mode: _mode = 'auto' }: GeNavbarProps = {}) {
                   </li>
                 ))}
               </ul>
+              {portalSlot ? (
+                <div className="mt-4 border-t border-ge-gray100 pt-4">
+                  <p className="mb-2 text-[0.65rem] font-extrabold uppercase tracking-[0.2em] text-ge-gray500">Your account</p>
+                  <PortalNavActions portalSlot={portalSlot} layout="mobile" />
+                </div>
+              ) : null}
               <div className="mt-4">
                 <GeButton href="/contact" size="md" variant="gs-gold" className="w-full">
                   Get a Quote
@@ -193,6 +210,63 @@ export function GeNavbar({ mode: _mode = 'auto' }: GeNavbarProps = {}) {
         ) : null}
       </AnimatePresence>
     </header>
+  )
+}
+
+function PortalNavActions({
+  portalSlot,
+  layout
+}: {
+  readonly portalSlot: GeNavbarPortalSlot
+  readonly layout: 'desktop' | 'mobile'
+}) {
+  const { variant, showAdminDashboardLink, onSignOut } = portalSlot
+  const wrap =
+    layout === 'desktop'
+      ? 'flex flex-wrap items-center gap-2 xl:gap-3'
+      : 'flex flex-col gap-2'
+
+  const btnSm =
+    layout === 'desktop'
+      ? '!min-h-0 !border-2 !border-gs-green/35 !bg-gs-green/8 !px-4 !py-2 !text-[0.68rem] !normal-case !tracking-[0.06em] !text-gs-green hover:!bg-gs-green/14'
+      : '!min-h-0 !w-full !justify-center !border-2 !border-gs-green/35 !bg-gs-green/8 !py-2.5 !text-[0.78rem] !normal-case !tracking-[0.06em] !text-gs-green hover:!bg-gs-green/14'
+
+  const btnOutline =
+    layout === 'desktop'
+      ? '!min-h-0 !px-4 !py-2 !text-[0.68rem] !normal-case !tracking-[0.06em]'
+      : '!min-h-0 !w-full !justify-center !py-2.5 !text-[0.78rem] !normal-case !tracking-[0.06em]'
+
+  const btnGold =
+    layout === 'desktop'
+      ? '!min-h-0 !px-4 !py-2 !text-[0.68rem]'
+      : '!min-h-0 !w-full !justify-center !py-2.5 !text-[0.78rem]'
+
+  return (
+    <div className={wrap}>
+      {variant === 'driver' ? (
+        <GeButton className={btnSm} href="/driver" size="sm" variant="outline-gs-green">
+          Driver home
+        </GeButton>
+      ) : null}
+      {variant === 'client' && showAdminDashboardLink ? (
+        <GeButton className={btnSm} href="/dashboard/admin" size="sm" variant="outline-gs-green">
+          Admin dashboard
+        </GeButton>
+      ) : null}
+      {variant === 'admin' ? (
+        <GeButton className={btnSm} href="/dashboard" size="sm" variant="outline-gs-green">
+          Client dashboard
+        </GeButton>
+      ) : null}
+      {variant !== 'driver' ? (
+        <GeButton className={btnOutline} href="/" size="sm" variant="outline-ink">
+          Home
+        </GeButton>
+      ) : null}
+      <GeButton className={btnGold} size="sm" variant="gs-gold" type="button" onClick={() => void onSignOut()}>
+        Sign out
+      </GeButton>
+    </div>
   )
 }
 

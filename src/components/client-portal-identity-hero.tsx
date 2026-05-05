@@ -1,0 +1,213 @@
+import { useState } from 'react'
+import { Copy, Check, FileText, CreditCard } from 'lucide-react'
+
+const formatEurInline = (n: number) =>
+  new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n)
+
+export type ClientPortalTransferHeroRow = {
+  readonly id: string
+  readonly pickup_label: string
+  readonly dropoff_label: string
+  readonly status: string
+  readonly scheduled_at: string | null
+  readonly admin_price_eur?: number | null
+  readonly admin_price_vat_treatment?: string | null
+  readonly deposit_percent?: number | null
+  readonly payment_status?: string | null
+  readonly booking_source?: string | null
+  readonly package_build_id?: string | null
+}
+
+/** Matches server transfer checkout: full quoted EUR, or balance after deposit %. */
+export function transferPayableAmountEur(t: ClientPortalTransferHeroRow): number | null {
+  const gross = t.admin_price_eur
+  if (typeof gross !== 'number' || !Number.isFinite(gross)) {
+    return null
+  }
+  const pay = (t.payment_status ?? 'unpaid').toLowerCase()
+  if (pay === 'paid') {
+    return null
+  }
+  if (pay === 'deposit') {
+    const pctRaw = t.deposit_percent
+    const pct =
+      typeof pctRaw === 'number' && Number.isFinite(pctRaw)
+        ? Math.min(99, Math.max(1, Math.round(pctRaw)))
+        : 20
+    return Math.round(gross * (100 - pct)) / 100
+  }
+  return gross
+}
+
+export function ClientPortalIdentityHero(props: {
+  readonly firstName: string
+  readonly fullName: string
+  readonly accountNumber: string | null
+  readonly accountEmail: string | null
+  readonly transfers: readonly ClientPortalTransferHeroRow[]
+  readonly onDownloadTransferReceipt?: (transfer: ClientPortalTransferHeroRow) => void | Promise<void>
+  readonly onPayTransfer?: (transfer: ClientPortalTransferHeroRow) => void | Promise<void>
+}) {
+  const [copied, setCopied] = useState(false)
+  const [receiptBusyId, setReceiptBusyId] = useState<string | null>(null)
+  const [payBusyId, setPayBusyId] = useState<string | null>(null)
+  const ref = props.accountNumber?.trim() ?? ''
+  const displayName = props.fullName.trim() || props.firstName || 'there'
+  const emailDisplay = (props.accountEmail ?? '').trim()
+
+  const copyRef = async () => {
+    if (!ref) {
+      return
+    }
+    try {
+      await navigator.clipboard.writeText(ref)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 2200)
+    } catch {
+      /* ignore */
+    }
+  }
+
+  return (
+    <div className="mb-10 overflow-hidden rounded-[2rem] border-2 border-gs-gold/45 bg-gradient-to-br from-[#0f3d24] via-[#143d28] to-[#0a2416] p-6 text-white shadow-[0_24px_60px_rgba(11,73,52,0.35)] ring-1 ring-white/10 sm:p-8">
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <div className="min-w-0 flex-1 space-y-5">
+          <div>
+            <p className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.28em] text-emerald-200/90">Your account</p>
+            <h2 className="font-display mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              Hello, {props.firstName.trim() || 'there'}
+            </h2>
+            <p className="mt-2 font-ge text-sm leading-relaxed text-emerald-50/90">
+              Signed in as <span className="font-semibold text-white">{displayName}</span>
+            </p>
+          </div>
+
+          {emailDisplay || ref ? (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {emailDisplay ? (
+                <div className="rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-3.5 backdrop-blur-sm">
+                  <p className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.22em] text-emerald-200/85">Account email</p>
+                  <p className="mt-1.5 break-all font-ge text-sm font-semibold leading-snug text-white">{emailDisplay}</p>
+                </div>
+              ) : null}
+              {ref ? (
+                <div className="rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-3.5 backdrop-blur-sm">
+                  <p className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.22em] text-emerald-200/85">
+                    Account number
+                  </p>
+                  <p className="mt-1.5 font-mono text-lg font-bold tracking-wide text-amber-100 sm:text-xl">{ref}</p>
+                  <button
+                    className="mt-3 inline-flex items-center gap-2 rounded-xl border border-amber-300/50 bg-amber-400/15 px-3 py-2 font-ge text-[0.62rem] font-bold uppercase tracking-[0.14em] text-amber-100 transition hover:bg-amber-400/25"
+                    onClick={() => void copyRef()}
+                    type="button"
+                  >
+                    {copied ? <Check className="h-3.5 w-3.5" aria-hidden /> : <Copy className="h-3.5 w-3.5" aria-hidden />}
+                    {copied ? 'Copied' : 'Copy'}
+                  </button>
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-white/12 bg-black/15 px-4 py-3.5">
+                  <p className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.22em] text-emerald-200/85">
+                    Account number
+                  </p>
+                  <p className="mt-1.5 font-ge text-xs leading-relaxed text-emerald-100/85">
+                    Your personal account number appears after you submit a website form with this login email — same ref as on your
+                    enquiry PDFs.
+                  </p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <p className="max-w-xl font-ge text-sm leading-relaxed text-emerald-100/85">
+              Your personal <strong className="font-semibold text-white">account email</strong> and{' '}
+              <strong className="font-semibold text-white">account number</strong> show here once your profile is linked.
+            </p>
+          )}
+        </div>
+
+        {props.transfers.length > 0 ? (
+          <div className="w-full shrink-0 rounded-2xl border border-white/12 bg-black/20 p-5 lg:max-w-md">
+            <p className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.2em] text-emerald-200/85">Your transfers</p>
+            <p className="mt-1 font-ge text-xs text-emerald-100/75">Live status from our operations desk.</p>
+            <ul className="mt-4 space-y-3">
+              {props.transfers.slice(0, 5).map((t) => {
+                const pay = (t.payment_status ?? 'unpaid').toLowerCase()
+                const payLabel =
+                  pay === 'paid' ? 'Paid' : pay === 'deposit' ? 'Deposit' : 'Unpaid'
+                const when = t.scheduled_at
+                  ? new Date(t.scheduled_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
+                  : 'Timing TBC'
+                const src =
+                  t.booking_source === 'website_enquiry'
+                    ? 'Website'
+                    : t.booking_source === 'client_dashboard' && t.package_build_id
+                      ? 'Trip planner'
+                      : 'Dashboard'
+                const payable = transferPayableAmountEur(t)
+                const showPay =
+                  payable !== null && payable >= 0.5 && typeof props.onPayTransfer === 'function' && pay !== 'paid'
+                const payCta =
+                  pay === 'deposit'
+                    ? `Pay balance ${formatEurInline(payable!)}`
+                    : `Pay now ${formatEurInline(payable!)}`
+                return (
+                  <li className="rounded-xl border border-white/10 bg-white/[0.06] px-3 py-2.5" key={t.id}>
+                    <p className="font-ge text-sm font-semibold leading-snug text-white">
+                      {t.pickup_label} → {t.dropoff_label}
+                    </p>
+                    <p className="mt-1 font-ge text-[0.7rem] text-emerald-100/80">
+                      {src} · {t.status.replace(/_/g, ' ')} · {when}
+                    </p>
+                    <p className="mt-1 flex flex-wrap items-center gap-2 font-ge text-[0.68rem] text-emerald-50/90">
+                      <span className="rounded-full bg-white/10 px-2 py-0.5 font-bold uppercase tracking-wide text-amber-100/95">
+                        {payLabel}
+                      </span>
+                      {typeof t.admin_price_eur === 'number' && Number.isFinite(t.admin_price_eur) ? (
+                        <span className="font-semibold text-amber-100">{formatEurInline(t.admin_price_eur)}</span>
+                      ) : null}
+                      {showPay ? (
+                        <button
+                          className="inline-flex items-center gap-1 rounded-lg border border-emerald-300/50 bg-emerald-500/25 px-2 py-1 font-ge text-[0.62rem] font-bold uppercase tracking-[0.1em] text-emerald-50 transition hover:bg-emerald-500/40 disabled:opacity-50"
+                          disabled={payBusyId === t.id}
+                          onClick={() => {
+                            setPayBusyId(t.id)
+                            void Promise.resolve(props.onPayTransfer?.(t)).finally(() => setPayBusyId(null))
+                          }}
+                          type="button"
+                        >
+                          <CreditCard className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                          {payBusyId === t.id ? 'Redirecting…' : payCta}
+                        </button>
+                      ) : null}
+                      {typeof t.admin_price_eur === 'number' &&
+                      Number.isFinite(t.admin_price_eur) &&
+                      props.onDownloadTransferReceipt ? (
+                        <button
+                          className="inline-flex items-center gap-1 rounded-lg border border-amber-300/40 bg-amber-400/10 px-2 py-1 font-ge text-[0.62rem] font-bold uppercase tracking-[0.12em] text-amber-100 transition hover:bg-amber-400/20 disabled:opacity-50"
+                          disabled={receiptBusyId === t.id}
+                          onClick={() => {
+                            setReceiptBusyId(t.id)
+                            void Promise.resolve(props.onDownloadTransferReceipt?.(t)).finally(() =>
+                              setReceiptBusyId(null)
+                            )
+                          }}
+                          type="button"
+                        >
+                          <FileText className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                          {receiptBusyId === t.id ? 'PDF…' : 'Receipt PDF'}
+                        </button>
+                      ) : null}
+                    </p>
+                  </li>
+                )
+              })}
+            </ul>
+            {props.transfers.length > 5 ? (
+              <p className="mt-3 font-ge text-[0.65rem] text-emerald-200/80">+{props.transfers.length - 5} more in your full list below.</p>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+    </div>
+  )
+}

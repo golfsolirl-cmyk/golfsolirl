@@ -1,0 +1,131 @@
+import { buildGsolTransactionalEmail, finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
+
+const esc = (s) =>
+  String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/"/g, '&quot;')
+
+/**
+ * @param {Record<string, unknown>} booking
+ * @param {number} depositPercent
+ */
+export const buildTransferDepositThankYouEmail = (booking, depositPercent) => {
+  const site = getGsolSiteUrl()
+  const route = `${esc(booking.pickup_label)} → ${esc(booking.dropoff_label)}`
+  const subject = `Golf Sol Ireland — thank you for your ${depositPercent}% deposit`
+  const heroTitle = 'Deposit received — thank you'
+  const heroLead = `We have recorded your ${depositPercent}% deposit for your Costa transfer. Your route: ${route}. We will hold your date and keep everything moving smoothly.`
+  const bodyHtml = `<p style="margin:0 0 14px 0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">If anything changes on your side, just reply to this email or WhatsApp us — we are happy to adjust timings where we can.</p>
+    <p style="margin:0 0 14px 0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">You will receive a short <strong>friendly reminder</strong> about the outstanding balance when it is due — no surprises, just a gentle nudge.</p>
+    <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">Questions? Call <a href="tel:+353874464766" style="color:#0f5224;font-weight:600;">+353 87 446 4766</a> or open your <a href="${site}/dashboard" style="color:#0f5224;font-weight:600;">client dashboard</a>.</p>`
+
+  const htmlRaw = buildGsolTransactionalEmail({
+    documentTitle: subject,
+    preheader: heroLead.slice(0, 120),
+    heroKicker: 'Golf Sol Ireland',
+    heroTitle,
+    heroLead,
+    heroMetaHtml: `<div style="font-size:12px;line-height:1.6;color:rgba(255,255,255,0.82);">Costa del Sol transfers · Irish-owned</div>`,
+    bodyHtml
+  })
+  return { subject, html: finalizeGsolEmailHtml(htmlRaw) }
+}
+
+/**
+ * @param {Record<string, unknown>} booking
+ */
+export const buildTransferFullPaymentThankYouEmail = (booking) => {
+  const site = getGsolSiteUrl()
+  const route = `${esc(booking.pickup_label)} → ${esc(booking.dropoff_label)}`
+  const subject = 'Golf Sol Ireland — thank you, your transfer is fully paid'
+  const heroTitle = 'Payment received in full'
+  const heroLead = `Thank you — we have recorded full payment for your Costa transfer (${route}). That is one less thing for you to think about before you travel.`
+  const bodyHtml = `<p style="margin:0 0 14px 0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">We will confirm pick-up details closer to travel. If you need to tweak times or passenger numbers, message the team any time.</p>
+    <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">Warm regards from the Golf Sol Ireland desk · <a href="${site}/dashboard" style="color:#0f5224;font-weight:600;">Your dashboard</a></p>`
+
+  const htmlRaw = buildGsolTransactionalEmail({
+    documentTitle: subject,
+    preheader: heroLead.slice(0, 120),
+    heroKicker: 'Golf Sol Ireland',
+    heroTitle,
+    heroLead,
+    heroMetaHtml: `<div style="font-size:12px;line-height:1.6;color:rgba(255,255,255,0.82);">Costa del Sol · premium golf transport</div>`,
+    bodyHtml
+  })
+  return { subject, html: finalizeGsolEmailHtml(htmlRaw) }
+}
+
+/**
+ * @param {Record<string, unknown>} booking
+ * @param {number} depositPercent
+ */
+/**
+ * Admin-triggered: ask guest to pay for a specific transfer (preview link until checkout is wired).
+ * @param {Record<string, unknown>} booking
+ */
+export const buildTransferPaymentRequestEmail = (booking) => {
+  const site = getGsolSiteUrl()
+  const route = `${esc(booking.pickup_label)} → ${esc(booking.dropoff_label)}`
+  const idShort = String(booking.id ?? '').slice(0, 8)
+  const rawPrice = booking.admin_price_eur
+  const hasPrice = typeof rawPrice === 'number' && Number.isFinite(rawPrice) && rawPrice >= 0
+  const priceTxt = hasPrice
+    ? new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(rawPrice)
+    : null
+  /** Placeholder: opens client dashboard; replace with Stripe when ready. */
+  const payHref = `${site}/dashboard?transfer_payment_preview=${encodeURIComponent(String(booking.id ?? ''))}`
+  const subject = `Golf Sol Ireland — payment for your transfer (${idShort}…)`
+  const heroTitle = 'Payment request · Costa transfer'
+  const heroLead = hasPrice
+    ? `Please arrange payment for your transfer (${route}). Quoted amount: ${priceTxt}. Use the button below to open your client area — we will connect live checkout here soon.`
+    : `Please arrange payment for your transfer (${route}). We quoted this run separately — use the button below to open your client area; reply to this email if you need bank details or a breakdown.`
+  const amountBlock = hasPrice
+    ? `<p style="margin:0 0 18px 0;font-family:'DM Sans',Arial,sans-serif;font-size:18px;line-height:1.5;color:#163a13;"><strong style="color:#0f5224;">${priceTxt}</strong> <span style="color:#6b7280;font-size:14px;">(quoted EUR)</span></p>`
+    : `<p style="margin:0 0 18px 0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">We will confirm the exact figure if needed — reply to this email or WhatsApp us.</p>`
+
+  const bodyHtml = `${amountBlock}
+    <p style="margin:0 0 18px 0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">This link opens your <strong>dashboard preview</strong> for this transfer. Online card checkout will appear here when activated — for now you can also pay by arrangement with our desk.</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 22px 0;border-collapse:collapse;">
+      <tr>
+        <td style="padding:0;">
+          <a href="${payHref}" style="display:inline-block;background:#dc5801;color:#ffffff;text-decoration:none;font-weight:700;padding:14px 28px;border-radius:999px;font-size:15px;font-family:'DM Sans',Arial,sans-serif;">Open payment preview</a>
+        </td>
+      </tr>
+    </table>
+    <p style="margin:0 0 12px 0;font-family:'DM Sans',Arial,sans-serif;font-size:12px;line-height:1.6;color:#6b7280;">Preview URL (placeholder): <a href="${payHref}" style="color:#2d6a4a;word-break:break-all;">${esc(payHref)}</a></p>
+    <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">Questions? <a href="tel:+353874464766" style="color:#0f5224;font-weight:600;">+353 87 446 4766</a> · <a href="${site}/dashboard" style="color:#0f5224;font-weight:600;">Client dashboard</a></p>`
+
+  const htmlRaw = buildGsolTransactionalEmail({
+    documentTitle: subject,
+    preheader: heroLead.slice(0, 118),
+    heroKicker: 'Golf Sol Ireland',
+    heroTitle,
+    heroLead,
+    heroMetaHtml: `<div style="font-size:12px;line-height:1.6;color:rgba(255,255,255,0.82);">Transfers desk · Irish-owned · Costa del Sol</div>`,
+    bodyHtml
+  })
+  return { subject, html: finalizeGsolEmailHtml(htmlRaw) }
+}
+
+export const buildTransferBalanceReminderEmail = (booking, depositPercent) => {
+  const site = getGsolSiteUrl()
+  const route = `${esc(booking.pickup_label)} → ${esc(booking.dropoff_label)}`
+  const remainder = Math.max(1, 100 - depositPercent)
+  const subject = 'Golf Sol Ireland — gentle reminder: transfer balance'
+  const heroTitle = 'Balance reminder'
+  const heroLead = `This is a quick, friendly reminder about the remaining balance for your Costa transfer (${route}). Your ${depositPercent}% deposit is safely on file — when you are ready, you can settle the remaining ${remainder}% with the team.`
+  const bodyHtml = `<p style="margin:0 0 14px 0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">No rush if you are still finalising flights — reply to this email or WhatsApp us and we will send payment options that suit you.</p>
+    <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">Thank you for travelling with Golf Sol Ireland · <a href="${site}/dashboard" style="color:#0f5224;font-weight:600;">Dashboard</a> · <a href="tel:+353874464766" style="color:#0f5224;font-weight:600;">+353 87 446 4766</a></p>`
+
+  const htmlRaw = buildGsolTransactionalEmail({
+    documentTitle: subject,
+    preheader: heroLead.slice(0, 118),
+    heroKicker: 'Golf Sol Ireland',
+    heroTitle,
+    heroLead,
+    heroMetaHtml: `<div style="font-size:12px;line-height:1.6;color:rgba(255,255,255,0.82);">Outstanding balance · we are here to help</div>`,
+    bodyHtml
+  })
+  return { subject, html: finalizeGsolEmailHtml(htmlRaw) }
+}

@@ -16,6 +16,12 @@ type BookingRow = {
 
 type CalendarGridCell = { kind: 'blank' } | { kind: 'day'; iso: string; n: number }
 
+type TransferMonthRow = {
+  scheduled_at: string
+  admin_price_eur: number | null
+  status: string | null
+}
+
 function pad2(n: number) {
   return String(n).padStart(2, '0')
 }
@@ -32,10 +38,32 @@ function weekdayLabels() {
   return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 }
 
+/** Align transfer counts with calendar cells (Costa ops day = Europe/Madrid civil date). */
+function serviceDayKeyMadrid(iso: string): string {
+  try {
+    return new Date(iso).toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' })
+  } catch {
+    return iso.slice(0, 10)
+  }
+}
+
+const formatEurCompact = (n: number) =>
+  new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n)
+
 /** Monday-based week index (0 = Mon) for first of month */
 function mondayOffset(y: number, m0: number) {
   const js = new Date(y, m0, 1).getDay()
   return (js + 6) % 7
+}
+
+/** Row with no customer / ref on file — used only to block the website diary. */
+function isWebsiteCapacityBlockRow(r: BookingRow): boolean {
+  return (
+    !r.customer_name?.trim() &&
+    !r.customer_email?.trim() &&
+    !r.customer_phone?.trim() &&
+    !r.reference_id?.trim()
+  )
 }
 
 export function AdminDriverCalendarPanel() {
@@ -45,6 +73,7 @@ export function AdminDriverCalendarPanel() {
     return { y: n.getFullYear(), m0: n.getMonth() }
   })
   const [rows, setRows] = useState<BookingRow[]>([])
+  const [transferMonthRows, setTransferMonthRows] = useState<TransferMonthRow[]>([])
   const [loadError, setLoadError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [selectedIso, setSelectedIso] = useState<string | null>(null)
@@ -84,13 +113,37 @@ export function AdminDriverCalendarPanel() {
     const from = isoFromYmd(cursor.y, cursor.m0, 1)
     const dim = daysInMonth(cursor.y, cursor.m0)
     const to = isoFromYmd(cursor.y, cursor.m0, dim)
-    const { data, error } = await supabase
-      .from('driver_calendar_bookings')
-      .select('id, service_day, customer_name, customer_email, customer_phone, reference_id, notes, created_at')
-      .gte('service_day', from)
-      .lte('service_day', to)
-      .order('service_day', { ascending: true })
-      .order('created_at', { ascending: true })
+    const nextMonthStart =
+      cursor.m0 === 11 ? isoFromYmd(cursor.y + 1, 0, 1) : isoFromYmd(cursor.y, cursor.m0 + 1, 1)
+    const rangeStartUtc = `${from}T00:00:00.000Z`
+    const rangeEndUtcExclusive = `${nextMonthStart}T00:00:00.000Z`
+
+    const [dayRes, tbRes] = await Promise.all([
+      supabase
+        .from('driver_calendar_bookings')
+        .select('id, service_day, customer_name, customer_email, customer_phone, reference_id, notes, created_at')
+        .gte('service_day', from)
+        .lte('service_day', to)
+        .order('service_day', { ascending: true })
+        .order('created_at', { ascending: true }),
+      supabase
+        .from('transfer_bookings')
+        .select('scheduled_at, admin_price_eur, status')
+        .not('scheduled_at', 'is', null)
+        .gte('scheduled_at', rangeStartUtc)
+        .lt('scheduled_at', rangeEndUtcExclusive)
+    ])
+
+    const { data, error } = dayRes
+
+    if (tbRes.error) {
+      if (!tbRes.error.message.includes('does not exist') && tbRes.error.code !== '42P01') {
+        /* non-fatal: diary still loads */
+      }
+      setTransferMonthRows([])
+    } else {
+      setTransferMonthRows((tbRes.data ?? []) as TransferMonthRow[])
+    }
 
     if (error) {
       if (error.message.includes('does not exist') || error.code === '42P01') {
@@ -179,6 +232,27 @@ export function AdminDriverCalendarPanel() {
     return m
   }, [rows])
 
+  const transferAggByDay = useMemo(() => {
+    const m = new Map<string, { count: number; sumEur: number }>()
+    for (const r of transferMonthRows) {
+      if (!r.scheduled_at) {
+        continue
+      }
+      if ((r.status ?? '').toLowerCase() === 'cancelled') {
+        continue
+      }
+      const k = serviceDayKeyMadrid(r.scheduled_at)
+      const cur = m.get(k) ?? { count: 0, sumEur: 0 }
+      cur.count += 1
+      const p = r.admin_price_eur
+      if (typeof p === 'number' && Number.isFinite(p)) {
+        cur.sumEur += p
+      }
+      m.set(k, cur)
+    }
+    return m
+  }, [transferMonthRows])
+
   const selectedBookings = selectedIso ? (byDay.get(selectedIso) ?? []) : []
 
   const gridCells = useMemo(() => {
@@ -215,6 +289,47 @@ export function AdminDriverCalendarPanel() {
       return { y: c.y, m0: c.m0 + 1 }
     })
     setSelectedIso(null)
+  }
+
+  const handleQuickBlockDay = async () => {
+    setFormMessage(null)
+    if (!session || !isAdmin) {
+      return
+    }
+    const day = (formDay || selectedIso || '').trim().slice(0, 10)
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) {
+      setFormMessage('Pick a date on the calendar or set the service day first.')
+      return
+    }
+    const existing = byDay.get(day) ?? []
+    if (existing.length > 0) {
+      setFormMessage(
+        'This date already has a calendar row, so transfers are already blocked on the website for that day. Add details below if you need a printable run sheet.'
+      )
+      return
+    }
+    const supabase = getSupabaseBrowserClient()
+    if (!supabase) {
+      setFormMessage('Supabase is not configured.')
+      return
+    }
+    setBusy(true)
+    const { error } = await supabase.from('driver_calendar_bookings').insert({
+      service_day: day,
+      customer_name: '',
+      customer_email: '',
+      customer_phone: '',
+      reference_id: null,
+      notes: 'Website diary: fully booked (no customer record — admin capacity block).'
+    })
+    setBusy(false)
+    if (error) {
+      setFormMessage(error.message)
+      return
+    }
+    setFormMessage('Saved — that day is blocked on public forms and appears in the “fully booked” notice before customers submit.')
+    setSelectedIso(day)
+    await load()
   }
 
   const handleAdd = async () => {
@@ -371,6 +486,12 @@ export function AdminDriverCalendarPanel() {
         </LuxuryButton>
       </div>
 
+      <p className="max-w-3xl text-xs text-forest-600 print:hidden">
+        <span className="font-semibold text-forest-800">Transfer pipeline</span> (below): day cells show scheduled runs with a pick-up
+        on that date in <span className="font-medium">Europe/Madrid</span> and the sum of saved <span className="font-medium">quoted EUR</span>{' '}
+        (excludes cancelled). Diary &quot;Booked&quot; rows are separate website capacity blocks.
+      </p>
+
       {loadError ? (
         <div className="rounded-2xl border border-amber-200 bg-amber-50/90 px-4 py-3 text-sm text-amber-950" role="alert">
           {loadError}
@@ -391,6 +512,7 @@ export function AdminDriverCalendarPanel() {
               return <div className="min-h-[3rem] rounded-xl bg-offwhite/40 print:min-h-0" key={`b-${idx}`} />
             }
             const has = (byDay.get(cell.iso)?.length ?? 0) > 0
+            const trAgg = transferAggByDay.get(cell.iso)
             const sel = selectedIso === cell.iso
             return (
               <button
@@ -411,6 +533,12 @@ export function AdminDriverCalendarPanel() {
               >
                 <span className="block font-semibold">{cell.n}</span>
                 {has ? <span className="mt-0.5 block text-[10px] font-medium uppercase tracking-wide text-gold-700">Booked</span> : null}
+                {trAgg && trAgg.count > 0 ? (
+                  <span className="mt-0.5 block text-[9px] font-semibold leading-tight text-fairway-900">
+                    {trAgg.count} run{trAgg.count === 1 ? '' : 's'}
+                    {trAgg.sumEur > 0 ? ` · ${formatEurCompact(trAgg.sumEur)}` : ''}
+                  </span>
+                ) : null}
               </button>
             )
           })}
@@ -442,7 +570,15 @@ export function AdminDriverCalendarPanel() {
           </div>
 
           {selectedBookings.length === 0 && selectedIso ? (
-            <p className="mt-2 text-sm text-forest-600">No rows yet — add a booking below to block this day on the website.</p>
+            <div className="mt-3 space-y-3 rounded-2xl border border-fairway-200 bg-fairway-50/50 px-4 py-3 print:hidden">
+              <p className="text-sm text-forest-700">
+                No diary row yet — the website still allows transfer enquiries on this date. Use a quick block if you are at capacity but
+                do not have a booking to attach, or add a full row with customer details for the printable day sheet.
+              </p>
+              <LuxuryButton disabled={busy} onClick={() => void handleQuickBlockDay()} type="button" variant="primary">
+                {busy ? 'Saving…' : 'Block transfers on website (no customer details)'}
+              </LuxuryButton>
+            </div>
           ) : null}
 
           <ul className="mt-3 space-y-3 print:block">
@@ -453,9 +589,19 @@ export function AdminDriverCalendarPanel() {
               >
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0 space-y-1">
-                    <p className="font-semibold text-forest-950">{b.customer_name || '—'}</p>
-                    <p className="break-all text-forest-800">{b.customer_email || '—'}</p>
-                    <p>{b.customer_phone || '—'}</p>
+                    {isWebsiteCapacityBlockRow(b) ? (
+                      <p className="font-semibold text-forest-950">
+                        Website capacity block <span className="font-normal text-forest-600">(no customer on file)</span>
+                      </p>
+                    ) : (
+                      <p className="font-semibold text-forest-950">{b.customer_name || '—'}</p>
+                    )}
+                    {!isWebsiteCapacityBlockRow(b) ? (
+                      <>
+                        <p className="break-all text-forest-800">{b.customer_email || '—'}</p>
+                        <p>{b.customer_phone || '—'}</p>
+                      </>
+                    ) : null}
                     {b.reference_id ? <p className="font-mono text-xs">Ref {b.reference_id}</p> : null}
                     {b.notes ? <p className="whitespace-pre-wrap text-forest-700">{b.notes}</p> : null}
                   </div>
@@ -476,7 +622,11 @@ export function AdminDriverCalendarPanel() {
       </div>
 
       <div className="rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft print:hidden">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">Add booking (blocks public forms for that day)</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">Add booking or block a day</p>
+        <p className="mt-2 max-w-2xl text-sm text-forest-600">
+          One row on a date is enough: public enquiry forms load that date as <strong className="font-medium text-forest-800">fully booked</strong> and show a notice before submit. Customer fields can stay empty for a capacity-only block — or use{' '}
+          <strong className="font-medium text-forest-800">Block transfers on website</strong> above after selecting a day.
+        </p>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <label className="block sm:col-span-1">
             <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">Service day</span>
@@ -498,16 +648,17 @@ export function AdminDriverCalendarPanel() {
             />
           </label>
           <label className="block sm:col-span-1">
-            <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">Customer name</span>
+            <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">Customer name (optional)</span>
             <input
               className="w-full rounded-xl border border-forest-200 px-3 py-2.5 text-sm text-forest-900"
               onChange={(e) => setFormName(e.target.value)}
+              placeholder="Leave blank for diary-only block"
               type="text"
               value={formName}
             />
           </label>
           <label className="block sm:col-span-1">
-            <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">Email</span>
+            <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">Email (optional)</span>
             <input
               className="w-full rounded-xl border border-forest-200 px-3 py-2.5 text-sm text-forest-900"
               onChange={(e) => setFormEmail(e.target.value)}
@@ -516,7 +667,7 @@ export function AdminDriverCalendarPanel() {
             />
           </label>
           <label className="block sm:col-span-2">
-            <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">Phone</span>
+            <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">Phone (optional)</span>
             <input
               className="w-full rounded-xl border border-forest-200 px-3 py-2.5 text-sm text-forest-900"
               onChange={(e) => setFormPhone(e.target.value)}
@@ -535,7 +686,15 @@ export function AdminDriverCalendarPanel() {
         </div>
         <div className="mt-4 flex flex-wrap gap-3">
           <LuxuryButton disabled={busy} onClick={() => void handleAdd()} type="button" variant="primary">
-            {busy ? 'Saving…' : 'Save booking'}
+            {busy ? 'Saving…' : 'Save row (blocks website even with empty customer fields)'}
+          </LuxuryButton>
+          <LuxuryButton
+            disabled={busy || !(formDay || selectedIso || '').trim()}
+            onClick={() => void handleQuickBlockDay()}
+            type="button"
+            variant="outline"
+          >
+            Quick block from date field only
           </LuxuryButton>
         </div>
         {formMessage ? (

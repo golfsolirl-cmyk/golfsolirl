@@ -113,6 +113,19 @@ export function PortalTransferPlanEditor({ value, onChange, disabled }: PortalTr
                     value={leg.notes}
                   />
                 </div>
+                <div className="md:col-span-2">
+                  <label className={labelClass} htmlFor={`portal-golf-pickup-${index}`}>
+                    Pick-up date &amp; time (optional)
+                  </label>
+                  <input
+                    className={inputClass}
+                    disabled={disabled}
+                    id={`portal-golf-pickup-${index}`}
+                    onChange={(e) => updateGolf(index, { pickupAtLocal: e.target.value })}
+                    type="datetime-local"
+                    value={leg.pickupAtLocal ?? ''}
+                  />
+                </div>
               </div>
               <div className="mt-3 flex justify-end">
                 <button
@@ -181,6 +194,19 @@ export function PortalTransferPlanEditor({ value, onChange, disabled }: PortalTr
                     placeholder="e.g. second villa in Estepona, luggage van"
                     type="text"
                     value={leg.notes}
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className={labelClass} htmlFor={`portal-hotel-pickup-${index}`}>
+                    Pick-up date &amp; time (optional)
+                  </label>
+                  <input
+                    className={inputClass}
+                    disabled={disabled}
+                    id={`portal-hotel-pickup-${index}`}
+                    onChange={(e) => updateHotel(index, { pickupAtLocal: e.target.value })}
+                    type="datetime-local"
+                    value={leg.pickupAtLocal ?? ''}
                   />
                 </div>
               </div>

@@ -21,8 +21,14 @@ export const transferStopDisplayLabel = (stop: PortalTransferStop): string => {
   return c ? `${c.name} — ${c.region}` : stop.ref
 }
 
+const stopSummaryLine = (stop: PortalTransferStop): string => {
+  const base = transferStopDisplayLabel(stop)
+  const t = stop.pickupAtLocal?.trim()
+  return t ? `${base} (${t.replace('T', ' ')})` : base
+}
+
 export const formatTransferRouteSummary = (stops: readonly PortalTransferStop[]): string =>
-  stops.map(transferStopDisplayLabel).join(' → ')
+  stops.map(stopSummaryLine).join(' → ')
 
 const kindOptionsForIndex = (index: number): { value: PortalTransferStopKind; label: string }[] => {
   if (index === 0) {
@@ -57,14 +63,19 @@ export function PortalTransferRouteBuilder({
 }: PortalTransferRouteBuilderProps) {
   const summary = formatTransferRouteSummary(stops)
 
+  const carryPickup = (cur: PortalTransferStop): Partial<Pick<PortalTransferStop, 'pickupAtLocal'>> => {
+    const v = cur.pickupAtLocal?.trim()
+    return v ? { pickupAtLocal: v } : {}
+  }
+
   const replaceStop = (index: number, stop: PortalTransferStop) => {
-    onStopsChange(stops.map((s, i) => (i === index ? stop : { ...s })))
+    onStopsChange(stops.map((s, i) => (i === index ? stop : s)))
   }
 
   const handleKindChange = (index: number, kind: PortalTransferStopKind) => {
     const cur = stops[index]
     if (kind === 'malaga_airport') {
-      replaceStop(index, { kind: 'malaga_airport', ref: MALAGA_AIRPORT_REF })
+      replaceStop(index, { kind: 'malaga_airport', ref: MALAGA_AIRPORT_REF, ...carryPickup(cur) })
       return
     }
     if (kind === 'hotel') {
@@ -72,12 +83,12 @@ export function PortalTransferRouteBuilder({
         cur.kind === 'hotel' && AIRPORT_CORRIDOR_HOTELS.some((h) => h.slug === cur.ref)
           ? cur.ref
           : (AIRPORT_CORRIDOR_HOTELS[0]?.slug ?? '')
-      replaceStop(index, { kind: 'hotel', ref })
+      replaceStop(index, { kind: 'hotel', ref, ...carryPickup(cur) })
       return
     }
     const ref =
       cur.kind === 'golf_course' && COURSES.some((c) => c.id === cur.ref) ? cur.ref : (COURSES[0]?.id ?? '')
-    replaceStop(index, { kind: 'golf_course', ref })
+    replaceStop(index, { kind: 'golf_course', ref, ...carryPickup(cur) })
   }
 
   const addStop = () => {
@@ -155,7 +166,7 @@ export function PortalTransferRouteBuilder({
                 <select
                   className={cx(inputClass, 'mt-1')}
                   id={`transfer-hotel-${index}`}
-                  onChange={(e) => replaceStop(index, { kind: 'hotel', ref: e.target.value })}
+                  onChange={(e) => replaceStop(index, { kind: 'hotel', ref: e.target.value, ...carryPickup(stop) })}
                   value={AIRPORT_CORRIDOR_HOTELS.some((h) => h.slug === stop.ref) ? stop.ref : AIRPORT_CORRIDOR_HOTELS[0]?.slug}
                 >
                   {AIRPORT_CORRIDOR_HOTELS.map((h) => (
@@ -175,7 +186,7 @@ export function PortalTransferRouteBuilder({
                 <select
                   className={cx(inputClass, 'mt-1')}
                   id={`transfer-course-${index}`}
-                  onChange={(e) => replaceStop(index, { kind: 'golf_course', ref: e.target.value })}
+                  onChange={(e) => replaceStop(index, { kind: 'golf_course', ref: e.target.value, ...carryPickup(stop) })}
                   value={COURSES.some((c) => c.id === stop.ref) ? stop.ref : COURSES[0]?.id}
                 >
                   {COURSES.map((c) => (
@@ -186,6 +197,19 @@ export function PortalTransferRouteBuilder({
                 </select>
               </div>
             ) : null}
+
+            <div className="mt-3">
+              <label className={labelClass} htmlFor={`transfer-pickup-${index}`}>
+                Pick-up date &amp; time (optional)
+              </label>
+              <input
+                className={cx(inputClass, 'mt-1')}
+                id={`transfer-pickup-${index}`}
+                onChange={(e) => replaceStop(index, { ...stop, pickupAtLocal: e.target.value })}
+                type="datetime-local"
+                value={stop.pickupAtLocal ?? ''}
+              />
+            </div>
           </div>
         ))}
       </div>

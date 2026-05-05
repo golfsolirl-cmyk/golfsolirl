@@ -61,11 +61,17 @@ const EnquiryPdfTemplatePage = lazy(() =>
 const ProposalPdfSamplePage = lazy(() =>
   import('./pages/proposal-pdf-sample-page').then((m) => ({ default: m.ProposalPdfSamplePage }))
 )
+const DriverDashboardPage = lazy(() =>
+  import('./pages/driver-dashboard-page').then((m) => ({ default: m.DriverDashboardPage }))
+)
+const RateTripPage = lazy(() => import('./pages/rate-trip-page').then((m) => ({ default: m.RateTripPage })))
 
 type PageComponent = LazyExoticComponent<ComponentType>
 
 function syncReadableTypePageClass(path: string) {
   const nonReadableTypePaths = new Set([
+    '/dashboard/login',
+    '/dashboard/admin/login',
     '/dashboard/quote',
     '/proposal-template',
     '/package-proposal',
@@ -113,7 +119,7 @@ function resolvePage(): PageComponent {
     return LogoPreviewPage
   }
 
-  if (normalizedPath === '/login') {
+  if (normalizedPath === '/login' || normalizedPath === '/dashboard/login' || normalizedPath === '/dashboard/admin/login') {
     return LoginPage
   }
 
@@ -135,6 +141,14 @@ function resolvePage(): PageComponent {
 
   if (normalizedPath === '/dashboard/admin') {
     return AdminDashboardPage
+  }
+
+  if (normalizedPath === '/driver') {
+    return DriverDashboardPage
+  }
+
+  if (normalizedPath === '/rate-trip') {
+    return RateTripPage
   }
 
   if (normalizedPath === '/documents/terms' || normalizedPath === '/documents/welcome') {

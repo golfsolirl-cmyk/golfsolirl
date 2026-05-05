@@ -108,7 +108,7 @@ export const handleSendProposalToClient = async (rawBody, env, { authHeader }) =
   }
 
   const origin = getSiteOrigin(env)
-  const dashboardLoginUrl = `${origin}/login?next=${encodeURIComponent('/dashboard')}`
+  const dashboardLoginUrl = `${origin}/dashboard/login?next=${encodeURIComponent('/dashboard')}`
   const rawHtml = buildBrandedProposalAttachedEmailHtml({
     greetingName: clientProfile.full_name ?? '',
     proposalId: proposal.proposalId,

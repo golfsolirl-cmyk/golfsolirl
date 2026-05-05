@@ -108,7 +108,7 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
                   Dashboard
                 </LuxuryButton>
               ) : (
-                <LuxuryButton className="!px-5 !py-2.5 !text-base" href="/login" variant="outline">
+                <LuxuryButton className="!px-5 !py-2.5 !text-base" href="/dashboard/login" variant="outline">
                   Sign in
                 </LuxuryButton>
               )
@@ -155,7 +155,7 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
                     Dashboard
                   </LuxuryButton>
                 ) : (
-                  <LuxuryButton className="w-full justify-center !py-3" href="/login" onClick={handleCloseMenu} variant="outline">
+                  <LuxuryButton className="w-full justify-center !py-3" href="/dashboard/login" onClick={handleCloseMenu} variant="outline">
                     Sign in
                   </LuxuryButton>
                 )

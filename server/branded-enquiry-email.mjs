@@ -69,7 +69,7 @@ export function buildBrandedEnquiryEmailHtml(payload, variant = 'customer') {
 
   const saveToAccountHref = isAdmin
     ? ''
-    : `${getGsolSiteUrl()}/login?next=${encodeURIComponent(`/dashboard?enquiry_ref=${payload.enquiryId}`)}`
+    : `${getGsolSiteUrl()}/dashboard/login?next=${encodeURIComponent(`/dashboard?enquiry_ref=${payload.enquiryId}`)}`
 
   return `<!doctype html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">

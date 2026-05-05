@@ -231,7 +231,7 @@ function CustomerPackagePage() {
   )
 
   const loginHrefForSave = useMemo(
-    () => `/login?next=${encodeURIComponent(`${window.location.pathname}${window.location.search}`)}`,
+    () => `/dashboard/login?next=${encodeURIComponent(`${window.location.pathname}${window.location.search}`)}`,
     []
   )
 

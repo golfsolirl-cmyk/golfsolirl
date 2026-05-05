@@ -17,7 +17,18 @@ import {
 import { handleSendProposalToClient } from '../server/send-proposal-client-service.mjs'
 import { handleAdminPortalClient } from '../server/admin-portal-client-service.mjs'
 import { handlePortalInterestTicketReply } from '../server/portal-interest-ticket-reply-service.mjs'
-import { readIncomingMessageBodyUtf8 } from '../server/vercel-read-body.mjs'
+import { handleTransferBookingNotify } from '../server/transfer-booking-notify-service.mjs'
+import {
+  handleTransferBookingNoDriverSweep,
+  handleTransferRejectNoDriver
+} from '../server/transfer-booking-no-driver-service.mjs'
+import { handleTransferBalanceReminderSweep, handleTransferPaymentAdmin } from '../server/transfer-payment-service.mjs'
+import { handleTripReviewSubmit } from '../server/trip-review-submit-service.mjs'
+import { handlePortalInvoiceSend } from '../server/portal-invoice-send-service.mjs'
+import { handlePortalLinkIssue, handlePortalLinkVerify } from '../server/portal-link-context-service.mjs'
+import { handleStripeWebhook } from '../server/stripe-webhook-service.mjs'
+import { handleTransferStripeCheckout } from '../server/transfer-checkout-service.mjs'
+import { readIncomingMessageBodyUtf8, readIncomingMessageBodyBuffer } from '../server/vercel-read-body.mjs'
 
 const readStreamBody = (req) =>
   new Promise((resolve, reject) => {
@@ -256,6 +267,142 @@ export default async function handler(req, res) {
         const payload = raw ? JSON.parse(raw) : {}
         const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
         const result = await handlePortalInterestTicketReply(payload, process.env, { authHeader })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'portal-link-verify': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const result = await handlePortalLinkVerify(payload, process.env)
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'portal-link-issue': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const result = await handlePortalLinkIssue(payload, process.env, { authHeader })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'transfer-notify': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const result = await handleTransferBookingNotify(process.env, { authHeader, payload })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'transfer-reject-no-driver': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const result = await handleTransferRejectNoDriver(payload, process.env, { authHeader })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'transfer-booking-sweep': {
+        if (req.method !== 'GET' && req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const result = await handleTransferBookingNoDriverSweep(process.env, { authHeader })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'transfer-balance-reminder-sweep': {
+        if (req.method !== 'GET' && req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const result = await handleTransferBalanceReminderSweep(process.env, { authHeader })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'transfer-payment-admin': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const result = await handleTransferPaymentAdmin(payload, process.env, { authHeader })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'transfer-checkout': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const result = await handleTransferStripeCheckout(payload, process.env, { authHeader })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'trip-review-submit': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const result = await handleTripReviewSubmit(process.env, { payload })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'portal-invoice-send': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const result = await handlePortalInvoiceSend(payload, process.env, { authHeader })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'stripe-webhook': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const rawBuffer = await readIncomingMessageBodyBuffer(req)
+        const sig = req.headers['stripe-signature']
+        const result = await handleStripeWebhook(rawBuffer, sig, process.env)
         jsonEnd(res, 200, result)
         return
       }

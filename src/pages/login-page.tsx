@@ -7,7 +7,7 @@ import { GeNavbar } from '../pages/golf-experience/sections/ge-navbar'
 import { BrandFleetHeroPanel } from '../components/brand-fleet-hero-panel'
 import { GeBrandLockup } from '../pages/golf-experience/components/brand-lockup'
 import { integrationRegistry } from '../config/integrations'
-import { AUTH_NEXT_STORAGE_KEY, isSafeInternalPath } from '../lib/internal-redirect'
+import { AUTH_NEXT_STORAGE_KEY, AUTH_PORTAL_CTX_LABEL_KEY, isSafeInternalPath } from '../lib/internal-redirect'
 import { useAuth } from '../providers/auth-provider'
 
 const LoginHeroBackdrop = () => (
@@ -27,6 +27,8 @@ const LoginHeroBackdrop = () => (
   </>
 )
 
+const normalizeLoginPath = () => (window.location.pathname.replace(/\/+$/, '') || '/') as string
+
 export function LoginPage() {
   const sentConfirmationRef = useRef<HTMLDivElement>(null)
   const { signInWithMagicLink, session, profile, isLoading, isSupabaseConfigured } = useAuth()
@@ -34,6 +36,7 @@ export function LoginPage() {
   const [formError, setFormError] = useState<string | null>(null)
   const [isSending, setIsSending] = useState(false)
   const [sent, setSent] = useState(false)
+  const [portalCtxBanner, setPortalCtxBanner] = useState<string | null>(null)
 
   const params = new URLSearchParams(window.location.search)
   const queryError = params.get('error')
@@ -42,12 +45,103 @@ export function LoginPage() {
   const safeReturnPath = nextRaw && isSafeInternalPath(nextRaw) ? nextRaw : null
 
   useEffect(() => {
+    const ctx = new URLSearchParams(window.location.search).get('ctx')?.trim()
+    if (!ctx) {
+      return
+    }
+
+    let cancelled = false
+
+    void (async () => {
+      try {
+        const res = await fetch('/api/portal-link-verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ctx })
+        })
+        const data = (await res.json().catch(() => ({}))) as {
+          ok?: boolean
+          accountReferenceId?: string
+          portal?: string
+          message?: string
+        }
+        if (cancelled || !data.ok) {
+          if (!cancelled && data.message) {
+            setPortalCtxBanner(data.message)
+          }
+          return
+        }
+
+        const next = data.portal === 'admin' ? '/dashboard/admin' : '/dashboard'
+        try {
+          sessionStorage.setItem(AUTH_NEXT_STORAGE_KEY, next)
+          sessionStorage.setItem(
+            AUTH_PORTAL_CTX_LABEL_KEY,
+            `Account ${data.accountReferenceId ?? ''} · ${data.portal === 'admin' ? 'Operator sign-in' : 'Client portal sign-in'}`
+          )
+        } catch {
+          /* private mode */
+        }
+
+        setPortalCtxBanner(
+          `Link verified for account ${data.accountReferenceId ?? ''}. After you sign in from the email we send, you will land on the ${data.portal === 'admin' ? 'admin' : 'client'} dashboard.`
+        )
+
+        const p = new URLSearchParams(window.location.search)
+        p.delete('ctx')
+        const q = p.toString()
+        window.history.replaceState(null, '', `${window.location.pathname}${q ? `?${q}` : ''}`)
+      } catch {
+        if (!cancelled) {
+          setPortalCtxBanner('Could not verify this link. You can still request a magic link below.')
+        }
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
     if (isLoading || !session) {
+      return
+    }
+
+    const path = normalizeLoginPath()
+    const sp = new URLSearchParams(window.location.search)
+    const explicitAs = sp.get('as')?.trim().toLowerCase()
+
+    if (explicitAs === 'client') {
+      window.location.replace('/dashboard')
+      return
+    }
+
+    if (explicitAs === 'admin') {
+      if (profile?.role === 'admin') {
+        window.location.replace('/dashboard/admin')
+      } else {
+        window.location.replace('/dashboard')
+      }
       return
     }
 
     if (safeReturnPath) {
       window.location.replace(safeReturnPath)
+      return
+    }
+
+    if (path === '/dashboard/login') {
+      window.location.replace('/dashboard')
+      return
+    }
+
+    if (path === '/dashboard/admin/login') {
+      if (profile?.role === 'admin') {
+        window.location.replace('/dashboard/admin')
+      } else {
+        window.location.replace('/dashboard')
+      }
       return
     }
 
@@ -238,6 +332,32 @@ export function LoginPage() {
           />
 
           <div className="px-6 py-9 md:px-10 md:py-11">
+            {portalCtxBanner ? (
+              <div className="mb-6 rounded-2xl border border-gs-green/40 bg-ge-gray50 px-4 py-3 font-ge text-sm leading-relaxed text-gs-dark">
+                {portalCtxBanner}
+              </div>
+            ) : null}
+
+            <p className="mb-6 font-ge text-xs leading-relaxed text-ge-gray600">
+              <span className="font-semibold text-gs-dark">Same email, two dashboards?</span> Use{' '}
+              <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.7rem] text-gs-dark ring-1 ring-ge-gray200">
+                /dashboard/login
+              </code>{' '}
+              for the client portal and{' '}
+              <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.7rem] text-gs-dark ring-1 ring-ge-gray200">
+                /dashboard/admin/login
+              </code>{' '}
+              for operations — or add{' '}
+              <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.7rem] text-gs-dark ring-1 ring-ge-gray200">
+                ?as=client
+              </code>{' '}
+              /{' '}
+              <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.7rem] text-gs-dark ring-1 ring-ge-gray200">
+                ?as=admin
+              </code>{' '}
+              on this page when already signed in.
+            </p>
+
             {queryError ? (
               <div className="mb-6 space-y-2 rounded-2xl border border-gs-gold/50 bg-[#fff9e8] px-4 py-3 font-ge text-base text-gs-dark">
                 <p className="font-bold text-gs-dark">

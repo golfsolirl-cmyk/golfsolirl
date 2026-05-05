@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { ensureEmailAccountAnchor } from './email-address-registry.mjs'
 
 /**
  * Fills empty profiles.full_name / profiles.phone from the latest enquiry with the same email.
@@ -42,7 +43,7 @@ export const handleSyncPortalProfile = async (env = process.env, meta = {}) => {
 
   const { data: profile, error: profErr } = await admin
     .from('profiles')
-    .select('id, full_name, phone, portal_contact_completed_at, portal_enquiry_autofill_disabled')
+    .select('id, full_name, phone, account_reference_id, portal_contact_completed_at, portal_enquiry_autofill_disabled')
     .eq('id', user.id)
     .maybeSingle()
 
@@ -58,18 +59,37 @@ export const handleSyncPortalProfile = async (env = process.env, meta = {}) => {
     throw err
   }
 
+  let updated = false
+
+  const existingRef = String(profile.account_reference_id ?? '').trim()
+  if (!existingRef) {
+    const anchorRef = await ensureEmailAccountAnchor(admin, email)
+    if (anchorRef) {
+      const { error: anchorErr } = await admin
+        .from('profiles')
+        .update({ account_reference_id: anchorRef, updated_at: new Date().toISOString() })
+        .eq('id', user.id)
+      if (anchorErr) {
+        const err = new Error(anchorErr.message)
+        err.statusCode = 500
+        throw err
+      }
+      updated = true
+    }
+  }
+
   if (profile.portal_contact_completed_at) {
-    return { ok: true, updated: false }
+    return { ok: true, updated }
   }
 
   if (profile.portal_enquiry_autofill_disabled) {
-    return { ok: true, updated: false }
+    return { ok: true, updated }
   }
 
   const needsName = !String(profile.full_name ?? '').trim()
   const needsPhone = !String(profile.phone ?? '').trim()
   if (!needsName && !needsPhone) {
-    return { ok: true, updated: false }
+    return { ok: true, updated }
   }
 
   const { data: enquiryRows, error: enqErr } = await admin
@@ -87,7 +107,7 @@ export const handleSyncPortalProfile = async (env = process.env, meta = {}) => {
 
   const enquiry = enquiryRows?.[0]
   if (!enquiry) {
-    return { ok: true, updated: false }
+    return { ok: true, updated }
   }
 
   /** @type {Record<string, string>} */
@@ -100,7 +120,7 @@ export const handleSyncPortalProfile = async (env = process.env, meta = {}) => {
   }
 
   if (Object.keys(patch).length === 0) {
-    return { ok: true, updated: false }
+    return { ok: true, updated }
   }
 
   patch.updated_at = new Date().toISOString()

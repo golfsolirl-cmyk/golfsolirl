@@ -39,7 +39,7 @@ export function PdfSiteShell({ children }: PdfSiteShellProps) {
             ))}
           </nav>
           <div className="flex flex-wrap gap-3">
-            <LuxuryButton className="!border-white/25 !bg-white/10 !text-white hover:!bg-white/15" href="/login" variant="outline">
+            <LuxuryButton className="!border-white/25 !bg-white/10 !text-white hover:!bg-white/15" href="/dashboard/login" variant="outline">
               Sign in
             </LuxuryButton>
             <LuxuryButton className="!px-5 !py-2.5 !text-xs" href="/packages" variant="outline">

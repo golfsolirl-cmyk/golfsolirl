@@ -155,3 +155,9 @@
     background: #ffffff !important;
   }
 }
+
+/* Leaflet: branded transfer map pins (avoid default white tile behind HTML marker) */
+.leaflet-div-icon.gsol-transfer-map-marker {
+  border: none !important;
+  background: transparent !important;
+}

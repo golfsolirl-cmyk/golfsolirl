@@ -51,7 +51,7 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
                   <ChevronRight className="h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
                   <a
                     className="text-[1.05rem] font-medium text-white transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
-                    href={session ? dashboardHref : '/login'}
+                    href={session ? dashboardHref : '/dashboard/login'}
                   >
                     {session ? 'My dashboard' : 'Sign in'}
                   </a>

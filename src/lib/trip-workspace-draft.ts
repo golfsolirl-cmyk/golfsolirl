@@ -11,6 +11,8 @@ export interface PortalTransferStop {
   readonly kind: PortalTransferStopKind
   /** `agp`, hotel slug from corridor list, or golf course id. */
   readonly ref: string
+  /** Optional `datetime-local` value (`yyyy-MM-ddTHH:mm`) for this stop / leg pick-up. */
+  readonly pickupAtLocal?: string
 }
 
 export interface TripWorkspaceDraft {
@@ -49,10 +51,19 @@ const isTransferStop = (x: unknown): x is PortalTransferStop => {
   )
 }
 
-/** Normalise and cap at 8 stops; ensure pickup is not a golf course. */
+const pickupLocalFromStop = (s: PortalTransferStop): string | undefined => {
+  const v = typeof s.pickupAtLocal === 'string' ? s.pickupAtLocal.trim() : ''
+  return v.length > 0 ? v : undefined
+}
+
+/** Normalise and cap at 8 stops; ensure pickup is not a golf course. Preserves optional `pickupAtLocal`. */
 export const normalizeTransferStops = (raw: readonly PortalTransferStop[] | undefined): PortalTransferStop[] => {
   const list = raw && raw.length > 0 ? [...raw] : [...defaultTransferStops()]
-  const capped = list.slice(0, 8).map((s) => ({ kind: s.kind, ref: s.ref.trim() }))
+  const capped = list.slice(0, 8).map((s) => {
+    const pt = pickupLocalFromStop(s)
+    const base: PortalTransferStop = { kind: s.kind, ref: s.ref.trim() }
+    return pt ? { ...base, pickupAtLocal: pt } : base
+  })
   if (capped[0]?.kind === 'golf_course') {
     capped[0] = { kind: 'malaga_airport', ref: MALAGA_AIRPORT_REF }
   }
@@ -80,6 +91,54 @@ export const emptyTripWorkspaceDraft = (referenceId: string): TripWorkspaceDraft
 })
 
 export const isLikelyEnquiryReferenceId = (value: string): boolean => /^GSI-[A-Z0-9-]+$/i.test(value.trim())
+
+/**
+ * Restores a trip workspace slice stored on `package_builds.config.portalTripWorkspace` (website_form v3).
+ * `referenceId` is the enquiry reference — persisted JSON may omit or disagree; caller should align.
+ */
+export const parsePersistedTripWorkspaceFromPackage = (raw: unknown, referenceId: string): TripWorkspaceDraft | null => {
+  if (raw === null || raw === undefined) {
+    return null
+  }
+  if (typeof raw !== 'object' || Array.isArray(raw)) {
+    return null
+  }
+
+  const o = raw as Record<string, unknown>
+  const stagesRaw = o.stages && typeof o.stages === 'object' && !Array.isArray(o.stages) ? (o.stages as Record<string, unknown>) : {}
+  const partySizeRaw = o.partySize
+  let partySize = 4
+  if (typeof partySizeRaw === 'number' && Number.isFinite(partySizeRaw)) {
+    partySize = Math.min(8, Math.max(1, Math.round(partySizeRaw)))
+  } else if (typeof partySizeRaw === 'string' && /^\d+$/.test(partySizeRaw.trim())) {
+    partySize = Math.min(8, Math.max(1, parseInt(partySizeRaw.trim(), 10)))
+  }
+
+  const courseIds = Array.isArray(o.courseIds) ? o.courseIds.filter((c): c is string => typeof c === 'string') : []
+  const hotelNotes = typeof o.hotelNotes === 'string' ? o.hotelNotes : ''
+  const rawStops = Array.isArray(o.transferStops) ? o.transferStops.filter(isTransferStop) : []
+  const transferStops = normalizeTransferStops(rawStops as readonly PortalTransferStop[])
+  const transferContactPhone =
+    typeof o.transferContactPhone === 'string' ? o.transferContactPhone : ''
+
+  const defStages = defaultStages()
+  const stages = {
+    transfer: typeof stagesRaw.transfer === 'boolean' ? stagesRaw.transfer : defStages.transfer,
+    golf: typeof stagesRaw.golf === 'boolean' ? stagesRaw.golf : defStages.golf,
+    hotel: typeof stagesRaw.hotel === 'boolean' ? stagesRaw.hotel : defStages.hotel
+  }
+
+  return ensureTripWorkspaceDraftShape({
+    referenceId: referenceId.trim(),
+    stages,
+    partySize,
+    courseIds,
+    hotelNotes,
+    updatedAt: typeof o.updatedAt === 'string' && o.updatedAt.trim() ? o.updatedAt.trim() : new Date().toISOString(),
+    transferStops,
+    transferContactPhone
+  })
+}
 
 export const parseTripWorkspaceDraft = (raw: string | null): TripWorkspaceDraft | null => {
   if (!raw) {
@@ -175,5 +234,5 @@ export const illustrativeTripPriceRangeEur = (draft: TripWorkspaceDraft): { low:
 export const buildClientLoginUrlForEnquiry = (origin: string, enquiryId: string): string => {
   const base = origin.replace(/\/+$/, '')
   const next = `/dashboard?enquiry_ref=${encodeURIComponent(enquiryId)}`
-  return `${base}/login?next=${encodeURIComponent(next)}`
+  return `${base}/dashboard/login?next=${encodeURIComponent(next)}`
 }

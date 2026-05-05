@@ -1,12 +1,83 @@
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { requireAdminFromBearer } from './auth-verify-admin.mjs'
+import { isAuthEmailBlocked } from './email-address-registry.mjs'
 import { createEnquiryReferenceId } from '../shared/document-templates.mjs'
 import { buildBrandedPortalMagicLinkEmailHtml } from './branded-client-portal-email.mjs'
 import { finalizeGsolEmailHtml } from './email-layout.mjs'
 import { getTransactionalEmailImageAttachments } from './enquiry-service.mjs'
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+
+const normalizeAccountRefInput = (raw) =>
+  typeof raw === 'string' ? raw.trim().replace(/\s+/g, '').toUpperCase() : ''
+
+/**
+ * Inbox rows use `profiles.id` from the recipient email when we send studio mail.
+ * Admins often paste the enquiry ref from a quote (GSI-…) which may not equal `account_reference_id`.
+ * Resolve: client email (best) → account_reference_id → package_builds.config.enquiryReferenceId.
+ *
+ * @param {import('@supabase/supabase-js').SupabaseClient} admin
+ * @param {{ accountReferenceId?: string; clientEmail?: string }} payload
+ */
+const resolveOwnerIdForPortalClear = async (admin, payload) => {
+  const emailRaw = typeof payload.clientEmail === 'string' ? payload.clientEmail.trim().toLowerCase() : ''
+  if (emailRaw && isValidEmail(emailRaw)) {
+    const { data, error } = await admin.from('profiles').select('id').ilike('email', emailRaw).maybeSingle()
+    if (error) {
+      throwStatus(error.message, 500)
+    }
+    if (data?.id) {
+      return data.id
+    }
+  }
+
+  const normalized = normalizeAccountRefInput(payload.accountReferenceId ?? '')
+  if (normalized.length >= 8) {
+    const { data: byRef, error: rErr } = await admin
+      .from('profiles')
+      .select('id')
+      .ilike('account_reference_id', normalized)
+      .maybeSingle()
+    if (rErr) {
+      throwStatus(rErr.message, 500)
+    }
+    if (byRef?.id) {
+      return byRef.id
+    }
+
+    const { data: fuzzy, error: fErr } = await admin
+      .from('profiles')
+      .select('id')
+      .ilike('account_reference_id', `%${normalized}%`)
+      .limit(5)
+    if (fErr) {
+      throwStatus(fErr.message, 500)
+    }
+    const fuzzIds = [...new Set((fuzzy ?? []).map((r) => r.id).filter(Boolean))]
+    if (fuzzIds.length === 1) {
+      return fuzzIds[0]
+    }
+
+    const { data: builds, error: bErr } = await admin
+      .from('package_builds')
+      .select('owner_id')
+      .ilike('config->>enquiryReferenceId', normalized)
+      .limit(40)
+    if (bErr) {
+      throwStatus(bErr.message, 500)
+    }
+    const ownerIds = [...new Set((builds ?? []).map((r) => r.owner_id).filter(Boolean))]
+    if (ownerIds.length === 1) {
+      return ownerIds[0]
+    }
+    if (ownerIds.length > 1) {
+      throwStatus('Multiple client accounts share that reference — enter the client login email and try again.', 409)
+    }
+  }
+
+  return null
+}
 
 const throwStatus = (message, statusCode) => {
   const err = new Error(message)
@@ -277,9 +348,80 @@ export const handleAdminPortalClient = async (payload = {}, env = process.env, m
     return { ok: true, cleared: true, profileId: ownerId }
   }
 
+  if (action === 'clear_portal_messages_by_account_ref') {
+    const emailRaw = typeof payload.clientEmail === 'string' ? payload.clientEmail.trim().toLowerCase() : ''
+    const normalized = normalizeAccountRefInput(payload.accountReferenceId ?? '')
+    if ((!emailRaw || !isValidEmail(emailRaw)) && normalized.length < 8) {
+      throwStatus('Enter the client login email and/or an account or enquiry reference (e.g. GSI-XXXX-1234).', 400)
+    }
+
+    const ownerId = await resolveOwnerIdForPortalClear(admin, payload)
+    if (!ownerId) {
+      throwStatus(
+        'No profile matched. Add the client’s **login email** (the address they sign in with) — that is how inbox rows are keyed when we send a quote.',
+        404
+      )
+    }
+
+    const { data: deletedRows, error: inboxErr } = await admin
+      .from('portal_client_updates')
+      .delete()
+      .eq('owner_id', ownerId)
+      .select('id')
+    if (inboxErr) {
+      throwStatus(inboxErr.message, 500)
+    }
+
+    return { ok: true, clearedPortalMessages: true, deletedCount: deletedRows?.length ?? 0 }
+  }
+
+  if (action === 'list_auth_email_blocks') {
+    const { data, error } = await admin
+      .from('auth_email_blocks')
+      .select('email, blocked_at, reason')
+      .order('blocked_at', { ascending: false })
+      .limit(200)
+    if (error) {
+      throwStatus(error.message, 500)
+    }
+    return { ok: true, blocks: data ?? [] }
+  }
+
+  if (action === 'block_auth_email') {
+    const emailRaw = typeof payload.email === 'string' ? payload.email.trim().toLowerCase() : ''
+    if (!emailRaw || !isValidEmail(emailRaw)) {
+      throwStatus('Valid email is required.', 400)
+    }
+    const reason = typeof payload.reason === 'string' ? payload.reason.trim().slice(0, 500) : ''
+    const { error } = await admin.from('auth_email_blocks').upsert(
+      {
+        email: emailRaw,
+        reason: reason || null,
+        blocked_at: new Date().toISOString()
+      },
+      { onConflict: 'email' }
+    )
+    if (error) {
+      throwStatus(error.message, 500)
+    }
+    return { ok: true, blocked: true }
+  }
+
+  if (action === 'unblock_auth_email') {
+    const emailRaw = typeof payload.email === 'string' ? payload.email.trim().toLowerCase() : ''
+    if (!emailRaw || !isValidEmail(emailRaw)) {
+      throwStatus('Valid email is required.', 400)
+    }
+    const { error } = await admin.from('auth_email_blocks').delete().eq('email', emailRaw)
+    if (error) {
+      throwStatus(error.message, 500)
+    }
+    return { ok: true, unblocked: true }
+  }
+
   if (action !== 'create') {
     throwStatus(
-      'Unknown action. Use "create", "delete", "reset_portal_onboarding", or "clear_dashboard_by_account_ref".',
+      'Unknown action. Use "create", "delete", "reset_portal_onboarding", "clear_dashboard_by_account_ref", "clear_portal_messages_by_account_ref", "list_auth_email_blocks", "block_auth_email", or "unblock_auth_email".',
       400
     )
   }
@@ -291,6 +433,10 @@ export const handleAdminPortalClient = async (payload = {}, env = process.env, m
   }
   if (!emailRaw || !isValidEmail(emailRaw)) {
     throwStatus('Valid email is required.', 400)
+  }
+
+  if (await isAuthEmailBlocked(admin, emailRaw)) {
+    throwStatus('That email is blocked from magic links, enquiries, and new portal accounts.', 403)
   }
 
   const { data: existingProf, error: exErr } = await admin.from('profiles').select('id').ilike('email', emailRaw).maybeSingle()

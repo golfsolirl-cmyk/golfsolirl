@@ -1,5 +1,11 @@
 /** Website `formPayload.form` string keys: see `src/lib/enquiry-form-registry.ts`. */
 import { ENQUIRY_STRUCTURED_FIELD_KEYS, PICKUP_DROPOFF_TYPES } from './enquiry-form-registry'
+import {
+  ensureTripWorkspaceDraftShape,
+  normalizeTransferStops,
+  parsePersistedTripWorkspaceFromPackage,
+  type TripWorkspaceDraft
+} from './trip-workspace-draft'
 
 export type PackageBuildSource = 'landing' | 'packages'
 
@@ -187,11 +193,14 @@ export interface AdminManualPackageConfig {
 export interface PortalGolfTransferLeg {
   readonly courseId: string
   readonly notes: string
+  /** Optional `datetime-local` string for this leg pick-up. */
+  readonly pickupAtLocal?: string
 }
 
 export interface PortalHotelTransferLeg {
   readonly hotelName: string
   readonly notes: string
+  readonly pickupAtLocal?: string
 }
 
 /** Client-edited golf / hotel transfer legs; stored on `package_builds.config` (website_form v3). */
@@ -212,6 +221,8 @@ export interface WebsiteFormPackageConfig {
   readonly adminQuote?: WebsiteFormAdminQuote
   /** Client-saved transfer planning (Costa del Sol courses + hotels). */
   readonly portalTransferPlan?: PortalTransferPlan
+  /** Client-saved trip workspace (route stops, stages, party) from the portal dashboard. */
+  readonly portalTripWorkspace?: TripWorkspaceDraft
 }
 
 /** Human copy when pickup type is “match fleet to group” (stored as `free_text`). */
@@ -381,7 +392,9 @@ export const normalizePortalTransferPlan = (raw: unknown): PortalTransferPlan =>
       const g = item as Record<string, unknown>
       const courseId = typeof g.courseId === 'string' ? g.courseId.trim() : ''
       const notes = typeof g.notes === 'string' ? g.notes.trim() : ''
-      return { courseId, notes }
+      const pickupAtLocal = typeof g.pickupAtLocal === 'string' ? g.pickupAtLocal.trim() : ''
+      const out: PortalGolfTransferLeg = { courseId, notes }
+      return pickupAtLocal ? { ...out, pickupAtLocal } : out
     })
     .filter((x): x is PortalGolfTransferLeg => Boolean(x))
   const hotelLegs = hotelRaw
@@ -392,7 +405,9 @@ export const normalizePortalTransferPlan = (raw: unknown): PortalTransferPlan =>
       const h = item as Record<string, unknown>
       const hotelName = typeof h.hotelName === 'string' ? h.hotelName.trim() : ''
       const notes = typeof h.notes === 'string' ? h.notes.trim() : ''
-      return { hotelName, notes }
+      const pickupAtLocal = typeof h.pickupAtLocal === 'string' ? h.pickupAtLocal.trim() : ''
+      const out: PortalHotelTransferLeg = { hotelName, notes }
+      return pickupAtLocal ? { ...out, pickupAtLocal } : out
     })
     .filter((x): x is PortalHotelTransferLeg => Boolean(x))
 
@@ -412,16 +427,22 @@ export const normalizePortalTransferPlan = (raw: unknown): PortalTransferPlan =>
 
 export const sanitizePortalTransferPlanForSave = (plan: PortalTransferPlan): PortalTransferPlan | null => {
   const golfLegs = plan.golfLegs
-    .map((l) => ({
-      courseId: l.courseId.trim(),
-      notes: l.notes.trim()
-    }))
+    .map((l) => {
+      const courseId = l.courseId.trim()
+      const notes = l.notes.trim()
+      const pickupAtLocal = typeof l.pickupAtLocal === 'string' ? l.pickupAtLocal.trim() : ''
+      const row: PortalGolfTransferLeg = { courseId, notes }
+      return pickupAtLocal ? { ...row, pickupAtLocal } : row
+    })
     .filter((l) => l.courseId.length > 0)
   const hotelLegs = plan.hotelLegs
-    .map((l) => ({
-      hotelName: l.hotelName.trim(),
-      notes: l.notes.trim()
-    }))
+    .map((l) => {
+      const hotelName = l.hotelName.trim()
+      const notes = l.notes.trim()
+      const pickupAtLocal = typeof l.pickupAtLocal === 'string' ? l.pickupAtLocal.trim() : ''
+      const row: PortalHotelTransferLeg = { hotelName, notes }
+      return pickupAtLocal ? { ...row, pickupAtLocal } : row
+    })
     .filter((l) => l.hotelName.length > 0)
   if (golfLegs.length === 0 && hotelLegs.length === 0) {
     return null
@@ -450,6 +471,45 @@ export const mergePortalTransferPlanIntoWebsiteFormConfig = (
     base.portalTransferPlan = cleaned
   }
   return base
+}
+
+/** Persist portal trip workspace (route builder + stages) into website_form JSON. */
+export const mergePortalTripWorkspaceIntoWebsiteFormConfig = (
+  existingRaw: unknown,
+  draft: TripWorkspaceDraft,
+  enquiryReferenceId: string
+): Record<string, unknown> => {
+  if (!existingRaw || typeof existingRaw !== 'object') {
+    throw new Error('Invalid package config')
+  }
+  const base = { ...(existingRaw as Record<string, unknown>) }
+  const aligned = ensureTripWorkspaceDraftShape({ ...draft, referenceId: enquiryReferenceId.trim() })
+  const stops = normalizeTransferStops(aligned.transferStops)
+  base.portalTripWorkspace = {
+    stages: { ...aligned.stages },
+    partySize: aligned.partySize,
+    courseIds: [...aligned.courseIds],
+    hotelNotes: aligned.hotelNotes,
+    transferStops: stops.map((s) => {
+      const row: Record<string, unknown> = { kind: s.kind, ref: s.ref }
+      const pt = typeof s.pickupAtLocal === 'string' && s.pickupAtLocal.trim() ? s.pickupAtLocal.trim() : ''
+      if (pt.length > 0) {
+        row.pickupAtLocal = pt
+      }
+      return row
+    }),
+    transferContactPhone: aligned.transferContactPhone ?? '',
+    updatedAt: aligned.updatedAt
+  }
+  return base
+}
+
+/** Update `adminQuote` on website_form config without dropping portal legs or trip workspace. */
+export const mergeAdminQuoteIntoWebsiteFormConfig = (existingRaw: unknown, quote: WebsiteFormAdminQuote): Record<string, unknown> => {
+  if (!existingRaw || typeof existingRaw !== 'object') {
+    throw new Error('Invalid package config')
+  }
+  return { ...(existingRaw as Record<string, unknown>), adminQuote: quote }
 }
 
 export const parseManualAdminPackageConfig = (raw: unknown): AdminManualPackageConfig | null => {
@@ -525,14 +585,24 @@ export const parseWebsiteFormPackageConfig = (raw: unknown): WebsiteFormPackageC
     portalTransferPlanRaw.golfLegs.some((l) => l.courseId.trim()) ||
     portalTransferPlanRaw.hotelLegs.some((l) => l.hotelName.trim())
 
+  const enquiryRef = o.enquiryReferenceId.trim()
+  let portalTripWorkspace: TripWorkspaceDraft | undefined
+  if ('portalTripWorkspace' in o) {
+    const tw = parsePersistedTripWorkspaceFromPackage(o.portalTripWorkspace, enquiryRef)
+    if (tw) {
+      portalTripWorkspace = tw
+    }
+  }
+
   return {
     version: 3,
     formKey: o.formKey.trim(),
-    enquiryReferenceId: o.enquiryReferenceId.trim(),
+    enquiryReferenceId: enquiryRef,
     submittedAt,
     fields,
     ...(adminQuote ? { adminQuote } : {}),
-    ...(hasPortalPlan ? { portalTransferPlan: portalTransferPlanRaw } : {})
+    ...(hasPortalPlan ? { portalTransferPlan: portalTransferPlanRaw } : {}),
+    ...(portalTripWorkspace ? { portalTripWorkspace } : {})
   }
 }
 

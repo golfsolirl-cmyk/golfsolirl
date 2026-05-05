@@ -32,7 +32,7 @@ export function ClientDocumentPage() {
 
     if (!session?.user) {
       const next = encodeURIComponent(window.location.pathname)
-      window.location.replace(`/login?next=${next}`)
+      window.location.replace(`/dashboard/login?next=${next}`)
       return
     }
 

@@ -29,6 +29,8 @@ export type WebsiteEnquiryFormKey = (typeof WEBSITE_ENQUIRY_FORM)[keyof typeof W
  * Admin `extractManualHintsFromFormPayload` and transfer tooling read these.
  */
 export const ENQUIRY_STRUCTURED_FIELD_KEYS = {
+  /** Stable GSI id for this contact email (server; all submissions for same email share it). */
+  accountAnchorRef: '_accountAnchorRef',
   pax: '_pax',
   pickupType: '_pickupType',
   pickupId: '_pickupId',

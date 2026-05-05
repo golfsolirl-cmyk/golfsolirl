@@ -120,7 +120,7 @@ export const handlePortalInterestTicketReply = async (payload = {}, env = proces
   if (resendKey && fromEmail) {
     try {
       const origin = getSiteOrigin(env)
-      const dashboardHref = `${origin}/login?next=${encodeURIComponent('/dashboard#portal-interest')}`
+      const dashboardHref = `${origin}/dashboard/login?next=${encodeURIComponent('/dashboard#portal-interest')}`
       const greeting = (owner?.full_name ?? '').toString().trim().split(/\s+/)[0] || 'there'
       const topicLabel = topicFromCategory(ticket.category)
       const { subject, html: rawHtml } = buildBrandedPortalTicketReplyEmailHtml({

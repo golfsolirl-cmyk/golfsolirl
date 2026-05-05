@@ -159,7 +159,7 @@ export const handleSendWorkspaceProposalToClient = async (rawBody, env, meta = {
   }
 
   const site = getGsolSiteUrl()
-  const dashboardLoginUrl = `${site}/login?next=${encodeURIComponent('/dashboard')}`
+  const dashboardLoginUrl = `${site}/dashboard/login?next=${encodeURIComponent('/dashboard')}`
   const rawHtml = buildBrandedProposalAttachedEmailHtml({
     greetingName: greetingName || '',
     proposalId: proposal.proposalId,

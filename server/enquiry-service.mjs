@@ -11,6 +11,8 @@ import { buildGsolTransactionalEmail, finalizeGsolEmailHtml, getGsolSiteUrl } fr
 import { brandedPdfAssetPaths as sharedBrandedPdfImages } from './pdf-email-brand.mjs'
 import { buildBrandedEnquiryEmailHtml } from './branded-enquiry-email.mjs'
 import { runPostEnquiryPortalInviteJob } from './post-enquiry-portal-invite.mjs'
+import { insertTransferBookingFromWebsiteEnquiry } from './insert-transfer-booking-from-enquiry.mjs'
+import { ensureEmailAccountAnchor, isAuthEmailBlocked } from './email-address-registry.mjs'
 
 const pageWidth = 595.28
 const pageHeight = 841.89
@@ -1700,6 +1702,20 @@ const recordEnquiryToSupabase = async (enquiry, enquiryId, env) => {
     const sb = createClient(url, key, {
       auth: { persistSession: false, autoRefreshToken: false }
     })
+    const anchorRef = await ensureEmailAccountAnchor(sb, enquiry.email)
+    let mergedFormPayload = enquiry.formPayload
+    if (anchorRef) {
+      const base =
+        enquiry.formPayload && typeof enquiry.formPayload === 'object' && !Array.isArray(enquiry.formPayload)
+          ? enquiry.formPayload
+          : { form: 'website_form', fields: {} }
+      const prevFields =
+        base.fields && typeof base.fields === 'object' && !Array.isArray(base.fields) ? base.fields : {}
+      mergedFormPayload = {
+        ...base,
+        fields: { ...prevFields, _accountAnchorRef: anchorRef }
+      }
+    }
     const row = {
       reference_id: enquiryId,
       email: enquiry.email,
@@ -1708,8 +1724,11 @@ const recordEnquiryToSupabase = async (enquiry, enquiryId, env) => {
       phone_whatsapp: enquiry.phoneWhatsApp,
       best_time_to_call: enquiry.bestTimeToCall
     }
-    if (enquiry.formPayload) {
-      row.form_payload = enquiry.formPayload
+    if (anchorRef) {
+      row.account_anchor_ref = anchorRef
+    }
+    if (mergedFormPayload) {
+      row.form_payload = mergedFormPayload
     }
     let { error } = await sb.from('enquiries').insert(row)
 
@@ -1771,12 +1790,15 @@ const insertWebsiteFormPackageBuildIfProfileExists = async (enquiry, enquiryId, 
       }
     }
 
+    const anchorRef = await ensureEmailAccountAnchor(sb, email)
+
     const config = {
       version: 3,
       formKey,
       enquiryReferenceId: enquiryId,
       submittedAt: new Date().toISOString(),
-      fields
+      fields,
+      ...(anchorRef ? { accountAnchorRef: anchorRef } : {})
     }
 
     const label = `${formKey.replace(/_/g, ' ')} · ${enquiryId}`
@@ -1870,6 +1892,7 @@ export const handleEnquirySubmission = async (payload, env = process.env, runtim
 
   await recordEnquiryToSupabase(enquiry, enquiryId, env)
   await insertWebsiteFormPackageBuildIfProfileExists(enquiry, enquiryId, env)
+  await insertTransferBookingFromWebsiteEnquiry(enquiry, enquiryId, env)
 
   const portalInviteTask = runPostEnquiryPortalInviteJob({ enquiry, enquiryId, enquiryDate, env })
   if (typeof runtime.waitUntil === 'function') {

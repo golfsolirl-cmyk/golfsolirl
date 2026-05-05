@@ -1,7 +1,12 @@
 import type { Session } from '@supabase/supabase-js'
 import { MessageCircle } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
+import { ClientPortalIdentityHero, type ClientPortalTransferHeroRow } from '../components/client-portal-identity-hero'
+import { ClientTransferRequestPanel } from '../components/client-transfer-request-panel'
+import { PortalClientDataCard } from '../components/portal-client-data-card'
+import { PortalInvoicesPanel } from '../components/portal-invoices-panel'
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
+import { buildClientDataCardSections, type ClientEnquiryRowLite, type ClientTransferBookingLite } from '../lib/client-data-card'
 import { LuxuryButton } from '../components/ui/button'
 import {
   emptyPortalTransferPlanDraft,
@@ -9,6 +14,7 @@ import {
   formatWebsiteFormFieldValueForDisplay,
   isCalculatorLockedTripField,
   mergePortalTransferPlanIntoWebsiteFormConfig,
+  mergePortalTripWorkspaceIntoWebsiteFormConfig,
   mergeTripDetailsWithSaved,
   normalizePortalTransferPlan,
   orderedWebsiteFormFieldEntries,
@@ -32,6 +38,11 @@ import { getSupabaseBrowserClient } from '../lib/supabase-client'
 
 type BrowserSupabase = NonNullable<ReturnType<typeof getSupabaseBrowserClient>>
 import { formatTravelDateInput } from '../lib/format-travel-date'
+import { syncTripWorkspaceToTransferBooking } from '../lib/sync-trip-workspace-transfer-booking'
+import {
+  downloadTransferVatReceiptPdf,
+  type TransferReceiptVatTreatment
+} from '../lib/transfer-vat-receipt-pdf'
 import {
   clearTripWorkspaceDraft,
   emptyTripWorkspaceDraft,
@@ -82,6 +93,7 @@ interface PackageBuildRow {
   config: unknown
   client_details: unknown
   created_at: string
+  updated_at?: string
   linked_proposal_id?: string | null
   linked_proposal?: LinkedProposalMini | null
 }
@@ -171,6 +183,20 @@ const tripStageOptionRows: readonly (readonly [TripStageKey, string, string])[] 
   ['hotel', 'Hotel / villa base', 'Notes for 1–8 guests; we match star level and location.']
 ]
 
+type ClientPortalTransferBookingRow = {
+  id: string
+  pickup_label: string
+  dropoff_label: string
+  status: string
+  scheduled_at: string | null
+  admin_price_eur?: number | null
+  admin_price_vat_treatment?: string | null
+  deposit_percent?: number | null
+  payment_status?: string | null
+  booking_source?: string | null
+  package_build_id?: string | null
+}
+
 export function ClientDashboardPage() {
   const { session, profile, isLoading, refreshProfile } = useAuth()
   const contactSyncAttempted = useRef(false)
@@ -197,6 +223,8 @@ export function ClientDashboardPage() {
   const [transferBuilderOpen, setTransferBuilderOpen] = useState(false)
   const [portalUpdates, setPortalUpdates] = useState<PortalClientUpdateRow[]>([])
   const [portalUpdatesError, setPortalUpdatesError] = useState<string | null>(null)
+  const [enquiries, setEnquiries] = useState<ClientEnquiryRowLite[]>([])
+  const [transferBookingsPortal, setTransferBookingsPortal] = useState<ClientPortalTransferBookingRow[]>([])
   const [onboardingName, setOnboardingName] = useState('')
   const [onboardingPhone, setOnboardingPhone] = useState('')
   const [onboardingStatus, setOnboardingStatus] = useState<'idle' | 'saving' | 'error'>('idle')
@@ -214,6 +242,8 @@ export function ClientDashboardPage() {
   const [interestFollowUpBusy, setInterestFollowUpBusy] = useState(false)
   const [interestFollowUpError, setInterestFollowUpError] = useState<string | null>(null)
   const [interestTicketLatestAdminAt, setInterestTicketLatestAdminAt] = useState<Record<string, string>>({})
+  const [invoiceUrlBanner, setInvoiceUrlBanner] = useState<string | null>(null)
+  const [invoicePanelRefresh, setInvoicePanelRefresh] = useState(0)
   const listDataInflightRef = useRef(0)
 
   const loadData = useCallback(async () => {
@@ -234,11 +264,12 @@ export function ClientDashboardPage() {
       setListLoading(true)
     }
     try {
-    const [propRes, buildRes, docRes, portalRes] = await Promise.all([
+    const [propRes, buildRes, docRes, portalRes, enqRes] = await Promise.all([
       supabase.from('proposals').select('id, proposal_id, title, status, created_at, payload').order('created_at', { ascending: false }),
       fetchPackageBuildsClientList(supabase, 40),
       supabase.from('client_document_access').select('document_kind').eq('owner_id', session.user.id),
-      fetchPortalClientUpdates(supabase, 30)
+      fetchPortalClientUpdates(supabase, 30),
+      supabase.from('enquiries').select('id, reference_id, created_at, form_payload').order('created_at', { ascending: false }).limit(80)
     ])
 
     if (docRes.error) {
@@ -261,6 +292,46 @@ export function ClientDashboardPage() {
       setPortalUpdates((portalRes.data ?? []) as PortalClientUpdateRow[])
     }
 
+    if (enqRes.error) {
+      setEnquiries([])
+    } else {
+      setEnquiries((enqRes.data ?? []) as ClientEnquiryRowLite[])
+    }
+
+    const enquiryRows = (enqRes.data ?? []) as ClientEnquiryRowLite[]
+    const orTransfer: string[] = [`client_user_id.eq.${session.user.id}`]
+    const loginEmail = session.user.email?.trim()
+    if (loginEmail) {
+      orTransfer.push(`client_email.eq.${loginEmail}`)
+    }
+    const accountRefForTb = profile?.account_reference_id?.trim()
+    if (accountRefForTb) {
+      orTransfer.push(`enquiry_reference_id.eq.${accountRefForTb}`)
+    }
+    for (const row of enquiryRows) {
+      const rid = typeof row.reference_id === 'string' ? row.reference_id.trim() : ''
+      if (rid) {
+        orTransfer.push(`enquiry_reference_id.eq.${rid}`)
+      }
+    }
+    const tbRes = await supabase
+      .from('transfer_bookings')
+      .select(
+        'id, pickup_label, dropoff_label, status, scheduled_at, admin_price_eur, admin_price_vat_treatment, deposit_percent, payment_status, booking_source, package_build_id, created_at'
+      )
+      .or(orTransfer.join(','))
+      .order('created_at', { ascending: false })
+      .limit(80)
+    if (!tbRes.error && tbRes.data) {
+      const dedupTb = new Map<string, ClientPortalTransferBookingRow>()
+      for (const r of tbRes.data as ClientPortalTransferBookingRow[]) {
+        dedupTb.set(r.id, r)
+      }
+      setTransferBookingsPortal([...dedupTb.values()])
+    } else {
+      setTransferBookingsPortal([])
+    }
+
     if (propRes.error) {
       setProposalsError(propRes.error.message)
       setProposals([])
@@ -269,9 +340,29 @@ export function ClientDashboardPage() {
       setProposals((propRes.data ?? []) as ProposalRow[])
     }
 
+    const resetTripShellAndModals = () => {
+      clearTripWorkspaceDraft()
+      setTripDraft(null)
+      setSelectedBuildId('')
+      setExpandedFormalProposalBuildId(null)
+      setTransferBuilderOpen(false)
+      setTeamMessagingOpen(false)
+      setInterestModalCategory(null)
+      setInterestDraftBody('')
+      setInterestSubmitError(null)
+      setInterestThreadTicketId(null)
+      setInterestFollowUp('')
+      setInterestFollowUpError(null)
+      setProposalPdfLoadingId(null)
+      setLinkedProposalPdfLoadingBuildId(null)
+      setDetailsStatus('idle')
+      setDetailsMessage(null)
+    }
+
     if (buildRes.error) {
       setBuildsError(buildRes.error.message)
       setPackageBuilds([])
+      resetTripShellAndModals()
     } else {
       setBuildsError(null)
       const rawBuilds = (buildRes.data ?? []) as PackageBuildRow[]
@@ -303,6 +394,9 @@ export function ClientDashboardPage() {
           linked_proposal: b.linked_proposal_id ? proposalById[b.linked_proposal_id] ?? null : null
         }))
       )
+      if (rawBuilds.length === 0) {
+        resetTripShellAndModals()
+      }
     }
     } finally {
       listDataInflightRef.current -= 1
@@ -311,7 +405,87 @@ export function ClientDashboardPage() {
         setListLoading(false)
       }
     }
-  }, [session?.user?.id])
+  }, [session?.user?.id, session?.user?.email, profile?.account_reference_id])
+
+  const refetchPortal = useCallback(() => {
+    void loadData()
+    void refreshProfile()
+  }, [loadData, refreshProfile])
+
+  useEffect(() => {
+    if (isLoading || !session?.user?.id) {
+      return undefined
+    }
+    const supabase = getSupabaseBrowserClient()
+    if (!supabase) {
+      return undefined
+    }
+
+    const uid = session.user.id
+    const channel = supabase
+      .channel(`client-portal-live-${uid}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${uid}` }, refetchPortal)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'portal_client_updates', filter: `owner_id=eq.${uid}` },
+        refetchPortal
+      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'package_builds', filter: `owner_id=eq.${uid}` }, refetchPortal)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'proposals', filter: `owner_id=eq.${uid}` }, refetchPortal)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'transfer_bookings', filter: `client_user_id=eq.${uid}` },
+        refetchPortal
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'client_document_access', filter: `owner_id=eq.${uid}` },
+        refetchPortal
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'portal_interest_tickets', filter: `owner_id=eq.${uid}` },
+        refetchPortal
+      )
+      .subscribe((status) => {
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          console.warn(
+            '[client-dashboard] Realtime unavailable; use tab focus/refresh after admin clears portal. If this persists, apply migration 20260505240000_realtime_client_portal_dashboard.sql.'
+          )
+        }
+      })
+
+    return () => {
+      void supabase.removeChannel(channel)
+    }
+  }, [isLoading, session?.user?.id, refetchPortal])
+
+  useEffect(() => {
+    if (isLoading || !session?.user?.id) {
+      return undefined
+    }
+    let t: ReturnType<typeof setTimeout> | undefined
+    const schedule = () => {
+      if (document.visibilityState !== 'visible') {
+        return
+      }
+      if (t) {
+        window.clearTimeout(t)
+      }
+      t = window.setTimeout(() => {
+        refetchPortal()
+      }, 400)
+    }
+    document.addEventListener('visibilitychange', schedule)
+    window.addEventListener('focus', schedule)
+    return () => {
+      document.removeEventListener('visibilitychange', schedule)
+      window.removeEventListener('focus', schedule)
+      if (t) {
+        window.clearTimeout(t)
+      }
+    }
+  }, [isLoading, session?.user?.id, refetchPortal])
 
   const refreshInterestAdminTimes = useCallback(async (supabase: BrowserSupabase, rows: PortalInterestTicketRow[]) => {
     const ids = rows.map((t) => t.id)
@@ -347,12 +521,41 @@ export function ClientDashboardPage() {
     }
 
     if (!session?.user) {
-      window.location.replace('/login')
+      window.location.replace('/dashboard/login')
     }
   }, [isLoading, session?.user?.id])
 
   useEffect(() => {
     void loadData()
+  }, [loadData])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+    const sp = new URLSearchParams(window.location.search)
+    const parts: string[] = []
+    if (sp.get('invoice_paid') === '1') {
+      parts.push('Payment received — thank you. Your invoice card should show Paid within a few seconds.')
+      sp.delete('invoice_paid')
+      setInvoicePanelRefresh((n) => n + 1)
+    } else if (sp.get('invoice_cancel') === '1') {
+      parts.push('Checkout was cancelled. You can open Pay again from your trip invoice card whenever you are ready.')
+      sp.delete('invoice_cancel')
+    }
+    if (sp.get('transfer_paid') === '1') {
+      parts.push('Payment received — thank you. Your transfer will show as paid shortly.')
+      sp.delete('transfer_paid')
+      void loadData()
+    } else if (sp.get('transfer_pay_cancel') === '1') {
+      parts.push('Checkout was cancelled. You can use Pay now on your transfer when you are ready.')
+      sp.delete('transfer_pay_cancel')
+    }
+    if (parts.length) {
+      setInvoiceUrlBanner(parts.join(' '))
+      const qs = sp.toString()
+      window.history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}${window.location.hash}`)
+    }
   }, [loadData])
 
   useEffect(() => {
@@ -619,10 +822,25 @@ export function ClientDashboardPage() {
     setTripForm(mergeTripDetailsWithSaved(row.client_details, defaults))
 
     const parsed = parseAnyPackageBuildRowConfig(row.config)
-    if (parsed?.type === 'website_form' && parsed.config.portalTransferPlan) {
-      setPortalPlan(normalizePortalTransferPlan(parsed.config.portalTransferPlan))
-    } else if (parsed?.type === 'website_form') {
+    if (parsed?.type === 'website_form') {
+      if (parsed.config.portalTransferPlan) {
+        setPortalPlan(normalizePortalTransferPlan(parsed.config.portalTransferPlan))
+      } else {
+        setPortalPlan(emptyPortalTransferPlanDraft())
+      }
+      const ref = parsed.config.enquiryReferenceId
+      const fromPackage = parsed.config.portalTripWorkspace
+      const sessionDraft = loadTripWorkspaceDraft()
+      if (fromPackage) {
+        setTripDraft(ensureTripWorkspaceDraftShape({ ...fromPackage, referenceId: ref }))
+      } else if (sessionDraft && sessionDraft.referenceId === ref) {
+        setTripDraft(ensureTripWorkspaceDraftShape(sessionDraft))
+      } else {
+        setTripDraft(emptyTripWorkspaceDraft(ref))
+      }
+    } else {
       setPortalPlan(emptyPortalTransferPlanDraft())
+      setTripDraft(null)
     }
   }, [selectedBuildId, packageBuilds])
 
@@ -679,7 +897,16 @@ export function ClientDashboardPage() {
 
     if (parsed?.type === 'website_form') {
       try {
-        updatePayload.config = mergePortalTransferPlanIntoWebsiteFormConfig(row.config, portalPlan)
+        let nextConfig = mergePortalTransferPlanIntoWebsiteFormConfig(row.config, portalPlan)
+        const ref = parsed.config.enquiryReferenceId
+        if (tripDraft) {
+          nextConfig = mergePortalTripWorkspaceIntoWebsiteFormConfig(
+            nextConfig,
+            ensureTripWorkspaceDraftShape({ ...tripDraft, referenceId: ref }),
+            ref
+          )
+        }
+        updatePayload.config = nextConfig
       } catch {
         setDetailsMessage('Could not save transfer plan into your package record.')
         setDetailsStatus('error')
@@ -700,8 +927,31 @@ export function ClientDashboardPage() {
       return
     }
 
+    let savedMsg = 'Your trip details are saved.'
+    if (parsed?.type === 'website_form' && tripDraft && session.user.id) {
+      const ref = (parsed.config.enquiryReferenceId ?? '').trim()
+      if (ref) {
+        const profRes = await supabase.from('profiles').select('full_name, phone').eq('id', session.user.id).maybeSingle()
+        const syncResult = await syncTripWorkspaceToTransferBooking(supabase, {
+          packageBuildId: selectedBuildId,
+          clientUserId: session.user.id,
+          enquiryReferenceId: ref,
+          tripDraft: ensureTripWorkspaceDraftShape({ ...tripDraft, referenceId: ref }),
+          clientDisplayName: (profRes.data?.full_name ?? '').toString(),
+          clientPhone: (profRes.data?.phone ?? '').toString()
+        })
+        if (!syncResult.ok) {
+          savedMsg += ` ${syncResult.message}`
+        } else if (syncResult.skipped) {
+          savedMsg += ' (Minimal route — no separate Operations row until you add stops again.)'
+        } else {
+          savedMsg += ' Your saved route is synced to Operations · Costa transfers for the team.'
+        }
+      }
+    }
+
     setDetailsStatus('saved')
-    setDetailsMessage('Your trip details are saved.')
+    setDetailsMessage(savedMsg)
     await loadData()
   }
 
@@ -1099,9 +1349,57 @@ export function ClientDashboardPage() {
     }
   }
 
+  const selectedBuildRowEarly = selectedBuildId ? (packageBuilds.find((b) => b.id === selectedBuildId) ?? null) : null
+  const selectedBuildParsedEarly = selectedBuildRowEarly ? parseAnyPackageBuildRowConfig(selectedBuildRowEarly.config) : null
+  const selectedTripIsWebsiteFormEarly = selectedBuildParsedEarly?.type === 'website_form'
+
+  const tripDetailsSectionsForForm = useMemo(() => {
+    const excluded = new Set(TRIP_DETAILS_DASHBOARD_EXCLUDED_SECTION_TITLES)
+    let sections = TRIP_DETAILS_SECTIONS.filter((s) => !excluded.has(s.title))
+    if (selectedTripIsWebsiteFormEarly) {
+      sections = sections.filter((s) => s.title !== 'Trip shape' && s.title !== 'Trip overview')
+    }
+    return sections
+  }, [selectedTripIsWebsiteFormEarly])
+
+  const transferBookingsForCard: readonly ClientTransferBookingLite[] = useMemo(
+    () =>
+      transferBookingsPortal.map((r) => ({
+        id: r.id,
+        pickup_label: r.pickup_label,
+        dropoff_label: r.dropoff_label,
+        status: r.status,
+        scheduled_at: r.scheduled_at
+      })),
+    [transferBookingsPortal]
+  )
+
+  const clientDataCardSections = useMemo(
+    () =>
+      buildClientDataCardSections({
+        profile,
+        userEmail: session?.user?.email ?? null,
+        enquiries,
+        packageBuilds,
+        transferBookings: transferBookingsForCard
+      }),
+    [profile, session?.user?.email, enquiries, packageBuilds, transferBookingsForCard]
+  )
+
   if (isLoading || !session) {
     return <DashboardLoadingShell label="Loading your dashboard…" />
   }
+
+  const portalSupabase = getSupabaseBrowserClient()
+  const tripInvoicesPanel =
+    portalSupabase && session.user.id ? (
+      <PortalInvoicesPanel
+        accountReferenceLabel={profile?.account_reference_id?.trim() ?? null}
+        refreshTrigger={invoicePanelRefresh}
+        supabase={portalSupabase}
+        userId={session.user.id}
+      />
+    ) : null
 
   const clientDisplayFullName = resolveClientDisplayFullName(session, profile)
   const clientDisplayPhone = resolveClientPhone(session, profile)
@@ -1115,7 +1413,7 @@ export function ClientDashboardPage() {
     profile?.full_name?.trim().split(/\s+/).filter(Boolean)[0] ??
     clientDisplayFullName.split(/\s+/).filter(Boolean)[0] ??
     ''
-  const dashboardTitle = greetingFirst ? `Hello, ${greetingFirst}` : 'Hello'
+  const dashboardTitle = 'Your dashboard'
   const hasAdminPricedPackage = packageBuilds.some((row) => {
     const c = parseAnyPackageBuildRowConfig(row.config)
     if (c?.type === 'manual' || c?.type === 'calculator') {
@@ -1135,15 +1433,6 @@ export function ClientDashboardPage() {
   const selectedBuildParsed = selectedBuildRow ? parseAnyPackageBuildRowConfig(selectedBuildRow.config) : null
   const selectedTripIsManualQuote = selectedBuildParsed?.type === 'manual'
   const selectedTripIsWebsiteForm = selectedBuildParsed?.type === 'website_form'
-
-  const tripDetailsSectionsForForm = useMemo(() => {
-    const excluded = new Set(TRIP_DETAILS_DASHBOARD_EXCLUDED_SECTION_TITLES)
-    let sections = TRIP_DETAILS_SECTIONS.filter((s) => !excluded.has(s.title))
-    if (selectedTripIsWebsiteForm) {
-      sections = sections.filter((s) => s.title !== 'Trip shape' && s.title !== 'Trip overview')
-    }
-    return sections
-  }, [selectedTripIsWebsiteForm])
 
   const tripIllustrative =
     tripDraft && (tripDraft.stages.transfer || tripDraft.stages.golf || tripDraft.stages.hotel)
@@ -1172,6 +1461,61 @@ export function ClientDashboardPage() {
       </button>
     ) : null
 
+  const handleTransferReceiptPdf = async (t: ClientPortalTransferHeroRow) => {
+    const vatTreatment: TransferReceiptVatTreatment =
+      t.admin_price_vat_treatment === 'services'
+        ? 'services'
+        : t.admin_price_vat_treatment === 'tourism'
+          ? 'tourism'
+          : null
+    try {
+      await downloadTransferVatReceiptPdf({
+        transfer: {
+          id: t.id,
+          pickup_label: t.pickup_label,
+          dropoff_label: t.dropoff_label,
+          status: t.status,
+          scheduled_at: t.scheduled_at,
+          admin_price_eur: t.admin_price_eur,
+          admin_price_vat_treatment: vatTreatment,
+          payment_status: t.payment_status,
+          booking_source: t.booking_source
+        },
+        customerName: clientDisplayFullName,
+        accountRef: accountRef || null,
+        customerEmail: session.user.email ?? null
+      })
+    } catch (e) {
+      window.alert(e instanceof Error ? e.message : 'Could not create receipt PDF.')
+    }
+  }
+
+  const handlePayTransfer = async (t: ClientPortalTransferHeroRow) => {
+    if (!session.access_token) {
+      window.alert('Sign in again to pay.')
+      return
+    }
+    try {
+      const res = await fetch('/api/transfer-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ bookingId: t.id })
+      })
+      const data = (await res.json().catch(() => ({}))) as { message?: string; url?: string }
+      if (!res.ok) {
+        throw new Error(data.message || 'Could not start checkout.')
+      }
+      if (data.url) {
+        window.location.assign(data.url)
+      }
+    } catch (e) {
+      window.alert(e instanceof Error ? e.message : 'Payment could not start.')
+    }
+  }
+
   return (
     <DashboardLayout
       kicker="Your client area"
@@ -1184,6 +1528,35 @@ export function ClientDashboardPage() {
         <p className="text-sm font-medium text-forest-600">Loading your account…</p>
       ) : (
         <div className="mb-12 md:mb-14">
+          <div className="mb-12 space-y-10">
+            <ClientPortalIdentityHero
+              accountEmail={session.user.email ?? null}
+              accountNumber={accountRef || null}
+              firstName={greetingFirst || 'there'}
+              fullName={clientDisplayFullName}
+              onDownloadTransferReceipt={handleTransferReceiptPdf}
+              onPayTransfer={handlePayTransfer}
+              transfers={transferBookingsPortal}
+            />
+            <PortalClientDataCard sections={clientDataCardSections} />
+            {invoiceUrlBanner ? (
+              <div
+                className="flex flex-col gap-2 rounded-2xl border border-emerald-300/80 bg-emerald-50/95 px-4 py-3 text-sm text-emerald-950 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+                role="status"
+              >
+                <span>{invoiceUrlBanner}</span>
+                <button
+                  className="shrink-0 text-xs font-semibold uppercase tracking-[0.12em] text-emerald-800 underline decoration-emerald-600/60"
+                  onClick={() => setInvoiceUrlBanner(null)}
+                  type="button"
+                >
+                  Dismiss
+                </button>
+              </div>
+            ) : null}
+            {tripInvoicesPanel}
+            <ClientTransferRequestPanel />
+          </div>
           <section>
             <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
               <div>

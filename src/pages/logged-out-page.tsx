@@ -109,7 +109,7 @@ export function LoggedOutPage() {
             </div>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
-              <GeButton className="w-full sm:w-auto" href="/login" size="md" variant="gs-gold">
+              <GeButton className="w-full sm:w-auto" href="/dashboard/login" size="md" variant="gs-gold">
                 Sign in again
               </GeButton>
               <GeButton className="w-full sm:w-auto" href="/" size="md" variant="outline-gs-green">

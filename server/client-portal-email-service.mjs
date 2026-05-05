@@ -147,7 +147,7 @@ export const handleSendClientPortalEmail = async (body, env = process.env, meta 
   }
 
   const origin = getSiteOrigin(env)
-  const dashboardUrl = `${origin}/login?next=${encodeURIComponent('/dashboard')}`
+  const dashboardUrl = `${origin}/dashboard/login?next=${encodeURIComponent('/dashboard')}`
   const greeting = (clientProfile.full_name ?? '').trim().split(/\s+/)[0] || 'there'
   const paragraphs = splitMessageParagraphs(message)
 

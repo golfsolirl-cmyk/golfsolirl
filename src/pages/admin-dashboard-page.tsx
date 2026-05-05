@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
+import { AdminAccountTransfersHub } from '../components/admin-account-transfers-hub'
 import { AdminDriverCalendarPanel } from '../components/admin-driver-calendar-panel'
+import { AdminTransferPipeline } from '../components/admin-transfer-pipeline'
+import { PortalClientDataCard } from '../components/portal-client-data-card'
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
+import { buildClientDataCardSections } from '../lib/client-data-card'
 import { LuxuryButton } from '../components/ui/button'
 import { fetchPackageBuildsAdminList, isMissingClientDetailsColumnError } from '../lib/fetch-package-builds'
 import {
@@ -14,6 +18,7 @@ import {
   IRISH_VAT_REDUCED_TOURISM_RATE,
   IRISH_VAT_STANDARD_RATE,
   mergeTripDetailsWithSaved,
+  mergeAdminQuoteIntoWebsiteFormConfig,
   packageBuildDbSourceLabel,
   parseAnyPackageBuildRowConfig,
   serializeTripDetailsForDb,
@@ -33,14 +38,20 @@ import {
   buildAdminWorkspaceProposalPdfPayload,
   computeManualGroupPriceAllocation
 } from '../lib/build-admin-workspace-proposal-payload'
+import {
+  buildAdminTransferLegsPreviewHtml,
+  hydrateAdminWorkspaceDraftFromClientPackages,
+  resolveAdminWorkspaceClientTransferSnapshot,
+  type CostaMapBookingPreviewRow
+} from '../lib/admin-trip-workspace-hydrate'
 import { integrationRegistry } from '../config/integrations'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { formatTravelDateInput } from '../lib/format-travel-date'
 import { createProposalId, formatDocumentDate } from '../lib/document-templates'
 import {
   buildClientLoginUrlForEnquiry,
-  emptyTripWorkspaceDraft,
   illustrativeTripPriceRangeEur,
+  normalizeTransferStops,
   type TripStageKey,
   type TripWorkspaceDraft
 } from '../lib/trip-workspace-draft'
@@ -353,6 +364,7 @@ interface PackageBuildAdminRow {
   config: unknown
   client_details: unknown
   created_at: string
+  updated_at?: string
   linked_proposal_id?: string | null
   profiles: ProfileEmbed | ProfileEmbed[] | null
 }
@@ -481,7 +493,7 @@ const createEmptyManualProposalForm = (): ManualProposalForm => ({
 type ManualProposalFieldKey = keyof ManualProposalForm
 
 export function AdminDashboardPage() {
-  const { session, profile, isLoading } = useAuth()
+  const { session, profile, isLoading, refreshProfile } = useAuth()
   const [crmDocEmail, setCrmDocEmail] = useState('')
   const [crmDocSending, setCrmDocSending] = useState<'idle' | 'terms' | 'welcome'>('idle')
   const [crmDocMessage, setCrmDocMessage] = useState<string | null>(null)
@@ -504,6 +516,18 @@ export function AdminDashboardPage() {
   const [clearDashboardAccountRef, setClearDashboardAccountRef] = useState('')
   const [clearDashboardBusy, setClearDashboardBusy] = useState(false)
   const [clearDashboardMessage, setClearDashboardMessage] = useState<string | null>(null)
+  const [clearPortalInboxBusy, setClearPortalInboxBusy] = useState(false)
+  const [clearPortalInboxMessage, setClearPortalInboxMessage] = useState<string | null>(null)
+  /** Used with portal clear actions: inbox rows are keyed by profile id from this email when studio sends mail. */
+  const [clearPortalClientEmail, setClearPortalClientEmail] = useState('')
+  const [authBlockList, setAuthBlockList] = useState<{ email: string; blocked_at: string; reason: string | null }[]>([])
+  const [authBlockListLoading, setAuthBlockListLoading] = useState(false)
+  const [authBlockEmailInput, setAuthBlockEmailInput] = useState('')
+  const [authBlockReasonInput, setAuthBlockReasonInput] = useState('')
+  const [authBlockBusy, setAuthBlockBusy] = useState(false)
+  const [authBlockMessage, setAuthBlockMessage] = useState<string | null>(null)
+  const [portalLinkCopyMessage, setPortalLinkCopyMessage] = useState<string | null>(null)
+  const [portalLinkCopyBusy, setPortalLinkCopyBusy] = useState<'idle' | 'client' | 'admin'>('idle')
   const [interestAdminTickets, setInterestAdminTickets] = useState<AdminInterestTicketRow[]>([])
   const [interestAdminTicketsError, setInterestAdminTicketsError] = useState<string | null>(null)
   const [selectedAdminTicketId, setSelectedAdminTicketId] = useState<string | null>(null)
@@ -522,6 +546,9 @@ export function AdminDashboardPage() {
   const [enquiryDeleteMessage, setEnquiryDeleteMessage] = useState<string | null>(null)
   const [enquirySearchQuery, setEnquirySearchQuery] = useState('')
   const [selectedEnquiryDetailRef, setSelectedEnquiryDetailRef] = useState<string | null>(null)
+  const [portalInvoiceAmountInput, setPortalInvoiceAmountInput] = useState('')
+  const [portalInvoiceSendBusy, setPortalInvoiceSendBusy] = useState(false)
+  const [portalInvoiceSendMessage, setPortalInvoiceSendMessage] = useState<string | null>(null)
   const [workspaceEnquiryRef, setWorkspaceEnquiryRef] = useState('')
   const [workspaceDraft, setWorkspaceDraft] = useState<TripWorkspaceDraft | null>(null)
   const [workspaceCopyMessage, setWorkspaceCopyMessage] = useState<string | null>(null)
@@ -538,6 +565,15 @@ export function AdminDashboardPage() {
   const [workspaceHotelNotes, setWorkspaceHotelNotes] = useState('')
   const [workspaceEmailBusy, setWorkspaceEmailBusy] = useState<'idle' | 'client' | 'hotel'>('idle')
   const [workspaceEmailMessage, setWorkspaceEmailMessage] = useState<string | null>(null)
+  const [workspaceCostaMapBookings, setWorkspaceCostaMapBookings] = useState<CostaMapBookingPreviewRow[]>([])
+  const [workspaceTransferPayBusyId, setWorkspaceTransferPayBusyId] = useState<string | null>(null)
+  const [workspaceTransferPayMsg, setWorkspaceTransferPayMsg] = useState<string | null>(null)
+  const [workspaceTransferReminderBusy, setWorkspaceTransferReminderBusy] = useState(false)
+  const [workspaceTransferSendCustomerEmails, setWorkspaceTransferSendCustomerEmails] = useState(true)
+  const [workspacePkgQuoteGross, setWorkspacePkgQuoteGross] = useState('')
+  const [workspacePkgQuoteVat, setWorkspacePkgQuoteVat] = useState(IRISH_VAT_STANDARD_RATE)
+  const [workspacePkgQuoteBusy, setWorkspacePkgQuoteBusy] = useState(false)
+  const [workspacePkgQuoteMessage, setWorkspacePkgQuoteMessage] = useState<string | null>(null)
   const [manualProposalForm, setManualProposalForm] = useState<ManualProposalForm>(() => createEmptyManualProposalForm())
   const [manualProposalPdfUrl, setManualProposalPdfUrl] = useState<string | null>(null)
   const [manualProposalPdfLoading, setManualProposalPdfLoading] = useState(false)
@@ -616,17 +652,18 @@ export function AdminDashboardPage() {
     }
 
     if (!session?.user) {
-      window.location.replace('/login')
+      window.location.replace('/dashboard/login')
       return
     }
 
-    if (profile?.role !== 'admin') {
+    /** Only redirect once profile row is known; `null` means fetch failed / no row — do not send real admins to the client dashboard during a race or RLS glitch. */
+    if (profile !== null && profile.role !== 'admin') {
       window.location.replace('/dashboard')
     }
-  }, [isLoading, session?.user?.id, profile?.role])
+  }, [isLoading, session?.user?.id, profile])
 
   useEffect(() => {
-    if (!session || profile?.role !== 'admin') {
+    if (!session?.user || !profile || profile.role !== 'admin') {
       return
     }
 
@@ -643,94 +680,100 @@ export function AdminDashboardPage() {
     const load = async () => {
       setListLoading(true)
       setPackageBuildDeleteMessage(null)
-      const [enqRes, propRes, buildRes, tkRes] = await Promise.all([
-        supabase.from('enquiries').select('*').order('created_at', { ascending: false }).limit(100),
-        supabase.from('proposals').select('id, proposal_id, title, status, created_at').order('created_at', { ascending: false }).limit(100),
-        fetchPackageBuildsAdminList(supabase, 100),
-        supabase
-          .from('portal_interest_tickets')
-          .select('id, owner_id, category, status, created_at, updated_at')
-          .order('created_at', { ascending: false })
-          .limit(100)
-      ])
+      try {
+        const [enqRes, propRes, buildRes, tkRes] = await Promise.all([
+          supabase.from('enquiries').select('*').order('created_at', { ascending: false }).limit(100),
+          supabase.from('proposals').select('id, proposal_id, title, status, created_at').order('created_at', { ascending: false }).limit(100),
+          fetchPackageBuildsAdminList(supabase, 100),
+          supabase
+            .from('portal_interest_tickets')
+            .select('id, owner_id, category, status, created_at, updated_at')
+            .order('created_at', { ascending: false })
+            .limit(100)
+        ])
 
-      if (cancelled) {
-        return
-      }
-
-      const errMsg = enqRes.error?.message ?? propRes.error?.message ?? null
-      setLoadError(errMsg)
-      setEnquiries((enqRes.data ?? []) as EnquiryRow[])
-      setProposals((propRes.data ?? []) as ProposalRow[])
-
-      if (buildRes.error) {
-        setBuildsLoadError(buildRes.error.message)
-        setPackageBuilds([])
-      } else {
-        setBuildsLoadError(null)
-        setPackageBuilds((buildRes.data ?? []) as PackageBuildAdminRow[])
-      }
-
-      if (tkRes.error) {
-        if (isMissingPortalInterestTicketsError(tkRes.error)) {
-          setInterestAdminTickets([])
-          setInterestAdminTicketsError(null)
-        } else {
-          setInterestAdminTickets([])
-          setInterestAdminTicketsError(tkRes.error.message)
+        if (cancelled) {
+          return
         }
-      } else {
-        const rawTickets = (tkRes.data ?? []) as PortalInterestTicketRow[]
-        const ownerIds = [...new Set(rawTickets.map((t) => t.owner_id).filter(Boolean))]
-        const profBy: Record<
-          string,
-          { email: string | null; full_name: string | null; phone: string | null; account_reference_id: string | null }
-        > = {}
-        if (ownerIds.length > 0) {
-          const pr = await supabase
-            .from('profiles')
-            .select('id, email, full_name, phone, account_reference_id')
-            .in('id', ownerIds)
-          if (!pr.error && pr.data) {
-            for (const p of pr.data as {
-              id: string
-              email: string | null
-              full_name: string | null
-              phone: string | null
-              account_reference_id: string | null
-            }[]) {
-              profBy[p.id] = {
-                email: p.email ?? null,
-                full_name: p.full_name ?? null,
-                phone: p.phone ?? null,
-                account_reference_id: p.account_reference_id ?? null
+
+        const errMsg = enqRes.error?.message ?? propRes.error?.message ?? null
+        setLoadError(errMsg)
+        setEnquiries((enqRes.data ?? []) as EnquiryRow[])
+        setProposals((propRes.data ?? []) as ProposalRow[])
+
+        if (buildRes.error) {
+          setBuildsLoadError(buildRes.error.message)
+          setPackageBuilds([])
+        } else {
+          setBuildsLoadError(null)
+          setPackageBuilds((buildRes.data ?? []) as PackageBuildAdminRow[])
+        }
+
+        if (tkRes.error) {
+          if (isMissingPortalInterestTicketsError(tkRes.error)) {
+            setInterestAdminTickets([])
+            setInterestAdminTicketsError(null)
+          } else {
+            setInterestAdminTickets([])
+            setInterestAdminTicketsError(tkRes.error.message)
+          }
+        } else {
+          const rawTickets = (tkRes.data ?? []) as PortalInterestTicketRow[]
+          const ownerIds = [...new Set(rawTickets.map((t) => t.owner_id).filter(Boolean))]
+          const profBy: Record<
+            string,
+            { email: string | null; full_name: string | null; phone: string | null; account_reference_id: string | null }
+          > = {}
+          if (ownerIds.length > 0) {
+            const pr = await supabase
+              .from('profiles')
+              .select('id, email, full_name, phone, account_reference_id')
+              .in('id', ownerIds)
+            if (!pr.error && pr.data) {
+              for (const p of pr.data as {
+                id: string
+                email: string | null
+                full_name: string | null
+                phone: string | null
+                account_reference_id: string | null
+              }[]) {
+                profBy[p.id] = {
+                  email: p.email ?? null,
+                  full_name: p.full_name ?? null,
+                  phone: p.phone ?? null,
+                  account_reference_id: p.account_reference_id ?? null
+                }
               }
             }
           }
+          setInterestAdminTicketsError(null)
+          const merged = rawTickets.map((t) => {
+            const pr = profBy[t.owner_id]
+            return {
+              ...t,
+              client_email: pr?.email ?? null,
+              client_name: pr?.full_name ?? null,
+              client_phone: pr?.phone?.trim() ? pr.phone.trim() : null,
+              client_account_ref: pr?.account_reference_id?.trim() ? pr.account_reference_id.trim() : null
+            }
+          })
+          merged.sort((a, b) => {
+            const ao = a.status === 'open' ? 0 : 1
+            const bo = b.status === 'open' ? 0 : 1
+            if (ao !== bo) {
+              return ao - bo
+            }
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          })
+          setInterestAdminTickets(merged)
         }
-        setInterestAdminTicketsError(null)
-        const merged = rawTickets.map((t) => {
-          const pr = profBy[t.owner_id]
-          return {
-            ...t,
-            client_email: pr?.email ?? null,
-            client_name: pr?.full_name ?? null,
-            client_phone: pr?.phone?.trim() ? pr.phone.trim() : null,
-            client_account_ref: pr?.account_reference_id?.trim() ? pr.account_reference_id.trim() : null
-          }
-        })
-        merged.sort((a, b) => {
-          const ao = a.status === 'open' ? 0 : 1
-          const bo = b.status === 'open' ? 0 : 1
-          if (ao !== bo) {
-            return ao - bo
-          }
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        })
-        setInterestAdminTickets(merged)
+      } catch (err) {
+        if (!cancelled) {
+          setLoadError(err instanceof Error ? err.message : 'Failed to load admin data.')
+        }
+      } finally {
+        setListLoading(false)
       }
-
-      setListLoading(false)
     }
 
     void load()
@@ -738,7 +781,7 @@ export function AdminDashboardPage() {
     return () => {
       cancelled = true
     }
-  }, [session?.user?.id, profile?.role])
+  }, [session?.user?.id, profile?.id, profile?.role])
 
   const filteredEnquiries = useMemo(() => {
     const q = enquirySearchQuery.trim().toLowerCase()
@@ -778,6 +821,77 @@ export function AdminDashboardPage() {
     [enquiries, workspaceEnquiryRef]
   )
 
+  const workspaceWebsiteFormBuildSig = useMemo(() => {
+    if (!workspaceEnquiryRef) {
+      return ''
+    }
+    const rows = packageBuilds.filter((row) => {
+      const cfg = parseAnyPackageBuildRowConfig(row.config)
+      return cfg?.type === 'website_form' && cfg.config.enquiryReferenceId === workspaceEnquiryRef
+    })
+    const newest = [...rows].sort(
+      (a, b) =>
+        new Date(b.updated_at ?? b.created_at).getTime() - new Date(a.updated_at ?? a.created_at).getTime()
+    )[0]
+    if (!newest) {
+      return `_none:${workspaceEnquiryRef}`
+    }
+    return `${newest.id}:${newest.updated_at ?? newest.created_at}`
+  }, [packageBuilds, workspaceEnquiryRef])
+
+  const workspaceEnquiryFieldsSig = useMemo(() => {
+    const row = enquiries.find((e) => e.reference_id === workspaceEnquiryRef)
+    if (!row?.form_payload) {
+      return ''
+    }
+    const fields = parseStoredFormPayload(row.form_payload)?.fields
+    return fields ? JSON.stringify(fields) : ''
+  }, [enquiries, workspaceEnquiryRef])
+
+  const workspaceClientTransferSnap = useMemo(() => {
+    if (!workspaceEnquiryRef) {
+      return null
+    }
+    const enq = enquiries.find((e) => e.reference_id === workspaceEnquiryRef)
+    const fields = parseStoredFormPayload(enq?.form_payload)?.fields ?? null
+    return resolveAdminWorkspaceClientTransferSnapshot(workspaceEnquiryRef, fields, packageBuilds)
+  }, [workspaceEnquiryRef, enquiries, packageBuilds])
+
+  const workspaceTransferPreviewSrcDoc = useMemo(
+    () =>
+      workspaceClientTransferSnap || workspaceCostaMapBookings.length > 0
+        ? buildAdminTransferLegsPreviewHtml(
+            workspaceClientTransferSnap,
+            workspaceEnquiryRef.trim() || workspaceClientTransferSnap?.referenceId || '',
+            workspaceCostaMapBookings
+          )
+        : '',
+    [workspaceClientTransferSnap, workspaceCostaMapBookings, workspaceEnquiryRef]
+  )
+
+  const workspaceLinkedWebsiteFormBuild = useMemo((): PackageBuildAdminRow | null => {
+    if (!workspaceEnquiryRef.trim()) {
+      return null
+    }
+    const rows = packageBuilds.filter((row) => {
+      const cfg = parseAnyPackageBuildRowConfig(row.config)
+      return cfg?.type === 'website_form' && cfg.config.enquiryReferenceId === workspaceEnquiryRef.trim()
+    })
+    const newest = [...rows].sort(
+      (a, b) =>
+        new Date(b.updated_at ?? b.created_at).getTime() - new Date(a.updated_at ?? a.created_at).getTime()
+    )[0]
+    return newest ?? null
+  }, [packageBuilds, workspaceEnquiryRef])
+
+  const workspacePkgQuotePreview = useMemo(() => {
+    const g = Number(workspacePkgQuoteGross.replace(/,/g, ''))
+    if (!Number.isFinite(g) || g <= 0) {
+      return null
+    }
+    return buildWebsiteFormAdminQuote(g, workspacePkgQuoteVat)
+  }, [workspacePkgQuoteGross, workspacePkgQuoteVat])
+
   const openInterestTicketCount = useMemo(
     () => interestAdminTickets.filter((t) => t.status === 'open').length,
     [interestAdminTickets]
@@ -789,7 +903,95 @@ export function AdminDashboardPage() {
       return
     }
 
-    setWorkspaceDraft(emptyTripWorkspaceDraft(workspaceEnquiryRef))
+    const enq = enquiries.find((e) => e.reference_id === workspaceEnquiryRef)
+    const fields = parseStoredFormPayload(enq?.form_payload)?.fields ?? null
+    setWorkspaceDraft(hydrateAdminWorkspaceDraftFromClientPackages(workspaceEnquiryRef, fields, packageBuilds))
+  }, [workspaceEnquiryRef, workspaceWebsiteFormBuildSig, workspaceEnquiryFieldsSig])
+
+  useEffect(() => {
+    const row = workspaceLinkedWebsiteFormBuild
+    if (!row) {
+      setWorkspacePkgQuoteGross('')
+      setWorkspacePkgQuoteVat(IRISH_VAT_STANDARD_RATE)
+      return
+    }
+    const p = parseAnyPackageBuildRowConfig(row.config)
+    if (p?.type === 'website_form' && p.config.adminQuote) {
+      setWorkspacePkgQuoteGross(String(p.config.adminQuote.grossTotalEur))
+      setWorkspacePkgQuoteVat(p.config.adminQuote.vatRate)
+    } else {
+      setWorkspacePkgQuoteGross('')
+      setWorkspacePkgQuoteVat(IRISH_VAT_STANDARD_RATE)
+    }
+  }, [workspaceLinkedWebsiteFormBuild, workspaceWebsiteFormBuildSig])
+
+  useEffect(() => {
+    const ref = workspaceEnquiryRef.trim()
+    const email = activeWorkspaceEnquiry?.email?.trim().toLowerCase()
+    if (!ref && !email) {
+      setWorkspaceCostaMapBookings([])
+      return
+    }
+
+    let cancelled = false
+    const supabase = getSupabaseBrowserClient()
+    if (!supabase) {
+      setWorkspaceCostaMapBookings([])
+      return
+    }
+
+    void (async () => {
+      let uid: string | null = null
+      if (email) {
+        const pr = await supabase.from('profiles').select('id').ilike('email', email).maybeSingle()
+        if (cancelled) {
+          return
+        }
+        uid = pr.data?.id ?? null
+      }
+      const orParts: string[] = []
+      if (ref) {
+        orParts.push(`enquiry_reference_id.eq.${ref}`)
+      }
+      if (uid) {
+        orParts.push(`client_user_id.eq.${uid}`)
+      }
+      if (orParts.length === 0) {
+        if (!cancelled) {
+          setWorkspaceCostaMapBookings([])
+        }
+        return
+      }
+      const tb = await supabase
+        .from('transfer_bookings')
+        .select(
+          'id,pickup_label,dropoff_label,scheduled_at,status,created_at,booking_source,enquiry_reference_id,client_email,payment_status,deposit_percent,balance_remind_at,balance_remind_sent_at'
+        )
+        .or(orParts.join(','))
+        .order('created_at', { ascending: false })
+        .limit(40)
+      if (cancelled) {
+        return
+      }
+      if (tb.error) {
+        setWorkspaceCostaMapBookings([])
+        return
+      }
+      const dedup = new Map<string, CostaMapBookingPreviewRow>()
+      for (const row of tb.data ?? []) {
+        dedup.set(row.id, row as CostaMapBookingPreviewRow)
+      }
+      setWorkspaceCostaMapBookings([...dedup.values()])
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [workspaceEnquiryRef, activeWorkspaceEnquiry?.email, session?.user?.id])
+
+  useEffect(() => {
+    setWorkspaceTransferPayMsg(null)
+    setWorkspaceTransferSendCustomerEmails(true)
   }, [workspaceEnquiryRef])
 
   useEffect(() => {
@@ -1483,14 +1685,7 @@ export function AdminDashboardPage() {
     }
 
     const quote = buildWebsiteFormAdminQuote(gross, websiteQuoteVatRate)
-    const nextConfig = {
-      version: 3 as const,
-      formKey: parsed.config.formKey,
-      enquiryReferenceId: parsed.config.enquiryReferenceId,
-      submittedAt: parsed.config.submittedAt,
-      fields: { ...parsed.config.fields },
-      adminQuote: quote
-    }
+    const nextConfig = mergeAdminQuoteIntoWebsiteFormConfig(detailRow.config, quote)
 
     setWebsiteQuoteBusy(true)
     setWebsiteQuoteMessage(null)
@@ -1540,6 +1735,75 @@ export function AdminDashboardPage() {
       `Saved — the client dashboard shows this quote, itinerary iframe, and PDF download.${emailNote}`
     )
     setWebsiteQuoteBusy(false)
+  }
+
+  const handleWorkspaceSavePackageQuote = async () => {
+    const row = workspaceLinkedWebsiteFormBuild
+    if (!row || !session?.user) {
+      setWorkspacePkgQuoteMessage('No website package is linked to this enquiry, or you are not signed in.')
+      return
+    }
+    const gross = Number(workspacePkgQuoteGross.replace(/,/g, ''))
+    if (!Number.isFinite(gross) || gross <= 0) {
+      setWorkspacePkgQuoteMessage('Enter a VAT-inclusive total in EUR (greater than zero).')
+      return
+    }
+
+    const supabase = getSupabaseBrowserClient()
+    if (!supabase) {
+      setWorkspacePkgQuoteMessage('Supabase is not configured.')
+      return
+    }
+
+    const quote = buildWebsiteFormAdminQuote(gross, workspacePkgQuoteVat)
+    const nextConfig = mergeAdminQuoteIntoWebsiteFormConfig(row.config, quote)
+
+    setWorkspacePkgQuoteBusy(true)
+    setWorkspacePkgQuoteMessage(null)
+
+    const { error } = await supabase
+      .from('package_builds')
+      .update({
+        config: nextConfig,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', row.id)
+
+    if (error) {
+      setWorkspacePkgQuoteBusy(false)
+      setWorkspacePkgQuoteMessage(error.message)
+      return
+    }
+
+    setPackageBuilds((prev) => prev.map((b) => (b.id === row.id ? { ...b, config: nextConfig } : b)))
+
+    let emailNote = ''
+    const token = session.access_token
+    if (token) {
+      try {
+        const res = await fetch('/api/send-website-quote-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({ packageBuildId: row.id })
+        })
+        const data = (await res.json().catch(() => ({}))) as { message?: string }
+        if (!res.ok) {
+          emailNote = ` The branded PDF email did not send: ${data.message ?? res.statusText}.`
+        } else {
+          emailNote = ' We also emailed them a branded copy with the quote PDF attached.'
+        }
+      } catch {
+        emailNote = ' The branded PDF email did not send (network error).'
+      }
+    } else {
+      emailNote = ' Sign in again to trigger the branded PDF email automatically.'
+    }
+
+    setWorkspacePkgQuoteMessage(`Quote saved to the linked package.${emailNote}`)
+    setWorkspacePkgQuoteBusy(false)
   }
 
   const handleCloseBuildDetail = useCallback(() => {
@@ -1938,14 +2202,18 @@ export function AdminDashboardPage() {
     }
 
     const ref = clearDashboardAccountRef.trim().toUpperCase().replace(/\s+/g, '')
-    if (!ref || ref.length < 8) {
-      setClearDashboardMessage('Enter the account number (e.g. GSI-3TY1-2719).')
+    const clientEmail = clearPortalClientEmail.trim().toLowerCase()
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientEmail)
+    if (!emailOk && (!ref || ref.length < 8)) {
+      setClearDashboardMessage('Enter the client login email and/or account / enquiry reference (e.g. GSI-3TY1-2719).')
       return
     }
 
+    const who = emailOk ? clientEmail : ref
+
     if (
       !window.confirm(
-        `Clear the entire client portal dashboard for account ${ref}?\n\nThis permanently deletes their package builds, formal proposals, portal message log, interest tickets, and terms/thank-you access rows. It turns off formal proposals and the PDF library for that login. The Supabase user is not deleted (works even when this email is also an admin).\n\nContinue?`
+        `Clear the entire client portal dashboard for ${who}?\n\nThis permanently deletes their package builds, formal proposals, portal message log, interest tickets, and terms/thank-you access rows. It turns off formal proposals and the PDF library for that login. The Supabase user is not deleted (works even when this email is also an admin).\n\nContinue?`
       )
     ) {
       return
@@ -1959,7 +2227,11 @@ export function AdminDashboardPage() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${session.access_token}`
         },
-        body: JSON.stringify({ action: 'clear_dashboard_by_account_ref', accountReferenceId: ref })
+        body: JSON.stringify({
+          action: 'clear_dashboard_by_account_ref',
+          accountReferenceId: ref,
+          ...(emailOk ? { clientEmail } : {})
+        })
       })
       const data = (await res.json().catch(() => ({}))) as { message?: string }
 
@@ -1967,12 +2239,231 @@ export function AdminDashboardPage() {
         throw new Error(data.message || 'Clear failed.')
       }
 
-      setClearDashboardMessage(`Dashboard cleared for ${ref}.`)
+      setClearDashboardMessage(`Dashboard cleared for ${who}.`)
       setClearDashboardAccountRef('')
+      setClearPortalClientEmail('')
     } catch (e) {
       setClearDashboardMessage(e instanceof Error ? e.message : 'Clear failed.')
     } finally {
       setClearDashboardBusy(false)
+    }
+  }
+
+  const handleClearPortalMessagesOnly = async () => {
+    setClearPortalInboxMessage(null)
+    if (!session?.access_token) {
+      setClearPortalInboxMessage('Sign in again as admin.')
+      return
+    }
+
+    const ref = clearDashboardAccountRef.trim().toUpperCase().replace(/\s+/g, '')
+    const clientEmail = clearPortalClientEmail.trim().toLowerCase()
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientEmail)
+    if (!emailOk && (!ref || ref.length < 8)) {
+      setClearPortalInboxMessage('Enter the client login email and/or account / enquiry reference (e.g. GSI-3TY1-2719).')
+      return
+    }
+
+    const who = emailOk ? clientEmail : ref
+
+    if (
+      !window.confirm(
+        `Clear only the client “Messages & files” log (studio emails / quote rows) for ${who}?\n\nPackages, proposals, interest tickets, and profile settings are not changed.`
+      )
+    ) {
+      return
+    }
+
+    setClearPortalInboxBusy(true)
+    try {
+      const res = await fetch('/api/admin-portal-client', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          action: 'clear_portal_messages_by_account_ref',
+          accountReferenceId: ref,
+          ...(emailOk ? { clientEmail } : {})
+        })
+      })
+      const data = (await res.json().catch(() => ({}))) as { message?: string; deletedCount?: number }
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Clear failed.')
+      }
+
+      const n = data.deletedCount
+      setClearPortalInboxMessage(
+        typeof n === 'number'
+          ? n === 0
+            ? `Matched client but removed 0 inbox rows (already empty). If the list still shows on their dashboard, have them refresh — or use their login email above.`
+            : `Removed ${n} inbox row(s) for ${who}.`
+          : `Messages & files cleared for ${who}.`
+      )
+    } catch (e) {
+      setClearPortalInboxMessage(e instanceof Error ? e.message : 'Clear failed.')
+    } finally {
+      setClearPortalInboxBusy(false)
+    }
+  }
+
+  const loadAuthEmailBlocks = useCallback(async () => {
+    if (!session?.access_token) {
+      return
+    }
+    setAuthBlockListLoading(true)
+    try {
+      const res = await fetch('/api/admin-portal-client', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ action: 'list_auth_email_blocks' })
+      })
+      const data = (await res.json().catch(() => ({}))) as {
+        message?: string
+        blocks?: { email: string; blocked_at: string; reason: string | null }[]
+      }
+      if (!res.ok) {
+        throw new Error(data.message || 'Could not load block list.')
+      }
+      setAuthBlockList(data.blocks ?? [])
+    } catch (e) {
+      setAuthBlockMessage(e instanceof Error ? e.message : 'Could not load block list.')
+    } finally {
+      setAuthBlockListLoading(false)
+    }
+  }, [session?.access_token])
+
+  useEffect(() => {
+    if (profile?.role === 'admin' && session?.access_token) {
+      void loadAuthEmailBlocks()
+    }
+  }, [profile?.role, session?.access_token, loadAuthEmailBlocks])
+
+  const handleBlockAuthEmail = async () => {
+    setAuthBlockMessage(null)
+    if (!session?.access_token) {
+      setAuthBlockMessage('Sign in again as admin.')
+      return
+    }
+    const email = authBlockEmailInput.trim().toLowerCase()
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setAuthBlockMessage('Enter a valid email to block.')
+      return
+    }
+    if (!window.confirm(`Block ${email} from magic links, website enquiries, and creating a portal account via admin?`)) {
+      return
+    }
+    setAuthBlockBusy(true)
+    try {
+      const res = await fetch('/api/admin-portal-client', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          action: 'block_auth_email',
+          email,
+          reason: authBlockReasonInput.trim() || undefined
+        })
+      })
+      const data = (await res.json().catch(() => ({}))) as { message?: string }
+      if (!res.ok) {
+        throw new Error(data.message || 'Block failed.')
+      }
+      setAuthBlockMessage(`Blocked ${email}.`)
+      setAuthBlockEmailInput('')
+      setAuthBlockReasonInput('')
+      await loadAuthEmailBlocks()
+    } catch (e) {
+      setAuthBlockMessage(e instanceof Error ? e.message : 'Block failed.')
+    } finally {
+      setAuthBlockBusy(false)
+    }
+  }
+
+  const handleUnblockAuthEmail = async (email: string) => {
+    setAuthBlockMessage(null)
+    if (!session?.access_token) {
+      setAuthBlockMessage('Sign in again as admin.')
+      return
+    }
+    if (!window.confirm(`Remove the block so ${email} can sign in and submit forms again?`)) {
+      return
+    }
+    setAuthBlockBusy(true)
+    try {
+      const res = await fetch('/api/admin-portal-client', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ action: 'unblock_auth_email', email: email.trim().toLowerCase() })
+      })
+      const data = (await res.json().catch(() => ({}))) as { message?: string }
+      if (!res.ok) {
+        throw new Error(data.message || 'Unblock failed.')
+      }
+      setAuthBlockMessage(`Unblocked ${email}.`)
+      await loadAuthEmailBlocks()
+    } catch (e) {
+      setAuthBlockMessage(e instanceof Error ? e.message : 'Unblock failed.')
+    } finally {
+      setAuthBlockBusy(false)
+    }
+  }
+
+  const handleCopySignedPortalLoginLink = async (portal: 'client' | 'admin') => {
+    setPortalLinkCopyMessage(null)
+    if (!session?.access_token) {
+      setPortalLinkCopyMessage('Sign in again as admin.')
+      return
+    }
+
+    const ref = clearDashboardAccountRef.trim().toUpperCase().replace(/\s+/g, '')
+    if (!ref || ref.length < 6) {
+      setPortalLinkCopyMessage('Enter the client account number first (e.g. GSI-3TY1-2719).')
+      return
+    }
+
+    setPortalLinkCopyBusy(portal)
+    try {
+      const res = await fetch('/api/portal-link-issue', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          accountReferenceId: ref,
+          portal,
+          siteOrigin: window.location.origin
+        })
+      })
+      const data = (await res.json().catch(() => ({}))) as { message?: string; loginUrl?: string }
+      if (!res.ok) {
+        throw new Error(data.message || 'Could not build link.')
+      }
+      const url = data.loginUrl
+      if (!url) {
+        throw new Error('Server did not return a login URL.')
+      }
+      await navigator.clipboard.writeText(url)
+      setPortalLinkCopyMessage(
+        portal === 'admin'
+          ? `Copied admin sign-in link for ${ref}. Paste into email to golfsolirl@gmail.com (or any admin inbox).`
+          : `Copied client sign-in link for ${ref}. Paste into your resend email — it opens /dashboard/login with a signed context.`
+      )
+    } catch (e) {
+      setPortalLinkCopyMessage(e instanceof Error ? e.message : 'Copy failed.')
+    } finally {
+      setPortalLinkCopyBusy('idle')
     }
   }
 
@@ -2476,6 +2967,48 @@ export function AdminDashboardPage() {
     setEnquiries((prev) => prev.filter((e) => e.id !== row.id))
   }
 
+  const handleSendPortalInvoice = async () => {
+    const row = selectedEnquiryDetail
+    if (!row) {
+      setPortalInvoiceSendMessage('Open a submission with Details first.')
+      return
+    }
+    if (!session?.access_token) {
+      setPortalInvoiceSendMessage('Sign in again as admin to send invoices.')
+      return
+    }
+    const parsed = Number(String(portalInvoiceAmountInput).replace(/,/g, '.').trim())
+    if (!Number.isFinite(parsed) || parsed < 0.5) {
+      setPortalInvoiceSendMessage('Enter a valid amount in euros (minimum €0.50).')
+      return
+    }
+    setPortalInvoiceSendBusy(true)
+    setPortalInvoiceSendMessage(null)
+    try {
+      const res = await fetch('/api/portal-invoice-send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ enquiryId: row.id, amountEur: parsed })
+      })
+      const data = (await res.json().catch(() => ({}))) as { message?: string; invoiceNumber?: string }
+      if (!res.ok) {
+        setPortalInvoiceSendMessage(data.message ?? res.statusText)
+        return
+      }
+      setPortalInvoiceSendMessage(
+        `Sent invoice ${data.invoiceNumber ?? ''} — client emailed with PDF and Stripe checkout. They pay from /dashboard.`
+      )
+      setPortalInvoiceAmountInput('')
+    } catch (e) {
+      setPortalInvoiceSendMessage(e instanceof Error ? e.message : 'Request failed.')
+    } finally {
+      setPortalInvoiceSendBusy(false)
+    }
+  }
+
   const handleRemoveAllEnquiries = async () => {
     if (enquiries.length === 0) {
       return
@@ -2550,6 +3083,139 @@ export function AdminDashboardPage() {
     }
 
     window.setTimeout(() => setWorkspaceCopyMessage(null), 4000)
+  }
+
+  const handleWorkspaceTransferPayment = async (
+    bookingId: string,
+    paymentStatus: 'unpaid' | 'deposit' | 'paid',
+    depositPercent = 20
+  ) => {
+    setWorkspaceTransferPayMsg(null)
+    if (!session?.access_token) {
+      setWorkspaceTransferPayMsg('Sign in again as admin.')
+      return
+    }
+    setWorkspaceTransferPayBusyId(bookingId)
+    try {
+      const res = await fetch('/api/transfer-payment-admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          action: 'set_payment',
+          bookingId,
+          paymentStatus,
+          depositPercent,
+          sendCustomerEmails: workspaceTransferSendCustomerEmails
+        })
+      })
+      const data = (await res.json().catch(() => ({}))) as {
+        message?: string
+        thankYouError?: string | null
+        thankYouSent?: string | null
+        balanceRemindAt?: string | null
+        unchanged?: boolean
+      }
+      if (!res.ok) {
+        throw new Error(data.message || 'Update failed.')
+      }
+      const parts: string[] = []
+      if (data.unchanged) {
+        parts.push(data.message || 'No change.')
+      } else {
+        if (paymentStatus === 'deposit') {
+          parts.push(
+            data.balanceRemindAt
+              ? `Deposit recorded. Balance reminder queued for ${formatAdminDateTime(data.balanceRemindAt)}.`
+              : 'Deposit recorded.'
+          )
+        } else if (paymentStatus === 'paid') {
+          parts.push('Full payment recorded.')
+        } else {
+          parts.push('Marked unpaid; reminder schedule cleared.')
+        }
+        if (workspaceTransferSendCustomerEmails) {
+          if (data.thankYouSent) {
+            parts.push(`Thank-you email sent (${data.thankYouSent === 'deposit' ? 'deposit' : 'paid in full'}).`)
+          }
+          if (data.thankYouError) {
+            parts.push(`Email failed: ${data.thankYouError}`)
+          }
+        } else if (paymentStatus === 'deposit' || paymentStatus === 'paid') {
+          parts.push('Customer thank-you email not sent (option unchecked).')
+        }
+      }
+      setWorkspaceTransferPayMsg(parts.join(' '))
+
+      const ref = workspaceEnquiryRef.trim()
+      const em = activeWorkspaceEnquiry?.email?.trim().toLowerCase()
+      const supabase = getSupabaseBrowserClient()
+      if (supabase && (ref || em)) {
+        let uid: string | null = null
+        if (em) {
+          const pr = await supabase.from('profiles').select('id').ilike('email', em).maybeSingle()
+          uid = pr.data?.id ?? null
+        }
+        const orParts: string[] = []
+        if (ref) {
+          orParts.push(`enquiry_reference_id.eq.${ref}`)
+        }
+        if (uid) {
+          orParts.push(`client_user_id.eq.${uid}`)
+        }
+        if (orParts.length) {
+          const tb = await supabase
+            .from('transfer_bookings')
+            .select(
+              'id,pickup_label,dropoff_label,scheduled_at,status,created_at,booking_source,enquiry_reference_id,client_email,payment_status,deposit_percent,balance_remind_at,balance_remind_sent_at'
+            )
+            .or(orParts.join(','))
+            .order('created_at', { ascending: false })
+            .limit(40)
+          if (!tb.error && tb.data) {
+            const dedup = new Map<string, CostaMapBookingPreviewRow>()
+            for (const row of tb.data) {
+              dedup.set(row.id, row as CostaMapBookingPreviewRow)
+            }
+            setWorkspaceCostaMapBookings([...dedup.values()])
+          }
+        }
+      }
+    } catch (e) {
+      setWorkspaceTransferPayMsg(e instanceof Error ? e.message : 'Update failed.')
+    } finally {
+      setWorkspaceTransferPayBusyId(null)
+    }
+  }
+
+  const handleWorkspaceRunBalanceReminders = async () => {
+    setWorkspaceTransferPayMsg(null)
+    if (!session?.access_token) {
+      setWorkspaceTransferPayMsg('Sign in again as admin.')
+      return
+    }
+    setWorkspaceTransferReminderBusy(true)
+    try {
+      const res = await fetch('/api/transfer-payment-admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ action: 'run_balance_reminders' })
+      })
+      const data = (await res.json().catch(() => ({}))) as { message?: string; sent?: number; candidates?: number }
+      if (!res.ok) {
+        throw new Error(data.message || 'Sweep failed.')
+      }
+      setWorkspaceTransferPayMsg(`Balance reminders: ${data.sent ?? 0} sent (${data.candidates ?? 0} due rows).`)
+    } catch (e) {
+      setWorkspaceTransferPayMsg(e instanceof Error ? e.message : 'Sweep failed.')
+    } finally {
+      setWorkspaceTransferReminderBusy(false)
+    }
   }
 
   const handleCopyWorkspaceJson = async () => {
@@ -2811,15 +3477,55 @@ export function AdminDashboardPage() {
     }
   }
 
-  if (isLoading || !session || profile?.role !== 'admin') {
+  const adminDataCardSections = useMemo(
+    () =>
+      buildClientDataCardSections({
+        profile,
+        userEmail: session?.user?.email ?? null,
+        enquiries: [],
+        packageBuilds: []
+      }),
+    [profile, session?.user?.email]
+  )
+
+  const adminGreetingFirst = profile?.full_name?.trim()?.split(/\s+/).filter(Boolean)[0] ?? ''
+  const adminHeroTitle = adminGreetingFirst ? `Hello, ${adminGreetingFirst}` : 'Admin dashboard'
+
+  if (isLoading || !session) {
     return <DashboardLoadingShell label="Loading admin dashboard…" />
+  }
+
+  if (!profile) {
+    return (
+      <DashboardLayout
+        kicker="Operations"
+        subtitle="Signed in, but your profile row did not load (network, RLS, or missing `profiles` row)."
+        title="Admin dashboard"
+        variant="admin"
+      >
+        <div className="rounded-3xl border border-amber-200/90 bg-amber-50/90 px-6 py-5 text-sm text-amber-950 shadow-soft">
+          <p className="font-medium">Cannot verify admin access without a profile.</p>
+          <p className="mt-2 text-amber-900/90">
+            If your account is an admin, confirm <code className="rounded bg-white/80 px-1">profiles.role</code> is{' '}
+            <code className="rounded bg-white/80 px-1">admin</code> for this user in Supabase, then retry.
+          </p>
+          <LuxuryButton className="mt-4" onClick={() => void refreshProfile()} type="button" variant="primary">
+            Retry loading profile
+          </LuxuryButton>
+        </div>
+      </DashboardLayout>
+    )
+  }
+
+  if (profile.role !== 'admin') {
+    return <DashboardLoadingShell label="Opening your client dashboard…" />
   }
 
   return (
     <DashboardLayout
       kicker="Operations"
       subtitle="Enquiries, client-saved package builds from the live calculator, and CRM proposal rows — all in Supabase."
-      title="Admin dashboard"
+      title={adminHeroTitle}
       variant="admin"
     >
       {loadError ? (
@@ -2827,6 +3533,14 @@ export function AdminDashboardPage() {
           {loadError}
         </div>
       ) : null}
+
+      <div className="mb-10 space-y-10">
+        <PortalClientDataCard sections={adminDataCardSections} />
+        <AdminAccountTransfersHub />
+        <div className="scroll-mt-28" id="admin-transfer-pipeline">
+          <AdminTransferPipeline />
+        </div>
+      </div>
 
       {listLoading ? (
         <p className="text-sm font-medium text-forest-600">Loading data…</p>
@@ -2988,8 +3702,10 @@ export function AdminDashboardPage() {
                       site.
                     </p>
                     <p className="mt-2 text-xs text-forest-500">
-                      <strong className="font-medium text-forest-700">Quote &amp; VAT</strong> (totals, deposit, branded PDF email) live on
-                      the linked <strong className="font-medium text-forest-700">client package build</strong> (modal), not here.
+                      <strong className="font-medium text-forest-700">Full quote &amp; VAT breakdown</strong> (deposit split, calculator) lives on
+                      the linked <strong className="font-medium text-forest-700">client package build</strong> when it exists. You can also send a
+                      simple <strong className="font-medium text-forest-700">priced invoice + Stripe</strong> from this card (portal profile must
+                      match the enquiry email).
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -3047,6 +3763,48 @@ export function AdminDashboardPage() {
                     </p>
                   </div>
                 )}
+
+                <div className="mt-6 rounded-2xl border border-violet-200/90 bg-gradient-to-br from-violet-50/95 to-white px-4 py-4 text-sm text-forest-900 shadow-sm">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-800">Priced invoice + Stripe (simple path)</p>
+                  <p className="mt-2 text-sm text-forest-700">
+                    Enter one total (EUR, inc. VAT as you intend). We create a portal invoice row, Stripe Checkout, and email the client a
+                    branded message with an invoice PDF. They pay from <span className="font-mono text-xs">/dashboard</span> (two cards:
+                    submission + invoice).
+                  </p>
+                  <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+                    <div className="min-w-[8rem] flex-1">
+                      <label className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.12em] text-violet-900/80" htmlFor="portal-invoice-amount">
+                        Amount (EUR)
+                      </label>
+                      <input
+                        className="w-full rounded-xl border border-violet-200 bg-white px-3 py-2.5 text-sm font-medium text-forest-900 outline-none ring-violet-300/40 focus:ring-2"
+                        id="portal-invoice-amount"
+                        inputMode="decimal"
+                        onChange={(e) => setPortalInvoiceAmountInput(e.target.value)}
+                        placeholder="e.g. 2499"
+                        type="text"
+                        value={portalInvoiceAmountInput}
+                      />
+                    </div>
+                    <LuxuryButton
+                      className="!px-6 !py-2.5"
+                      disabled={portalInvoiceSendBusy}
+                      onClick={() => void handleSendPortalInvoice()}
+                      type="button"
+                      variant="primary"
+                    >
+                      {portalInvoiceSendBusy ? 'Sending…' : 'Send invoice & payment link'}
+                    </LuxuryButton>
+                  </div>
+                  {portalInvoiceSendMessage ? (
+                    <p className="mt-3 text-xs text-forest-700">{portalInvoiceSendMessage}</p>
+                  ) : null}
+                  <p className="mt-3 text-[11px] leading-relaxed text-forest-500">
+                    Requires <code className="rounded bg-white/90 px-1">STRIPE_SECRET_KEY</code>,{' '}
+                    <code className="rounded bg-white/90 px-1">STRIPE_WEBHOOK_SECRET</code>, and a Stripe webhook pointing to{' '}
+                    <code className="rounded bg-white/90 px-1">/api/stripe-webhook</code> for <code className="rounded bg-white/90 px-1">checkout.session.completed</code>.
+                  </p>
+                </div>
 
                 <dl className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {submissionDetailRows(selectedEnquiryDetail).map(([label, value], rowIndex) => (
@@ -4561,18 +5319,19 @@ export function AdminDashboardPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Trip proposal workspace</p>
             <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Match an enquiry → sketch a quote</h2>
             <p className="mt-2 max-w-3xl text-sm text-forest-600">
-              Pick the enquiry reference (same ID as in the customer email subject). Toggle <strong>transfer</strong>,{' '}
-              <strong>golf</strong>, and/or <strong>hotel</strong> for 1–8 guests, select Costa courses (Benalmádena through
-              Sotogrande — same roster as the site map). Generate a <strong>client-style proposal PDF</strong> below (same
-              template as customers) with enquiry contact details, your selections, and indicative pricing — or copy JSON for
-              other tools. Illustrative prices only until you wire supplier rates.
+              Pick the enquiry reference (same ID as in the customer email subject). After you choose <strong>Active enquiry</strong>, use{' '}
+              <strong>Transfer payments (this enquiry)</strong> (card just below the enquiry details) to mark each linked transfer job
+              as unpaid, deposit, or paid in full. Toggle <strong>transfer</strong>, <strong>golf</strong>, and/or <strong>hotel</strong>{' '}
+              for 1–8 guests, select Costa courses (Benalmádena through Sotogrande — same roster as the site map). Generate a{' '}
+              <strong>client-style proposal PDF</strong> below with enquiry contact details, your selections, and indicative pricing — or
+              copy JSON for other tools. Illustrative prices only until you wire supplier rates.
             </p>
 
             {enquiries.length === 0 ? (
               <p className="mt-6 text-sm text-forest-600">Load enquiries above to use this workspace.</p>
             ) : (
               <div className="mt-6 space-y-6 rounded-[2rem] border border-forest-100 bg-offwhite/90 p-6 shadow-soft md:p-8">
-                <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                <div className="flex flex-col flex-wrap gap-4 md:flex-row md:items-end md:justify-between">
                   <div className="min-w-0 flex-1">
                     <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="ws-enquiry">
                       Active enquiry
@@ -4598,6 +5357,18 @@ export function AdminDashboardPage() {
                     variant="outline"
                   >
                     Copy client “save enquiry” link
+                  </LuxuryButton>
+                  <LuxuryButton
+                    disabled={!workspaceEnquiryRef.trim()}
+                    onClick={() =>
+                      document
+                        .getElementById('admin-transfer-payments-workspace')
+                        ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                    }
+                    type="button"
+                    variant="outline"
+                  >
+                    Jump to transfer payments
                   </LuxuryButton>
                 </div>
 
@@ -4642,6 +5413,390 @@ export function AdminDashboardPage() {
                         </LuxuryButton>
                       </div>
                     </div>
+                  </div>
+                ) : null}
+
+                {workspaceEnquiryRef.trim() ? (
+                  <div
+                    className="scroll-mt-28 rounded-2xl border border-forest-200 bg-white p-4 shadow-sm md:p-6"
+                    id="admin-transfer-payments-workspace"
+                  >
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-700">
+                      Transfer payments (this enquiry)
+                    </p>
+                    <p className="mt-1 text-sm text-forest-600">
+                      Each row is one <strong className="font-medium text-forest-800">transfer_bookings</strong> job (client map,
+                      dashboard request, or website enquiry mirror). Use the buttons to set{' '}
+                      <strong className="font-medium text-forest-800">Unpaid</strong>,{' '}
+                      <strong className="font-medium text-forest-800">20% deposit</strong>, or{' '}
+                      <strong className="font-medium text-forest-800">Paid in full</strong>.
+                    </p>
+                    {workspaceCostaMapBookings.length > 0 ? (
+                      <div className="mt-4">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">
+                            Linked transfer jobs
+                          </p>
+                          <LuxuryButton
+                            className="!px-3 !py-2 !text-xs"
+                            disabled={workspaceTransferReminderBusy}
+                            onClick={() => void handleWorkspaceRunBalanceReminders()}
+                            type="button"
+                            variant="outline"
+                          >
+                            {workspaceTransferReminderBusy ? 'Running…' : 'Send due balance reminders now'}
+                          </LuxuryButton>
+                        </div>
+                        <p className="mt-1 text-xs text-forest-500">
+                          Thank-you emails send when you change payment (unless unchecked below). After a deposit, a balance reminder is
+                          queued (server env{' '}
+                          <code className="rounded bg-offwhite px-1">TRANSFER_BALANCE_REMINDER_AFTER_MINUTES</code>). Cron{' '}
+                          <code className="rounded bg-offwhite px-1">/api/transfer-balance-reminder-sweep</code> runs every two minutes
+                          when deployed.
+                        </p>
+                        <label className="mt-3 flex cursor-pointer items-start gap-2.5 text-sm text-forest-800">
+                          <input
+                            checked={workspaceTransferSendCustomerEmails}
+                            className="mt-1 h-4 w-4 shrink-0 rounded border-forest-300 text-fairway-700 focus:ring-fairway-500"
+                            id="ws-transfer-send-customer-emails"
+                            onChange={(e) => setWorkspaceTransferSendCustomerEmails(e.target.checked)}
+                            type="checkbox"
+                          />
+                          <span>
+                            <span className="font-medium">Send customer thank-you email</span> when you change payment to deposit or
+                            paid in full. Uncheck to update status only (no email); balance reminder scheduling still applies after a
+                            deposit.
+                          </span>
+                        </label>
+                        {workspaceTransferPayMsg ? (
+                          <p className="mt-2 text-sm font-medium text-fairway-900" role="status">
+                            {workspaceTransferPayMsg}
+                          </p>
+                        ) : null}
+                        <ul className="mt-3 space-y-4 text-sm text-forest-900">
+                          {workspaceCostaMapBookings.map((b) => {
+                            const paySt = (b.payment_status ?? 'unpaid').toLowerCase()
+                            const pct = typeof b.deposit_percent === 'number' ? b.deposit_percent : 20
+                            const busy = workspaceTransferPayBusyId === b.id
+                            return (
+                              <li
+                                className="rounded-xl border border-forest-100 bg-offwhite/80 px-3 py-3 sm:px-4"
+                                key={b.id}
+                              >
+                                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                                  <span className="font-medium text-forest-800">
+                                    {b.pickup_label} → {b.dropoff_label}
+                                  </span>
+                                  <span className="text-forest-600">
+                                    · {b.status.replace(/_/g, ' ')}
+                                    {b.scheduled_at
+                                      ? ` · ${formatAdminDateTime(b.scheduled_at)}`
+                                      : ' · Pick-up time not set (ASAP)'}
+                                  </span>
+                                </div>
+                                <p className="mt-1 text-xs text-forest-500">
+                                  {b.booking_source === 'website_enquiry' ? 'Website enquiry mirror' : 'Client dashboard'} ·{' '}
+                                  {(b.client_email ?? '').trim() || '—'}
+                                </p>
+                                <div className="mt-2 flex flex-wrap items-center gap-2">
+                                  <span
+                                    className={`rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide ${
+                                      paySt === 'paid'
+                                        ? 'bg-fairway-100 text-fairway-900'
+                                        : paySt === 'deposit'
+                                          ? 'bg-amber-100 text-amber-950'
+                                          : 'bg-offwhite text-forest-600'
+                                    }`}
+                                  >
+                                    {paySt === 'paid' ? 'Paid in full' : paySt === 'deposit' ? `${pct}% deposit` : 'Unpaid'}
+                                  </span>
+                                  {b.balance_remind_at && paySt === 'deposit' ? (
+                                    <span className="text-xs text-forest-600">
+                                      Balance reminder due {formatAdminDateTime(b.balance_remind_at)}
+                                      {b.balance_remind_sent_at
+                                        ? ` · Sent ${formatAdminDateTime(b.balance_remind_sent_at)}`
+                                        : ' · Not sent yet'}
+                                    </span>
+                                  ) : null}
+                                </div>
+                                <div className="mt-3 flex flex-wrap gap-2">
+                                  <LuxuryButton
+                                    className="!px-3 !py-2 !text-xs"
+                                    disabled={busy || paySt === 'unpaid'}
+                                    onClick={() => void handleWorkspaceTransferPayment(b.id, 'unpaid')}
+                                    type="button"
+                                    variant="white"
+                                  >
+                                    Unpaid
+                                  </LuxuryButton>
+                                  <LuxuryButton
+                                    className="!px-3 !py-2 !text-xs"
+                                    disabled={busy || paySt === 'deposit'}
+                                    onClick={() => void handleWorkspaceTransferPayment(b.id, 'deposit', 20)}
+                                    type="button"
+                                    variant="outline"
+                                  >
+                                    20% deposit received
+                                  </LuxuryButton>
+                                  <LuxuryButton
+                                    className="!px-3 !py-2 !text-xs"
+                                    disabled={busy || paySt === 'paid'}
+                                    onClick={() => void handleWorkspaceTransferPayment(b.id, 'paid')}
+                                    type="button"
+                                    variant="primary"
+                                  >
+                                    Paid in full
+                                  </LuxuryButton>
+                                </div>
+                              </li>
+                            )
+                          })}
+                        </ul>
+                      </div>
+                    ) : (
+                      <div className="mt-4 rounded-xl border border-dashed border-forest-200 bg-offwhite/60 px-4 py-4 text-sm text-forest-700">
+                        <p className="font-medium text-forest-900">No transfer jobs linked to this enquiry yet</p>
+                        <p className="mt-2">
+                          Rows show up when a booking uses enquiry reference{' '}
+                          <span className="font-mono text-xs">{workspaceEnquiryRef}</span> (website transport mirror) or the same email as
+                          this enquiry has a portal profile with map/dashboard transfer requests.
+                        </p>
+                        <div className="mt-3">
+                          <LuxuryButton
+                            className="!px-3 !py-2 !text-xs"
+                            onClick={() =>
+                              document
+                                .getElementById('admin-transfer-pipeline')
+                                ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                            }
+                            type="button"
+                            variant="outline"
+                          >
+                            Open Operations · Costa transfers
+                          </LuxuryButton>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : null}
+
+                {workspaceClientTransferSnap || workspaceCostaMapBookings.length > 0 ? (
+                  <div className="rounded-2xl border border-fairway-200 bg-gradient-to-br from-fairway-50/80 to-white p-4 shadow-sm md:p-6">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-fairway-800">
+                          Client transfers (portal + map)
+                        </p>
+                        <p className="mt-1 text-sm text-forest-700">
+                          Saved trip legs from the client dashboard, map-based transfer requests for this enquiry email, and
+                          original enquiry fields when available.
+                          {workspaceClientTransferSnap?.buildUpdatedAt ? (
+                            <>
+                              {' '}
+                              · Package updated {formatAdminDateTime(workspaceClientTransferSnap.buildUpdatedAt)}
+                            </>
+                          ) : null}
+                        </p>
+                      </div>
+                      <LuxuryButton
+                        className="!px-4 !py-2 !text-xs"
+                        onClick={() =>
+                          document
+                            .getElementById('admin-transfer-pipeline')
+                            ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                        }
+                        type="button"
+                        variant="outline"
+                      >
+                        Assign driver (operations)
+                      </LuxuryButton>
+                    </div>
+
+                    {workspaceClientTransferSnap ? (
+                      <>
+                        {workspaceClientTransferSnap.originalTransferRows.length > 0 ? (
+                          <div className="mt-5">
+                            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">Original form</p>
+                            <ul className="mt-2 space-y-1.5 text-sm text-forest-900">
+                              {workspaceClientTransferSnap.originalTransferRows.map((r) => (
+                                <li key={`${r.label}:${r.value}`}>
+                                  <span className="font-medium text-forest-800">{r.label}:</span> {r.value}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ) : null}
+
+                        {workspaceClientTransferSnap.portalPlan &&
+                        ((workspaceClientTransferSnap.portalPlan.golfLegs.some((l) => l.courseId.trim()) ||
+                          workspaceClientTransferSnap.portalPlan.hotelLegs.some((l) => l.hotelName.trim()))) ? (
+                          <div className="mt-5">
+                            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">
+                              Portal · golf & hotel legs
+                            </p>
+                            <ul className="mt-2 space-y-2 text-sm text-forest-900">
+                              {workspaceClientTransferSnap.portalPlan.golfLegs
+                                .filter((l) => l.courseId.trim())
+                                .map((l) => {
+                                  const name = COURSES.find((c) => c.id === l.courseId)?.name ?? l.courseId
+                                  const pt = (l.pickupAtLocal ?? '').trim()
+                                  return (
+                                    <li key={`golf-${l.courseId}-${l.notes}-${pt}`}>
+                                      <span className="font-medium text-forest-800">Golf · {name}</span>
+                                      {l.notes.trim() ? <span className="text-forest-600"> — {l.notes.trim()}</span> : null}
+                                      {pt ? (
+                                        <span className="text-forest-600"> · Pick-up {pt.replace('T', ' ')}</span>
+                                      ) : null}
+                                    </li>
+                                  )
+                                })}
+                              {workspaceClientTransferSnap.portalPlan.hotelLegs
+                                .filter((l) => l.hotelName.trim())
+                                .map((l) => {
+                                  const pt = (l.pickupAtLocal ?? '').trim()
+                                  return (
+                                    <li key={`hotel-${l.hotelName}-${l.notes}-${pt}`}>
+                                      <span className="font-medium text-forest-800">Hotel · {l.hotelName.trim()}</span>
+                                      {l.notes.trim() ? <span className="text-forest-600"> — {l.notes.trim()}</span> : null}
+                                      {pt ? (
+                                        <span className="text-forest-600"> · Pick-up {pt.replace('T', ' ')}</span>
+                                      ) : null}
+                                    </li>
+                                  )
+                                })}
+                            </ul>
+                          </div>
+                        ) : null}
+
+                        <div className="mt-5">
+                          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">
+                            Route order (portal)
+                          </p>
+                          <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-forest-900">
+                            {normalizeTransferStops(workspaceClientTransferSnap.hydratedDraft.transferStops).map((stop, i) => {
+                              const label =
+                                stop.kind === 'malaga_airport' || stop.ref === 'agp'
+                                  ? 'Málaga Airport (AGP)'
+                                  : stop.kind === 'golf_course'
+                                    ? COURSES.find((c) => c.id === stop.ref)?.name ?? stop.ref
+                                    : corridorHotelBySlug(stop.ref)?.name ?? stop.ref
+                              const pt = (stop.pickupAtLocal ?? '').trim()
+                              return (
+                                <li key={`${stop.kind}-${stop.ref}-${i}`}>
+                                  {stop.kind.replace(/_/g, ' ')} → {label}
+                                  {pt ? <span className="text-forest-600"> · pick-up {pt.replace('T', ' ')}</span> : null}
+                                </li>
+                              )
+                            })}
+                          </ol>
+                        </div>
+
+                        {(workspaceClientTransferSnap.hydratedDraft.transferContactPhone ?? '').trim() ? (
+                          <p className="mt-4 text-sm text-forest-800">
+                            <span className="font-semibold">Transfer contact:</span>{' '}
+                            {workspaceClientTransferSnap.hydratedDraft.transferContactPhone?.trim()}
+                          </p>
+                        ) : null}
+                      </>
+                    ) : workspaceCostaMapBookings.length > 0 ? (
+                      <p className="mt-4 text-sm text-forest-600">
+                        This enquiry email has map transfer requests. When the client saves <strong>Trip details</strong> for
+                        their linked package, corridor route legs and pick-up times from the trip planner appear here too.
+                      </p>
+                    ) : null}
+
+                    {workspaceTransferPreviewSrcDoc ? (
+                      <div className="mt-5 overflow-hidden rounded-xl border border-forest-200 bg-white shadow-inner">
+                        <p className="border-b border-forest-100 px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">
+                          Transfer legs preview
+                        </p>
+                        <iframe
+                          className="h-[min(52vh,560px)] w-full bg-white"
+                          srcDoc={workspaceTransferPreviewSrcDoc}
+                          title="Client transfer legs preview"
+                        />
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
+
+                {workspaceEnquiryRef ? (
+                  <div className="rounded-2xl border border-forest-200 bg-white p-4 shadow-sm md:p-6">
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">
+                      Linked package · update pricing for this enquiry
+                    </p>
+                    {workspaceLinkedWebsiteFormBuild ? (
+                      <>
+                        <p className="mt-1 text-sm text-forest-600">
+                          Saves VAT-inclusive totals to the client&apos;s website-form package and emails the same branded
+                          quote PDF as the package detail tool (portal legs and pick-up times are preserved).
+                        </p>
+                        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                          <div>
+                            <label className={adminTripLabelClass} htmlFor="ws-pkg-quote-gross">
+                              Group total (EUR, VAT inc.)
+                            </label>
+                            <input
+                              className={adminTripInputClass}
+                              id="ws-pkg-quote-gross"
+                              inputMode="decimal"
+                              onChange={(e) => setWorkspacePkgQuoteGross(e.target.value)}
+                              placeholder="e.g. 8450"
+                              value={workspacePkgQuoteGross}
+                            />
+                          </div>
+                          <div>
+                            <label className={adminTripLabelClass} htmlFor="ws-pkg-quote-vat">
+                              VAT rate
+                            </label>
+                            <select
+                              className={adminTripInputClass}
+                              id="ws-pkg-quote-vat"
+                              onChange={(e) => setWorkspacePkgQuoteVat(Number(e.target.value))}
+                              value={workspacePkgQuoteVat}
+                            >
+                              <option value={IRISH_VAT_STANDARD_RATE}>Standard ({Math.round(IRISH_VAT_STANDARD_RATE * 100)}%)</option>
+                              <option value={IRISH_VAT_REDUCED_TOURISM_RATE}>
+                                Tourism ({Math.round(IRISH_VAT_REDUCED_TOURISM_RATE * 1000) / 10}%)
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+                        {workspacePkgQuotePreview ? (
+                          <div className="mt-3 rounded-xl border border-forest-100 bg-offwhite/80 px-3 py-2 text-xs text-forest-800">
+                            <p>
+                              Net services {formatEur(workspacePkgQuotePreview.netServicesEur)} · VAT{' '}
+                              {formatEur(workspacePkgQuotePreview.vatAmountEur)} ·{' '}
+                              <span className="font-semibold">Total {formatEur(workspacePkgQuotePreview.grossTotalEur)}</span>
+                            </p>
+                            <p className="mt-1">
+                              Deposit 20% {formatEur(workspacePkgQuotePreview.deposit20Eur)} · Balance{' '}
+                              {formatEur(workspacePkgQuotePreview.balance80Eur)}
+                            </p>
+                          </div>
+                        ) : null}
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          <LuxuryButton
+                            disabled={workspacePkgQuoteBusy || !workspacePkgQuotePreview}
+                            onClick={() => void handleWorkspaceSavePackageQuote()}
+                            type="button"
+                            variant="primary"
+                          >
+                            {workspacePkgQuoteBusy ? 'Saving…' : 'Save quote & email client'}
+                          </LuxuryButton>
+                        </div>
+                        {workspacePkgQuoteMessage ? (
+                          <p className="mt-3 text-sm font-medium text-fairway-900" role="status">
+                            {workspacePkgQuoteMessage}
+                          </p>
+                        ) : null}
+                      </>
+                    ) : (
+                      <p className="mt-2 text-sm text-forest-600">
+                        No <code className="rounded bg-forest-900/10 px-1 text-xs">website_form</code> package row matches
+                        this enquiry reference yet — create or link one from enquiries / client portal first.
+                      </p>
+                    )}
                   </div>
                 ) : null}
 
@@ -5206,40 +6361,12 @@ export function AdminDashboardPage() {
               ) : null}
             </div>
 
-            <div className="mt-8 rounded-[2rem] border border-forest-200 bg-white p-6 shadow-soft md:p-8">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-red-900">Clear client dashboard by account number</p>
-              <p className="mt-2 text-sm text-forest-600">
-                Finds the profile by <strong className="font-medium text-forest-800">account reference</strong> (not email) — safe when the same address is used for admin and client. Deletes package builds, proposals, portal inbox log, interest tickets, and terms/thank-you access rows; turns off both dashboard toggles; clears{' '}
-                <strong className="font-medium text-forest-800">name, phone, account number</strong>, and the one-time contact flag on the profile, and clears name/phone stored on the auth record (so the dashboard does not fall back to old metadata).{' '}
-                <strong className="font-medium text-forest-800">Sign-in email is unchanged.</strong> Does not delete the Supabase user or enquiry CRM rows.
+            <div className="mt-8 rounded-[2rem] border border-forest-200 bg-offwhite/80 p-5 text-sm text-forest-700 shadow-inner md:p-6">
+              <p className="font-semibold text-forest-900">Client access &amp; portal reset</p>
+              <p className="mt-2 max-w-xl">
+                Clear dashboard, copy signed login links, and block or unblock sign-in / enquiries for an address — moved to the{' '}
+                <strong className="font-medium text-forest-900">bottom of this admin page</strong> so day-to-day enquiries and packages stay up top.
               </p>
-              <label className="mb-2 mt-4 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="clear-dashboard-account-ref">
-                Account number
-              </label>
-              <input
-                className="mb-4 w-full max-w-md rounded-2xl border border-forest-200 bg-white px-4 py-3 font-mono text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
-                id="clear-dashboard-account-ref"
-                onChange={(e) => {
-                  setClearDashboardAccountRef(e.target.value)
-                  setClearDashboardMessage(null)
-                }}
-                placeholder="e.g. GSI-3TY1-2719"
-                type="text"
-                value={clearDashboardAccountRef}
-              />
-              <button
-                className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-red-200 bg-white px-6 py-3 text-sm font-semibold text-red-900 transition-colors hover:bg-red-50 disabled:opacity-60"
-                disabled={clearDashboardBusy}
-                onClick={() => void handleClearDashboardByAccountRef()}
-                type="button"
-              >
-                {clearDashboardBusy ? 'Clearing…' : 'Clear entire portal dashboard'}
-              </button>
-              {clearDashboardMessage ? (
-                <p className="mt-3 text-sm font-medium text-forest-800" role="status">
-                  {clearDashboardMessage}
-                </p>
-              ) : null}
             </div>
 
             <div className="mt-8 rounded-[2rem] border border-dashed border-forest-200 bg-offwhite/60 p-6 md:p-8">
@@ -5575,8 +6702,10 @@ export function AdminDashboardPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Driver calendar</p>
             <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Booked days &amp; printable runs</h2>
             <p className="mt-2 max-w-2xl text-sm text-forest-600">
-              Add a row for each day that is <strong className="font-medium text-forest-800">fully booked</strong>. Every public enquiry form checks these dates and blocks new requests on the same day. Click a date to see customer details and use{' '}
-              <strong className="font-medium text-forest-800">Print day sheet</strong> for a paper copy.
+              Add a row for each day that is <strong className="font-medium text-forest-800">fully booked</strong>. You do not need a real
+              booking in other tables — use <strong className="font-medium text-forest-800">Block transfers on website</strong> on a selected
+              day when you are at capacity. Public forms show a &quot;fully booked&quot; notice before submit and refuse those dates. Click a
+              date for details and <strong className="font-medium text-forest-800">Print day sheet</strong> when you have passenger info.
             </p>
             <div className="mt-6">
               <AdminDriverCalendarPanel />
@@ -6187,6 +7316,209 @@ export function AdminDashboardPage() {
           </div>
         </div>
       ) : null}
+
+      <div className="mt-20 space-y-12 border-t border-forest-200 pt-14">
+        <section
+          aria-label="Clear client portal and copy signed login links"
+          className="rounded-3xl border-2 border-red-200/90 bg-gradient-to-br from-red-50/95 to-white p-6 shadow-soft sm:p-8"
+        >
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-red-900">Client portal reset</p>
+          <h2 className="font-display mt-2 text-xl font-semibold text-forest-950">Clear dashboard or copy signed login URL</h2>
+          <p className="mt-2 max-w-3xl text-sm text-forest-700">
+            Use <strong className="font-medium text-forest-900">client login email</strong> and/or an <strong className="font-medium text-forest-900">account or enquiry ref</strong> (GSI-…) so we match the same profile that owns the inbox. Signed links use the account ref field and{' '}
+            <code className="rounded bg-white/90 px-1 font-mono text-xs ring-1 ring-forest-200">PORTAL_LINK_SIGNING_SECRET</code> on the server.
+          </p>
+          <label className="mb-2 mt-5 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="bottom-clear-portal-client-email">
+            Client login email
+          </label>
+          <input
+            autoComplete="email"
+            className="mb-3 w-full max-w-md rounded-2xl border border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
+            id="bottom-clear-portal-client-email"
+            onChange={(e) => {
+              setClearPortalClientEmail(e.target.value)
+              setClearDashboardMessage(null)
+              setClearPortalInboxMessage(null)
+              setPortalLinkCopyMessage(null)
+            }}
+            placeholder="Address they sign in with (best for clearing Messages & files)"
+            type="email"
+            value={clearPortalClientEmail}
+          />
+          <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="bottom-clear-dashboard-ref">
+            Account or enquiry reference (optional if email above is set)
+          </label>
+          <input
+            className="mb-2 w-full max-w-md rounded-2xl border border-forest-200 bg-white px-4 py-3 font-mono text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
+            id="bottom-clear-dashboard-ref"
+            onChange={(e) => {
+              setClearDashboardAccountRef(e.target.value)
+              setClearDashboardMessage(null)
+              setClearPortalInboxMessage(null)
+              setPortalLinkCopyMessage(null)
+            }}
+            placeholder="e.g. GSI-3TY1-2719 (profile account # or quote enquiry ref)"
+            type="text"
+            value={clearDashboardAccountRef}
+          />
+          <p className="mb-4 max-w-xl text-xs text-forest-600">
+            Quote titles may show an enquiry ref that differs from the profile account number — use login email when in doubt.
+          </p>
+          <div className="flex flex-col flex-wrap gap-3 sm:flex-row sm:items-center">
+            <button
+              className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-amber-300 bg-white px-6 py-3 text-sm font-semibold text-amber-950 transition-colors hover:bg-amber-50 disabled:opacity-60"
+              disabled={clearPortalInboxBusy || clearDashboardBusy}
+              onClick={() => void handleClearPortalMessagesOnly()}
+              type="button"
+            >
+              {clearPortalInboxBusy ? 'Clearing…' : 'Clear Messages & files only'}
+            </button>
+            <button
+              className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-red-300 bg-white px-6 py-3 text-sm font-semibold text-red-950 transition-colors hover:bg-red-50 disabled:opacity-60"
+              disabled={clearDashboardBusy || clearPortalInboxBusy}
+              onClick={() => void handleClearDashboardByAccountRef()}
+              type="button"
+            >
+              {clearDashboardBusy ? 'Clearing…' : 'Clear entire client portal'}
+            </button>
+            <button
+              className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-forest-200 bg-white px-6 py-3 text-sm font-semibold text-forest-900 transition-colors hover:border-fairway-400 disabled:opacity-60"
+              disabled={portalLinkCopyBusy !== 'idle'}
+              onClick={() => void handleCopySignedPortalLoginLink('client')}
+              type="button"
+            >
+              {portalLinkCopyBusy === 'client' ? 'Preparing…' : 'Copy signed client login link'}
+            </button>
+            <button
+              className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-forest-200 bg-white px-6 py-3 text-sm font-semibold text-forest-900 transition-colors hover:border-fairway-400 disabled:opacity-60"
+              disabled={portalLinkCopyBusy !== 'idle'}
+              onClick={() => void handleCopySignedPortalLoginLink('admin')}
+              type="button"
+            >
+              {portalLinkCopyBusy === 'admin' ? 'Preparing…' : 'Copy signed admin login link'}
+            </button>
+          </div>
+          {clearPortalInboxMessage ? (
+            <p className="mt-4 text-sm font-medium text-amber-950" role="status">
+              {clearPortalInboxMessage}
+            </p>
+          ) : null}
+          {clearDashboardMessage ? (
+            <p className="mt-4 text-sm font-medium text-forest-900" role="status">
+              {clearDashboardMessage}
+            </p>
+          ) : null}
+          {portalLinkCopyMessage ? (
+            <p className="mt-3 text-sm font-medium text-forest-900" role="status">
+              {portalLinkCopyMessage}
+            </p>
+          ) : null}
+        </section>
+
+        <section className="rounded-3xl border border-forest-200 bg-white p-6 shadow-soft sm:p-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">One id per contact email</p>
+          <h2 className="font-display mt-2 text-lg font-semibold text-forest-950">How stable account ids work</h2>
+          <p className="mt-2 max-w-3xl text-sm text-forest-600">
+            The first time someone uses a form with an email address, we assign a single <strong className="font-medium text-forest-900">GSI-style id</strong> and store it in{' '}
+            <code className="rounded bg-offwhite px-1 font-mono text-xs">email_account_anchors</code>. Every later submission with the same email reuses that id (
+            <code className="rounded bg-offwhite px-1 font-mono text-xs">enquiries.account_anchor_ref</code> and{' '}
+            <code className="rounded bg-offwhite px-1 font-mono text-xs">_accountAnchorRef</code> in form data). When they sign in and load the client dashboard, we copy that id onto their profile if the account number field is still empty — so magic links and the portal line up with the same number they saw from day one.
+          </p>
+        </section>
+
+        <section aria-label="Block sign-in and enquiries" className="rounded-3xl border border-forest-200 bg-white p-6 shadow-soft sm:p-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-800">Access control</p>
+          <h2 className="font-display mt-2 text-lg font-semibold text-forest-950">Block or unblock an email</h2>
+          <p className="mt-2 max-w-2xl text-sm text-forest-600">
+            Blocked addresses cannot request magic links, submit website enquiries, or be created as a new client via admin “Create portal user”. Existing sessions are not revoked automatically.
+          </p>
+          <div className="mt-5 flex max-w-xl flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+            <div className="min-w-0 flex-1">
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="auth-block-email">
+                Email to block
+              </label>
+              <input
+                autoComplete="email"
+                className="w-full rounded-2xl border border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
+                id="auth-block-email"
+                onChange={(e) => setAuthBlockEmailInput(e.target.value)}
+                placeholder="client@example.com"
+                type="email"
+                value={authBlockEmailInput}
+              />
+            </div>
+            <div className="min-w-0 flex-1 sm:min-w-[12rem]">
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="auth-block-reason">
+                Reason (optional)
+              </label>
+              <input
+                className="w-full rounded-2xl border border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
+                id="auth-block-reason"
+                onChange={(e) => setAuthBlockReasonInput(e.target.value)}
+                placeholder="Spam, abuse, duplicate…"
+                type="text"
+                value={authBlockReasonInput}
+              />
+            </div>
+            <button
+              className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-forest-900 bg-forest-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-forest-800 disabled:opacity-60"
+              disabled={authBlockBusy}
+              onClick={() => void handleBlockAuthEmail()}
+              type="button"
+            >
+              {authBlockBusy ? 'Working…' : 'Block email'}
+            </button>
+          </div>
+          {authBlockMessage ? (
+            <p className="mt-4 text-sm font-medium text-forest-900" role="status">
+              {authBlockMessage}
+            </p>
+          ) : null}
+          <div className="mt-8">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">Currently blocked</p>
+              <button
+                className="text-xs font-semibold text-gs-green underline decoration-gs-green/40 hover:decoration-gs-green"
+                disabled={authBlockListLoading}
+                onClick={() => void loadAuthEmailBlocks()}
+                type="button"
+              >
+                {authBlockListLoading ? 'Refreshing…' : 'Refresh list'}
+              </button>
+            </div>
+            {authBlockListLoading && authBlockList.length === 0 ? (
+              <p className="mt-3 text-sm text-forest-600">Loading…</p>
+            ) : authBlockList.length === 0 ? (
+              <p className="mt-3 text-sm text-forest-600">No blocked addresses.</p>
+            ) : (
+              <ul className="mt-4 space-y-3">
+                {authBlockList.map((row) => (
+                  <li
+                    className="flex flex-col gap-2 rounded-2xl border border-forest-100 bg-offwhite/80 px-4 py-3 text-sm text-forest-800 sm:flex-row sm:items-center sm:justify-between"
+                    key={row.email}
+                  >
+                    <div>
+                      <p className="font-mono text-sm font-semibold text-forest-950">{row.email}</p>
+                      <p className="text-xs text-forest-500">
+                        Since {new Date(row.blocked_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}
+                        {row.reason ? ` · ${row.reason}` : ''}
+                      </p>
+                    </div>
+                    <button
+                      className="inline-flex min-h-9 shrink-0 items-center justify-center rounded-full border border-forest-200 bg-white px-4 text-xs font-semibold text-forest-900 hover:border-fairway-400 disabled:opacity-60"
+                      disabled={authBlockBusy}
+                      onClick={() => void handleUnblockAuthEmail(row.email)}
+                      type="button"
+                    >
+                      Unblock
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
+      </div>
     </DashboardLayout>
   )
 }
