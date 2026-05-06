@@ -124,10 +124,6 @@ as $$
 declare
   privileged boolean;
 begin
-  if tg_op = 'INSERT' then
-    return new;
-  end if;
-
   privileged :=
     public.is_admin()
     or coalesce(auth.role(), '') = 'service_role'
@@ -135,6 +131,16 @@ begin
     or coalesce((auth.jwt() ->> 'role'), '') = 'service_role';
 
   if privileged then
+    return new;
+  end if;
+
+  if tg_op = 'INSERT' then
+    new.payment_status := 'unpaid';
+    new.deposit_percent := 20;
+    new.balance_remind_at := null;
+    new.balance_remind_sent_at := null;
+    new.admin_price_eur := null;
+    new.admin_price_vat_treatment := null;
     return new;
   end if;
 
@@ -147,3 +153,10 @@ begin
   return new;
 end;
 $$;
+
+drop trigger if exists tr_transfer_bookings_payment_lock on public.transfer_bookings;
+
+create trigger tr_transfer_bookings_payment_lock
+  before insert or update on public.transfer_bookings
+  for each row
+  execute function public.transfer_bookings_payment_columns_privileged_only();
