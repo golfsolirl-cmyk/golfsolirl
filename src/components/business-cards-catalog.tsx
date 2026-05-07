@@ -1,9 +1,9 @@
 import { useCallback, useState, type ReactNode } from 'react'
-import { Download, Globe, Mail, Phone } from 'lucide-react'
+import { Download, FileDown, Globe, Mail, Phone } from 'lucide-react'
 import { FaFacebookF, FaInstagram, FaLinkedinIn } from 'react-icons/fa6'
 import { SiWhatsapp } from 'react-icons/si'
 import { cx } from '../lib/utils'
-import { saveBusinessCardsCatalogPdf } from '../lib/save-business-cards-pdf'
+import { saveBusinessCardsCatalogPdf, saveSingleBusinessCardPdf } from '../lib/save-business-cards-pdf'
 import {
   businessCardAssets,
   businessCardContact,
@@ -1237,6 +1237,7 @@ export const BUSINESS_CARD_SPECS: readonly BusinessCardSpec[] = [
 export function BusinessCardsCatalog() {
   const [pdfBusy, setPdfBusy] = useState(false)
   const [pdfError, setPdfError] = useState<string | null>(null)
+  const [singlePdfBusyId, setSinglePdfBusyId] = useState<string | null>(null)
 
   const handlePdf = useCallback(async () => {
     const root = document.getElementById('business-cards-pdf-export-root')
@@ -1254,6 +1255,27 @@ export function BusinessCardsCatalog() {
       console.error(e)
     } finally {
       setPdfBusy(false)
+    }
+  }, [])
+
+  const handleSingleCardPdf = useCallback(async (spec: BusinessCardSpec) => {
+    const root = document.getElementById('business-cards-pdf-export-root')
+    const slide = root?.querySelector<HTMLElement>(`[data-pdf-card-id="${CSS.escape(spec.id)}"]`)
+    if (!slide) {
+      setPdfError('Could not find print layout for this card. Refresh and try again.')
+      return
+    }
+    setPdfError(null)
+    setSinglePdfBusyId(spec.id)
+    try {
+      const filenameBase = `golfsol-business-card-${spec.id}-${spec.title}`
+      await saveSingleBusinessCardPdf(slide, filenameBase)
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Could not build the PDF.'
+      setPdfError(message)
+      console.error(e)
+    } finally {
+      setSinglePdfBusyId(null)
     }
   }, [])
 
@@ -1303,10 +1325,27 @@ export function BusinessCardsCatalog() {
               key={spec.id}
               className="rounded-[2rem] border border-white/70 bg-white/80 p-8 shadow-[0_24px_80px_rgba(15,61,36,0.09)] backdrop-blur-md"
             >
-              <div className="border-b border-forest-900/[0.08] pb-5">
-                <p className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.3em] text-gs-gold">{spec.id}</p>
-                <h2 className="font-display mt-2 text-2xl font-bold tracking-tight text-forest-950">{spec.title}</h2>
-                <p className="mt-2 max-w-lg font-ge text-[0.95rem] leading-relaxed text-forest-700">{spec.subtitle}</p>
+              <div className="flex flex-col gap-4 border-b border-forest-900/[0.08] pb-5 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0 flex-1">
+                  <p className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.3em] text-gs-gold">{spec.id}</p>
+                  <h2 className="font-display mt-2 text-2xl font-bold tracking-tight text-forest-950">{spec.title}</h2>
+                  <p className="mt-2 max-w-lg font-ge text-[0.95rem] leading-relaxed text-forest-700">{spec.subtitle}</p>
+                </div>
+                <button
+                  className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-full border border-forest-900/[0.12] bg-white px-4 py-2.5 font-ge text-[0.65rem] font-bold uppercase tracking-[0.16em] text-forest-900 shadow-sm transition hover:border-forest-900/25 hover:bg-offwhite disabled:opacity-60"
+                  data-html2canvas-ignore="true"
+                  type="button"
+                  aria-label={
+                    singlePdfBusyId === spec.id
+                      ? 'Building PDF for this card'
+                      : 'Download this card as a one-page PDF'
+                  }
+                  disabled={singlePdfBusyId !== null || pdfBusy}
+                  onClick={() => void handleSingleCardPdf(spec)}
+                >
+                  <FileDown className="h-4 w-4" aria-hidden />
+                  {singlePdfBusyId === spec.id ? 'Building…' : 'Card PDF'}
+                </button>
               </div>
               <div className="mt-10 flex justify-center px-1">
                 <div className="w-full max-w-[600px]">{spec.render()}</div>
@@ -1331,7 +1370,12 @@ export function BusinessCardsCatalog() {
           </div>
         </div>
         {BUSINESS_CARD_SPECS.map((spec) => (
-          <div key={`pdf-${spec.id}`} className="bg-white px-10 pb-14 pt-12" data-pdf-page>
+          <div
+            key={`pdf-${spec.id}`}
+            className="bg-white px-10 pb-14 pt-12"
+            data-pdf-card-id={spec.id}
+            data-pdf-page
+          >
             <p className="mb-6 font-ge text-[0.72rem] font-bold uppercase tracking-[0.26em] text-forest-600">
               {spec.id} · {spec.title}
             </p>
