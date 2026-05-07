@@ -129,3 +129,48 @@ export const buildTransferBalanceReminderEmail = (booking, depositPercent) => {
   })
   return { subject, html: finalizeGsolEmailHtml(htmlRaw) }
 }
+
+/**
+ * @param {Record<string, unknown>} booking
+ * @param {{ refundAmountEur: number; refundKind: 'partial' | 'full'; cumulativeEur: number }} detail
+ */
+export const buildTransferRefundEmail = (booking, detail) => {
+  const site = getGsolSiteUrl()
+  const route = `${esc(booking.pickup_label)} → ${esc(booking.dropoff_label)}`
+  const amt = new Intl.NumberFormat('en-IE', {
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(detail.refundAmountEur)
+  const cum = new Intl.NumberFormat('en-IE', {
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(detail.cumulativeEur)
+  const subject =
+    detail.refundKind === 'full'
+      ? 'Golf Sol Ireland — refund processed for your transfer'
+      : 'Golf Sol Ireland — partial refund processed for your transfer'
+  const heroTitle = detail.refundKind === 'full' ? 'Refund completed' : 'Partial refund completed'
+  const heroLead =
+    detail.refundKind === 'full'
+      ? `We have processed a full card refund for your Costa transfer (${route}). Amount refunded this step: ${amt}.`
+      : `We have processed a partial card refund for your Costa transfer (${route}). Amount refunded this step: ${amt}.`
+
+  const bodyHtml = `<p style="margin:0 0 14px 0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">Total refunded to your card for this transfer (including any earlier steps): <strong style="color:#0f5224;">${cum}</strong>.</p>
+    <p style="margin:0 0 14px 0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">A <strong>PDF confirmation</strong> is attached for your records. Timing on your bank statement can vary — typically a few business days.</p>
+    <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">Questions? <a href="tel:+353874464766" style="color:#0f5224;font-weight:600;">+353 87 446 4766</a> · <a href="${site}/dashboard" style="color:#0f5224;font-weight:600;">Your dashboard</a></p>`
+
+  const htmlRaw = buildGsolTransactionalEmail({
+    documentTitle: subject,
+    preheader: heroLead.slice(0, 118),
+    heroKicker: 'Golf Sol Ireland',
+    heroTitle,
+    heroLead,
+    heroMetaHtml: `<div style="font-size:12px;line-height:1.6;color:rgba(255,255,255,0.82);">Transfers desk · refunds</div>`,
+    bodyHtml
+  })
+  return { subject, html: finalizeGsolEmailHtml(htmlRaw) }
+}

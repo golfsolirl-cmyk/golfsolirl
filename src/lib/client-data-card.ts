@@ -31,6 +31,9 @@ export interface ClientEnquiryRowLite {
   readonly reference_id: string
   readonly created_at: string
   readonly form_payload: unknown
+  /** Present when selected from enquiries table — used for dashboard greeting before profile name sync */
+  readonly email?: string | null
+  readonly full_name?: string | null
 }
 
 export interface ClientPackageBuildLite {

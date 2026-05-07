@@ -2,6 +2,7 @@ import type { Session } from '@supabase/supabase-js'
 import { MessageCircle } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { ClientPortalIdentityHero, type ClientPortalTransferHeroRow } from '../components/client-portal-identity-hero'
+import { PortalTransferServiceCard, type PortalTransferServiceCardModel } from '../components/portal-transfer-service-card'
 import { ClientTransferRequestPanel } from '../components/client-transfer-request-panel'
 import { PortalClientDataCard } from '../components/portal-client-data-card'
 import { PortalInvoicesPanel } from '../components/portal-invoices-panel'
@@ -40,7 +41,8 @@ type BrowserSupabase = NonNullable<ReturnType<typeof getSupabaseBrowserClient>>
 import { formatTravelDateInput } from '../lib/format-travel-date'
 import { syncTripWorkspaceToTransferBooking } from '../lib/sync-trip-workspace-transfer-booking'
 import {
-  downloadTransferVatReceiptPdf,
+  downloadTransferPaidInvoicePdf,
+  downloadTransferQuotePdf,
   type TransferReceiptVatTreatment
 } from '../lib/transfer-vat-receipt-pdf'
 import {
@@ -195,6 +197,9 @@ type ClientPortalTransferBookingRow = {
   payment_status?: string | null
   booking_source?: string | null
   package_build_id?: string | null
+  enquiry_reference_id?: string | null
+  created_at?: string | null
+  updated_at?: string | null
 }
 
 export function ClientDashboardPage() {
@@ -243,6 +248,9 @@ export function ClientDashboardPage() {
   const [interestFollowUpError, setInterestFollowUpError] = useState<string | null>(null)
   const [interestTicketLatestAdminAt, setInterestTicketLatestAdminAt] = useState<Record<string, string>>({})
   const [invoiceUrlBanner, setInvoiceUrlBanner] = useState<string | null>(null)
+  /** Set from `?transfer_paid=1&transfer_booking_id=` after Stripe (local or prod) */
+  const [stripePaidTransferBookingId, setStripePaidTransferBookingId] = useState<string | null>(null)
+  const [transferServiceCardBookingId, setTransferServiceCardBookingId] = useState<string | null>(null)
   const [invoicePanelRefresh, setInvoicePanelRefresh] = useState(0)
   const listDataInflightRef = useRef(0)
 
@@ -269,7 +277,11 @@ export function ClientDashboardPage() {
       fetchPackageBuildsClientList(supabase, 40),
       supabase.from('client_document_access').select('document_kind').eq('owner_id', session.user.id),
       fetchPortalClientUpdates(supabase, 30),
-      supabase.from('enquiries').select('id, reference_id, created_at, form_payload').order('created_at', { ascending: false }).limit(80)
+      supabase
+        .from('enquiries')
+        .select('id, reference_id, created_at, form_payload, email, full_name')
+        .order('created_at', { ascending: false })
+        .limit(80)
     ])
 
     if (docRes.error) {
@@ -317,7 +329,7 @@ export function ClientDashboardPage() {
     const tbRes = await supabase
       .from('transfer_bookings')
       .select(
-        'id, pickup_label, dropoff_label, status, scheduled_at, admin_price_eur, admin_price_vat_treatment, deposit_percent, payment_status, booking_source, package_build_id, created_at'
+        'id, pickup_label, dropoff_label, status, scheduled_at, admin_price_eur, admin_price_vat_treatment, deposit_percent, payment_status, booking_source, package_build_id, enquiry_reference_id, created_at, updated_at'
       )
       .or(orTransfer.join(','))
       .order('created_at', { ascending: false })
@@ -534,9 +546,34 @@ export function ClientDashboardPage() {
     if (isLoading) {
       return
     }
+    if (session?.user) {
+      return
+    }
 
-    if (!session?.user) {
+    let cancelled = false
+    const verify = async () => {
+      const supabase = getSupabaseBrowserClient()
+      const a = await supabase?.auth.getSession()
+      if (cancelled) {
+        return
+      }
+      if (a?.data?.session?.user) {
+        return
+      }
+      /* After Stripe redirect, storage can resolve a beat after isLoading flips */
+      await new Promise((r) => setTimeout(r, 500))
+      if (cancelled) {
+        return
+      }
+      const b = await supabase?.auth.getSession()
+      if (b?.data?.session?.user) {
+        return
+      }
       window.location.replace('/dashboard/login')
+    }
+    void verify()
+    return () => {
+      cancelled = true
     }
   }, [isLoading, session?.user?.id])
 
@@ -544,52 +581,136 @@ export function ClientDashboardPage() {
     void loadData()
   }, [loadData])
 
+  const transferCheckoutSyncAttempted = useRef<string | null>(null)
+
   useEffect(() => {
     if (typeof window === 'undefined') {
-      return
-    }
-    const sp = new URLSearchParams(window.location.search)
-    const parts: string[] = []
-    let stripeSuccessPoll = false
-    if (sp.get('invoice_paid') === '1') {
-      parts.push('Payment received — thank you. Your invoice card should show Paid within a few seconds.')
-      sp.delete('invoice_paid')
-      setInvoicePanelRefresh((n) => n + 1)
-      stripeSuccessPoll = true
-      void loadData()
-    } else if (sp.get('invoice_cancel') === '1') {
-      parts.push('Checkout was cancelled. You can open Pay again from your trip invoice card whenever you are ready.')
-      sp.delete('invoice_cancel')
-    }
-    if (sp.get('transfer_paid') === '1') {
-      parts.push('Payment received — thank you. Your transfer will show as paid shortly.')
-      sp.delete('transfer_paid')
-      stripeSuccessPoll = true
-      void loadData()
-    } else if (sp.get('transfer_pay_cancel') === '1') {
-      parts.push('Checkout was cancelled. You can use Pay now on your transfer when you are ready.')
-      sp.delete('transfer_pay_cancel')
-    }
-    if (parts.length) {
-      setInvoiceUrlBanner(parts.join(' '))
-      const qs = sp.toString()
-      window.history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}${window.location.hash}`)
-    }
-    if (!stripeSuccessPoll) {
       return undefined
     }
-    const t1 = window.setTimeout(() => void loadData(), 1200)
-    const t2 = window.setTimeout(() => void loadData(), 3200)
-    const t3 = window.setTimeout(() => {
-      void loadData()
-      setInvoicePanelRefresh((n) => n + 1)
-    }, 6200)
+
+    let cancelled = false
+    let t1 = 0
+    let t2 = 0
+    let t3 = 0
+
+    const run = async () => {
+      const spWait = new URLSearchParams(window.location.search)
+      if (
+        spWait.get('transfer_paid') === '1' &&
+        spWait.get('checkout_session_id')?.trim() &&
+        (isLoading || !session?.access_token)
+      ) {
+        return
+      }
+
+      const sp0 = new URLSearchParams(window.location.search)
+      const transferPaidFlag = sp0.get('transfer_paid') === '1'
+      const checkoutSessionId = sp0.get('checkout_session_id')?.trim()
+
+      if (
+        transferPaidFlag &&
+        checkoutSessionId &&
+        session?.access_token &&
+        transferCheckoutSyncAttempted.current !== checkoutSessionId
+      ) {
+        transferCheckoutSyncAttempted.current = checkoutSessionId
+        try {
+          const res = await fetch('/api/transfer-checkout-sync', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({ checkoutSessionId })
+          })
+          if (!cancelled && res.ok) {
+            await loadData()
+          } else if (!res.ok) {
+            transferCheckoutSyncAttempted.current = null
+          }
+        } catch {
+          transferCheckoutSyncAttempted.current = null
+        }
+      }
+
+      if (cancelled) {
+        return
+      }
+
+      const sp = new URLSearchParams(window.location.search)
+      const parts: string[] = []
+      let stripeSuccessPoll = false
+      let stripUrl = false
+      if (sp.get('invoice_paid') === '1') {
+        stripUrl = true
+        parts.push('Payment received — thank you. Your invoice card should show Paid within a few seconds.')
+        sp.delete('invoice_paid')
+        setInvoicePanelRefresh((n) => n + 1)
+        stripeSuccessPoll = true
+        void loadData()
+      } else if (sp.get('invoice_cancel') === '1') {
+        stripUrl = true
+        parts.push('Checkout was cancelled. You can open Pay again from your trip invoice card whenever you are ready.')
+        sp.delete('invoice_cancel')
+      }
+      if (sp.get('transfer_paid') === '1') {
+        stripUrl = true
+        const bid = sp.get('transfer_booking_id')?.trim()
+        if (bid) {
+          setStripePaidTransferBookingId(bid)
+        }
+        sp.delete('transfer_paid')
+        sp.delete('transfer_booking_id')
+        sp.delete('checkout_session_id')
+        stripeSuccessPoll = true
+        void loadData()
+      } else if (sp.get('transfer_pay_cancel') === '1') {
+        stripUrl = true
+        parts.push('Checkout was cancelled. You can use Pay now on your transfer when you are ready.')
+        sp.delete('transfer_pay_cancel')
+        sp.delete('transfer_booking_id')
+        sp.delete('checkout_session_id')
+      }
+      if (parts.length) {
+        setInvoiceUrlBanner(parts.join(' '))
+      }
+      if (stripUrl || parts.length) {
+        const qs = sp.toString()
+        window.history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}${window.location.hash}`)
+      }
+      if (!stripeSuccessPoll || cancelled) {
+        return
+      }
+      t1 = window.setTimeout(() => void loadData(), 1200)
+      t2 = window.setTimeout(() => void loadData(), 3200)
+      t3 = window.setTimeout(() => {
+        void loadData()
+        setInvoicePanelRefresh((n) => n + 1)
+      }, 6200)
+    }
+
+    void run()
+
     return () => {
+      cancelled = true
       window.clearTimeout(t1)
       window.clearTimeout(t2)
       window.clearTimeout(t3)
     }
-  }, [loadData])
+  }, [loadData, session?.access_token, isLoading])
+
+  useEffect(() => {
+    if (!transferServiceCardBookingId) {
+      return
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setTransferServiceCardBookingId(null)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [transferServiceCardBookingId])
 
   useEffect(() => {
     if (session?.user) {
@@ -1407,17 +1528,63 @@ export function ClientDashboardPage() {
     [transferBookingsPortal]
   )
 
+  const enquiriesForDataCard = useMemo(
+    () => (profile?.portal_enquiry_autofill_disabled ? [] : enquiries),
+    [profile?.portal_enquiry_autofill_disabled, enquiries]
+  )
+
   const clientDataCardSections = useMemo(
     () =>
       buildClientDataCardSections({
         profile,
         userEmail: session?.user?.email ?? null,
-        enquiries,
+        enquiries: enquiriesForDataCard,
         packageBuilds,
         transferBookings: transferBookingsForCard
       }),
-    [profile, session?.user?.email, enquiries, packageBuilds, transferBookingsForCard]
+    [profile, session?.user?.email, enquiriesForDataCard, packageBuilds, transferBookingsForCard, profile]
   )
+
+  const dashboardPaymentBanner = useMemo(():
+    | { kind: 'transfer_paid'; headline: string; detail: string }
+    | { kind: 'plain'; text: string }
+    | null => {
+    if (stripePaidTransferBookingId) {
+      const row = transferBookingsPortal.find((r) => r.id === stripePaidTransferBookingId)
+      const headline = 'Payment received — thank you.'
+      const detail = row
+        ? `${row.pickup_label} → ${row.dropoff_label} is now Paid below. Download Paid invoice for your VAT receipt PDF. Pay now is disabled for this transfer.`
+        : 'Your transfer line should show Paid in a few seconds. Use Paid invoice for your VAT receipt. This transfer cannot be paid again from Pay now.'
+      return { kind: 'transfer_paid', headline, detail }
+    }
+    if (invoiceUrlBanner?.trim()) {
+      return { kind: 'plain', text: invoiceUrlBanner.trim() }
+    }
+    return null
+  }, [stripePaidTransferBookingId, transferBookingsPortal, invoiceUrlBanner])
+
+  const transferServiceCardModel = useMemo((): PortalTransferServiceCardModel | null => {
+    if (!transferServiceCardBookingId) {
+      return null
+    }
+    const r = transferBookingsPortal.find((x) => x.id === transferServiceCardBookingId)
+    if (!r) {
+      return null
+    }
+    return {
+      enquiryReferenceId: r.enquiry_reference_id ?? null,
+      createdAt: r.created_at ?? null,
+      pickupLabel: r.pickup_label,
+      dropoffLabel: r.dropoff_label,
+      status: r.status,
+      scheduledAt: r.scheduled_at,
+      bookingSource: r.booking_source ?? null,
+      packageBuildId: r.package_build_id ?? null,
+      paymentStatus: r.payment_status ?? null,
+      depositPercent: r.deposit_percent ?? null,
+      adminPriceEur: r.admin_price_eur ?? null
+    }
+  }, [transferServiceCardBookingId, transferBookingsPortal])
 
   if (isLoading || !session) {
     return <DashboardLoadingShell label="Loading your dashboard…" />
@@ -1437,13 +1604,31 @@ export function ClientDashboardPage() {
   const clientDisplayFullName = resolveClientDisplayFullName(session, profile)
   const clientDisplayPhone = resolveClientPhone(session, profile)
   const accountRef = profile?.account_reference_id?.trim() ?? ''
+  const accountEmailForUi = (session.user.email ?? '').trim()
+  /** Identity hero “Signed in as …”: email until one-time contact saves a name; then saved full name (contact section edits update this too). */
+  const signedInAsLine =
+    profile?.portal_contact_completed_at && profile?.full_name?.trim()
+      ? profile.full_name.trim()
+      : accountEmailForUi || '—'
   const contactOnboardingDone = Boolean(profile?.portal_contact_completed_at)
   const hasImportedContactDetails =
     Boolean(profile?.full_name?.trim()) && Boolean(profile?.phone?.trim())
   const needsManualContactForm = !contactOnboardingDone && !hasImportedContactDetails
   const needsConfirmImportedContact = !contactOnboardingDone && hasImportedContactDetails
+
+  const enquiryRowForSignedInEmail = useMemo(() => {
+    const mail = session?.user?.email?.trim().toLowerCase()
+    if (!mail) {
+      return null
+    }
+    return enquiries.find((e) => (e.email ?? '').trim().toLowerCase() === mail) ?? null
+  }, [enquiries, session?.user?.email])
+
   const greetingFirst =
     profile?.full_name?.trim().split(/\s+/).filter(Boolean)[0] ??
+    (!profile?.portal_enquiry_autofill_disabled
+      ? enquiryRowForSignedInEmail?.full_name?.trim().split(/\s+/).filter(Boolean)[0]
+      : undefined) ??
     clientDisplayFullName.split(/\s+/).filter(Boolean)[0] ??
     ''
   const dashboardTitle = 'Your dashboard'
@@ -1494,15 +1679,20 @@ export function ClientDashboardPage() {
       </button>
     ) : null
 
-  const handleTransferReceiptPdf = async (t: ClientPortalTransferHeroRow) => {
-    const vatTreatment: TransferReceiptVatTreatment =
-      t.admin_price_vat_treatment === 'services'
-        ? 'services'
-        : t.admin_price_vat_treatment === 'tourism'
-          ? 'tourism'
-          : null
+  const vatTreatmentFromHero = (t: ClientPortalTransferHeroRow): TransferReceiptVatTreatment =>
+    t.admin_price_vat_treatment === 'services'
+      ? 'services'
+      : t.admin_price_vat_treatment === 'tourism'
+        ? 'tourism'
+        : null
+
+  const handleTransferQuotePdf = async (t: ClientPortalTransferHeroRow) => {
+    const dashboardPayUrl =
+      typeof window !== 'undefined' && window.location?.origin
+        ? `${window.location.origin.replace(/\/+$/, '')}/dashboard`
+        : 'https://golfsolirl.com/dashboard'
     try {
-      await downloadTransferVatReceiptPdf({
+      await downloadTransferQuotePdf({
         transfer: {
           id: t.id,
           pickup_label: t.pickup_label,
@@ -1510,16 +1700,46 @@ export function ClientDashboardPage() {
           status: t.status,
           scheduled_at: t.scheduled_at,
           admin_price_eur: t.admin_price_eur,
-          admin_price_vat_treatment: vatTreatment,
+          admin_price_vat_treatment: vatTreatmentFromHero(t),
           payment_status: t.payment_status,
           booking_source: t.booking_source
         },
         customerName: clientDisplayFullName,
         accountRef: accountRef || null,
-        customerEmail: session.user.email ?? null
+        customerEmail: session.user.email ?? null,
+        dashboardPayUrl
       })
     } catch (e) {
-      window.alert(e instanceof Error ? e.message : 'Could not create receipt PDF.')
+      window.alert(e instanceof Error ? e.message : 'Could not create quote PDF.')
+    }
+  }
+
+  const handleTransferPaidInvoicePdf = async (t: ClientPortalTransferHeroRow) => {
+    try {
+      const row = transferBookingsPortal.find((r) => r.id === t.id)
+      const paymentRecordedHint =
+        row?.updated_at
+          ? `Systems updated ${new Date(row.updated_at).toLocaleString('en-IE', { dateStyle: 'medium', timeStyle: 'short' })}`
+          : null
+      await downloadTransferPaidInvoicePdf({
+        transfer: {
+          id: t.id,
+          pickup_label: t.pickup_label,
+          dropoff_label: t.dropoff_label,
+          status: t.status,
+          scheduled_at: t.scheduled_at,
+          admin_price_eur: t.admin_price_eur,
+          admin_price_vat_treatment: vatTreatmentFromHero(t),
+          payment_status: t.payment_status,
+          booking_source: t.booking_source
+        },
+        customerName: clientDisplayFullName,
+        accountRef: accountRef || null,
+        customerEmail: session.user.email ?? null,
+        paymentRecordedHint
+      })
+    } catch (e) {
+      window.alert(e instanceof Error ? e.message : 'Could not create paid invoice PDF.')
     }
   }
 
@@ -1562,31 +1782,63 @@ export function ClientDashboardPage() {
       ) : (
         <div className="mb-12 md:mb-14">
           <div className="mb-12 space-y-10">
-            <ClientPortalIdentityHero
-              accountEmail={session.user.email ?? null}
-              accountNumber={accountRef || null}
-              firstName={greetingFirst || 'there'}
-              fullName={clientDisplayFullName}
-              onDownloadTransferReceipt={handleTransferReceiptPdf}
-              onPayTransfer={handlePayTransfer}
-              transfers={transferBookingsPortal}
-            />
-            <PortalClientDataCard sections={clientDataCardSections} />
-            {invoiceUrlBanner ? (
-              <div
-                className="flex flex-col gap-2 rounded-2xl border border-emerald-300/80 bg-emerald-50/95 px-4 py-3 text-sm text-emerald-950 shadow-sm sm:flex-row sm:items-center sm:justify-between"
-                role="status"
-              >
-                <span>{invoiceUrlBanner}</span>
-                <button
-                  className="shrink-0 text-xs font-semibold uppercase tracking-[0.12em] text-emerald-800 underline decoration-emerald-600/60"
-                  onClick={() => setInvoiceUrlBanner(null)}
-                  type="button"
+            <div className={dashboardPaymentBanner ? 'mb-10 space-y-3' : 'contents'}>
+              <ClientPortalIdentityHero
+                accountEmail={session.user.email ?? null}
+                accountNumber={accountRef || null}
+                className={dashboardPaymentBanner ? '!mb-0' : undefined}
+                emphasizeTransferBookingId={stripePaidTransferBookingId}
+                firstName={greetingFirst || 'there'}
+                signedInAs={signedInAsLine}
+                onDownloadTransferQuotePdf={handleTransferQuotePdf}
+                onDownloadTransferPaidInvoicePdf={handleTransferPaidInvoicePdf}
+                onPayTransfer={handlePayTransfer}
+                onViewTransferCard={(t) => setTransferServiceCardBookingId(t.id)}
+                transfers={transferBookingsPortal}
+              />
+              {dashboardPaymentBanner ? (
+                <div
+                  className="flex flex-col gap-3 rounded-2xl border border-emerald-300/80 bg-emerald-50/95 px-4 py-3.5 text-emerald-950 shadow-sm sm:flex-row sm:items-start sm:justify-between sm:gap-4"
+                  role="status"
                 >
-                  Dismiss
-                </button>
-              </div>
-            ) : null}
+                  <div className="min-w-0 flex-1">
+                    {dashboardPaymentBanner.kind === 'transfer_paid' ? (
+                      <>
+                        <p className="font-display text-base font-semibold tracking-tight text-emerald-950 md:text-lg">
+                          {dashboardPaymentBanner.headline}
+                        </p>
+                        <p className="mt-2 text-sm leading-relaxed text-emerald-900/95">{dashboardPaymentBanner.detail}</p>
+                      </>
+                    ) : (
+                      <p className="text-sm leading-relaxed text-emerald-950">{dashboardPaymentBanner.text}</p>
+                    )}
+                  </div>
+                  <div className="flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center">
+                    {dashboardPaymentBanner.kind === 'transfer_paid' && stripePaidTransferBookingId ? (
+                      <LuxuryButton
+                        className="!px-4 !py-2 !text-xs"
+                        onClick={() => setTransferServiceCardBookingId(stripePaidTransferBookingId)}
+                        type="button"
+                        variant="secondary"
+                      >
+                        View transfer card
+                      </LuxuryButton>
+                    ) : null}
+                    <button
+                      className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-800 underline decoration-emerald-600/60"
+                      onClick={() => {
+                        setInvoiceUrlBanner(null)
+                        setStripePaidTransferBookingId(null)
+                      }}
+                      type="button"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+            <PortalClientDataCard sections={clientDataCardSections} />
             {tripInvoicesPanel}
             <ClientTransferRequestPanel />
           </div>
@@ -2135,6 +2387,13 @@ export function ClientDashboardPage() {
             <p className="mt-2 max-w-2xl text-sm text-forest-600">
               You signed in directly — add your name and phone once so we can reach you. Your email is the one you used to sign
               in. Website enquiries you submit later with the same email still show as packages below.
+              {accountRef ? (
+                <>
+                  {' '}
+                  Your account number is already assigned (see below) — same GSI-style reference as enquiry confirmations. Only
+                  name and phone can be edited here.
+                </>
+              ) : null}
             </p>
             <form className="mt-6 max-w-xl space-y-4" noValidate onSubmit={(e) => void handlePortalOnboardingSubmit(e)}>
               <div>
@@ -2177,9 +2436,20 @@ export function ClientDashboardPage() {
               </div>
               <div>
                 <p className={labelClass}>Account number</p>
-                <p className="text-sm text-forest-700">
-                  Assigned automatically when you save — same style as enquiry references (e.g. GSI-…).
-                </p>
+                {accountRef ? (
+                  <>
+                    <p className="mt-1 font-mono text-base font-semibold text-forest-950">{accountRef}</p>
+                    <p className="mt-2 max-w-xl text-xs text-forest-600">
+                      This is your fixed account ID — it must match the number shown in “Your account” at the top. It cannot be
+                      changed here (only name and phone above).
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-sm text-forest-700">
+                    Assigned automatically when you save — same style as enquiry references (e.g. GSI-…). Only name and phone can
+                    be edited.
+                  </p>
+                )}
               </div>
               {onboardingMessage ? (
                 <p className="text-sm text-red-800" role="alert">
@@ -2195,7 +2465,14 @@ export function ClientDashboardPage() {
           <>
             <p className="mt-2 max-w-2xl text-sm text-forest-600">
               We imported your name and phone from your website enquiry. Confirm they are correct for this account — we then
-              assign your account number and unlock messaging the team.
+              {accountRef ? ' unlock messaging the team.' : ' assign your account number and unlock messaging the team.'}
+              {accountRef ? (
+                <>
+                  {' '}
+                  Your account number is already on file below — the same GSI-style reference as enquiry confirmations and as in
+                  “Your account” at the top.
+                </>
+              ) : null}
             </p>
             <dl className="mt-5 grid gap-4 text-sm text-forest-800 sm:grid-cols-2">
               <div>
@@ -2212,7 +2489,19 @@ export function ClientDashboardPage() {
               </div>
               <div className="sm:col-span-2">
                 <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-500">Account number</dt>
-                <dd className="mt-1 font-mono text-base font-semibold text-forest-950">Assigned when you confirm</dd>
+                <dd className="mt-1 font-mono text-base font-semibold text-forest-950">
+                  {accountRef || 'Assigned when you confirm'}
+                </dd>
+                {accountRef ? (
+                  <p className="mt-2 max-w-xl text-xs text-forest-600">
+                    Must match the number in “Your account” above. This reference is not editable; only your name and phone can be
+                    changed after onboarding.
+                  </p>
+                ) : (
+                  <p className="mt-2 max-w-xl text-xs text-forest-600">
+                    Same style as enquiry references (e.g. GSI-…); assigned when you confirm.
+                  </p>
+                )}
               </div>
             </dl>
             {onboardingMessage ? (
@@ -2413,6 +2702,33 @@ export function ClientDashboardPage() {
                   </div>
                 </>
               )}
+            </div>
+          </div>
+        ) : null}
+
+        {transferServiceCardModel ? (
+          <div
+            aria-labelledby="transfer-service-card-title"
+            aria-modal="true"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-forest-950/55 p-4"
+            onClick={() => setTransferServiceCardBookingId(null)}
+            role="dialog"
+          >
+            <div
+              className="relative max-h-[min(92vh,720px)] w-full max-w-lg overflow-y-auto rounded-[1.5rem] border border-forest-200 bg-white p-6 shadow-xl md:p-8"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                className="absolute right-4 top-4 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide text-forest-600 transition-colors hover:bg-forest-100 hover:text-forest-900"
+                onClick={() => setTransferServiceCardBookingId(null)}
+                type="button"
+              >
+                Close
+              </button>
+              <h2 className="sr-only" id="transfer-service-card-title">
+                Transfer details
+              </h2>
+              <PortalTransferServiceCard transfer={transferServiceCardModel} />
             </div>
           </div>
         ) : null}

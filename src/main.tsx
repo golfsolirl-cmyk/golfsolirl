@@ -65,6 +65,9 @@ const DriverDashboardPage = lazy(() =>
   import('./pages/driver-dashboard-page').then((m) => ({ default: m.DriverDashboardPage }))
 )
 const RateTripPage = lazy(() => import('./pages/rate-trip-page').then((m) => ({ default: m.RateTripPage })))
+const BusinessCardsPage = lazy(() =>
+  import('./pages/business-cards-page').then((m) => ({ default: m.BusinessCardsPage }))
+)
 
 type PageComponent = LazyExoticComponent<ComponentType>
 
@@ -182,6 +185,10 @@ function resolvePage(): PageComponent {
 
   if (normalizedPath === '/proposal-pdf-sample') {
     return ProposalPdfSamplePage
+  }
+
+  if (normalizedPath === '/business-cards') {
+    return BusinessCardsPage
   }
 
   return GolfExperienceHome

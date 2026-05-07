@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
+import { stripeCheckoutSessionDashboardUrl, stripePaymentDashboardUrl } from '../lib/stripe-dashboard-url'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { PORTAL_INTEREST_LABELS, type PortalInterestCategory } from '../lib/portal-interest-tickets'
 import { useAuth } from '../providers/auth-provider'
@@ -23,6 +24,11 @@ type HubBookingRow = {
   admin_price_eur: number | null
   admin_price_vat_treatment: string | null
   assigned_driver_id: string | null
+  stripe_payment_intent_id: string | null
+  stripe_checkout_session_id: string | null
+  transfer_refund_total_eur: number | null
+  transfer_refund_status: string | null
+  updated_at?: string | null
   created_at: string
 }
 
@@ -73,6 +79,14 @@ const formatAdminDateTime = (iso: string) => {
 const formatEur = (n: number) =>
   new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n)
 
+const formatEurPrecise = (n: number) =>
+  new Intl.NumberFormat('en-IE', {
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(n)
+
 export function AdminAccountTransfersHub() {
   const { session, profile } = useAuth()
   const supabase = getSupabaseBrowserClient()
@@ -89,6 +103,9 @@ export function AdminAccountTransfersHub() {
   const [priceBusyId, setPriceBusyId] = useState<string | null>(null)
   const [payBusyId, setPayBusyId] = useState<string | null>(null)
   const [payRequestBusyId, setPayRequestBusyId] = useState<string | null>(null)
+  const [refundDraft, setRefundDraft] = useState<Record<string, string>>({})
+  const [refundBusyId, setRefundBusyId] = useState<string | null>(null)
+  const [refundNotifyCustomer, setRefundNotifyCustomer] = useState(true)
   const [sendCustomerEmails, setSendCustomerEmails] = useState(true)
   const [statusMsg, setStatusMsg] = useState<string | null>(null)
 
@@ -233,7 +250,7 @@ export function AdminAccountTransfersHub() {
         supabase
           .from('transfer_bookings')
           .select(
-            'id, pickup_label, dropoff_label, status, scheduled_at, client_email, booking_source, enquiry_reference_id, package_build_id, payment_status, deposit_percent, balance_remind_at, balance_remind_sent_at, admin_price_eur, admin_price_vat_treatment, assigned_driver_id, created_at'
+            'id, pickup_label, dropoff_label, status, scheduled_at, client_email, booking_source, enquiry_reference_id, package_build_id, payment_status, deposit_percent, balance_remind_at, balance_remind_sent_at, admin_price_eur, admin_price_vat_treatment, assigned_driver_id, stripe_payment_intent_id, stripe_checkout_session_id, transfer_refund_total_eur, transfer_refund_status, created_at'
           )
           .or(orParts.join(','))
           .order('created_at', { ascending: false })
@@ -438,6 +455,68 @@ export function AdminAccountTransfersHub() {
     }
   }
 
+  const issueRefund = async (bookingId: string, fullRemaining: boolean) => {
+    setStatusMsg(null)
+    setError(null)
+    if (!session?.access_token) {
+      setError('Sign in again as admin.')
+      return
+    }
+    setRefundBusyId(bookingId)
+    try {
+      const body: Record<string, unknown> = {
+        bookingId,
+        sendCustomerEmail: refundNotifyCustomer
+      }
+      if (fullRemaining) {
+        body.fullRemaining = true
+      } else {
+        const raw = (refundDraft[bookingId] ?? '').trim().replace(/,/g, '.')
+        const n = Number(raw)
+        if (!Number.isFinite(n) || n <= 0) {
+          throw new Error('Enter a valid refund amount in EUR.')
+        }
+        body.amountEur = n
+      }
+      const res = await fetch('/api/transfer-refund', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify(body)
+      })
+      const data = (await res.json().catch(() => ({}))) as {
+        message?: string
+        booking?: HubBookingRow
+        emailedTo?: string | null
+        emailError?: string | null
+        refundAmountEur?: number
+      }
+      if (!res.ok) {
+        throw new Error(data.message || 'Refund failed.')
+      }
+      const parts: string[] = []
+      if (typeof data.refundAmountEur === 'number') {
+        parts.push(`Refunded ${formatEurPrecise(data.refundAmountEur)}`)
+      }
+      if (data.emailedTo) {
+        parts.push(`Refund PDF emailed to ${data.emailedTo}`)
+      } else if (data.emailError) {
+        parts.push(`Email: ${data.emailError}`)
+      }
+      setStatusMsg(parts.join(' · ') || 'Refund processed.')
+      if (data.booking) {
+        const u = data.booking as HubBookingRow
+        setRows((prev) => prev.map((r) => (r.id === bookingId ? { ...r, ...u } : r)))
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Refund failed.')
+    } finally {
+      setRefundBusyId(null)
+    }
+  }
+
   const scrollToPipelineRow = (bookingId: string) => {
     document.getElementById(`admin-transfer-booking-${bookingId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
@@ -448,6 +527,17 @@ export function AdminAccountTransfersHub() {
     const payBusy = payBusyId === b.id
     const priceBusy = priceBusyId === b.id
     const reqBusy = payRequestBusyId === b.id
+    const refundBusy = refundBusyId === b.id
+    const refundSt = String(b.transfer_refund_status ?? 'none').toLowerCase()
+    const refundedTotal = typeof b.transfer_refund_total_eur === 'number' ? b.transfer_refund_total_eur : 0
+    const piOk = typeof b.stripe_payment_intent_id === 'string' && b.stripe_payment_intent_id.trim().startsWith('pi_')
+    const checkoutOk =
+      typeof b.stripe_checkout_session_id === 'string' && b.stripe_checkout_session_id.trim().startsWith('cs_')
+    const hasStripeCharge = piOk || checkoutOk
+    const canIssueRefund =
+      (paySt === 'paid' || paySt === 'deposit') && refundSt !== 'full' && hasStripeCharge
+    const showRefundUnavailableHint =
+      (paySt === 'paid' || paySt === 'deposit') && refundSt !== 'full' && !hasStripeCharge
     const src =
       b.booking_source === 'website_enquiry'
         ? 'Website form'
@@ -552,6 +642,51 @@ export function AdminAccountTransfersHub() {
               {b.admin_price_vat_treatment === 'services' ? 'services 23%' : 'tourism 13.5%'}
             </span>
           ) : null}
+          {paySt === 'paid' ? (
+            <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-emerald-950 ring-1 ring-emerald-400/35">
+              Card paid · Stripe
+            </span>
+          ) : null}
+          {refundSt === 'partial' ? (
+            <span className="rounded-full bg-rose-100 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-rose-950 ring-1 ring-rose-400/40">
+              Partial refund
+            </span>
+          ) : null}
+          {refundSt === 'full' ? (
+            <span className="rounded-full bg-rose-200 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-rose-950 ring-1 ring-rose-500/35">
+              Fully refunded
+            </span>
+          ) : null}
+          {refundedTotal > 0 ? (
+            <span className="text-xs font-semibold text-rose-900">
+              {formatEurPrecise(refundedTotal)} refunded (cumulative)
+            </span>
+          ) : null}
+          {stripePaymentDashboardUrl(b.stripe_payment_intent_id) ||
+          stripeCheckoutSessionDashboardUrl(b.stripe_checkout_session_id) ? (
+            <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-semibold">
+              {stripePaymentDashboardUrl(b.stripe_payment_intent_id) ? (
+                <a
+                  className="text-fairway-900 underline decoration-fairway-600/60 underline-offset-2 hover:text-fairway-950"
+                  href={stripePaymentDashboardUrl(b.stripe_payment_intent_id) ?? '#'}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Stripe receipt
+                </a>
+              ) : null}
+              {stripeCheckoutSessionDashboardUrl(b.stripe_checkout_session_id) ? (
+                <a
+                  className="text-forest-700 underline decoration-forest-400/70 underline-offset-2 hover:text-forest-900"
+                  href={stripeCheckoutSessionDashboardUrl(b.stripe_checkout_session_id) ?? '#'}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Checkout session
+                </a>
+              ) : null}
+            </span>
+          ) : null}
           {b.assigned_driver_id ? (
             <span className="text-xs text-forest-600">Driver assigned</span>
           ) : (
@@ -598,6 +733,71 @@ export function AdminAccountTransfersHub() {
             {reqBusy ? 'Sending…' : 'Email payment request'}
           </LuxuryButton>
         </div>
+
+        {canIssueRefund ? (
+          <div className="mt-4 rounded-2xl border border-rose-200/80 bg-rose-50/50 px-4 py-3 sm:px-5">
+            <p className="text-[0.65rem] font-bold uppercase tracking-wide text-rose-900">Stripe card refund</p>
+            <p className="mt-1 text-xs text-forest-600">
+              Issues a partial or full refund in Stripe, updates this booking, and optionally emails the guest a refund confirmation PDF.
+            </p>
+            <div className="mt-3 flex flex-wrap items-end gap-2">
+              <label className="block min-w-0">
+                <span className="mb-1 block text-[0.62rem] font-semibold uppercase tracking-wide text-forest-600">
+                  Amount (EUR)
+                </span>
+                <input
+                  className="w-32 rounded-xl border border-rose-200 bg-white px-3 py-2 text-sm text-forest-900"
+                  inputMode="decimal"
+                  onChange={(e) => setRefundDraft((m) => ({ ...m, [b.id]: e.target.value }))}
+                  placeholder="e.g. 50"
+                  type="text"
+                  value={refundDraft[b.id] ?? ''}
+                />
+              </label>
+              <LuxuryButton
+                className="!px-3 !py-2 !text-xs"
+                disabled={refundBusy}
+                onClick={() => void issueRefund(b.id, false)}
+                type="button"
+                variant="secondary"
+              >
+                {refundBusy ? 'Processing…' : 'Refund this amount'}
+              </LuxuryButton>
+              <LuxuryButton
+                className="!px-3 !py-2 !text-xs !font-semibold"
+                disabled={refundBusy}
+                onClick={() => void issueRefund(b.id, true)}
+                type="button"
+                variant="white"
+              >
+                {refundBusy ? 'Processing…' : 'Refund full remaining'}
+              </LuxuryButton>
+            </div>
+            <label className="mt-3 flex cursor-pointer items-start gap-2 text-xs text-forest-800">
+              <input
+                checked={refundNotifyCustomer}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-rose-300 text-rose-700 focus:ring-rose-500"
+                onChange={(e) => setRefundNotifyCustomer(e.target.checked)}
+                type="checkbox"
+              />
+              <span>
+                <span className="font-medium">Email customer</span> — branded message with PDF attachment (uses profile / transfer email).
+              </span>
+            </label>
+          </div>
+        ) : refundSt === 'full' ? (
+          <p className="mt-4 text-xs text-forest-500">This transfer is fully refunded on the card; no further Stripe refunds.</p>
+        ) : showRefundUnavailableHint ? (
+          <div className="mt-4 rounded-2xl border border-forest-200 bg-offwhite/90 px-4 py-3 text-xs text-forest-600">
+            <p className="font-semibold text-forest-800">Stripe refund unavailable</p>
+            <p className="mt-1">
+              This booking is marked paid or deposit but has no <span className="font-mono text-[0.65rem]">pi_</span> Payment
+              Intent or <span className="font-mono text-[0.65rem]">cs_</span> Checkout session on file — refunds cannot be
+              issued from Golf Sol until the card payment is linked (e.g. guest completes Checkout so the webhook saves Stripe
+              IDs), or handle the refund manually outside the app.
+            </p>
+          </div>
+        ) : null}
       </div>
     )
   }
@@ -619,8 +819,9 @@ export function AdminAccountTransfersHub() {
         <strong className="font-medium text-forest-800">form enquiries</strong>,{' '}
         <strong className="font-medium text-forest-800">saved packages</strong>,{' '}
         <strong className="font-medium text-forest-800">portal interest tickets</strong>, and{' '}
-        <strong className="font-medium text-forest-800">transfer jobs</strong> in one timeline (newest first). For each transfer,
-        set quoted EUR, record payment, or send a <strong className="font-medium text-forest-800">branded payment-request email</strong>{' '}
+        <strong className="font-medium text-forest-800">transfer jobs</strong> in one timeline (newest first).         For each transfer,
+        set quoted EUR, record payment, issue <strong className="font-medium text-forest-800">Stripe refunds</strong> when a
+        card payment is linked, or send a <strong className="font-medium text-forest-800">branded payment-request email</strong>{' '}
         with a dashboard preview link (live card checkout can replace this later).
       </p>
 

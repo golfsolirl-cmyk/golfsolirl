@@ -31,15 +31,31 @@ export type TransferReceiptPdfTransfer = {
   readonly booking_source?: string | null
 }
 
-/**
- * Branded A4 receipt (Irish VAT breakdown from VAT-inclusive gross). Opens print/save dialog via jsPDF.
- */
-export async function downloadTransferVatReceiptPdf(opts: {
+type TransferDocTheme = {
+  readonly ink: [number, number, number]
+  readonly muted: [number, number, number]
+  readonly gold: [number, number, number]
+  readonly payLink: [number, number, number]
+}
+
+const THEME: TransferDocTheme = {
+  ink: [22, 59, 42],
+  muted: [75, 95, 85],
+  gold: [217, 154, 0],
+  payLink: [0, 102, 204]
+}
+
+/** Load logo and draw PDF body (shared layout). */
+async function renderTransferVatPdf(opts: {
   readonly transfer: TransferReceiptPdfTransfer
   readonly customerName: string
   readonly accountRef: string | null
   readonly customerEmail?: string | null
-}): Promise<void> {
+  readonly bannerTitle: string
+  readonly paymentLine: string
+  readonly paySection: { readonly dashboardPayUrl: string } | null
+  readonly footerNote: string
+}): Promise<jsPDF> {
   const gross = opts.transfer.admin_price_eur
   if (typeof gross !== 'number' || !Number.isFinite(gross) || gross <= 0) {
     throw new Error('No quoted amount on file for this transfer.')
@@ -52,11 +68,10 @@ export async function downloadTransferVatReceiptPdf(opts: {
   const doc = new jsPDF({ unit: 'pt', format: 'a4' })
   const pageW = doc.internal.pageSize.getWidth()
   const margin = 48
-  let y = margin
 
-  const ink: [number, number, number] = [22, 59, 42]
-  const muted: [number, number, number] = [75, 95, 85]
-  const gold: [number, number, number] = [217, 154, 0]
+  let y = margin
+  const { ink, muted, gold, payLink } = THEME
+  const transfer = opts.transfer
 
   try {
     const res = await fetch('/images/golfsol-header-logo-bitmap.png')
@@ -82,7 +97,7 @@ export async function downloadTransferVatReceiptPdf(opts: {
   doc.setTextColor(255, 255, 255)
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(16)
-  doc.text('Transfer receipt & VAT summary', margin, 46)
+  doc.text(opts.bannerTitle, margin, 46)
 
   y = 92
   doc.setTextColor(ink[0], ink[1], ink[2])
@@ -123,31 +138,30 @@ export async function downloadTransferVatReceiptPdf(opts: {
   y += 18
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(10)
-  const route = `${opts.transfer.pickup_label} → ${opts.transfer.dropoff_label}`
+  const route = `${transfer.pickup_label} → ${transfer.dropoff_label}`
   doc.text(route, margin + 14, y)
   y += 14
-  const when = opts.transfer.scheduled_at
-    ? new Date(opts.transfer.scheduled_at).toLocaleString('en-IE', { dateStyle: 'medium', timeStyle: 'short' })
+  const when = transfer.scheduled_at
+    ? new Date(transfer.scheduled_at).toLocaleString('en-IE', { dateStyle: 'medium', timeStyle: 'short' })
     : 'Pick-up time to be confirmed'
   doc.text(`Timing: ${when}`, margin + 14, y)
   y += 14
   const src =
-    opts.transfer.booking_source === 'website_enquiry'
+    transfer.booking_source === 'website_enquiry'
       ? 'Website enquiry'
-      : opts.transfer.booking_source === 'client_dashboard'
+      : transfer.booking_source === 'client_dashboard'
         ? 'Client dashboard / trip planner'
         : 'Client dashboard'
   doc.text(`Source: ${src}`, margin + 14, y)
   y += 14
-  doc.text(`Status: ${opts.transfer.status.replace(/_/g, ' ')}`, margin + 14, y)
+  doc.text(`Status: ${transfer.status.replace(/_/g, ' ')}`, margin + 14, y)
   y += 14
-  const pay = (opts.transfer.payment_status ?? 'unpaid').toLowerCase()
-  doc.text(`Payment: ${pay === 'paid' ? 'Paid in full' : pay === 'deposit' ? 'Deposit recorded' : 'Outstanding'}`, margin + 14, y)
+  doc.text(`Payment: ${opts.paymentLine}`, margin + 14, y)
   y += 14
   doc.setFont('helvetica', 'normal')
   doc.setTextColor(muted[0], muted[1], muted[2])
   doc.setFontSize(8)
-  doc.text(`Reference: ${opts.transfer.id}`, margin + 14, y)
+  doc.text(`Reference: ${transfer.id}`, margin + 14, y)
   doc.setTextColor(ink[0], ink[1], ink[2])
   y += 28
 
@@ -182,15 +196,130 @@ export async function downloadTransferVatReceiptPdf(opts: {
   doc.setTextColor(gold[0], gold[1], gold[2])
   doc.text(`Total (incl. VAT): ${formatEur(quote.grossTotalEur)}`, margin + 14, y)
   doc.setTextColor(ink[0], ink[1], ink[2])
-  y += 36
+  y += 28
+
+  if (opts.paySection) {
+    doc.setFillColor(255, 251, 235)
+    doc.roundedRect(margin, y, pageW - margin * 2, 92, 6, 6, 'F')
+    doc.setDrawColor(234, 214, 170)
+    doc.roundedRect(margin, y, pageW - margin * 2, 92, 6, 6, 'S')
+    y += 18
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(11)
+    doc.setTextColor(ink[0], ink[1], ink[2])
+    doc.text('Pay online (secure card payment)', margin + 14, y)
+    y += 16
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(10)
+    const payLines = doc.splitTextToSize(
+      'Sign in to your client dashboard and use Pay now next to this transfer. Most PDF viewers turn the URL below into a clickable link.',
+      pageW - margin * 2 - 28
+    )
+    doc.text(payLines, margin + 14, y)
+    y += 14 * payLines.length + 4
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor(payLink[0], payLink[1], payLink[2])
+    const urlLines = doc.splitTextToSize(opts.paySection.dashboardPayUrl, pageW - margin * 2 - 28)
+    doc.text(urlLines, margin + 14, y)
+    doc.setTextColor(ink[0], ink[1], ink[2])
+    y += 14 * urlLines.length + 18
+  } else {
+    y += 12
+  }
 
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(8)
   doc.setTextColor(muted[0], muted[1], muted[2])
-  const foot =
-    'Golf Sol Ireland · Irish VAT shown for transparency. Confirm specifics with your accountant. This receipt reflects our desk quote for this transfer only.'
-  const splitFoot = doc.splitTextToSize(foot, pageW - margin * 2)
+  const splitFoot = doc.splitTextToSize(opts.footerNote, pageW - margin * 2)
   doc.text(splitFoot, margin, y)
 
-  doc.save(`golfsol-transfer-receipt-${opts.transfer.id.slice(0, 8)}.pdf`)
+  return doc
+}
+
+/**
+ * Pre-payment quote + VAT breakdown. Includes dashboard URL so guests can open Pay now (Stripe) from the PDF.
+ */
+export async function downloadTransferQuotePdf(opts: {
+  readonly transfer: TransferReceiptPdfTransfer
+  readonly customerName: string
+  readonly accountRef: string | null
+  readonly customerEmail?: string | null
+  /** Full URL to the client dashboard (e.g. https://golfsolirl.com/dashboard or http://localhost:5173/dashboard). */
+  readonly dashboardPayUrl: string
+}): Promise<void> {
+  const pay = (opts.transfer.payment_status ?? 'unpaid').toLowerCase()
+  const payLine =
+    pay === 'paid'
+      ? 'Paid in full'
+      : pay === 'deposit'
+        ? 'Deposit recorded — balance outstanding'
+        : 'Outstanding — quote only until paid'
+
+  const doc = await renderTransferVatPdf({
+    transfer: opts.transfer,
+    customerName: opts.customerName,
+    accountRef: opts.accountRef,
+    customerEmail: opts.customerEmail,
+    bannerTitle: 'Transfer quote & VAT summary',
+    paymentLine: payLine,
+    paySection: { dashboardPayUrl: opts.dashboardPayUrl.trim() },
+    footerNote:
+      'Golf Sol Ireland · This document is a VAT-transparent quote for this transfer. Payment is due according to your dashboard; after payment you can download a separate paid invoice PDF from the same place.'
+  })
+
+  doc.save(`golfsol-transfer-quote-${opts.transfer.id.slice(0, 8)}.pdf`)
+}
+
+/**
+ * Post-payment invoice + VAT breakdown (no pay link — payment already recorded).
+ */
+export async function downloadTransferPaidInvoicePdf(opts: {
+  readonly transfer: TransferReceiptPdfTransfer
+  readonly customerName: string
+  readonly accountRef: string | null
+  readonly customerEmail?: string | null
+  /** Optional note under Payment (e.g. booking row updated_at from Supabase). */
+  readonly paymentRecordedHint?: string | null
+}): Promise<void> {
+  const pay = (opts.transfer.payment_status ?? 'unpaid').toLowerCase()
+  if (pay !== 'paid') {
+    throw new Error('This transfer is not marked as paid yet — use the quote PDF until payment completes.')
+  }
+
+  let paymentLine = 'Paid in full (thank you)'
+  const hint = opts.paymentRecordedHint?.trim()
+  if (hint) {
+    paymentLine = `Paid in full · ${hint}`
+  }
+
+  const doc = await renderTransferVatPdf({
+    transfer: opts.transfer,
+    customerName: opts.customerName,
+    accountRef: opts.accountRef,
+    customerEmail: opts.customerEmail,
+    bannerTitle: 'Paid transfer invoice & VAT summary',
+    paymentLine,
+    paySection: null,
+    footerNote:
+      'Golf Sol Ireland · Paid invoice for your records (Irish VAT breakdown shown for transparency). For accounting questions, retain this PDF alongside your card receipt from Stripe.'
+  })
+
+  doc.save(`golfsol-transfer-invoice-paid-${opts.transfer.id.slice(0, 8)}.pdf`)
+}
+
+/**
+ * @deprecated Prefer {@link downloadTransferQuotePdf} or {@link downloadTransferPaidInvoicePdf}.
+ */
+export async function downloadTransferVatReceiptPdf(opts: {
+  readonly transfer: TransferReceiptPdfTransfer
+  readonly customerName: string
+  readonly accountRef: string | null
+  readonly customerEmail?: string | null
+}): Promise<void> {
+  const origin =
+    typeof window !== 'undefined' && window.location?.origin ? window.location.origin : 'https://golfsolirl.com'
+  await downloadTransferQuotePdf({
+    ...opts,
+    dashboardPayUrl: `${origin.replace(/\/+$/, '')}/dashboard`
+  })
 }

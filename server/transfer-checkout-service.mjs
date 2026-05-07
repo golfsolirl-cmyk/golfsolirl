@@ -25,12 +25,28 @@ const getSiteOrigin = (env) => {
 }
 
 /**
+ * Origin used only for Stripe Checkout return URLs (success/cancel).
+ * Set TRANSFER_CHECKOUT_ORIGIN=http://localhost:5173 when testing locally while SITE_URL stays production for emails.
+ */
+const getTransferCheckoutOrigin = (env) => {
+  const raw = env.TRANSFER_CHECKOUT_ORIGIN?.trim() || env.TRANSFER_CHECKOUT_SITE_URL?.trim()
+  if (raw) {
+    try {
+      return new URL(raw.startsWith('http') ? raw : `https://${raw}`).origin
+    } catch {
+      /* fall through */
+    }
+  }
+  return getSiteOrigin(env)
+}
+
+/**
  * @param {import('@supabase/supabase-js').SupabaseClient} admin
  * @param {string} userId
  * @param {string} userEmail
  * @param {Record<string, unknown>} booking
  */
-const clientOwnsTransferBooking = async (admin, userId, userEmail, booking) => {
+export const clientOwnsTransferBooking = async (admin, userId, userEmail, booking) => {
   if (booking.client_user_id === userId) {
     return true
   }
@@ -167,9 +183,10 @@ export const handleTransferStripeCheckout = async (body, env = process.env, meta
   }
 
   const route = `${String(booking.pickup_label ?? '').trim() || 'Pickup'} → ${String(booking.dropoff_label ?? '').trim() || 'Drop-off'}`
-  const origin = getSiteOrigin(env)
-  const successUrl = `${origin}/dashboard?transfer_paid=1`
-  const cancelUrl = `${origin}/dashboard?transfer_pay_cancel=1`
+  const origin = getTransferCheckoutOrigin(env)
+  const bid = encodeURIComponent(bookingId)
+  const successUrl = `${origin}/dashboard?transfer_paid=1&transfer_booking_id=${bid}&checkout_session_id={CHECKOUT_SESSION_ID}`
+  const cancelUrl = `${origin}/dashboard?transfer_pay_cancel=1&transfer_booking_id=${bid}`
 
   const stripe = new Stripe(stripeKey)
   let session

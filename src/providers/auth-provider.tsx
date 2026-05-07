@@ -19,6 +19,8 @@ export interface Profile {
   portal_pdf_library_enabled: boolean
   /** After client completes one-time “How we reach you” on the dashboard; blocks enquiry auto-overwrite of name/phone. */
   portal_contact_completed_at: string | null
+  /** After admin clears portal — hide enquiry snapshots / form echo on the dashboard until re-enabled. */
+  portal_enquiry_autofill_disabled?: boolean
   created_at: string
   updated_at: string
 }
@@ -107,6 +109,10 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
             : Boolean(row.portal_proposals_enabled),
         portal_contact_completed_at:
           row.portal_contact_completed_at != null ? String(row.portal_contact_completed_at) : null,
+        portal_enquiry_autofill_disabled:
+          typeof row.portal_enquiry_autofill_disabled === 'boolean'
+            ? Boolean(row.portal_enquiry_autofill_disabled)
+            : false,
         created_at: String(row.created_at),
         updated_at: String(row.updated_at)
       }

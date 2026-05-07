@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { motion } from 'framer-motion'
 import { ChevronDown, Sparkles } from 'lucide-react'
+import { BRAND_FLEET_HERO_IMAGE_SRC, BRAND_PORTAL_HERO_GOLF_BACKDROP_SRC } from '../../../lib/brand-visual-assets'
 import { GeButton } from '../components/ge-button'
 import { handleScrollToFormTarget } from '../../../lib/scroll-to-form-target'
 
@@ -51,22 +52,48 @@ export function GeHero({
       {/* Mobile: fractionally taller frame than 9:16 eases vertical crowding in-view
           (object-cover crops sides slightly). sm+ keeps desktop 2:1. */}
       <div className="relative w-full max-sm:aspect-[9/17] sm:aspect-[2/1]">
-        <picture className="absolute inset-0 block h-full w-full">
-          <source
-            type="image/webp"
-            media="(max-width: 639px)"
-            srcSet="/images/hero-sample-sunny-mercedes-03-mobile.webp"
-          />
-          <source type="image/webp" media="(min-width: 640px)" srcSet="/images/hero-sample-sunny-mercedes-03.webp" />
-          <source media="(max-width: 639px)" srcSet="/images/hero-sample-sunny-mercedes-03-mobile.png" />
-          <img
-            src="/images/hero-sample-sunny-mercedes-03.png"
-            alt="GolfSol Ireland — From plane to fairway. Meet-and-greet at Málaga, golf-bag friendly Mercedes transfers, tee times pre-booked. Irish and Spanish phone lines: +353 87 446 4766 and +34 641 81 53 66."
-            className="h-full w-full select-none object-cover object-center"
-            fetchPriority="high"
-            decoding="async"
-          />
-        </picture>
+        {isPortal ? (
+          <>
+            <div className="absolute inset-0 z-0">
+              <img
+                alt=""
+                className="h-full w-full object-cover object-center"
+                decoding="async"
+                fetchPriority="high"
+                src={BRAND_PORTAL_HERO_GOLF_BACKDROP_SRC}
+              />
+              <div
+                aria-hidden
+                className="absolute inset-0 bg-gradient-to-br from-gs-dark/82 via-forest-950/40 to-emerald-950/30"
+              />
+              <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/90 via-gs-dark/45 to-gs-dark/20" />
+            </div>
+            <img
+              alt=""
+              aria-hidden
+              className="pointer-events-none absolute bottom-0 left-1/2 z-[1] max-h-[min(46vh,380px)] w-auto max-w-[min(96%,520px)] -translate-x-1/2 object-contain object-bottom opacity-[0.97] drop-shadow-[0_28px_80px_rgba(0,0,0,0.6)] sm:left-auto sm:right-[4%] sm:max-h-[min(52vh,460px)] sm:translate-x-0 md:right-[6%]"
+              decoding="async"
+              src={BRAND_FLEET_HERO_IMAGE_SRC}
+            />
+          </>
+        ) : (
+          <picture className="absolute inset-0 block h-full w-full">
+            <source
+              type="image/webp"
+              media="(max-width: 639px)"
+              srcSet="/images/hero-sample-sunny-mercedes-03-mobile.webp"
+            />
+            <source type="image/webp" media="(min-width: 640px)" srcSet="/images/hero-sample-sunny-mercedes-03.webp" />
+            <source media="(max-width: 639px)" srcSet="/images/hero-sample-sunny-mercedes-03-mobile.png" />
+            <img
+              src="/images/hero-sample-sunny-mercedes-03.png"
+              alt="GolfSol Ireland — From plane to fairway. Meet-and-greet at Málaga, golf-bag friendly Mercedes transfers, tee times pre-booked. Irish and Spanish phone lines: +353 87 446 4766 and +34 641 81 53 66."
+              className="h-full w-full select-none object-cover object-center"
+              fetchPriority="high"
+              decoding="async"
+            />
+          </picture>
+        )}
 
         {/* Marketing: headline is in raster; sr-only for SEO. Portal H1 lives in overlay below. */}
         {!isPortal ? (
@@ -76,7 +103,7 @@ export function GeHero({
         ) : null}
 
         {isPortal && (portalTitle || portalKicker || portalSubtitle || portalTimestamp) ? (
-          <div className="pointer-events-none absolute inset-0 z-30 flex flex-col justify-end bg-gradient-to-t from-gs-dark/95 via-gs-dark/55 to-transparent pb-[12%] pt-32 max-sm:pb-[18%] sm:pb-[10%]">
+          <div className="pointer-events-none absolute inset-0 z-30 flex flex-col justify-end bg-gradient-to-t from-black/92 via-gs-dark/50 to-transparent pb-[12%] pt-32 max-sm:pb-[18%] sm:pb-[10%]">
             <div className="pointer-events-auto mx-auto w-full max-w-[1180px] px-5 sm:px-8">
               <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <div className="min-w-0">

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { stripeCheckoutSessionDashboardUrl, stripePaymentDashboardUrl } from '../lib/stripe-dashboard-url'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { GeButton } from '../pages/golf-experience/components/ge-button'
 import { LuxuryButton } from './ui/button'
@@ -24,6 +25,10 @@ type TransferBookingRow = {
   /** Set when this row mirrors the client portal trip planner for a package build. */
   package_build_id?: string | null
   admin_price_eur?: number | null
+  admin_price_vat_treatment?: string | null
+  payment_status?: string | null
+  stripe_payment_intent_id?: string | null
+  stripe_checkout_session_id?: string | null
 }
 
 type DriverRow = {
@@ -347,8 +352,45 @@ export function AdminTransferPipeline() {
                 <span className="font-semibold text-forest-600">Pickup timing:</span> {formatPickupWhenAdmin(b)}
               </p>
               {typeof b.admin_price_eur === 'number' && Number.isFinite(b.admin_price_eur) ? (
-                <p className="mt-1 text-xs font-semibold text-fairway-800">
-                  <span className="text-forest-600">Quoted (admin):</span> {formatEurAdmin(b.admin_price_eur)}
+                <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <p className="text-xs font-semibold text-fairway-800">
+                    <span className="text-forest-600">Quoted (admin):</span> {formatEurAdmin(b.admin_price_eur)}
+                    {(b.admin_price_vat_treatment ?? '').trim() === 'services' ? (
+                      <span className="text-forest-600"> · VAT services 23%</span>
+                    ) : (
+                      <span className="text-forest-600"> · VAT tourism 13.5%</span>
+                    )}
+                  </p>
+                  {(b.payment_status ?? 'unpaid').toLowerCase() === 'paid' ? (
+                    <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-emerald-950 ring-1 ring-emerald-400/35">
+                      Paid · card confirmed
+                    </span>
+                  ) : null}
+                </div>
+              ) : null}
+              {stripePaymentDashboardUrl(b.stripe_payment_intent_id) ||
+              stripeCheckoutSessionDashboardUrl(b.stripe_checkout_session_id) ? (
+                <p className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs font-semibold">
+                  {stripePaymentDashboardUrl(b.stripe_payment_intent_id) ? (
+                    <a
+                      className="text-fairway-900 underline decoration-fairway-600/60 underline-offset-2 hover:text-fairway-950"
+                      href={stripePaymentDashboardUrl(b.stripe_payment_intent_id) ?? '#'}
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      Stripe payment / receipt
+                    </a>
+                  ) : null}
+                  {stripeCheckoutSessionDashboardUrl(b.stripe_checkout_session_id) ? (
+                    <a
+                      className="text-forest-700 underline decoration-forest-400/70 underline-offset-2 hover:text-forest-900"
+                      href={stripeCheckoutSessionDashboardUrl(b.stripe_checkout_session_id) ?? '#'}
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      Checkout session
+                    </a>
+                  ) : null}
                 </p>
               ) : null}
               <div className="mt-4 flex flex-col gap-3 border-t border-forest-200/60 pt-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">

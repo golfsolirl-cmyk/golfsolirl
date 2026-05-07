@@ -23,11 +23,13 @@ import {
   handleTransferRejectNoDriver
 } from '../server/transfer-booking-no-driver-service.mjs'
 import { handleTransferBalanceReminderSweep, handleTransferPaymentAdmin } from '../server/transfer-payment-service.mjs'
+import { handleTransferRefund } from '../server/transfer-refund-service.mjs'
 import { handleTripReviewSubmit } from '../server/trip-review-submit-service.mjs'
 import { handlePortalInvoiceSend } from '../server/portal-invoice-send-service.mjs'
 import { handlePortalLinkIssue, handlePortalLinkVerify } from '../server/portal-link-context-service.mjs'
 import { handleStripeWebhook } from '../server/stripe-webhook-service.mjs'
 import { handleTransferStripeCheckout } from '../server/transfer-checkout-service.mjs'
+import { handleTransferCheckoutSync } from '../server/transfer-checkout-sync-service.mjs'
 import { readIncomingMessageBodyUtf8, readIncomingMessageBodyBuffer } from '../server/vercel-read-body.mjs'
 
 const readStreamBody = (req) =>
@@ -357,6 +359,19 @@ export default async function handler(req, res) {
         return
       }
 
+      case 'transfer-refund': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const result = await handleTransferRefund(payload, process.env, { authHeader })
+        jsonEnd(res, 200, result)
+        return
+      }
+
       case 'transfer-checkout': {
         if (req.method !== 'POST') {
           jsonEnd(res, 405, { message: 'Method not allowed' })
@@ -366,6 +381,19 @@ export default async function handler(req, res) {
         const payload = raw ? JSON.parse(raw) : {}
         const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
         const result = await handleTransferStripeCheckout(payload, process.env, { authHeader })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'transfer-checkout-sync': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const result = await handleTransferCheckoutSync(payload, process.env, { authHeader })
         jsonEnd(res, 200, result)
         return
       }

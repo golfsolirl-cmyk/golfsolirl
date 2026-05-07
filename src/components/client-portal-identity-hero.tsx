@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Copy, Check, FileText, CreditCard } from 'lucide-react'
+import { Copy, Check, FileText, CreditCard, BadgeCheck } from 'lucide-react'
+import { cx } from '../lib/utils'
 
 const formatEurInline = (n: number) =>
   new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n)
@@ -16,6 +17,10 @@ export type ClientPortalTransferHeroRow = {
   readonly payment_status?: string | null
   readonly booking_source?: string | null
   readonly package_build_id?: string | null
+  readonly enquiry_reference_id?: string | null
+  readonly created_at?: string | null
+  /** ISO timestamp — used for paid-invoice “systems updated” hint */
+  readonly updated_at?: string | null
 }
 
 /** Matches server transfer checkout: full quoted EUR, or balance after deposit %. */
@@ -41,19 +46,28 @@ export function transferPayableAmountEur(t: ClientPortalTransferHeroRow): number
 
 export function ClientPortalIdentityHero(props: {
   readonly firstName: string
-  readonly fullName: string
+  /** Shown after “Signed in as” — typically login email until contact form saves a name, then `profile.full_name`. */
+  readonly signedInAs: string
   readonly accountNumber: string | null
   readonly accountEmail: string | null
   readonly transfers: readonly ClientPortalTransferHeroRow[]
-  readonly onDownloadTransferReceipt?: (transfer: ClientPortalTransferHeroRow) => void | Promise<void>
+  /** Stripe return — pulse ring on this booking row */
+  readonly emphasizeTransferBookingId?: string | null
+  readonly onDownloadTransferQuotePdf?: (transfer: ClientPortalTransferHeroRow) => void | Promise<void>
+  readonly onDownloadTransferPaidInvoicePdf?: (transfer: ClientPortalTransferHeroRow) => void | Promise<void>
   readonly onPayTransfer?: (transfer: ClientPortalTransferHeroRow) => void | Promise<void>
+  /** Opens full-screen transfer summary (Transport Service card) */
+  readonly onViewTransferCard?: (transfer: ClientPortalTransferHeroRow) => void | Promise<void>
+  /** Merged onto the root card — e.g. `mb-0` when a sibling banner sits directly below */
+  readonly className?: string
 }) {
   const [copied, setCopied] = useState(false)
-  const [receiptBusyId, setReceiptBusyId] = useState<string | null>(null)
+  const [quotePdfBusyId, setQuotePdfBusyId] = useState<string | null>(null)
+  const [paidInvoiceBusyId, setPaidInvoiceBusyId] = useState<string | null>(null)
   const [payBusyId, setPayBusyId] = useState<string | null>(null)
   const ref = props.accountNumber?.trim() ?? ''
-  const displayName = props.fullName.trim() || props.firstName || 'there'
   const emailDisplay = (props.accountEmail ?? '').trim()
+  const signedInLabel = props.signedInAs.trim() || emailDisplay || '—'
 
   const copyRef = async () => {
     if (!ref) {
@@ -69,7 +83,12 @@ export function ClientPortalIdentityHero(props: {
   }
 
   return (
-    <div className="mb-10 overflow-hidden rounded-[2rem] border-2 border-gs-gold/45 bg-gradient-to-br from-[#0f3d24] via-[#143d28] to-[#0a2416] p-6 text-white shadow-[0_24px_60px_rgba(11,73,52,0.35)] ring-1 ring-white/10 sm:p-8">
+    <div
+      className={cx(
+        'mb-10 overflow-hidden rounded-[2rem] border-2 border-gs-gold/45 bg-gradient-to-br from-[#0f3d24] via-[#143d28] to-[#0a2416] p-6 text-white shadow-[0_24px_60px_rgba(11,73,52,0.35)] ring-1 ring-white/10 sm:p-8',
+        props.className
+      )}
+    >
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0 flex-1 space-y-5">
           <div>
@@ -78,7 +97,8 @@ export function ClientPortalIdentityHero(props: {
               Hello, {props.firstName.trim() || 'there'}
             </h2>
             <p className="mt-2 font-ge text-sm leading-relaxed text-emerald-50/90">
-              Signed in as <span className="font-semibold text-white">{displayName}</span>
+              Signed in as{' '}
+              <span className="break-all font-semibold text-white">{signedInLabel}</span>
             </p>
           </div>
 
@@ -132,6 +152,7 @@ export function ClientPortalIdentityHero(props: {
             <ul className="mt-4 space-y-3">
               {props.transfers.slice(0, 5).map((t) => {
                 const pay = (t.payment_status ?? 'unpaid').toLowerCase()
+                const isPaid = pay === 'paid'
                 const payLabel =
                   pay === 'paid' ? 'Paid' : pay === 'deposit' ? 'Deposit' : 'Unpaid'
                 const when = t.scheduled_at
@@ -145,13 +166,21 @@ export function ClientPortalIdentityHero(props: {
                       : 'Dashboard'
                 const payable = transferPayableAmountEur(t)
                 const showPay =
-                  payable !== null && payable >= 0.5 && typeof props.onPayTransfer === 'function' && pay !== 'paid'
+                  payable !== null && payable >= 0.5 && typeof props.onPayTransfer === 'function' && !isPaid
                 const payCta =
                   pay === 'deposit'
                     ? `Pay balance ${formatEurInline(payable!)}`
                     : `Pay now ${formatEurInline(payable!)}`
+                const emphasized = props.emphasizeTransferBookingId === t.id
                 return (
-                  <li className="rounded-xl border border-white/10 bg-white/[0.06] px-3 py-2.5" key={t.id}>
+                  <li
+                    className={`rounded-xl border px-3 py-2.5 transition-[box-shadow] duration-500 ${
+                      emphasized
+                        ? 'border-amber-300/75 bg-amber-400/[0.14] shadow-[0_0_0_1px_rgba(251,191,36,0.35),0_12px_40px_rgba(251,191,36,0.15)]'
+                        : 'border-white/10 bg-white/[0.06]'
+                    }`}
+                    key={t.id}
+                  >
                     <p className="font-ge text-sm font-semibold leading-snug text-white">
                       {t.pickup_label} → {t.dropoff_label}
                     </p>
@@ -181,23 +210,52 @@ export function ClientPortalIdentityHero(props: {
                       ) : null}
                       {typeof t.admin_price_eur === 'number' &&
                       Number.isFinite(t.admin_price_eur) &&
-                      props.onDownloadTransferReceipt ? (
+                      !isPaid &&
+                      props.onDownloadTransferQuotePdf ? (
                         <button
                           className="inline-flex items-center gap-1 rounded-lg border border-amber-300/40 bg-amber-400/10 px-2 py-1 font-ge text-[0.62rem] font-bold uppercase tracking-[0.12em] text-amber-100 transition hover:bg-amber-400/20 disabled:opacity-50"
-                          disabled={receiptBusyId === t.id}
+                          disabled={quotePdfBusyId === t.id}
                           onClick={() => {
-                            setReceiptBusyId(t.id)
-                            void Promise.resolve(props.onDownloadTransferReceipt?.(t)).finally(() =>
-                              setReceiptBusyId(null)
+                            setQuotePdfBusyId(t.id)
+                            void Promise.resolve(props.onDownloadTransferQuotePdf?.(t)).finally(() =>
+                              setQuotePdfBusyId(null)
                             )
                           }}
                           type="button"
                         >
                           <FileText className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                          {receiptBusyId === t.id ? 'PDF…' : 'Receipt PDF'}
+                          {quotePdfBusyId === t.id ? 'PDF…' : 'Quote PDF'}
+                        </button>
+                      ) : null}
+                      {typeof t.admin_price_eur === 'number' &&
+                      Number.isFinite(t.admin_price_eur) &&
+                      isPaid &&
+                      props.onDownloadTransferPaidInvoicePdf ? (
+                        <button
+                          className="inline-flex items-center gap-1 rounded-lg border border-emerald-300/55 bg-emerald-500/25 px-2 py-1 font-ge text-[0.62rem] font-bold uppercase tracking-[0.12em] text-emerald-50 transition hover:bg-emerald-500/40 disabled:opacity-50"
+                          disabled={paidInvoiceBusyId === t.id}
+                          onClick={() => {
+                            setPaidInvoiceBusyId(t.id)
+                            void Promise.resolve(props.onDownloadTransferPaidInvoicePdf?.(t)).finally(() =>
+                              setPaidInvoiceBusyId(null)
+                            )
+                          }}
+                          type="button"
+                        >
+                          <BadgeCheck className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                          {paidInvoiceBusyId === t.id ? 'PDF…' : 'Paid invoice'}
                         </button>
                       ) : null}
                     </p>
+                    {typeof props.onViewTransferCard === 'function' ? (
+                      <button
+                        className="mt-2 font-ge text-[0.62rem] font-bold uppercase tracking-[0.14em] text-emerald-200/95 underline decoration-emerald-400/45 underline-offset-2 transition hover:text-white"
+                        onClick={() => void Promise.resolve(props.onViewTransferCard?.(t))}
+                        type="button"
+                      >
+                        View transfer card
+                      </button>
+                    ) : null}
                   </li>
                 )
               })}

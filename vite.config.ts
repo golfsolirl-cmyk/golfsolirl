@@ -21,7 +21,9 @@ import {
   handleTransferRejectNoDriver
 } from './server/transfer-booking-no-driver-service.mjs'
 import { handleTransferBalanceReminderSweep, handleTransferPaymentAdmin } from './server/transfer-payment-service.mjs'
+import { handleTransferRefund } from './server/transfer-refund-service.mjs'
 import { handleTransferStripeCheckout } from './server/transfer-checkout-service.mjs'
+import { handleTransferCheckoutSync } from './server/transfer-checkout-sync-service.mjs'
 import { handlePortalInvoiceSend } from './server/portal-invoice-send-service.mjs'
 import { handleStripeWebhook } from './server/stripe-webhook-service.mjs'
 import { readIncomingMessageBodyBuffer } from './server/vercel-read-body.mjs'
@@ -608,6 +610,36 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
       }
     })
 
+    server.middlewares.use('/api/transfer-refund', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const rawBody = await readRequestBody(request)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const authHeader = typeof request.headers.authorization === 'string' ? request.headers.authorization : ''
+        const result = await handleTransferRefund(payload, { ...process.env, ...serverEnv }, { authHeader })
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Request failed.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
     server.middlewares.use('/api/transfer-checkout', async (request, response) => {
       if (request.method !== 'POST') {
         response.statusCode = 405
@@ -639,6 +671,11 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
     })
 
     server.middlewares.use('/api/stripe-webhook', async (request, response) => {
+      if (request.method === 'OPTIONS') {
+        response.statusCode = 204
+        response.end()
+        return
+      }
       if (request.method !== 'POST') {
         response.statusCode = 405
         response.setHeader('Content-Type', 'application/json')
@@ -650,6 +687,36 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
         const rawBuffer = await readIncomingMessageBodyBuffer(request)
         const sig = request.headers['stripe-signature']
         const result = await handleStripeWebhook(rawBuffer, sig, { ...process.env, ...serverEnv })
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Request failed.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/transfer-checkout-sync', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const rawBody = await readRequestBody(request)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const authHeader = typeof request.headers.authorization === 'string' ? request.headers.authorization : ''
+        const result = await handleTransferCheckoutSync(payload, { ...process.env, ...serverEnv }, { authHeader })
 
         response.statusCode = 200
         response.setHeader('Content-Type', 'application/json')

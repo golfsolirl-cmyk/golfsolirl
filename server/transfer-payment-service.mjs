@@ -310,6 +310,10 @@ export const handleTransferPaymentAdmin = async (body, env = process.env, meta =
     deposit_percent: nextStatus === 'deposit' ? depositPercent : Number(row.deposit_percent) || 20,
     updated_at: now
   }
+  if (nextStatus === 'unpaid') {
+    patch.stripe_payment_intent_id = null
+    patch.stripe_checkout_session_id = null
+  }
   if (nextStatus === 'deposit') {
     patch.balance_remind_at = remindAt
     patch.balance_remind_sent_at = null

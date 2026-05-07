@@ -79,6 +79,10 @@ export type CostaMapBookingPreviewRow = {
   readonly deposit_percent?: number | null
   readonly balance_remind_at?: string | null
   readonly balance_remind_sent_at?: string | null
+  readonly admin_price_eur?: number | null
+  readonly admin_price_vat_treatment?: string | null
+  readonly stripe_payment_intent_id?: string | null
+  readonly stripe_checkout_session_id?: string | null
 }
 
 const formatPickupLocalDisplay = (raw: string | undefined): string => {

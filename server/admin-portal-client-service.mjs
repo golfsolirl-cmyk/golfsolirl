@@ -85,6 +85,59 @@ const throwStatus = (message, statusCode) => {
   throw err
 }
 
+/**
+ * Removes Stripe-linked dashboard rows and the email→account anchor so the next sign-in
+ * can mint a fresh GSI-style account number (see sync-portal-profile + email_account_anchors).
+ *
+ * @param {import('@supabase/supabase-js').SupabaseClient} admin
+ * @param {string} ownerId profiles.id
+ */
+const deletePortalInvoicesTransfersAndEmailAnchor = async (admin, ownerId) => {
+  const { data: prof, error: pErr } = await admin.from('profiles').select('email').eq('id', ownerId).maybeSingle()
+  if (pErr) {
+    throwStatus(pErr.message, 500)
+  }
+  const emailLower = typeof prof?.email === 'string' ? prof.email.trim().toLowerCase() : ''
+
+  if (emailLower) {
+    const { data: enqRows, error: enqErr } = await admin.from('enquiries').select('reference_id').eq('email', emailLower)
+    if (enqErr) {
+      throwStatus(enqErr.message, 500)
+    }
+    const refs = [...new Set((enqRows ?? []).map((r) => String(r.reference_id ?? '').trim()).filter(Boolean))]
+    if (refs.length > 0) {
+      const { error: tbRefErr } = await admin.from('transfer_bookings').delete().in('enquiry_reference_id', refs)
+      if (tbRefErr) {
+        throwStatus(tbRefErr.message, 500)
+      }
+    }
+  }
+
+  if (emailLower) {
+    const { error: aErr } = await admin.from('email_account_anchors').delete().eq('email', emailLower)
+    if (aErr) {
+      throwStatus(aErr.message, 500)
+    }
+  }
+
+  const { error: invErr } = await admin.from('portal_invoices').delete().eq('profile_id', ownerId)
+  if (invErr) {
+    throwStatus(invErr.message, 500)
+  }
+
+  const { error: tbErr } = await admin.from('transfer_bookings').delete().eq('client_user_id', ownerId)
+  if (tbErr) {
+    throwStatus(tbErr.message, 500)
+  }
+
+  if (emailLower) {
+    const { error: tbEmailErr } = await admin.from('transfer_bookings').delete().eq('client_email', emailLower)
+    if (tbEmailErr) {
+      throwStatus(tbEmailErr.message, 500)
+    }
+  }
+}
+
 const defaultMagicRedirectTo = (env) => {
   const site = env.SITE_URL?.trim()
   if (site) {
@@ -225,6 +278,8 @@ export const handleAdminPortalClient = async (payload = {}, env = process.env, m
       throwStatus('Cannot reset another admin’s portal contact this way.', 403)
     }
 
+    await deletePortalInvoicesTransfersAndEmailAnchor(admin, target.id)
+
     const now = new Date().toISOString()
     const { error: uErr } = await admin
       .from('profiles')
@@ -263,26 +318,40 @@ export const handleAdminPortalClient = async (payload = {}, env = process.env, m
   }
 
   if (action === 'clear_dashboard_by_account_ref') {
+    const emailRaw = typeof payload.clientEmail === 'string' ? payload.clientEmail.trim().toLowerCase() : ''
     const refRaw = typeof payload.accountReferenceId === 'string' ? payload.accountReferenceId.trim() : ''
-    const normalized = refRaw.replace(/\s+/g, '').toUpperCase()
-    if (!normalized || normalized.length < 8) {
-      throwStatus('Enter a valid account number (e.g. GSI-XXXX-1234).', 400)
+    const normalizedRef = refRaw.replace(/\s+/g, '').toUpperCase()
+
+    let ownerId = null
+    if (emailRaw && isValidEmail(emailRaw)) {
+      const { data: byEmail, error: emErr } = await admin.from('profiles').select('id').ilike('email', emailRaw).maybeSingle()
+      if (emErr) {
+        throwStatus(emErr.message, 500)
+      }
+      if (byEmail?.id) {
+        ownerId = byEmail.id
+      }
+    }
+    if (!ownerId && normalizedRef.length >= 8) {
+      const { data: byRef, error: refErr } = await admin
+        .from('profiles')
+        .select('id')
+        .ilike('account_reference_id', normalizedRef)
+        .maybeSingle()
+      if (refErr) {
+        throwStatus(refErr.message, 500)
+      }
+      if (byRef?.id) {
+        ownerId = byRef.id
+      }
     }
 
-    const { data: target, error: findErr } = await admin
-      .from('profiles')
-      .select('id')
-      .ilike('account_reference_id', normalized)
-      .maybeSingle()
-
-    if (findErr) {
-      throwStatus(findErr.message, 500)
+    if (!ownerId) {
+      throwStatus(
+        'No profile matched — enter the client login email (best) and/or their portal account number (GSI-…).',
+        404
+      )
     }
-    if (!target?.id) {
-      throwStatus('No profile found with that account number.', 404)
-    }
-
-    const ownerId = target.id
 
     const { error: tixErr } = await admin.from('portal_interest_tickets').delete().eq('owner_id', ownerId)
     if (tixErr) {
@@ -308,6 +377,8 @@ export const handleAdminPortalClient = async (payload = {}, env = process.env, m
     if (docErr) {
       throwStatus(docErr.message, 500)
     }
+
+    await deletePortalInvoicesTransfersAndEmailAnchor(admin, ownerId)
 
     const now = new Date().toISOString()
     const { error: upErr } = await admin

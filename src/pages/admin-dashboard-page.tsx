@@ -62,6 +62,7 @@ import {
   QUOTE_INTENTS,
   WEBSITE_ENQUIRY_FORM
 } from '../lib/enquiry-form-registry'
+import { stripeCheckoutSessionDashboardUrl, stripePaymentDashboardUrl } from '../lib/stripe-dashboard-url'
 import { cx } from '../lib/utils'
 import {
   isMissingPortalInterestTicketsError,
@@ -81,6 +82,8 @@ interface EnquiryRow {
   created_at: string
   /** Structured answers from the submitting form; requires `form_payload` column in Supabase. */
   form_payload?: unknown
+  /** Set after join with profiles on submitter email — dashboard account number */
+  client_portal_account_ref?: string | null
 }
 
 type AdminInterestTicketRow = PortalInterestTicketRow & {
@@ -698,7 +701,26 @@ export function AdminDashboardPage() {
 
         const errMsg = enqRes.error?.message ?? propRes.error?.message ?? null
         setLoadError(errMsg)
-        setEnquiries((enqRes.data ?? []) as EnquiryRow[])
+        let enquiryRows = (enqRes.data ?? []) as EnquiryRow[]
+        if (!enqRes.error && enquiryRows.length > 0 && supabase) {
+          const emails = [...new Set(enquiryRows.map((e) => e.email?.trim().toLowerCase()).filter(Boolean))]
+          if (emails.length > 0) {
+            const pr = await supabase.from('profiles').select('email, account_reference_id').in('email', emails)
+            if (!pr.error && pr.data) {
+              const accountByEmail: Record<string, string | null> = {}
+              for (const row of pr.data as { email: string; account_reference_id: string | null }[]) {
+                const em = row.email.trim().toLowerCase()
+                accountByEmail[em] =
+                  typeof row.account_reference_id === 'string' ? row.account_reference_id.trim() : null
+              }
+              enquiryRows = enquiryRows.map((row) => ({
+                ...row,
+                client_portal_account_ref: accountByEmail[row.email.trim().toLowerCase()] ?? null
+              }))
+            }
+          }
+        }
+        setEnquiries(enquiryRows)
         setProposals((propRes.data ?? []) as ProposalRow[])
 
         if (buildRes.error) {
@@ -790,7 +812,8 @@ export function AdminDashboardPage() {
     }
 
     return enquiries.filter((row) => {
-      const hay = `${row.reference_id} ${row.full_name} ${row.email} ${row.interest ?? ''} ${row.phone_whatsapp ?? ''}`.toLowerCase()
+      const hay =
+        `${row.reference_id} ${row.full_name} ${row.email} ${row.interest ?? ''} ${row.phone_whatsapp ?? ''} ${row.client_portal_account_ref ?? ''}`.toLowerCase()
       return hay.includes(q)
     })
   }, [enquiries, enquirySearchQuery])
@@ -965,7 +988,7 @@ export function AdminDashboardPage() {
       const tb = await supabase
         .from('transfer_bookings')
         .select(
-          'id,pickup_label,dropoff_label,scheduled_at,status,created_at,booking_source,enquiry_reference_id,client_email,payment_status,deposit_percent,balance_remind_at,balance_remind_sent_at'
+          'id,pickup_label,dropoff_label,scheduled_at,status,created_at,booking_source,enquiry_reference_id,client_email,payment_status,deposit_percent,balance_remind_at,balance_remind_sent_at,admin_price_eur,admin_price_vat_treatment,stripe_payment_intent_id,stripe_checkout_session_id'
         )
         .or(orParts.join(','))
         .order('created_at', { ascending: false })
@@ -2161,7 +2184,7 @@ export function AdminDashboardPage() {
 
     if (
       !window.confirm(
-        `Clear saved contact / account number / one-time onboarding for ${email}?\n\nFor testing: they will see the contact form again. Does not delete the user or enquiries.`
+        `Reset portal contact and account for ${email}?\n\nThis clears saved name/phone, account number, trip invoices, transfer bookings, and the email→account anchor (so a new GSI account can be issued). They will see the one-time contact form again. Does not delete the user or enquiry submissions.`
       )
     ) {
       return
@@ -2184,7 +2207,7 @@ export function AdminDashboardPage() {
       }
 
       setPortalOnboardingResetMsg(
-        `Reset portal onboarding for ${email}. After they refresh or sign in again, the one-time contact section appears.`
+        `Reset portal for ${email}. Invoices and transfers on their dashboard are cleared; after refresh or sign-in they get the contact form again and a fresh account number when they (re)complete it or when profile sync runs.`
       )
       setPortalOnboardingResetEmail('')
     } catch (e) {
@@ -3169,7 +3192,7 @@ export function AdminDashboardPage() {
           const tb = await supabase
             .from('transfer_bookings')
             .select(
-              'id,pickup_label,dropoff_label,scheduled_at,status,created_at,booking_source,enquiry_reference_id,client_email,payment_status,deposit_percent,balance_remind_at,balance_remind_sent_at'
+              'id,pickup_label,dropoff_label,scheduled_at,status,created_at,booking_source,enquiry_reference_id,client_email,payment_status,deposit_percent,balance_remind_at,balance_remind_sent_at,admin_price_eur,admin_price_vat_treatment,stripe_payment_intent_id,stripe_checkout_session_id'
             )
             .or(orParts.join(','))
             .order('created_at', { ascending: false })
@@ -3632,6 +3655,9 @@ export function AdminDashboardPage() {
                       <th className="whitespace-nowrap px-4 py-4 md:px-6">Ref</th>
                       <th className="whitespace-nowrap px-4 py-4 md:px-6">Name</th>
                       <th className="whitespace-nowrap px-4 py-4 md:px-6">Email</th>
+                      <th className="hidden whitespace-nowrap px-4 py-4 font-mono normal-case tracking-normal md:table-cell md:px-6">
+                        Portal account
+                      </th>
                       <th className="hidden px-4 py-4 md:table-cell md:px-6 lg:table-cell">Interest</th>
                       <th className="whitespace-nowrap px-4 py-4 md:px-6">When</th>
                       <th className="whitespace-nowrap px-4 py-4 text-right md:px-6">Remove</th>
@@ -3664,6 +3690,9 @@ export function AdminDashboardPage() {
                           >
                             {row.email}
                           </a>
+                        </td>
+                        <td className="hidden px-4 py-4 font-mono text-xs text-forest-800 md:table-cell md:px-6">
+                          {row.client_portal_account_ref?.trim() ? row.client_portal_account_ref.trim() : '—'}
                         </td>
                         <td className="hidden max-w-xs truncate px-4 py-4 text-forest-600 md:table-cell md:px-6 lg:table-cell">
                           {row.interest ?? '—'}
@@ -5519,6 +5548,52 @@ export function AdminDashboardPage() {
                                     </span>
                                   ) : null}
                                 </div>
+                                {typeof b.admin_price_eur === 'number' && Number.isFinite(b.admin_price_eur) ? (
+                                  <p className="mt-2 text-xs font-semibold text-fairway-900">
+                                    <span className="text-forest-600">Quoted (admin):</span> {formatEur(b.admin_price_eur)}
+                                    {(b.admin_price_vat_treatment ?? '').trim() === 'services' ? (
+                                      <span className="text-forest-600"> · VAT services 23%</span>
+                                    ) : (
+                                      <span className="text-forest-600"> · VAT tourism 13.5%</span>
+                                    )}
+                                    {paySt === 'paid' ? (
+                                      <span className="ml-2 inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-emerald-950 ring-1 ring-emerald-400/35">
+                                        Paid · confirmed
+                                      </span>
+                                    ) : null}
+                                  </p>
+                                ) : paySt === 'paid' ? (
+                                  <p className="mt-2">
+                                    <span className="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-emerald-950 ring-1 ring-emerald-400/35">
+                                      Paid · card confirmed
+                                    </span>
+                                  </p>
+                                ) : null}
+                                {stripePaymentDashboardUrl(b.stripe_payment_intent_id) ||
+                                stripeCheckoutSessionDashboardUrl(b.stripe_checkout_session_id) ? (
+                                  <p className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs font-semibold">
+                                    {stripePaymentDashboardUrl(b.stripe_payment_intent_id) ? (
+                                      <a
+                                        className="text-fairway-900 underline decoration-fairway-600/60 underline-offset-2 hover:text-fairway-950"
+                                        href={stripePaymentDashboardUrl(b.stripe_payment_intent_id) ?? '#'}
+                                        rel="noreferrer"
+                                        target="_blank"
+                                      >
+                                        Stripe payment / receipt
+                                      </a>
+                                    ) : null}
+                                    {stripeCheckoutSessionDashboardUrl(b.stripe_checkout_session_id) ? (
+                                      <a
+                                        className="text-forest-700 underline decoration-forest-400/70 underline-offset-2 hover:text-forest-900"
+                                        href={stripeCheckoutSessionDashboardUrl(b.stripe_checkout_session_id) ?? '#'}
+                                        rel="noreferrer"
+                                        target="_blank"
+                                      >
+                                        Checkout session
+                                      </a>
+                                    ) : null}
+                                  </p>
+                                ) : null}
                                 <div className="mt-3 flex flex-wrap gap-2">
                                   <LuxuryButton
                                     className="!px-3 !py-2 !text-xs"
@@ -7363,6 +7438,11 @@ export function AdminDashboardPage() {
           />
           <p className="mb-4 max-w-xl text-xs text-forest-600">
             Quote titles may show an enquiry ref that differs from the profile account number — use login email when in doubt.
+          </p>
+          <p className="mb-4 max-w-2xl text-xs text-forest-600">
+            <strong className="font-medium text-forest-800">Full dashboard clear</strong> also deletes portal invoices, transfer
+            bookings, and the email→account anchor so the client can receive a <strong className="font-medium text-forest-800">new</strong>{' '}
+            portal account number on next sign-in or when they save contact details again. Enquiry rows in the table above are kept.
           </p>
           <div className="flex flex-col flex-wrap gap-3 sm:flex-row sm:items-center">
             <button
