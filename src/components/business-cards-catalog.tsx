@@ -3,7 +3,7 @@ import { Download, Globe, Mail, Phone } from 'lucide-react'
 import { FaFacebookF, FaInstagram, FaLinkedinIn } from 'react-icons/fa6'
 import { SiWhatsapp } from 'react-icons/si'
 import { cx } from '../lib/utils'
-import { saveElementAsPdf } from '../lib/save-element-as-pdf'
+import { saveBusinessCardsCatalogPdf } from '../lib/save-business-cards-pdf'
 import {
   businessCardAssets,
   businessCardContact,
@@ -1236,15 +1236,22 @@ export const BUSINESS_CARD_SPECS: readonly BusinessCardSpec[] = [
 
 export function BusinessCardsCatalog() {
   const [pdfBusy, setPdfBusy] = useState(false)
+  const [pdfError, setPdfError] = useState<string | null>(null)
 
   const handlePdf = useCallback(async () => {
     const root = document.getElementById('business-cards-pdf-export-root')
     if (!root) {
+      setPdfError('Print layout is not ready. Refresh the page and try again.')
       return
     }
+    setPdfError(null)
     setPdfBusy(true)
     try {
-      await saveElementAsPdf(root, 'golfsol-business-cards-martin-kelly-catalogue')
+      await saveBusinessCardsCatalogPdf(root, 'golfsol-business-cards-martin-kelly-catalogue')
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Could not build the PDF.'
+      setPdfError(message)
+      console.error(e)
     } finally {
       setPdfBusy(false)
     }
@@ -1280,6 +1287,11 @@ export function BusinessCardsCatalog() {
               <Download className="h-4 w-4" aria-hidden />
               {pdfBusy ? 'Building PDF…' : 'Download PDF catalogue'}
             </button>
+            {pdfError ? (
+              <p className="mt-4 max-w-2xl rounded-xl border border-amber-300/40 bg-black/25 px-4 py-3 font-ge text-sm text-amber-100">
+                {pdfError}
+              </p>
+            ) : null}
           </div>
         </div>
       </header>
@@ -1304,8 +1316,9 @@ export function BusinessCardsCatalog() {
         </div>
       </div>
 
-      <div className="fixed -left-[9999px] top-0 w-[640px] bg-white p-12" id="business-cards-pdf-export-root">
-        <div className="space-y-14">
+      <div className="fixed -left-[9999px] top-0 w-[640px]" id="business-cards-pdf-export-root">
+        {/* Each block is one A4 page in the downloaded PDF (see save-business-cards-pdf.ts). */}
+        <div data-pdf-page className="bg-white p-12">
           <div className="border-b border-black/10 pb-8">
             <p className="font-ge text-xs font-bold uppercase tracking-[0.22em] text-forest-700">Golf Sol Ireland</p>
             <p className="font-display mt-3 text-3xl font-bold tracking-tight text-forest-950">
@@ -1316,15 +1329,15 @@ export function BusinessCardsCatalog() {
               {businessCardContact.phoneEs} · Co. Reg. Ireland {businessCardContact.companyRegIreland}
             </p>
           </div>
-          {BUSINESS_CARD_SPECS.map((spec) => (
-            <div key={`pdf-${spec.id}`}>
-              <p className="mb-5 font-ge text-[0.7rem] font-bold uppercase tracking-[0.26em] text-forest-600">
-                {spec.id} · {spec.title}
-              </p>
-              <div className="max-w-[600px]">{spec.render()}</div>
-            </div>
-          ))}
         </div>
+        {BUSINESS_CARD_SPECS.map((spec) => (
+          <div key={`pdf-${spec.id}`} className="bg-white px-10 pb-14 pt-12" data-pdf-page>
+            <p className="mb-6 font-ge text-[0.72rem] font-bold uppercase tracking-[0.26em] text-forest-600">
+              {spec.id} · {spec.title}
+            </p>
+            <div className="mx-auto max-w-[600px]">{spec.render()}</div>
+          </div>
+        ))}
       </div>
     </div>
   )

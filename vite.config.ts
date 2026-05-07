@@ -776,6 +776,16 @@ export default defineConfig(({ mode }) => {
      * Informative only — suppress to keep CI logs readable (see https://rolldown.rs/options/checks).
      */
     build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (!id.includes('node_modules')) return
+            if (id.includes('leaflet')) return 'leaflet'
+            if (id.includes('framer-motion')) return 'motion'
+            if (id.includes('jspdf') || id.includes('html2canvas') || id.includes('pdf-lib')) return 'pdf'
+          }
+        }
+      },
       rolldownOptions: {
         checks: {
           pluginTimings: false
