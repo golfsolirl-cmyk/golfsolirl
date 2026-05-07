@@ -1,9 +1,10 @@
 import { useCallback, useState, type ReactNode } from 'react'
-import { Download, FileDown, Globe, Mail, Phone } from 'lucide-react'
+import { FileDown, Globe, Mail, Phone } from 'lucide-react'
 import { FaFacebookF, FaInstagram, FaLinkedinIn } from 'react-icons/fa6'
 import { SiWhatsapp } from 'react-icons/si'
 import { cx } from '../lib/utils'
-import { saveBusinessCardsCatalogPdf, saveSingleBusinessCardPdf } from '../lib/save-business-cards-pdf'
+import { saveSingleBusinessCardPdf } from '../lib/save-business-cards-pdf'
+import { BRAND_FLEET_LINEUP_ALT, BRAND_FLEET_LINEUP_IMAGE_SRC } from '../lib/brand-visual-assets'
 import {
   businessCardAssets,
   businessCardContact,
@@ -18,11 +19,11 @@ const GOLD = '#c9a227'
 const INK = '#0c0c0c'
 
 /**
- * Extra height vs standard 3.5×2 so email, www, two phones, Co. Reg., and icon row never clip.
+ * Taller than ISO so contact blocks + fleet panels rarely clip; still reads “business card” in grid.
  */
-const CARD_PREVIEW = 'aspect-[3.5/2.82] w-full max-w-[min(100%,600px)]'
+const CARD_PREVIEW = 'aspect-[3.5/3.12] w-full max-w-[min(100%,600px)]'
 
-/** Homepage-style warm gold edge + optional soft “sunny” glow (navbar crest shimmer language). */
+/** Warm gold edge + optional soft “sunny” glow (premium card trim language). */
 function SunnyHairline({ glow = 'top-right' }: { readonly glow?: 'top-right' | 'none' }) {
   return (
     <>
@@ -180,9 +181,9 @@ function ContactBlock({
   const label = dark ? 'text-emerald-100/70' : 'text-forest-700/55'
 
   return (
-    <div className={cx('font-ge text-[0.78rem] leading-[1.55] sm:text-[0.8rem]', ink, className)}>
+    <div className={cx('font-ge text-[0.78rem] leading-[1.5] sm:text-[0.8rem]', ink, className)}>
       <a
-        className={cx('group flex items-start gap-2.5 border-b pb-2.5 text-left transition', border, dark ? 'hover:text-white' : 'hover:text-forest-950')}
+        className={cx('group flex items-start gap-2.5 border-b pb-2 text-left transition', border, dark ? 'hover:text-white' : 'hover:text-forest-950')}
         href={`mailto:${businessCardContact.email}`}
       >
         <Mail className={cx('mt-[3px] h-3.5 w-3.5 shrink-0', muted)} aria-hidden />
@@ -192,7 +193,7 @@ function ContactBlock({
       </a>
       {omitWebsite ? null : (
         <a
-          className={cx('mt-2.5 flex items-start gap-2.5 border-b pb-2.5 text-left font-bold tracking-[-0.01em] transition', border, dark ? 'hover:text-white' : 'hover:text-forest-950')}
+          className={cx('mt-2 flex items-start gap-2.5 border-b pb-2 text-left font-bold tracking-[-0.01em] transition', border, dark ? 'hover:text-white' : 'hover:text-forest-950')}
           href={businessCardContact.websiteUrl}
           rel="noreferrer"
           target="_blank"
@@ -201,23 +202,23 @@ function ContactBlock({
           <span className="min-w-0 break-all">{businessCardContact.websiteDisplay}</span>
         </a>
       )}
-      <div className="mt-2.5 space-y-1.5">
+      <div className="mt-2 space-y-1.5">
         <a
-          className={cx('flex items-start gap-2.5 text-left font-semibold tracking-[-0.01em] transition', dark ? 'hover:text-white' : 'hover:text-forest-950')}
+          className={cx('flex min-w-0 items-start gap-2.5 text-left font-semibold tracking-[-0.01em] transition', dark ? 'hover:text-white' : 'hover:text-forest-950')}
           href={`tel:${businessCardContact.phoneIe.replace(/\s/g, '')}`}
         >
           <Phone className={cx('mt-[3px] h-3.5 w-3.5 shrink-0', muted)} aria-hidden />
-          <span>
+          <span className="min-w-0 break-words">
             <span className={cx('mr-2 text-[0.65rem] font-bold uppercase tracking-[0.14em]', label)}>Ireland</span>
             {businessCardContact.phoneIe}
           </span>
         </a>
         <a
-          className={cx('flex items-start gap-2.5 text-left font-semibold tracking-[-0.01em] transition', dark ? 'hover:text-white' : 'hover:text-forest-950')}
+          className={cx('flex min-w-0 items-start gap-2.5 text-left font-semibold tracking-[-0.01em] transition', dark ? 'hover:text-white' : 'hover:text-forest-950')}
           href={`tel:${businessCardContact.phoneEs.replace(/\s/g, '')}`}
         >
           <Phone className={cx('mt-[3px] h-3.5 w-3.5 shrink-0', muted)} aria-hidden />
-          <span>
+          <span className="min-w-0 break-words">
             <span className={cx('mr-2 text-[0.65rem] font-bold uppercase tracking-[0.14em]', label)}>Spain</span>
             {businessCardContact.phoneEs}
           </span>
@@ -235,7 +236,7 @@ function ContactBlock({
       ) : (
         <p
           className={cx(
-            'mt-3 border-t pt-3 font-bold leading-none tracking-[0.06em] normal-case',
+            'mt-2.5 border-t pt-2.5 font-bold leading-snug tracking-[0.06em] normal-case',
             dark ? 'border-white/15 text-[0.62rem] text-emerald-100/95' : 'border-black/[0.06] text-[0.62rem] text-forest-900/92 sm:text-[0.66rem]',
             coRegClassName
           )}
@@ -247,22 +248,44 @@ function ContactBlock({
   )
 }
 
-function NameBlock({ centered, large, boldTagline }: { readonly centered?: boolean; readonly large?: boolean; readonly boldTagline?: boolean }) {
+function NameBlock({
+  centered,
+  large,
+  compact,
+  boldTagline,
+  tone = 'dark'
+}: {
+  readonly centered?: boolean
+  readonly large?: boolean
+  /** Slightly smaller type for dense / photo-backed cards. */
+  readonly compact?: boolean
+  readonly boldTagline?: boolean
+  /** `light` = white type on fleet / nocturne photography. */
+  readonly tone?: 'dark' | 'light'
+}) {
+  const onPhoto = tone === 'light'
   return (
     <div className={cx(centered && 'text-center')}>
       <p
         className={cx(
           'font-display font-black tracking-[-0.025em]',
-          large ? 'text-[1.65rem] leading-[1.12] sm:text-[1.85rem]' : 'text-[1.45rem] leading-[1.15] sm:text-[1.6rem]'
+          compact
+            ? 'text-[1.28rem] leading-[1.14] sm:text-[1.38rem]'
+            : large
+              ? 'text-[1.65rem] leading-[1.12] sm:text-[1.85rem]'
+              : 'text-[1.45rem] leading-[1.15] sm:text-[1.6rem]',
+          onPhoto && 'text-white [text-shadow:0_2px_22px_rgba(0,0,0,0.65)]'
         )}
-        style={{ color: INK }}
+        style={onPhoto ? undefined : { color: INK }}
       >
         {businessCardPerson.name}
       </p>
       <p
         className={cx(
-          'mt-2 font-ge text-[0.68rem] uppercase tracking-[0.26em] text-forest-800/72 sm:text-[0.72rem]',
-          boldTagline ? 'font-bold' : 'font-semibold'
+          'mt-1.5 font-ge uppercase tracking-[0.26em] sm:tracking-[0.26em]',
+          compact ? 'text-[0.62rem] leading-snug sm:text-[0.64rem]' : 'mt-2 text-[0.68rem] sm:text-[0.72rem]',
+          boldTagline ? 'font-bold' : 'font-semibold',
+          onPhoto ? 'text-emerald-50/95 [text-shadow:0_1px_14px_rgba(0,0,0,0.5)]' : 'text-forest-800/72'
         )}
       >
         {businessCardPerson.tagline}
@@ -272,7 +295,7 @@ function NameBlock({ centered, large, boldTagline }: { readonly centered?: boole
 }
 
 const cardShell =
-  'relative overflow-hidden rounded-2xl shadow-[0_16px_48px_rgba(15,45,30,0.12),0_2px_8px_rgba(0,0,0,0.04)] ring-1 ring-black/[0.06]'
+  'relative min-h-0 overflow-hidden rounded-2xl shadow-[0_16px_48px_rgba(15,45,30,0.12),0_2px_8px_rgba(0,0,0,0.04)] ring-1 ring-black/[0.06]'
 
 export type BusinessCardSpec = {
   readonly id: string
@@ -314,17 +337,43 @@ function Card01IvoryLedger() {
 
 function Card02CreamStudio() {
   return (
-    <div className={cx(CARD_PREVIEW, cardShell, 'relative')} style={{ backgroundColor: CREAM }}>
+    <div
+      className={cx(
+        CARD_PREVIEW,
+        cardShell,
+        'relative ring-2 ring-amber-200/45 ring-offset-[3px] ring-offset-[#f3ece0]'
+      )}
+      style={{
+        backgroundColor: CREAM,
+        boxShadow:
+          '0 20px 56px rgba(15,45,30,0.14), 0 2px 8px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.85), inset 0 -1px 0 rgba(201,162,39,0.12)'
+      }}
+    >
       <SunnyHairline />
-      <div className="pointer-events-none absolute -right-10 top-0 z-[1] h-44 w-44 rounded-full bg-amber-200/30 blur-3xl" />
-      <div className="relative z-[2] flex h-full flex-col gap-6 px-6 py-6 sm:flex-row sm:gap-8 sm:px-7 sm:py-7">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-[1] opacity-[0.4]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E")`,
+          mixBlendMode: 'multiply'
+        }}
+      />
+      <div className="pointer-events-none absolute -right-10 top-0 z-[1] h-48 w-48 rounded-full bg-amber-200/35 blur-3xl" />
+      <p
+        aria-hidden
+        className="pointer-events-none absolute left-5 top-5 z-[2] font-ge text-[0.5rem] font-extrabold uppercase tracking-[0.42em] text-forest-800/35 sm:left-6 sm:top-6"
+      >
+        Dublin print · matt laminate
+      </p>
+      <div className="relative z-[2] flex min-h-0 h-full flex-col gap-5 px-6 pb-6 pt-9 sm:flex-row sm:gap-8 sm:px-7 sm:pb-7 sm:pt-7">
         <div className="flex shrink-0 flex-col justify-center sm:w-[40%]">
-          <SiteLogoMark className="mx-auto h-[132px] w-auto max-w-[min(100%,200px)] object-contain object-center drop-shadow-[0_10px_28px_rgba(15,45,30,0.14)] sm:mx-0 sm:h-[148px] sm:max-w-none" />
+          <SiteLogoMark className="mx-auto h-[132px] w-auto max-w-[min(100%,200px)] object-contain object-center drop-shadow-[0_12px_32px_rgba(15,45,30,0.18)] sm:mx-0 sm:h-[148px] sm:max-w-none" />
         </div>
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-5 border-black/[0.08] sm:border-l sm:pl-8">
+        <div className="relative flex min-h-0 min-w-0 flex-1 flex-col gap-5 border-black/[0.08] sm:border-l sm:pl-8">
+          <div aria-hidden className="pointer-events-none absolute -left-px top-8 hidden h-[62%] w-px bg-gradient-to-b from-amber-200/20 via-amber-400/80 to-amber-700/40 sm:block" />
           <NameBlock boldTagline />
           <ContactBlock />
-          <div className="mt-auto border-t border-black/[0.07] pt-4">
+          <div className="mt-auto border-t border-black/[0.08] pt-4">
             <SocialIconRow size="sm" variant="light" />
           </div>
         </div>
@@ -356,20 +405,41 @@ function Card03CentreSummit() {
 
 function Card04CreamRail() {
   return (
-    <div className={cx(CARD_PREVIEW, cardShell, 'relative')} style={{ backgroundColor: CREAM }}>
+    <div
+      className={cx(CARD_PREVIEW, cardShell, 'relative')}
+      style={{
+        backgroundColor: CREAM,
+        boxShadow: '0 18px 52px rgba(15,45,30,0.13), inset 0 1px 0 rgba(255,255,255,0.75)'
+      }}
+    >
       <SunnyHairline glow="none" />
-      <div className="pointer-events-none absolute inset-y-0 left-0 z-[1] w-[44%] bg-gradient-to-br from-white via-[#faf7f2] to-[#ebe4d9]" />
-      <div className="pointer-events-none absolute left-0 top-0 z-[2] h-28 w-[44%] bg-gradient-to-br from-amber-100/50 to-transparent" />
-      <div className="absolute inset-y-0 left-0 z-[2] w-[44%]">
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-[1] w-[44%] bg-gradient-to-br from-white via-[#faf8f3] to-[#e8dfd2]" />
+      <div className="pointer-events-none absolute left-0 top-0 z-[2] h-32 w-[44%] bg-gradient-to-br from-amber-50/90 to-transparent" />
+      {/* Foil spine between panels */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-6 left-[44%] z-[4] w-[5px] -translate-x-1/2 rounded-full"
+        style={{
+          background: 'linear-gradient(180deg, #fff9eb 0%, #fde68a 15%, #eab308 42%, #b45309 78%, #78350f 100%)',
+          boxShadow: '0 0 20px rgba(234,179,8,0.35), inset 0 1px 0 rgba(255,255,255,0.5)'
+        }}
+      />
+      <p
+        aria-hidden
+        className="pointer-events-none absolute bottom-5 left-[22%] z-[5] hidden max-w-[38%] text-center font-ge text-[0.48rem] font-bold uppercase leading-snug tracking-[0.28em] text-forest-800/40 sm:block"
+      >
+        Spot foil rail · Irish studio proof
+      </p>
+      <div className="absolute inset-y-0 left-0 z-[2] w-[44%] shadow-[inset_-8px_0_24px_rgba(15,45,30,0.06)]">
         <div className="flex h-full flex-col items-center justify-center gap-5 px-4 py-7 sm:gap-6 sm:px-5">
-          <SiteLogoMark className="h-[138px] w-auto max-w-[94%] object-contain object-center drop-shadow-[0_12px_28px_rgba(15,45,30,0.12)]" />
+          <SiteLogoMark className="h-[138px] w-auto max-w-[94%] object-contain object-center drop-shadow-[0_14px_32px_rgba(15,45,30,0.14)]" />
           <FlagPair />
         </div>
       </div>
-      <div className="absolute inset-y-0 right-0 z-[2] flex w-[56%] flex-col gap-5 py-7 pl-5 pr-6 sm:pl-6 sm:pr-7">
+      <div className="absolute inset-y-0 right-0 z-[2] flex w-[56%] flex-col gap-5 bg-gradient-to-bl from-[#faf7f2]/98 to-transparent py-7 pl-6 pr-6 sm:pl-7 sm:pr-8">
         <NameBlock boldTagline />
         <ContactBlock className="flex-1" />
-        <div className="mt-auto border-t border-black/[0.07] pt-4">
+        <div className="mt-auto border-t border-black/[0.08] pt-4">
           <SocialIconRow size="sm" variant="light" />
         </div>
       </div>
@@ -432,18 +502,35 @@ function Card06ForestBand() {
 
 function Card07WatermarkClassic() {
   return (
-    <div className={cx(CARD_PREVIEW, cardShell, 'relative')} style={{ backgroundColor: OFF_WHITE }}>
+    <div
+      className={cx(CARD_PREVIEW, cardShell, 'relative')}
+      style={{
+        backgroundColor: OFF_WHITE,
+        boxShadow: '0 16px 48px rgba(15,45,30,0.11), inset 0 0 0 1px rgba(15,61,36,0.06)'
+      }}
+    >
       <SunnyHairline />
-      <CrestLockup className="pointer-events-none absolute left-1/2 top-[40%] z-0 max-h-[280px] w-[125%] max-w-none -translate-x-1/2 -translate-y-1/2 object-contain opacity-[0.07]" />
+      <CrestLockup className="pointer-events-none absolute left-1/2 top-[40%] z-0 max-h-[300px] w-[130%] max-w-none -translate-x-1/2 -translate-y-1/2 object-contain opacity-[0.11]" />
+      {/* Blind emboss frame */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-[10px] z-[1] rounded-[16px] border border-double border-forest-900/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]"
+      />
+      <p
+        aria-hidden
+        className="pointer-events-none absolute right-5 top-4 z-[3] max-w-[45%] text-right font-ge text-[0.48rem] font-extrabold uppercase leading-tight tracking-[0.32em] text-forest-800/40"
+      >
+        Deboss crest · 300gsm
+      </p>
       <div className="relative z-[2] flex h-full flex-col gap-5 px-6 py-6 sm:gap-6 sm:px-7 sm:py-7">
         <div className="flex items-start justify-between gap-4">
-          <SiteLogoMark className="relative z-[1] h-[102px] w-auto max-w-[55%] object-contain drop-shadow-[0_8px_20px_rgba(15,45,30,0.1)] sm:h-[112px] sm:max-w-none" />
+          <SiteLogoMark className="relative z-[1] h-[102px] w-auto max-w-[55%] object-contain drop-shadow-[0_10px_24px_rgba(15,45,30,0.12)] sm:h-[112px] sm:max-w-none" />
           <FlagPair className="relative z-[1] shrink-0" />
         </div>
         <div className="relative z-[1] pt-1 text-center">
           <NameBlock boldTagline centered large />
         </div>
-        <div className="relative z-[1] mt-auto flex flex-col gap-5 border-t border-black/[0.07] pt-5 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
+        <div className="relative z-[1] mt-auto flex flex-col gap-5 border-t border-forest-900/10 pt-5 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
           <ContactBlock className="flex-1 sm:max-w-[62%]" />
           <div className="shrink-0 sm:pt-1">
             <SocialIconRow size="sm" variant="light" />
@@ -531,7 +618,7 @@ function Card10DualIdentity() {
       <div className="absolute inset-x-0 top-0 z-[1] h-[52%] border-b border-black/[0.08]">
         <div className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-[2px] bg-gradient-to-r from-transparent via-amber-200/90 to-transparent opacity-90" />
         <div className="absolute inset-y-0 left-0 w-1/2 border-r border-black/[0.07] bg-gradient-to-br from-white to-[#f2ebe3] px-4 py-5 sm:px-5 sm:py-6">
-          <p className="font-ge text-[0.58rem] font-bold uppercase tracking-[0.28em] text-forest-700/65">Homepage crest</p>
+          <p className="font-ge text-[0.58rem] font-bold uppercase tracking-[0.28em] text-forest-700/65">Crest lockup</p>
           <CrestLockup className="mx-auto mt-3 max-h-[118px] min-h-[96px] w-full object-contain drop-shadow-[0_8px_20px_rgba(15,45,30,0.1)] sm:mt-4" />
           <div className="mt-3 flex justify-center sm:mt-4">
             <FlagPair />
@@ -676,16 +763,42 @@ function Card14CantileverCrest() {
 
 function Card15WebHero() {
   return (
-    <div className={cx(CARD_PREVIEW, cardShell, 'relative')} style={{ backgroundColor: OFF_WHITE }}>
-      <SunnyHairline glow="top-right" />
-      <div className="relative z-[2] flex h-full flex-col justify-between gap-6 px-7 py-8">
-        <div className="text-center">
-          <NameBlock centered large />
+    <div className={cx(CARD_PREVIEW, cardShell, 'relative flex flex-col')}>
+      {/* Letterboxed fleet photo — object-contain avoids stretched / squashed vans */}
+      <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-[#050d0a] via-[#0a1812] to-black" />
+      <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center p-2 sm:p-3">
+        <img
+          alt={BRAND_FLEET_LINEUP_ALT}
+          className="max-h-full max-w-full object-contain object-center"
+          decoding="async"
+          src={BRAND_FLEET_LINEUP_IMAGE_SRC}
+        />
+      </div>
+      <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/94 via-gs-dark/55 to-gs-dark/25" />
+      <div className="absolute inset-0 z-[1] bg-gradient-to-br from-amber-400/15 via-transparent to-emerald-950/45 mix-blend-soft-light" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -left-[18%] top-[-20%] z-[2] h-[140%] w-[72%] rotate-[19deg] bg-gradient-to-r from-white/[0.18] via-white/[0.05] to-transparent opacity-75"
+      />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-1/2 bg-gradient-to-t from-black/88 to-transparent" />
+      <div className="relative z-[3] flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain px-3.5 pb-3 pt-3.5 sm:gap-2.5 sm:px-5 sm:pb-4 sm:pt-4">
+        <div className="rounded-2xl border border-white/25 bg-white/[0.13] px-3 py-3 shadow-[0_16px_48px_rgba(0,0,0,0.45)] backdrop-blur-md ring-1 ring-white/12 sm:px-4 sm:py-3.5">
+          <p className="font-ge text-[0.48rem] font-extrabold uppercase leading-snug tracking-[0.28em] text-amber-200 sm:text-[0.5rem] sm:tracking-[0.32em]">
+            Private Mercedes fleet · Costa del Sol
+          </p>
+          <p className="mt-1.5 font-ge text-[0.58rem] font-semibold leading-snug text-emerald-50/95 sm:text-[0.6rem]">
+            E-Class · V-Class · Sprinter — gloss laminate proof
+          </p>
+          <div className="mt-3 text-center">
+            <NameBlock boldTagline centered compact tone="light" />
+          </div>
         </div>
-        <div className="rounded-2xl border border-amber-400/35 bg-gradient-to-br from-amber-50/90 to-white px-5 py-5 text-center shadow-inner ring-1 ring-amber-200/40">
-          <p className="font-ge text-[0.58rem] font-bold uppercase tracking-[0.28em] text-forest-700/65">Website</p>
+        <div className="rounded-2xl border border-amber-300/45 bg-gradient-to-br from-amber-50/96 via-white to-amber-50/90 px-3 py-3 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_12px_36px_rgba(0,0,0,0.35)] ring-2 ring-amber-400/40 sm:px-4 sm:py-3.5">
+          <p className="font-ge text-[0.52rem] font-extrabold uppercase tracking-[0.28em] text-forest-800/75 sm:text-[0.54rem] sm:tracking-[0.3em]">
+            Book transfers online
+          </p>
           <a
-            className="mt-2 block font-ge text-[1.05rem] font-black tracking-tight text-forest-950 hover:text-gs-green sm:text-[1.15rem]"
+            className="mt-1 block break-all font-ge text-[1rem] font-black tracking-tight text-forest-950 sm:text-[1.08rem]"
             href={businessCardContact.websiteUrl}
             rel="noreferrer"
             target="_blank"
@@ -693,9 +806,11 @@ function Card15WebHero() {
             {businessCardContact.websiteDisplay}
           </a>
         </div>
-        <ContactBlock className="text-[0.74rem]" omitWebsite />
-        <div className="flex justify-center border-t border-black/[0.06] pt-4">
-          <SocialIconRow size="sm" variant="light" />
+        <div className="rounded-xl border border-white/15 bg-black/40 px-3 py-3 backdrop-blur-sm sm:px-4">
+          <ContactBlock className="text-[0.68rem] leading-[1.45] sm:text-[0.7rem]" omitWebsite tone="dark" />
+        </div>
+        <div className="flex shrink-0 justify-center border-t border-white/12 pt-2">
+          <SocialIconRow size="sm" variant="dark" />
         </div>
       </div>
     </div>
@@ -750,20 +865,35 @@ function Card18FairwayGrid() {
     <div className={cx(CARD_PREVIEW, cardShell, 'relative')} style={{ backgroundColor: OFF_WHITE }}>
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.35]"
+        className="pointer-events-none absolute inset-0 opacity-[0.42]"
         style={{
           backgroundImage:
-            'radial-gradient(circle at center, rgba(15,61,36,0.14) 1px, transparent 1px)',
-          backgroundSize: '14px 14px'
+            'radial-gradient(circle at center, rgba(15,61,36,0.12) 1px, transparent 1px), radial-gradient(circle at center, rgba(201,162,39,0.08) 1px, transparent 1px)',
+          backgroundSize: '14px 14px, 14px 14px',
+          backgroundPosition: '0 0, 7px 7px'
         }}
       />
-      <div className="relative z-[2] flex h-full flex-col gap-6 px-7 py-7">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(255,248,220,0.5)_0%,transparent_55%)]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_115%,rgba(15,61,36,0.09)_0%,transparent_45%)]"
+      />
+      <p
+        aria-hidden
+        className="pointer-events-none absolute left-6 top-5 z-[3] font-ge text-[0.48rem] font-extrabold uppercase tracking-[0.38em] text-forest-800/38"
+      >
+        Duplex UV grid · premium sheet
+      </p>
+      <div className="relative z-[2] flex min-h-0 h-full flex-col gap-5 px-7 pb-7 pt-10">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-          <SiteLogoMark className="h-[118px] w-auto shrink-0 object-contain drop-shadow-sm" />
+          <SiteLogoMark className="h-[118px] w-auto shrink-0 object-contain drop-shadow-[0_8px_28px_rgba(15,45,30,0.14)]" />
           <NameBlock boldTagline />
         </div>
         <ContactBlock />
-        <div className="mt-auto flex justify-center border-t border-forest-900/10 pt-4">
+        <div className="mt-auto flex justify-center border-t border-forest-900/12 pt-4">
           <SocialIconRow size="sm" variant="light" />
         </div>
       </div>
@@ -870,20 +1000,62 @@ function Card22CopperBaseline() {
 
 function Card23MalagaSunrise() {
   return (
-    <div className={cx(CARD_PREVIEW, cardShell, 'relative')} style={{ backgroundColor: '#fff8f0' }}>
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-2/5 bg-gradient-to-b from-amber-200/70 via-orange-100/40 to-transparent"
-      />
-      <SunnyHairline glow="top-right" />
-      <div className="relative z-[2] flex h-full flex-col gap-6 px-7 py-8">
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-          <CrestLockup className="max-h-[128px] w-[200px] shrink-0 object-contain drop-shadow-lg" />
-          <NameBlock boldTagline />
+    <div className={cx(CARD_PREVIEW, cardShell, 'relative flex min-h-0 overflow-hidden')}>
+      {/* Fleet column — desktop (contain = correct van proportions) */}
+      <div className="relative hidden w-[38%] shrink-0 flex-col overflow-hidden bg-[#050a08] sm:flex sm:flex-col">
+        <div className="relative flex min-h-0 flex-1 items-center justify-center px-1.5 py-2">
+          <img
+            alt={BRAND_FLEET_LINEUP_ALT}
+            className="max-h-full max-w-full object-contain object-center"
+            decoding="async"
+            src={BRAND_FLEET_LINEUP_IMAGE_SRC}
+          />
         </div>
-        <ContactBlock />
-        <div className="mt-auto flex justify-center border-t border-orange-200/60 pt-4">
-          <SocialIconRow size="sm" variant="light" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent pt-10">
+          <div className="px-3 pb-3 pt-6">
+            <p className="font-ge text-[0.48rem] font-extrabold uppercase leading-snug tracking-[0.22em] text-amber-100 sm:text-[0.5rem]">
+              Fleet lineup photo
+            </p>
+            <p className="mt-1 font-ge text-[0.58rem] font-semibold leading-snug text-white/93">
+              Vans & cars · Málaga transfers
+            </p>
+          </div>
+        </div>
+      </div>
+      {/* Ivory content */}
+      <div
+        className="relative flex min-h-0 min-w-0 flex-1 flex-col bg-gradient-to-br from-[#fffbf7] via-[#f5ebe2] to-[#e8dfd4]"
+        style={{ boxShadow: 'inset 8px 0 24px rgba(15,45,30,0.07)' }}
+      >
+        {/* Mobile fleet strip */}
+        <div className="relative flex h-[7.25rem] shrink-0 items-center justify-center overflow-hidden bg-[#050a08] sm:hidden">
+          <img
+            alt={BRAND_FLEET_LINEUP_ALT}
+            className="max-h-[92%] max-w-[96%] object-contain object-center"
+            src={BRAND_FLEET_LINEUP_IMAGE_SRC}
+          />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/55 to-gs-dark/35" />
+          <p className="absolute bottom-2 left-3 right-3 text-center font-ge text-[0.52rem] font-bold uppercase leading-tight tracking-[0.18em] text-white drop-shadow-md">
+            Fleet vans · Málaga corridor
+          </p>
+        </div>
+        <SunnyHairline glow="top-right" />
+        <p
+          aria-hidden
+          className="pointer-events-none absolute right-4 top-4 z-[5] hidden max-w-[48%] text-right font-ge text-[0.45rem] font-extrabold uppercase leading-tight tracking-[0.22em] text-forest-800/38 sm:right-5 sm:top-5 sm:block sm:text-[0.48rem]"
+        >
+          Trade print finish
+        </p>
+        <div className="relative z-[2] flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain px-5 py-6 sm:gap-5 sm:px-7 sm:py-7">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-5">
+            <CrestLockup className="max-h-[118px] w-[176px] shrink-0 object-contain drop-shadow-[0_14px_36px_rgba(15,45,30,0.18)] sm:max-h-[124px] sm:w-[188px]" />
+            <NameBlock boldTagline compact />
+          </div>
+          <ContactBlock className="text-[0.76rem] leading-[1.48]" />
+          <div className="mt-auto flex shrink-0 justify-center border-t border-amber-900/15 pt-3">
+            <SocialIconRow size="sm" variant="light" />
+          </div>
         </div>
       </div>
     </div>
@@ -1061,7 +1233,7 @@ export const BUSINESS_CARD_SPECS: readonly BusinessCardSpec[] = [
   {
     id: '02',
     title: 'Cream atelier',
-    subtitle: 'Wordmark · warm stock · calm vertical rhythm',
+    subtitle: 'Noise grain · foil ring · Dublin laminate caption',
     render: () => <Card02CreamStudio />
   },
   {
@@ -1073,7 +1245,7 @@ export const BUSINESS_CARD_SPECS: readonly BusinessCardSpec[] = [
   {
     id: '04',
     title: 'Split rail',
-    subtitle: 'Classic two-panel · rail balance',
+    subtitle: 'Gold foil spine · embossed left tray · studio wash',
     render: () => <Card04CreamRail />
   },
   {
@@ -1091,7 +1263,7 @@ export const BUSINESS_CARD_SPECS: readonly BusinessCardSpec[] = [
   {
     id: '07',
     title: 'Watermark',
-    subtitle: 'Ghost crest · centred name · tiered footer',
+    subtitle: 'Heavier deboss crest · double-rule passepartout · gsm callout',
     render: () => <Card07WatermarkClassic />
   },
   {
@@ -1138,8 +1310,8 @@ export const BUSINESS_CARD_SPECS: readonly BusinessCardSpec[] = [
   },
   {
     id: '15',
-    title: 'Web hero',
-    subtitle: 'Bold www panel · supporting contact stack',
+    title: 'Fleet gloss hero',
+    subtitle: 'Fleet lineup shot · foil www strip · glass panels',
     render: () => <Card15WebHero />
   },
   {
@@ -1157,7 +1329,7 @@ export const BUSINESS_CARD_SPECS: readonly BusinessCardSpec[] = [
   {
     id: '18',
     title: 'Fairway grid',
-    subtitle: 'Micro fairway texture · wordmark forward',
+    subtitle: 'Duplex UV dot grid · gold vignette wash · sheet caption',
     render: () => <Card18FairwayGrid />
   },
   {
@@ -1186,8 +1358,8 @@ export const BUSINESS_CARD_SPECS: readonly BusinessCardSpec[] = [
   },
   {
     id: '23',
-    title: 'Málaga sunrise',
-    subtitle: 'Soft dawn wash · corridor crest',
+    title: 'Fleet spine sunrise',
+    subtitle: 'Van lineup column · ivory duplex · trade-print captions',
     render: () => <Card23MalagaSunrise />
   },
   {
@@ -1235,28 +1407,8 @@ export const BUSINESS_CARD_SPECS: readonly BusinessCardSpec[] = [
 ]
 
 export function BusinessCardsCatalog() {
-  const [pdfBusy, setPdfBusy] = useState(false)
   const [pdfError, setPdfError] = useState<string | null>(null)
   const [singlePdfBusyId, setSinglePdfBusyId] = useState<string | null>(null)
-
-  const handlePdf = useCallback(async () => {
-    const root = document.getElementById('business-cards-pdf-export-root')
-    if (!root) {
-      setPdfError('Print layout is not ready. Refresh the page and try again.')
-      return
-    }
-    setPdfError(null)
-    setPdfBusy(true)
-    try {
-      await saveBusinessCardsCatalogPdf(root, 'golfsol-business-cards-martin-kelly-catalogue')
-    } catch (e) {
-      const message = e instanceof Error ? e.message : 'Could not build the PDF.'
-      setPdfError(message)
-      console.error(e)
-    } finally {
-      setPdfBusy(false)
-    }
-  }, [])
 
   const handleSingleCardPdf = useCallback(async (spec: BusinessCardSpec) => {
     const root = document.getElementById('business-cards-pdf-export-root')
@@ -1280,45 +1432,22 @@ export function BusinessCardsCatalog() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#e8f0ea] via-[#f5f0e6] to-[#e5dfd4]">
-      <header className="relative overflow-hidden border-b border-black/[0.06] bg-gradient-to-br from-[#0f3d24] via-[#143d28] to-[#0a2416] px-5 py-16 text-white">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-24 top-0 h-80 w-80 rounded-full bg-amber-400/15 blur-3xl"
-        />
-        <div className="relative mx-auto max-w-5xl">
-          <p className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.38em] text-emerald-200/95">
-            Golf Sol Ireland · brand studio
-          </p>
-          <h1 className="font-display mt-5 max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl">
-            Luxury business card catalogue
-          </h1>
-          <p className="mt-5 max-w-2xl font-ge text-lg leading-[1.65] text-emerald-50/95">
-            Thirty production-ready concepts for <span className="font-semibold text-white">{businessCardPerson.name}</span>
-            — taller canvas so email, <span className="font-semibold text-white">www.golfsolirl.com</span>, phones, and Co. Reg. never clip.
-            Bold accents where they help scanning; waves 01–10, 11–20, 21–30. Export the full set as PDF for print review.
-          </p>
-          <div className="mt-10 flex flex-wrap gap-3">
-            <button
-              className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-7 py-3.5 font-ge text-sm font-bold uppercase tracking-[0.14em] text-white backdrop-blur transition hover:bg-white/18 disabled:opacity-60"
-              data-html2canvas-ignore="true"
-              disabled={pdfBusy}
-              type="button"
-              onClick={() => void handlePdf()}
-            >
-              <Download className="h-4 w-4" aria-hidden />
-              {pdfBusy ? 'Building PDF…' : 'Download PDF catalogue'}
-            </button>
-            {pdfError ? (
-              <p className="mt-4 max-w-2xl rounded-xl border border-amber-300/40 bg-black/25 px-4 py-3 font-ge text-sm text-amber-100">
-                {pdfError}
-              </p>
-            ) : null}
+    <div className="bg-gradient-to-b from-[#e8f0ea] via-[#f5f0e6] to-[#e5dfd4]">
+      <div className="mx-auto max-w-6xl px-5 pb-6 pt-12">
+        {pdfError ? (
+          <div className="mb-8 rounded-2xl border border-amber-400/40 bg-amber-950/10 px-4 py-3 font-ge text-sm text-forest-900">
+            {pdfError}
           </div>
-        </div>
-      </header>
+        ) : null}
+        <p className="max-w-3xl font-ge text-[1.05rem] leading-relaxed text-forest-800">
+          Thirty production-ready concepts for <span className="font-semibold text-forest-950">{businessCardPerson.name}</span>{' '}
+          — taller canvas so email, <span className="font-semibold text-forest-950">www.golfsolirl.com</span>, phones, and Co.
+          Reg. never clip. Bold accents where they help scanning; waves 01–10, 11–20, 21–30. Use{' '}
+          <span className="font-semibold text-forest-950">Card PDF</span> on each tile for a one-page print proof.
+        </p>
+      </div>
 
-      <div className="mx-auto max-w-6xl px-5 py-16">
+      <div className="mx-auto max-w-6xl px-5 pb-16 pt-0">
         <div className="grid gap-16 lg:grid-cols-2">
           {BUSINESS_CARD_SPECS.map((spec) => (
             <article
@@ -1340,7 +1469,7 @@ export function BusinessCardsCatalog() {
                       ? 'Building PDF for this card'
                       : 'Download this card as a one-page PDF'
                   }
-                  disabled={singlePdfBusyId !== null || pdfBusy}
+                  disabled={singlePdfBusyId !== null}
                   onClick={() => void handleSingleCardPdf(spec)}
                 >
                   <FileDown className="h-4 w-4" aria-hidden />
@@ -1356,19 +1485,7 @@ export function BusinessCardsCatalog() {
       </div>
 
       <div className="fixed -left-[9999px] top-0 w-[640px]" id="business-cards-pdf-export-root">
-        {/* Each block is one A4 page in the downloaded PDF (see save-business-cards-pdf.ts). */}
-        <div data-pdf-page className="bg-white p-12">
-          <div className="border-b border-black/10 pb-8">
-            <p className="font-ge text-xs font-bold uppercase tracking-[0.22em] text-forest-700">Golf Sol Ireland</p>
-            <p className="font-display mt-3 text-3xl font-bold tracking-tight text-forest-950">
-              Business card catalogue — {businessCardPerson.name}
-            </p>
-            <p className="mt-4 font-ge text-base leading-relaxed text-forest-700">
-              {businessCardContact.websiteDisplay} · {businessCardContact.email} · {businessCardContact.phoneIe} ·{' '}
-              {businessCardContact.phoneEs} · Co. Reg. Ireland {businessCardContact.companyRegIreland}
-            </p>
-          </div>
-        </div>
+        {/* One block per card PDF page (save-business-cards-pdf.ts). */}
         {BUSINESS_CARD_SPECS.map((spec) => (
           <div
             key={`pdf-${spec.id}`}

@@ -110,38 +110,7 @@ function addCanvasToPdfPage(pdf: jsPDF, canvas: HTMLCanvasElement, isFirstPage: 
 }
 
 /**
- * One slide per PDF page (cover + each card). Avoids slicing one tall canvas across page breaks.
- */
-export async function saveBusinessCardsCatalogPdf(root: HTMLElement, filenameBase: string) {
-  if (document.fonts?.ready) {
-    await document.fonts.ready
-  }
-
-  await waitForImages(root)
-
-  const slides = root.querySelectorAll<HTMLElement>('[data-pdf-page]')
-  if (slides.length === 0) {
-    throw new Error('No [data-pdf-page] sections found for PDF export.')
-  }
-
-  const pdf = new jsPDF({
-    orientation: 'portrait',
-    unit: 'mm',
-    format: 'a4',
-    compress: true
-  })
-
-  for (let i = 0; i < slides.length; i++) {
-    const canvas = await captureSlideToCanvas(slides[i])
-    addCanvasToPdfPage(pdf, canvas, i === 0)
-  }
-
-  const safeName = sanitizePdfFilenameBase(filenameBase)
-  triggerPdfDownload(pdf.output('blob'), `${safeName}.pdf`)
-}
-
-/**
- * Single A4 PDF with one card slide (same print markup as catalogue export).
+ * Single A4 PDF with one card slide (hidden print markup under `#business-cards-pdf-export-root`).
  */
 export async function saveSingleBusinessCardPdf(slideEl: HTMLElement, filenameBase: string) {
   if (document.fonts?.ready) {
