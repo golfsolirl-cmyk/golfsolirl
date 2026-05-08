@@ -12,16 +12,27 @@ import {
   businessCardSocial
 } from '../lib/business-cards-config'
 
-const OFF_WHITE = '#faf9f6'
-const CREAM = '#f6efe4'
-const FOREST = '#0f3d24'
-const GOLD = '#c9a227'
-const INK = '#0c0c0c'
+/** Matches `server/branded-email-shell.mjs` / enquiry-customer email */
+const GS_BG = '#F4F7F5'
+const GS_DARK = '#063B2A'
+const GS_GOLD = '#FFC72C'
+
+const OFF_WHITE = '#FFFFFF'
+const CREAM = '#fffcf6'
+const FOREST = GS_DARK
+const INK = GS_DARK
 
 /**
  * Taller than ISO so contact blocks + fleet panels rarely clip; still reads “business card” in grid.
  */
 const CARD_PREVIEW = 'aspect-[3.5/3.12] w-full max-w-[min(100%,600px)]'
+
+/** Premium duplex fronts — room for larger wordmark */
+const CARD_FACE_PREMIUM_FRONT = 'w-full max-w-[min(100%,600px)] aspect-[3.5/3.42] sm:aspect-[3.5/3.38]'
+
+/** Premium duplex backs — extra vertical canvas so name + contact + social never clip */
+const CARD_FACE_PREMIUM_BACK =
+  'w-full max-w-[min(100%,600px)] aspect-[3.5/3.95] sm:aspect-[3.5/3.82] min-h-[280px] sm:min-h-0'
 
 /** Warm gold edge + optional soft “sunny” glow (premium card trim language). */
 function SunnyHairline({ glow = 'top-right' }: { readonly glow?: 'top-right' | 'none' }) {
@@ -127,7 +138,7 @@ function SocialIconRow({ variant, size = 'md' }: { readonly variant: 'light' | '
   const isSm = size === 'sm'
   const ring =
     variant === 'light'
-      ? 'border border-black/[0.1] bg-white/95 text-forest-900 shadow-sm hover:border-amber-800/25 hover:shadow-md'
+      ? 'border border-[#063B2A]/12 bg-white text-[#063B2A] shadow-sm hover:border-[#0B6B45]/25 hover:shadow-md'
       : 'border border-white/30 bg-white/12 text-white shadow-sm hover:bg-white/20'
 
   const items = [
@@ -174,16 +185,16 @@ function ContactBlock({
   readonly omitWebsite?: boolean
 }) {
   const dark = tone === 'dark'
-  const ink = dark ? 'text-emerald-50/95' : 'text-forest-900/[0.88]'
-  const muted = dark ? 'text-emerald-100/55' : 'text-forest-800/50'
-  const border = dark ? 'border-white/15' : 'border-black/[0.05]'
-  const borderTop = dark ? 'border-white/15' : 'border-black/[0.06]'
-  const label = dark ? 'text-emerald-100/70' : 'text-forest-700/55'
+  const ink = dark ? 'text-emerald-50/95' : 'text-[#063B2A]/90'
+  const muted = dark ? 'text-emerald-100/55' : 'text-[#4e4e4e]'
+  const border = dark ? 'border-white/15' : 'border-[#063B2A]/10'
+  const borderTop = dark ? 'border-white/15' : 'border-[#063B2A]/10'
+  const label = dark ? 'text-emerald-100/70' : 'text-[#0B6B45]/90'
 
   return (
     <div className={cx('font-ge text-[0.78rem] leading-[1.5] sm:text-[0.8rem]', ink, className)}>
       <a
-        className={cx('group flex items-start gap-2.5 border-b pb-2 text-left transition', border, dark ? 'hover:text-white' : 'hover:text-forest-950')}
+        className={cx('group flex items-start gap-2.5 border-b pb-2 text-left transition', border, dark ? 'hover:text-white' : 'hover:text-[#063B2A]')}
         href={`mailto:${businessCardContact.email}`}
       >
         <Mail className={cx('mt-[3px] h-3.5 w-3.5 shrink-0', muted)} aria-hidden />
@@ -193,7 +204,7 @@ function ContactBlock({
       </a>
       {omitWebsite ? null : (
         <a
-          className={cx('mt-2 flex items-start gap-2.5 border-b pb-2 text-left font-bold tracking-[-0.01em] transition', border, dark ? 'hover:text-white' : 'hover:text-forest-950')}
+          className={cx('mt-2 flex items-start gap-2.5 border-b pb-2 text-left font-bold tracking-[-0.01em] transition', border, dark ? 'hover:text-white' : 'hover:text-[#063B2A]')}
           href={businessCardContact.websiteUrl}
           rel="noreferrer"
           target="_blank"
@@ -204,7 +215,7 @@ function ContactBlock({
       )}
       <div className="mt-2 space-y-1.5">
         <a
-          className={cx('flex min-w-0 items-start gap-2.5 text-left font-semibold tracking-[-0.01em] transition', dark ? 'hover:text-white' : 'hover:text-forest-950')}
+          className={cx('flex min-w-0 items-start gap-2.5 text-left font-semibold tracking-[-0.01em] transition', dark ? 'hover:text-white' : 'hover:text-[#063B2A]')}
           href={`tel:${businessCardContact.phoneIe.replace(/\s/g, '')}`}
         >
           <Phone className={cx('mt-[3px] h-3.5 w-3.5 shrink-0', muted)} aria-hidden />
@@ -214,7 +225,7 @@ function ContactBlock({
           </span>
         </a>
         <a
-          className={cx('flex min-w-0 items-start gap-2.5 text-left font-semibold tracking-[-0.01em] transition', dark ? 'hover:text-white' : 'hover:text-forest-950')}
+          className={cx('flex min-w-0 items-start gap-2.5 text-left font-semibold tracking-[-0.01em] transition', dark ? 'hover:text-white' : 'hover:text-[#063B2A]')}
           href={`tel:${businessCardContact.phoneEs.replace(/\s/g, '')}`}
         >
           <Phone className={cx('mt-[3px] h-3.5 w-3.5 shrink-0', muted)} aria-hidden />
@@ -285,7 +296,7 @@ function NameBlock({
           'mt-1.5 font-ge uppercase tracking-[0.26em] sm:tracking-[0.26em]',
           compact ? 'text-[0.62rem] leading-snug sm:text-[0.64rem]' : 'mt-2 text-[0.68rem] sm:text-[0.72rem]',
           boldTagline ? 'font-bold' : 'font-semibold',
-          onPhoto ? 'text-emerald-50/95 [text-shadow:0_1px_14px_rgba(0,0,0,0.5)]' : 'text-forest-800/72'
+          onPhoto ? 'text-emerald-50/95 [text-shadow:0_1px_14px_rgba(0,0,0,0.5)]' : 'text-[#0B6B45]/85'
         )}
       >
         {businessCardPerson.tagline}
@@ -295,7 +306,238 @@ function NameBlock({
 }
 
 const cardShell =
-  'relative min-h-0 overflow-hidden rounded-2xl shadow-[0_16px_48px_rgba(15,45,30,0.12),0_2px_8px_rgba(0,0,0,0.04)] ring-1 ring-black/[0.06]'
+  'relative min-h-0 overflow-hidden rounded-[2rem] shadow-[0_26px_70px_rgba(40,33,19,0.12)] ring-1 ring-black/[0.06]'
+
+/** Luxury duplex suite — softer radius, print-depth shadow, minimal ring */
+const premiumShell =
+  'relative isolate min-h-0 overflow-hidden rounded-[1.35rem] shadow-[0_22px_56px_rgba(12,12,14,0.09),0_1px_0_rgba(255,255,255,0.8)_inset] ring-1 ring-black/[0.045]'
+
+const LUX_PAPER = '#FAFAF8'
+const LUX_LINEN = '#EFEBE4'
+const LUX_NOIR = '#0B1210'
+const LUX_ANTIQUE_GOLD = '#B8A06E'
+
+function DuplexSideLabel({ side }: { readonly side: 'Front' | 'Back' }) {
+  return (
+    <p
+      data-html2canvas-ignore="true"
+      className="mb-2 font-premium text-[0.58rem] font-semibold uppercase tracking-[0.42em] text-[#063B2A]/38"
+    >
+      {side}
+    </p>
+  )
+}
+
+/** Fine grain overlay — suggests matte laminate / soft-touch stock */
+function MatteGrainOverlay({ opacity = 0.22 }: { readonly opacity?: number }) {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0"
+      style={{
+        opacity,
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E")`,
+        mixBlendMode: 'multiply'
+      }}
+    />
+  )
+}
+
+/** Minimal contact stack — premium backs (no icons, strong hierarchy) */
+function PremiumContactMinimal({
+  tone = 'light',
+  className
+}: {
+  readonly tone?: 'light' | 'dark'
+  readonly className?: string
+}) {
+  const dark = tone === 'dark'
+  const ink = dark ? 'text-emerald-50/97' : 'text-[#0D0D0D]'
+  const soft = dark ? 'text-emerald-100/58' : 'text-[#7a7f7c]'
+  const rule = dark ? 'border-white/12' : 'border-black/[0.06]'
+  return (
+    <div
+      className={cx(
+        'font-premium text-[0.82rem] leading-[1.58] break-words sm:text-[0.85rem] sm:leading-[1.55]',
+        ink,
+        className
+      )}
+    >
+      <a
+        className={cx('block font-bold tracking-[-0.018em] transition', dark ? 'hover:text-white' : 'hover:opacity-80')}
+        href={`mailto:${businessCardContact.email}`}
+      >
+        {businessCardContact.email}
+      </a>
+      <a
+        className={cx(
+          'mt-3 block font-bold tracking-[-0.018em] transition break-all sm:break-words',
+          dark ? 'hover:text-white' : 'hover:opacity-80'
+        )}
+        href={businessCardContact.websiteUrl}
+        rel="noreferrer"
+        target="_blank"
+      >
+        {businessCardContact.websiteDisplay}
+      </a>
+      <div className={cx('my-4 h-px w-full bg-gradient-to-r from-transparent via-current to-transparent opacity-[0.18]', soft)} aria-hidden />
+      <div className="space-y-2.5">
+        <p className="min-w-0">
+          <span className={cx('mr-2 text-[0.6rem] font-bold uppercase tracking-[0.16em]', soft)}>Ireland</span>
+          <a className={cx('font-semibold tracking-[-0.012em]', dark ? 'hover:text-white' : 'hover:opacity-80')} href={`tel:${businessCardContact.phoneIe.replace(/\s/g, '')}`}>
+            {businessCardContact.phoneIe}
+          </a>
+        </p>
+        <p className="min-w-0">
+          <span className={cx('mr-2 text-[0.6rem] font-bold uppercase tracking-[0.16em]', soft)}>Spain</span>
+          <a className={cx('font-semibold tracking-[-0.012em]', dark ? 'hover:text-white' : 'hover:opacity-80')} href={`tel:${businessCardContact.phoneEs.replace(/\s/g, '')}`}>
+            {businessCardContact.phoneEs}
+          </a>
+        </p>
+      </div>
+      <p className={cx('mt-5 border-t pt-4 text-[0.6rem] font-semibold uppercase tracking-[0.18em]', rule, soft)}>
+        Co. Reg. Ireland {businessCardContact.companyRegIreland}
+      </p>
+    </div>
+  )
+}
+
+function CardPremium01IvoryDuplex() {
+  return (
+    <div className="w-full max-w-[min(100%,600px)]">
+      <DuplexSideLabel side="Front" />
+      <div className={cx(CARD_FACE_PREMIUM_FRONT, premiumShell)} style={{ backgroundColor: LUX_PAPER }}>
+        <MatteGrainOverlay />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#B8A06E]/55 to-transparent"
+        />
+        <div className="relative flex h-full min-h-0 flex-col px-8 py-10 sm:px-10 sm:py-11">
+          <SiteLogoMark className="h-[76px] w-auto max-w-[min(94%,340px)] object-contain object-left opacity-[0.96] sm:h-[84px]" />
+          <div className="mt-8 h-[2px] w-14 rounded-full" style={{ backgroundColor: LUX_ANTIQUE_GOLD }} aria-hidden />
+          <p className="mt-8 font-premium text-[0.76rem] font-bold uppercase tracking-[0.22em] text-[#141414] sm:text-[0.8rem]">{businessCardPerson.tagline}</p>
+          <p className="mt-3 max-w-[18rem] font-premium text-[0.66rem] font-semibold uppercase leading-relaxed tracking-[0.14em] text-[#5a605c] sm:text-[0.68rem]">
+            {businessCardPerson.premiumDescriptor}
+          </p>
+          <div className="mt-auto border-t border-black/[0.055] pt-5">
+            <p className="font-premium text-[0.56rem] font-bold uppercase tracking-[0.3em] text-[#8e908c] sm:text-[0.58rem]">{businessCardPerson.corridorLine}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="h-8" data-html2canvas-ignore="true" aria-hidden />
+
+      <DuplexSideLabel side="Back" />
+      <div className={cx(CARD_FACE_PREMIUM_BACK, premiumShell)} style={{ backgroundColor: LUX_PAPER }}>
+        <MatteGrainOverlay opacity={0.18} />
+        <div className="relative flex h-full min-h-0 flex-col overflow-y-auto overscroll-contain px-8 py-9 sm:px-10 sm:py-10">
+          <div className="shrink-0">
+            <h3 className="font-premium text-[1.52rem] font-bold leading-[1.08] tracking-[-0.038em] text-[#0a0a0a] sm:text-[1.68rem]">
+              {businessCardPerson.name}
+            </h3>
+            <p className="mt-2 font-premium text-[0.68rem] font-bold uppercase leading-snug tracking-[0.18em] text-[#2d3d36] sm:text-[0.72rem]">{businessCardPerson.roleTitle}</p>
+          </div>
+          <div
+            className="my-6 h-px w-full shrink-0 bg-gradient-to-r from-[#063B2A]/18 via-[#B8A06E]/35 to-transparent"
+            aria-hidden
+          />
+          <PremiumContactMinimal className="min-h-0 shrink pb-2" />
+          <div className="mt-auto flex shrink-0 justify-center border-t border-black/[0.06] pt-4">
+            <SocialIconRow size="sm" variant="light" />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function CardPremium02NoirDuplex() {
+  return (
+    <div className="w-full max-w-[min(100%,600px)]">
+      <DuplexSideLabel side="Front" />
+      <div className={cx(CARD_FACE_PREMIUM_FRONT, premiumShell)} style={{ backgroundColor: LUX_NOIR }}>
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_30%_0%,rgba(184,160,110,0.12)_0%,transparent_50%)]"
+        />
+        <div className="relative flex h-full min-h-0 flex-col px-8 py-10 sm:px-10 sm:py-11">
+          <SiteLogoMark className="h-[74px] w-auto max-w-[min(94%,340px)] object-contain object-left brightness-0 invert opacity-[0.95] sm:h-[82px]" />
+          <div className="mt-8 h-[2px] w-14 rounded-full bg-[#c4a86a]/90" aria-hidden />
+          <p className="mt-8 font-premium text-[0.74rem] font-bold uppercase tracking-[0.24em] text-white/95 sm:text-[0.78rem]">{businessCardPerson.tagline}</p>
+          <p className="mt-3 max-w-[18rem] font-premium text-[0.64rem] font-semibold uppercase leading-relaxed tracking-[0.13em] text-white/55 sm:text-[0.66rem]">
+            {businessCardPerson.premiumDescriptor}
+          </p>
+          <div className="mt-auto border-t border-white/[0.08] pt-5">
+            <p className="font-premium text-[0.54rem] font-bold uppercase tracking-[0.3em] text-white/42 sm:text-[0.56rem]">{businessCardPerson.corridorLine}</p>
+          </div>
+        </div>
+        <div className="pointer-events-none absolute inset-x-10 bottom-8 h-px bg-gradient-to-r from-transparent via-[#B8A06E]/75 to-transparent" aria-hidden />
+      </div>
+
+      <div className="h-8" data-html2canvas-ignore="true" aria-hidden />
+
+      <DuplexSideLabel side="Back" />
+      <div className={cx(CARD_FACE_PREMIUM_BACK, premiumShell)} style={{ backgroundColor: LUX_PAPER }}>
+        <MatteGrainOverlay opacity={0.2} />
+        <div className="relative flex h-full min-h-0 flex-col overflow-y-auto overscroll-contain px-8 py-9 sm:px-10 sm:py-10">
+          <div className="shrink-0">
+            <h3 className="font-premium text-[1.52rem] font-bold leading-[1.08] tracking-[-0.038em] text-[#0a0a0a] sm:text-[1.68rem]">{businessCardPerson.name}</h3>
+            <p className="mt-2 font-premium text-[0.68rem] font-bold uppercase leading-snug tracking-[0.18em] text-[#2d3d36] sm:text-[0.72rem]">{businessCardPerson.roleTitle}</p>
+          </div>
+          <div className="my-6 h-px w-full shrink-0 bg-gradient-to-r from-[#063B2A]/14 via-[#B8A06E]/32 to-transparent" aria-hidden />
+          <PremiumContactMinimal className="min-h-0 shrink pb-2" />
+          <div className="mt-auto flex shrink-0 justify-center border-t border-black/[0.06] pt-4">
+            <SocialIconRow size="sm" variant="light" />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function CardPremium03LinenDuplex() {
+  return (
+    <div className="w-full max-w-[min(100%,600px)]">
+      <DuplexSideLabel side="Front" />
+      <div className={cx(CARD_FACE_PREMIUM_FRONT, premiumShell)} style={{ backgroundColor: LUX_LINEN }}>
+        <div className="pointer-events-none absolute inset-y-6 left-0 z-[2] w-[3px] rounded-full bg-gradient-to-b from-[#B8A06E] via-[#063B2A]/55 to-[#B8A06E]/90" aria-hidden />
+        <MatteGrainOverlay opacity={0.28} />
+        <div className="relative flex h-full min-h-0 flex-col py-10 pl-10 pr-8 sm:py-11 sm:pl-12 sm:pr-10">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
+            <SiteLogoMark className="h-[72px] w-auto max-w-[min(94%,300px)] shrink-0 object-contain object-left opacity-[0.94] sm:h-[80px]" />
+            <p className="max-w-[12.5rem] text-right font-premium text-[0.56rem] font-bold uppercase leading-relaxed tracking-[0.18em] text-[#4f5552] sm:pt-1 sm:text-[0.58rem]">
+              Irish-owned
+              <br />
+              international golf travel
+            </p>
+          </div>
+          <div className="mt-auto space-y-2.5 border-t border-[#063B2A]/10 pt-6">
+            <p className="font-premium text-[0.76rem] font-bold uppercase tracking-[0.2em] text-[#121816] sm:text-[0.78rem]">{businessCardPerson.tagline}</p>
+            <p className="font-premium text-[0.64rem] font-semibold uppercase tracking-[0.12em] text-[#5c6360] sm:text-[0.66rem]">{businessCardPerson.premiumDescriptor}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="h-8" data-html2canvas-ignore="true" aria-hidden />
+
+      <DuplexSideLabel side="Back" />
+      <div className={cx(CARD_FACE_PREMIUM_BACK, premiumShell)} style={{ backgroundColor: LUX_LINEN }}>
+        <MatteGrainOverlay opacity={0.22} />
+        <div className="relative flex h-full min-h-0 flex-col overflow-y-auto overscroll-contain px-8 py-9 sm:px-10 sm:py-10">
+          <div className="shrink-0">
+            <h3 className="font-premium text-[1.52rem] font-bold leading-[1.08] tracking-[-0.038em] text-[#0a0a0a] sm:text-[1.68rem]">{businessCardPerson.name}</h3>
+            <p className="mt-2 font-premium text-[0.68rem] font-bold uppercase leading-snug tracking-[0.18em] text-[#2d3d36] sm:text-[0.72rem]">{businessCardPerson.roleTitle}</p>
+          </div>
+          <div className="my-6 h-px w-full shrink-0 bg-gradient-to-r from-[#063B2A]/15 via-[#B8A06E]/32 to-transparent" aria-hidden />
+          <PremiumContactMinimal className="min-h-0 shrink pb-2" />
+          <div className="mt-auto flex shrink-0 justify-center border-t border-[#063B2A]/10 pt-4">
+            <SocialIconRow size="sm" variant="light" />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export type BusinessCardSpec = {
   readonly id: string
@@ -1225,6 +1467,24 @@ function Card30AscentPortrait() {
 
 export const BUSINESS_CARD_SPECS: readonly BusinessCardSpec[] = [
   {
+    id: 'P1',
+    title: 'Executive ivory duplex',
+    subtitle: 'Front identity · back credentials · antique gold rule · soft-touch grain — embassy stationery',
+    render: () => <CardPremium01IvoryDuplex />
+  },
+  {
+    id: 'P2',
+    title: 'Noir signature duplex',
+    subtitle: 'Deep charcoal face · foil-line restraint · ivory reverse — private club / concierge desk',
+    render: () => <CardPremium02NoirDuplex />
+  },
+  {
+    id: 'P3',
+    title: 'Linen column duplex',
+    subtitle: 'Vertical bullion accent · asymmetric front · warm linen stock — hospitality brand systems',
+    render: () => <CardPremium03LinenDuplex />
+  },
+  {
     id: '01',
     title: 'Ivory ledger',
     subtitle: 'Crest column · gold spine · editorial spacing',
@@ -1432,18 +1692,23 @@ export function BusinessCardsCatalog() {
   }, [])
 
   return (
-    <div className="bg-gradient-to-b from-[#e8f0ea] via-[#f5f0e6] to-[#e5dfd4]">
+    <div className="bg-[#F4F7F5]">
       <div className="mx-auto max-w-6xl px-5 pb-6 pt-12">
         {pdfError ? (
-          <div className="mb-8 rounded-2xl border border-amber-400/40 bg-amber-950/10 px-4 py-3 font-ge text-sm text-forest-900">
+          <div className="mb-8 rounded-[1.25rem] border border-[#FFC72C]/35 bg-white px-4 py-3 font-ge text-sm text-[#063B2A] shadow-[0_12px_32px_rgba(6,59,42,0.08)]">
             {pdfError}
           </div>
         ) : null}
-        <p className="max-w-3xl font-ge text-[1.05rem] leading-relaxed text-forest-800">
-          Thirty production-ready concepts for <span className="font-semibold text-forest-950">{businessCardPerson.name}</span>{' '}
-          — taller canvas so email, <span className="font-semibold text-forest-950">www.golfsolirl.com</span>, phones, and Co.
-          Reg. never clip. Bold accents where they help scanning; waves 01–10, 11–20, 21–30. Use{' '}
-          <span className="font-semibold text-forest-950">Card PDF</span> on each tile for a one-page print proof.
+        <p className="max-w-3xl font-ge text-[1.05rem] font-medium leading-relaxed text-[#4e4e4e]">
+          Lead concepts <span className="font-extrabold text-[#063B2A]">P1–P3</span> are duplex executive layouts (Manrope
+          typography, front/back separation). Thirty-three production-ready concepts for{' '}
+          <span className="font-extrabold text-[#063B2A]">{businessCardPerson.name}</span> — taller canvas so email,{' '}
+          <span className="font-extrabold text-[#063B2A]">www.golfsolirl.com</span>, phones, and Co. Reg. never clip.
+          Colours and rhythm follow the same GolfSol enquiry mail system (turf background{' '}
+          <span className="font-mono text-[0.85em] text-[#0B6B45]">{GS_BG}</span>, emerald{' '}
+          <span className="font-mono text-[0.85em] text-[#0B6B45]">{GS_DARK}</span>, gold{' '}
+          <span className="font-mono text-[0.85em] text-[#0B6B45]">{GS_GOLD}</span>). Use{' '}
+          <span className="font-extrabold text-[#063B2A]">Card PDF</span> on each tile for a one-page print proof.
         </p>
       </div>
 
@@ -1452,16 +1717,18 @@ export function BusinessCardsCatalog() {
           {BUSINESS_CARD_SPECS.map((spec) => (
             <article
               key={spec.id}
-              className="rounded-[2rem] border border-white/70 bg-white/80 p-8 shadow-[0_24px_80px_rgba(15,61,36,0.09)] backdrop-blur-md"
+              className="rounded-[2.5rem] border border-[#d9d2c1]/90 bg-white p-8 shadow-[0_26px_70px_rgba(40,33,19,0.12)]"
             >
-              <div className="flex flex-col gap-4 border-b border-forest-900/[0.08] pb-5 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex flex-col gap-4 border-b border-[#063B2A]/10 pb-5 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0 flex-1">
-                  <p className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.3em] text-gs-gold">{spec.id}</p>
-                  <h2 className="font-display mt-2 text-2xl font-bold tracking-tight text-forest-950">{spec.title}</h2>
-                  <p className="mt-2 max-w-lg font-ge text-[0.95rem] leading-relaxed text-forest-700">{spec.subtitle}</p>
+                  <p className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.3em] text-[#0B6B45]">{spec.id}</p>
+                  <h2 className="font-ge mt-2 text-2xl font-extrabold tracking-tight text-[#063B2A]">{spec.title}</h2>
+                  <p className="mt-2 max-w-lg font-ge text-[0.95rem] font-medium leading-relaxed text-[#4e4e4e]">
+                    {spec.subtitle}
+                  </p>
                 </div>
                 <button
-                  className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-full border border-forest-900/[0.12] bg-white px-4 py-2.5 font-ge text-[0.65rem] font-bold uppercase tracking-[0.16em] text-forest-900 shadow-sm transition hover:border-forest-900/25 hover:bg-offwhite disabled:opacity-60"
+                  className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-2xl bg-gradient-to-br from-[#FFC72C] to-[#FFE27A] px-5 py-2.5 font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.14em] text-[#063B2A] shadow-[0_8px_22px_rgba(255,199,44,0.35)] transition hover:brightness-105 disabled:opacity-60"
                   data-html2canvas-ignore="true"
                   type="button"
                   aria-label={
