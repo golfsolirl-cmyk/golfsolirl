@@ -7,6 +7,7 @@ import sharp from 'sharp'
 import { createEnquiryReferenceId, formatDocumentDate } from '../shared/document-templates.mjs'
 import { sanitizeStandardFontText } from '../shared/pdf-winansi-sanitize.mjs'
 import { gsolEmailBrand, logoLockupEmailContentId, shamrockInlineContentId, socialContentIds } from './email-constants.mjs'
+import { emailFonts, gs } from './branded-email-shell.mjs'
 import { buildGsolTransactionalEmail, finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
 import { brandedPdfAssetPaths as sharedBrandedPdfImages } from './pdf-email-brand.mjs'
 import { buildBrandedEnquiryEmailHtml } from './branded-enquiry-email.mjs'
@@ -213,65 +214,12 @@ const buildEnquiryFieldRowsHtml = (rows) =>
   rows
     .map(
       ([label, valueHtml], idx) => `
-                            <tr style="background-color:${idx % 2 === 1 ? '#f9fbf7' : '#ffffff'};">
-                              <td style="padding:12px 16px;font-family:'DM Sans',Arial,sans-serif;font-size:11px;font-weight:700;color:#6b7280;width:34%;vertical-align:top;border-bottom:1px solid #dfe7db;">${escapeHtml(label)}</td>
-                              <td style="padding:12px 16px;font-family:'DM Sans',Arial,sans-serif;font-size:14px;line-height:1.5;color:#374151;vertical-align:top;border-bottom:1px solid #dfe7db;">${valueHtml}</td>
+                            <tr style="background-color:${idx % 2 === 1 ? gs.rowA : '#ffffff'};">
+                              <td style="padding:12px 16px;font-family:${emailFonts.sans};font-size:11px;font-weight:800;color:${gs.muted};width:34%;vertical-align:top;border-bottom:1px solid rgba(13,61,46,0.12);">${escapeHtml(label)}</td>
+                              <td style="padding:12px 16px;font-family:${emailFonts.sans};font-size:14px;line-height:1.5;color:${gs.text};vertical-align:top;border-bottom:1px solid rgba(13,61,46,0.12);">${valueHtml}</td>
                             </tr>`
     )
     .join('')
-
-const buildEnquiryBodyHtmlRow = (payload, telHref) => {
-  const { fullName, email, interest, phoneWhatsApp, bestTimeToCall, enquiryId, enquiryDate } = payload
-  const site = getGsolSiteUrl()
-  const phoneCell =
-    telHref && telHref !== '#'
-      ? `<a href="${escapeHtml(telHref)}" style="color:#163a13;font-weight:600;text-decoration:none;">${escapeHtml(phoneWhatsApp)}</a>`
-      : escapeHtml(phoneWhatsApp)
-  const emailCell = `<a href="mailto:${escapeHtml(email)}" style="color:#163a13;font-weight:600;text-decoration:none;">${escapeHtml(email)}</a>`
-  const rowsHtml = buildEnquiryFieldRowsHtml([
-    ['Full name', escapeHtml(fullName)],
-    ['Email', emailCell],
-    ['Phone / WhatsApp', phoneCell],
-    ['Best time to call', escapeHtml(bestTimeToCall)],
-    ['Enquiry ID', escapeHtml(enquiryId)],
-    ['Submitted', escapeHtml(enquiryDate)],
-    ['Trip interest', escapeHtml(interest)]
-  ])
-  const discHtml = disclaimerParagraphs
-    .map(
-      (p, i) =>
-        `<p style="margin:${i === disclaimerParagraphs.length - 1 ? '0' : '0 0 10px 0'};font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.65;color:#374151;">${escapeHtml(p)}</p>`
-    )
-    .join('')
-  const termsParasHtml = termsSummaryParagraphs
-    .map(
-      (p, i) =>
-        `<p style="margin:${i === termsSummaryParagraphs.length - 1 ? '0 0 12px 0' : '0 0 10px 0'};font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.65;color:#374151;">${escapeHtml(p)}</p>`
-    )
-    .join('')
-  const termsLink = `${site}/terms-and-conditions`
-  const termsFooter = `<p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:12px;line-height:1.6;color:#6b7280;"><a href="${escapeHtml(termsLink)}" style="color:#dc5801;font-weight:600;text-decoration:underline;">Read full terms and conditions</a></p>`
-
-  return `<tr>
-                  <td style="padding:32px 36px 40px 36px;background-color:#ffffff;" class="p-m">
-                    <p style="margin:0 0 16px 0;font-family:'DM Sans',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#dc5801;">Your submitted details</p>
-                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;border-collapse:collapse;border:1px solid #dfe7db;border-radius:8px;overflow:hidden;">
-                      <tbody>
-                        ${rowsHtml}
-                      </tbody>
-                    </table>
-                    <div style="margin-top:28px;padding:20px 22px;border:1px solid #dc5801;border-radius:12px;background-color:#fffdfb;">
-                      <p style="margin:0 0 12px 0;font-family:'DM Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#dc5801;">Important disclaimer</p>
-                      ${discHtml}
-                    </div>
-                    <div style="margin-top:24px;padding:20px 22px;border:1px solid #163a13;border-radius:12px;background-color:#f7f9f5;">
-                      <p style="margin:0 0 12px 0;font-family:'DM Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#163a13;">Terms summary</p>
-                      ${termsParasHtml}
-                      ${termsFooter}
-                    </div>
-                  </td>
-                </tr>`
-}
 
 const iconPaths = {
   linkedin: {
@@ -1617,47 +1565,6 @@ export const createPackingChecklistPdf = async () => {
   return pdfDocument.save()
 }
 
-const buildEnquiryTransactionalEmailHtml = (payload, variant) => {
-  const { fullName, email, interest, phoneWhatsApp, bestTimeToCall, enquiryId, enquiryDate } = payload
-  const telDigits = phoneWhatsApp.replace(/[^\d+]/g, '')
-  const telHref = telDigits ? `tel:${telDigits}` : '#'
-  const isAdmin = variant === 'admin'
-
-  const customerPreheader = `We received your Costa del Sol enquiry (${enquiryId}). Golf Sol Ireland will use your phone, WhatsApp, and preferred call window.`
-  const adminPreheader = `New website enquiry ${enquiryId} from ${fullName}. Submitted via golfsolirl.com.`
-
-  const documentTitle = isAdmin
-    ? `New enquiry ${enquiryId} — Golf Sol Ireland`
-    : `Your enquiry ${enquiryId} — Golf Sol Ireland`
-  const preheader = escapeHtml(isAdmin ? adminPreheader : customerPreheader)
-  const heroKicker = escapeHtml(isAdmin ? 'Internal' : 'Website enquiry')
-  const heroTitle = escapeHtml(
-    isAdmin ? `New enquiry — ${fullName}` : 'Thanks — we received your Costa del Sol enquiry'
-  )
-  const heroLead = escapeHtml(
-    isAdmin
-      ? `Internal copy: lead submitted via golfsolirl.com get-in-touch form. Reply to this email reaches the customer at ${email}.`
-      : 'Below is what you submitted from the get-in-touch form on golfsolirl.com. We will use your phone or WhatsApp and your preferred call window when we reach out.'
-  )
-  const sourceLine = isAdmin ? 'Source: Website form (internal)' : 'Source: golfsolirl.com'
-  const heroMetaHtml = `
-                                      <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.88);"><strong style="font-weight:700;">Enquiry ID:</strong> ${escapeHtml(enquiryId)}</p>
-                                      <p style="margin:8px 0 0 0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.82);"><strong style="font-weight:700;">Submitted:</strong> ${escapeHtml(enquiryDate)}</p>
-                                      <p style="margin:8px 0 0 0;font-family:'DM Sans',Arial,sans-serif;font-size:12px;line-height:1.5;color:rgba(255,255,255,0.68);">${escapeHtml(sourceLine)}</p>`
-
-  const raw = buildGsolTransactionalEmail({
-    documentTitle: escapeHtml(documentTitle),
-    preheader,
-    heroKicker,
-    heroTitle,
-    heroLead,
-    heroMetaHtml,
-    bodyHtml: buildEnquiryBodyHtmlRow(payload, telHref)
-  })
-
-  return finalizeGsolEmailHtml(raw)
-}
-
 const buildCustomerHtml = (payload) => buildBrandedEnquiryEmailHtml(payload, 'customer')
 const buildOwnerHtml = (payload) => buildBrandedEnquiryEmailHtml(payload, 'admin')
 
@@ -1941,22 +1848,22 @@ const buildTermsEmailHtml = ({ email, sentDate }) => {
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
       <tr>
         <td style="padding:0 0 18px 0;">
-          <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:16px;line-height:1.75;color:#374151;">
+          <p style="margin:0;font-family:${emailFonts.sans};font-size:16px;line-height:1.75;color:${gs.muted};">
             Thanks for requesting a copy of the GolfSol Ireland terms and conditions. The attached PDF explains the key booking terms for deposits, balance payments, supplier responsibility, cancellations, accommodation issues, golf course changes and liability limits.
           </p>
         </td>
       </tr>
       <tr>
         <td style="padding:0 0 22px 0;">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #dfe7db;border-radius:16px;overflow:hidden;background:#ffffff;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid rgba(13,61,46,0.12);border-radius:16px;overflow:hidden;background:#ffffff;">
             ${rows}
           </table>
         </td>
       </tr>
       <tr>
-        <td style="padding:18px 20px;border-radius:18px;background:#fff7df;border:1px solid #e8d49a;">
-          <p style="margin:0 0 8px 0;font-family:'DM Sans',Arial,sans-serif;font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#8a6500;">Important note</p>
-          <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:14px;line-height:1.7;color:#374151;">
+        <td style="padding:18px 20px;border-radius:18px;background:#fff7df;border:1px solid ${gs.tierBorder};">
+          <p style="margin:0 0 8px 0;font-family:${emailFonts.sans};font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#8a6500;">Important note</p>
+          <p style="margin:0;font-family:${emailFonts.sans};font-size:14px;line-height:1.7;color:${gs.muted};">
             This email is a terms information copy only. Your specific trip may also include supplier-specific terms on your quote, invoice or confirmation email.
           </p>
         </td>
@@ -1971,13 +1878,17 @@ const buildTermsEmailHtml = ({ email, sentDate }) => {
     heroLead:
       'A plain-English summary of deposit rules, balance payments, cancellations, supplier responsibility and liability limits for Costa del Sol golf trips.',
     heroMetaHtml: `
-      <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.88);"><strong style="font-weight:700;">Sent to:</strong> ${safeEmail}</p>
-      <p style="margin:8px 0 0 0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.82);"><strong style="font-weight:700;">Sent:</strong> ${escapeHtml(sentDate)}</p>`,
+      <p style="margin:0;font-family:${emailFonts.sans};font-size:13px;line-height:1.5;color:rgba(255,255,255,0.88);"><strong style="font-weight:700;">Sent to:</strong> ${safeEmail}</p>
+      <p style="margin:8px 0 0 0;font-family:${emailFonts.sans};font-size:13px;line-height:1.5;color:rgba(255,255,255,0.82);"><strong style="font-weight:700;">Sent:</strong> ${escapeHtml(sentDate)}</p>`,
     bodyHtml
   })
 
   return finalizeGsolEmailHtml(raw)
 }
+
+/** Same HTML as `POST /api/terms-email` (sample address) — for browser preview only. */
+export const getTermsEmailHtmlSampleForPreview = () =>
+  buildTermsEmailHtml({ email: 'sample.client@example.com', sentDate: formatDocumentDate() })
 
 export const handleTermsEmailRequest = async (payload, env = process.env) => {
   const { email } = validateTermsEmailPayload(payload)

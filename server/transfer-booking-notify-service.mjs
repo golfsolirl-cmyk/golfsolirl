@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { randomBytes } from 'node:crypto'
+import { ctaGold, emailFonts, gs } from './branded-email-shell.mjs'
 import { buildGsolTransactionalEmail, finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
 
 const esc = (s) =>
@@ -137,12 +138,12 @@ export const handleTransferBookingNotify = async (env, meta = {}) => {
     heroLead = `We have assigned ${dn} to your Costa del Sol transfer. They will accept the job in the driver app and you will receive another note when they are on the way.`
     const viaClient = viaLabelsHtml(booking)
     const whenLine = esc(formatTransferWhen(booking))
-    bodyHtml = `<p style="margin:0 0 12px 0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.7;color:#163a13;">Pickup: <strong>${esc(booking.pickup_label)}</strong><br />Destination: <strong>${esc(booking.dropoff_label)}</strong>${viaClient ? `<br />Via: <strong>${viaClient}</strong>` : ''}<br />When: <strong>${whenLine}</strong></p>`
+    bodyHtml = `<p style="margin:0 0 12px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.7;color:${gs.text};">Pickup: <strong>${esc(booking.pickup_label)}</strong><br />Destination: <strong>${esc(booking.dropoff_label)}</strong>${viaClient ? `<br />Via: <strong>${viaClient}</strong>` : ''}<br />When: <strong>${whenLine}</strong></p>`
   } else if (event === 'driver_accepted') {
     subject = 'Your driver is preparing'
     heroTitle = 'Driver accepted'
     heroLead = 'Your driver has accepted the job and will head to your pickup shortly.'
-    bodyHtml = `<p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.7;color:#163a13;">Open your <a href="${site}/dashboard">client dashboard</a> to follow live location once they share it.</p>`
+    bodyHtml = `<p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.7;color:${gs.text};">Open your <a href="${site}/dashboard" style="color:${gs.green};font-weight:800;text-decoration:none;">client dashboard</a> to follow live location once they share it.</p>`
   } else if (event === 'en_route') {
     subject = 'Your driver is on the way'
     heroTitle = 'On the way'
@@ -160,8 +161,8 @@ export const handleTransferBookingNotify = async (env, meta = {}) => {
     subject = 'How was your transfer?'
     heroTitle = 'Trip complete'
     heroLead = 'Thank you for travelling with Golf Sol Ireland. Rate your driver in one tap — it helps us showcase real Irish-owned service on the Sol.'
-    bodyHtml = `<p style="margin:0 0 18px 0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.7;color:#163a13;">We read every review. Optional public testimonial is approved by our team before it appears on the homepage.</p>
-      <p style="margin:0;"><a href="${reviewUrl}" style="display:inline-block;padding:14px 22px;border-radius:999px;background:linear-gradient(135deg,#f4c934,#ffe77a);color:#0a2008;font-family:'DM Sans',Arial,sans-serif;font-size:13px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;">Rate this trip</a></p>`
+    bodyHtml = `<p style="margin:0 0 18px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.7;color:${gs.text};">We read every review. Optional public testimonial is approved by our team before it appears on the homepage.</p>
+      <p style="margin:0;"><a href="${reviewUrl}" style="${ctaGold}">Rate this trip</a></p>`
   }
 
   const htmlRaw = buildGsolTransactionalEmail({
@@ -203,7 +204,7 @@ export const handleTransferBookingNotify = async (env, meta = {}) => {
         heroTitle: 'New job allocated',
         heroLead: `Pickup: ${esc(booking.pickup_label)} → ${esc(booking.dropoff_label)} · ${guestDriver} · ${whenDriver}.`,
         heroMetaHtml: `<a href="${site}/driver" style="color:#ffe7a3;font-weight:700;">Open driver dashboard</a>`,
-        bodyHtml: `<p style="margin:0 0 10px 0;font-family:'DM Sans',Arial,sans-serif;font-size:14px;line-height:1.7;color:#163a13;"><strong>Guest contact</strong> (no email): ${guestDriver}</p>${viaDriver ? `<p style="margin:0 0 10px 0;font-family:'DM Sans',Arial,sans-serif;font-size:14px;line-height:1.7;color:#163a13;"><strong>Via:</strong> ${viaDriver}</p>` : ''}<p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:14px;line-height:1.7;color:#163a13;">Accept the job in your driver view to notify the guest automatically.</p>`
+        bodyHtml: `<p style="margin:0 0 10px 0;font-family:${emailFonts.sans};font-size:14px;line-height:1.7;color:${gs.text};"><strong>Guest contact</strong> (no email): ${guestDriver}</p>${viaDriver ? `<p style="margin:0 0 10px 0;font-family:${emailFonts.sans};font-size:14px;line-height:1.7;color:${gs.text};"><strong>Via:</strong> ${viaDriver}</p>` : ''}<p style="margin:0;font-family:${emailFonts.sans};font-size:14px;line-height:1.7;color:${gs.text};">Accept the job in your driver view to notify the guest automatically.</p>`
       })
       await resend.emails.send({
         from,

@@ -1,3 +1,4 @@
+import { ctaGold, ctaGreen, emailFonts, gs } from './branded-email-shell.mjs'
 import { buildGsolTransactionalEmail, getGsolSiteUrl } from './email-layout.mjs'
 
 const escapeHtml = (value) =>
@@ -23,14 +24,17 @@ export const buildBrandedClientPortalEmailHtml = ({ subject, greetingName, bodyP
   const safeSubject = escapeHtml(subject)
   const safeName = escapeHtml(greetingName || 'there')
   const paragraphsHtml = bodyParagraphs
-    .map((p) => `<p style="margin:0 0 16px 0;font-family:'DM Sans',Arial,sans-serif;font-size:16px;line-height:1.75;color:#374151;">${escapeHtml(p)}</p>`)
+    .map(
+      (p) =>
+        `<p style="margin:0 0 16px 0;font-family:${emailFonts.sans};font-size:16px;line-height:1.75;color:${gs.muted};">${escapeHtml(p)}</p>`
+    )
     .join('')
 
   const bodyHtml = `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
       <tr>
         <td style="padding:0 0 8px 0;">
-          <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:16px;line-height:1.75;color:#374151;">Hi ${safeName},</p>
+          <p style="margin:0;font-family:${emailFonts.sans};font-size:16px;line-height:1.75;color:${gs.text};">Hi ${safeName},</p>
         </td>
       </tr>
       <tr>
@@ -40,13 +44,13 @@ export const buildBrandedClientPortalEmailHtml = ({ subject, greetingName, bodyP
       </tr>
       <tr>
         <td style="padding:0 0 28px 0;">
-          <a href="${escapeHtml(ctaHref)}" style="display:inline-block;background:#dc5801;color:#ffffff;text-decoration:none;font-weight:700;padding:14px 28px;border-radius:999px;font-size:15px;font-family:'DM Sans',Arial,sans-serif;">${escapeHtml(ctaLabel)}</a>
+          <a href="${escapeHtml(ctaHref)}" style="${ctaGreen}">${escapeHtml(ctaLabel)}</a>
         </td>
       </tr>
       <tr>
-        <td style="padding:0;border-radius:18px;background:#f7faf6;border:1px solid #dfe7db;">
-          <p style="margin:0;padding:16px 18px;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.65;color:#4b5e49;">
-            <strong style="color:#163a13;">Tip:</strong> Sign in to your <a href="${escapeHtml(`${site}/dashboard`)}" style="color:#2d6a4a;font-weight:600;">client dashboard</a> to see packages we publish for you, form submissions linked to your account, and any formal proposals.
+        <td style="padding:0;border-radius:18px;background:${gs.rowA};border:1px solid rgba(13,61,46,0.12);">
+          <p style="margin:0;padding:16px 18px;font-family:${emailFonts.sans};font-size:13px;line-height:1.65;color:${gs.muted};">
+            <strong style="color:${gs.green};">Tip:</strong> Sign in to your <a href="${escapeHtml(`${site}/dashboard`)}" style="color:${gs.green};font-weight:700;">client dashboard</a> to see packages we publish for you, form submissions linked to your account, and any formal proposals.
           </p>
         </td>
       </tr>
@@ -59,8 +63,8 @@ export const buildBrandedClientPortalEmailHtml = ({ subject, greetingName, bodyP
     heroTitle: safeSubject,
     heroLead: 'We have prepared an update for your Costa del Sol golf trip — details are below, with any files attached to this email.',
     heroMetaHtml: `
-      <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.88);"><strong style="font-weight:700;">From:</strong> Golf Sol Ireland</p>
-      <p style="margin:8px 0 0 0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.82);"><strong style="font-weight:700;">Replies</strong> go to our team inbox.</p>`,
+      <p style="margin:0;font-family:${emailFonts.sans};font-size:13px;line-height:1.5;color:rgba(255,255,255,0.88);"><strong style="font-weight:700;">From:</strong> Golf Sol Ireland</p>
+      <p style="margin:8px 0 0 0;font-family:${emailFonts.sans};font-size:13px;line-height:1.5;color:rgba(255,255,255,0.82);"><strong style="font-weight:700;">Replies</strong> go to our team inbox.</p>`,
     bodyHtml
   })
 
@@ -81,33 +85,33 @@ export const buildBrandedClientDocumentInviteEmailHtml = ({ greetingName, docTit
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
       <tr>
         <td style="padding:0 0 8px 0;">
-          <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:16px;line-height:1.75;color:#374151;">Hi ${safeName},</p>
+          <p style="margin:0;font-family:${emailFonts.sans};font-size:16px;line-height:1.75;color:${gs.text};">Hi ${safeName},</p>
         </td>
       </tr>
       <tr>
         <td style="padding:0 0 18px 0;">
-          <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:16px;line-height:1.75;color:#374151;">
-            We have shared <strong style="color:#163a13;">${safeTitle}</strong> with your Golf Sol Ireland client account. Sign in once to open the document page and save a print-ready PDF anytime.
+          <p style="margin:0;font-family:${emailFonts.sans};font-size:16px;line-height:1.75;color:${gs.muted};">
+            We have shared <strong style="color:${gs.text};">${safeTitle}</strong> with your Golf Sol Ireland client account. Sign in once to open the document page and save a print-ready PDF anytime.
           </p>
         </td>
       </tr>
       <tr>
         <td style="padding:0 0 28px 0;">
-          <a href="${safeUrl}" style="display:inline-block;background:#dc5801;color:#ffffff;text-decoration:none;font-weight:700;padding:14px 28px;border-radius:999px;font-size:15px;font-family:'DM Sans',Arial,sans-serif;">Open your client area</a>
+          <a href="${safeUrl}" style="${ctaGreen}">Open your client area</a>
         </td>
       </tr>
       <tr>
-        <td style="padding:0;border-radius:18px;background:#f7faf6;border:1px solid #dfe7db;">
-          <p style="margin:0;padding:16px 18px;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.65;color:#4b5e49;">
-            <strong style="color:#163a13;">Link not working?</strong> Copy and paste this URL into your browser:<br />
-            <span style="word-break:break-all;color:#2d6a4a;">${safeUrl}</span>
+        <td style="padding:0;border-radius:18px;background:${gs.rowA};border:1px solid rgba(13,61,46,0.12);">
+          <p style="margin:0;padding:16px 18px;font-family:${emailFonts.sans};font-size:13px;line-height:1.65;color:${gs.muted};">
+            <strong style="color:${gs.green};">Link not working?</strong> Copy and paste this URL into your browser:<br />
+            <span style="word-break:break-all;color:${gs.green};font-weight:700;">${safeUrl}</span>
           </p>
         </td>
       </tr>
       <tr>
         <td style="padding:16px 0 0 0;">
-          <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.65;color:#4b5e49;">
-            After sign-in you can also open your <a href="${escapeHtml(`${site}/dashboard`)}" style="color:#2d6a4a;font-weight:600;">full dashboard</a> for packages and proposals.
+          <p style="margin:0;font-family:${emailFonts.sans};font-size:13px;line-height:1.65;color:${gs.muted};">
+            After sign-in you can also open your <a href="${escapeHtml(`${site}/dashboard`)}" style="color:${gs.green};font-weight:700;">full dashboard</a> for packages and proposals.
           </p>
         </td>
       </tr>
@@ -121,8 +125,8 @@ export const buildBrandedClientDocumentInviteEmailHtml = ({ greetingName, docTit
     heroLead:
       'We have enabled this document on your profile. One secure sign-in opens the reader-friendly page on golfsolirl.com — same premium layout family as our enquiry confirmations.',
     heroMetaHtml: `
-      <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.88);"><strong style="font-weight:700;">Document:</strong> ${safeTitle}</p>
-      <p style="margin:8px 0 0 0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.82);"><strong style="font-weight:700;">Support</strong> — reply to this email if you need help.</p>`,
+      <p style="margin:0;font-family:${emailFonts.sans};font-size:13px;line-height:1.5;color:rgba(255,255,255,0.88);"><strong style="font-weight:700;">Document:</strong> ${safeTitle}</p>
+      <p style="margin:8px 0 0 0;font-family:${emailFonts.sans};font-size:13px;line-height:1.5;color:rgba(255,255,255,0.82);"><strong style="font-weight:700;">Support</strong> — reply to this email if you need help.</p>`,
     bodyHtml
   })
 }
@@ -140,39 +144,39 @@ export const buildBrandedProposalAttachedEmailHtml = ({ greetingName, proposalId
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
       <tr>
         <td style="padding:0 0 8px 0;">
-          <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:16px;line-height:1.75;color:#374151;">Hi ${safeName},</p>
+          <p style="margin:0;font-family:${emailFonts.sans};font-size:16px;line-height:1.75;color:${gs.text};">Hi ${safeName},</p>
         </td>
       </tr>
       <tr>
         <td style="padding:0 0 18px 0;">
-          <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:16px;line-height:1.75;color:#374151;">
-            Your formal package proposal <strong style="color:#163a13;font-family:ui-monospace,Menlo,monospace;">${safeId}</strong> is attached as a PDF (Costa del Sol layout, same visual family as our site). Open on a desktop or tablet for the best read.
+          <p style="margin:0;font-family:${emailFonts.sans};font-size:16px;line-height:1.75;color:${gs.muted};">
+            Your formal package proposal <strong style="color:${gs.text};font-family:ui-monospace,Menlo,monospace;">${safeId}</strong> is attached as a PDF (Costa del Sol layout, same visual family as our site). Open on a desktop or tablet for the best read.
           </p>
         </td>
       </tr>
       <tr>
         <td style="padding:0 0 18px 0;">
-          <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:16px;line-height:1.75;color:#374151;">
+          <p style="margin:0;font-family:${emailFonts.sans};font-size:16px;line-height:1.75;color:${gs.muted};">
             After you sign in, the same proposal also appears under <strong>Proposals &amp; PDFs</strong> on your dashboard whenever we have enabled that area for your account.
           </p>
         </td>
       </tr>
       <tr>
         <td style="padding:0 0 28px 0;">
-          <a href="${safeLogin}" style="display:inline-block;background:#dc5801;color:#ffffff;text-decoration:none;font-weight:700;padding:14px 28px;border-radius:999px;font-size:15px;font-family:'DM Sans',Arial,sans-serif;">Open client dashboard</a>
+          <a href="${safeLogin}" style="${ctaGreen}">Open client dashboard</a>
         </td>
       </tr>
       <tr>
-        <td style="padding:0;border-radius:18px;background:#f7faf6;border:1px solid #dfe7db;">
-          <p style="margin:0;padding:16px 18px;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.65;color:#4b5e49;">
-            <strong style="color:#163a13;">Prefer to tweak something?</strong> Reply to this email with dates, courses, rooming, or budget — we will refine the proposal and re-issue if needed.
+        <td style="padding:0;border-radius:18px;background:${gs.rowA};border:1px solid rgba(13,61,46,0.12);">
+          <p style="margin:0;padding:16px 18px;font-family:${emailFonts.sans};font-size:13px;line-height:1.65;color:${gs.muted};">
+            <strong style="color:${gs.green};">Prefer to tweak something?</strong> Reply to this email with dates, courses, rooming, or budget — we will refine the proposal and re-issue if needed.
           </p>
         </td>
       </tr>
       <tr>
         <td style="padding:16px 0 0 0;">
-          <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.65;color:#4b5e49;">
-            Dashboard: <a href="${escapeHtml(`${site}/dashboard`)}" style="color:#2d6a4a;font-weight:600;">${escapeHtml(`${site}/dashboard`)}</a>
+          <p style="margin:0;font-family:${emailFonts.sans};font-size:13px;line-height:1.65;color:${gs.muted};">
+            Dashboard: <a href="${escapeHtml(`${site}/dashboard`)}" style="color:${gs.green};font-weight:700;">${escapeHtml(`${site}/dashboard`)}</a>
           </p>
         </td>
       </tr>
@@ -185,8 +189,8 @@ export const buildBrandedProposalAttachedEmailHtml = ({ greetingName, proposalId
     heroTitle: 'Your proposal is ready',
     heroLead: `Proposal ${proposalId} is attached. Everything below matches the same premium email system we use for enquiries — shamrock hero, forest palette, and print-ready PDF quality.`,
     heroMetaHtml: `
-      <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.88);"><strong style="font-weight:700;">Reference:</strong> ${safeId}</p>
-      <p style="margin:8px 0 0 0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.82);"><strong style="font-weight:700;">Golf Sol Ireland</strong> — Costa del Sol golf travel for Irish groups.</p>`,
+      <p style="margin:0;font-family:${emailFonts.sans};font-size:13px;line-height:1.5;color:rgba(255,255,255,0.88);"><strong style="font-weight:700;">Reference:</strong> ${safeId}</p>
+      <p style="margin:8px 0 0 0;font-family:${emailFonts.sans};font-size:13px;line-height:1.5;color:rgba(255,255,255,0.82);"><strong style="font-weight:700;">Golf Sol Ireland</strong> — Costa del Sol golf travel for Irish groups.</p>`,
     bodyHtml
   })
 }
@@ -200,59 +204,59 @@ export const buildBrandedPortalMagicLinkEmailHtml = ({ actionLink, email, reques
   const safeLink = escapeHtml(actionLink)
   const safeEmail = escapeHtml(email)
   const safeWhen = escapeHtml(requestedAtDisplay)
-  const emailCell = `<span style="color:#374151;font-weight:700;">${safeEmail}</span>`
+  const emailCell = `<span style="color:${gs.text};font-weight:800;">${safeEmail}</span>`
 
   const bodyHtml = `
 <tr>
-  <td style="padding:36px 40px 44px 40px;" class="p-m">
+  <td style="padding:0;">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
       <tr>
         <td style="padding:0 0 10px 0;">
-          <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:16px;line-height:1.75;color:#374151;">Hi,</p>
+          <p style="margin:0;font-family:${emailFonts.sans};font-size:16px;line-height:1.75;color:${gs.text};">Hi,</p>
         </td>
       </tr>
       <tr>
         <td style="padding:0 0 20px 0;">
-          <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:16px;line-height:1.65;color:#374151;">
-            Tap the button below to open your Golf Sol Ireland client area — passwordless sign-in, same layout family as our proposal and enquiry emails.
+          <p style="margin:0;font-family:${emailFonts.sans};font-size:16px;line-height:1.65;color:${gs.muted};">
+            Tap the button below to open your Golf Sol Ireland client area — passwordless sign-in, same layout as our enquiry confirmation emails.
           </p>
         </td>
       </tr>
       <tr>
         <td style="padding:0 0 16px 0;">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #dfe7db;border-radius:18px;overflow:hidden;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid rgba(13,61,46,0.12);border-radius:18px;overflow:hidden;">
             <tr style="background:#ffffff;">
-              <td style="padding:12px 16px;font-family:'DM Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#66736d;width:34%;vertical-align:top;">Signing in as</td>
-              <td style="padding:12px 16px;font-family:'DM Sans',Arial,sans-serif;font-size:14px;vertical-align:top;">${emailCell}</td>
+              <td style="padding:12px 16px;font-family:${emailFonts.sans};font-size:10px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:${gs.muted};width:34%;vertical-align:top;">Signing in as</td>
+              <td style="padding:12px 16px;font-family:${emailFonts.sans};font-size:14px;vertical-align:top;">${emailCell}</td>
             </tr>
-            <tr style="background:#f7faf6;">
-              <td style="padding:12px 16px;font-family:'DM Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#66736d;vertical-align:top;">Method</td>
-              <td style="padding:12px 16px;font-family:'DM Sans',Arial,sans-serif;font-size:14px;vertical-align:top;">${escapeHtml('Secure magic link (no password)')}</td>
+            <tr style="background:${gs.rowA};">
+              <td style="padding:12px 16px;font-family:${emailFonts.sans};font-size:10px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:${gs.muted};vertical-align:top;">Method</td>
+              <td style="padding:12px 16px;font-family:${emailFonts.sans};font-size:14px;vertical-align:top;">${escapeHtml('Secure magic link (no password)')}</td>
             </tr>
             <tr style="background:#ffffff;">
-              <td style="padding:12px 16px;font-family:'DM Sans',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#66736d;vertical-align:top;">Requested</td>
-              <td style="padding:12px 16px;font-family:'DM Sans',Arial,sans-serif;font-size:14px;vertical-align:top;">${safeWhen}</td>
+              <td style="padding:12px 16px;font-family:${emailFonts.sans};font-size:10px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:${gs.muted};vertical-align:top;">Requested</td>
+              <td style="padding:12px 16px;font-family:${emailFonts.sans};font-size:14px;vertical-align:top;">${safeWhen}</td>
             </tr>
           </table>
         </td>
       </tr>
       <tr>
         <td style="padding:0 0 28px 0;">
-          <a href="${safeLink}" style="display:inline-block;background:#dc5801;color:#ffffff;text-decoration:none;font-weight:700;padding:14px 28px;border-radius:999px;font-size:15px;font-family:'DM Sans',Arial,sans-serif;">Sign in to Golf Sol Ireland</a>
+          <a href="${safeLink}" style="${ctaGold}">Sign in to Golf Sol Ireland</a>
         </td>
       </tr>
       <tr>
-        <td style="padding:0 0 16px 0;border-radius:18px;background:#f7faf6;border:1px solid #dfe7db;">
-          <p style="margin:0;padding:16px 18px;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.65;color:#4b5e49;">
-            <strong style="color:#163a13;">Button not working?</strong><br />
-            <span style="word-break:break-all;color:#2d6a4a;">${safeLink}</span>
+        <td style="padding:0 0 16px 0;border-radius:18px;background:${gs.rowA};border:1px solid rgba(13,61,46,0.12);">
+          <p style="margin:0;padding:16px 18px;font-family:${emailFonts.sans};font-size:13px;line-height:1.65;color:${gs.muted};">
+            <strong style="color:${gs.green};">Button not working?</strong><br />
+            <span style="word-break:break-all;color:${gs.green};font-weight:700;">${safeLink}</span>
           </p>
         </td>
       </tr>
       <tr>
-        <td style="padding:0;border-radius:18px;background:#fff9ea;border:1px solid #e9d9b6;">
-          <p style="margin:0;padding:16px 18px;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.65;color:#4b5e49;">
-            <strong style="color:#92400e;">Security:</strong> Do not forward this email. The link expires after a short time. If you did not request access, you can ignore this message.
+        <td style="padding:0;border-radius:18px;background:#fff9ea;border:1px solid ${gs.tierBorder};">
+          <p style="margin:0;padding:16px 18px;font-family:${emailFonts.sans};font-size:13px;line-height:1.65;color:${gs.muted};">
+            <strong style="color:${gs.text};">Security:</strong> Do not forward this email. The link expires after a short time. If you did not request access, you can ignore this message.
           </p>
         </td>
       </tr>
@@ -268,8 +272,8 @@ export const buildBrandedPortalMagicLinkEmailHtml = ({ actionLink, email, reques
     heroLead:
       'Open your dashboard with one tap — same premium Golf Sol Ireland email shell as proposals, terms access, and package updates.',
     heroMetaHtml: `
-      <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.88);"><strong style="font-weight:700;">Magic link only</strong> — we never email passwords.</p>
-      <p style="margin:8px 0 0 0;font-family:'DM Sans',Arial,sans-serif;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.82);"><strong style="font-weight:700;">Need help?</strong> Reply to this message.</p>`,
+      <p style="margin:0;font-family:${emailFonts.sans};font-size:13px;line-height:1.5;color:rgba(255,255,255,0.88);"><strong style="font-weight:700;">Magic link only</strong> — we never email passwords.</p>
+      <p style="margin:8px 0 0 0;font-family:${emailFonts.sans};font-size:13px;line-height:1.5;color:rgba(255,255,255,0.82);"><strong style="font-weight:700;">Need help?</strong> Reply to this message.</p>`,
     bodyHtml
   })
 }

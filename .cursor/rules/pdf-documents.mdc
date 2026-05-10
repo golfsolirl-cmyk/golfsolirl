@@ -1,0 +1,89 @@
+---
+description: Golf Sol PDFs — pdf-lib proposals/invoices/terms, jsPDF receipts, admin attachments, portal logging
+globs:
+alwaysApply: false
+---
+# PDF documents (Golf Sol Ireland)
+
+PDFs fall into three buckets: **server-generated** (brand-aligned `pdf-lib` + shared theme), **browser-generated** (`jspdf` / print-to-PDF), and **admin-supplied** (uploaded PDFs attached to Resend — not generated in this repo).
+
+## Unified PDF shell (preferred for new work)
+
+Use **[gsol-unified-pdf-template.mjs](mdc:server/gsol-unified-pdf-template.mjs)** when adding PDFs that should share one visual system (form submission copy, quote summary, policy PDF, invoice layout, etc.):
+
+- **`drawUnifiedDocumentHeader`** / **`drawUnifiedDocumentFooter`** — emerald band, gold rule, logo, company reg line.
+- **`drawUnifiedSectionHeading`**, **`drawUnifiedKeyValueTable`**, **`drawUnifiedParagraphBlock`**, **`drawUnifiedGoldRule`** — body patterns.
+- **`loadUnifiedPdfFonts`** + **`embedUnifiedLogo`** — embed once per document.
+
+**Stakeholder sample** (two pages: mock form + quote, then policy-style copy):
+
+- File: `public/samples/golfsol-unified-document-template.pdf`
+- Generator: `buildGsolUnifiedPdfTemplateSampleBytes()` (same module) — run `npm run generate:unified-pdf-sample` or `node scripts/generate-gsol-unified-pdf-sample.mjs`
+- Browser preview: **`/unified-pdf-sample`** ([unified-pdf-sample-page.tsx](mdc:src/pages/unified-pdf-sample-page.tsx))
+
+Older PDFs (proposal, enquiry record, terms, portal invoice) keep their bespoke layouts until migrated; new flows should start from the unified helpers to avoid drift.
+
+## Shared branding and assets
+
+- **Colours + WinAnsi safety**: [pdf-email-brand.mjs](mdc:server/pdf-email-brand.mjs) exports `pdfEmailTheme`, `brandedPdfAssetPaths` (logo PNG, fleet plate). Align new server PDFs with this palette so they match [email-templates.mdc](mdc:.cursor/rules/email-templates.mdc) and formal proposals.
+- **Helvetica text**: always run user-facing strings through **`sanitizeStandardFontText`** from [shared/pdf-winansi-sanitize.mjs](mdc:shared/pdf-winansi-sanitize.mjs) before `pdf-lib` `drawText`, or embedding will throw on smart quotes / emoji / Irish-specific characters outside WinAnsi.
+
+## Server — `pdf-lib` + Sharp (primary “product” PDFs)
+
+| Output | Entry | Notes |
+|--------|--------|--------|
+| Client proposals | [proposal-service.mjs](mdc:server/proposal-service.mjs) `createProposalPdf` | Uses `buildProposalDocument` from [shared/document-templates.mjs](mdc:shared/document-templates.mjs), Sharp-resized JPGs, `createProposalFilename`. |
+| Sample proposal file | [scripts/generate-sample-proposal-pdf.mjs](mdc:scripts/generate-sample-proposal-pdf.mjs) | Writes `public/samples/sample-proposal.pdf` — same generator as `/api/proposal-pdf` and [proposal-pdf-sample-page.tsx](mdc:src/pages/proposal-pdf-sample-page.tsx). |
+| Enquiry / marketing-style PDFs | [enquiry-service.mjs](mdc:server/enquiry-service.mjs) | Large PDF builders (e.g. enquiry record, terms). |
+| Trip invoice PDF | [portal-invoice-pdf.mjs](mdc:server/portal-invoice-pdf.mjs) | Branded invoice; sent via [portal-invoice-send-service.mjs](mdc:server/portal-invoice-send-service.mjs) with email + attachment. |
+| Branded layout sample | [scripts/generate-branded-sample-pdf.mjs](mdc:scripts/generate-branded-sample-pdf.mjs) | Writes `public/samples/golfsol-branded-layout-sample.pdf` (A4 one-pager, palette + logo). |
+| **Unified shell sample** | [scripts/generate-gsol-unified-pdf-sample.mjs](mdc:scripts/generate-gsol-unified-pdf-sample.mjs) | Writes `public/samples/golfsol-unified-document-template.pdf` — master template for all future PDFs. |
+
+**Email + PDF together**: [send-proposal-client-service.mjs](mdc:server/send-proposal-client-service.mjs) builds HTML with `finalizeGsolEmailHtml`, attaches **`getTransactionalEmailImageAttachments()`** plus the proposal PDF bytes. Follow that order when adding new “branded email + PDF” sends.
+
+## Client / hybrid — `jspdf` and DOM capture
+
+- **Transfer VAT receipt**: [transfer-vat-receipt-pdf.ts](mdc:src/lib/transfer-vat-receipt-pdf.ts) (`jspdf`).
+- **Business cards export**: [save-business-cards-pdf.ts](mdc:src/lib/save-business-cards-pdf.ts).
+- **Client document pages** (welcome / terms views): [client-document-page.tsx](mdc:src/pages/client-document-page.tsx) uses [PdfSiteShell](mdc:src/components/pdf-site-shell.tsx) + `saveElementAsPdf` for optional user-side save.
+
+## Admin → client portal email (attachments + dashboard)
+
+Flow: **`POST` via `/api/send-client-portal-email`** → [client-portal-email-service.mjs](mdc:server/client-portal-email-service.mjs).
+
+- **Auth**: admin JWT (`requireAdminFromBearer`).
+- **Attachments**: up to **4** PDFs per send; each **≤ 4 MB**; `filename` + `contentBase64` (raw base64 payload, not a `data:` URL). Only **`.pdf`** is allowed.
+- **Email**: [buildBrandedClientPortalEmailHtml](mdc:server/branded-client-portal-email.mjs) + `finalizeGsolEmailHtml` + Resend with image CID attachments + PDF attachments.
+- **Portal log**: inserts into **`portal_client_updates`** with `attachment_filenames` (JSON array of **names only**). The dashboard **does not store PDF bytes**; clients re-open files from their **inbox**. UI: [client-dashboard-page.tsx](mdc:src/pages/client-dashboard-page.tsx) (“Messages & files” — lists `PDFs: …` from `attachment_filenames`).
+
+Admin UI that calls this: [admin-dashboard-page.tsx](mdc:src/pages/admin-dashboard-page.tsx) (`handleSendStudioClientEmail` — reads local PDF files, base64, posts JSON).
+
+## Other document emails
+
+- **Terms PDF to inbox**: [enquiry-service.mjs](mdc:server/enquiry-service.mjs) `handleTermsEmailRequest` — `createTermsAndConditionsPdf()` + Resend PDF attachment + transactional HTML.
+- **Preset document access** (terms / welcome **pages**, not arbitrary PDFs): [send-client-document-service.mjs](mdc:server/send-client-document-service.mjs) grants `client_document_access` and emails a **dashboard link**; no PDF attachment in that handler.
+
+## Checklist for new server PDFs
+
+1. Reuse **`pdfEmailTheme`** / **`brandedPdfAssetPaths`** where possible.
+2. **`sanitizeStandardFontText`** on all dynamic `drawText` strings.
+3. If the PDF is emailed, use **`application/pdf`**, sensible `filename`, and keep under Resend / product limits.
+4. If the send should appear in the portal timeline, either use **`handleSendClientPortalEmail`** or insert **`portal_client_updates`** with the same shape (and set `attachment_filenames` accurately).
+
+## Committed sample files (regenerate after layout changes)
+
+From repo root:
+
+```bash
+node scripts/generate-sample-proposal-pdf.mjs
+node scripts/generate-branded-sample-pdf.mjs
+npm run generate:unified-pdf-sample
+```
+
+Outputs:
+
+- `public/samples/sample-proposal.pdf` — full proposal generator sample.
+- `public/samples/golfsol-branded-layout-sample.pdf` — one-page branded strip + fictional invoice lines.
+- **`public/samples/golfsol-unified-document-template.pdf`** — **master shell** (form + quote + policy examples on two pages).
+
+**Admin-attached** PDFs in the studio flow are **any** client-valid PDF file the admin chooses; they are not checked into git. For **generated** house-style PDFs, prefer the unified shell above.

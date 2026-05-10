@@ -4,8 +4,14 @@
  */
 export const businessCardPerson = {
   name: 'Martin Kelly',
-  /** Optional strapline under the name */
-  tagline: 'Golf Sol Ireland'
+  /** Company line used across legacy card layouts */
+  tagline: 'Golf Sol Ireland',
+  /** Executive title — premium / duplex backs */
+  roleTitle: 'Director · Golf Travel & Concierge',
+  /** Short positioning line for luxury fronts */
+  premiumDescriptor: 'Premium golf travel · Costa del Sol',
+  /** Corridor / markets line */
+  corridorLine: 'Dublin · Málaga'
 } as const
 
 export const businessCardContact = {

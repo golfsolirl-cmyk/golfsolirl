@@ -65,6 +65,7 @@ export default {
         }
       },
       fontFamily: {
+        premium: ['"Manrope"', 'system-ui', 'sans-serif'],
         display: ['"Rubik"', 'system-ui', 'sans-serif'],
         body: ['"Rubik"', 'system-ui', 'sans-serif'],
         accent: ['"Rubik"', 'system-ui', 'sans-serif'],

@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "generate:sample-proposal-pdf": "node scripts/generate-sample-proposal-pdf.mjs"
+    "generate:sample-proposal-pdf": "node scripts/generate-sample-proposal-pdf.mjs",
+    "generate:branded-sample-pdf": "node scripts/generate-branded-sample-pdf.mjs",
+    "generate:unified-pdf-sample": "node scripts/generate-gsol-unified-pdf-sample.mjs"
   },
   "type": "module",
   "dependencies": {

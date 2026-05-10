@@ -61,6 +61,9 @@ const EnquiryPdfTemplatePage = lazy(() =>
 const ProposalPdfSamplePage = lazy(() =>
   import('./pages/proposal-pdf-sample-page').then((m) => ({ default: m.ProposalPdfSamplePage }))
 )
+const UnifiedPdfSamplePage = lazy(() =>
+  import('./pages/unified-pdf-sample-page').then((m) => ({ default: m.UnifiedPdfSamplePage }))
+)
 const DriverDashboardPage = lazy(() =>
   import('./pages/driver-dashboard-page').then((m) => ({ default: m.DriverDashboardPage }))
 )
@@ -83,6 +86,7 @@ function syncReadableTypePageClass(path: string) {
     '/enquiry-pdf-template',
     '/enquiry-record',
     '/proposal-pdf-sample',
+    '/unified-pdf-sample',
     '/documents/terms',
     '/documents/welcome'
   ])
@@ -185,6 +189,10 @@ function resolvePage(): PageComponent {
 
   if (normalizedPath === '/proposal-pdf-sample') {
     return ProposalPdfSamplePage
+  }
+
+  if (normalizedPath === '/unified-pdf-sample') {
+    return UnifiedPdfSamplePage
   }
 
   if (normalizedPath === '/business-cards') {

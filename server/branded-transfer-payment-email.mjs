@@ -1,3 +1,4 @@
+import { ctaGold, emailFonts, gs } from './branded-email-shell.mjs'
 import { buildGsolTransactionalEmail, finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
 
 const esc = (s) =>
@@ -16,9 +17,9 @@ export const buildTransferDepositThankYouEmail = (booking, depositPercent) => {
   const subject = `Golf Sol Ireland — thank you for your ${depositPercent}% deposit`
   const heroTitle = 'Deposit received — thank you'
   const heroLead = `We have recorded your ${depositPercent}% deposit for your Costa transfer. Your route: ${route}. We will hold your date and keep everything moving smoothly.`
-  const bodyHtml = `<p style="margin:0 0 14px 0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">If anything changes on your side, just reply to this email or WhatsApp us — we are happy to adjust timings where we can.</p>
-    <p style="margin:0 0 14px 0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">You will receive a short <strong>friendly reminder</strong> about the outstanding balance when it is due — no surprises, just a gentle nudge.</p>
-    <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">Questions? Call <a href="tel:+353874464766" style="color:#0f5224;font-weight:600;">+353 87 446 4766</a> or open your <a href="${site}/dashboard" style="color:#0f5224;font-weight:600;">client dashboard</a>.</p>`
+  const bodyHtml = `<p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">If anything changes on your side, just reply to this email or WhatsApp us — we are happy to adjust timings where we can.</p>
+    <p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">You will receive a short <strong>friendly reminder</strong> about the outstanding balance when it is due — no surprises, just a gentle nudge.</p>
+    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Questions? Call <a href="tel:+353874464766" style="color:${gs.green};font-weight:600;">+353 87 446 4766</a> or open your <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">client dashboard</a>.</p>`
 
   const htmlRaw = buildGsolTransactionalEmail({
     documentTitle: subject,
@@ -41,8 +42,8 @@ export const buildTransferFullPaymentThankYouEmail = (booking) => {
   const subject = 'Golf Sol Ireland — thank you, your transfer is fully paid'
   const heroTitle = 'Payment received in full'
   const heroLead = `Thank you — we have recorded full payment for your Costa transfer (${route}). That is one less thing for you to think about before you travel.`
-  const bodyHtml = `<p style="margin:0 0 14px 0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">We will confirm pick-up details closer to travel. If you need to tweak times or passenger numbers, message the team any time.</p>
-    <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">Warm regards from the Golf Sol Ireland desk · <a href="${site}/dashboard" style="color:#0f5224;font-weight:600;">Your dashboard</a></p>`
+  const bodyHtml = `<p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">We will confirm pick-up details closer to travel. If you need to tweak times or passenger numbers, message the team any time.</p>
+    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Warm regards from the Golf Sol Ireland desk · <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">Your dashboard</a></p>`
 
   const htmlRaw = buildGsolTransactionalEmail({
     documentTitle: subject,
@@ -81,20 +82,20 @@ export const buildTransferPaymentRequestEmail = (booking) => {
     ? `Please arrange payment for your transfer (${route}). Quoted amount: ${priceTxt}. Use the button below to open your client area — we will connect live checkout here soon.`
     : `Please arrange payment for your transfer (${route}). We quoted this run separately — use the button below to open your client area; reply to this email if you need bank details or a breakdown.`
   const amountBlock = hasPrice
-    ? `<p style="margin:0 0 18px 0;font-family:'DM Sans',Arial,sans-serif;font-size:18px;line-height:1.5;color:#163a13;"><strong style="color:#0f5224;">${priceTxt}</strong> <span style="color:#6b7280;font-size:14px;">(quoted EUR)</span></p>`
-    : `<p style="margin:0 0 18px 0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">We will confirm the exact figure if needed — reply to this email or WhatsApp us.</p>`
+    ? `<p style="margin:0 0 18px 0;font-family:${emailFonts.sans};font-size:18px;line-height:1.5;color:${gs.text};"><strong style="color:${gs.green};">${priceTxt}</strong> <span style="color:#6b7280;font-size:14px;">(quoted EUR)</span></p>`
+    : `<p style="margin:0 0 18px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">We will confirm the exact figure if needed — reply to this email or WhatsApp us.</p>`
 
   const bodyHtml = `${amountBlock}
-    <p style="margin:0 0 18px 0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">This link opens your <strong>dashboard preview</strong> for this transfer. Online card checkout will appear here when activated — for now you can also pay by arrangement with our desk.</p>
+    <p style="margin:0 0 18px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">This link opens your <strong>dashboard preview</strong> for this transfer. Online card checkout will appear here when activated — for now you can also pay by arrangement with our desk.</p>
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 22px 0;border-collapse:collapse;">
       <tr>
         <td style="padding:0;">
-          <a href="${payHref}" style="display:inline-block;background:#dc5801;color:#ffffff;text-decoration:none;font-weight:700;padding:14px 28px;border-radius:999px;font-size:15px;font-family:'DM Sans',Arial,sans-serif;">Open payment preview</a>
+          <a href="${payHref}" style="${ctaGold}">Open payment preview</a>
         </td>
       </tr>
     </table>
-    <p style="margin:0 0 12px 0;font-family:'DM Sans',Arial,sans-serif;font-size:12px;line-height:1.6;color:#6b7280;">Preview URL (placeholder): <a href="${payHref}" style="color:#2d6a4a;word-break:break-all;">${esc(payHref)}</a></p>
-    <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">Questions? <a href="tel:+353874464766" style="color:#0f5224;font-weight:600;">+353 87 446 4766</a> · <a href="${site}/dashboard" style="color:#0f5224;font-weight:600;">Client dashboard</a></p>`
+    <p style="margin:0 0 12px 0;font-family:${emailFonts.sans};font-size:12px;line-height:1.6;color:#6b7280;">Preview URL (placeholder): <a href="${payHref}" style="color:#2d6a4a;word-break:break-all;">${esc(payHref)}</a></p>
+    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Questions? <a href="tel:+353874464766" style="color:${gs.green};font-weight:600;">+353 87 446 4766</a> · <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">Client dashboard</a></p>`
 
   const htmlRaw = buildGsolTransactionalEmail({
     documentTitle: subject,
@@ -115,8 +116,8 @@ export const buildTransferBalanceReminderEmail = (booking, depositPercent) => {
   const subject = 'Golf Sol Ireland — gentle reminder: transfer balance'
   const heroTitle = 'Balance reminder'
   const heroLead = `This is a quick, friendly reminder about the remaining balance for your Costa transfer (${route}). Your ${depositPercent}% deposit is safely on file — when you are ready, you can settle the remaining ${remainder}% with the team.`
-  const bodyHtml = `<p style="margin:0 0 14px 0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">No rush if you are still finalising flights — reply to this email or WhatsApp us and we will send payment options that suit you.</p>
-    <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">Thank you for travelling with Golf Sol Ireland · <a href="${site}/dashboard" style="color:#0f5224;font-weight:600;">Dashboard</a> · <a href="tel:+353874464766" style="color:#0f5224;font-weight:600;">+353 87 446 4766</a></p>`
+  const bodyHtml = `<p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">No rush if you are still finalising flights — reply to this email or WhatsApp us and we will send payment options that suit you.</p>
+    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Thank you for travelling with Golf Sol Ireland · <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">Dashboard</a> · <a href="tel:+353874464766" style="color:${gs.green};font-weight:600;">+353 87 446 4766</a></p>`
 
   const htmlRaw = buildGsolTransactionalEmail({
     documentTitle: subject,
@@ -159,9 +160,9 @@ export const buildTransferRefundEmail = (booking, detail) => {
       ? `We have processed a full card refund for your Costa transfer (${route}). Amount refunded this step: ${amt}.`
       : `We have processed a partial card refund for your Costa transfer (${route}). Amount refunded this step: ${amt}.`
 
-  const bodyHtml = `<p style="margin:0 0 14px 0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">Total refunded to your card for this transfer (including any earlier steps): <strong style="color:#0f5224;">${cum}</strong>.</p>
-    <p style="margin:0 0 14px 0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">A <strong>PDF confirmation</strong> is attached for your records. Timing on your bank statement can vary — typically a few business days.</p>
-    <p style="margin:0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.75;color:#163a13;">Questions? <a href="tel:+353874464766" style="color:#0f5224;font-weight:600;">+353 87 446 4766</a> · <a href="${site}/dashboard" style="color:#0f5224;font-weight:600;">Your dashboard</a></p>`
+  const bodyHtml = `<p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Total refunded to your card for this transfer (including any earlier steps): <strong style="color:${gs.green};">${cum}</strong>.</p>
+    <p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">A <strong>PDF confirmation</strong> is attached for your records. Timing on your bank statement can vary — typically a few business days.</p>
+    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Questions? <a href="tel:+353874464766" style="color:${gs.green};font-weight:600;">+353 87 446 4766</a> · <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">Your dashboard</a></p>`
 
   const htmlRaw = buildGsolTransactionalEmail({
     documentTitle: subject,

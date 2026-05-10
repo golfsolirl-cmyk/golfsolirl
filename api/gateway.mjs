@@ -3,6 +3,8 @@
  * vercel.json rewrites each public path to /api/gateway?r=...
  */
 import { handleEnquirySubmission, handleTermsEmailRequest } from '../server/enquiry-service.mjs'
+import { getFormEmailPreviewHtml } from '../server/form-email-browser-preview.mjs'
+import { getBrandedSampleDocumentPreviewHtml } from '../server/branded-sample-document-html.mjs'
 import { handleMagicLinkRequest } from '../server/magic-link-service.mjs'
 import { handleSyncPortalProfile } from '../server/sync-portal-profile-service.mjs'
 import { handlePortalContactSetup } from '../server/portal-contact-setup-service.mjs'
@@ -114,6 +116,53 @@ export default async function handler(req, res) {
         const payload = rawBody ? JSON.parse(rawBody) : {}
         const result = await handleTermsEmailRequest(payload, process.env)
         jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'email-preview-html': {
+        if (req.method !== 'GET') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        try {
+          const host = String(req.headers['x-forwarded-host'] || req.headers.host || 'localhost')
+            .split(',')[0]
+            ?.trim()
+          const protoRaw = String(req.headers['x-forwarded-proto'] || 'https')
+            .split(',')[0]
+            ?.trim()
+          const safeProto = protoRaw === 'http' || protoRaw === 'https' ? protoRaw : 'https'
+          const urlPath = typeof req.url === 'string' ? req.url : '/'
+          const u = new URL(urlPath, `${safeProto}://${host}`)
+          const t = u.searchParams.get('t')?.trim() || 'enquiry-customer'
+          const origin = `${safeProto}://${host}`
+          const html = getFormEmailPreviewHtml(t, origin)
+          res.statusCode = 200
+          res.setHeader('Content-Type', 'text/html; charset=utf-8')
+          res.setHeader('Cache-Control', 'no-store')
+          res.end(html)
+        } catch (e) {
+          const message = e instanceof Error ? e.message : 'Bad request'
+          jsonEnd(res, 400, { message })
+        }
+        return
+      }
+
+      case 'sample-branded-document-html': {
+        if (req.method !== 'GET') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        try {
+          const html = getBrandedSampleDocumentPreviewHtml()
+          res.statusCode = 200
+          res.setHeader('Content-Type', 'text/html; charset=utf-8')
+          res.setHeader('Cache-Control', 'no-store')
+          res.end(html)
+        } catch (e) {
+          const message = e instanceof Error ? e.message : 'Bad request'
+          jsonEnd(res, 400, { message })
+        }
         return
       }
 

@@ -124,6 +124,56 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
       }
     })
 
+    server.middlewares.use('/api/email-preview-html', async (request, response) => {
+      if (request.method !== 'GET') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const host = (request.headers.host || 'localhost:5173').toString().split(',')[0]?.trim() || 'localhost:5173'
+        const url = new URL(request.url || '/', `http://${host}`)
+        const t = url.searchParams.get('t')?.trim() || 'enquiry-customer'
+        const origin = `http://${host}`
+        const { getFormEmailPreviewHtml } = await import('./server/form-email-browser-preview.mjs')
+        const html = getFormEmailPreviewHtml(t, origin)
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'text/html; charset=utf-8')
+        response.setHeader('Cache-Control', 'no-store')
+        response.end(html)
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Bad request'
+        response.statusCode = 400
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/sample-branded-document-html', async (request, response) => {
+      if (request.method !== 'GET') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const { getBrandedSampleDocumentPreviewHtml } = await import('./server/branded-sample-document-html.mjs')
+        const html = getBrandedSampleDocumentPreviewHtml()
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'text/html; charset=utf-8')
+        response.setHeader('Cache-Control', 'no-store')
+        response.end(html)
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Bad request'
+        response.statusCode = 400
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
     server.middlewares.use('/api/sync-portal-profile', async (request, response) => {
       if (request.method !== 'POST') {
         response.statusCode = 405

@@ -9,6 +9,11 @@ export const socialContentIds = {
   bsky: 'gsol-social-bsky'
 }
 
+/** Legal — company no. mirrors `src/lib/business-cards-config.ts` businessCardContact.companyRegIreland */
+export const gsolCompanyLegal = {
+  companyRegistrationNumber: '814210'
+}
+
 /** Brand lines — align with `src/data/site-content.ts` companyContact + footer. */
 export const gsolEmailBrand = {
   phoneDisplay: '087 446 4766',

@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { requireAdminFromBearer } from './auth-verify-admin.mjs'
+import { emailFonts, gs } from './branded-email-shell.mjs'
 import { buildGsolTransactionalEmail, finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
 import { processDueBalanceReminders } from './transfer-payment-service.mjs'
 
@@ -47,8 +48,8 @@ const sendNoDriverEmail = async (booking, source, env) => {
       ? 'We are sorry — we were not able to assign a driver to your Costa transfer request within two hours. Please try another time or message the team and we will help you plan alternatives.'
       : 'We are sorry — we are not able to cover this transfer run with our driver network right now. Please try another time or message the team from your dashboard and we will help you plan alternatives.'
 
-  const bodyHtml = `<p style="margin:0 0 12px 0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.7;color:#163a13;">Requested route:<br /><strong>${esc(booking.pickup_label)}</strong> → <strong>${esc(booking.dropoff_label)}</strong></p>
-    <p style="margin:0 0 12px 0;font-family:'DM Sans',Arial,sans-serif;font-size:15px;line-height:1.7;color:#163a13;">You can submit a new request from your <a href="${site}/dashboard">client dashboard</a> whenever suits.</p>`
+  const bodyHtml = `<p style="margin:0 0 12px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.7;color:${gs.text};">Requested route:<br /><strong>${esc(booking.pickup_label)}</strong> → <strong>${esc(booking.dropoff_label)}</strong></p>
+    <p style="margin:0 0 12px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.7;color:${gs.text};">You can submit a new request from your <a href="${site}/dashboard" style="color:${gs.green};font-weight:800;text-decoration:none;">client dashboard</a> whenever suits.</p>`
 
   const htmlRaw = buildGsolTransactionalEmail({
     documentTitle: subject,

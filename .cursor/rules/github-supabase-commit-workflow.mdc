@@ -1,0 +1,44 @@
+---
+description: GitHub push restrictions, Supabase migration/commit hygiene, and MCP/API call budgeting
+globs:
+alwaysApply: true
+---
+# GitHub restrictions, Supabase commits, and tool-call budget
+
+Use this when preparing **commits**, **pushes**, **PRs**, or **Supabase schema** work so the repo stays mergeable and automation does not hit limits.
+
+## Tool and MCP call budget (~12 server round trips)
+
+GitHub, Supabase MCP, and similar integrations often enforce **low rate limits** or **strict quotas** per minute or per session.
+
+1. **Batch work**: Prefer one consolidated read (e.g. list migrations, then open the single file you need) instead of many sequential small calls.
+2. **Plan before calling**: Decide the query or file path first; avoid discover-then-discover loops.
+3. **Cap exploration**: Unless the user explicitly asks for a full audit, treat **~12** distinct server/MCP/tool round trips as a soft ceiling for a single goal; if more are needed, summarize progress and ask whether to continue.
+4. **On failure**: If a push or API returns **429** / **secondary rate limit** / **abuse detection**, **back off** (wait, reduce concurrency); do not retry the same hammering pattern.
+
+## GitHub restrictions that block or complicate commits
+
+| Situation | What to do |
+|-----------|------------|
+| **Branch protection** (e.g. `main` requires PR + checks) | Commit on a **feature branch**, open a **PR**; do not assume direct push to default branch works. |
+| **Secret scanning / push protection** | Remove secrets from commits; rotate keys if exposed; use **env / secrets manager**, not repo files. |
+| **File / repo size** | Avoid committing binaries > **~50–100MB**; use Git LFS or host assets elsewhere if needed. |
+| **Required status checks** | CI must pass or failures must be understood before merge; do not merge “to unblock” without fixing or waiving per team policy. |
+| **Auth / SSO** | If push is rejected with auth errors, the human fixes credentials/SSH/HTTPS token; the agent does not store tokens in the repo. |
+
+If `git push` fails: **read the full error**, fix the root cause once, then push again — avoid identical retries in a tight loop.
+
+## Supabase: cleanup and commit hygiene
+
+1. **Migrations are the contract**: Ship intentional DDL in **`supabase/migrations/`** with a clear timestamp prefix; one logical change per migration when practical.
+2. **Do not commit secrets**: No `SUPABASE_SERVICE_ROLE_KEY`, database passwords, or production URLs with embedded credentials in tracked files.
+3. **Ad-hoc SQL scripts**: Files like `supabase/run-in-sql-editor-*.sql` are often **manual / one-off**; if they duplicate migration logic, prefer **migrations** as source of truth and keep scripts documented or trimmed to avoid drift.
+4. **Local-only noise**: Do not commit ephemeral paths, personal machine dumps, or `.env` unless the project explicitly uses a committed **example** (e.g. `.env.example` only).
+5. **Destructive operations**: Do not instruct or run **`supabase db reset`**, remote **truncate**, or **drop** against production without explicit user confirmation and a backup story.
+6. **RLS and roles**: When changing policies or JWT-dependent SQL, align with existing migrations and test paths; large policy rewrites belong in a **named migration**, not only in chat.
+
+## Agent behaviour summary
+
+- Prefer **small, reviewable commits** and **PRs** when GitHub restricts direct pushes.
+- Keep Supabase changes **migration-first**, **secret-free**, and **low-noise** in git.
+- Treat **server/MCP calls as a scarce resource**: plan, batch, and stop near **~12** round trips per task unless the user expands scope.
