@@ -1,8 +1,11 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { isCheckoutSessionPaid } from '../server/stripe-webhook-service.mjs'
-import { clientOwnsTransferBooking, transferBookingHasFullRefund } from '../server/transfer-checkout-service.mjs'
+import {
+  clientOwnsTransferBooking,
+  isCheckoutSessionPaid,
+  transferBookingHasFullRefund
+} from '../server/transfer-payment-guards.mjs'
 
 const unusedAdmin = {
   from() {

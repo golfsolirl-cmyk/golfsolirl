@@ -2,7 +2,9 @@ import Stripe from 'stripe'
 
 import { createClient } from '@supabase/supabase-js'
 
-import { transferBookingHasFullRefund } from './transfer-checkout-service.mjs'
+import { isCheckoutSessionPaid, transferBookingHasFullRefund } from './transfer-payment-guards.mjs'
+
+export { isCheckoutSessionPaid } from './transfer-payment-guards.mjs'
 
 
 
@@ -63,11 +65,6 @@ const throwWebhookRetry = (message) => {
   err.statusCode = 500
   throw err
 }
-
-export const isCheckoutSessionPaid = (session) =>
-  String(session?.payment_status ?? '').trim().toLowerCase() === 'paid'
-
-
 
 /**
 

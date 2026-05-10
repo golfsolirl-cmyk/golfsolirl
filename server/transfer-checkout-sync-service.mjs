@@ -1,6 +1,6 @@
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
-import { clientOwnsTransferBooking, transferBookingHasFullRefund } from './transfer-checkout-service.mjs'
+import { clientOwnsTransferBooking, transferBookingHasFullRefund } from './transfer-payment-guards.mjs'
 import { markTransferBookingPaid } from './stripe-webhook-service.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
