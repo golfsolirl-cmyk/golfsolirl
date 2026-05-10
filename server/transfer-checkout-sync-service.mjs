@@ -1,6 +1,6 @@
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
-import { clientOwnsTransferBooking } from './transfer-checkout-service.mjs'
+import { clientOwnsTransferBooking, transferBookingHasFullRefund } from './transfer-payment-guards.mjs'
 import { markTransferBookingPaid } from './stripe-webhook-service.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
@@ -94,7 +94,7 @@ export const handleTransferCheckoutSync = async (body, env = process.env, meta =
 
   const { data: booking, error: bErr } = await admin
     .from('transfer_bookings')
-    .select('id, client_user_id, client_email, enquiry_reference_id, payment_status')
+    .select('id, client_user_id, client_email, enquiry_reference_id, payment_status, transfer_refund_status')
     .eq('id', bookingId)
     .maybeSingle()
 
@@ -108,6 +108,9 @@ export const handleTransferCheckoutSync = async (body, env = process.env, meta =
   const owns = await clientOwnsTransferBooking(admin, user.id, userEmail, booking)
   if (!owns) {
     throwStatus('You do not have access to this transfer.', 403)
+  }
+  if (transferBookingHasFullRefund(booking)) {
+    throwStatus('This transfer has already been fully refunded. Contact Golf Sol Ireland before making another payment.', 400)
   }
 
   const paymentIntent =

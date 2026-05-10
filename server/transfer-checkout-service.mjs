@@ -1,5 +1,8 @@
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
+import { clientOwnsTransferBooking, transferBookingHasFullRefund } from './transfer-payment-guards.mjs'
+
+export { clientOwnsTransferBooking, transferBookingHasFullRefund } from './transfer-payment-guards.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
   const e = new Error(message)
@@ -38,57 +41,6 @@ const getTransferCheckoutOrigin = (env) => {
     }
   }
   return getSiteOrigin(env)
-}
-
-/**
- * @param {import('@supabase/supabase-js').SupabaseClient} admin
- * @param {string} userId
- * @param {string} userEmail
- * @param {Record<string, unknown>} booking
- */
-export const clientOwnsTransferBooking = async (admin, userId, userEmail, booking) => {
-  if (booking.client_user_id === userId) {
-    return true
-  }
-  const uEmail = (userEmail ?? '').trim().toLowerCase()
-  const rowEmail = String(booking.client_email ?? '')
-    .trim()
-    .toLowerCase()
-  if (uEmail && rowEmail === uEmail) {
-    return true
-  }
-
-  const enqRef =
-    typeof booking.enquiry_reference_id === 'string' ? booking.enquiry_reference_id.trim() : ''
-  if (!enqRef) {
-    return false
-  }
-
-  const { data: profile } = await admin
-    .from('profiles')
-    .select('account_reference_id')
-    .eq('id', userId)
-    .maybeSingle()
-
-  const accountRef =
-    typeof profile?.account_reference_id === 'string' ? profile.account_reference_id.trim() : ''
-  if (accountRef && accountRef === enqRef) {
-    return true
-  }
-
-  if (uEmail) {
-    const { data: enqMatch } = await admin
-      .from('enquiries')
-      .select('id')
-      .eq('reference_id', enqRef)
-      .ilike('email', uEmail)
-      .maybeSingle()
-    if (enqMatch?.id) {
-      return true
-    }
-  }
-
-  return false
 }
 
 /**
@@ -135,7 +87,7 @@ export const handleTransferStripeCheckout = async (body, env = process.env, meta
   const { data: booking, error: bErr } = await admin
     .from('transfer_bookings')
     .select(
-      'id, client_user_id, client_email, enquiry_reference_id, pickup_label, dropoff_label, admin_price_eur, payment_status, deposit_percent'
+      'id, client_user_id, client_email, enquiry_reference_id, pickup_label, dropoff_label, admin_price_eur, payment_status, deposit_percent, transfer_refund_status'
     )
     .eq('id', bookingId)
     .maybeSingle()
@@ -160,6 +112,9 @@ export const handleTransferStripeCheckout = async (body, env = process.env, meta
   const paySt = String(booking.payment_status ?? 'unpaid').toLowerCase()
   if (paySt === 'paid') {
     throwStatus('This transfer is already marked as paid.', 400)
+  }
+  if (transferBookingHasFullRefund(booking)) {
+    throwStatus('This transfer has already been fully refunded. Contact Golf Sol Ireland before making another payment.', 400)
   }
 
   let amountEur = Math.round(gross * 100) / 100

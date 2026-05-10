@@ -5,7 +5,10 @@
 export const businessCardPerson = {
   name: 'Martin Kelly',
   /** Optional strapline under the name */
-  tagline: 'Golf Sol Ireland'
+  tagline: 'Golf Sol Ireland',
+  roleTitle: 'Founder & golf travel specialist',
+  premiumDescriptor: 'Bespoke Costa del Sol golf escapes for Irish groups',
+  corridorLine: 'Ireland · Malaga · Costa del Sol'
 } as const
 
 export const businessCardContact = {

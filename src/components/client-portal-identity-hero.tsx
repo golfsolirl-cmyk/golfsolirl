@@ -15,6 +15,7 @@ export type ClientPortalTransferHeroRow = {
   readonly admin_price_vat_treatment?: string | null
   readonly deposit_percent?: number | null
   readonly payment_status?: string | null
+  readonly transfer_refund_status?: string | null
   readonly booking_source?: string | null
   readonly package_build_id?: string | null
   readonly enquiry_reference_id?: string | null
@@ -30,6 +31,10 @@ export function transferPayableAmountEur(t: ClientPortalTransferHeroRow): number
     return null
   }
   const pay = (t.payment_status ?? 'unpaid').toLowerCase()
+  const refund = (t.transfer_refund_status ?? 'none').toLowerCase()
+  if (refund === 'full') {
+    return null
+  }
   if (pay === 'paid') {
     return null
   }
@@ -152,9 +157,10 @@ export function ClientPortalIdentityHero(props: {
             <ul className="mt-4 space-y-3">
               {props.transfers.slice(0, 5).map((t) => {
                 const pay = (t.payment_status ?? 'unpaid').toLowerCase()
+                const refund = (t.transfer_refund_status ?? 'none').toLowerCase()
                 const isPaid = pay === 'paid'
                 const payLabel =
-                  pay === 'paid' ? 'Paid' : pay === 'deposit' ? 'Deposit' : 'Unpaid'
+                  refund === 'full' ? 'Refunded' : pay === 'paid' ? 'Paid' : pay === 'deposit' ? 'Deposit' : 'Unpaid'
                 const when = t.scheduled_at
                   ? new Date(t.scheduled_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
                   : 'Timing TBC'
