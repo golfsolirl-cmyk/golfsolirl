@@ -2,6 +2,8 @@ import Stripe from 'stripe'
 
 import { createClient } from '@supabase/supabase-js'
 
+import { transferBookingHasFullRefund } from './transfer-checkout-service.mjs'
+
 
 
 /**
@@ -56,6 +58,15 @@ const markPortalInvoicePaid = async (supabase, invoiceId, paymentIntent, paidAt)
 
 }
 
+const throwWebhookRetry = (message) => {
+  const err = new Error(message)
+  err.statusCode = 500
+  throw err
+}
+
+export const isCheckoutSessionPaid = (session) =>
+  String(session?.payment_status ?? '').trim().toLowerCase() === 'paid'
+
 
 
 /**
@@ -78,13 +89,17 @@ export const markTransferBookingPaid = async (supabase, bookingId, session, paym
 
     .from('transfer_bookings')
 
-    .select('id, payment_status')
+    .select('id, payment_status, transfer_refund_status')
 
     .eq('id', bookingId)
 
     .maybeSingle()
 
-  if (String(existingRow?.payment_status ?? '').toLowerCase() === 'paid') {
+  if (!existingRow?.id || transferBookingHasFullRefund(existingRow)) {
+    return false
+  }
+
+  if (String(existingRow.payment_status ?? '').toLowerCase() === 'paid') {
 
     return true
 
@@ -234,7 +249,7 @@ export const handleStripeWebhook = async (rawBody, signatureHeader, env = proces
 
 
 
-  if (event.type === 'checkout.session.completed') {
+  if (event.type === 'checkout.session.completed' || event.type === 'checkout.session.async_payment_succeeded') {
 
     const session = /** @type {import('stripe').Stripe.Checkout.Session} */ (event.data.object)
 
@@ -302,6 +317,10 @@ export const handleStripeWebhook = async (rawBody, signatureHeader, env = proces
 
 
 
+    if (!isCheckoutSessionPaid(session)) {
+      return { received: true, ignored: 'checkout_session_not_paid', paymentStatus: session.payment_status ?? null }
+    }
+
     const paidAt = new Date().toISOString()
 
     const paymentKind = typeof meta.payment_kind === 'string' ? meta.payment_kind : null
@@ -310,11 +329,17 @@ export const handleStripeWebhook = async (rawBody, signatureHeader, env = proces
 
     if (metaPortal) {
 
-      await markPortalInvoicePaid(supabase, metaPortal, paymentIntent, paidAt)
+      const ok = await markPortalInvoicePaid(supabase, metaPortal, paymentIntent, paidAt)
+      if (!ok) {
+        throwWebhookRetry(`No portal invoice updated for paid Stripe Checkout session ${session.id}.`)
+      }
 
     } else if (metaTransfer) {
 
-      await markTransferBookingPaid(supabase, metaTransfer, session, paymentIntent, paymentKind)
+      const ok = await markTransferBookingPaid(supabase, metaTransfer, session, paymentIntent, paymentKind)
+      if (!ok) {
+        throwWebhookRetry(`No transfer booking updated for paid Stripe Checkout session ${session.id}.`)
+      }
 
     } else if (cref) {
 
@@ -322,7 +347,10 @@ export const handleStripeWebhook = async (rawBody, signatureHeader, env = proces
 
       if (!invOk) {
 
-        await markTransferBookingPaid(supabase, cref, session, paymentIntent, paymentKind)
+        const transferOk = await markTransferBookingPaid(supabase, cref, session, paymentIntent, paymentKind)
+        if (!transferOk) {
+          console.error(`[stripe-webhook] no matching invoice or transfer for Checkout session ${session.id}`)
+        }
 
       }
 

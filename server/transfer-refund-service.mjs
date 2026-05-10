@@ -178,7 +178,7 @@ export const handleTransferRefund = async (body, env = process.env, meta = {}) =
   }
 
   if (isFullyRefunded) {
-    patch.payment_status = 'unpaid'
+    patch.payment_status = 'paid'
     patch.balance_remind_at = null
     patch.balance_remind_sent_at = null
   }

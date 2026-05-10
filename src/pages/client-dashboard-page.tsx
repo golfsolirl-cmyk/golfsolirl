@@ -195,6 +195,7 @@ type ClientPortalTransferBookingRow = {
   admin_price_vat_treatment?: string | null
   deposit_percent?: number | null
   payment_status?: string | null
+  transfer_refund_status?: string | null
   booking_source?: string | null
   package_build_id?: string | null
   enquiry_reference_id?: string | null
@@ -329,7 +330,7 @@ export function ClientDashboardPage() {
     const tbRes = await supabase
       .from('transfer_bookings')
       .select(
-        'id, pickup_label, dropoff_label, status, scheduled_at, admin_price_eur, admin_price_vat_treatment, deposit_percent, payment_status, booking_source, package_build_id, enquiry_reference_id, created_at, updated_at'
+        'id, pickup_label, dropoff_label, status, scheduled_at, admin_price_eur, admin_price_vat_treatment, deposit_percent, payment_status, transfer_refund_status, booking_source, package_build_id, enquiry_reference_id, created_at, updated_at'
       )
       .or(orTransfer.join(','))
       .order('created_at', { ascending: false })

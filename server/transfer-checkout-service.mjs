@@ -50,6 +50,12 @@ export const clientOwnsTransferBooking = async (admin, userId, userEmail, bookin
   if (booking.client_user_id === userId) {
     return true
   }
+
+  const hasAssignedClient = typeof booking.client_user_id === 'string' && booking.client_user_id.trim() !== ''
+  if (hasAssignedClient) {
+    return false
+  }
+
   const uEmail = (userEmail ?? '').trim().toLowerCase()
   const rowEmail = String(booking.client_email ?? '')
     .trim()
@@ -90,6 +96,9 @@ export const clientOwnsTransferBooking = async (admin, userId, userEmail, bookin
 
   return false
 }
+
+export const transferBookingHasFullRefund = (booking) =>
+  String(booking?.transfer_refund_status ?? 'none').trim().toLowerCase() === 'full'
 
 /**
  * Authenticated client: Stripe Checkout for one transfer (quoted EUR from admin).
@@ -135,7 +144,7 @@ export const handleTransferStripeCheckout = async (body, env = process.env, meta
   const { data: booking, error: bErr } = await admin
     .from('transfer_bookings')
     .select(
-      'id, client_user_id, client_email, enquiry_reference_id, pickup_label, dropoff_label, admin_price_eur, payment_status, deposit_percent'
+      'id, client_user_id, client_email, enquiry_reference_id, pickup_label, dropoff_label, admin_price_eur, payment_status, deposit_percent, transfer_refund_status'
     )
     .eq('id', bookingId)
     .maybeSingle()
@@ -160,6 +169,9 @@ export const handleTransferStripeCheckout = async (body, env = process.env, meta
   const paySt = String(booking.payment_status ?? 'unpaid').toLowerCase()
   if (paySt === 'paid') {
     throwStatus('This transfer is already marked as paid.', 400)
+  }
+  if (transferBookingHasFullRefund(booking)) {
+    throwStatus('This transfer has already been fully refunded. Contact Golf Sol Ireland before making another payment.', 400)
   }
 
   let amountEur = Math.round(gross * 100) / 100
