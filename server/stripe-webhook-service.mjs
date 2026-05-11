@@ -1,6 +1,14 @@
 import Stripe from 'stripe'
 
 import { createClient } from '@supabase/supabase-js'
+import {
+  balanceAmountEur,
+  balanceDueReminderIso,
+  depositAmountEur,
+  isTransferFullUpfront,
+  normalizedDepositPercent
+} from './transfer-payment-amounts.mjs'
+import { publishTransferPortalPaymentReceipt } from './transfer-portal-publish-payment-pdf.mjs'
 
 
 
@@ -73,99 +81,161 @@ const markPortalInvoicePaid = async (supabase, invoiceId, paymentIntent, paidAt)
  */
 
 export const markTransferBookingPaid = async (supabase, bookingId, session, paymentIntent, paymentKind) => {
-
-  const { data: existingRow } = await supabase
-
+  const { data: row, error: loadErr } = await supabase
     .from('transfer_bookings')
-
-    .select('id, payment_status')
-
+    .select(
+      'id, payment_status, admin_price_eur, deposit_percent, scheduled_at, next_available_driver, stripe_payment_intent_id, stripe_checkout_session_id'
+    )
     .eq('id', bookingId)
-
     .maybeSingle()
 
-  if (String(existingRow?.payment_status ?? '').toLowerCase() === 'paid') {
-
-    return true
-
+  if (loadErr) {
+    const err = new Error(loadErr.message)
+    err.statusCode = 500
+    throw err
+  }
+  if (!row?.id) {
+    return false
   }
 
+  const st = String(row.payment_status ?? 'unpaid').toLowerCase()
+  if (st === 'paid') {
+    return true
+  }
+
+  const kind = String(paymentKind ?? 'full').toLowerCase()
   const now = new Date().toISOString()
+  const sessionId = typeof session?.id === 'string' ? session.id : null
+  const meta = { checkout_session_id: sessionId, stripe_payment_intent_id: paymentIntent, payment_kind: kind }
 
-  const { error, data } = await supabase
+  if (kind === 'deposit') {
+    if (st !== 'unpaid') {
+      return true
+    }
+    if (isTransferFullUpfront(row)) {
+      console.warn('[stripe-webhook] deposit checkout for full-upfront transfer', bookingId)
+      return true
+    }
+    const remindAt = balanceDueReminderIso(row.scheduled_at)
+    const { error, data } = await supabase
+      .from('transfer_bookings')
+      .update({
+        payment_status: 'deposit',
+        balance_remind_at: remindAt,
+        balance_remind_sent_at: null,
+        updated_at: now,
+        stripe_payment_intent_id: paymentIntent ?? null,
+        stripe_checkout_session_id: sessionId
+      })
+      .eq('id', bookingId)
+      .eq('payment_status', 'unpaid')
+      .select('id')
+      .maybeSingle()
 
-    .from('transfer_bookings')
-
-    .update({
-
-      payment_status: 'paid',
-
-      balance_remind_at: null,
-
-      balance_remind_sent_at: null,
-
-      updated_at: now,
-
-      stripe_payment_intent_id: paymentIntent ?? null,
-
-      stripe_checkout_session_id: typeof session?.id === 'string' ? session.id : null
-
+    if (error) {
+      const err = new Error(error.message)
+      err.statusCode = 500
+      throw err
+    }
+    if (!data?.id) {
+      return true
+    }
+    const { error: evErr } = await supabase.from('transfer_booking_events').insert({
+      booking_id: bookingId,
+      actor_kind: 'system',
+      action: 'stripe_transfer_deposit_paid',
+      meta
     })
+    if (evErr) {
+      console.error('[stripe-webhook] transfer_booking_events insert', evErr.message)
+    }
+    try {
+      const gross = Number(row.admin_price_eur)
+      const pct = normalizedDepositPercent(row.deposit_percent)
+      const fallback = Number.isFinite(gross) && gross > 0 ? depositAmountEur(gross, pct) : 0
+      const cents = /** @type {unknown} */ (session.amount_total)
+      const fromStripe = typeof cents === 'number' && Number.isFinite(cents) ? cents / 100 : null
+      const amountEur = fromStripe != null && fromStripe > 0 ? Math.round(fromStripe * 100) / 100 : fallback
+      const r = await publishTransferPortalPaymentReceipt(supabase, bookingId, {
+        receiptKind: 'deposit',
+        amountEur,
+        stripeSessionId: sessionId,
+        stripePaymentIntentId: paymentIntent
+      })
+      if (!r.ok) {
+        console.error('[stripe-webhook] portal deposit receipt pdf', r.reason, r.message ?? '')
+      }
+    } catch (e) {
+      console.error('[stripe-webhook] portal deposit receipt pdf', e)
+    }
+    return true
+  }
 
-    .eq('id', bookingId)
+  if (kind === 'balance' && st !== 'deposit') {
+    console.warn('[stripe-webhook] balance checkout but booking not on deposit', bookingId, st)
+    return false
+  }
 
-    .select('id')
+  const paidPatch = {
+    payment_status: 'paid',
+    balance_remind_at: null,
+    balance_remind_sent_at: null,
+    updated_at: now,
+    stripe_payment_intent_id: paymentIntent ?? null,
+    stripe_checkout_session_id: sessionId
+  }
 
-    .maybeSingle()
+  const q =
+    kind === 'balance'
+      ? supabase.from('transfer_bookings').update(paidPatch).eq('id', bookingId).eq('payment_status', 'deposit')
+      : supabase.from('transfer_bookings').update(paidPatch).eq('id', bookingId).in('payment_status', ['unpaid', 'deposit'])
 
-
+  const { error, data } = await q.select('id').maybeSingle()
 
   if (error) {
-
     const err = new Error(error.message)
-
     err.statusCode = 500
-
     throw err
-
   }
 
   if (!data?.id) {
-
     return false
-
   }
 
-
-
   const { error: evErr } = await supabase.from('transfer_booking_events').insert({
-
     booking_id: bookingId,
-
     actor_kind: 'system',
-
     action: 'stripe_transfer_checkout_paid',
-
-    meta: {
-
-      checkout_session_id: session.id,
-
-      stripe_payment_intent_id: paymentIntent,
-
-      payment_kind: paymentKind
-
-    }
-
+    meta: { ...meta, deposit_percent_snapshot: normalizedDepositPercent(row.deposit_percent) }
   })
-
   if (evErr) {
-
     console.error('[stripe-webhook] transfer_booking_events insert', evErr.message)
+  }
 
+  try {
+    const gross = Number(row.admin_price_eur)
+    const pct = normalizedDepositPercent(row.deposit_percent)
+    let fallback = Number.isFinite(gross) && gross > 0 ? gross : 0
+    if (kind === 'balance' && Number.isFinite(gross) && gross > 0) {
+      fallback = balanceAmountEur(gross, pct)
+    }
+    const cents = /** @type {unknown} */ (session.amount_total)
+    const fromStripe = typeof cents === 'number' && Number.isFinite(cents) ? cents / 100 : null
+    const amountEur = fromStripe != null && fromStripe > 0 ? Math.round(fromStripe * 100) / 100 : Math.round(fallback * 100) / 100
+    const r = await publishTransferPortalPaymentReceipt(supabase, bookingId, {
+      receiptKind: 'paid_in_full',
+      amountEur,
+      stripeSessionId: sessionId,
+      stripePaymentIntentId: paymentIntent
+    })
+    if (!r.ok) {
+      console.error('[stripe-webhook] portal payment confirmation pdf', r.reason, r.message ?? '')
+    }
+  } catch (e) {
+    console.error('[stripe-webhook] portal payment confirmation pdf', e)
   }
 
   return true
-
 }
 
 

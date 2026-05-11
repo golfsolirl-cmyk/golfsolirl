@@ -1,15 +1,22 @@
+import { UserRound } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
-import { AdminAccountTransfersHub } from '../components/admin-account-transfers-hub'
+import { PortalInterestCategoryGlyph } from '../components/portal-interest-category-glyph'
+import { AdminOperationsHubHero } from '../components/admin-operations-hub-hero'
+import { AdminOperationsSectionShell } from '../components/admin-operations-section-shell'
+import {
+  AdminAccountTransfersHub,
+  type AdminAccountLookupSeed
+} from '../components/admin-account-transfers-hub'
 import { AdminDriverCalendarPanel } from '../components/admin-driver-calendar-panel'
 import { AdminTransferPipeline } from '../components/admin-transfer-pipeline'
 import { PortalClientDataCard } from '../components/portal-client-data-card'
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
-import { buildClientDataCardSections } from '../lib/client-data-card'
+import { buildClientDataCardSections, type AccountDeskDisplay } from '../lib/client-data-card'
+import { contactInfo } from '../pages/golf-experience/data/copy'
+import { formatDateTimeDdMmYy } from '../lib/date-format-ie'
 import { LuxuryButton } from '../components/ui/button'
 import { fetchPackageBuildsAdminList, isMissingClientDetailsColumnError } from '../lib/fetch-package-builds'
 import {
-  buildManualAdminPackageConfig,
-  buildSourceForAdminKind,
   buildWebsiteFormAdminQuote,
   emptyTripDetailsForm,
   formatWebsiteFormFieldValueForDisplay,
@@ -67,6 +74,7 @@ import { cx } from '../lib/utils'
 import {
   isMissingPortalInterestTicketsError,
   PORTAL_INTEREST_LABELS,
+  type PortalInterestCategory,
   type PortalInterestTicketMessageRow,
   type PortalInterestTicketRow
 } from '../lib/portal-interest-tickets'
@@ -92,6 +100,21 @@ type AdminInterestTicketRow = PortalInterestTicketRow & {
   client_phone: string | null
   client_account_ref: string | null
 }
+
+const ADMIN_OPERATIONS_DESK_CARD: AccountDeskDisplay = {
+  sectionTitle: 'Admin',
+  fullName: 'Greg McDonald',
+  phone: contactInfo.phoneDisplay
+}
+
+const MANUAL_OFFER_PORTAL_CATEGORY: Record<AdminManualPackageKind, PortalInterestCategory> = {
+  transfer: 'transfers',
+  golf: 'golf_courses',
+  hotel: 'hotels'
+}
+
+/** Set `VITE_SHOW_ADMIN_WORKSPACE=true` in `.env.local` to show workflow, builders, and trip workspace (default: hidden everywhere). */
+const SHOW_ADMIN_WORKSPACE_UI = import.meta.env.VITE_SHOW_ADMIN_WORKSPACE === 'true'
 
 type StoredFormPayload = { form: string; fields: Record<string, string> }
 
@@ -543,12 +566,12 @@ export function AdminDashboardPage() {
   const [enquiriesSectionVisible, setEnquiriesSectionVisible] = useState(true)
   const [adminShowTransferBuilder, setAdminShowTransferBuilder] = useState(false)
   const [adminShowManualProposal, setAdminShowManualProposal] = useState(false)
-  const [adminShowManualClients, setAdminShowManualClients] = useState(false)
   const [enquiryDeletingId, setEnquiryDeletingId] = useState<string | null>(null)
   const [enquiryDeletingAll, setEnquiryDeletingAll] = useState(false)
   const [enquiryDeleteMessage, setEnquiryDeleteMessage] = useState<string | null>(null)
   const [enquirySearchQuery, setEnquirySearchQuery] = useState('')
   const [selectedEnquiryDetailRef, setSelectedEnquiryDetailRef] = useState<string | null>(null)
+  const [accountLookupSeedFromTable, setAccountLookupSeedFromTable] = useState<AdminAccountLookupSeed | null>(null)
   const [portalInvoiceAmountInput, setPortalInvoiceAmountInput] = useState('')
   const [portalInvoiceSendBusy, setPortalInvoiceSendBusy] = useState(false)
   const [portalInvoiceSendMessage, setPortalInvoiceSendMessage] = useState<string | null>(null)
@@ -918,6 +941,11 @@ export function AdminDashboardPage() {
   const openInterestTicketCount = useMemo(
     () => interestAdminTickets.filter((t) => t.status === 'open').length,
     [interestAdminTickets]
+  )
+
+  const selectedAdminInterestTicket = useMemo(
+    () => interestAdminTickets.find((t) => t.id === selectedAdminTicketId) ?? null,
+    [interestAdminTickets, selectedAdminTicketId]
   )
 
   useEffect(() => {
@@ -1466,69 +1494,56 @@ export function AdminDashboardPage() {
       return
     }
 
-    const supabase = getSupabaseBrowserClient()
-    if (!supabase) {
-      setManualOfferMessage('Supabase is not configured.')
+    if (!session?.access_token) {
+      setManualOfferMessage('Session expired. Sign in again.')
       return
     }
 
     setManualOfferBusy(true)
-
-    const { data: prof, error: profileErr } = await supabase.from('profiles').select('id').ilike('email', email).maybeSingle()
-
-    if (profileErr) {
-      setManualOfferBusy(false)
-      setManualOfferMessage(profileErr.message)
-      return
-    }
-
-    if (!prof?.id) {
-      setManualOfferBusy(false)
-      setManualOfferMessage('No profile with that email — the client must sign in once with this address first.')
-      return
-    }
-
-    const config = buildManualAdminPackageConfig({
-      kind: manualOfferKind,
-      title,
-      summary,
-      priceEur: price
-    })
-
-    const source = buildSourceForAdminKind(manualOfferKind)
-
-    const { data: inserted, error: insertErr } = await supabase
-      .from('package_builds')
-      .insert({
-        owner_id: prof.id,
-        source,
-        label: title,
-        config,
-        client_details: {},
-        updated_at: new Date().toISOString()
+    try {
+      const res = await fetch('/api/package-build-admin-publish', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          clientEmail: email,
+          kind: manualOfferKind,
+          title,
+          summary,
+          priceEur: price
+        })
       })
-      .select('id, owner_id, label, source, config, client_details, created_at, linked_proposal_id, profiles(email, full_name)')
-      .single()
-
-    setManualOfferBusy(false)
-
-    if (insertErr) {
+      const data = (await res.json().catch(() => ({}))) as {
+        message?: string
+        row?: PackageBuildAdminRow
+        pdfPortal?: { ok?: boolean; reason?: string; message?: string }
+      }
+      if (!res.ok) {
+        const msg = data.message ?? res.statusText
+        setManualOfferMessage(
+          /policy|rls|42501|check|booking_source/i.test(msg)
+            ? `${msg} — apply supabase/migrations/20260430120000_package_builds_admin_manual.sql (and 20260511210000_transfer_bookings_admin_package_quote_source.sql for transfer desk rows) in Supabase.`
+            : msg
+        )
+        return
+      }
+      if (data.row) {
+        setPackageBuilds((prev) => [data.row as PackageBuildAdminRow, ...prev])
+      }
+      const pdfOk = data.pdfPortal?.ok !== false
       setManualOfferMessage(
-        /policy|rls|42501|check/i.test(insertErr.message)
-          ? `${insertErr.message} — apply supabase/migrations/20260430120000_package_builds_admin_manual.sql (or run-in-sql-editor-package-builds-admin-manual.sql) in Supabase.`
-          : insertErr.message
+        pdfOk
+          ? 'Published — the client will see the package, a Transfer requests row, Trip details, and quote PDFs on their dashboard.'
+          : `Published package and transfer desk row, but PDF upload failed (${data.pdfPortal?.message ?? data.pdfPortal?.reason ?? 'unknown'}). Fix Storage/env and re-save the price on that row in Account transfers if needed.`
       )
-      return
+      setManualOfferTitle('')
+      setManualOfferSummary('')
+      setManualOfferPrice('')
+    } finally {
+      setManualOfferBusy(false)
     }
-
-    if (inserted) {
-      setPackageBuilds((prev) => [inserted as PackageBuildAdminRow, ...prev])
-    }
-
-    setManualOfferMessage('Published — the client will see this on their dashboard.')
-    setManualOfferTitle('')
-    setManualOfferSummary('')
-    setManualOfferPrice('')
   }
 
   const handleSendStudioClientEmail = async (event: FormEvent<HTMLFormElement>) => {
@@ -3506,13 +3521,15 @@ export function AdminDashboardPage() {
         profile,
         userEmail: session?.user?.email ?? null,
         enquiries: [],
-        packageBuilds: []
+        packageBuilds: [],
+        accountDesk: ADMIN_OPERATIONS_DESK_CARD
       }),
     [profile, session?.user?.email]
   )
 
-  const adminGreetingFirst = profile?.full_name?.trim()?.split(/\s+/).filter(Boolean)[0] ?? ''
-  const adminHeroTitle = adminGreetingFirst ? `Hello, ${adminGreetingFirst}` : 'Admin dashboard'
+  /** Operations hero uses a fixed desk identity (not the Supabase profile row). */
+  const adminGreetingFirst = 'Greg'
+  const adminHeroTitle = `Hello, ${adminGreetingFirst}`
 
   if (isLoading || !session) {
     return <DashboardLoadingShell label="Loading admin dashboard…" />
@@ -3547,7 +3564,7 @@ export function AdminDashboardPage() {
   return (
     <DashboardLayout
       kicker="Operations"
-      subtitle="Enquiries, client-saved package builds from the live calculator, and CRM proposal rows — all in Supabase."
+      subtitle="Forms, packages, payments, and drivers — one desk. Use the green jump buttons below if you are not sure where to look."
       title={adminHeroTitle}
       variant="admin"
     >
@@ -3557,81 +3574,426 @@ export function AdminDashboardPage() {
         </div>
       ) : null}
 
-      <div className="mb-10 space-y-10">
-        <PortalClientDataCard sections={adminDataCardSections} />
-        <AdminAccountTransfersHub />
-        <div className="scroll-mt-28" id="admin-transfer-pipeline">
-          <AdminTransferPipeline />
-        </div>
-      </div>
+      <AdminOperationsHubHero adminFirstName={adminGreetingFirst} />
 
-      {listLoading ? (
-        <p className="text-sm font-medium text-forest-600">Loading data…</p>
-      ) : (
-        <div className="space-y-14 md:space-y-16">
-          <section>
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div className="min-w-0 flex-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Enquiries</p>
-                <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Recent form submissions</h2>
-                <p className="mt-2 max-w-2xl text-sm text-forest-600">
-                  Rows appear after the SQL migration and when the dev server has{' '}
-                  <code className="rounded-md bg-forest-900 px-1.5 py-0.5 text-xs text-white">SUPABASE_SERVICE_ROLE_KEY</code>{' '}
-                  set for <code className="rounded-md bg-forest-900 px-1.5 py-0.5 text-xs text-white">/api/enquiry</code>.
-                  Each submitter also gets a confirmation email with their enquiry PDF at the address they entered (Resend, same
-                  run as your internal notification). The <span className="font-medium text-forest-800">Ref</span> column matches
-                  the ID in email subjects, e.g. <span className="font-mono text-xs text-forest-800">GSI-E9DP-7132</span>.
-                  Forms store <strong className="font-medium text-forest-800">trip timing</strong> (start/end dates or already at Málaga AGP), routes, and party size in{' '}
-                  <code className="rounded-md bg-forest-900 px-1.5 py-0.5 text-xs text-white">form_payload</code> — run{' '}
-                  <code className="rounded-md bg-forest-900 px-1.5 py-0.5 text-xs text-white">supabase/run-in-sql-editor-enquiries-form-payload.sql</code>{' '}
-                  (or apply the matching migration) if Submission detail is empty.
-                </p>
+      <div className="mb-10 md:mb-12 scroll-mt-28 space-y-6 md:space-y-8">
+        <AdminOperationsSectionShell
+          bodyClassName="space-y-8 sm:space-y-10 sm:py-8"
+          hideHeader
+          id="admin-hub-payments"
+        >
+          <PortalClientDataCard sections={adminDataCardSections} />
+
+          <div className="rounded-[1.35rem] border border-amber-200/90 bg-gradient-to-br from-amber-50/95 via-white to-fairway-50/35 px-5 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] ring-1 ring-amber-900/[0.07] sm:px-6 sm:py-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
+              <span className="inline-flex w-fit shrink-0 rounded-lg bg-forest-950 px-2.5 py-1.5 font-ge text-[0.58rem] font-extrabold uppercase tracking-[0.18em] text-white">
+                Stripe &amp; receipts
+              </span>
+              <p className="min-w-0 flex-1 text-sm leading-relaxed text-forest-700">
+                Same receipts and card totals guests see after checkout. Need a dashboard link in a hurry? Use the hero{' '}
+                <strong className="font-semibold text-forest-900">Jump to</strong> row and tap{' '}
+                <strong className="font-semibold text-forest-900">Desk &amp; inbox</strong> (this block).
+              </p>
+            </div>
+          </div>
+
+          <div className="relative border-t border-forest-200/80 pt-8">
+            <div className="mb-6 max-w-3xl">
+              <p className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.22em] text-gold-600">Client interest tickets</p>
+              <h3 className="font-display mt-2 text-xl font-semibold tracking-tight text-forest-950 sm:text-2xl">
+                Transfers, golf &amp; hotels
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-forest-600">
+                When a signed-in client opens a thread from their dashboard, it appears here. Reply to send an admin message back into
+                their ticket timeline.
+              </p>
+            </div>
+            {interestAdminTicketsError ? (
+              <p className="mb-6 text-sm text-amber-900" role="alert">
+                {interestAdminTicketsError}
+              </p>
+            ) : null}
+            <div className="grid gap-6 lg:grid-cols-2">
+              <div className="rounded-[2rem] border border-forest-100 bg-white p-5 shadow-soft md:p-6">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-700">Open tickets</p>
+                  {openInterestTicketCount > 0 ? (
+                    <span
+                      className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-950 ring-1 ring-amber-200/80"
+                      title="Tickets still open — client is waiting for your first reply or follow-up."
+                    >
+                      {openInterestTicketCount} awaiting reply
+                    </span>
+                  ) : interestAdminTickets.length > 0 ? (
+                    <span className="text-xs font-medium text-forest-500">All caught up</span>
+                  ) : null}
+                </div>
+                {interestAdminTickets.length === 0 ? (
+                  <p className="mt-3 text-sm text-forest-600">No tickets yet.</p>
+                ) : (
+                  <>
+                    <ul className="mt-3 max-h-[420px] space-y-2 overflow-y-auto text-sm">
+                      {interestAdminTickets.map((t) => (
+                        <li key={t.id}>
+                          <button
+                            className={`flex w-full items-start gap-3 rounded-xl border px-4 py-3 text-left transition-colors ${
+                              selectedAdminTicketId === t.id
+                                ? 'border-fairway-500 bg-fairway-50/80'
+                                : 'border-forest-100 bg-offwhite/80 hover:border-fairway-300'
+                            }`}
+                            onClick={() => {
+                              setSelectedAdminTicketId(t.id)
+                              setAdminTicketReplyMessage(null)
+                            }}
+                            type="button"
+                          >
+                            <PortalInterestCategoryGlyph category={t.category} size="sm" />
+                            <div className="min-w-0 flex-1">
+                              <div className="flex flex-wrap items-center gap-2">
+                              <span className="font-semibold text-forest-950">{PORTAL_INTEREST_LABELS[t.category]}</span>
+                              {t.status === 'open' ? (
+                                <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-900 ring-1 ring-amber-200/70">
+                                  New
+                                </span>
+                              ) : null}
+                              </div>
+                              <span className="mt-1 block text-xs text-forest-600">
+                                {t.client_email ?? t.owner_id} · {t.status}
+                              </span>
+                              <span className="mt-0.5 block text-xs text-forest-400">{formatDateTimeDdMmYy(t.created_at)}</span>
+                            </div>
+                          </button>
+                          {selectedAdminTicketId === t.id ? (
+                            <div className="mt-2 rounded-xl border border-forest-100 bg-offwhite/90 px-4 py-3 text-sm shadow-inner">
+                              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-forest-500">Client details</p>
+                              <dl className="mt-2 grid gap-2 text-forest-900 sm:grid-cols-2">
+                                <div>
+                                  <dt className="text-xs text-forest-500">Name</dt>
+                                  <dd className="mt-0.5 font-medium text-forest-950">{t.client_name?.trim() || '—'}</dd>
+                                </div>
+                                <div>
+                                  <dt className="text-xs text-forest-500">Email</dt>
+                                  <dd className="mt-0.5 font-medium text-forest-950 break-all">{t.client_email ?? '—'}</dd>
+                                </div>
+                                <div>
+                                  <dt className="text-xs text-forest-500">Phone</dt>
+                                  <dd className="mt-0.5 font-medium text-forest-950">{t.client_phone?.trim() || '—'}</dd>
+                                </div>
+                                <div className="sm:col-span-2">
+                                  <dt className="text-xs text-forest-500">Account number</dt>
+                                  <dd className="mt-0.5 font-mono text-sm font-semibold text-forest-950">
+                                    {t.client_account_ref?.trim() || '—'}
+                                  </dd>
+                                </div>
+                              </dl>
+                            </div>
+                          ) : null}
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
               </div>
-              {enquiries.length > 0 ? (
-                <div className="flex shrink-0 flex-col gap-2 self-start sm:flex-row sm:items-center">
-                  <LuxuryButton
-                    className="!px-5 !py-2.5 !text-xs"
-                    onClick={() => setEnquiriesSectionVisible((v) => !v)}
-                    type="button"
-                    variant="outline"
-                  >
-                    {enquiriesSectionVisible ? 'Hide table' : 'Show table'}
-                  </LuxuryButton>
-                  <LuxuryButton
-                    className="!border-red-300 !px-5 !py-2.5 !text-xs !text-red-800 hover:!bg-red-50"
-                    disabled={enquiryDeletingAll || enquiryDeletingId !== null}
-                    onClick={() => void handleRemoveAllEnquiries()}
-                    type="button"
-                    variant="outline"
-                  >
-                    {enquiryDeletingAll ? 'Removing…' : 'Remove all enquiries'}
-                  </LuxuryButton>
+              <div className="rounded-[2rem] border border-forest-100 bg-white p-5 shadow-soft md:p-6">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-700">Thread</p>
+                {!selectedAdminTicketId ? (
+                  <p className="mt-3 text-sm text-forest-600">Select a ticket to read messages and reply.</p>
+                ) : adminTicketMessagesLoading ? (
+                  <p className="mt-3 text-sm text-forest-600">Loading messages…</p>
+                ) : (
+                  <>
+                    {selectedAdminInterestTicket ? (
+                      <div className="mt-3 flex items-start gap-3 border-b border-forest-100 pb-3">
+                        <PortalInterestCategoryGlyph category={selectedAdminInterestTicket.category} size="md" />
+                        <div className="min-w-0 flex-1">
+                          <p className="font-display text-sm font-semibold text-forest-950 md:text-base">
+                            {PORTAL_INTEREST_LABELS[selectedAdminInterestTicket.category]}
+                          </p>
+                          <p className="mt-0.5 text-xs text-forest-500">
+                            {selectedAdminInterestTicket.status} ·{' '}
+                            {formatDateTimeDdMmYy(selectedAdminInterestTicket.created_at)}
+                          </p>
+                        </div>
+                      </div>
+                    ) : null}
+                    <ul className="mt-3 max-h-64 space-y-3 overflow-y-auto text-sm">
+                      {adminTicketMessages.map((m) => (
+                        <li
+                          className={`rounded-xl border px-3 py-2 ${
+                            m.author_kind === 'admin' ? 'border-fairway-200 bg-fairway-50/60' : 'border-forest-100 bg-offwhite/90'
+                          }`}
+                          key={m.id}
+                        >
+                          {m.author_kind === 'admin' ? (
+                            <div className="flex min-h-[1.5rem] items-center">
+                              <img
+                                alt="Golf Sol Ireland"
+                                className="h-6 w-auto max-w-[7rem] object-contain object-left"
+                                src="/golf-sol-ireland-logo.svg"
+                              />
+                            </div>
+                          ) : (
+                            <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-forest-600">
+                              <UserRound aria-hidden className="h-3.5 w-3.5 shrink-0 text-forest-500" />
+                              Client
+                            </p>
+                          )}
+                          <p className="mt-1 whitespace-pre-wrap text-forest-900">{m.body}</p>
+                          <p className="mt-1 text-xs text-forest-400">{formatDateTimeDdMmYy(m.created_at)}</p>
+                        </li>
+                      ))}
+                    </ul>
+                    <label className="mb-2 mt-4 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="admin-ticket-reply">
+                      Your reply
+                    </label>
+                    <textarea
+                      className="mb-3 min-h-[100px] w-full rounded-2xl border border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
+                      id="admin-ticket-reply"
+                      onChange={(e) => {
+                        setAdminTicketReply(e.target.value)
+                        setAdminTicketReplyMessage(null)
+                      }}
+                      placeholder="Write your reply…"
+                      value={adminTicketReply}
+                    />
+                    <button
+                      className="inline-flex min-h-11 items-center justify-center rounded-full bg-forest-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-forest-800 disabled:opacity-60"
+                      disabled={adminTicketReplyBusy}
+                      onClick={() => void handleSendAdminTicketReply()}
+                      type="button"
+                    >
+                      {adminTicketReplyBusy ? 'Sending…' : 'Send reply'}
+                    </button>
+                    {adminTicketReplyMessage ? (
+                      <p className="mt-2 text-sm font-medium text-forest-800" role="status">
+                        {adminTicketReplyMessage}
+                      </p>
+                    ) : null}
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <section className="relative mt-10 scroll-mt-28 border-t border-forest-200/80 pt-8" id="admin-hub-publish">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Publish client packages</p>
+            <h3 className="font-display mt-2 text-xl font-semibold text-forest-950 md:text-2xl">Transfers, golf &amp; hotel</h3>
+
+            <form
+              className="mt-6 max-w-2xl space-y-5 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8"
+              noValidate
+              onSubmit={(e) => void handlePublishManualPackage(e)}
+            >
+              <div>
+                <label className={adminTripLabelClass} htmlFor="manual-offer-email">
+                  Client login email
+                </label>
+                <input
+                  autoComplete="email"
+                  className={adminTripInputClass}
+                  id="manual-offer-email"
+                  onChange={(e) => {
+                    setManualOfferEmail(e.target.value)
+                    setManualOfferMessage(null)
+                  }}
+                  placeholder="same@email they use to sign in"
+                  type="email"
+                  value={manualOfferEmail}
+                />
+              </div>
+
+              <fieldset>
+                <legend className={adminTripLabelClass}>Package type</legend>
+                <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                  {(
+                    [
+                      ['transfer', 'Transfers'],
+                      ['golf', 'Golf courses'],
+                      ['hotel', 'Hotel']
+                    ] as const
+                  ).map(([value, label]) => (
+                    <label
+                      className="flex cursor-pointer items-center gap-3 rounded-2xl border border-forest-200 bg-offwhite/80 px-4 py-3 text-sm font-medium text-forest-900 has-[:checked]:border-fairway-500 has-[:checked]:bg-white"
+                      key={value}
+                    >
+                      <input
+                        checked={manualOfferKind === value}
+                        className="h-4 w-4 shrink-0 border-forest-300 text-fairway-600 focus:ring-fairway-400"
+                        name="manual-offer-kind"
+                        onChange={() => {
+                          setManualOfferKind(value)
+                          setManualOfferMessage(null)
+                        }}
+                        type="radio"
+                        value={value}
+                      />
+                      <PortalInterestCategoryGlyph category={MANUAL_OFFER_PORTAL_CATEGORY[value]} size="sm" />
+                      {label}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+
+              <div>
+                <label className={adminTripLabelClass} htmlFor="manual-offer-title">
+                  Title (shown on client dashboard)
+                </label>
+                <input
+                  className={adminTripInputClass}
+                  id="manual-offer-title"
+                  onChange={(e) => {
+                    setManualOfferTitle(e.target.value)
+                    setManualOfferMessage(null)
+                  }}
+                  placeholder="e.g. Private AGP return + two golf-day shuttles"
+                  type="text"
+                  value={manualOfferTitle}
+                />
+              </div>
+
+              <div>
+                <label className={adminTripLabelClass} htmlFor="manual-offer-summary">
+                  Description / inclusions
+                </label>
+                <textarea
+                  className={cx(adminTripInputClass, 'min-h-[120px] resize-y')}
+                  id="manual-offer-summary"
+                  onChange={(e) => {
+                    setManualOfferSummary(e.target.value)
+                    setManualOfferMessage(null)
+                  }}
+                  placeholder="What is included, vehicle type, courses, board basis, etc."
+                  value={manualOfferSummary}
+                />
+              </div>
+
+              <div>
+                <label className={adminTripLabelClass} htmlFor="manual-offer-price">
+                  Price (EUR, total for this line)
+                </label>
+                <input
+                  className={cx(adminTripInputClass, 'max-w-[220px]')}
+                  id="manual-offer-price"
+                  inputMode="decimal"
+                  min={0}
+                  onChange={(e) => {
+                    setManualOfferPrice(e.target.value)
+                    setManualOfferMessage(null)
+                  }}
+                  placeholder="e.g. 1890"
+                  type="number"
+                  value={manualOfferPrice}
+                />
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <LuxuryButton disabled={manualOfferBusy} type="submit" variant="primary">
+                  {manualOfferBusy ? 'Publishing…' : 'Publish to client dashboard'}
+                </LuxuryButton>
+              </div>
+
+              {manualOfferMessage ? (
+                <p className="text-sm font-medium text-forest-800" role="status">
+                  {manualOfferMessage}
+                </p>
+              ) : null}
+            </form>
+          </section>
+        </AdminOperationsSectionShell>
+
+        <AdminAccountTransfersHub
+          accountLookupSeed={accountLookupSeedFromTable}
+          onAccountLookupSeedApplied={() => setAccountLookupSeedFromTable(null)}
+        />
+
+        {listLoading ? (
+          <AdminOperationsSectionShell
+            className="scroll-mt-28"
+            id="admin-hub-forms"
+            kicker="Step 1 · Website forms"
+            title="Recent form submissions"
+            description="Loading workspace data — form rows appear here once the list is ready."
+          >
+            <p className="text-sm font-medium text-forest-600">Loading…</p>
+          </AdminOperationsSectionShell>
+        ) : (
+          <>
+            <AdminOperationsSectionShell
+              bodyClassName="space-y-6 sm:py-8"
+              className="scroll-mt-28"
+              description={
+                <>
+                  Filter by ref, name, email, or interest — click a{' '}
+                  <span className="font-medium text-forest-800">Ref</span> to fill{' '}
+                  <span className="font-medium text-forest-800">Account lookup</span> and load activity, or paste the ref manually above.
+                </>
+              }
+              headerAside={
+                enquiries.length > 0 ? (
+                  <div className="flex shrink-0 flex-col gap-2 self-start sm:flex-row sm:items-center">
+                    <LuxuryButton
+                      className="!px-5 !py-2.5 !text-xs"
+                      onClick={() => setEnquiriesSectionVisible((v) => !v)}
+                      type="button"
+                      variant="outline"
+                    >
+                      {enquiriesSectionVisible ? 'Hide table' : 'Show table'}
+                    </LuxuryButton>
+                    <LuxuryButton
+                      className="!border-red-300 !px-5 !py-2.5 !text-xs !text-red-800 hover:!bg-red-50"
+                      disabled={enquiryDeletingAll || enquiryDeletingId !== null}
+                      onClick={() => void handleRemoveAllEnquiries()}
+                      type="button"
+                      variant="outline"
+                    >
+                      {enquiryDeletingAll ? 'Removing…' : 'Remove all enquiries'}
+                    </LuxuryButton>
+                  </div>
+                ) : undefined
+              }
+              id="admin-hub-forms"
+              kicker="Step 1 · Website forms"
+              title="Recent form submissions"
+            >
+              {enquiriesSectionVisible && enquiries.length > 0 ? (
+                <div className="rounded-2xl border border-forest-200/80 bg-fairway-50/40 px-4 py-4 sm:px-5">
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-700" htmlFor="enquiry-filter">
+                    Filter by ref, name, email, or interest
+                  </label>
+                  <input
+                    className="w-full max-w-xl rounded-2xl border-2 border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none transition focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
+                    id="enquiry-filter"
+                    onChange={(e) => setEnquirySearchQuery(e.target.value)}
+                    placeholder="e.g. GSI-… or part of a name"
+                    type="search"
+                    value={enquirySearchQuery}
+                  />
                 </div>
               ) : null}
-            </div>
+
+                <details className="rounded-2xl border border-forest-100 bg-offwhite/70 px-4 py-3 text-sm text-forest-700">
+                  <summary className="cursor-pointer text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">
+                    Setup &amp; imports
+                  </summary>
+                  <p className="mt-3 text-sm leading-relaxed text-forest-600">
+                    Rows appear after the SQL migration and when the dev server has{' '}
+                    <code className="rounded-md bg-forest-900 px-1.5 py-0.5 text-xs text-white">SUPABASE_SERVICE_ROLE_KEY</code>{' '}
+                    set for <code className="rounded-md bg-forest-900 px-1.5 py-0.5 text-xs text-white">/api/enquiry</code>. Each
+                    submitter gets a confirmation email with their enquiry PDF (Resend — same run as your internal notification). The{' '}
+                    <span className="font-medium text-forest-800">Ref</span> column matches email subjects, e.g.{' '}
+                    <span className="font-mono text-xs text-forest-800">GSI-E9DP-7132</span>. Trip timing, routes, and party size live in{' '}
+                    <code className="rounded-md bg-forest-900 px-1.5 py-0.5 text-xs text-white">form_payload</code> — run{' '}
+                    <code className="rounded-md bg-forest-900 px-1.5 py-0.5 text-xs text-white">supabase/run-in-sql-editor-enquiries-form-payload.sql</code>{' '}
+                    (or the matching migration) if Submission detail is empty.
+                  </p>
+                </details>
 
             {enquiryDeleteMessage ? (
               <div
-                className="mt-4 rounded-2xl border border-red-200/90 bg-red-50/90 px-4 py-3 text-sm text-red-900"
+                className="rounded-2xl border border-red-200/90 bg-red-50/90 px-4 py-3 text-sm text-red-900"
                 role="alert"
               >
                 {enquiryDeleteMessage}
-              </div>
-            ) : null}
-
-            {enquiriesSectionVisible && enquiries.length > 0 ? (
-              <div className="mt-4 max-w-md">
-                <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="enquiry-filter">
-                  Filter by ref, name, email, or interest
-                </label>
-                <input
-                  className="w-full rounded-2xl border border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
-                  id="enquiry-filter"
-                  onChange={(e) => setEnquirySearchQuery(e.target.value)}
-                  placeholder="e.g. GSI- or surname"
-                  type="search"
-                  value={enquirySearchQuery}
-                />
               </div>
             ) : null}
 
@@ -3672,11 +4034,13 @@ export function AdminDashboardPage() {
                         <td className="whitespace-nowrap px-4 py-4 font-mono text-xs md:px-6">
                           <button
                             className="rounded-full bg-gold-50 px-3 py-1.5 font-mono text-xs font-semibold text-gold-800 underline-offset-2 transition-colors hover:bg-gold-100 hover:underline"
-                            onClick={() =>
+                            aria-label={`Fill account lookup with ${row.reference_id} and show submission detail`}
+                            onClick={() => {
                               setSelectedEnquiryDetailRef((current) =>
                                 current === row.reference_id ? null : row.reference_id
                               )
-                            }
+                              setAccountLookupSeedFromTable({ ref: row.reference_id, key: Date.now() })
+                            }}
                             type="button"
                           >
                             {row.reference_id}
@@ -3860,8 +4224,15 @@ export function AdminDashboardPage() {
                 </details>
               </div>
             ) : null}
-          </section>
+            </AdminOperationsSectionShell>
 
+            <div className="scroll-mt-28" id="admin-transfer-pipeline">
+              <AdminTransferPipeline />
+            </div>
+
+          <div className="space-y-14 md:space-y-16">
+          {SHOW_ADMIN_WORKSPACE_UI ? (
+            <>
           <section className="mb-8 rounded-[2rem] border border-fairway-300/70 bg-gradient-to-br from-fairway-50/95 to-white px-6 py-5 shadow-sm md:mb-10 md:px-8">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Recommended workflow</p>
             <h3 className="font-display mt-2 text-lg font-semibold text-forest-950 md:text-xl">
@@ -3871,9 +4242,9 @@ export function AdminDashboardPage() {
               <li>
                 <strong className="text-forest-900">Enquiries</strong> — click a <span className="font-mono text-xs">Ref</span> for{' '}
                 <strong className="font-medium text-forest-800">Submission detail</strong> (form answers, travel dates, already at AGP, routes).
-                VAT-inclusive <strong className="font-medium text-forest-800">quote pricing</strong> is not on this card: use{' '}
-                <strong className="font-medium text-forest-800">Open package in Details</strong> when shown, or{' '}
-                <strong className="font-medium text-forest-800">Client package builds</strong> → <strong className="font-medium text-forest-800">View</strong> on the row that lists this reference.
+                VAT-inclusive quote pricing is not on this card: use <strong className="font-medium text-forest-800">Open package in Details</strong>{' '}
+                when shown, or <strong className="font-medium text-forest-800">Client package builds</strong> →{' '}
+                <strong className="font-medium text-forest-800">View</strong> on the row that lists this reference.
               </li>
               <li>
                 <strong className="text-forest-900">Transfer package builder</strong> — tie the client (Details, Reference ID, or email), choose{' '}
@@ -3884,6 +4255,10 @@ export function AdminDashboardPage() {
                 <strong className="text-forest-900">Manual customer proposal</strong> — complete yellow fields, preview, and email the PDF when ready.
               </li>
             </ol>
+            <div className="mt-4 rounded-xl border border-dashed border-fairway-300/70 bg-white/70 px-4 py-3 text-xs leading-relaxed text-forest-700">
+              <p className="font-semibold text-forest-900">Show transfer package builder</p>
+              <p className="mt-1 font-semibold text-forest-900">Show manual customer proposal</p>
+            </div>
           </section>
 
           <section className="mb-14 md:mb-16">
@@ -5477,9 +5852,11 @@ export function AdminDashboardPage() {
                           </LuxuryButton>
                         </div>
                         <p className="mt-1 text-xs text-forest-500">
-                          Thank-you emails send when you change payment (unless unchecked below). After a deposit, a balance reminder is
-                          queued (server env{' '}
-                          <code className="rounded bg-offwhite px-1">TRANSFER_BALANCE_REMINDER_AFTER_MINUTES</code>). Cron{' '}
+                          Thank-you emails send when you change payment (unless unchecked below). After a deposit, one balance reminder is
+                          queued for <strong>48 hours before</strong> the scheduled pickup (see “Balance reminder due” below). Optional dev
+                          override: server env{' '}
+                          <code className="rounded bg-offwhite px-1">TRANSFER_BALANCE_REMINDER_AFTER_MINUTES</code> schedules that moment{' '}
+                          <strong>N minutes after</strong> the deposit instead — remove on production. Cron{' '}
                           <code className="rounded bg-offwhite px-1">/api/transfer-balance-reminder-sweep</code> runs every two minutes
                           when deployed.
                         </p>
@@ -6179,16 +6556,12 @@ export function AdminDashboardPage() {
               </div>
             )}
           </section>
+            </>
+          ) : null}
 
           <section>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">CRM — client PDFs</p>
             <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Terms and thank-you documents</h2>
-            <p className="mt-2 max-w-2xl text-sm text-forest-600">
-              Send branded terms or the thank-you page to a client&apos;s login email. They only see these links on their
-              dashboard after you send. Requires table{' '}
-              <code className="rounded-md bg-forest-900 px-1.5 py-0.5 text-xs text-white">client_document_access</code>{' '}
-              — run <code className="rounded-md bg-forest-900 px-1.5 py-0.5 text-xs text-white">supabase/run-in-sql-editor-client-document-access.sql</code> if needed.
-            </p>
 
             <div className="mt-6 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
               <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="crm-doc-email">
@@ -6237,22 +6610,12 @@ export function AdminDashboardPage() {
           </section>
 
           <section>
-            <button
-              type="button"
-              className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-forest-200 bg-white px-5 py-2.5 text-sm font-semibold text-forest-900 transition-colors hover:border-fairway-400 hover:bg-offwhite/80"
-              aria-expanded={adminShowManualClients}
-              onClick={() => setAdminShowManualClients((v) => !v)}
-            >
-              {adminShowManualClients ? 'Hide' : 'Show'} manual clients
-            </button>
-            {adminShowManualClients ? (
-              <>
-                <p className="mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Manual clients</p>
-                <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Add or remove portal logins</h2>
-                <p className="mt-2 max-w-2xl text-sm text-forest-600">
-                  Create a dashboard login with only name and email. An account number (same format as enquiry references) is assigned automatically. The client can add or update their mobile number after they sign in. Removing an enquiry from “Recent form submissions” does{' '}
-                  <strong className="font-medium text-forest-800">not</strong> delete a portal account — use remove below only when you intend to wipe that login entirely.
-                </p>
+            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Manual clients</p>
+            <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Add or remove portal logins</h2>
+            <p className="mt-2 max-w-2xl text-sm text-forest-600">
+              Create a dashboard login with only name and email. An account number (same format as enquiry references) is assigned automatically. The client can add or update their mobile number after they sign in. Removing an enquiry from “Recent form submissions” does{' '}
+              <strong className="font-medium text-forest-800">not</strong> delete a portal account — use remove below only when you intend to wipe that login entirely.
+            </p>
 
             <div className="mt-6 grid gap-6 lg:grid-cols-2">
               <div className="rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
@@ -6336,11 +6699,9 @@ export function AdminDashboardPage() {
                 {manualPortalCreateMessage}
               </p>
             ) : null}
-              </>
-            ) : null}
           </section>
 
-          <section>
+          <section className="scroll-mt-28" id="admin-hub-portal">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Client portal</p>
             <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Account number &amp; document area</h2>
             <p className="mt-2 max-w-2xl text-sm text-forest-600">
@@ -6482,298 +6843,6 @@ export function AdminDashboardPage() {
           </section>
 
           <section className="mb-14 md:mb-16">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Client interest tickets</p>
-            <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Transfers, golf &amp; hotels</h2>
-            <p className="mt-2 max-w-2xl text-sm text-forest-600">
-              When a signed-in client opens a thread from their dashboard, it appears here. Reply to send an admin message
-              back into their ticket timeline.
-            </p>
-            {interestAdminTicketsError ? (
-              <p className="mt-4 text-sm text-amber-900" role="alert">
-                {interestAdminTicketsError}
-              </p>
-            ) : null}
-            <div className="mt-6 grid gap-6 lg:grid-cols-2">
-              <div className="rounded-[2rem] border border-forest-100 bg-white p-5 shadow-soft md:p-6">
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-700">Open tickets</p>
-                  {openInterestTicketCount > 0 ? (
-                    <span
-                      className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-950 ring-1 ring-amber-200/80"
-                      title="Tickets still open — client is waiting for your first reply or follow-up."
-                    >
-                      {openInterestTicketCount} awaiting reply
-                    </span>
-                  ) : interestAdminTickets.length > 0 ? (
-                    <span className="text-xs font-medium text-forest-500">All caught up</span>
-                  ) : null}
-                </div>
-                {interestAdminTickets.length === 0 ? (
-                  <p className="mt-3 text-sm text-forest-600">No tickets yet.</p>
-                ) : (
-                  <>
-                    <ul className="mt-3 max-h-[420px] space-y-2 overflow-y-auto text-sm">
-                      {interestAdminTickets.map((t) => (
-                        <li key={t.id}>
-                          <button
-                            className={`w-full rounded-xl border px-4 py-3 text-left transition-colors ${
-                              selectedAdminTicketId === t.id
-                                ? 'border-fairway-500 bg-fairway-50/80'
-                                : 'border-forest-100 bg-offwhite/80 hover:border-fairway-300'
-                            }`}
-                            onClick={() => {
-                              setSelectedAdminTicketId(t.id)
-                              setAdminTicketReplyMessage(null)
-                            }}
-                            type="button"
-                          >
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span className="font-semibold text-forest-950">{PORTAL_INTEREST_LABELS[t.category]}</span>
-                              {t.status === 'open' ? (
-                                <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-900 ring-1 ring-amber-200/70">
-                                  New
-                                </span>
-                              ) : null}
-                            </div>
-                            <span className="mt-1 block text-xs text-forest-600">
-                              {t.client_email ?? t.owner_id} · {t.status}
-                            </span>
-                            <span className="mt-0.5 block text-xs text-forest-400">
-                              {new Date(t.created_at).toLocaleString(undefined, {
-                                day: 'numeric',
-                                month: 'short',
-                                year: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })}
-                            </span>
-                          </button>
-                          {selectedAdminTicketId === t.id ? (
-                            <div className="mt-2 rounded-xl border border-forest-100 bg-offwhite/90 px-4 py-3 text-sm shadow-inner">
-                              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-forest-500">Client details</p>
-                              <dl className="mt-2 grid gap-2 text-forest-900 sm:grid-cols-2">
-                                <div>
-                                  <dt className="text-xs text-forest-500">Name</dt>
-                                  <dd className="mt-0.5 font-medium text-forest-950">{t.client_name?.trim() || '—'}</dd>
-                                </div>
-                                <div>
-                                  <dt className="text-xs text-forest-500">Email</dt>
-                                  <dd className="mt-0.5 font-medium text-forest-950 break-all">{t.client_email ?? '—'}</dd>
-                                </div>
-                                <div>
-                                  <dt className="text-xs text-forest-500">Phone</dt>
-                                  <dd className="mt-0.5 font-medium text-forest-950">{t.client_phone?.trim() || '—'}</dd>
-                                </div>
-                                <div className="sm:col-span-2">
-                                  <dt className="text-xs text-forest-500">Account number</dt>
-                                  <dd className="mt-0.5 font-mono text-sm font-semibold text-forest-950">
-                                    {t.client_account_ref?.trim() || '—'}
-                                  </dd>
-                                </div>
-                              </dl>
-                            </div>
-                          ) : null}
-                        </li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-              </div>
-              <div className="rounded-[2rem] border border-forest-100 bg-white p-5 shadow-soft md:p-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-700">Thread</p>
-                {!selectedAdminTicketId ? (
-                  <p className="mt-3 text-sm text-forest-600">Select a ticket to read messages and reply.</p>
-                ) : adminTicketMessagesLoading ? (
-                  <p className="mt-3 text-sm text-forest-600">Loading messages…</p>
-                ) : (
-                  <>
-                    <ul className="mt-3 max-h-64 space-y-3 overflow-y-auto text-sm">
-                      {adminTicketMessages.map((m) => (
-                        <li
-                          className={`rounded-xl border px-3 py-2 ${
-                            m.author_kind === 'admin' ? 'border-fairway-200 bg-fairway-50/60' : 'border-forest-100 bg-offwhite/90'
-                          }`}
-                          key={m.id}
-                        >
-                          <p className="text-xs font-semibold uppercase tracking-wide text-forest-500">
-                            {m.author_kind === 'admin' ? 'You (admin)' : 'Client'}
-                          </p>
-                          <p className="mt-1 whitespace-pre-wrap text-forest-900">{m.body}</p>
-                          <p className="mt-1 text-xs text-forest-400">
-                            {new Date(m.created_at).toLocaleString(undefined, {
-                              day: 'numeric',
-                              month: 'short',
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                          </p>
-                        </li>
-                      ))}
-                    </ul>
-                    <label className="mb-2 mt-4 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="admin-ticket-reply">
-                      Your reply
-                    </label>
-                    <textarea
-                      className="mb-3 min-h-[100px] w-full rounded-2xl border border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
-                      id="admin-ticket-reply"
-                      onChange={(e) => {
-                        setAdminTicketReply(e.target.value)
-                        setAdminTicketReplyMessage(null)
-                      }}
-                      placeholder="Write your reply…"
-                      value={adminTicketReply}
-                    />
-                    <button
-                      className="inline-flex min-h-11 items-center justify-center rounded-full bg-forest-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-forest-800 disabled:opacity-60"
-                      disabled={adminTicketReplyBusy}
-                      onClick={() => void handleSendAdminTicketReply()}
-                      type="button"
-                    >
-                      {adminTicketReplyBusy ? 'Sending…' : 'Send reply'}
-                    </button>
-                    {adminTicketReplyMessage ? (
-                      <p className="mt-2 text-sm font-medium text-forest-800" role="status">
-                        {adminTicketReplyMessage}
-                      </p>
-                    ) : null}
-                  </>
-                )}
-              </div>
-            </div>
-          </section>
-
-          <section className="mb-14 md:mb-16">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Publish client packages</p>
-            <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Transfers, golf &amp; hotel</h2>
-            <p className="mt-2 max-w-2xl text-sm text-forest-600">
-              Create up to three flavours of manually priced line — each publish goes straight to that client&apos;s dashboard.
-              They must already have signed in once with the same email you enter here (so a profile exists). Website forms
-              (every <code className="rounded bg-offwhite px-1">/api/enquiry</code> submit with{' '}
-              <code className="rounded bg-offwhite px-1">formPayload</code>) automatically add a matching row when that email
-              already has a profile.
-            </p>
-
-            <form
-              className="mt-8 max-w-2xl space-y-5 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8"
-              noValidate
-              onSubmit={(e) => void handlePublishManualPackage(e)}
-            >
-              <div>
-                <label className={adminTripLabelClass} htmlFor="manual-offer-email">
-                  Client login email
-                </label>
-                <input
-                  autoComplete="email"
-                  className={adminTripInputClass}
-                  id="manual-offer-email"
-                  onChange={(e) => {
-                    setManualOfferEmail(e.target.value)
-                    setManualOfferMessage(null)
-                  }}
-                  placeholder="same@email they use to sign in"
-                  type="email"
-                  value={manualOfferEmail}
-                />
-              </div>
-
-              <fieldset>
-                <legend className={adminTripLabelClass}>Package type</legend>
-                <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                  {(
-                    [
-                      ['transfer', 'Transfers'],
-                      ['golf', 'Golf courses'],
-                      ['hotel', 'Hotel']
-                    ] as const
-                  ).map(([value, label]) => (
-                    <label
-                      className="flex cursor-pointer items-center gap-2 rounded-2xl border border-forest-200 bg-offwhite/80 px-4 py-3 text-sm font-medium text-forest-900 has-[:checked]:border-fairway-500 has-[:checked]:bg-white"
-                      key={value}
-                    >
-                      <input
-                        checked={manualOfferKind === value}
-                        className="h-4 w-4 border-forest-300 text-fairway-600 focus:ring-fairway-400"
-                        name="manual-offer-kind"
-                        onChange={() => {
-                          setManualOfferKind(value)
-                          setManualOfferMessage(null)
-                        }}
-                        type="radio"
-                        value={value}
-                      />
-                      {label}
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
-
-              <div>
-                <label className={adminTripLabelClass} htmlFor="manual-offer-title">
-                  Title (shown on client dashboard)
-                </label>
-                <input
-                  className={adminTripInputClass}
-                  id="manual-offer-title"
-                  onChange={(e) => {
-                    setManualOfferTitle(e.target.value)
-                    setManualOfferMessage(null)
-                  }}
-                  placeholder="e.g. Private AGP return + two golf-day shuttles"
-                  type="text"
-                  value={manualOfferTitle}
-                />
-              </div>
-
-              <div>
-                <label className={adminTripLabelClass} htmlFor="manual-offer-summary">
-                  Description / inclusions
-                </label>
-                <textarea
-                  className={cx(adminTripInputClass, 'min-h-[120px] resize-y')}
-                  id="manual-offer-summary"
-                  onChange={(e) => {
-                    setManualOfferSummary(e.target.value)
-                    setManualOfferMessage(null)
-                  }}
-                  placeholder="What is included, vehicle type, courses, board basis, etc."
-                  value={manualOfferSummary}
-                />
-              </div>
-
-              <div>
-                <label className={adminTripLabelClass} htmlFor="manual-offer-price">
-                  Price (EUR, total for this line)
-                </label>
-                <input
-                  className={cx(adminTripInputClass, 'max-w-[220px]')}
-                  id="manual-offer-price"
-                  inputMode="decimal"
-                  min={0}
-                  onChange={(e) => {
-                    setManualOfferPrice(e.target.value)
-                    setManualOfferMessage(null)
-                  }}
-                  placeholder="e.g. 1890"
-                  type="number"
-                  value={manualOfferPrice}
-                />
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3 pt-2">
-                <LuxuryButton disabled={manualOfferBusy} type="submit" variant="primary">
-                  {manualOfferBusy ? 'Publishing…' : 'Publish to client dashboard'}
-                </LuxuryButton>
-              </div>
-
-              {manualOfferMessage ? (
-                <p className="text-sm font-medium text-forest-800" role="status">
-                  {manualOfferMessage}
-                </p>
-              ) : null}
-            </form>
-          </section>
-
-          <section className="mb-14 md:mb-16">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Driver calendar</p>
             <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Booked days &amp; printable runs</h2>
             <p className="mt-2 max-w-2xl text-sm text-forest-600">
@@ -6880,7 +6949,7 @@ export function AdminDashboardPage() {
             </form>
           </section>
 
-          <section>
+          <section className="scroll-mt-28" id="admin-hub-packages">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Client package builds</p>
             <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">All saved &amp; published packages</h2>
             <p className="mt-2 max-w-2xl text-sm text-forest-600">
@@ -7061,7 +7130,10 @@ export function AdminDashboardPage() {
             )}
           </section>
         </div>
+        </>
       )}
+
+      </div>
 
       {detailRow ? (
         <div className="fixed inset-0 z-[90] flex items-end justify-center p-4 sm:items-center sm:p-6">
@@ -7495,17 +7567,6 @@ export function AdminDashboardPage() {
           ) : null}
         </section>
 
-        <section className="rounded-3xl border border-forest-200 bg-white p-6 shadow-soft sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">One id per contact email</p>
-          <h2 className="font-display mt-2 text-lg font-semibold text-forest-950">How stable account ids work</h2>
-          <p className="mt-2 max-w-3xl text-sm text-forest-600">
-            The first time someone uses a form with an email address, we assign a single <strong className="font-medium text-forest-900">GSI-style id</strong> and store it in{' '}
-            <code className="rounded bg-offwhite px-1 font-mono text-xs">email_account_anchors</code>. Every later submission with the same email reuses that id (
-            <code className="rounded bg-offwhite px-1 font-mono text-xs">enquiries.account_anchor_ref</code> and{' '}
-            <code className="rounded bg-offwhite px-1 font-mono text-xs">_accountAnchorRef</code> in form data). When they sign in and load the client dashboard, we copy that id onto their profile if the account number field is still empty — so magic links and the portal line up with the same number they saw from day one.
-          </p>
-        </section>
-
         <section aria-label="Block sign-in and enquiries" className="rounded-3xl border border-forest-200 bg-white p-6 shadow-soft sm:p-8">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-800">Access control</p>
           <h2 className="font-display mt-2 text-lg font-semibold text-forest-950">Block or unblock an email</h2>
@@ -7580,7 +7641,7 @@ export function AdminDashboardPage() {
                     <div>
                       <p className="font-mono text-sm font-semibold text-forest-950">{row.email}</p>
                       <p className="text-xs text-forest-500">
-                        Since {new Date(row.blocked_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}
+                        Since {formatDateTimeDdMmYy(row.blocked_at)}
                         {row.reason ? ` · ${row.reason}` : ''}
                       </p>
                     </div>

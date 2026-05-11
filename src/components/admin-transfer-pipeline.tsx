@@ -149,6 +149,7 @@ export function AdminTransferPipeline() {
       return
     }
     setAssigningId(bookingId)
+    setError(null)
     try {
       const { error: uErr } = await supabase
         .from('transfer_bookings')
@@ -158,28 +159,50 @@ export function AdminTransferPipeline() {
         setError(uErr.message)
         return
       }
-      await supabase.from('transfer_booking_events').insert({
+      const { error: evErr } = await supabase.from('transfer_booking_events').insert({
         booking_id: bookingId,
         actor_kind: 'admin',
         action: 'allocated',
         meta: { driver_id: driverId }
       })
-      const session = await supabase.auth.getSession()
-      const token = session.data.session?.access_token
-      if (token) {
-        await fetch('/api/transfer-notify', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify({ bookingId, event: 'allocated' })
-        })
+      if (evErr) {
+        console.error('[admin-transfer-pipeline] transfer_booking_events insert', evErr.message)
       }
       await refresh()
     } finally {
       setAssigningId(null)
     }
+    // Do not block the Assign button on outbound email (Resend can be slow or stall in dev).
+    void (async () => {
+      try {
+        const session = await supabase.auth.getSession()
+        const token = session.data.session?.access_token
+        if (!token) {
+          return
+        }
+        const ctrl = new AbortController()
+        const tid = window.setTimeout(() => ctrl.abort(), 20_000)
+        try {
+          const res = await fetch('/api/transfer-notify', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ bookingId, event: 'allocated' }),
+            signal: ctrl.signal
+          })
+          if (!res.ok) {
+            const j = (await res.json().catch(() => ({}))) as { message?: string }
+            console.warn('[admin-transfer-pipeline] transfer-notify', res.status, j.message ?? res.statusText)
+          }
+        } finally {
+          window.clearTimeout(tid)
+        }
+      } catch (e) {
+        console.warn('[admin-transfer-pipeline] transfer-notify', e)
+      }
+    })()
   }
 
   const rejectNoDriver = async (bookingId: string) => {
@@ -275,18 +298,14 @@ export function AdminTransferPipeline() {
   }
 
   return (
-    <section className="rounded-3xl border-2 border-gs-green/25 bg-white p-6 shadow-soft sm:p-8" aria-label="Transfer pipeline">
+    <section
+      className="overflow-hidden rounded-[2rem] border-2 border-fairway-600/25 bg-gradient-to-br from-white via-white to-fairway-50/30 p-6 shadow-[0_22px_56px_rgba(11,73,52,0.08)] ring-1 ring-forest-900/[0.06] sm:p-8"
+      aria-label="Transfer pipeline"
+    >
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Operations</p>
-          <h2 className="font-display mt-1 text-2xl font-semibold text-forest-950">Costa del Sol transfer bookings</h2>
-          <p className="mt-2 max-w-2xl text-sm text-forest-600">
-            Allocate a driver by name; the client receives a branded email. If you cannot cover a pending run, use{' '}
-            <strong className="font-medium text-forest-800">Decline — no driver</strong> — we email the guest and log the update in their portal.
-            Use <strong className="font-medium text-forest-800">Delete booking</strong> on a row to remove it from this list (test data, duplicates, or GDPR cleanup). Unassigned requests older than{' '}
-            <strong className="font-medium text-forest-800">two hours</strong> are auto-declined on the same basis (Vercel cron every 15 minutes; set{' '}
-            <code className="rounded bg-offwhite px-1 text-xs">CRON_SECRET</code> on the project so <code className="rounded bg-offwhite px-1 text-xs">/api/transfer-booking-sweep</code> is authorised).
-          </p>
+          <p className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.22em] text-gold-600">Step 3 · Drivers</p>
+          <h2 className="font-display mt-1 text-xl font-bold tracking-tight text-forest-950 sm:text-2xl">Operations — Costa del Sol transfers</h2>
         </div>
         <GeButton
           href="/driver"

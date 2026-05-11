@@ -10,6 +10,8 @@ export interface Profile {
   full_name: string | null
   /** Phone / WhatsApp; may be synced from enquiries or OAuth metadata. */
   phone: string | null
+  /** Normalized mobile key for dedupe (server); optional until migration applied. */
+  phone_e164?: string | null
   role: ProfileRole
   /** Enquiry-style reference shown as “account number” on the client portal. */
   account_reference_id: string | null

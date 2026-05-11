@@ -1,45 +1,27 @@
 import type { Session } from '@supabase/supabase-js'
-import { MessageCircle } from 'lucide-react'
+import { ChevronDown, MessageCircle, Ticket, UserRound } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { ClientPortalIdentityHero, type ClientPortalTransferHeroRow } from '../components/client-portal-identity-hero'
 import { PortalTransferServiceCard, type PortalTransferServiceCardModel } from '../components/portal-transfer-service-card'
-import { ClientTransferRequestPanel } from '../components/client-transfer-request-panel'
+import { PortalAccountLoadingState } from '../components/portal-account-loading-state'
+import {
+  PortalClientProposalsPdfViewer,
+  type ProposalRowLite,
+  type TransferPortalDocumentRow
+} from '../components/portal-client-proposals-pdf-viewer'
+import { PortalAddToYourTripStrip } from '../components/portal-add-to-your-trip-strip'
+import { PortalInterestCategoryGlyph } from '../components/portal-interest-category-glyph'
 import { PortalClientDataCard } from '../components/portal-client-data-card'
+import { PortalTransferRequestsSection } from '../components/portal-transfer-requests-section'
 import { PortalInvoicesPanel } from '../components/portal-invoices-panel'
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
-import { buildClientDataCardSections, type ClientEnquiryRowLite, type ClientTransferBookingLite } from '../lib/client-data-card'
+import { buildClientDataCardSections, type ClientEnquiryRowLite } from '../lib/client-data-card'
 import { LuxuryButton } from '../components/ui/button'
-import {
-  emptyPortalTransferPlanDraft,
-  emptyTripDetailsForm,
-  formatWebsiteFormFieldValueForDisplay,
-  isCalculatorLockedTripField,
-  mergePortalTransferPlanIntoWebsiteFormConfig,
-  mergePortalTripWorkspaceIntoWebsiteFormConfig,
-  mergeTripDetailsWithSaved,
-  normalizePortalTransferPlan,
-  orderedWebsiteFormFieldEntries,
-  packagesPagePathFromConfig,
-  packageBuildDbSourceLabel,
-  getWebsiteFormFieldLabel,
-  parseAnyPackageBuildRowConfig,
-  serializeTripDetailsForDb,
-  tripDefaultsForPackageRow,
-  TRIP_DETAILS_DASHBOARD_EXCLUDED_SECTION_TITLES,
-  TRIP_DETAILS_MULTILINE_KEYS,
-  TRIP_DETAILS_SECTIONS,
-  type PackageTripDetailsForm,
-  type PortalTransferPlan,
-  type TripDetailsFieldKey
-} from '../lib/package-build'
 import { COURSES } from '../data/coastal-golf-data'
-import { fetchPackageBuildsClientList, isMissingClientDetailsColumnError } from '../lib/fetch-package-builds'
-import { fetchPortalClientUpdates, isMissingPortalUpdatesTableError, type PortalClientUpdateRow } from '../lib/fetch-portal-updates'
+import { fetchPackageBuildsClientList } from '../lib/fetch-package-builds'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 
 type BrowserSupabase = NonNullable<ReturnType<typeof getSupabaseBrowserClient>>
-import { formatTravelDateInput } from '../lib/format-travel-date'
-import { syncTripWorkspaceToTransferBooking } from '../lib/sync-trip-workspace-transfer-booking'
 import {
   downloadTransferPaidInvoicePdf,
   downloadTransferQuotePdf,
@@ -58,8 +40,6 @@ import {
   type TripStageKey,
   type TripWorkspaceDraft
 } from '../lib/trip-workspace-draft'
-import { FormalProposalPayloadSummary, type FormalProposalPayload } from '../components/formal-proposal-payload-summary'
-import { PortalTransferPlanEditor } from '../components/portal-transfer-plan-editor'
 import { PortalTransferRouteBuilder } from '../components/portal-transfer-route-builder'
 import { useAuth, type Profile } from '../providers/auth-provider'
 import { cx } from '../lib/utils'
@@ -99,16 +79,6 @@ interface PackageBuildRow {
   linked_proposal_id?: string | null
   linked_proposal?: LinkedProposalMini | null
 }
-
-const statusStyles: Record<string, string> = {
-  draft: 'bg-forest-800 text-white ring-1 ring-forest-600/80',
-  sent: 'bg-fairway-700 text-white ring-1 ring-fairway-500/80',
-  accepted: 'bg-gold-50 text-gold-700 ring-1 ring-gold-200/80',
-  archived: 'bg-forest-800 text-white ring-1 ring-forest-600/80'
-}
-
-const formatEur = (value: number) =>
-  new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value)
 
 const inputClass =
   'w-full rounded-2xl border-2 border-orange-400 bg-white px-4 py-3 text-sm text-forest-900 placeholder:text-forest-400 outline-none transition-[border-color,box-shadow] focus:border-orange-500 focus:ring-2 focus:ring-orange-300/70'
@@ -195,6 +165,7 @@ type ClientPortalTransferBookingRow = {
   admin_price_vat_treatment?: string | null
   deposit_percent?: number | null
   payment_status?: string | null
+  next_available_driver?: boolean | null
   booking_source?: string | null
   package_build_id?: string | null
   enquiry_reference_id?: string | null
@@ -205,29 +176,17 @@ type ClientPortalTransferBookingRow = {
 export function ClientDashboardPage() {
   const { session, profile, isLoading, refreshProfile } = useAuth()
   const contactSyncAttempted = useRef(false)
-  const detailsMessageRef = useRef<HTMLParagraphElement>(null)
   const [proposals, setProposals] = useState<ProposalRow[]>([])
   const [packageBuilds, setPackageBuilds] = useState<PackageBuildRow[]>([])
   const [proposalsError, setProposalsError] = useState<string | null>(null)
-  const [buildsError, setBuildsError] = useState<string | null>(null)
   const [listLoading, setListLoading] = useState(true)
-  const [selectedBuildId, setSelectedBuildId] = useState('')
-  const [tripForm, setTripForm] = useState<PackageTripDetailsForm>(() => emptyTripDetailsForm())
-  const [portalPlan, setPortalPlan] = useState<PortalTransferPlan>(() => emptyPortalTransferPlanDraft())
-  const [detailsStatus, setDetailsStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
-  const [detailsMessage, setDetailsMessage] = useState<string | null>(null)
   const [teamMessagingOpen, setTeamMessagingOpen] = useState(false)
-  const [proposalPdfLoadingId, setProposalPdfLoadingId] = useState<string | null>(null)
-  const [linkedProposalPdfLoadingBuildId, setLinkedProposalPdfLoadingBuildId] = useState<string | null>(null)
-  const [expandedFormalProposalBuildId, setExpandedFormalProposalBuildId] = useState<string | null>(null)
   const [documentAccess, setDocumentAccess] = useState<{ terms: boolean; welcome: boolean }>({
     terms: false,
     welcome: false
   })
   const [tripDraft, setTripDraft] = useState<TripWorkspaceDraft | null>(null)
   const [transferBuilderOpen, setTransferBuilderOpen] = useState(false)
-  const [portalUpdates, setPortalUpdates] = useState<PortalClientUpdateRow[]>([])
-  const [portalUpdatesError, setPortalUpdatesError] = useState<string | null>(null)
   const [enquiries, setEnquiries] = useState<ClientEnquiryRowLite[]>([])
   const [transferBookingsPortal, setTransferBookingsPortal] = useState<ClientPortalTransferBookingRow[]>([])
   const [onboardingName, setOnboardingName] = useState('')
@@ -252,6 +211,7 @@ export function ClientDashboardPage() {
   const [stripePaidTransferBookingId, setStripePaidTransferBookingId] = useState<string | null>(null)
   const [transferServiceCardBookingId, setTransferServiceCardBookingId] = useState<string | null>(null)
   const [invoicePanelRefresh, setInvoicePanelRefresh] = useState(0)
+  const [transferPortalDocuments, setTransferPortalDocuments] = useState<TransferPortalDocumentRow[]>([])
   const listDataInflightRef = useRef(0)
 
   const loadData = useCallback(async () => {
@@ -263,7 +223,6 @@ export function ClientDashboardPage() {
     if (!supabase) {
       setListLoading(false)
       setProposalsError('Supabase is not configured.')
-      setBuildsError('Supabase is not configured.')
       return
     }
 
@@ -272,14 +231,19 @@ export function ClientDashboardPage() {
       setListLoading(true)
     }
     try {
-    const [propRes, buildRes, docRes, portalRes, enqRes] = await Promise.all([
+    const [propRes, buildRes, docRes, enqRes, transferDocRes] = await Promise.all([
       supabase.from('proposals').select('id, proposal_id, title, status, created_at, payload').order('created_at', { ascending: false }),
       fetchPackageBuildsClientList(supabase, 40),
       supabase.from('client_document_access').select('document_kind').eq('owner_id', session.user.id),
-      fetchPortalClientUpdates(supabase, 30),
       supabase
         .from('enquiries')
         .select('id, reference_id, created_at, form_payload, email, full_name')
+        .order('created_at', { ascending: false })
+        .limit(80),
+      supabase
+        .from('portal_client_transfer_documents')
+        .select('id, transfer_booking_id, document_kind, title, storage_path, created_at')
+        .eq('owner_id', session.user.id)
         .order('created_at', { ascending: false })
         .limit(80)
     ])
@@ -291,17 +255,10 @@ export function ClientDashboardPage() {
       setDocumentAccess({ terms: kinds.has('terms'), welcome: kinds.has('welcome') })
     }
 
-    if (portalRes.error) {
-      if (isMissingPortalUpdatesTableError(portalRes.error)) {
-        setPortalUpdates([])
-        setPortalUpdatesError(null)
-      } else {
-        setPortalUpdates([])
-        setPortalUpdatesError(portalRes.error.message)
-      }
+    if (transferDocRes.error) {
+      setTransferPortalDocuments([])
     } else {
-      setPortalUpdatesError(null)
-      setPortalUpdates((portalRes.data ?? []) as PortalClientUpdateRow[])
+      setTransferPortalDocuments((transferDocRes.data ?? []) as TransferPortalDocumentRow[])
     }
 
     if (enqRes.error) {
@@ -329,7 +286,7 @@ export function ClientDashboardPage() {
     const tbRes = await supabase
       .from('transfer_bookings')
       .select(
-        'id, pickup_label, dropoff_label, status, scheduled_at, admin_price_eur, admin_price_vat_treatment, deposit_percent, payment_status, booking_source, package_build_id, enquiry_reference_id, created_at, updated_at'
+        'id, pickup_label, dropoff_label, status, scheduled_at, admin_price_eur, admin_price_vat_treatment, deposit_percent, payment_status, next_available_driver, booking_source, package_build_id, enquiry_reference_id, created_at, updated_at'
       )
       .or(orTransfer.join(','))
       .order('created_at', { ascending: false })
@@ -355,8 +312,6 @@ export function ClientDashboardPage() {
     const resetTripShellAndModals = () => {
       clearTripWorkspaceDraft()
       setTripDraft(null)
-      setSelectedBuildId('')
-      setExpandedFormalProposalBuildId(null)
       setTransferBuilderOpen(false)
       setTeamMessagingOpen(false)
       setInterestModalCategory(null)
@@ -365,18 +320,12 @@ export function ClientDashboardPage() {
       setInterestThreadTicketId(null)
       setInterestFollowUp('')
       setInterestFollowUpError(null)
-      setProposalPdfLoadingId(null)
-      setLinkedProposalPdfLoadingBuildId(null)
-      setDetailsStatus('idle')
-      setDetailsMessage(null)
     }
 
     if (buildRes.error) {
-      setBuildsError(buildRes.error.message)
       setPackageBuilds([])
       resetTripShellAndModals()
     } else {
-      setBuildsError(null)
       const rawBuilds = (buildRes.data ?? []) as PackageBuildRow[]
       const linkedIds = [
         ...new Set(
@@ -419,10 +368,90 @@ export function ClientDashboardPage() {
     }
   }, [session?.user?.id, session?.user?.email, profile?.account_reference_id])
 
+  const interestTicketsFetchSeq = useRef(0)
+
+  const refreshInterestAdminTimes = useCallback(async (supabase: BrowserSupabase, rows: PortalInterestTicketRow[]) => {
+    const ids = rows.map((t) => t.id)
+    if (ids.length === 0) {
+      setInterestTicketLatestAdminAt({})
+      return
+    }
+
+    const { data: adminMsgs, error: adminErr } = await supabase
+      .from('portal_interest_ticket_messages')
+      .select('ticket_id, created_at')
+      .in('ticket_id', ids)
+      .eq('author_kind', 'admin')
+
+    if (adminErr || !adminMsgs) {
+      setInterestTicketLatestAdminAt({})
+      return
+    }
+
+    const latest: Record<string, string> = {}
+    for (const m of adminMsgs as { ticket_id: string; created_at: string }[]) {
+      const prev = latest[m.ticket_id]
+      if (!prev || new Date(m.created_at) > new Date(prev)) {
+        latest[m.ticket_id] = m.created_at
+      }
+    }
+    setInterestTicketLatestAdminAt(latest)
+  }, [])
+
+  const refreshInterestTickets = useCallback(async () => {
+    const seq = ++interestTicketsFetchSeq.current
+    const userId = session?.user?.id
+    if (!userId) {
+      setInterestTickets([])
+      setInterestTicketsError(null)
+      setInterestTicketLatestAdminAt({})
+      return
+    }
+
+    const supabase = getSupabaseBrowserClient()
+    if (!supabase) {
+      return
+    }
+
+    const { data, error } = await supabase
+      .from('portal_interest_tickets')
+      .select('*')
+      .eq('owner_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(40)
+
+    if (seq !== interestTicketsFetchSeq.current) {
+      return
+    }
+
+    if (error) {
+      if (isMissingPortalInterestTicketsError(error)) {
+        setInterestTickets([])
+        setInterestTicketsError(null)
+      } else {
+        setInterestTickets([])
+        setInterestTicketsError(error.message)
+      }
+      setInterestTicketLatestAdminAt({})
+      return
+    }
+
+    const rows = (data ?? []) as PortalInterestTicketRow[]
+    setInterestTicketsError(null)
+    setInterestTickets(rows)
+
+    if (seq !== interestTicketsFetchSeq.current) {
+      return
+    }
+
+    await refreshInterestAdminTimes(supabase, rows)
+  }, [session?.user?.id, refreshInterestAdminTimes])
+
   const refetchPortal = useCallback(() => {
     void loadData()
     void refreshProfile()
-  }, [loadData, refreshProfile])
+    void refreshInterestTickets()
+  }, [loadData, refreshProfile, refreshInterestTickets])
 
   useEffect(() => {
     if (isLoading || !session?.user?.id) {
@@ -471,6 +500,11 @@ export function ClientDashboardPage() {
       )
       .on(
         'postgres_changes',
+        { event: '*', schema: 'public', table: 'portal_client_transfer_documents', filter: `owner_id=eq.${uid}` },
+        refetchPortal
+      )
+      .on(
+        'postgres_changes',
         { event: '*', schema: 'public', table: 'portal_interest_tickets', filter: `owner_id=eq.${uid}` },
         refetchPortal
       )
@@ -513,34 +547,6 @@ export function ClientDashboardPage() {
       }
     }
   }, [isLoading, session?.user?.id, refetchPortal])
-
-  const refreshInterestAdminTimes = useCallback(async (supabase: BrowserSupabase, rows: PortalInterestTicketRow[]) => {
-    const ids = rows.map((t) => t.id)
-    if (ids.length === 0) {
-      setInterestTicketLatestAdminAt({})
-      return
-    }
-
-    const { data: adminMsgs, error: adminErr } = await supabase
-      .from('portal_interest_ticket_messages')
-      .select('ticket_id, created_at')
-      .in('ticket_id', ids)
-      .eq('author_kind', 'admin')
-
-    if (adminErr || !adminMsgs) {
-      setInterestTicketLatestAdminAt({})
-      return
-    }
-
-    const latest: Record<string, string> = {}
-    for (const m of adminMsgs as { ticket_id: string; created_at: string }[]) {
-      const prev = latest[m.ticket_id]
-      if (!prev || new Date(m.created_at) > new Date(prev)) {
-        latest[m.ticket_id] = m.created_at
-      }
-    }
-    setInterestTicketLatestAdminAt(latest)
-  }, [])
 
   useEffect(() => {
     if (isLoading) {
@@ -778,58 +784,8 @@ export function ClientDashboardPage() {
   }, [session?.user?.id, profile?.portal_contact_completed_at, profile?.full_name, profile?.phone])
 
   useEffect(() => {
-    if (!session?.user?.id || !profile?.portal_contact_completed_at) {
-      setInterestTickets([])
-      setInterestTicketsError(null)
-      setInterestTicketLatestAdminAt({})
-      return
-    }
-
-    let cancelled = false
-    const supabase = getSupabaseBrowserClient()
-    if (!supabase) {
-      return
-    }
-
-    void (async () => {
-      const { data, error } = await supabase
-        .from('portal_interest_tickets')
-        .select('*')
-        .eq('owner_id', session.user.id)
-        .order('created_at', { ascending: false })
-        .limit(40)
-
-      if (cancelled) {
-        return
-      }
-
-      if (error) {
-        if (isMissingPortalInterestTicketsError(error)) {
-          setInterestTickets([])
-          setInterestTicketsError(null)
-        } else {
-          setInterestTickets([])
-          setInterestTicketsError(error.message)
-        }
-        setInterestTicketLatestAdminAt({})
-        return
-      }
-
-      const rows = (data ?? []) as PortalInterestTicketRow[]
-      setInterestTicketsError(null)
-      setInterestTickets(rows)
-
-      if (cancelled) {
-        return
-      }
-
-      await refreshInterestAdminTimes(supabase, rows)
-    })()
-
-    return () => {
-      cancelled = true
-    }
-  }, [session?.user?.id, profile?.portal_contact_completed_at, refreshInterestAdminTimes])
+    void refreshInterestTickets()
+  }, [refreshInterestTickets])
 
   const hasUnreadInterestReplies = useMemo(() => {
     for (const t of interestTickets) {
@@ -844,6 +800,21 @@ export function ClientDashboardPage() {
     }
     return false
   }, [interestTickets, interestTicketLatestAdminAt])
+
+  const enquiryRowForSignedInEmail = useMemo(() => {
+    const mail = session?.user?.email?.trim().toLowerCase()
+    if (!mail) {
+      return null
+    }
+    return enquiries.find((e) => (e.email ?? '').trim().toLowerCase() === mail) ?? null
+  }, [enquiries, session?.user?.email])
+
+  const accountRefForUi = useMemo(
+    () =>
+      (profile?.account_reference_id?.trim() ?? '') ||
+      (enquiryRowForSignedInEmail?.reference_id?.trim() ?? ''),
+    [profile?.account_reference_id, enquiryRowForSignedInEmail]
+  )
 
   useEffect(() => {
     if (!interestThreadTicketId || !session?.user) {
@@ -960,245 +931,52 @@ export function ClientDashboardPage() {
     })
   }, [isLoading, session?.user?.id])
 
-  useEffect(() => {
-    if (!selectedBuildId) {
-      setTripForm(emptyTripDetailsForm())
-      setPortalPlan(emptyPortalTransferPlanDraft())
-      return
-    }
-
-    const row = packageBuilds.find((b) => b.id === selectedBuildId)
-    if (!row) {
-      return
-    }
-
-    const defaults = tripDefaultsForPackageRow(row.config)
-    setTripForm(mergeTripDetailsWithSaved(row.client_details, defaults))
-
-    const parsed = parseAnyPackageBuildRowConfig(row.config)
-    if (parsed?.type === 'website_form') {
-      if (parsed.config.portalTransferPlan) {
-        setPortalPlan(normalizePortalTransferPlan(parsed.config.portalTransferPlan))
-      } else {
-        setPortalPlan(emptyPortalTransferPlanDraft())
-      }
-      const ref = parsed.config.enquiryReferenceId
-      const fromPackage = parsed.config.portalTripWorkspace
-      const sessionDraft = loadTripWorkspaceDraft()
-      if (fromPackage) {
-        setTripDraft(ensureTripWorkspaceDraftShape({ ...fromPackage, referenceId: ref }))
-      } else if (sessionDraft && sessionDraft.referenceId === ref) {
-        setTripDraft(ensureTripWorkspaceDraftShape(sessionDraft))
-      } else {
-        setTripDraft(emptyTripWorkspaceDraft(ref))
-      }
-    } else {
-      setPortalPlan(emptyPortalTransferPlanDraft())
-      setTripDraft(null)
-    }
-  }, [selectedBuildId, packageBuilds])
-
-  useEffect(() => {
-    if (selectedBuildId && !packageBuilds.some((b) => b.id === selectedBuildId)) {
-      setSelectedBuildId('')
-      setDetailsStatus('idle')
-      setDetailsMessage(null)
-    }
-  }, [packageBuilds, selectedBuildId])
-
-  useEffect(() => {
-    if (detailsStatus === 'saved') {
-      detailsMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    }
-  }, [detailsStatus])
-
-  const handleTripFieldChange = (field: TripDetailsFieldKey) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const value = field === 'preferredTravelDates' ? formatTravelDateInput(event.target.value) : event.target.value
-    setTripForm((prev) => ({ ...prev, [field]: value }))
-    setDetailsStatus('idle')
-    setDetailsMessage(null)
-  }
-
-  const handleSaveTripDetails = async (event: FormEvent) => {
-    event.preventDefault()
-    setDetailsMessage(null)
-
-    if (!selectedBuildId || !session?.user) {
-      setDetailsMessage('Choose a saved trip from the list first.')
-      setDetailsStatus('error')
-      return
-    }
-
+  const loadTransferPortalPdfBlob = useCallback(async (row: TransferPortalDocumentRow) => {
     const supabase = getSupabaseBrowserClient()
     if (!supabase) {
-      setDetailsMessage('Could not connect.')
-      setDetailsStatus('error')
-      return
+      throw new Error('Supabase is not configured.')
     }
-
-    const row = packageBuilds.find((b) => b.id === selectedBuildId)
-    if (!row) {
-      setDetailsMessage('That package is no longer in your list. Refresh and try again.')
-      setDetailsStatus('error')
-      return
+    const { data, error } = await supabase.storage.from('client-portal-pdfs').createSignedUrl(row.storage_path, 3600)
+    if (error || !data?.signedUrl) {
+      throw new Error(error?.message ?? 'Could not open document.')
     }
-
-    const parsed = parseAnyPackageBuildRowConfig(row.config)
-    const updatePayload: Record<string, unknown> = {
-      client_details: serializeTripDetailsForDb(tripForm),
-      updated_at: new Date().toISOString()
+    const res = await fetch(data.signedUrl)
+    if (!res.ok) {
+      throw new Error('Could not download PDF.')
     }
+    return res.blob()
+  }, [])
 
-    if (parsed?.type === 'website_form') {
-      try {
-        let nextConfig = mergePortalTransferPlanIntoWebsiteFormConfig(row.config, portalPlan)
-        const ref = parsed.config.enquiryReferenceId
-        if (tripDraft) {
-          nextConfig = mergePortalTripWorkspaceIntoWebsiteFormConfig(
-            nextConfig,
-            ensureTripWorkspaceDraftShape({ ...tripDraft, referenceId: ref }),
-            ref
-          )
-        }
-        updatePayload.config = nextConfig
-      } catch {
-        setDetailsMessage('Could not save transfer plan into your package record.')
-        setDetailsStatus('error')
-        return
-      }
-    }
-
-    setDetailsStatus('saving')
-    const { error } = await supabase.from('package_builds').update(updatePayload).eq('id', selectedBuildId)
-
-    if (error) {
-      setDetailsMessage(
-        isMissingClientDetailsColumnError(error)
-          ? 'Database is missing client_details. Run supabase/run-in-sql-editor-add-client-details.sql in Supabase SQL Editor, then try again.'
-          : error.message
-      )
-      setDetailsStatus('error')
-      return
-    }
-
-    let savedMsg = 'Your trip details are saved.'
-    if (parsed?.type === 'website_form' && tripDraft && session.user.id) {
-      const ref = (parsed.config.enquiryReferenceId ?? '').trim()
-      if (ref) {
-        const profRes = await supabase.from('profiles').select('full_name, phone').eq('id', session.user.id).maybeSingle()
-        const syncResult = await syncTripWorkspaceToTransferBooking(supabase, {
-          packageBuildId: selectedBuildId,
-          clientUserId: session.user.id,
-          enquiryReferenceId: ref,
-          tripDraft: ensureTripWorkspaceDraftShape({ ...tripDraft, referenceId: ref }),
-          clientDisplayName: (profRes.data?.full_name ?? '').toString(),
-          clientPhone: (profRes.data?.phone ?? '').toString()
-        })
-        if (!syncResult.ok) {
-          savedMsg += ` ${syncResult.message}`
-        } else if (syncResult.skipped) {
-          savedMsg += ' (Minimal route — no separate Operations row until you add stops again.)'
-        } else {
-          savedMsg += ' Your saved route is synced to Operations · Costa transfers for the team.'
-        }
-      }
-    }
-
-    setDetailsStatus('saved')
-    setDetailsMessage(savedMsg)
-    await loadData()
-  }
-
-  const handleDownloadLinkedBuildProposalPdf = async (build: PackageBuildRow) => {
-    const lp = build.linked_proposal
-    if (!lp?.payload || typeof lp.payload !== 'object') {
-      window.alert('This formal proposal has no saved PDF data. Ask Golf Sol Ireland to re-send from the admin tool.')
-      return
-    }
-
-    try {
-      setLinkedProposalPdfLoadingBuildId(build.id)
-      const res = await fetch('/api/proposal-pdf', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(lp.payload)
-      })
-
-      if (!res.ok) {
-        const errText = await res.text()
-        let msg = 'Could not generate PDF.'
-        try {
-          const j = JSON.parse(errText) as { message?: string }
-          if (j.message) {
-            msg = j.message
-          }
-        } catch {
-          if (errText.trim()) {
-            msg = errText
-          }
-        }
-
-        throw new Error(msg)
-      }
-
-      const blob = await res.blob()
-      const url = URL.createObjectURL(blob)
-      const anchor = document.createElement('a')
-      anchor.href = url
-      anchor.download = `golf-sol-ireland-${lp.proposal_id.replace(/[^\w.-]+/g, '-')}.pdf`
-      anchor.click()
-      URL.revokeObjectURL(url)
-    } catch (e) {
-      window.alert(e instanceof Error ? e.message : 'Download failed.')
-    } finally {
-      setLinkedProposalPdfLoadingBuildId(null)
-    }
-  }
-
-  const handleDownloadProposalPdf = async (row: ProposalRow) => {
+  const loadProposalPdfBlob = useCallback(async (row: ProposalRowLite) => {
     if (!row.payload || typeof row.payload !== 'object') {
-      window.alert('This proposal has no saved PDF data. Ask Golf Sol to re-send from the admin proposal tool.')
-      return
+      throw new Error('This proposal has no saved PDF data. Ask Golf Sol Ireland to re-send from the admin proposal tool.')
     }
 
-    try {
-      setProposalPdfLoadingId(row.id)
-      const res = await fetch('/api/proposal-pdf', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(row.payload)
-      })
+    const res = await fetch('/api/proposal-pdf', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(row.payload)
+    })
 
-      if (!res.ok) {
-        const errText = await res.text()
-        let msg = 'Could not generate PDF.'
-        try {
-          const j = JSON.parse(errText) as { message?: string }
-          if (j.message) {
-            msg = j.message
-          }
-        } catch {
-          if (errText.trim()) {
-            msg = errText
-          }
+    if (!res.ok) {
+      const errText = await res.text()
+      let msg = 'Could not generate PDF.'
+      try {
+        const j = JSON.parse(errText) as { message?: string }
+        if (j.message) {
+          msg = j.message
         }
-
-        throw new Error(msg)
+      } catch {
+        if (errText.trim()) {
+          msg = errText
+        }
       }
 
-      const blob = await res.blob()
-      const url = URL.createObjectURL(blob)
-      const anchor = document.createElement('a')
-      anchor.href = url
-      anchor.download = `golf-sol-ireland-${row.proposal_id.replace(/[^\w.-]+/g, '-')}.pdf`
-      anchor.click()
-      URL.revokeObjectURL(url)
-    } catch (e) {
-      window.alert(e instanceof Error ? e.message : 'Download failed.')
-    } finally {
-      setProposalPdfLoadingId(null)
+      throw new Error(msg)
     }
-  }
+
+    return res.blob()
+  }, [])
 
   const persistTripDraft = (next: TripWorkspaceDraft) => {
     const shaped = ensureTripWorkspaceDraftShape(next)
@@ -1503,46 +1281,17 @@ export function ClientDashboardPage() {
     }
   }
 
-  const selectedBuildRowEarly = selectedBuildId ? (packageBuilds.find((b) => b.id === selectedBuildId) ?? null) : null
-  const selectedBuildParsedEarly = selectedBuildRowEarly ? parseAnyPackageBuildRowConfig(selectedBuildRowEarly.config) : null
-  const selectedTripIsWebsiteFormEarly = selectedBuildParsedEarly?.type === 'website_form'
-
-  const tripDetailsSectionsForForm = useMemo(() => {
-    const excluded = new Set(TRIP_DETAILS_DASHBOARD_EXCLUDED_SECTION_TITLES)
-    let sections = TRIP_DETAILS_SECTIONS.filter((s) => !excluded.has(s.title))
-    if (selectedTripIsWebsiteFormEarly) {
-      sections = sections.filter((s) => s.title !== 'Trip shape' && s.title !== 'Trip overview')
-    }
-    return sections
-  }, [selectedTripIsWebsiteFormEarly])
-
-  const transferBookingsForCard: readonly ClientTransferBookingLite[] = useMemo(
-    () =>
-      transferBookingsPortal.map((r) => ({
-        id: r.id,
-        pickup_label: r.pickup_label,
-        dropoff_label: r.dropoff_label,
-        status: r.status,
-        scheduled_at: r.scheduled_at
-      })),
-    [transferBookingsPortal]
-  )
-
-  const enquiriesForDataCard = useMemo(
-    () => (profile?.portal_enquiry_autofill_disabled ? [] : enquiries),
-    [profile?.portal_enquiry_autofill_disabled, enquiries]
-  )
-
-  const clientDataCardSections = useMemo(
+  const accountCardSections = useMemo(
     () =>
       buildClientDataCardSections({
         profile,
         userEmail: session?.user?.email ?? null,
-        enquiries: enquiriesForDataCard,
-        packageBuilds,
-        transferBookings: transferBookingsForCard
-      }),
-    [profile, session?.user?.email, enquiriesForDataCard, packageBuilds, transferBookingsForCard, profile]
+        enquiries: [],
+        packageBuilds: [],
+        transferBookings: [],
+        includeTransferSection: false
+      }).filter((s) => s.id === 'account'),
+    [profile, session?.user?.email]
   )
 
   const dashboardPaymentBanner = useMemo(():
@@ -1551,10 +1300,20 @@ export function ClientDashboardPage() {
     | null => {
     if (stripePaidTransferBookingId) {
       const row = transferBookingsPortal.find((r) => r.id === stripePaidTransferBookingId)
+      const st = (row?.payment_status ?? 'unpaid').toLowerCase()
+      if (st === 'deposit') {
+        return {
+          kind: 'transfer_paid',
+          headline: 'Deposit received — thank you.',
+          detail: row
+            ? `${row.pickup_label} → ${row.dropoff_label}: your deposit is on file. Pay the remaining balance from “Your transfers” before the due time shown on that row.`
+            : 'Your deposit should appear on this transfer in a few seconds. Use Pay balance when you are ready to settle the remainder.'
+        }
+      }
       const headline = 'Payment received — thank you.'
       const detail = row
-        ? `${row.pickup_label} → ${row.dropoff_label} is now Paid below. Download Paid invoice for your VAT receipt PDF. Pay now is disabled for this transfer.`
-        : 'Your transfer line should show Paid in a few seconds. Use Paid invoice for your VAT receipt. This transfer cannot be paid again from Pay now.'
+        ? `${row.pickup_label} → ${row.dropoff_label} is now Paid in full below. Download Paid invoice for your VAT receipt PDF.`
+        : 'Your transfer line should show Paid in a few seconds. Use Paid invoice for your VAT receipt.'
       return { kind: 'transfer_paid', headline, detail }
     }
     if (invoiceUrlBanner?.trim()) {
@@ -1582,7 +1341,8 @@ export function ClientDashboardPage() {
       packageBuildId: r.package_build_id ?? null,
       paymentStatus: r.payment_status ?? null,
       depositPercent: r.deposit_percent ?? null,
-      adminPriceEur: r.admin_price_eur ?? null
+      adminPriceEur: r.admin_price_eur ?? null,
+      nextAvailableDriver: r.next_available_driver === true
     }
   }, [transferServiceCardBookingId, transferBookingsPortal])
 
@@ -1594,7 +1354,7 @@ export function ClientDashboardPage() {
   const tripInvoicesPanel =
     portalSupabase && session.user.id ? (
       <PortalInvoicesPanel
-        accountReferenceLabel={profile?.account_reference_id?.trim() ?? null}
+        accountReferenceLabel={accountRefForUi.trim() ? accountRefForUi : null}
         refreshTrigger={invoicePanelRefresh}
         supabase={portalSupabase}
         userId={session.user.id}
@@ -1616,14 +1376,6 @@ export function ClientDashboardPage() {
   const needsManualContactForm = !contactOnboardingDone && !hasImportedContactDetails
   const needsConfirmImportedContact = !contactOnboardingDone && hasImportedContactDetails
 
-  const enquiryRowForSignedInEmail = useMemo(() => {
-    const mail = session?.user?.email?.trim().toLowerCase()
-    if (!mail) {
-      return null
-    }
-    return enquiries.find((e) => (e.email ?? '').trim().toLowerCase() === mail) ?? null
-  }, [enquiries, session?.user?.email])
-
   const greetingFirst =
     profile?.full_name?.trim().split(/\s+/).filter(Boolean)[0] ??
     (!profile?.portal_enquiry_autofill_disabled
@@ -1632,25 +1384,13 @@ export function ClientDashboardPage() {
     clientDisplayFullName.split(/\s+/).filter(Boolean)[0] ??
     ''
   const dashboardTitle = 'Your dashboard'
-  const hasAdminPricedPackage = packageBuilds.some((row) => {
-    const c = parseAnyPackageBuildRowConfig(row.config)
-    if (c?.type === 'manual' || c?.type === 'calculator') {
-      return true
-    }
-    if (c?.type === 'website_form' && c.config.adminQuote) {
-      return true
-    }
-    return false
-  })
   const showProposalsPortal =
-    profile?.portal_proposals_enabled === true || profile?.portal_pdf_library_enabled === true
+    profile?.portal_proposals_enabled === true ||
+    profile?.portal_pdf_library_enabled === true ||
+    transferPortalDocuments.length > 0
   const showFormalProposalsList = profile?.portal_proposals_enabled === true
   const showPdfLibraryOnDashboard =
     profile?.portal_pdf_library_enabled === true && (documentAccess.terms || documentAccess.welcome)
-  const selectedBuildRow = selectedBuildId ? (packageBuilds.find((b) => b.id === selectedBuildId) ?? null) : null
-  const selectedBuildParsed = selectedBuildRow ? parseAnyPackageBuildRowConfig(selectedBuildRow.config) : null
-  const selectedTripIsManualQuote = selectedBuildParsed?.type === 'manual'
-  const selectedTripIsWebsiteForm = selectedBuildParsed?.type === 'website_form'
 
   const tripIllustrative =
     tripDraft && (tripDraft.stages.transfer || tripDraft.stages.golf || tripDraft.stages.hotel)
@@ -1658,7 +1398,7 @@ export function ClientDashboardPage() {
       : null
 
   const interestHeroAdornment =
-    contactOnboardingDone && hasUnreadInterestReplies ? (
+    hasUnreadInterestReplies ? (
       <button
         className="group relative flex max-w-full cursor-pointer items-center gap-3 rounded-2xl border border-emerald-400/45 bg-gradient-to-br from-emerald-900/80 via-[#0c3d2c]/85 to-gs-green/90 px-4 py-2.5 text-left shadow-[0_0_0_1px_rgba(255,199,44,0.12),0_12px_40px_rgba(16,185,129,0.28)] ring-1 ring-white/10 backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:border-gs-gold/50 hover:shadow-[0_0_0_1px_rgba(255,199,44,0.35),0_16px_48px_rgba(16,185,129,0.35)]"
         onClick={() => openTeamMessagingAndScroll()}
@@ -1743,7 +1483,7 @@ export function ClientDashboardPage() {
     }
   }
 
-  const handlePayTransfer = async (t: ClientPortalTransferHeroRow) => {
+  const handlePayTransfer = async (t: ClientPortalTransferHeroRow, phase: 'deposit' | 'balance' | 'full') => {
     if (!session.access_token) {
       window.alert('Sign in again to pay.')
       return
@@ -1755,7 +1495,7 @@ export function ClientDashboardPage() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${session.access_token}`
         },
-        body: JSON.stringify({ bookingId: t.id })
+        body: JSON.stringify({ bookingId: t.id, paymentPhase: phase })
       })
       const data = (await res.json().catch(() => ({}))) as { message?: string; url?: string }
       if (!res.ok) {
@@ -1772,20 +1512,22 @@ export function ClientDashboardPage() {
   return (
     <DashboardLayout
       kicker="Your client area"
-      subtitle="Your packages and enquiry snapshots are at the top of this page. Trip notes unlock after we publish a priced package for you. The enquiry workspace below is for optional preferences saved in this browser."
+      subtitle="Transfers, invoices, and interest tickets are on this page. The enquiry workspace is optional — it saves preferences in this browser until your trip is connected in our system."
       title={dashboardTitle}
       titleAdornment={interestHeroAdornment}
       variant="client"
     >
       {listLoading ? (
-        <p className="text-sm font-medium text-forest-600">Loading your account…</p>
+        <div className="fixed inset-0 z-[35] flex items-center justify-center overflow-y-auto overscroll-contain bg-white/55 backdrop-blur-md supports-[backdrop-filter]:bg-white/40">
+          <PortalAccountLoadingState compact />
+        </div>
       ) : (
         <div className="mb-12 md:mb-14">
           <div className="mb-12 space-y-10">
             <div className={dashboardPaymentBanner ? 'mb-10 space-y-3' : 'contents'}>
               <ClientPortalIdentityHero
                 accountEmail={session.user.email ?? null}
-                accountNumber={accountRef || null}
+                accountNumber={accountRefForUi.trim() ? accountRefForUi : null}
                 className={dashboardPaymentBanner ? '!mb-0' : undefined}
                 emphasizeTransferBookingId={stripePaidTransferBookingId}
                 firstName={greetingFirst || 'there'}
@@ -1838,351 +1580,16 @@ export function ClientDashboardPage() {
                 </div>
               ) : null}
             </div>
-            <PortalClientDataCard sections={clientDataCardSections} />
+            <PortalAddToYourTripStrip onSelect={openInterestModal} variant="page" />
+            {accountCardSections.length > 0 ? <PortalClientDataCard sections={accountCardSections} /> : null}
+            <PortalTransferRequestsSection
+              bookings={transferBookingsPortal}
+              enquiries={enquiries}
+              interestTickets={interestTickets}
+              packageBuilds={packageBuilds}
+            />
             {tripInvoicesPanel}
-            <ClientTransferRequestPanel />
           </div>
-          <section>
-            <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Your packages</p>
-                <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Transfers, golf courses &amp; hotel</h2>
-                <p className="mt-2 max-w-2xl text-sm text-forest-600">
-                  Each line is a snapshot of what you submitted or what we published for you — website forms show every field.
-                  Trip notes (below) unlock after we publish a calculator or quoted package with pricing.
-                </p>
-              </div>
-              <LuxuryButton onClick={() => openTeamMessagingAndScroll()} type="button" variant="outline">
-                Message the team
-              </LuxuryButton>
-            </div>
-
-            {buildsError ? (
-              <div className="rounded-3xl border border-amber-200/90 bg-amber-50/90 px-6 py-4 text-sm text-amber-950 shadow-soft">
-                <p className="font-medium">Could not load saved packages.</p>
-                <p className="mt-2 text-amber-900/85">{buildsError}</p>
-                <p className="mt-2 text-xs text-amber-900/70">
-                  Open <code className="rounded bg-white/80 px-1">supabase/run-in-sql-editor-add-client-details.sql</code> in this
-                  repo, copy it into Supabase → SQL → Run. That adds <code className="rounded bg-white/80 px-1">client_details</code>{' '}
-                  and the delete policy.
-                </p>
-              </div>
-            ) : packageBuilds.length === 0 ? (
-              <div className="rounded-[2rem] border border-dashed border-forest-200 bg-offwhite px-6 py-10 text-center text-sm text-forest-900 md:px-10">
-                No packages on your dashboard yet. When Golf Sol Ireland publishes your transfers, golf course options, or hotel
-                quote, they will appear here. Use message the team if you would like a follow-up.
-              </div>
-            ) : (
-              <>
-                <ul className="mb-8 overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-soft">
-                  {packageBuilds.map((row, index) => {
-                    const cfg = parseAnyPackageBuildRowConfig(row.config)
-                    const reopenHref = cfg?.type === 'calculator' ? packagesPagePathFromConfig(cfg.config) : null
-                    const total =
-                      cfg?.type === 'calculator'
-                        ? cfg.config.totals.estimatedGroupTotal
-                        : cfg?.type === 'manual'
-                          ? cfg.config.priceEur
-                          : cfg?.type === 'website_form' && cfg.config.adminQuote
-                            ? cfg.config.adminQuote.grossTotalEur
-                            : undefined
-                    const hasLinkedFormal = Boolean(row.linked_proposal?.payload && typeof row.linked_proposal.payload === 'object')
-                    const expanded = expandedFormalProposalBuildId === row.id
-                    let manualSummaryPreview: string | null = null
-                    let websiteFormEntries: [string, string][] | null = null
-                    if (cfg?.type === 'manual' && cfg.config.summary.trim()) {
-                      const s = cfg.config.summary.trim()
-                      manualSummaryPreview = s.slice(0, 160) + (s.length > 160 ? '…' : '')
-                    } else if (cfg?.type === 'website_form') {
-                      websiteFormEntries = orderedWebsiteFormFieldEntries(cfg.config.fields ?? {})
-                    }
-
-                    return (
-                      <li
-                        className={cx(
-                          'border-b border-forest-100/80 last:border-b-0',
-                          index % 2 === 1 ? 'bg-offwhite/90' : 'bg-white'
-                        )}
-                        key={row.id}
-                      >
-                        <div className="flex flex-col gap-4 px-5 py-5 md:px-7 lg:flex-row lg:items-center lg:justify-between">
-                          <div className="min-w-0 flex-1">
-                            <p className="font-display text-lg font-semibold text-forest-950">
-                              {row.label?.trim() || 'Package'}
-                            </p>
-                            <p className="mt-1 text-xs text-forest-500">
-                              {packageBuildDbSourceLabel(row.source)} ·{' '}
-                              {new Date(row.created_at).toLocaleString(undefined, {
-                                day: 'numeric',
-                                month: 'short',
-                                year: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })}
-                            </p>
-                            {manualSummaryPreview ? (
-                              <p className="mt-2 line-clamp-2 text-sm text-forest-700">{manualSummaryPreview}</p>
-                            ) : null}
-                            {websiteFormEntries && websiteFormEntries.length > 0 ? (
-                              <dl className="mt-4 grid gap-4 text-sm sm:grid-cols-2">
-                                {websiteFormEntries.map(([key, val]) => (
-                                  <div
-                                    className="min-w-0 rounded-2xl border-2 border-orange-400/80 bg-white px-4 py-3 shadow-sm"
-                                    key={key}
-                                  >
-                                    <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-gold-600">
-                                      {getWebsiteFormFieldLabel(key)}
-                                    </dt>
-                                    <dd className="mt-1.5 whitespace-pre-wrap break-words text-sm font-medium text-forest-900">
-                                      {formatWebsiteFormFieldValueForDisplay(key, String(val ?? '')).trim() || '—'}
-                                    </dd>
-                                  </div>
-                                ))}
-                              </dl>
-                            ) : cfg?.type === 'website_form' ? (
-                              <p className="mt-2 text-sm text-forest-600">No form fields stored for this submission.</p>
-                            ) : null}
-                            {cfg?.type === 'website_form' && cfg.config.adminQuote ? (
-                              <div className="mt-5 rounded-2xl border border-emerald-200/90 bg-gradient-to-br from-emerald-50/90 to-white px-4 py-4 text-sm text-forest-800 shadow-sm">
-                                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-800">Your quote</p>
-                                <p className="mt-2 font-display text-lg font-bold text-forest-950">
-                                  Total {formatEur(cfg.config.adminQuote.grossTotalEur)} inc. VAT
-                                </p>
-                                <p className="mt-1 text-xs text-forest-600">
-                                  Deposit {formatEur(cfg.config.adminQuote.deposit20Eur)} · Balance{' '}
-                                  {formatEur(cfg.config.adminQuote.balance80Eur)}
-                                </p>
-                                <div className="mt-4 overflow-hidden rounded-xl border border-forest-200/80 bg-white shadow-inner">
-                                  <iframe
-                                    className="h-[min(520px,70vh)] w-full"
-                                    src={`/dashboard/quote/${row.id}`}
-                                    title={`Quote ${cfg.config.enquiryReferenceId}`}
-                                  />
-                                </div>
-                                <p className="mt-2 text-xs text-forest-500">
-                                  Open full page or use your browser print / PDF from the quote view if you need a file copy.
-                                </p>
-                              </div>
-                            ) : null}
-                            {typeof total === 'number' &&
-                            !(cfg?.type === 'website_form' && cfg.config.adminQuote) ? (
-                              <p className="mt-2 text-sm font-medium text-forest-700">
-                                {cfg?.type === 'manual' ? 'Quoted total' : 'Group estimate'} {formatEur(total)}
-                              </p>
-                            ) : null}
-                          </div>
-                          <div className="flex flex-wrap items-center gap-3">
-                            {hasLinkedFormal ? (
-                              <LuxuryButton
-                                aria-expanded={expanded}
-                                onClick={() =>
-                                  setExpandedFormalProposalBuildId((prev) => (prev === row.id ? null : row.id))
-                                }
-                                type="button"
-                                variant="outline"
-                              >
-                                {expanded ? 'Hide formal proposal' : 'View formal proposal'}
-                              </LuxuryButton>
-                            ) : null}
-                            {reopenHref ? (
-                              <LuxuryButton href={reopenHref} variant="primary">
-                                Open in calculator
-                              </LuxuryButton>
-                            ) : null}
-                          </div>
-                        </div>
-                        {expanded && hasLinkedFormal && row.linked_proposal ? (
-                          <div className="border-t border-forest-100/80 bg-white px-5 pb-6 pt-2 md:px-7">
-                            <FormalProposalPayloadSummary
-                              onDownloadPdf={() => handleDownloadLinkedBuildProposalPdf(row)}
-                              payload={row.linked_proposal.payload as FormalProposalPayload}
-                              pdfLoading={linkedProposalPdfLoadingBuildId === row.id}
-                              proposalIdText={row.linked_proposal.proposal_id}
-                            />
-                          </div>
-                        ) : null}
-                      </li>
-                    )
-                  })}
-                </ul>
-
-                {hasAdminPricedPackage ? (
-                <div className="rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Trip details</p>
-                  <h3 className="font-display mt-2 text-xl font-semibold text-forest-950 md:text-2xl">
-                    Proposal-style information (saved to your account)
-                  </h3>
-                  <p className="mt-2 max-w-2xl text-sm text-forest-600">
-                    {selectedTripIsManualQuote
-                      ? 'Package name and pricing on this quote were set by Golf Sol Ireland — those lines are read-only here. You can edit the other fields and save; we will see your updates on our side.'
-                      : selectedTripIsWebsiteForm
-                        ? 'Your enquiry snapshot is in the package list above (read-only). Add golf and hotel transfer legs below, then save — pricing, proposal, logistics and long notes are not collected in this form; Golf Sol Ireland sees your snapshot and transfer plan on the admin dashboard.'
-                        : 'Package, stay, group size, nights, rounds, and pricing come from your saved package snapshot — those are read-only here. Edit the remaining sections and save; Golf Sol Ireland can adjust locked fields if needed.'}
-                  </p>
-
-                  <form className="mt-8 space-y-6" noValidate onSubmit={handleSaveTripDetails}>
-                    <div>
-                      <label className={labelClass} htmlFor="trip-select">
-                        Select saved trip
-                      </label>
-                      <select
-                        className={cx(inputClass, 'appearance-none bg-[length:1rem] bg-[right_1rem_center] bg-no-repeat pr-10')}
-                        id="trip-select"
-                        onChange={(e) => {
-                          setSelectedBuildId(e.target.value)
-                          setDetailsStatus('idle')
-                          setDetailsMessage(null)
-                        }}
-                        style={{
-                          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234a5c49'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`
-                        }}
-                        value={selectedBuildId}
-                      >
-                        <option value="">Choose a saved trip…</option>
-                        {packageBuilds.map((row) => (
-                          <option key={row.id} value={row.id}>
-                            {(row.label ?? 'Build').slice(0, 72)}
-                            {' · '}
-                            {new Date(row.created_at).toLocaleDateString()}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {selectedBuildId ? (
-                      <>
-                        <div className="space-y-10">
-                          {selectedTripIsWebsiteForm ? (
-                            <div className="space-y-4">
-                              <h4 className="border-b border-orange-200/80 pb-2 font-display text-base font-semibold text-forest-900">
-                                Golf &amp; hotel transfers
-                              </h4>
-                              <p className="text-sm text-forest-600">
-                                Choose Costa del Sol courses and hotels for golf-day and hotel transfers. Saves with{' '}
-                                <span className="font-semibold">Save trip details</span> — your Golf Sol Ireland team sees it on
-                                the admin dashboard.
-                              </p>
-                              <PortalTransferPlanEditor
-                                disabled={detailsStatus === 'saving'}
-                                onChange={setPortalPlan}
-                                value={portalPlan}
-                              />
-                            </div>
-                          ) : null}
-                          {tripDetailsSectionsForForm.map((section) => (
-                            <div className="space-y-4" key={section.title}>
-                              <h4 className="border-b border-orange-200/80 pb-2 font-display text-base font-semibold text-forest-900">
-                                {section.title}
-                              </h4>
-                              {section.title === 'Trip shape' ? (
-                                <p className="text-sm font-medium text-forest-700">
-                                  Trip shape: {tripForm.nights.trim() || '0'} nights / {tripForm.rounds.trim() || '0'} rounds
-                                  <span className="ml-2 font-normal text-forest-500">
-                                    {selectedTripIsManualQuote
-                                      ? '(from your Golf Sol Ireland package — read-only)'
-                                      : selectedTripIsWebsiteForm
-                                        ? '(website form snapshot — read-only)'
-                                        : '(from saved package — read-only)'}
-                                  </span>
-                                </p>
-                              ) : null}
-                              <div className="grid gap-5 md:grid-cols-2">
-                                {section.fields.map((field) => {
-                                  const id = `td-${field.key}`
-                                  const isMultiline = TRIP_DETAILS_MULTILINE_KEYS.has(field.key)
-                                  const locked = isCalculatorLockedTripField(field.key, selectedBuildRow?.source ?? null)
-                                  const displayValue = tripForm[field.key].trim() || '—'
-
-                                  return (
-                                    <div className={field.key === 'notesForGsol' ? 'md:col-span-2' : ''} key={field.key}>
-                                      <span className={labelClass} id={`${id}-label`}>
-                                        {field.label}
-                                      </span>
-                                      {locked ? (
-                                        <div>
-                                          <div
-                                            aria-labelledby={`${id}-label`}
-                                            className={readOnlyCalcClass}
-                                            role="group"
-                                          >
-                                            {displayValue}
-                                          </div>
-                                          <p className={readOnlyCalcHintClass}>
-                                            {selectedTripIsManualQuote
-                                              ? 'Set by Golf Sol Ireland — contact us if this needs to change.'
-                                              : selectedTripIsWebsiteForm
-                                                ? 'Captured from your website form — contact us if the reference is wrong.'
-                                                : 'From your saved package — admin can change if required.'}
-                                          </p>
-                                        </div>
-                                      ) : isMultiline ? (
-                                        <textarea
-                                          aria-labelledby={`${id}-label`}
-                                          className={cx(inputClass, 'min-h-[100px] resize-y')}
-                                          id={id}
-                                          onChange={handleTripFieldChange(field.key)}
-                                          value={tripForm[field.key]}
-                                        />
-                                      ) : (
-                                        <input
-                                          aria-labelledby={`${id}-label`}
-                                          autoComplete={
-                                            field.key === 'leadGuestName'
-                                              ? 'name'
-                                              : field.key === 'contactPhone'
-                                                ? 'tel'
-                                                : undefined
-                                          }
-                                          className={inputClass}
-                                          id={id}
-                                          onChange={handleTripFieldChange(field.key)}
-                                          value={tripForm[field.key]}
-                                        />
-                                      )}
-                                    </div>
-                                  )
-                                })}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-
-                        <div className="mt-8 flex flex-col gap-4 border-t border-forest-100 pt-8 sm:flex-row sm:flex-wrap sm:items-center">
-                          <LuxuryButton disabled={detailsStatus === 'saving'} type="submit" variant="primary">
-                            {detailsStatus === 'saving' ? 'Saving…' : 'Save trip details'}
-                          </LuxuryButton>
-                        </div>
-
-                        {detailsMessage ? (
-                          <p
-                            ref={detailsMessageRef}
-                            className={cx(
-                              'text-sm font-medium',
-                              detailsStatus === 'error' ? 'text-red-700' : 'text-forest-800'
-                            )}
-                            role={detailsStatus === 'error' ? 'alert' : 'status'}
-                          >
-                            {detailsMessage}
-                          </p>
-                        ) : null}
-                      </>
-                    ) : (
-                      <p className="mt-4 text-sm text-forest-600">Select a trip above to edit and save details.</p>
-                    )}
-                  </form>
-                </div>
-                ) : (
-                  <div className="rounded-[2rem] border border-dashed border-forest-200 bg-offwhite/80 p-6 text-sm text-forest-700 shadow-soft md:p-8">
-                    <p className="font-medium text-forest-900">Trip details</p>
-                    <p className="mt-2 max-w-2xl">
-                      After Golf Sol Ireland publishes a calculator build or a fixed-price quote for your trip, you can add dates,
-                      notes, and other details here. Website-only enquiries stay in the package list above until we add pricing.
-                    </p>
-                  </div>
-                )}
-              </>
-            )}
-          </section>
 
         </div>
       )}
@@ -2371,9 +1778,6 @@ export function ClientDashboardPage() {
             >
               Save preferences
             </LuxuryButton>
-            <LuxuryButton onClick={() => openTeamMessagingAndScroll()} type="button" variant="outline">
-              Message the team
-            </LuxuryButton>
           </div>
         </section>
       ) : null}
@@ -2386,7 +1790,7 @@ export function ClientDashboardPage() {
           <>
             <p className="mt-2 max-w-2xl text-sm text-forest-600">
               You signed in directly — add your name and phone once so we can reach you. Your email is the one you used to sign
-              in. Website enquiries you submit later with the same email still show as packages below.
+              in. Website enquiries you submit later with the same email still appear in linked requests above.
               {accountRef ? (
                 <>
                   {' '}
@@ -2548,35 +1952,55 @@ export function ClientDashboardPage() {
         )}
       </section>
 
-      {contactOnboardingDone ? (
-        <section className="relative mb-10 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
+      <section className="relative mb-10 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Message the team</p>
-              <h2 className="font-display mt-2 text-xl font-semibold text-forest-950 md:text-2xl">Interest tickets</h2>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Interest tickets</p>
+              <h2 className="font-display mt-2 text-xl font-semibold text-forest-950 md:text-2xl">Ask Golf Sol Ireland</h2>
               <p className="mt-1 max-w-2xl text-sm text-forest-600">
                 Open a ticket for transfers, golf courses, or hotels — we reply in the thread below.
               </p>
             </div>
-            <LuxuryButton
+            <button
               aria-expanded={teamMessagingOpen}
+              className={cx(
+                'group relative inline-flex shrink-0 items-center gap-2.5 overflow-hidden rounded-full border border-emerald-600/40',
+                'bg-gradient-to-r from-emerald-950 via-[#0c3d2c] to-forest-950 px-6 py-3.5 text-sm font-semibold text-white',
+                'shadow-[0_10px_36px_rgba(16,185,129,0.28)] ring-1 ring-white/15 transition duration-300',
+                'hover:-translate-y-0.5 hover:border-gold-400/50 hover:shadow-[0_14px_44px_rgba(16,185,129,0.38)]',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white'
+              )}
               onClick={() => setTeamMessagingOpen((o) => !o)}
               type="button"
-              variant="outline"
             >
-              {teamMessagingOpen ? 'Hide ticketing' : 'Open ticketing'}
-            </LuxuryButton>
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.12)_45%,transparent_90%)] opacity-0 transition group-hover:translate-x-full group-hover:opacity-100 group-hover:duration-700"
+              />
+              <Ticket className="relative h-4 w-4 shrink-0 text-gold-300" strokeWidth={2.25} aria-hidden />
+              <span className="relative">{teamMessagingOpen ? 'Hide ticketing' : 'Open ticketing'}</span>
+              <ChevronDown
+                aria-hidden
+                className={cx(
+                  'relative h-4 w-4 shrink-0 text-emerald-100/90 transition-transform duration-300',
+                  teamMessagingOpen ? 'rotate-180' : 'rotate-0'
+                )}
+              />
+            </button>
           </div>
           {teamMessagingOpen ? (
             <div className="mt-6 scroll-mt-28 border-t border-forest-100 pt-6" id="portal-interest" tabIndex={-1}>
               <div className="mt-4 flex flex-wrap gap-3">
                 <LuxuryButton onClick={() => openInterestModal('transfers')} type="button" variant="secondary">
+                  <PortalInterestCategoryGlyph category="transfers" size="sm" />
                   Transfers
                 </LuxuryButton>
                 <LuxuryButton onClick={() => openInterestModal('golf_courses')} type="button" variant="secondary">
+                  <PortalInterestCategoryGlyph category="golf_courses" size="sm" />
                   Golf courses
                 </LuxuryButton>
                 <LuxuryButton onClick={() => openInterestModal('hotels')} type="button" variant="secondary">
+                  <PortalInterestCategoryGlyph category="hotels" size="sm" />
                   Hotels
                 </LuxuryButton>
               </div>
@@ -2590,7 +2014,7 @@ export function ClientDashboardPage() {
                   {interestTickets.map((t) => (
                     <li key={t.id}>
                       <button
-                        className="w-full rounded-xl border border-forest-100 bg-offwhite/80 px-4 py-3 text-left text-sm text-forest-800 transition-colors hover:border-fairway-300 hover:bg-white"
+                        className="flex w-full items-start gap-3 rounded-xl border border-forest-100 bg-offwhite/80 px-4 py-3 text-left text-sm text-forest-800 transition-colors hover:border-fairway-300 hover:bg-white"
                         onClick={() => {
                           setInterestThreadTicketId(t.id)
                           setInterestFollowUp('')
@@ -2598,18 +2022,21 @@ export function ClientDashboardPage() {
                         }}
                         type="button"
                       >
-                        <span className="font-semibold text-forest-950">{PORTAL_INTEREST_LABELS[t.category]}</span>
-                        <span className="ml-2 text-xs text-forest-500">
-                          {t.status} ·{' '}
-                          {new Date(t.created_at).toLocaleString(undefined, {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
+                        <PortalInterestCategoryGlyph category={t.category} size="sm" />
+                        <span className="min-w-0 flex-1">
+                          <span className="font-semibold text-forest-950">{PORTAL_INTEREST_LABELS[t.category]}</span>
+                          <span className="ml-2 text-xs text-forest-500">
+                            {t.status} ·{' '}
+                            {new Date(t.created_at).toLocaleString(undefined, {
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </span>
+                          <span className="mt-1 block text-xs text-fairway-700">Open thread</span>
                         </span>
-                        <span className="mt-1 block text-xs text-fairway-700">Open thread</span>
                       </button>
                     </li>
                   ))}
@@ -2620,7 +2047,6 @@ export function ClientDashboardPage() {
             </div>
           ) : null}
         </section>
-      ) : null}
 
         {interestThreadTicketId && selectedInterestThread ? (
           <div
@@ -2637,24 +2063,35 @@ export function ClientDashboardPage() {
               >
                 Close
               </button>
-              <h3 className="font-display pr-16 text-lg font-semibold text-forest-950 md:text-xl" id="interest-thread-title">
-                {PORTAL_INTEREST_LABELS[selectedInterestThread.category]}
-              </h3>
-              <p className="mt-1 text-xs text-forest-500">
-                {selectedInterestThread.status} ·{' '}
-                {new Date(selectedInterestThread.created_at).toLocaleString(undefined, {
-                  day: 'numeric',
-                  month: 'short',
-                  year: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })}
-              </p>
+              <div className="flex items-start gap-3 pr-16">
+                <PortalInterestCategoryGlyph category={selectedInterestThread.category} size="md" />
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-display text-lg font-semibold text-forest-950 md:text-xl" id="interest-thread-title">
+                    {PORTAL_INTEREST_LABELS[selectedInterestThread.category]}
+                  </h3>
+                  <p className="mt-1 text-xs text-forest-500">
+                    {selectedInterestThread.status} ·{' '}
+                    {new Date(selectedInterestThread.created_at).toLocaleString(undefined, {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </p>
+                </div>
+              </div>
               {interestThreadLoading ? (
                 <p className="mt-4 text-sm text-forest-600">Loading messages…</p>
               ) : (
                 <>
-                  <ul className="mt-4 max-h-56 space-y-3 overflow-y-auto text-sm">
+                  <div className="mt-5 flex items-center gap-2 border-b border-forest-100 pb-2">
+                    <PortalInterestCategoryGlyph category={selectedInterestThread.category} size="sm" />
+                    <span className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-forest-600">
+                      Linked request messages
+                    </span>
+                  </div>
+                  <ul className="mt-3 max-h-56 space-y-3 overflow-y-auto text-sm">
                     {interestThreadMessages.map((m) => (
                       <li
                         className={`rounded-xl border px-3 py-2 ${
@@ -2662,9 +2099,20 @@ export function ClientDashboardPage() {
                         }`}
                         key={m.id}
                       >
-                        <p className="text-xs font-semibold uppercase tracking-wide text-forest-500">
-                          {m.author_kind === 'admin' ? 'Golf Sol Ireland' : 'You'}
-                        </p>
+                        {m.author_kind === 'admin' ? (
+                          <div className="flex min-h-[1.5rem] items-center">
+                            <img
+                              alt="Golf Sol Ireland"
+                              className="h-6 w-auto max-w-[7rem] object-contain object-left"
+                              src="/golf-sol-ireland-logo.svg"
+                            />
+                          </div>
+                        ) : (
+                          <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-forest-600">
+                            <UserRound aria-hidden className="h-3.5 w-3.5 shrink-0 text-forest-500" />
+                            You
+                          </p>
+                        )}
                         <p className="mt-1 whitespace-pre-wrap text-forest-900">{m.body}</p>
                       </li>
                     ))}
@@ -2779,63 +2227,6 @@ export function ClientDashboardPage() {
           </div>
         ) : null}
 
-      <section className="mb-10 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Messages &amp; files</p>
-        <h2 className="font-display mt-2 text-xl font-semibold text-forest-950 md:text-2xl">From Golf Sol Ireland</h2>
-        <p className="mt-2 max-w-2xl text-sm text-forest-600">
-          When we send you a branded email from the studio (with optional PDFs), it is logged here so this dashboard stays your
-          single timeline alongside packages and proposals.
-        </p>
-        {portalUpdatesError ? (
-          <p className="mt-4 text-sm text-amber-900" role="alert">
-            {portalUpdatesError}
-          </p>
-        ) : null}
-        {!portalUpdatesError && portalUpdates.length === 0 ? (
-          <p className="mt-4 text-sm text-forest-600">
-            No studio sends recorded yet. You will still receive the real email in your inbox — this list fills automatically when
-            we message you from admin.
-          </p>
-        ) : null}
-        {portalUpdates.length > 0 ? (
-          <ul className="mt-6 space-y-4">
-            {portalUpdates.map((u) => {
-              const names = Array.isArray(u.attachment_filenames) ? (u.attachment_filenames as string[]) : []
-              return (
-                <li
-                  className="rounded-2xl border border-forest-100 bg-offwhite/90 px-5 py-4 text-sm text-forest-800 shadow-sm"
-                  key={u.id}
-                >
-                  <p className="font-display text-base font-semibold text-forest-950">{u.title}</p>
-                  <p className="mt-1 text-xs text-forest-500">
-                    {new Date(u.created_at).toLocaleString(undefined, {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                    {u.template_key ? (
-                      <span className="ml-2 text-forest-400">
-                        · Site template
-                      </span>
-                    ) : null}
-                  </p>
-                  {u.summary?.trim() ? <p className="mt-2 text-forest-700">{u.summary.trim()}</p> : null}
-                  {names.length > 0 ? (
-                    <p className="mt-2 text-xs font-semibold uppercase tracking-[0.12em] text-gold-700">
-                      PDFs: {names.join(', ')}
-                    </p>
-                  ) : (
-                    <p className="mt-2 text-xs text-forest-500">No PDF attachments on this send.</p>
-                  )}
-                </li>
-              )
-            })}
-          </ul>
-        ) : null}
-      </section>
-
       {!listLoading ? (
         <div className="space-y-14 md:space-y-16">
           {showProposalsPortal ? (
@@ -2845,136 +2236,60 @@ export function ClientDashboardPage() {
                   <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Proposals &amp; PDFs</p>
                   <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Documents from Golf Sol Ireland</h2>
                   <p className="mt-2 max-w-2xl text-sm text-forest-600">
-                    Formal proposals and your PDF library are controlled separately by Golf Sol Ireland. Terms and thank-you
-                    links only appear when this area is on for your account and we have granted access.
+                    Terms, thank-you letters, and formal proposals appear in the preview when Golf Sol Ireland enables them for
+                    your account. After we save a transfer price for you, your original request snapshot, VAT quote PDF, and a
+                    terms summary appear under <span className="font-semibold text-forest-800">Your paper trail</span>. The
+                    preview is read-only — print, open in a new tab, download the PDF, or share a link to this dashboard.
                   </p>
                 </div>
               </div>
 
-              {showPdfLibraryOnDashboard ? (
-              <div className="mb-8 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Your PDF library</p>
-                <h3 className="font-display mt-2 text-lg font-semibold text-forest-950">Terms and thank-you</h3>
-                <p className="mt-2 max-w-xl text-sm text-forest-600">
-                  Open a page, then use <strong className="font-medium text-forest-800">Save PDF</strong> for a print-ready copy
-                  with the same header and footer as our main website.
-                </p>
-                <div className="mt-5 flex flex-wrap gap-3">
-                  {documentAccess.terms ? (
-                    <LuxuryButton href="/documents/terms" variant="white">
-                      Terms and conditions
-                    </LuxuryButton>
-                  ) : null}
-                  {documentAccess.welcome ? (
-                    <LuxuryButton href="/documents/welcome" variant="white">
-                      Thank you — Golf Sol Ireland
-                    </LuxuryButton>
-                  ) : null}
-                </div>
-              </div>
-            ) : null}
+              <PortalClientProposalsPdfViewer
+                documentAccess={documentAccess}
+                loadProposalPdf={loadProposalPdfBlob}
+                loadTransferPortalPdf={loadTransferPortalPdfBlob}
+                profilePortalPdfEnabled={profile?.portal_pdf_library_enabled === true}
+                proposals={proposals}
+                proposalsError={proposalsError}
+                showFormalProposalsList={showFormalProposalsList}
+                showPdfLibraryOnDashboard={showPdfLibraryOnDashboard}
+                transferPortalDocuments={transferPortalDocuments}
+              />
 
-            {!showPdfLibraryOnDashboard &&
-            profile?.portal_pdf_library_enabled === true &&
-            !(documentAccess.terms || documentAccess.welcome) ? (
-              <div className="mb-8 rounded-[2rem] border border-forest-100 bg-offwhite/90 px-6 py-5 text-sm text-forest-700 shadow-soft">
-                <p className="font-medium text-forest-900">PDF library</p>
-                <p className="mt-1 max-w-xl">
-                  This area is enabled for your account; when we send you terms or our thank-you document, download links will
-                  appear here.
-                </p>
-              </div>
-            ) : null}
-
-            {showFormalProposalsList ? (
-              <>
-            {proposalsError ? (
-              <div className="rounded-3xl border border-red-200/80 bg-red-50/90 px-6 py-4 text-sm text-red-900 shadow-soft">
-                {proposalsError}
-              </div>
-            ) : proposals.length === 0 ? (
-              <div className="relative overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-soft">
-                <div
-                  aria-hidden="true"
-                  className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-gold-400 via-fairway-500 to-forest-700"
-                />
-                <div className="px-6 py-10 md:px-10 md:py-12">
-                  <h3 className="font-display text-xl font-semibold text-forest-950">No formal proposals yet</h3>
-                  <p className="mt-4 max-w-lg text-forest-600">
-                    When we email you a proposal from our admin tools, it will show up here with a download button. Terms and
-                    thank-you PDFs appear in your PDF library when that option is on for your account. Your published packages stay
-                    in the section above.
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <ul className="overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-soft">
-                {proposals.map((row, index) => (
-                  <li
-                    className={cx(
-                      'flex flex-col gap-3 border-b border-forest-100/80 px-5 py-5 last:border-b-0 sm:flex-row sm:items-center sm:justify-between md:px-7',
-                      index % 2 === 1 ? 'bg-offwhite/90' : 'bg-white'
-                    )}
-                    key={row.id}
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="font-display text-lg font-semibold text-forest-950">
-                        {row.title?.trim() || row.proposal_id}
-                      </p>
-                      <p className="mt-1 font-mono text-xs text-forest-500">{row.proposal_id}</p>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-3">
-                      {row.payload ? (
-                        <LuxuryButton
-                          className="!px-5 !py-2.5 !text-xs"
-                          disabled={proposalPdfLoadingId === row.id}
-                          onClick={() => handleDownloadProposalPdf(row)}
-                          type="button"
-                          variant="primary"
-                        >
-                          {proposalPdfLoadingId === row.id ? 'Preparing…' : 'Download PDF'}
-                        </LuxuryButton>
-                      ) : null}
-                      <span
-                        className={cx(
-                          'inline-flex rounded-full px-3 py-1 text-xs font-semibold capitalize',
-                          statusStyles[row.status] ?? 'bg-forest-800 text-white ring-1 ring-forest-600/80'
-                        )}
-                      >
-                        {row.status}
-                      </span>
-                      <span className="text-xs font-medium text-forest-400">
-                        {new Date(row.created_at).toLocaleDateString(undefined, {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric'
-                        })}
-                      </span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-              </>
-            ) : (
-              profile?.portal_proposals_enabled !== true && profile?.portal_pdf_library_enabled === true ? (
+            {!showFormalProposalsList &&
+            profile?.portal_proposals_enabled !== true &&
+            profile?.portal_pdf_library_enabled === true ? (
                 <div className="rounded-[2rem] border border-forest-100 bg-offwhite/90 px-6 py-8 text-sm text-forest-700 md:px-10">
                   <p className="font-semibold text-forest-900">Formal proposals</p>
                   <p className="mt-2 max-w-2xl">
-                    Your PDF library can be shown separately. Formal proposal downloads stay hidden until Golf Sol Ireland enables
+                    Your PDF library can be shown separately. Formal proposal previews stay hidden until Golf Sol Ireland enables
                     that option for your account.
                   </p>
                 </div>
-              ) : null
-            )}
+              ) : null}
             </section>
           ) : (
-            <section className="rounded-[2rem] border border-forest-100 bg-offwhite/80 px-6 py-8 text-sm text-forest-700 md:px-10">
-              <p className="font-semibold text-forest-900">Proposals and PDF library</p>
-              <p className="mt-2 max-w-2xl">
-                This area stays hidden until Golf Sol Ireland turns on formal proposals and/or your PDF library for your
-                account.
-              </p>
+            <section className="relative overflow-hidden rounded-[2rem] border border-forest-100/90 bg-gradient-to-br from-offwhite via-white to-[#eef6f0] px-6 py-9 text-sm text-forest-700 shadow-soft md:px-10 md:py-10">
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full bg-gold-200/25 blur-3xl"
+              />
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -bottom-24 -left-12 h-40 w-40 rounded-full bg-fairway-400/15 blur-3xl"
+              />
+              <div className="relative">
+                <p className="text-xs font-bold uppercase tracking-[0.22em] text-gold-600">Your paper trail, in one place</p>
+                <h3 className="font-display mt-3 text-xl font-semibold tracking-tight text-forest-950 md:text-2xl">
+                  The PDF shelf is almost ready
+                </h3>
+                <p className="mt-3 max-w-2xl leading-relaxed">
+                  When Golf Sol Ireland switches this on for you, your terms, thank-you letter, and formal proposals will land
+                  here as polished PDFs — same preview you get after a quote, with print and share at your fingertips. Nothing to
+                  do for now except keep an eye on this card; the moment we publish a document for your trip, it will show up
+                  automatically.
+                </p>
+              </div>
             </section>
           )}
         </div>

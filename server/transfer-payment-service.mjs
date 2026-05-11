@@ -7,19 +7,13 @@ import {
   buildTransferFullPaymentThankYouEmail,
   buildTransferPaymentRequestEmail
 } from './branded-transfer-payment-email.mjs'
-import { getTransactionalEmailImageAttachments } from './enquiry-service.mjs'
+import { publishTransferAdminPricePortalPdfs } from './transfer-portal-publish-admin-price-pdfs.mjs'
+import { balanceDueReminderIso } from './transfer-payment-amounts.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
   const e = new Error(message)
   e.statusCode = statusCode
   throw e
-}
-
-const balanceReminderDelayMs = (env) => {
-  const raw = env.TRANSFER_BALANCE_REMINDER_AFTER_MINUTES?.trim()
-  const n = raw ? Number(raw) : NaN
-  const mins = Number.isFinite(n) && n > 0 ? n : 2
-  return Math.round(mins * 60 * 1000)
 }
 
 /**
@@ -61,13 +55,11 @@ const sendResendHtml = async (admin, booking, content, env) => {
     throwStatus('No client email on file for this transfer.', 400)
   }
   const resend = new Resend(resendKey)
-  const attachments = await getTransactionalEmailImageAttachments()
   const { error: sendErr } = await resend.emails.send({
     from,
     to,
     subject: content.subject,
-    html: content.html,
-    attachments
+    html: content.html
   })
   if (sendErr) {
     throwStatus(sendErr.message ?? 'Resend failed', 500)
@@ -232,7 +224,20 @@ export const handleTransferPaymentAdmin = async (body, env = process.env, meta =
       action: 'admin_price_set',
       meta: { admin_price_eur: price, admin_price_vat_treatment: vatTreatment }
     })
-    return { ok: true, bookingId, adminPriceEur: price, adminPriceVatTreatment: vatTreatment }
+    let pdfPortal = null
+    if (price !== null) {
+      try {
+        pdfPortal = await publishTransferAdminPricePortalPdfs(admin, env, bookingId)
+      } catch (e) {
+        console.error('[set_admin_price] portal pdf bundle', e)
+        pdfPortal = {
+          ok: false,
+          reason: 'exception',
+          message: e instanceof Error ? e.message : String(e)
+        }
+      }
+    }
+    return { ok: true, bookingId, adminPriceEur: price, adminPriceVatTreatment: vatTreatment, pdfPortal }
   }
 
   if (action === 'send_payment_request_email') {
@@ -302,8 +307,7 @@ export const handleTransferPaymentAdmin = async (body, env = process.env, meta =
   }
 
   const now = new Date().toISOString()
-  const delayMs = balanceReminderDelayMs(env)
-  const remindAt = nextStatus === 'deposit' ? new Date(Date.now() + delayMs).toISOString() : null
+  const remindAt = nextStatus === 'deposit' ? balanceDueReminderIso(row.scheduled_at) : null
 
   const patch = {
     payment_status: nextStatus,
@@ -370,7 +374,6 @@ export const handleTransferPaymentAdmin = async (body, env = process.env, meta =
     paymentStatus: nextStatus,
     balanceRemindAt: fresh.balance_remind_at,
     thankYouSent,
-    thankYouError,
-    balanceReminderAfterMinutes: Math.round(delayMs / 60000)
+    thankYouError
   }
 }

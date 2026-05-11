@@ -17,6 +17,7 @@ import {
   WEBSITE_ENQUIRY_FORM
 } from '../../../lib/enquiry-form-registry'
 import { getSupabaseBrowserClient } from '../../../lib/supabase-client'
+import { ENQUIRY_CONFLICT_EXISTING_PHONE, postWebsiteEnquiry } from '../../../lib/post-enquiry-client'
 import { BookedDatesAvailabilityNotice } from '../../../components/booked-dates-availability-notice'
 import { GeButton } from './ge-button'
 import { cx } from '../../../lib/utils'
@@ -122,6 +123,7 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
   const [notes, setNotes] = useState('')
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [errorCode, setErrorCode] = useState<string | null>(null)
   const [bookedDays, setBookedDays] = useState<Set<string>>(() => new Set())
 
   const selectedCourse = useMemo(
@@ -368,47 +370,49 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
     const sizePax = size.trim().match(/^(\d+)/)
 
     setStatus('submitting')
+    setErrorCode(null)
     try {
-      const response = await fetch('/api/enquiry', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fullName: name,
-          email: mail,
-          phoneWhatsApp: phone,
-          interest,
-          bestTimeToCall: 'Course map enquiry',
-          formPayload: {
-            form: WEBSITE_ENQUIRY_FORM.courseMap,
-            fields: {
-              Course: selectedCourse.name,
-              'Course ID': selectedCourse.id,
-              Region: selectedCourse.region,
-              Tier: tierLabel[selectedCourse.tier],
-              Page: `${routeLabel} (${path})`,
-              'Trip timing':
-                tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp
-                  ? 'Already at Málaga (AGP) — need transfers now'
-                  : 'Planned trip — dated',
-              [ENQUIRY_STRUCTURED_FIELD_KEYS.alreadyAtMalagaAgp]:
-                tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp ? 'yes' : 'no',
-              ...(df ? { [ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateFrom]: df, 'Travel start date': df } : {}),
-              ...(dt ? { [ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateTo]: dt, 'Travel end date': dt } : {}),
-              'Group size': size,
-              [ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffType]: PICKUP_DROPOFF_TYPES.golfCourse,
-              [ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffId]: selectedCourse.id,
-              [ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffLabel]: selectedCourse.name,
-              ...(sizePax?.[1] ? { [ENQUIRY_STRUCTURED_FIELD_KEYS.pax]: sizePax[1] } : {}),
-              ...(note ? { Notes: note } : {})
-            }
+      const result = await postWebsiteEnquiry({
+        fullName: name,
+        email: mail,
+        phoneWhatsApp: phone,
+        interest,
+        bestTimeToCall: 'Course map enquiry',
+        formPayload: {
+          form: WEBSITE_ENQUIRY_FORM.courseMap,
+          fields: {
+            Course: selectedCourse.name,
+            'Course ID': selectedCourse.id,
+            Region: selectedCourse.region,
+            Tier: tierLabel[selectedCourse.tier],
+            Page: `${routeLabel} (${path})`,
+            'Trip timing':
+              tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp
+                ? 'Already at Málaga (AGP) — need transfers now'
+                : 'Planned trip — dated',
+            [ENQUIRY_STRUCTURED_FIELD_KEYS.alreadyAtMalagaAgp]:
+              tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp ? 'yes' : 'no',
+            ...(df ? { [ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateFrom]: df, 'Travel start date': df } : {}),
+            ...(dt ? { [ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateTo]: dt, 'Travel end date': dt } : {}),
+            'Group size': size,
+            [ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffType]: PICKUP_DROPOFF_TYPES.golfCourse,
+            [ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffId]: selectedCourse.id,
+            [ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffLabel]: selectedCourse.name,
+            ...(sizePax?.[1] ? { [ENQUIRY_STRUCTURED_FIELD_KEYS.pax]: sizePax[1] } : {}),
+            ...(note ? { Notes: note } : {})
           }
-        })
+        }
       })
-      const data = (await response.json().catch(() => ({}))) as { message?: string }
-      if (!response.ok) {
-        throw new Error(data.message ?? 'Could not send your request right now.')
+
+      if (!result.ok) {
+        setStatus('error')
+        setErrorMessage(result.message)
+        setErrorCode(result.code ?? null)
+        return
       }
+
       setStatus('success')
+      setErrorCode(null)
       setFullName('')
       setEmail('')
       setPhoneWhatsApp('')
@@ -419,6 +423,7 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
       setNotes('')
     } catch (e) {
       setStatus('error')
+      setErrorCode(null)
       setErrorMessage(e instanceof Error ? e.message : 'Could not send your request right now.')
     }
   }
@@ -690,7 +695,16 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
                   </div>
 
                   {status === 'error' && errorMessage ? (
-                    <p className="rounded-xl border border-ge-orange/40 bg-orange-50 px-3 py-2.5 font-ge text-sm text-gs-dark">{errorMessage}</p>
+                    <div className="rounded-xl border border-ge-orange/40 bg-orange-50 px-3 py-2.5 font-ge text-sm text-gs-dark">
+                      <p>{errorMessage}</p>
+                      {errorCode === ENQUIRY_CONFLICT_EXISTING_PHONE ? (
+                        <p className="mt-2 font-semibold text-gs-green">
+                          <a className="underline underline-offset-2" href="/dashboard/login">
+                            Sign in to your trip desk
+                          </a>
+                        </p>
+                      ) : null}
+                    </div>
                   ) : null}
 
                   <div className="flex flex-col gap-4 border-t border-gs-dark/6 pt-5 sm:flex-row sm:items-center sm:justify-between">

@@ -39,7 +39,7 @@ Older PDFs (proposal, enquiry record, terms, portal invoice) keep their bespoke 
 | Branded layout sample | [scripts/generate-branded-sample-pdf.mjs](mdc:scripts/generate-branded-sample-pdf.mjs) | Writes `public/samples/golfsol-branded-layout-sample.pdf` (A4 one-pager, palette + logo). |
 | **Unified shell sample** | [scripts/generate-gsol-unified-pdf-sample.mjs](mdc:scripts/generate-gsol-unified-pdf-sample.mjs) | Writes `public/samples/golfsol-unified-document-template.pdf` — master template for all future PDFs. |
 
-**Email + PDF together**: [send-proposal-client-service.mjs](mdc:server/send-proposal-client-service.mjs) builds HTML with `finalizeGsolEmailHtml`, attaches **`getTransactionalEmailImageAttachments()`** plus the proposal PDF bytes. Follow that order when adding new “branded email + PDF” sends.
+**Email + PDF together**: [send-proposal-client-service.mjs](mdc:server/send-proposal-client-service.mjs) builds HTML with `finalizeGsolEmailHtml`, attaches **PDF bytes only** (no PNG/image parts — brand graphics load from absolute site URLs in the HTML). Follow that pattern for new “branded email + PDF” sends.
 
 ## Client / hybrid — `jspdf` and DOM capture
 

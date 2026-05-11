@@ -1,7 +1,16 @@
 import type { ReactNode } from 'react'
 import { motion } from 'framer-motion'
 import { ChevronDown, Sparkles } from 'lucide-react'
-import { BRAND_FLEET_HERO_IMAGE_SRC, BRAND_PORTAL_HERO_GOLF_BACKDROP_SRC } from '../../../lib/brand-visual-assets'
+import {
+  BRAND_ADMIN_OPERATIONS_HERO_ALT,
+  BRAND_CLIENT_PORTAL_HERO_ILLUSTRATION_ALT,
+  BRAND_CLIENT_PORTAL_HERO_ILLUSTRATION_SRC,
+  BRAND_FLEET_HERO_IMAGE_SRC,
+  BRAND_PORTAL_HERO_GOLF_BACKDROP_SRC
+} from '../../../lib/brand-visual-assets'
+
+/** Same resolution as `AdminOperationsHubHero` — respects Vite `base`. */
+const ADMIN_PORTAL_HERO_IMG_SRC = `${import.meta.env.BASE_URL}images/admin-operations-hero.png`
 import { GeButton } from '../components/ge-button'
 import { handleScrollToFormTarget } from '../../../lib/scroll-to-form-target'
 
@@ -16,6 +25,8 @@ export interface GeHeroProps {
   readonly portalAdornment?: ReactNode
   /** Portal: live-updating line (e.g. Dublin time). */
   readonly portalTimestamp?: string
+  /** Client: bespoke illustration. Admin: operations hero. Driver: twilight + fleet (`classic`). */
+  readonly portalBackdrop?: 'client' | 'admin' | 'classic'
 }
 
 /**
@@ -33,7 +44,8 @@ export function GeHero({
   portalTitle,
   portalSubtitle,
   portalAdornment,
-  portalTimestamp
+  portalTimestamp,
+  portalBackdrop = 'classic'
 }: GeHeroProps = {}) {
   const isPortal = variant === 'portal'
   return (
@@ -52,7 +64,59 @@ export function GeHero({
       {/* Mobile: fractionally taller frame than 9:16 eases vertical crowding in-view
           (object-cover crops sides slightly). sm+ keeps desktop 2:1. */}
       <div className="relative w-full max-sm:aspect-[9/17] sm:aspect-[2/1]">
-        {isPortal ? (
+        {isPortal && portalBackdrop === 'client' ? (
+          <div className="absolute inset-0 z-0">
+            <img
+              alt={BRAND_CLIENT_PORTAL_HERO_ILLUSTRATION_ALT}
+              className="h-full w-full scale-[1.02] object-cover object-[center_42%] sm:object-[center_38%]"
+              decoding="async"
+              fetchPriority="high"
+              src={BRAND_CLIENT_PORTAL_HERO_ILLUSTRATION_SRC}
+            />
+            <div
+              aria-hidden
+              className="absolute inset-0 bg-gradient-to-br from-gs-dark/88 via-emerald-950/55 to-[#0a1f14]/70"
+            />
+            <div
+              aria-hidden
+              className="absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_70%_20%,rgba(255,199,44,0.12),transparent_55%)]"
+            />
+            <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/[0.93] via-gs-dark/50 to-transparent" />
+            <div
+              aria-hidden
+              className="absolute inset-0 opacity-[0.35] mix-blend-overlay"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E")`
+              }}
+            />
+          </div>
+        ) : isPortal && portalBackdrop === 'admin' ? (
+          <div className="absolute inset-0 z-0">
+            <img
+              alt={BRAND_ADMIN_OPERATIONS_HERO_ALT}
+              className="h-full w-full object-cover object-[center_45%] sm:object-[center_40%]"
+              decoding="async"
+              fetchPriority="high"
+              src={ADMIN_PORTAL_HERO_IMG_SRC}
+            />
+            <div
+              aria-hidden
+              className="absolute inset-0 bg-gradient-to-br from-gs-dark/85 via-emerald-950/50 to-[#0a1f14]/68"
+            />
+            <div
+              aria-hidden
+              className="absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_72%_18%,rgba(255,199,44,0.1),transparent_55%)]"
+            />
+            <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/[0.92] via-gs-dark/48 to-transparent" />
+            <div
+              aria-hidden
+              className="absolute inset-0 opacity-[0.3] mix-blend-overlay"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E")`
+              }}
+            />
+          </div>
+        ) : isPortal ? (
           <>
             <div className="absolute inset-0 z-0">
               <img
@@ -108,27 +172,50 @@ export function GeHero({
               <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <div className="min-w-0">
                   {portalKicker ? (
-                    <p className="inline-flex rounded-full border border-gs-gold/40 bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.22em] text-gs-gold shadow-sm backdrop-blur">
+                    <motion.p
+                      className="inline-flex rounded-full border border-gs-gold/50 bg-gradient-to-r from-white/[0.14] to-white/[0.06] px-3.5 py-1.5 text-[0.68rem] font-extrabold uppercase tracking-[0.24em] text-gs-gold shadow-[0_0_24px_rgba(255,199,44,0.15)] backdrop-blur-md sm:text-xs"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                    >
                       {portalKicker}
-                    </p>
+                    </motion.p>
                   ) : null}
                   {portalTitle ? (
-                    <h1
+                    <motion.h1
                       id="ge-hero-title"
-                      className="mt-4 max-w-3xl text-[2rem] font-extrabold leading-[1.06] tracking-[-0.02em] text-white [text-shadow:0_2px_22px_rgba(0,0,0,0.5)] sm:text-[2.65rem] md:text-[3rem]"
+                      className="mt-4 max-w-3xl text-[2rem] font-extrabold leading-[1.06] tracking-[-0.02em] text-white [text-shadow:0_2px_28px_rgba(0,0,0,0.55),0_0_40px_rgba(16,185,129,0.12)] sm:text-[2.65rem] md:text-[3rem]"
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.06, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                     >
                       {portalTitle}
-                    </h1>
+                    </motion.h1>
                   ) : null}
                   {portalTimestamp ? (
-                    <p className="mt-3 text-sm font-semibold text-emerald-100/95 [text-shadow:0_1px_14px_rgba(0,0,0,0.45)] md:text-base">
-                      {portalTimestamp}
-                    </p>
+                    <motion.div
+                      className="mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-1"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.12, duration: 0.4 }}
+                    >
+                      <p className="text-sm font-semibold tabular-nums text-white [text-shadow:0_1px_16px_rgba(0,0,0,0.5)] md:text-base">
+                        {portalTimestamp}
+                      </p>
+                      <span className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-white md:text-xs">
+                        Ireland (Dublin)
+                      </span>
+                    </motion.div>
                   ) : null}
                   {portalSubtitle ? (
-                    <p className="mt-4 max-w-2xl text-sm leading-relaxed text-emerald-50/95 [text-shadow:0_1px_14px_rgba(0,0,0,0.4)] md:text-[1.02rem] md:leading-8">
+                    <motion.p
+                      className="mt-4 max-w-2xl border-l-2 border-gs-gold/50 pl-4 text-sm leading-relaxed text-emerald-50/[0.96] [text-shadow:0_1px_14px_rgba(0,0,0,0.45)] md:text-[1.02rem] md:leading-8"
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.18, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                    >
                       {portalSubtitle}
-                    </p>
+                    </motion.p>
                   ) : null}
                 </div>
                 {portalAdornment ? <div className="shrink-0">{portalAdornment}</div> : null}

@@ -481,7 +481,8 @@ export function ClientTransferRequestPanel() {
         dropoff_lng: dropoff.lng,
         dropoff_label: dropoffLabel.trim(),
         status: 'pending',
-        scheduled_at: scheduledAtIso
+        scheduled_at: scheduledAtIso,
+        next_available_driver: scheduleMode === 'asap'
       }
       if (resolvedVias.length > 0) {
         row.route_waypoints = resolvedVias

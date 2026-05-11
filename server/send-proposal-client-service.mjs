@@ -5,7 +5,6 @@ import { requireAdminFromBearer } from './auth-verify-admin.mjs'
 import { createProposalFilename, createProposalPdf } from './proposal-service.mjs'
 import { buildBrandedProposalAttachedEmailHtml } from './branded-client-portal-email.mjs'
 import { finalizeGsolEmailHtml } from './email-layout.mjs'
-import { getTransactionalEmailImageAttachments } from './enquiry-service.mjs'
 
 const getSiteOrigin = (env) => {
   const site = env.SITE_URL?.trim()
@@ -115,7 +114,6 @@ export const handleSendProposalToClient = async (rawBody, env, { authHeader }) =
     dashboardLoginUrl
   })
   const html = finalizeGsolEmailHtml(rawHtml)
-  const imageAttachments = await getTransactionalEmailImageAttachments()
   const pdfAttachment = {
     filename,
     content: Buffer.from(pdfBytes).toString('base64'),
@@ -128,7 +126,7 @@ export const handleSendProposalToClient = async (rawBody, env, { authHeader }) =
     to: clientEmail,
     subject: `Your Golf Sol Ireland proposal — ${proposal.proposalId}`,
     html,
-    attachments: [...imageAttachments, pdfAttachment]
+    attachments: [pdfAttachment]
   })
 
   if (sendError) {

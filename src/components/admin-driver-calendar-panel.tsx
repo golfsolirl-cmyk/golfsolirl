@@ -473,11 +473,21 @@ export function AdminDriverCalendarPanel() {
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between print:hidden">
         <div className="flex items-center gap-2">
-          <LuxuryButton onClick={prevMonth} type="button" variant="outline">
+          <LuxuryButton
+            className="!border-fairway-600 !bg-fairway-50 !text-fairway-800 shadow-none hover:!translate-y-0 hover:!border-fairway-700 hover:!bg-fairway-100 hover:!text-fairway-900 px-5 py-2.5 text-sm"
+            onClick={prevMonth}
+            type="button"
+            variant="white"
+          >
             Previous
           </LuxuryButton>
-          <p className="min-w-[10rem] text-center font-display text-lg font-semibold text-forest-950">{monthLabel}</p>
-          <LuxuryButton onClick={nextMonth} type="button" variant="outline">
+          <p className="min-w-[10rem] text-center font-display text-lg font-semibold text-fairway-800">{monthLabel}</p>
+          <LuxuryButton
+            className="!border-fairway-600 !bg-fairway-50 !text-fairway-800 shadow-none hover:!translate-y-0 hover:!border-fairway-700 hover:!bg-fairway-100 hover:!text-fairway-900 px-5 py-2.5 text-sm"
+            onClick={nextMonth}
+            type="button"
+            variant="white"
+          >
             Next
           </LuxuryButton>
         </div>

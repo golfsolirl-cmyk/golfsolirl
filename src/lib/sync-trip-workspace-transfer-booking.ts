@@ -134,6 +134,7 @@ export const syncTripWorkspaceToTransferBooking = async (
     .join('\n')
 
   const scheduled_at = firstScheduledIso(stops)
+  const next_available_driver = !scheduled_at
 
   const baseRow: Record<string, unknown> = {
     client_user_id: clientUserId,
@@ -150,6 +151,7 @@ export const syncTripWorkspaceToTransferBooking = async (
     dropoff_lng: p1.lng,
     dropoff_label: dropoffLabel,
     scheduled_at,
+    next_available_driver,
     client_timing_note: timingNote.slice(0, 4000),
     route_waypoints: route_waypoints && route_waypoints.length ? route_waypoints : null,
     updated_at: new Date().toISOString()

@@ -117,21 +117,31 @@ export const drawUnifiedDocumentHeader = (page, ctx, header) => {
 export const drawUnifiedKeyValueTable = (page, startY, ctx, rows) => {
   const { pageWidth, margin } = UNIFIED_PDF_LAYOUT
   const contentW = pageWidth - margin * 2
-  const rowH = 44
   const labelColW = Math.min(168, Math.floor(contentW * 0.32))
   const valueX = margin + labelColW + 18
   const valueMaxW = contentW - labelColW - 36
+  const labelMaxW = labelColW - 8
+  const labelSize = 7.5
+  const valueSize = 10.5
+  const labelLH = 11
+  const valueLH = 13
+  const padV = 12
   let yTop = startY
 
   for (let i = 0; i < rows.length; i += 1) {
     const bg = i % 2 === 0 ? pdfEmailTheme.paleGreen : pdfEmailTheme.white
-    const bottom = yTop - rowH
-    const rowMid = bottom + rowH / 2
+    const labelLines = wrapPlainLinesWithFont(ctx.fontBold, rows[i].label.toUpperCase(), labelSize, labelMaxW)
+    const valueLines = wrapPlainLinesWithFont(ctx.font, rows[i].value, valueSize, valueMaxW)
+    const labelBlockH = Math.max(labelLines.length, 1) * labelLH
+    const valueBlockH = Math.max(valueLines.length, 1) * valueLH
+    const innerH = padV * 2 + Math.max(labelBlockH, valueBlockH)
+    const bottom = yTop - innerH
+
     page.drawRectangle({
       x: margin,
       y: bottom,
       width: contentW,
-      height: rowH,
+      height: innerH,
       color: bg,
       borderColor: pdfEmailTheme.sand,
       borderWidth: 0.5
@@ -140,32 +150,179 @@ export const drawUnifiedKeyValueTable = (page, startY, ctx, rows) => {
       x: margin + labelColW + 8,
       y: bottom + 6,
       width: 0.45,
-      height: rowH - 12,
+      height: innerH - 12,
       color: pdfEmailTheme.sand
     })
-    const yLabel = rowMid - 2
-    const yValue = rowMid - 3
-    page.drawText(sanitizeStandardFontText(rows[i].label.toUpperCase()), {
-      x: margin + 16,
-      y: yLabel,
-      font: ctx.fontBold,
-      size: 7.5,
-      color: pdfEmailTheme.greenSoft,
-      maxWidth: labelColW - 8
-    })
-    page.drawText(sanitizeStandardFontText(rows[i].value), {
-      x: valueX,
-      y: yValue,
-      font: ctx.font,
-      size: 10.5,
-      color: pdfEmailTheme.ink,
-      maxWidth: valueMaxW,
-      lineHeight: 13
-    })
+
+    let lb = yTop - padV - labelSize
+    for (const line of labelLines) {
+      page.drawText(line, {
+        x: margin + 16,
+        y: lb,
+        font: ctx.fontBold,
+        size: labelSize,
+        color: pdfEmailTheme.greenSoft
+      })
+      lb -= labelLH
+    }
+
+    let vb = yTop - padV - valueSize
+    for (const line of valueLines) {
+      page.drawText(line, {
+        x: valueX,
+        y: vb,
+        font: ctx.font,
+        size: valueSize,
+        color: pdfEmailTheme.ink
+      })
+      vb -= valueLH
+    }
+
     yTop = bottom - 3
   }
 
   return yTop
+}
+
+/** Vertical space (pt) for key-value rows — matches {@link drawUnifiedKeyValueTable}. */
+export const estimateUnifiedKeyValueTableHeight = (ctx, rows) => {
+  const { pageWidth, margin } = UNIFIED_PDF_LAYOUT
+  const contentW = pageWidth - margin * 2
+  const labelColW = Math.min(168, Math.floor(contentW * 0.32))
+  const valueMaxW = contentW - labelColW - 36
+  const labelMaxW = labelColW - 8
+  const labelLH = 11
+  const valueLH = 13
+  const padV = 12
+  let total = 0
+  for (const row of rows) {
+    const labelLines = wrapPlainLinesWithFont(ctx.fontBold, row.label.toUpperCase(), 7.5, labelMaxW)
+    const valueLines = wrapPlainLinesWithFont(ctx.font, row.value, 10.5, valueMaxW)
+    const labelBlockH = Math.max(labelLines.length, 1) * labelLH
+    const valueBlockH = Math.max(valueLines.length, 1) * valueLH
+    const innerH = padV * 2 + Math.max(labelBlockH, valueBlockH)
+    total += innerH + 3
+  }
+  return total
+}
+
+/**
+ * Section card: title, intro paragraph, bullet list (wrapped — no clipping).
+ * @returns {number} next Y below the card
+ */
+export const drawUnifiedBulletCard = (page, startY, ctx, section) => {
+  const { pageWidth, margin } = UNIFIED_PDF_LAYOUT
+  const contentW = pageWidth - margin * 2
+  const pad = 16
+  const innerLeft = margin + pad
+  const innerW = contentW - pad * 2
+  const titleSize = 11.5
+  const titleLH = 14
+  const bodySize = 10.5
+  const bodyLH = 14
+  const bulletSize = 10.5
+  const bulletLH = 14
+
+  const titleLines = wrapPlainLinesWithFont(ctx.fontBold, section.title, titleSize, innerW)
+  const bodyLines = wrapPlainLinesWithFont(ctx.font, section.body, bodySize, innerW - 4)
+  const bulletLineGroups = (section.points ?? []).map((p) =>
+    wrapPlainLinesWithFont(ctx.font, `• ${p}`, bulletSize, innerW - 14)
+  )
+
+  const titleBlockH = titleLines.length * titleLH
+  const bodyBlockH = bodyLines.length * bodyLH
+  let bulletsH = 0
+  for (const g of bulletLineGroups) {
+    bulletsH += g.length * bulletLH + 8
+  }
+
+  const cardH = pad + titleBlockH + 12 + bodyBlockH + 14 + bulletsH + pad
+  const bottom = startY - cardH
+
+  page.drawRectangle({
+    x: margin,
+    y: bottom,
+    width: contentW,
+    height: cardH,
+    color: pdfEmailTheme.white,
+    borderColor: pdfEmailTheme.sand,
+    borderWidth: 0.75
+  })
+
+  let y = startY - pad - titleSize
+  for (const line of titleLines) {
+    page.drawText(line, {
+      x: innerLeft,
+      y,
+      font: ctx.fontBold,
+      size: titleSize,
+      color: pdfEmailTheme.ink
+    })
+    y -= titleLH
+  }
+
+  y -= 8
+  for (const line of bodyLines) {
+    page.drawText(line, {
+      x: innerLeft,
+      y,
+      font: ctx.font,
+      size: bodySize,
+      color: pdfEmailTheme.muted
+    })
+    y -= bodyLH
+  }
+
+  y -= 10
+  for (const group of bulletLineGroups) {
+    for (const line of group) {
+      page.drawText(line, {
+        x: innerLeft,
+        y,
+        font: ctx.font,
+        size: bulletSize,
+        color: pdfEmailTheme.ink
+      })
+      y -= bulletLH
+    }
+    y -= 8
+  }
+
+  return bottom - 14
+}
+
+/**
+ * Approximate vertical space needed for {@link drawUnifiedBulletCard} (for pagination).
+ */
+export const estimateUnifiedBulletCardHeight = (ctx, section, contentW) => {
+  const pad = 16
+  const innerW = contentW - pad * 2
+  const titleLH = 14
+  const bodyLH = 14
+  const bulletLH = 14
+  const titleLines = wrapPlainLinesWithFont(ctx.fontBold, section.title, 11.5, innerW)
+  const bodyLines = wrapPlainLinesWithFont(ctx.font, section.body, 10.5, innerW - 4)
+  let bulletsH = 0
+  for (const point of section.points ?? []) {
+    const lines = wrapPlainLinesWithFont(ctx.font, `• ${point}`, 10.5, innerW - 14)
+    bulletsH += lines.length * bulletLH + 8
+  }
+  return pad + titleLines.length * titleLH + 12 + bodyLines.length * bodyLH + 14 + bulletsH + pad + 20
+}
+
+/** Footer line with optional page x of y (same shell as sample PDFs). */
+export const drawUnifiedFooterLine = (page, ctx, text, y = 30) => {
+  const { pageWidth, margin } = UNIFIED_PDF_LAYOUT
+  const contentW = pageWidth - margin * 2
+  page.drawText(sanitizeStandardFontText(text), {
+    x: margin,
+    y,
+    font: ctx.font,
+    size: 9,
+    color: pdfEmailTheme.muted,
+    maxWidth: contentW * 0.72,
+    lineHeight: 12
+  })
 }
 
 /**
@@ -195,10 +352,10 @@ export const drawUnifiedSectionHeading = (page, y, ctx, title) => {
 }
 
 /**
- * Wrapped body copy (policies, notes).
- * @returns {number} Y below block
+ * Word-wrap for WinAnsi-safe text (use with Helvetica / embedded fonts).
+ * @param {import('pdf-lib').PDFFont} font
  */
-const wrapPlainLines = (font, text, fontSize, maxWidth) => {
+export const wrapPlainLinesWithFont = (font, text, fontSize, maxWidth) => {
   const words = sanitizeStandardFontText(text).split(/\s+/).filter(Boolean)
   if (words.length === 0) {
     return ['']
@@ -231,7 +388,7 @@ export const drawUnifiedParagraphBlock = (page, topY, ctx, text, opts = {}) => {
       y -= lineHeight * 0.35
       continue
     }
-    const wrapped = wrapPlainLines(ctx.font, para, size, contentW)
+    const wrapped = wrapPlainLinesWithFont(ctx.font, para, size, contentW)
     for (const line of wrapped) {
       page.drawText(line, { x: margin, y, font: ctx.font, size, color })
       y -= lineHeight
@@ -292,9 +449,10 @@ export const buildGsolUnifiedPdfTemplateSampleBytes = async () => {
 
   const page1 = doc.addPage([pageWidth, pageHeight])
   let y = drawUnifiedDocumentHeader(page1, ctx, {
-    kicker: 'SAMPLE · UNIFIED TEMPLATE',
-    title: 'Golf Sol Ireland',
-    subtitle: 'One visual shell for every PDF: enquiry copy, quotes, invoices, terms, privacy, and admin portal attachments.'
+    kicker: 'WHERE YOUR COSTA ROUND BEGINS',
+    title: 'Your Costa del Sol golf trip starts here',
+    subtitle:
+      'Meet-and-greet at Málaga (AGP), golf-bag-friendly Mercedes transfers and tee-time-ready pacing — every GolfSol Ireland transfer is fully insured.'
   })
 
   y = drawUnifiedSectionHeading(page1, y - 8, ctx, 'FORM SUBMISSION COPY (FICTIONAL)')

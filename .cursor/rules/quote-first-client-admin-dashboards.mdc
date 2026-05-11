@@ -1,0 +1,82 @@
+---
+description: Quote-first client & admin dashboards — phone-unique account, form submissions, three services, pricing + email updates
+globs:
+alwaysApply: true
+---
+# Quote-first client & admin dashboards (target product)
+
+Golf Sol Ireland should feel **simple**: everything starts from **“Get a quote”** or a **site form**. The **client dashboard** is the home after that. The **admin** view is a **queue of submissions and requests**, not a heavy CRM.
+
+When implementing or refactoring dashboard, enquiry, or portal code, **prefer this model** over ad-hoc admin-only flows.
+
+## Three services (copy & product)
+
+All upsells and line items map to these Costa del Sol offerings:
+
+| Service | User-facing idea | Notes |
+|--------|-------------------|--------|
+| **Transfers** | Private transport (Málaga airport ↔ hotel ↔ golf course) | Same vehicle story for airport, hotel, course legs |
+| **Golf courses** | Rounds / tee times / course selection | Part of itinerary and add-on requests |
+| **Hotels & accommodation** | Stay | DB category today is `hotels` — UI may say “accommodation” |
+
+Keep client wording **short**; admin can see internal labels.
+
+## Identity: mobile number is the business unique key
+
+- **One “account” per unique mobile number** (after normalization). Users may submit many forms or “sign up” again **only** if the **mobile is different** each time.
+- **Normalize** phones to a single canonical form (e.g. **E.164**, `+353…` / `+34…`) before compare and storage. Strip spaces, handle leading `0` vs country code for IE/UK.
+- **Account / reference number**: generate a **stable, human-readable ID** when the first successful form or account is created for that phone (pattern can match existing `createEnquiryReferenceId()` / `GSOL-…` style used on profiles — see [admin-portal-client-service.mjs](mdc:server/admin-portal-client-service.mjs)).
+- **Duplicate phone on a new form or signup**: do **not** create another primary client row for that phone. Respond with a clear path: **“We already have a trip desk for this number — sign in to continue”** and offer **magic link / login** (today magic links are often **email**-based via Supabase — acceptable if **email is collected with the phone** and linked to the same profile; the **rule** is: **business uniqueness = phone**, not “unlimited anonymous forms per device”).
+
+## Client journey (happy path)
+
+1. **Get a quote / form** → creates or attaches to the **enquiry** / form payload (see `enquiries`, `form_payload` in migrations).
+2. **Account reference** issued or confirmed for that **phone** (and linked profile where auth exists).
+3. **Post-enquiry portal** (optional delay job): branded **magic link** email — see [post-enquiry-portal-invite.mjs](mdc:server/post-enquiry-portal-invite.mjs), [branded-post-enquiry-portal-invite-email.mjs](mdc:server/branded-post-enquiry-portal-invite-email.mjs).
+4. **Client dashboard** after login:
+   - **Greeting** with **first name or full name** from profile / enquiry.
+   - **Their details** (contact block — phone, email, party size as collected).
+   - **Requested trip / itinerary** — surface the **latest enquiry** or linked **package build** as the single “your trip” story (avoid multiple competing summaries).
+   - **Three simple actions**: “Add / request **transfers**”, “**Golf courses**”, “**Accommodation**” — each should create or continue a thread the admin can see. Prefer existing **`portal_interest_tickets`** with `category` in `transfers` | `golf_courses` | `hotels` (see [20260503120000_portal_contact_onboarding_interest_tickets.sql](mdc:supabase/migrations/20260503120000_portal_contact_onboarding_interest_tickets.sql)).
+
+## Admin journey (simplified)
+
+1. **Single list mindset**: each row is a **form submission** or **client request** (enquiry + portal tickets + optional package build), not a maze of unrelated tools.
+2. **Price the request**: admin enters or adjusts **price / line items**; persist in the same tables that drive the **customer portal** (avoid duplicate sources of truth).
+3. **Customer sees update**: portal reflects new totals or status **immediately** after save.
+4. **Email**: send a **branded transactional** mail that “your quote was updated” (reuse `buildGsolTransactionalEmail` / `finalizeGsolEmailHtml` patterns — [email-layout.mjs](mdc:server/email-layout.mjs), [email-templates.mdc](mdc:.cursor/rules/email-templates.mdc)).
+
+## Complexity budget
+
+- **Do not** reintroduce parallel admin workflows that bypass **enquiries** and **portal** tables unless necessary.
+- **Do** collapse UI so **client** sees **one dashboard** and **admin** sees **one queue** with drill-down.
+- When Supabase Auth **email** conflicts with **phone-first** product rules, resolve in **application logic** + **unique index on normalized phone** on `profiles` and/or `enquiries`, not by weakening the product rule.
+
+## Related implementation files (evolve, don’t ignore)
+
+| Area | Files / tables |
+|------|----------------|
+| Enquiry ingest | [enquiry-service.mjs](mdc:server/enquiry-service.mjs), `public.enquiries`, `form_payload` |
+| Portal invite | [post-enquiry-portal-invite.mjs](mdc:server/post-enquiry-portal-invite.mjs) |
+| Admin creates portal user | [admin-portal-client-service.mjs](mdc:server/admin-portal-client-service.mjs) — today **email**-unique; align with **phone uniqueness** when extending |
+| Client interest threads | `portal_interest_tickets`, `portal_interest_ticket_messages` |
+| Admin UI | [admin-dashboard-page.tsx](mdc:src/pages/admin-dashboard-page.tsx) (large — add focused subviews rather than duplicating flows) |
+
+## Checklist before shipping dashboard changes
+
+- [ ] Duplicate **same phone** on form → **login / existing desk**, not a second account.
+- [ ] Client dashboard shows **name**, **contact**, **itinerary**, **three service** actions.
+- [ ] Admin **price** updates **portal** + **email** in one coherent flow.
+- [ ] Copy mentions only the **three** services above unless product expands.
+
+## Implemented pieces (repo)
+
+- **Normalize**: [phone-e164.mjs](mdc:server/phone-e164.mjs) (`computePhoneUniquenessKey`).
+- **DB**: [20260510170000_profiles_enquiries_phone_e164.sql](mdc:supabase/migrations/20260510170000_profiles_enquiries_phone_e164.sql) — `enquiries.phone_e164`, unique `profiles.phone_e164`.
+- **Enquiry API**: [enquiry-service.mjs](mdc:server/enquiry-service.mjs) — preflight duplicate check → **409** + `code: EXISTING_PHONE_USE_LOGIN`; gateway returns `code` in JSON ([gateway.mjs](mdc:api/gateway.mjs)).
+- **Forms**: [post-enquiry-client.ts](mdc:src/lib/post-enquiry-client.ts) + all `/api/enquiry` callers show **Sign in** link on conflict.
+- **Portal contact**: [portal-contact-setup-service.mjs](mdc:server/portal-contact-setup-service.mjs) — refuse saving a phone already on another profile.
+- **Profile autofill**: [sync-portal-profile-service.mjs](mdc:server/sync-portal-profile-service.mjs) — sets `phone_e164` when copying from enquiry if no clash.
+- **Dashboard**: [client-dashboard-page.tsx](mdc:src/pages/client-dashboard-page.tsx) — **Add to your trip** strip (transfers / golf / hotels) opens existing interest modals.
+- **Admin layout & jump nav**: [admin-operations-dashboard.mdc](mdc:.cursor/rules/admin-operations-dashboard.mdc), [admin-operations-hub-hero.tsx](mdc:src/components/admin-operations-hub-hero.tsx).
+- **Disable dedupe** (staging): env `ENQUIRY_PHONE_DEDUPE_DISABLE=true`.

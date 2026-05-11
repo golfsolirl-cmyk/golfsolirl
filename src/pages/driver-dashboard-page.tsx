@@ -49,6 +49,15 @@ const viaLineDriver = (b: BookingRow) => {
 
 const DEFAULT_PREVIEW_DRIVER_ID = 'c0ffee00-0000-4000-8000-000000000001'
 
+const TRANSFER_BOOKINGS_SELECT_WITH_VIAS =
+  'id, status, client_display_name, client_phone, pickup_label, dropoff_label, scheduled_at, route_waypoints, client_timing_note'
+
+const TRANSFER_BOOKINGS_SELECT_NO_VIAS =
+  'id, status, client_display_name, client_phone, pickup_label, dropoff_label, scheduled_at, client_timing_note'
+
+const isRouteWaypointsColumnError = (message: string) =>
+  /route_waypoints|42703|does not exist|schema cache/i.test(message)
+
 const adminPreviewEnvEnabled = () =>
   Boolean(import.meta.env.DEV || import.meta.env.VITE_DRIVER_DESK_ADMIN_PREVIEW === 'true')
 
@@ -103,20 +112,36 @@ export function DriverDashboardPage() {
       }
 
       setDriverId(resolvedDriverId)
-      const { data: rows, error: bErr } = await supabase
+      const firstRes = await supabase
         .from('transfer_bookings')
-        .select(
-          'id, status, client_display_name, client_phone, pickup_label, dropoff_label, scheduled_at, route_waypoints, client_timing_note'
-        )
+        .select(TRANSFER_BOOKINGS_SELECT_WITH_VIAS)
         .eq('assigned_driver_id', resolvedDriverId)
         .order('created_at', { ascending: false })
         .limit(40)
-      if (bErr) {
-        setMsg(bErr.message)
+
+      if (!firstRes.error) {
+        setBookings((firstRes.data ?? []) as BookingRow[])
+      } else if (isRouteWaypointsColumnError(firstRes.error.message)) {
+        const secondRes = await supabase
+          .from('transfer_bookings')
+          .select(TRANSFER_BOOKINGS_SELECT_NO_VIAS)
+          .eq('assigned_driver_id', resolvedDriverId)
+          .order('created_at', { ascending: false })
+          .limit(40)
+        if (secondRes.error) {
+          setMsg(secondRes.error.message)
+          setBookings([])
+          return
+        }
+        setMsg(
+          'Jobs loaded without via stops: add column transfer_bookings.route_waypoints — run supabase/run-in-sql-editor-transfer-bookings-route-waypoints.sql (or migration 20260505180000) in Supabase, then refresh.'
+        )
+        setBookings((secondRes.data ?? []) as BookingRow[])
+      } else {
+        setMsg(firstRes.error.message)
         setBookings([])
         return
       }
-      setBookings((rows ?? []) as BookingRow[])
     } finally {
       setLoading(false)
     }

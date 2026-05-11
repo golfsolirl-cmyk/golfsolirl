@@ -1,5 +1,5 @@
 ---
-description: Golf Sol Ireland branded transactional HTML email — shell, builders, CID images, Resend, escaping
+description: Golf Sol Ireland branded transactional HTML email — shell, builders, hosted assets, Resend, escaping
 globs:
 alwaysApply: false
 ---
@@ -12,8 +12,8 @@ All customer-facing transactional mail shares one **640px table-based shell**: t
 | Layer | File | Responsibility |
 |--------|------|------------------|
 | Visual system + primitives | [branded-email-shell.mjs](mdc:server/branded-email-shell.mjs) | `gs` palette, `emailFonts`, `escapeHtml`, `ctaGold` / `ctaGreen`, `assetUrl`, `buildBrandedEmailHeadAndOpen`, `buildBrandedPreheaderThroughHeaderRow`, `buildBrandedMarketingTailHtml`, `buildBrandedFooterHtml`, **`buildBrandedTransactionalEmailHtml`** |
-| Resend CID swap + thin wrapper | [email-layout.mjs](mdc:server/email-layout.mjs) | `buildGsolTransactionalEmail`, **`finalizeGsolEmailHtml`**, `adaptTransactionalEmailHtmlForBrowserPreview` |
-| Content-IDs + brand lines | [email-constants.mjs](mdc:server/email-constants.mjs) | `logoLockupEmailContentId`, `shamrockInlineContentId`, `socialContentIds`, `gsolEmailBrand`, `gsolCompanyLegal` |
+| Finalize + browser preview | [email-layout.mjs](mdc:server/email-layout.mjs) | `buildGsolTransactionalEmail`, **`finalizeGsolEmailHtml`** (terms/social), `adaptTransactionalEmailHtmlForBrowserPreview` |
+| Brand lines + legacy CID keys (preview only) | [email-constants.mjs](mdc:server/email-constants.mjs) | `gsolEmailBrand`, `gsolCompanyLegal`, optional `logoLockupEmailContentId` / `socialContentIds` for old HTML preview |
 | Enquiry customer/admin HTML | [branded-enquiry-email.mjs](mdc:server/branded-enquiry-email.mjs) | Full document duplicated from the shell visual system — update alongside `branded-email-shell.mjs` when changing header/hero chrome. |
 
 Feature emails import **`buildGsolTransactionalEmail`** + **`finalizeGsolEmailHtml`** from [email-layout.mjs](mdc:server/email-layout.mjs) (see [branded-transfer-payment-email.mjs](mdc:server/branded-transfer-payment-email.mjs), [branded-client-portal-email.mjs](mdc:server/branded-client-portal-email.mjs), [transfer-booking-notify-service.mjs](mdc:server/transfer-booking-notify-service.mjs), etc.).
@@ -24,7 +24,7 @@ Feature emails import **`buildGsolTransactionalEmail`** + **`finalizeGsolEmailHt
 2. **Typography / colour**: use **`emailFonts.sans`** and **`gs.*`** tokens from [branded-email-shell.mjs](mdc:server/branded-email-shell.mjs) in new fragments so mail stays on-brand.
 3. **User-controlled text** (names, routes, IDs): escape with **`escapeHtml()`** from [branded-email-shell.mjs](mdc:server/branded-email-shell.mjs) before interpolating into HTML. Hero copy that embeds user data must be safe.
 4. **Main card body**: pass **`bodyHtml`** / **`mainCardInnerHtml`** as HTML you control. If you only have `<tr>...</tr>` fragments, the shell normalizes them via **`normalizeTransactionalEmailBodyHtml`**.
-5. **Sending through Resend**: build raw HTML, then run **`finalizeGsolEmailHtml(html)`** so lockup path, shamrock SVGs, social block, and absolute links are CID/site–correct. For iframe dev preview, use **`adaptTransactionalEmailHtmlForBrowserPreview`** from [email-layout.mjs](mdc:server/email-layout.mjs).
+5. **Sending through Resend**: build raw HTML, then run **`finalizeGsolEmailHtml(html)`** so `/terms-and-conditions` and optional **`GSOL-SOCIAL-ICONS`** placeholders resolve (brand logos in HTML already use **`assetUrl`** — no image attachments). For iframe dev preview, use **`adaptTransactionalEmailHtmlForBrowserPreview`** from [email-layout.mjs](mdc:server/email-layout.mjs).
 6. **Preheader**: short inbox preview string; keep aligned with `heroLead` / subject.
 7. **Footer disclaimer**: pass **`footerDisclaimerHtml`** into `buildBrandedTransactionalEmailHtml` when the default admin copy in `buildBrandedFooterHtml` is wrong for the mail type.
 8. **Mobile (`@media only screen and (max-width: 680px)`)**: keep [branded-email-shell.mjs](mdc:server/branded-email-shell.mjs) and [branded-enquiry-email.mjs](mdc:server/branded-enquiry-email.mjs) **in lockstep**. Patterns: **`email-outer-shell`** trims outer padding; **`email-header-row`** stacks logo → tagline → phone with **`email-header-phone-link`** tap target; **`email-hero-logo`** scales in hero; **`email-tile-row` / `email-tile-cell`** add vertical rhythm when three tiles stack; **`email-trust-badge` / `email-trust-body`** stack trust row; fluid **`img`** under `.email-shell`; **`#MessageViewBody`** width for Gmail webview quirks.
@@ -33,7 +33,7 @@ Feature emails import **`buildGsolTransactionalEmail`** + **`finalizeGsolEmailHt
 
 - ❌ External CSS only, or `<div>`-first layouts without tables — breaks Outlook.
 - ❌ Unescaped DB fields or Stripe metadata in HTML strings.
-- ❌ Calling Resend without **`finalizeGsolEmailHtml`** on the Golf Sol transactional shell (CID images and `href="/terms-and-conditions"` fixes will be wrong).
+- ❌ Calling Resend without **`finalizeGsolEmailHtml`** on the Golf Sol transactional shell (`href="/terms-and-conditions"` and social placeholder fixes will be wrong).
 - ❌ Duplicating the full `<html>…` shell in a new module — extend **`buildGsolTransactionalEmail`** / **`buildBrandedTransactionalEmailHtml`** instead.
 
 ## Canonical builder flow (Resend)
@@ -53,13 +53,13 @@ const htmlRaw = buildGsolTransactionalEmail({
   bodyHtml: `<p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Hello ${escapeHtml(customerName)}, …</p>`
 })
 const html = finalizeGsolEmailHtml(htmlRaw)
-// attach inline images keyed by email-constants content-ids; send with Resend
+// send with Resend — brand images use absolute SITE_URL links in HTML; PDFs attach separately when needed
 ```
 
 ## Layout reference (same shell as live mail)
 
 [branded-sample-document-html.mjs](mdc:server/branded-sample-document-html.mjs) exports **`getBrandedSampleDocumentPreviewHtml()`** — full HTML using **`buildBrandedTransactionalEmailHtml`** with fictional body content. Use it for PDF/print alignment and visual QA. Dev route: [email-template-preview.tsx](mdc:src/pages/email-template-preview.tsx) (`/email-template-preview`).
 
-## Optional: social icons placeholder
+## Optional: social strip placeholder
 
-Templates that include the social row must keep the HTML comment pair **`<!-- GSOL-SOCIAL-ICONS -->` … `<!-- /GSOL-SOCIAL-ICONS -->`** if present in the string passed to **`finalizeGsolEmailHtml`** (see [email-layout.mjs](mdc:server/email-layout.mjs)); the finalizer replaces that block with CID-backed icons.
+Templates may include the HTML comment pair **`<!-- GSOL-SOCIAL-ICONS -->` … `<!-- /GSOL-SOCIAL-ICONS -->`** in the string passed to **`finalizeGsolEmailHtml`** (see [email-layout.mjs](mdc:server/email-layout.mjs)); the finalizer replaces it with **text links** (LinkedIn, Facebook, WhatsApp, Bluesky) — **no PNG attachments**.

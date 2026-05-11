@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { ensureEmailAccountAnchor } from './email-address-registry.mjs'
+import { computePhoneUniquenessKey } from './phone-e164.mjs'
 
 /**
  * Fills empty profiles.full_name / profiles.phone from the latest enquiry with the same email.
@@ -116,7 +117,24 @@ export const handleSyncPortalProfile = async (env = process.env, meta = {}) => {
     patch.full_name = enquiry.full_name.trim()
   }
   if (needsPhone && typeof enquiry.phone_whatsapp === 'string' && enquiry.phone_whatsapp.trim()) {
-    patch.phone = enquiry.phone_whatsapp.trim()
+    const trimmedPhone = enquiry.phone_whatsapp.trim()
+    const pk = computePhoneUniquenessKey(trimmedPhone)
+    if (pk) {
+      const { data: clashRows, error: clashErr } = await admin
+        .from('profiles')
+        .select('id')
+        .eq('phone_e164', pk)
+        .neq('id', user.id)
+        .limit(1)
+      if (!clashErr && clashRows?.length) {
+        // Another account already owns this number — skip autofill so sync stays non-destructive.
+      } else {
+        patch.phone = trimmedPhone
+        patch.phone_e164 = pk
+      }
+    } else {
+      patch.phone = trimmedPhone
+    }
   }
 
   if (Object.keys(patch).length === 0) {

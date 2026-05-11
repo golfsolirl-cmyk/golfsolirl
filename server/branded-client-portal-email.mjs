@@ -197,7 +197,7 @@ export const buildBrandedProposalAttachedEmailHtml = ({ greetingName, proposalId
 
 /**
  * Passwordless dashboard link — same `buildGsolTransactionalEmail` shell as proposals / portal messages
- * (finalize + CID images at send time).
+ * (`finalizeGsolEmailHtml` at send time; hosted logo URLs in HTML — no raster attachments).
  * @param {{ actionLink: string; email: string; requestedAtDisplay: string }} opts
  */
 export const buildBrandedPortalMagicLinkEmailHtml = ({ actionLink, email, requestedAtDisplay }) => {

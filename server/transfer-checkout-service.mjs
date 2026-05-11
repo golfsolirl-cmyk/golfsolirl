@@ -1,5 +1,11 @@
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
+import {
+  balanceAmountEur,
+  depositAmountEur,
+  isTransferFullUpfront,
+  normalizedDepositPercent
+} from './transfer-payment-amounts.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
   const e = new Error(message)
@@ -135,7 +141,7 @@ export const handleTransferStripeCheckout = async (body, env = process.env, meta
   const { data: booking, error: bErr } = await admin
     .from('transfer_bookings')
     .select(
-      'id, client_user_id, client_email, enquiry_reference_id, pickup_label, dropoff_label, admin_price_eur, payment_status, deposit_percent'
+      'id, client_user_id, client_email, enquiry_reference_id, pickup_label, dropoff_label, admin_price_eur, payment_status, deposit_percent, scheduled_at, next_available_driver'
     )
     .eq('id', bookingId)
     .maybeSingle()
@@ -162,19 +168,52 @@ export const handleTransferStripeCheckout = async (body, env = process.env, meta
     throwStatus('This transfer is already marked as paid.', 400)
   }
 
-  let amountEur = Math.round(gross * 100) / 100
-  let productTitle = 'Costa transfer — balance'
-  let productDetail = 'Quoted transfer total (VAT-inclusive where applicable).'
+  const rawPhase =
+    typeof body?.paymentPhase === 'string'
+      ? body.paymentPhase.trim().toLowerCase()
+      : typeof body?.paymentKind === 'string'
+        ? body.paymentKind.trim().toLowerCase()
+        : ''
 
-  if (paySt === 'deposit') {
-    const pctRaw = booking.deposit_percent
-    const pct =
-      typeof pctRaw === 'number' && Number.isFinite(pctRaw)
-        ? Math.min(99, Math.max(1, Math.round(pctRaw)))
-        : 20
-    amountEur = Math.round((gross * (100 - pct)) / 100 * 100) / 100
+  const fullUpfront = isTransferFullUpfront(booking)
+  const pct = normalizedDepositPercent(booking.deposit_percent)
+
+  let amountEur = Math.round(gross * 100) / 100
+  let productTitle = 'Costa transfer — pay in full'
+  let productDetail = 'Quoted transfer total (VAT-inclusive where applicable).'
+  let paymentKind = 'full'
+
+  if (fullUpfront) {
+    if (paySt !== 'unpaid') {
+      throwStatus('This transfer is not awaiting payment.', 400)
+    }
+    if (rawPhase === 'deposit' || rawPhase === 'balance') {
+      throwStatus('This transfer is ASAP / next available driver — pay the full quoted amount in one step.', 400)
+    }
+    paymentKind = 'full'
+    amountEur = Math.round(gross * 100) / 100
+    productTitle = 'Costa transfer — full payment (ASAP)'
+    productDetail = `Full quoted total €${gross.toFixed(2)} — no split deposit for next-available-driver requests.`
+  } else if (paySt === 'unpaid') {
+    if (rawPhase === 'balance') {
+      throwStatus('Pay the deposit first. You can pay the balance from your dashboard after the deposit is received.', 400)
+    }
+    paymentKind = 'deposit'
+    amountEur = depositAmountEur(gross, pct)
+    productTitle = `Costa transfer — ${pct}% deposit`
+    productDetail = `Deposit on quoted €${gross.toFixed(
+      2
+    )}. Remaining balance is due 48 hours before your scheduled pickup (we email a reminder).`
+  } else if (paySt === 'deposit') {
+    if (rawPhase === 'deposit') {
+      throwStatus('Your deposit is already on file. Use Pay balance for the remainder.', 400)
+    }
+    paymentKind = 'balance'
+    amountEur = balanceAmountEur(gross, pct)
     productTitle = `Costa transfer — balance (${100 - pct}% after deposit)`
     productDetail = `Remaining balance after ${pct}% deposit on quoted €${gross.toFixed(2)}.`
+  } else {
+    throwStatus('This transfer is not awaiting payment.', 400)
   }
 
   const amountCents = Math.round(amountEur * 100)
@@ -197,7 +236,7 @@ export const handleTransferStripeCheckout = async (body, env = process.env, meta
       client_reference_id: bookingId,
       metadata: {
         transfer_booking_id: bookingId,
-        payment_kind: paySt === 'deposit' ? 'balance' : 'full'
+        payment_kind: paymentKind
       },
       line_items: [
         {

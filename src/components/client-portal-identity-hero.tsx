@@ -1,5 +1,13 @@
 import { useState } from 'react'
 import { Copy, Check, FileText, CreditCard, BadgeCheck } from 'lucide-react'
+import {
+  balanceAmountEur,
+  clientTransferOperationalStatusLabel,
+  depositAmountEur,
+  formatBalanceDueLine,
+  normalizedDepositPercent,
+  transferPaymentFullUpfront
+} from '../lib/transfer-payment-breakdown'
 import { cx } from '../lib/utils'
 
 const formatEurInline = (n: number) =>
@@ -15,6 +23,7 @@ export type ClientPortalTransferHeroRow = {
   readonly admin_price_vat_treatment?: string | null
   readonly deposit_percent?: number | null
   readonly payment_status?: string | null
+  readonly next_available_driver?: boolean | null
   readonly booking_source?: string | null
   readonly package_build_id?: string | null
   readonly enquiry_reference_id?: string | null
@@ -23,30 +32,9 @@ export type ClientPortalTransferHeroRow = {
   readonly updated_at?: string | null
 }
 
-/** Matches server transfer checkout: full quoted EUR, or balance after deposit %. */
-export function transferPayableAmountEur(t: ClientPortalTransferHeroRow): number | null {
-  const gross = t.admin_price_eur
-  if (typeof gross !== 'number' || !Number.isFinite(gross)) {
-    return null
-  }
-  const pay = (t.payment_status ?? 'unpaid').toLowerCase()
-  if (pay === 'paid') {
-    return null
-  }
-  if (pay === 'deposit') {
-    const pctRaw = t.deposit_percent
-    const pct =
-      typeof pctRaw === 'number' && Number.isFinite(pctRaw)
-        ? Math.min(99, Math.max(1, Math.round(pctRaw)))
-        : 20
-    return Math.round(gross * (100 - pct)) / 100
-  }
-  return gross
-}
-
 export function ClientPortalIdentityHero(props: {
   readonly firstName: string
-  /** Shown after “Signed in as” — typically login email until contact form saves a name, then `profile.full_name`. */
+  /** Used in “Hello, …” — profile display name, else first name from the first website enquiry for this login email. */
   readonly signedInAs: string
   readonly accountNumber: string | null
   readonly accountEmail: string | null
@@ -55,7 +43,10 @@ export function ClientPortalIdentityHero(props: {
   readonly emphasizeTransferBookingId?: string | null
   readonly onDownloadTransferQuotePdf?: (transfer: ClientPortalTransferHeroRow) => void | Promise<void>
   readonly onDownloadTransferPaidInvoicePdf?: (transfer: ClientPortalTransferHeroRow) => void | Promise<void>
-  readonly onPayTransfer?: (transfer: ClientPortalTransferHeroRow) => void | Promise<void>
+  readonly onPayTransfer?: (
+    transfer: ClientPortalTransferHeroRow,
+    phase: 'deposit' | 'balance' | 'full'
+  ) => void | Promise<void>
   /** Opens full-screen transfer summary (Transport Service card) */
   readonly onViewTransferCard?: (transfer: ClientPortalTransferHeroRow) => void | Promise<void>
   /** Merged onto the root card — e.g. `mb-0` when a sibling banner sits directly below */
@@ -65,6 +56,7 @@ export function ClientPortalIdentityHero(props: {
   const [quotePdfBusyId, setQuotePdfBusyId] = useState<string | null>(null)
   const [paidInvoiceBusyId, setPaidInvoiceBusyId] = useState<string | null>(null)
   const [payBusyId, setPayBusyId] = useState<string | null>(null)
+  const [payBusyPhase, setPayBusyPhase] = useState<'deposit' | 'balance' | 'full' | null>(null)
   const ref = props.accountNumber?.trim() ?? ''
   const emailDisplay = (props.accountEmail ?? '').trim()
   const signedInLabel = props.signedInAs.trim() || emailDisplay || '—'
@@ -94,7 +86,7 @@ export function ClientPortalIdentityHero(props: {
           <div>
             <p className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.28em] text-emerald-200/90">Your account</p>
             <h2 className="font-display mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              Hello, {props.firstName.trim() || 'there'}
+              {props.firstName.trim() ? <>Hello, {props.firstName.trim()}</> : <>Hello</>}
             </h2>
             <p className="mt-2 font-ge text-sm leading-relaxed text-emerald-50/90">
               Signed in as{' '}
@@ -154,23 +146,25 @@ export function ClientPortalIdentityHero(props: {
                 const pay = (t.payment_status ?? 'unpaid').toLowerCase()
                 const isPaid = pay === 'paid'
                 const payLabel =
-                  pay === 'paid' ? 'Paid' : pay === 'deposit' ? 'Deposit' : 'Unpaid'
+                  pay === 'paid' ? 'Paid in full' : pay === 'deposit' ? 'Deposit paid' : 'Unpaid'
                 const when = t.scheduled_at
                   ? new Date(t.scheduled_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
-                  : 'Timing TBC'
+                  : 'ASAP / next available driver'
                 const src =
                   t.booking_source === 'website_enquiry'
                     ? 'Website'
                     : t.booking_source === 'client_dashboard' && t.package_build_id
                       ? 'Trip planner'
                       : 'Dashboard'
-                const payable = transferPayableAmountEur(t)
-                const showPay =
-                  payable !== null && payable >= 0.5 && typeof props.onPayTransfer === 'function' && !isPaid
-                const payCta =
-                  pay === 'deposit'
-                    ? `Pay balance ${formatEurInline(payable!)}`
-                    : `Pay now ${formatEurInline(payable!)}`
+                const gross =
+                  typeof t.admin_price_eur === 'number' && Number.isFinite(t.admin_price_eur) ? t.admin_price_eur : null
+                const fullUpfront = transferPaymentFullUpfront(t)
+                const pct = normalizedDepositPercent(t.deposit_percent)
+                const depEur = gross !== null ? depositAmountEur(gross, pct) : null
+                const balEur = gross !== null ? balanceAmountEur(gross, pct) : null
+                const dueLine = !fullUpfront ? formatBalanceDueLine(t.scheduled_at) : null
+                const showPay = gross !== null && gross >= 0.5 && typeof props.onPayTransfer === 'function' && !isPaid
+                const payBusy = payBusyId === t.id
                 const emphasized = props.emphasizeTransferBookingId === t.id
                 return (
                   <li
@@ -185,27 +179,97 @@ export function ClientPortalIdentityHero(props: {
                       {t.pickup_label} → {t.dropoff_label}
                     </p>
                     <p className="mt-1 font-ge text-[0.7rem] text-emerald-100/80">
-                      {src} · {t.status.replace(/_/g, ' ')} · {when}
+                      {src} · {clientTransferOperationalStatusLabel(t)} · {when}
                     </p>
-                    <p className="mt-1 flex flex-wrap items-center gap-2 font-ge text-[0.68rem] text-emerald-50/90">
+                    {gross !== null ? (
+                      <div className="mt-2 space-y-0.5 font-ge text-[0.68rem] leading-snug text-emerald-50/95">
+                        <p>
+                          <span className="text-emerald-200/80">Total (VAT incl.):</span>{' '}
+                          <span className="font-semibold text-amber-100">{formatEurInline(gross)}</span>
+                        </p>
+                        {fullUpfront ? (
+                          <p className="text-emerald-100/85">Full payment — no split deposit (ASAP / next available).</p>
+                        ) : (
+                          <>
+                            <p>
+                              <span className="text-emerald-200/80">{pct}% deposit:</span>{' '}
+                              <span className="font-semibold text-amber-100">{formatEurInline(depEur!)}</span>
+                            </p>
+                            <p>
+                              <span className="text-emerald-200/80">Balance:</span>{' '}
+                              <span className="font-semibold text-amber-100">{formatEurInline(balEur!)}</span>
+                            </p>
+                            {dueLine ? <p className="text-emerald-100/85">{dueLine}</p> : null}
+                          </>
+                        )}
+                      </div>
+                    ) : null}
+                    <p className="mt-2 flex flex-wrap items-center gap-2 font-ge text-[0.68rem] text-emerald-50/90">
                       <span className="rounded-full bg-white/10 px-2 py-0.5 font-bold uppercase tracking-wide text-amber-100/95">
                         {payLabel}
                       </span>
-                      {typeof t.admin_price_eur === 'number' && Number.isFinite(t.admin_price_eur) ? (
-                        <span className="font-semibold text-amber-100">{formatEurInline(t.admin_price_eur)}</span>
-                      ) : null}
-                      {showPay ? (
+                      {showPay && fullUpfront ? (
                         <button
                           className="inline-flex items-center gap-1 rounded-lg border border-emerald-300/50 bg-emerald-500/25 px-2 py-1 font-ge text-[0.62rem] font-bold uppercase tracking-[0.1em] text-emerald-50 transition hover:bg-emerald-500/40 disabled:opacity-50"
-                          disabled={payBusyId === t.id}
+                          disabled={payBusy}
                           onClick={() => {
                             setPayBusyId(t.id)
-                            void Promise.resolve(props.onPayTransfer?.(t)).finally(() => setPayBusyId(null))
+                            setPayBusyPhase('full')
+                            void Promise.resolve(props.onPayTransfer?.(t, 'full')).finally(() => {
+                              setPayBusyId(null)
+                              setPayBusyPhase(null)
+                            })
                           }}
                           type="button"
                         >
                           <CreditCard className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                          {payBusyId === t.id ? 'Redirecting…' : payCta}
+                          {payBusy && payBusyPhase === 'full' ? 'Redirecting…' : `Pay in full ${formatEurInline(gross!)}`}
+                        </button>
+                      ) : null}
+                      {showPay && !fullUpfront && pay === 'unpaid' ? (
+                        <>
+                          <button
+                            className="inline-flex items-center gap-1 rounded-lg border border-emerald-300/50 bg-emerald-500/25 px-2 py-1 font-ge text-[0.62rem] font-bold uppercase tracking-[0.1em] text-emerald-50 transition hover:bg-emerald-500/40 disabled:opacity-50"
+                            disabled={payBusy}
+                            onClick={() => {
+                              setPayBusyId(t.id)
+                              setPayBusyPhase('deposit')
+                              void Promise.resolve(props.onPayTransfer?.(t, 'deposit')).finally(() => {
+                                setPayBusyId(null)
+                                setPayBusyPhase(null)
+                              })
+                            }}
+                            type="button"
+                          >
+                            <CreditCard className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                            {payBusy && payBusyPhase === 'deposit' ? 'Redirecting…' : `Pay deposit ${formatEurInline(depEur!)}`}
+                          </button>
+                          <button
+                            className="inline-flex items-center gap-1 rounded-lg border border-white/20 bg-white/10 px-2 py-1 font-ge text-[0.62rem] font-bold uppercase tracking-[0.1em] text-emerald-100/50"
+                            disabled
+                            title="Pay the deposit first. Balance opens after your deposit is received."
+                            type="button"
+                          >
+                            Pay balance {formatEurInline(balEur!)}
+                          </button>
+                        </>
+                      ) : null}
+                      {showPay && !fullUpfront && pay === 'deposit' ? (
+                        <button
+                          className="inline-flex items-center gap-1 rounded-lg border border-emerald-300/50 bg-emerald-500/25 px-2 py-1 font-ge text-[0.62rem] font-bold uppercase tracking-[0.1em] text-emerald-50 transition hover:bg-emerald-500/40 disabled:opacity-50"
+                          disabled={payBusy}
+                          onClick={() => {
+                            setPayBusyId(t.id)
+                            setPayBusyPhase('balance')
+                            void Promise.resolve(props.onPayTransfer?.(t, 'balance')).finally(() => {
+                              setPayBusyId(null)
+                              setPayBusyPhase(null)
+                            })
+                          }}
+                          type="button"
+                        >
+                          <CreditCard className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                          {payBusy && payBusyPhase === 'balance' ? 'Redirecting…' : `Pay balance ${formatEurInline(balEur!)}`}
                         </button>
                       ) : null}
                       {typeof t.admin_price_eur === 'number' &&

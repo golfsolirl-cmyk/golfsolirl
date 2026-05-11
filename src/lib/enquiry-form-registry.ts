@@ -1,5 +1,6 @@
 /**
  * Central registry for every `formPayload.form` value POSTed to `/api/enquiry`.
+ * Server: all of these are handled by `handleEnquirySubmission` in `server/enquiry-service.mjs` (one PDF + email pipeline).
  * Keep in sync with submit handlers; import these constants instead of string literals.
  *
  * | Form key | Source component |

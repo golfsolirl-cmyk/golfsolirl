@@ -19,16 +19,24 @@ interface DashboardLayoutProps {
   readonly children: ReactNode
 }
 
-const dublinTimestamp = () =>
-  new Intl.DateTimeFormat(undefined, {
+/** Client-area hero clock — readable US-style date + 12h time (Ireland timezone). */
+const dublinTimestamp = () => {
+  const now = new Date()
+  const dateLine = new Intl.DateTimeFormat('en-US', {
     timeZone: 'Europe/Dublin',
     weekday: 'long',
-    day: 'numeric',
-    month: 'long',
     year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(new Date())
+    month: 'long',
+    day: 'numeric'
+  }).format(now)
+  const timeLine = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Europe/Dublin',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  }).format(now)
+  return `${dateLine} at ${timeLine}`
+}
 
 export function DashboardLayout({ title, subtitle, kicker, variant, titleAdornment, children }: DashboardLayoutProps) {
   const { signOut, profile } = useAuth()
@@ -59,6 +67,7 @@ export function DashboardLayout({ title, subtitle, kicker, variant, titleAdornme
       <main id="main" className="flex flex-1 flex-col">
         <GeHero
           variant="portal"
+          portalBackdrop={variant === 'client' ? 'client' : variant === 'admin' ? 'admin' : 'classic'}
           portalKicker={kicker}
           portalTitle={title}
           portalTimestamp={clock}

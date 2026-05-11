@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDown, Hotel, MapPin, PlaneLanding, Sparkles, X } from 'lucide-react'
 import { cx } from '../../../lib/utils'
 import { WEBSITE_ENQUIRY_FORM } from '../../../lib/enquiry-form-registry'
+import { ENQUIRY_CONFLICT_EXISTING_PHONE, postWebsiteEnquiry } from '../../../lib/post-enquiry-client'
 import { alreadyBookedHotelCopy } from '../data/copy'
 
 type TravelMode = 'flight' | 'arrived'
@@ -123,24 +124,27 @@ export function GeAlreadyBookedFlightPanel() {
               'Collection time': collectionTime.trim()
             }
 
-      const response = await fetch('/api/enquiry', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fullName: name,
-          email: mail,
-          phoneWhatsApp: phone,
-          interest,
-          bestTimeToCall: travelMode === 'flight' ? `Landing: ${arrivalTime.trim()}` : `Collection: ${collectionTime.trim()}`,
-          formPayload: {
-            form: WEBSITE_ENQUIRY_FORM.homepageHotelBookedSnapshot,
-            fields: formFields
-          }
-        })
+      const result = await postWebsiteEnquiry({
+        fullName: name,
+        email: mail,
+        phoneWhatsApp: phone,
+        interest,
+        bestTimeToCall: travelMode === 'flight' ? `Landing: ${arrivalTime.trim()}` : `Collection: ${collectionTime.trim()}`,
+        formPayload: {
+          form: WEBSITE_ENQUIRY_FORM.homepageHotelBookedSnapshot,
+          fields: formFields
+        }
       })
-      const data = (await response.json().catch(() => ({}))) as { message?: string }
-      if (!response.ok) {
-        throw new Error(data.message ?? 'Could not send your arrival snapshot right now.')
+      if (!result.ok) {
+        setSubmitting(false)
+        if (result.code === ENQUIRY_CONFLICT_EXISTING_PHONE) {
+          setError(
+            `${result.message} Sign in at golfsolirl.com/dashboard/login with the email you used before, then continue your trip.`
+          )
+        } else {
+          setError(result.message ?? 'Could not send your arrival snapshot right now.')
+        }
+        return
       }
     } catch {
       setSubmitting(false)

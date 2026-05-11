@@ -146,6 +146,14 @@ export const insertTransferBookingFromWebsiteEnquiry = async (enquiry, enquiryId
 
   const waypoints = parseRouteWaypointsJson(fm.get('_routeWaypoints'))
 
+  const asapField = norm(fm.get('ASAP')).toLowerCase()
+  const timingLower = timingRaw.toLowerCase()
+  const nextAvailableDriver =
+    asapField === 'yes' ||
+    timingLower.includes('asap') ||
+    timingLower.includes('next available') ||
+    timingLower.includes('first available')
+
   const row = {
     client_user_id: clientUserId,
     client_email: email,
@@ -159,6 +167,7 @@ export const insertTransferBookingFromWebsiteEnquiry = async (enquiry, enquiryId
     dropoff_lng: null,
     scheduled_at: scheduledAt,
     client_timing_note: timingRaw.slice(0, 500),
+    next_available_driver: nextAvailableDriver,
     status: 'pending',
     enquiry_reference_id: enquiryId,
     booking_source: 'website_enquiry',

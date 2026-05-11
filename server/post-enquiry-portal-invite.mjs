@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
-import { getGsolSiteUrl } from './email-layout.mjs'
+import { finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
 import { buildBrandedPostEnquiryPortalInviteHtml } from './branded-post-enquiry-portal-invite-email.mjs'
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -75,7 +75,7 @@ export const runPostEnquiryPortalInviteJob = async ({ enquiry, enquiryId, enquir
     minute: '2-digit'
   }).format(new Date())
 
-  const html = buildBrandedPostEnquiryPortalInviteHtml({
+  const htmlRaw = buildBrandedPostEnquiryPortalInviteHtml({
     fullName: enquiry.fullName,
     email: emailLower,
     enquiryId,
@@ -83,6 +83,7 @@ export const runPostEnquiryPortalInviteJob = async ({ enquiry, enquiryId, enquir
     actionLink,
     sentAtDisplay
   })
+  const html = finalizeGsolEmailHtml(htmlRaw)
 
   const resend = new Resend(resendKey)
   const { error: sendError } = await resend.emails.send({

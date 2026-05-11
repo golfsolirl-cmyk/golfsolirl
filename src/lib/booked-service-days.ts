@@ -1,6 +1,53 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
-type RpcRow = { service_day?: string }
+const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/
+
+/** Pull yyyy-mm-dd from PostgREST RPC payloads (scalar rows, composite rows, or odd column names). */
+export function addDriverBookedRpcRowsToSet(data: unknown, out: Set<string>): void {
+  if (data == null) {
+    return
+  }
+
+  const rows = Array.isArray(data) ? data : [data]
+
+  for (const row of rows) {
+    if (typeof row === 'string') {
+      const head = row.trim().slice(0, 10)
+      if (ISO_DAY.test(head)) {
+        out.add(head)
+      }
+      continue
+    }
+
+    if (row && typeof row === 'object' && !Array.isArray(row)) {
+      const record = row as Record<string, unknown>
+      for (const v of Object.values(record)) {
+        const d = normalizeIsoDayFromRpcValue(v)
+        if (d) {
+          out.add(d)
+        }
+      }
+    }
+  }
+}
+
+function normalizeIsoDayFromRpcValue(value: unknown): string | null {
+  if (value == null) {
+    return null
+  }
+  if (typeof value === 'string') {
+    const m = value.trim().match(/^(\d{4}-\d{2}-\d{2})/)
+    return m && ISO_DAY.test(m[1]) ? m[1] : null
+  }
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    const y = value.getUTCFullYear()
+    const mo = value.getUTCMonth() + 1
+    const d = value.getUTCDate()
+    const s = `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+    return ISO_DAY.test(s) ? s : null
+  }
+  return null
+}
 
 /** ISO yyyy-mm-dd strings for days that are fully booked (no new transport / trip starts). */
 export async function loadBookedServiceDayIsoSet(client: SupabaseClient | null): Promise<Set<string>> {
@@ -10,24 +57,12 @@ export async function loadBookedServiceDayIsoSet(client: SupabaseClient | null):
 
   const { data, error } = await client.rpc('get_driver_booked_service_days')
 
-  if (error || !data) {
+  if (error || data == null) {
     return new Set()
   }
 
   const out = new Set<string>()
-  for (const row of data as unknown[]) {
-    if (typeof row === 'string' && row.length >= 10) {
-      out.add(row.slice(0, 10))
-      continue
-    }
-    if (row && typeof row === 'object' && 'service_day' in row) {
-      const d = String((row as RpcRow).service_day ?? '').slice(0, 10)
-      if (d.length === 10) {
-        out.add(d)
-      }
-    }
-  }
-
+  addDriverBookedRpcRowsToSet(data, out)
   return out
 }
 

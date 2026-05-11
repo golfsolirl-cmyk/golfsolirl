@@ -3,7 +3,6 @@ import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { requireAdminFromBearer } from './auth-verify-admin.mjs'
 import { buildTransferRefundEmail } from './branded-transfer-payment-email.mjs'
-import { getTransactionalEmailImageAttachments } from './enquiry-service.mjs'
 import { buildTransferRefundPdfBytes } from './transfer-refund-pdf.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
@@ -244,7 +243,6 @@ export const handleTransferRefund = async (body, env = process.env, meta = {}) =
       } else if (!to) {
         emailError = 'No client email — refund processed but email skipped.'
       } else {
-        const imageAttachments = await getTransactionalEmailImageAttachments()
         const resend = new Resend(resendKey)
         const { error: sendErr } = await resend.emails.send({
           from,
@@ -252,7 +250,6 @@ export const handleTransferRefund = async (body, env = process.env, meta = {}) =
           subject: content.subject,
           html: content.html,
           attachments: [
-            ...imageAttachments,
             {
               filename: `golfsol-transfer-refund-${fresh.id.slice(0, 8)}.pdf`,
               content: pdfBuf

@@ -1,7 +1,9 @@
 /** Website `formPayload.form` string keys: see `src/lib/enquiry-form-registry.ts`. */
+import { formatDateDdMmYy, formatDateTimeDdMmYy, looksLikeIsoOrYmdDate } from './date-format-ie'
 import { ENQUIRY_STRUCTURED_FIELD_KEYS, PICKUP_DROPOFF_TYPES } from './enquiry-form-registry'
 import {
   ensureTripWorkspaceDraftShape,
+  isUnsavedDefaultTripWorkspace,
   normalizeTransferStops,
   parsePersistedTripWorkspaceFromPackage,
   type TripWorkspaceDraft
@@ -287,12 +289,47 @@ export const getWebsiteFormFieldLabel = (key: string): string => {
   return humanizeFormKey(splitCamelToWords(k) || k)
 }
 
+/** Airport / course / hotel pickup labels for structured enquiry fields (client + admin). */
+export const humanizePickupDropoffTypeForDisplay = (raw: string): string => {
+  const v = raw.trim().toLowerCase()
+  if (v === PICKUP_DROPOFF_TYPES.malagaAirport) {
+    return 'Private Mercedes van (Málaga AGP)'
+  }
+  if (v === PICKUP_DROPOFF_TYPES.golfCourse) {
+    return 'Golf course'
+  }
+  if (v === PICKUP_DROPOFF_TYPES.hotel) {
+    return 'Hotel / resort'
+  }
+  if (v === PICKUP_DROPOFF_TYPES.freeText) {
+    return WEBSITE_FORM_PICKUP_FREE_TEXT_DISPLAY
+  }
+  return raw.trim()
+}
+
+const WEBSITE_FORM_DATE_VALUE_KEYS = new Set<string>([
+  ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateFrom,
+  ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateTo,
+  'Travel start date',
+  'Travel end date',
+  'Service date (already here)',
+  'Collection timing'
+])
+
 /** Display value for website form snapshot rows (PDF, dashboard, quote preview). */
 export const formatWebsiteFormFieldValueForDisplay = (key: string, raw: string): string => {
   const k = key.replace(/^form\./i, '').trim()
   const v = raw.trim()
-  if (k === ENQUIRY_STRUCTURED_FIELD_KEYS.pickupType && v === PICKUP_DROPOFF_TYPES.freeText) {
-    return WEBSITE_FORM_PICKUP_FREE_TEXT_DISPLAY
+  if (k === ENQUIRY_STRUCTURED_FIELD_KEYS.pickupType || k === ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffType) {
+    return humanizePickupDropoffTypeForDisplay(v)
+  }
+  if (WEBSITE_FORM_DATE_VALUE_KEYS.has(k) && looksLikeIsoOrYmdDate(v)) {
+    return v.includes('T') && v.length >= 13 ? formatDateTimeDdMmYy(v) : formatDateDdMmYy(v)
+  }
+  // Do not match "collection" here — it appears in "Collection point" (a place name). Date-like collection times use
+  // WEBSITE_FORM_DATE_VALUE_KEYS ("Collection timing") or keys containing "date" / "timing" / "landing".
+  if (looksLikeIsoOrYmdDate(v) && /date|timing|landing/i.test(k)) {
+    return v.includes('T') && v.length >= 13 ? formatDateTimeDdMmYy(v) : formatDateDdMmYy(v)
   }
   return raw
 }
@@ -328,6 +365,12 @@ export const orderedWebsiteFormFieldEntries = (fields: Readonly<Record<string, s
   const used = new Set<string>()
   const out: [string, string][] = []
 
+  const sameCalendarDay = (a: string, b: string) => {
+    const sa = a.trim().slice(0, 10)
+    const sb = b.trim().slice(0, 10)
+    return /^\d{4}-\d{2}-\d{2}$/.test(sa) && sa === sb.slice(0, 10)
+  }
+
   const add = (key: string) => {
     if (used.has(key)) {
       return
@@ -341,6 +384,18 @@ export const orderedWebsiteFormFieldEntries = (fields: Readonly<Record<string, s
     }
     if (key === 'interest' && typeof fields.Interest === 'string' && fields.Interest.trim() === String(v).trim()) {
       return
+    }
+    if (key === 'Travel start date' && used.has(ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateFrom)) {
+      const u = fields[ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateFrom]
+      if (typeof u === 'string' && sameCalendarDay(u, String(v))) {
+        return
+      }
+    }
+    if (key === 'Travel end date' && used.has(ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateTo)) {
+      const u = fields[ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateTo]
+      if (typeof u === 'string' && sameCalendarDay(u, String(v))) {
+        return
+      }
     }
     used.add(key)
     out.push([key, String(v)])
@@ -588,9 +643,12 @@ export const parseWebsiteFormPackageConfig = (raw: unknown): WebsiteFormPackageC
   const enquiryRef = o.enquiryReferenceId.trim()
   let portalTripWorkspace: TripWorkspaceDraft | undefined
   if ('portalTripWorkspace' in o) {
-    const tw = parsePersistedTripWorkspaceFromPackage(o.portalTripWorkspace, enquiryRef)
-    if (tw) {
-      portalTripWorkspace = tw
+    const rawTw = o.portalTripWorkspace
+    if (rawTw != null && typeof rawTw === 'object' && !Array.isArray(rawTw) && Object.keys(rawTw as Record<string, unknown>).length > 0) {
+      const tw = parsePersistedTripWorkspaceFromPackage(rawTw, enquiryRef)
+      if (tw && !isUnsavedDefaultTripWorkspace(tw, enquiryRef)) {
+        portalTripWorkspace = tw
+      }
     }
   }
 

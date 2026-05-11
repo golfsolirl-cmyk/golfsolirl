@@ -5,7 +5,6 @@ import { isAuthEmailBlocked } from './email-address-registry.mjs'
 import { createEnquiryReferenceId } from '../shared/document-templates.mjs'
 import { buildBrandedPortalMagicLinkEmailHtml } from './branded-client-portal-email.mjs'
 import { finalizeGsolEmailHtml } from './email-layout.mjs'
-import { getTransactionalEmailImageAttachments } from './enquiry-service.mjs'
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
@@ -190,14 +189,12 @@ const sendMagicLinkEmail = async (admin, emailLower, redirectTo, env) => {
     requestedAtDisplay
   })
   const html = finalizeGsolEmailHtml(rawHtml)
-  const imageAttachments = await getTransactionalEmailImageAttachments()
   const resend = new Resend(resendKey)
   const { error: sendError } = await resend.emails.send({
     from: fromEmail,
     to: [emailLower],
     subject: 'Sign in to Golf Sol Ireland — your secure link',
-    html,
-    attachments: imageAttachments
+    html
   })
 
   if (sendError) {

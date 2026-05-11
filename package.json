@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "generate:sample-proposal-pdf": "node scripts/generate-sample-proposal-pdf.mjs",
     "generate:branded-sample-pdf": "node scripts/generate-branded-sample-pdf.mjs",
-    "generate:unified-pdf-sample": "node scripts/generate-gsol-unified-pdf-sample.mjs"
+    "generate:unified-pdf-sample": "node scripts/generate-gsol-unified-pdf-sample.mjs",
+    "verify:enquiry-pdf-exports": "node scripts/verify-enquiry-pdf-exports.mjs"
   },
   "type": "module",
   "dependencies": {

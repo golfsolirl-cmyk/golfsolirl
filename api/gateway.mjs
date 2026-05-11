@@ -18,6 +18,7 @@ import {
 } from '../server/admin-workspace-email-service.mjs'
 import { handleSendProposalToClient } from '../server/send-proposal-client-service.mjs'
 import { handleAdminPortalClient } from '../server/admin-portal-client-service.mjs'
+import { handlePackageBuildAdminPublish } from '../server/package-build-admin-publish-service.mjs'
 import { handlePortalInterestTicketReply } from '../server/portal-interest-ticket-reply-service.mjs'
 import { handleTransferBookingNotify } from '../server/transfer-booking-notify-service.mjs'
 import {
@@ -408,6 +409,19 @@ export default async function handler(req, res) {
         return
       }
 
+      case 'package-build-admin-publish': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const result = await handlePackageBuildAdminPublish(payload, process.env, { authHeader })
+        jsonEnd(res, 200, result)
+        return
+      }
+
       case 'transfer-refund': {
         if (req.method !== 'POST') {
           jsonEnd(res, 405, { message: 'Method not allowed' })
@@ -494,6 +508,8 @@ export default async function handler(req, res) {
       error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
         ? error.statusCode
         : 500
-    jsonEnd(res, statusCode, { message })
+    const code =
+      error && typeof error === 'object' && 'code' in error && typeof error.code === 'string' ? error.code : undefined
+    jsonEnd(res, statusCode, code ? { message, code } : { message })
   }
 }

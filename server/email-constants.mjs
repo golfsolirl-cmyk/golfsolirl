@@ -1,5 +1,4 @@
-/** Resend inline attachment content-ids — keep in sync with rasterized assets in enquiry-service. */
-/** Full horizontal lockup PNG (`src/gsol-brand-lockup-exact.png`); same asset as PDF / print. */
+/** Legacy `cid:` keys — only referenced by `adaptTransactionalEmailHtmlForBrowserPreview` if old HTML still contains them. */
 export const logoLockupEmailContentId = 'gsol-brand-lockup-email'
 export const shamrockInlineContentId = 'gsol-shamrock-inline'
 export const socialContentIds = {

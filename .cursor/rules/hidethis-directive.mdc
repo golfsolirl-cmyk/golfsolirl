@@ -1,0 +1,75 @@
+---
+description: Mark draft or internal copy with [hidethis] so it ships stripped from production bundles; Vite plugin removes it on build.
+globs:
+  - "**/*.{tsx,ts,jsx,js,md,mdx}"
+alwaysApply: false
+---
+
+# `[hidethis]` — hide from live / production
+
+Use this **exact** token including square brackets: **`[hidethis]`** (lowercase, no spaces inside brackets).
+
+The repo includes a **production-only** Vite transform (`vite/strip-hidethis-plugin.ts`) that removes marked regions from built JS/TS — they **remain visible in `vite dev`** so you can draft in place.
+
+## Forms
+
+### 1. Rest of line (most common)
+
+Put **`[hidethis]`** immediately before the text you want removed from the **live** site. Everything from **`[hidethis]`** through the **end of that line** is stripped in production builds.
+
+```tsx
+<p className="text-sm text-forest-600">
+  Guests see this sentence only.
+  [hidethis] Internal note: verify VAT copy with accountant before launch.
+</p>
+```
+
+After production build, the paragraph contains only the first sentence (the plugin removes ` [hidethis] Internal note…`).
+
+### 2. Multiline block
+
+For larger hidden chunks, wrap between **`[hidethis]`** and **`[endhidethis]`** on their own lines (or inline block in source — the regex is non-greedy).
+
+**In `.tsx`, prefer JSX comments** so the file stays valid — the build strips the whole `{/* … */}` … `{/* … */}` range:
+
+```tsx
+<div>
+  {/* [hidethis] */}
+  <section>
+    <p>Draft content stripped from production bundles.</p>
+  </section>
+  {/* [endhidethis] */}
+</div>
+```
+
+Plain markers without JSX comments also work in non-JSX contexts:
+
+```tsx
+<section>
+  <h2>Public heading</h2>
+  [hidethis]
+  <p>Draft paragraph only for staging review.</p>
+  [endhidethis]
+</section>
+```
+
+The entire block including markers is removed in production.
+
+**Order of stripping:** JSX-wrapped blocks first, then generic `[hidethis]…[endhidethis]`, then rest-of-line patterns.
+
+## Rules for agents & contributors
+
+1. **Spelling / casing:** Only **`[hidethis]`** and **`[endhidethis]`** are recognized (exact strings).
+2. **Do not** put `[hidethis]` inside runtime strings you need in production logic (e.g. `const msg = "[hidethis]..."`) — the build will delete those segments and may break code. Use markers in **JSX markup / adjacent text** or refactor to env-based copy.
+3. **Markdown / docs:** Same markers work in `.md` **only if** those files are processed through the same transform (default plugin targets imported `.ts/.tsx/.js/.jsx`). Raw markdown not bundled is **not** stripped — use CMS flags or remove manually for published docs.
+4. **SSR / server bundles:** If SSR is added later, extend the plugin or duplicate stripping for server entrypoints.
+
+## Verification
+
+- **Dev:** `npm run dev` — you should still see `[hidethis]` content.
+- **Prod bundle:** `npm run build` then search the output `dist` assets for `[hidethis]` — it should not appear.
+
+## Related implementation
+
+- Plugin: `vite/strip-hidethis-plugin.ts` (imported from `vite.config.ts`).
+- Toggle behaviour is **`config.isProduction`** during `vite build` only.

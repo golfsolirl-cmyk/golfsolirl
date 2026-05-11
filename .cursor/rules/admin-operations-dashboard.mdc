@@ -1,0 +1,54 @@
+---
+description: Admin / operations dashboard — layout parity with client portal, jump navigation, plain-language copy, avoid breaking cohesive flows
+globs:
+  - src/pages/admin-dashboard-page.tsx
+  - src/components/admin-account-transfers-hub.tsx
+  - src/components/admin-transfer-pipeline.tsx
+  - src/components/admin-operations-hub-hero.tsx
+  - src/components/admin-driver-calendar-panel.tsx
+alwaysApply: false
+---
+
+# Admin operations dashboard (Golf Sol Ireland)
+
+Staff using `/dashboard/admin` are often **not deeply technical**. The page is large; changes must **reduce cognitive load**, mirror the **client dashboard** look (rounded `2rem` cards, forest / fairway / gold, soft shadows), and **never fork** pricing or portal truth — admin and client stay **one system**.
+
+See also: [quote-first-client-admin-dashboards.mdc](mdc:.cursor/rules/quote-first-client-admin-dashboards.mdc), [email-templates.mdc](mdc:.cursor/rules/email-templates.mdc).
+
+## Layout principles (match client area)
+
+1. **Hero first** — `AdminOperationsHubHero`: short greeting, **3 numbered steps** (forms → price/packages → drivers), **Jump to** pill buttons that `scrollIntoView` stable `id`s (`admin-hub-payments`, `admin-hub-forms`, `admin-hub-packages`, `admin-hub-publish`, `admin-hub-portal`, `admin-transfer-pipeline`).
+2. **Above-the-fold stack** — After the hero: **`admin-hub-payments`** wraps **payments / Stripe snapshot only** (`PortalClientDataCard`). **`AdminAccountTransfersHub`** (account lookup) sits next; **`admin-hub-forms`** (website enquiries) follows in the **loaded** branch so the filter sits right under lookup. **`admin-transfer-pipeline`** is **after** the `listLoading` ternary: it stays on-screen while the long workspace loads, and when loaded it sits **after** packages / proposals (jump still lands on `id="admin-transfer-pipeline"`).
+3. **One visual language** — reuse client patterns: `rounded-[2rem]`, `border-forest-100` / `border-gs-gold/40`, `shadow-soft`, `font-display` headings, `text-xs uppercase tracking` kickers.
+4. **Hero imagery** — operations illustration lives at `public/images/admin-operations-hero.png`; keep **decorative** (`alt=""`), right column on large screens, **do not** embed small unreadable text inside the image.
+
+## Navigation & information scent
+
+- **Every new major block** must have `id="admin-hub-…"` (or reuse existing e.g. `admin-transfer-pipeline`) and **`scroll-mt-28`** so sticky headers do not cover titles.
+- Prefer **Jump to** updates in the hero over adding a second nav bar elsewhere.
+- Deep tools (Stripe keys, SQL file names) stay in **collapsed** `<details>` or **secondary** paragraphs — the **first paragraph** of each section answers: *What is this? Who is it for? What do I click?*
+
+## Copy rules (non–computer-savvy)
+
+- Use **“guest / client”** not “user”; **“website form”** not “POST payload”.
+- Avoid **“RLS”, “PostgREST”, “JWT”** in primary UI copy; if needed for devs, put in `<details>` or admin-only tooltips.
+- Error messages: **one clear action** (“Apply migration X” or “Run file Y in SQL Editor”) plus link-style `font-mono` file path when helpful.
+
+## Cohesion with client dashboard (do not break)
+
+- **Pricing & payments**: continue to use the same APIs/tables as the client sees (`transfer_bookings`, `package_builds`, gateway routes). Do not duplicate totals in admin-only tables.
+- **Publish client packages**: server-side publish + linked transfer row + PDFs must stay aligned with client **Transfer requests** and documents.
+- **Driver assignment**: Operations pipeline remains the source for `allocated` + emails; admin preview on `/driver` is documented in UI, not removed silently.
+
+## When adding features
+
+1. Decide **which step** of the hero (1 forms / 2 prices / 3 drivers) it belongs to; extend that section or add a jump target.
+2. If a new section is added, **register it** in `AdminOperationsHubHero` `JUMP_LINKS` and add a stable `id` on the section.
+3. Keep **diffs focused** — avoid drive-by reformatting the 7k-line admin page.
+
+## Checklist before merging admin UI work
+
+- [ ] Jump nav still reaches correct anchors (keyboard + click).
+- [ ] Client dashboard flows touched by the same data still work (smoke: login, transfers list, pay where applicable).
+- [ ] No new primary copy that only engineers understand.
+- [ ] Images live under `public/` and are optimized for web (hero PNG acceptable; prefer WebP if regenerated in future).

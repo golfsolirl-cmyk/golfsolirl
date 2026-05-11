@@ -4,7 +4,6 @@ import { requireAdminFromBearer } from './auth-verify-admin.mjs'
 import { buildBrandedHotelReservationEmailHtml } from './branded-hotel-brief-email.mjs'
 import { buildBrandedProposalAttachedEmailHtml } from './branded-client-portal-email.mjs'
 import { finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
-import { getTransactionalEmailImageAttachments } from './enquiry-service.mjs'
 import { normalizeProposalPayload } from '../shared/document-templates.mjs'
 import { createProposalFilename, createProposalPdf } from './proposal-service.mjs'
 
@@ -166,7 +165,6 @@ export const handleSendWorkspaceProposalToClient = async (rawBody, env, meta = {
     dashboardLoginUrl
   })
   const html = finalizeGsolEmailHtml(rawHtml)
-  const imageAttachments = await getTransactionalEmailImageAttachments()
   const pdfAttachment = {
     filename,
     content: Buffer.from(pdfBytes).toString('base64'),
@@ -179,7 +177,7 @@ export const handleSendWorkspaceProposalToClient = async (rawBody, env, meta = {
     to: [clientEmail],
     subject: `Your Golf Sol Ireland proposal — ${proposal.proposalId}`,
     html,
-    attachments: [...imageAttachments, pdfAttachment]
+    attachments: [pdfAttachment]
   })
 
   if (sendError) {
@@ -233,15 +231,13 @@ export const handleSendHotelReservationBrief = async (rawBody, env, meta = {}) =
     preferencesNote
   })
   const html = finalizeGsolEmailHtml(rawHtml)
-  const imageAttachments = await getTransactionalEmailImageAttachments()
 
   const resend = new Resend(resendKey)
   const { error: sendError } = await resend.emails.send({
     from: fromEmail,
     to: [hotelEmail],
     subject: `Reservation courtesy — partner ref ${bookingReference} (Golf Sol Ireland)`,
-    html,
-    attachments: imageAttachments
+    html
   })
 
   if (sendError) {

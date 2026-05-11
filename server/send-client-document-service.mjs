@@ -2,7 +2,6 @@ import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { buildBrandedClientDocumentInviteEmailHtml } from './branded-client-portal-email.mjs'
 import { finalizeGsolEmailHtml } from './email-layout.mjs'
-import { getTransactionalEmailImageAttachments } from './enquiry-service.mjs'
 
 const getSiteOrigin = (env) => {
   const site = env.SITE_URL?.trim()
@@ -130,15 +129,13 @@ export const handleSendClientDocument = async (rawBody, env, { authHeader }) => 
     documentUrl: loginUrl
   })
   const html = finalizeGsolEmailHtml(rawHtml)
-  const imageAttachments = await getTransactionalEmailImageAttachments()
 
   const resend = new Resend(resendKey)
   const { error: sendError } = await resend.emails.send({
     from: fromEmail,
     to: clientEmail,
     subject: labels.subject,
-    html,
-    attachments: imageAttachments
+    html
   })
 
   if (sendError) {

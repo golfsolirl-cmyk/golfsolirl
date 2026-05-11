@@ -91,9 +91,11 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
               <DesktopNavItem key={link.label} link={link} colorClass={linkColor} />
             ))}
             {portalSlot ? <PortalNavActions portalSlot={portalSlot} layout="desktop" /> : null}
-            <GeButton href="/contact" size="sm" variant={isOverlay ? 'outline-gs-white' : 'gs-gold'}>
-              Get Quote
-            </GeButton>
+            {!portalSlot ? (
+              <GeButton href="/contact" size="sm" variant={isOverlay ? 'outline-gs-white' : 'gs-gold'}>
+                Get Quote
+              </GeButton>
+            ) : null}
           </nav>
 
           {isOverlay ? (
@@ -196,15 +198,19 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
               </ul>
               {portalSlot ? (
                 <div className="mt-4 border-t border-ge-gray100 pt-4">
-                  <p className="mb-2 text-[0.65rem] font-extrabold uppercase tracking-[0.2em] text-ge-gray500">Your account</p>
+                  <p className="mb-2 text-[0.65rem] font-extrabold uppercase tracking-[0.2em] text-ge-gray500">
+                    {portalSlot.variant === 'admin' ? 'Admin' : 'Your account'}
+                  </p>
                   <PortalNavActions portalSlot={portalSlot} layout="mobile" />
                 </div>
               ) : null}
-              <div className="mt-4">
-                <GeButton href="/contact" size="md" variant="gs-gold" className="w-full">
-                  Get a Quote
-                </GeButton>
-              </div>
+              {!portalSlot ? (
+                <div className="mt-4">
+                  <GeButton href="/contact" size="md" variant="gs-gold" className="w-full">
+                    Get a Quote
+                  </GeButton>
+                </div>
+              ) : null}
             </nav>
           </motion.div>
         ) : null}
@@ -256,11 +262,6 @@ function PortalNavActions({
       {variant === 'admin' ? (
         <GeButton className={btnSm} href="/dashboard" size="sm" variant="outline-gs-green">
           Client dashboard
-        </GeButton>
-      ) : null}
-      {variant !== 'driver' ? (
-        <GeButton className={btnOutline} href="/" size="sm" variant="outline-ink">
-          Home
         </GeButton>
       ) : null}
       <GeButton className={btnGold} size="sm" variant="gs-gold" type="button" onClick={() => void onSignOut()}>

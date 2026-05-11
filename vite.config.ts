@@ -1,5 +1,6 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
+import { stripHidethisPlugin } from './vite/strip-hidethis-plugin'
 import { handleEnquirySubmission, handleTermsEmailRequest } from './server/enquiry-service.mjs'
 import { handleMagicLinkRequest } from './server/magic-link-service.mjs'
 import { handleSyncPortalProfile } from './server/sync-portal-profile-service.mjs'
@@ -21,6 +22,7 @@ import {
   handleTransferRejectNoDriver
 } from './server/transfer-booking-no-driver-service.mjs'
 import { handleTransferBalanceReminderSweep, handleTransferPaymentAdmin } from './server/transfer-payment-service.mjs'
+import { handlePackageBuildAdminPublish } from './server/package-build-admin-publish-service.mjs'
 import { handleTransferRefund } from './server/transfer-refund-service.mjs'
 import { handleTransferStripeCheckout } from './server/transfer-checkout-service.mjs'
 import { handleTransferCheckoutSync } from './server/transfer-checkout-sync-service.mjs'
@@ -660,6 +662,36 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
       }
     })
 
+    server.middlewares.use('/api/package-build-admin-publish', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const rawBody = await readRequestBody(request)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const authHeader = typeof request.headers.authorization === 'string' ? request.headers.authorization : ''
+        const result = await handlePackageBuildAdminPublish(payload, { ...process.env, ...serverEnv }, { authHeader })
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Request failed.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
     server.middlewares.use('/api/transfer-refund', async (request, response) => {
       if (request.method !== 'POST') {
         response.statusCode = 405
@@ -820,7 +852,7 @@ export default defineConfig(({ mode }) => {
   const serverEnv = loadEnv(mode, process.cwd(), '')
 
   return {
-    plugins: [react(), devEnquiryApiPlugin(serverEnv)],
+    plugins: [react(), stripHidethisPlugin(), devEnquiryApiPlugin(serverEnv)],
     /**
      * Rolldown emits PLUGIN_TIMINGS when the Rust build exceeds ~3s and plugin hooks dominate vs link.
      * Informative only — suppress to keep CI logs readable (see https://rolldown.rs/options/checks).

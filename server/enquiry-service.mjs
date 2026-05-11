@@ -3,17 +3,24 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import { Resend } from 'resend'
-import sharp from 'sharp'
 import { createEnquiryReferenceId, formatDocumentDate } from '../shared/document-templates.mjs'
 import { sanitizeStandardFontText } from '../shared/pdf-winansi-sanitize.mjs'
-import { gsolEmailBrand, logoLockupEmailContentId, shamrockInlineContentId, socialContentIds } from './email-constants.mjs'
+import { gsolEmailBrand } from './email-constants.mjs'
 import { emailFonts, gs } from './branded-email-shell.mjs'
 import { buildGsolTransactionalEmail, finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
-import { brandedPdfAssetPaths as sharedBrandedPdfImages } from './pdf-email-brand.mjs'
 import { buildBrandedEnquiryEmailHtml } from './branded-enquiry-email.mjs'
 import { runPostEnquiryPortalInviteJob } from './post-enquiry-portal-invite.mjs'
 import { insertTransferBookingFromWebsiteEnquiry } from './insert-transfer-booking-from-enquiry.mjs'
+import { assertEnquiryDriverDatesNotBlocked } from './enquiry-booked-dates.mjs'
 import { ensureEmailAccountAnchor, isAuthEmailBlocked } from './email-address-registry.mjs'
+import { computePhoneUniquenessKey } from './phone-e164.mjs'
+/** Real imports (not `export { … } from './…'` only): handlers call these by name in module scope. */
+import {
+  createBrandedEnquiryPdf,
+  createTermsAndConditionsPdf,
+  createTravellerContactsPdf,
+  createPackingChecklistPdf
+} from './enquiry-form-pdfs-unified.mjs'
 
 const pageWidth = 595.28
 const pageHeight = 841.89
@@ -45,18 +52,7 @@ const missingConfigMessage =
 const currentFilePath = fileURLToPath(import.meta.url)
 const currentDirectory = path.dirname(currentFilePath)
 const brandLockupAssetPath = path.resolve(currentDirectory, '../src/gsol-brand-lockup-exact.png')
-const publicImagesDirectory = path.resolve(currentDirectory, '../public/images')
-const brandedPdfAssetPaths = {
-  ...sharedBrandedPdfImages,
-  arrivals: path.join(publicImagesDirectory, 'transport-moment-arrivals.jpg'),
-  resort: path.join(publicImagesDirectory, 'transport-moment-resort.jpg'),
-  coastalDrive: path.join(publicImagesDirectory, 'transport-hero-coastal-drive.jpg')
-}
-
 let brandLockupPngBufferPromise
-let emailTransactionalLockupPngPromise
-let emailShamrockInlinePngPromise
-const socialPngPromises = {}
 
 const escapeHtml = (value) =>
   value
@@ -78,43 +74,6 @@ const getBrandLockupPngBuffer = async () => {
     brandLockupPngBufferPromise = Promise.resolve(readFileSync(brandLockupAssetPath))
   }
   return brandLockupPngBufferPromise
-}
-
-/** Raster of `gsol-brand-lockup-exact.png` for CID embedding (matches site Logo / PDF lockup). */
-const getEmailBrandLockupForTransactionalMail = async () => {
-  if (!emailTransactionalLockupPngPromise) {
-    emailTransactionalLockupPngPromise = sharp(readFileSync(brandLockupAssetPath))
-      .resize({ width: 760, withoutEnlargement: true, kernel: sharp.kernel.lanczos3 })
-      .png({ compressionLevel: 9 })
-      .toBuffer()
-  }
-  return emailTransactionalLockupPngPromise
-}
-
-const getEmailShamrockInlinePngBuffer = async () => {
-  if (!emailShamrockInlinePngPromise) {
-    const shamrockSvg = `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="5" ry="7" transform="rotate(-10 12 6)" fill="#1f571a"/><ellipse cx="6.5" cy="14" rx="5" ry="7" transform="rotate(50 6.5 14)" fill="#1f571a"/><ellipse cx="17.5" cy="14" rx="5" ry="7" transform="rotate(-50 17.5 14)" fill="#1f571a"/><path d="M11 14v6c0 .5.4 1 1 1s1-.5 1-1v-6" fill="none" stroke="#1f571a" stroke-linecap="round" stroke-width="1.2"/></svg>`
-    emailShamrockInlinePngPromise = sharp(Buffer.from(shamrockSvg))
-      .resize(96, 96, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
-      .png()
-      .toBuffer()
-  }
-  return emailShamrockInlinePngPromise
-}
-
-const rasterizeFaIcon = async (viewBox, pathD) => {
-  const svg = `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}"><path fill="#dc5801" d="${pathD}"/></svg>`
-  return sharp(Buffer.from(svg))
-    .resize(44, 44, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
-    .png()
-    .toBuffer()
-}
-
-const getSocialIconPng = (key, viewBox, pathD) => {
-  if (!socialPngPromises[key]) {
-    socialPngPromises[key] = rasterizeFaIcon(viewBox, pathD)
-  }
-  return socialPngPromises[key]
 }
 
 const wrapText = ({ text, font, fontSize, maxWidth }) => {
@@ -220,25 +179,6 @@ const buildEnquiryFieldRowsHtml = (rows) =>
                             </tr>`
     )
     .join('')
-
-const iconPaths = {
-  linkedin: {
-    vb: '0 0 448 512',
-    d: 'M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z'
-  },
-  facebook: {
-    vb: '0 0 320 512',
-    d: 'M80 299.3V512H196V299.3h86.5l18-97.8H196V166.9c0-51.7 20.3-71.5 72.7-71.5c16.3 0 29.4 .4 37 1.2V7.9C291.4 4 256.4 0 236.2 0C129.3 0 80 50.5 80 159.4v42.1H14v97.8H80z'
-  },
-  whatsapp: {
-    vb: '0 0 448 512',
-    d: 'M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.5c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56 81.2 56 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7 .9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.2-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 13.2 5.7 23.5 9.1 31.5 11.7 13.2 4.2 25.2 3.6 34.7 2.2 10.6-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z'
-  },
-  bsky: {
-    vb: '0 0 512 512',
-    d: 'M111.8 62.2C170.2 105.9 233 194.7 256 242.4c23-47.6 85.8-136.4 144.2-180.2c42.1-31.6 110.3-56 110.3 21.8c0 15.5-8.9 130.5-14.1 149.2C478.2 298 412 314.6 353.1 304.5c102.9 17.5 129.1 75.5 72.5 133.5c-107.4 110.2-154.3-27.6-166.3-62.9l0 0c-1.7-4.9-2.6-7.8-3.3-7.8s-1.6 3-3.3 7.8l0 0c-12 35.3-59 173.1-166.3 62.9c-56.5-58-30.4-116 72.5-133.5C100 314.6 33.8 298 15.7 233.1C10.4 214.4 1.5 99.4 1.5 83.9c0-77.8 68.2-53.4 110.3-21.8z'
-  }
-}
 
 const MAX_FORM_PAYLOAD_KEYS = 40
 const MAX_FORM_ID_LEN = 64
@@ -725,875 +665,63 @@ export const createEnquiryPdf = async ({
   return pdfDocument.save()
 }
 
-const pdfEmailTheme = {
-  green: rgb(6 / 255, 59 / 255, 42 / 255),
-  greenSoft: rgb(15 / 255, 81 / 255, 60 / 255),
-  gold: rgb(255 / 255, 199 / 255, 44 / 255),
-  goldDeep: rgb(217 / 255, 154 / 255, 0),
-  cream: rgb(247 / 255, 240 / 255, 226 / 255),
-  sand: rgb(233 / 255, 217 / 255, 182 / 255),
-  ink: rgb(22 / 255, 35 / 255, 29 / 255),
-  muted: rgb(102 / 255, 115 / 255, 109 / 255),
-  white: rgb(1, 1, 1),
-  paleGreen: rgb(246 / 255, 251 / 255, 248 / 255),
-  paleGold: rgb(255 / 255, 249 / 255, 234 / 255)
-}
-
-const fitAssetForPdf = (assetPath, width, height) =>
-  sharp(readFileSync(assetPath))
-    .resize(width, height, { fit: 'cover', kernel: sharp.kernel.lanczos3 })
-    .jpeg({ quality: 86, mozjpeg: true })
-    .toBuffer()
-
-const embedPdfJpg = async (pdfDocument, assetPath, width, height) =>
-  pdfDocument.embedJpg(await fitAssetForPdf(assetPath, width, height))
-
-const drawPdfLine = (page, x1, y, x2, color = pdfEmailTheme.sand) => {
-  page.drawLine({ start: { x: x1, y }, end: { x: x2, y }, color, thickness: 0.7 })
-}
-
-const drawPdfPill = (page, text, x, y, font, color = pdfEmailTheme.gold) => {
-  const pillTextSize = PDF_READING_PT
-  page.drawRectangle({
-    x,
-    y: y - 24,
-    width: Math.min(280, font.widthOfTextAtSize(text, pillTextSize) + 34),
-    height: 34,
-    color: pdfEmailTheme.greenSoft,
-    borderColor: color,
-    borderWidth: 0.7
-  })
-  page.drawText(sanitizeStandardFontText(text), { x: x + 14, y: y - 12, font, size: pillTextSize, color })
-}
-
-const drawPdfInfoCard = ({ page, x, y, width, height, kicker, title, body, font, boldFont, fill }) => {
-  page.drawRectangle({ x, y, width, height, color: fill, borderColor: pdfEmailTheme.sand, borderWidth: 0.8 })
-  const pad = 14
-  const kickerY = y + height - pad - 4
-  page.drawText(sanitizeStandardFontText(kicker).toUpperCase(), {
-    x: x + pad,
-    y: kickerY,
-    font: boldFont,
-    size: PDF_READING_PT,
-    color: pdfEmailTheme.goldDeep
-  })
-  const titleY = kickerY - 26
-  page.drawText(sanitizeStandardFontText(title), { x: x + pad, y: titleY, font: boldFont, size: 18, color: pdfEmailTheme.ink })
-  const bodyStartY = titleY - 30
-  drawTextBlock({
-    page,
-    text: body,
-    x: x + pad,
-    y: bodyStartY,
-    font,
-    fontSize: PDF_READING_PT,
-    color: pdfEmailTheme.muted,
-    maxWidth: width - pad * 2,
-    lineHeight: PDF_READING_LH
-  })
-}
-
-export const createBrandedEnquiryPdf = async ({
-  fullName,
-  email,
-  interest,
-  phoneWhatsApp,
-  bestTimeToCall,
-  enquiryId,
-  enquiryDate
-}) => {
-  const pdfDocument = await PDFDocument.create()
-  const regularFont = await pdfDocument.embedFont(StandardFonts.Helvetica)
-  const boldFont = await pdfDocument.embedFont(StandardFonts.HelveticaBold)
-  const logoImage = await pdfDocument.embedPng(readFileSync(brandedPdfAssetPaths.logo))
-  const fleetImage = await embedPdfJpg(pdfDocument, brandedPdfAssetPaths.fleetLineup, 1280, 390)
-  const arrivalsImage = await embedPdfJpg(pdfDocument, brandedPdfAssetPaths.arrivals, 640, 408)
-  const resortImage = await embedPdfJpg(pdfDocument, brandedPdfAssetPaths.resort, 640, 408)
-  const coastalImage = await embedPdfJpg(pdfDocument, brandedPdfAssetPaths.coastalDrive, 640, 408)
-
-  const margin = 34
-  const contentW = pageWidth - margin * 2
-
-  const addPage = () => {
-    const page = pdfDocument.addPage([pageWidth, pageHeight])
-    page.drawRectangle({ x: 0, y: 0, width: pageWidth, height: pageHeight, color: pdfEmailTheme.cream })
-    return page
-  }
-
-  const page = addPage()
-  page.drawText('IRISH-OWNED · COSTA DEL SOL GOLF SPECIALISTS', {
-    x: margin,
-    y: pageHeight - 30,
-    font: boldFont,
-    size: PDF_READING_PT,
-    color: pdfEmailTheme.green
-  })
-  page.drawText('GolfSol Ireland', {
-    x: pageWidth - margin - boldFont.widthOfTextAtSize('GolfSol Ireland', PDF_READING_PT),
-    y: pageHeight - 30,
-    font: boldFont,
-    size: PDF_READING_PT,
-    color: pdfEmailTheme.muted
-  })
-
-  const heroY = 540
-  const heroH = 258
-  page.drawRectangle({ x: margin, y: heroY, width: contentW, height: heroH, color: pdfEmailTheme.green })
-  page.drawRectangle({ x: margin, y: heroY, width: contentW, height: 5, color: pdfEmailTheme.gold })
-  const logoDims = logoImage.scale(0.26)
-  page.drawImage(logoImage, { x: margin + 18, y: heroY + heroH - logoDims.height - 10, width: logoDims.width, height: logoDims.height })
-  drawPdfPill(page, 'TRIP PLAN RECEIVED', margin + 22, heroY + 138, boldFont)
-  drawTextBlock({
-    page,
-    text: 'Your golf escape is taking shape.',
-    x: margin + 22,
-    y: heroY + 96,
-    font: boldFont,
-    fontSize: 21,
-    color: pdfEmailTheme.white,
-    maxWidth: 270,
-    lineHeight: 24
-  })
-  drawTextBlock({
-    page,
-    text:
-      'Thanks for sending your Costa del Sol trip details. We will review your dates, group shape, transfers and tee-time needs before replying.',
-    x: margin + 22,
-    y: heroY + 46,
-    font: regularFont,
-    fontSize: PDF_READING_PT,
-    color: rgb(220 / 255, 232 / 255, 226 / 255),
-    maxWidth: 275,
-    lineHeight: PDF_READING_LH
-  })
-  page.drawRectangle({ x: margin + contentW - 168, y: heroY + 82, width: 142, height: 92, color: pdfEmailTheme.greenSoft, borderColor: pdfEmailTheme.gold, borderWidth: 0.7 })
-  page.drawText('NOW BOARDING', { x: margin + contentW - 150, y: heroY + 147, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.gold })
-  page.drawText('Malaga Airport', { x: margin + contentW - 150, y: heroY + 124, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.white })
-  drawTextBlock({
-    page,
-    text: 'Meet & greet transfer with golf-bag room reserved.',
-    x: margin + contentW - 150,
-    y: heroY + 103,
-    font: regularFont,
-    fontSize: PDF_READING_PT,
-    color: rgb(207 / 255, 224 / 255, 216 / 255),
-    maxWidth: 110,
-    lineHeight: PDF_READING_LH
-  })
-
-  // Stack fleet strip directly under hero (hero occupies heroY → heroY+heroH) — was 322 and overlapped hero.
-  const fleetY = heroY - 236
-  page.drawRectangle({ x: margin, y: fleetY, width: contentW, height: 236, color: pdfEmailTheme.white, borderColor: pdfEmailTheme.sand, borderWidth: 0.8 })
-  page.drawImage(fleetImage, { x: margin, y: fleetY + 76, width: contentW, height: 160 })
-  page.drawRectangle({ x: margin, y: fleetY, width: contentW, height: 76, color: pdfEmailTheme.paleGold })
-  page.drawText('GOLF-BAG FRIENDLY MERCEDES FLEET', { x: margin + 18, y: fleetY + 52, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.goldDeep })
-  drawTextBlock({
-    page,
-    text: 'E-Class, V-Class and Sprinter options matched to your group.',
-    x: margin + 18,
-    y: fleetY + 32,
-    font: boldFont,
-    fontSize: PDF_READING_PT,
-    color: pdfEmailTheme.ink,
-    maxWidth: contentW - 36,
-    lineHeight: PDF_READING_LH
-  })
-
-  const summaryY = 56
-  /** Snapshot cards sit between fleet bottom (fleetY) and page footer margin. */
-  const summaryBandH = 248
-  page.drawRectangle({ x: margin, y: summaryY, width: contentW, height: summaryBandH, color: pdfEmailTheme.white, borderColor: pdfEmailTheme.sand, borderWidth: 0.8 })
-  page.drawText('RECOMMENDED ITINERARY SNAPSHOT', { x: margin + 20, y: summaryY + summaryBandH - 34, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.greenSoft })
-  page.drawText('Built around the details you sent.', { x: margin + 20, y: summaryY + summaryBandH - 64, font: boldFont, size: 20, color: pdfEmailTheme.ink })
-  const cardW = (contentW - 54) / 2
-  const infoCardH = 120
-  const snapshotTopRowBottom = summaryY + 118
-  const snapshotRowGap = 14
-  const snapshotBottomRowBottom = snapshotTopRowBottom - infoCardH - snapshotRowGap
-  drawPdfInfoCard({
-    page,
-    x: margin + 18,
-    y: snapshotTopRowBottom,
-    width: cardW,
-    height: infoCardH,
-    kicker: 'Transfer',
-    title: 'Private AGP pickup',
-    body: 'Flight-aware driver and room for clubs.',
-    font: regularFont,
-    boldFont,
-    fill: pdfEmailTheme.paleGold
-  })
-  drawPdfInfoCard({
-    page,
-    x: margin + 36 + cardW,
-    y: snapshotTopRowBottom,
-    width: cardW,
-    height: infoCardH,
-    kicker: 'Stay',
-    title: 'Golf-friendly base',
-    body: 'Hotel or resort matched to the group.',
-    font: regularFont,
-    boldFont,
-    fill: pdfEmailTheme.paleGreen
-  })
-  drawPdfInfoCard({
-    page,
-    x: margin + 18,
-    y: snapshotBottomRowBottom,
-    width: cardW,
-    height: infoCardH,
-    kicker: 'Golf',
-    title: 'Preferred rounds',
-    body: 'Courses selected around ability and daylight.',
-    font: regularFont,
-    boldFont,
-    fill: pdfEmailTheme.paleGreen
-  })
-  drawPdfInfoCard({
-    page,
-    x: margin + 36 + cardW,
-    y: snapshotBottomRowBottom,
-    width: cardW,
-    height: infoCardH,
-    kicker: 'Support',
-    title: 'Irish phone line',
-    body: 'Email, phone or WhatsApp follow-up.',
-    font: regularFont,
-    boldFont,
-    fill: pdfEmailTheme.paleGold
-  })
-
-  let detailPage = addPage()
-  let y = pageHeight - 62
-  detailPage.drawText('SUBMITTED TRIP DETAILS', { x: margin, y, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.greenSoft })
-  y -= 28
-  detailPage.drawText('Your GolfSol Ireland enquiry record', { x: margin, y, font: boldFont, size: 22, color: pdfEmailTheme.ink })
-  y -= 20
-  drawTextBlock({
-    page: detailPage,
-    text: 'Here is the trip brief we received. We will use this to prepare your Costa del Sol golf travel options.',
-    x: margin,
-    y,
-    font: regularFont,
-    fontSize: PDF_READING_PT,
-    color: pdfEmailTheme.muted,
-    maxWidth: contentW,
-    lineHeight: PDF_READING_LH
-  })
-  y -= 32
-
-  const rows = [
-    ['Full name', fullName],
-    ['Email', email],
-    ['Phone / WhatsApp', phoneWhatsApp],
-    ['Best time to call', bestTimeToCall],
-    ['Enquiry ID', enquiryId],
-    ['Submitted', enquiryDate],
-    ['Trip interest', interest]
-  ]
-
-  rows.forEach(([label, value], index) => {
-    const valueLines = wrapText({ text: value, font: regularFont, fontSize: PDF_READING_PT, maxWidth: contentW - 175 })
-    const rowH = Math.max(52, valueLines.length * PDF_READING_LH + 30)
-    if (y - rowH < 72) {
-      detailPage = addPage()
-      y = pageHeight - 62
-      detailPage.drawText('SUBMITTED TRIP DETAILS CONTINUED', { x: margin, y, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.greenSoft })
-      y -= 30
-    }
-    detailPage.drawRectangle({
-      x: margin,
-      y: y - rowH,
-      width: contentW,
-      height: rowH,
-      color: index % 2 === 0 ? pdfEmailTheme.white : pdfEmailTheme.paleGold,
-      borderColor: pdfEmailTheme.sand,
-      borderWidth: 0.6
-    })
-    detailPage.drawText(label.toUpperCase(), { x: margin + 14, y: y - 24, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.muted })
-    drawTextBlock({
-      page: detailPage,
-      text: value,
-      x: margin + 150,
-      y: y - 18,
-      font: regularFont,
-      fontSize: PDF_READING_PT,
-      color: pdfEmailTheme.ink,
-      maxWidth: contentW - 170,
-      lineHeight: PDF_READING_LH
-    })
-    y -= rowH
-  })
-
-  const finalPage = addPage()
-  finalPage.drawText('TRANSFER EXPERIENCE', { x: margin, y: pageHeight - 62, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.greenSoft })
-  finalPage.drawText('From arrivals hall to resort door.', { x: margin, y: pageHeight - 92, font: boldFont, size: 22, color: pdfEmailTheme.ink })
-  const imageCardW = (contentW - 22) / 3
-  const imageCardY = 542
-  const imageCards = [
-    [arrivalsImage, 'Arrivals tracked', 'Driver ready when your flight lands.'],
-    [resortImage, 'Resort drop-off', 'Straight to hotel, villa or course.'],
-    [coastalImage, 'Sol corridor', 'Malaga, Marbella and beyond.']
-  ]
-  imageCards.forEach(([image, title, body], index) => {
-    const x = margin + index * (imageCardW + 11)
-    finalPage.drawRectangle({ x, y: imageCardY, width: imageCardW, height: 178, color: index === 1 ? pdfEmailTheme.paleGold : pdfEmailTheme.paleGreen, borderColor: pdfEmailTheme.sand, borderWidth: 0.8 })
-    finalPage.drawImage(image, { x, y: imageCardY + 72, width: imageCardW, height: 106 })
-    finalPage.drawText(sanitizeStandardFontText(title), {
-      x: x + 12,
-      y: imageCardY + 48,
-      font: boldFont,
-      size: PDF_READING_PT,
-      color: pdfEmailTheme.ink
-    })
-    drawTextBlock({
-      page: finalPage,
-      text: body,
-      x: x + 12,
-      y: imageCardY + 28,
-      font: regularFont,
-      fontSize: PDF_READING_PT,
-      color: pdfEmailTheme.muted,
-      maxWidth: imageCardW - 24,
-      lineHeight: PDF_READING_LH
-    })
-  })
-
-  finalPage.drawRectangle({ x: margin, y: 286, width: contentW, height: 184, color: pdfEmailTheme.green })
-  finalPage.drawText('NEXT STEP', { x: margin + 28, y: 430, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.gold })
-  finalPage.drawText('Tell us what to tune.', { x: margin + 28, y: 398, font: boldFont, size: 22, color: pdfEmailTheme.white })
-  drawTextBlock({
-    page: finalPage,
-    text:
-      'Reply with any dates, group changes or must-play courses. We will shape the quote around the group rather than forcing you into a fixed package.',
-    x: margin + 28,
-    y: 372,
-    font: regularFont,
-    fontSize: PDF_READING_PT,
-    color: rgb(220 / 255, 232 / 255, 226 / 255),
-    maxWidth: contentW - 56,
-    lineHeight: PDF_READING_LH
-  })
-  finalPage.drawRectangle({ x: margin + 28, y: 310, width: 158, height: 36, color: pdfEmailTheme.gold })
-  finalPage.drawText('REFINE MY QUOTE', { x: margin + 46, y: 326, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.ink })
-
-  finalPage.drawRectangle({ x: margin, y: 92, width: contentW, height: 158, color: pdfEmailTheme.white, borderColor: pdfEmailTheme.sand, borderWidth: 0.8 })
-  finalPage.drawText('IMPORTANT DISCLAIMER', { x: margin + 20, y: 222, font: boldFont, size: PDF_READING_PT, color: pdfEmailTheme.goldDeep })
-  drawTextBlock({
-    page: finalPage,
-    text: disclaimerParagraphs.join('\n\n'),
-    x: margin + 20,
-    y: 198,
-    font: regularFont,
-    fontSize: PDF_READING_PT,
-    color: pdfEmailTheme.muted,
-    maxWidth: contentW - 40,
-    lineHeight: PDF_READING_LH
-  })
-  finalPage.drawText(`© ${new Date().getFullYear()} GolfSol Ireland · Irish-owned Costa del Sol golf travel · Transfers, accommodation and tee times in one place.`, {
-    x: margin,
-    y: 52,
-    font: regularFont,
-    size: PDF_READING_PT,
-    color: pdfEmailTheme.muted
-  })
-  drawPdfLine(finalPage, margin, 72, margin + contentW)
-
-  return pdfDocument.save()
-}
-
-const supplementalTermsSections = [
-  {
-    title: 'Booking role and supplier responsibility',
-    body:
-      'GolfSol Ireland arranges Costa del Sol golf travel services with third-party hotels, resorts, golf courses, transport providers and other suppliers. We use reasonable care when coordinating your trip, but we do not own or operate those suppliers.',
-    points: [
-      'Hotel rooms, accommodation facilities, golf courses, buggies, tee sheets and transfer operations are controlled by the relevant supplier.',
-      'If a supplier changes, cancels, overbooks or fails to deliver a service, we will help escalate and seek a practical remedy, but we are not liable for that supplier failure.',
-      'Supplier-specific cancellation, refund, no-show and amendment rules apply once a booking is confirmed.'
-    ]
-  },
-  {
-    title: 'Deposit and balance',
-    body:
-      'Unless your written proposal states otherwise, a 20% deposit is payable upfront to proceed with the booking. The remaining 80% balance is due within five days of booking confirmation.',
-    points: [
-      'If you cancel within 48 hours of paying the deposit, the deposit will be refunded provided no non-refundable supplier cost has already been committed on your instruction.',
-      'After 48 hours, the 20% deposit is non-refundable because supplier holds, administration and planning work have started.',
-      'If the balance is not paid on time, suppliers may release rooms, tee times or vehicles and prices may change.'
-    ]
-  },
-  {
-    title: 'Accommodation problems',
-    body:
-      'Accommodation is provided by third-party hotels, resorts, apartments or accommodation suppliers. We cannot guarantee room views, exact floors, adjoining rooms, bed types, facilities, staffing levels or amenities unless a supplier confirms them as guaranteed in writing.',
-    points: [
-      'If accommodation fails or changes, we will help seek an alternative or supplier remedy where available.',
-      'Local taxes, damage deposits, resort rules, cleaning charges and hotel policies may be payable locally.',
-      'Supplier decisions on room allocation, maintenance and service delivery are outside our direct control.'
-    ]
-  },
-  {
-    title: 'Golf course bookings',
-    body:
-      'Golf courses control tee times, course condition, course closure, pairing, pace of play, handicap rules, dress codes, buggy availability and refund policy.',
-    points: [
-      'If a course officially closes, we will seek the refund, credit, voucher or replacement round offered by that course.',
-      'If the course remains open and your group chooses not to attend, the round is normally treated as a no-show and charged in full.',
-      'Buggy inclusion varies by course and player numbers. Odd-number groups may need to share, walk or pay locally for an extra buggy.'
-    ]
-  },
-  {
-    title: 'Cancellations, reductions and changes',
-    body:
-      'Tell us as early as possible if you need to cancel, reduce numbers or change names, dates, hotels, golf rounds or transfer details. We will help where suppliers allow it.',
-    points: [
-      'Group reductions can increase per-person prices because fixed costs are split across fewer travellers.',
-      'Supplier amendment fees, lost discounts and rate increases are payable by the group unless we agree otherwise in writing.',
-      'Travel insurance is strongly recommended for cancellation, illness, missed flights, baggage, golf equipment and disruption.'
-    ]
-  },
-  {
-    title: 'Liability limits',
-    body:
-      'We are responsible only for our own proven failure to use reasonable care and skill in arranging services. We are not liable for another company mistake, delay, overbooking, cancellation, negligence or operational failure.',
-    points: [
-      'We are not liable for indirect loss, loss of enjoyment, missed flights, unused services, or costs not approved by us in advance.',
-      'Where GolfSol Ireland is legally liable, liability is limited to the amount paid to us for the affected service, except where Irish law does not allow that limit.',
-      'Nothing in these terms excludes liability for fraud, deliberate wrongdoing, death or personal injury caused by negligence, or any legal rights that cannot be excluded.'
-    ]
-  }
-]
-
-const travellerContactSections = [
-  {
-    title: 'Emergency first',
-    body:
-      'For any immediate danger in Spain, call 112 first. Operators can route police, ambulance and fire services and English-speaking support is normally available.',
-    points: [
-      'Spain / EU emergency number: 112',
-      'Medical emergency / ambulance: 061',
-      'National Police: 091',
-      'Guardia Civil: 062',
-      'Local Police: 092',
-      'Fire brigade: 080'
-    ]
-  },
-  {
-    title: 'Irish consular help in Spain',
-    body:
-      'For serious problems such as arrest, hospitalisation, lost passport, death, assault or urgent consular support, contact the Irish Embassy or Department of Foreign Affairs.',
-    points: [
-      'Embassy of Ireland, Madrid emergency line: +34 91 436 4093',
-      'Department of Foreign Affairs Dublin duty officer: +353 1 408 2000',
-      'Honorary Consulate of Ireland, Malaga/Fuengirola: +34 952 475 108',
-      'Honorary Consulates do not usually operate an out-of-hours emergency service.'
-    ]
-  },
-  {
-    title: 'Airport and airlines',
-    body:
-      'Keep your booking reference handy before calling an airline. For cancelled or delayed flights, contact the airline first; airport information desks cannot usually change airline bookings.',
-    points: [
-      'Malaga-Costa del Sol Airport / AENA information: +34 91 321 1000',
-      'Ryanair Ireland customer support: +353 1 691 7177',
-      'Aer Lingus customer support: +353 1 761 7838',
-      'For live flight disruption, check the airline app and your email/SMS before travelling to the airport.'
-    ]
-  },
-  {
-    title: 'Health and travel practicals',
-    body:
-      'Carry travel insurance details, passport copy, GHIC/EHIC card if applicable, medication names and your hotel address. In a medical emergency, go to the nearest public hospital or call 112.',
-    points: [
-      'Save your insurer emergency assistance phone number before you fly.',
-      'Bring prescription medication in original packaging where possible.',
-      'For lost medication, bring the empty box or prescription details to a pharmacy.',
-      'For lost/stolen passports, contact Irish consular support and make a police report.'
-    ]
-  },
-  {
-    title: 'GolfSol Ireland support',
-    body:
-      'For transfers, tee-time coordination, hotel notes or trip questions connected to your GolfSol Ireland enquiry, contact us directly.',
-    points: [
-      'GolfSol Ireland phone / WhatsApp (Ireland): +353 87 446 4766',
-      'GolfSol Ireland phone (Spain): +34 641 81 53 66',
-      'GolfSol Ireland email: info@golfsolirl.com',
-      'This guide is not an emergency service. In danger, call 112 first.'
-    ]
-  }
-]
-
-const packingChecklistSections = [
-  {
-    title: 'Travel documents',
-    body: 'Keep documents together in your hand luggage and save digital copies on your phone.',
-    points: [
-      'Passport valid for travel dates',
-      'Boarding passes and airline app access',
-      'Travel insurance policy and emergency number',
-      'EHIC/GHIC card if applicable',
-      'Hotel address and GolfSol itinerary PDF',
-      'Driving licence only if needed for ID or local activities'
-    ]
-  },
-  {
-    title: 'Golf essentials',
-    body: 'Pack for warm-weather golf, early tee times and course dress codes.',
-    points: [
-      'Golf shoes and spare spikes/laces',
-      'Golf glove plus spare glove',
-      'Golf balls, tees, pitch mark repairer and marker',
-      'Course-appropriate collared shirts',
-      'Light mid-layer for early starts',
-      'Cap or visor and sunglasses'
-    ]
-  },
-  {
-    title: 'Sun and heat',
-    body: 'Costa del Sol rounds can be hot even outside peak summer.',
-    points: [
-      'High SPF sun cream',
-      'After-sun or moisturiser',
-      'Reusable water bottle',
-      'Electrolyte tablets or hydration sachets',
-      'Lip balm with SPF',
-      'Light rain shell for changeable days'
-    ]
-  },
-  {
-    title: 'Airport and transfer',
-    body: 'Make arrivals easier for the group organiser and transfer driver.',
-    points: [
-      'Phone charged before landing',
-      'Portable battery pack',
-      'Roaming enabled or eSIM ready',
-      'Golf bag tag with name and mobile number',
-      'WhatsApp installed for quick contact',
-      'Group leader has all flight numbers'
-    ]
-  },
-  {
-    title: 'Evening and resort',
-    body: 'Add a few non-golf items for dinners, pool time and resort comfort.',
-    points: [
-      'Smart casual evening wear',
-      'Swimwear',
-      'Comfortable walking shoes',
-      'European plug adapter',
-      'Medication in original packaging',
-      'Small first-aid kit or blister plasters'
-    ]
-  }
-]
-
-const createSupplementalPdf = async ({ title, kicker, subtitle, sections, footerText }) => {
-  const pdfDocument = await PDFDocument.create()
-  const regularFont = await pdfDocument.embedFont(StandardFonts.Helvetica)
-  const boldFont = await pdfDocument.embedFont(StandardFonts.HelveticaBold)
-  const logoImage = await pdfDocument.embedPng(readFileSync(brandedPdfAssetPaths.logo))
-  const margin = 36
-  const contentW = pageWidth - margin * 2
-
-  const addPage = (pageKicker = kicker) => {
-    const page = pdfDocument.addPage([pageWidth, pageHeight])
-    page.drawRectangle({ x: 0, y: 0, width: pageWidth, height: pageHeight, color: pdfEmailTheme.cream })
-    page.drawRectangle({ x: margin, y: pageHeight - 206, width: contentW, height: 160, color: pdfEmailTheme.green })
-    page.drawRectangle({ x: margin, y: pageHeight - 206, width: contentW, height: 5, color: pdfEmailTheme.gold })
-    const logoDims = logoImage.scale(0.24)
-    page.drawImage(logoImage, { x: margin + 18, y: pageHeight - 126, width: logoDims.width, height: logoDims.height })
-    page.drawText(sanitizeStandardFontText(pageKicker).toUpperCase(), {
-      x: margin + 20,
-      y: pageHeight - 158,
-      font: boldFont,
-      size: PDF_READING_PT,
-      color: pdfEmailTheme.gold
-    })
-    drawTextBlock({
-      page,
-      text: title,
-      x: margin + 20,
-      y: pageHeight - 180,
-      font: boldFont,
-      fontSize: 18,
-      color: pdfEmailTheme.white,
-      maxWidth: contentW - 40,
-      lineHeight: 21
-    })
-    return { page, y: pageHeight - 238 }
-  }
-
-  let { page, y } = addPage()
-  y = drawTextBlock({
-    page,
-    text: subtitle,
-    x: margin,
-    y,
-    font: regularFont,
-    fontSize: PDF_READING_PT,
-    color: pdfEmailTheme.muted,
-    maxWidth: contentW,
-    lineHeight: PDF_READING_LH
-  }) - 18
-
-  sections.forEach((section) => {
-    const bodyLines = wrapText({ text: section.body, font: regularFont, fontSize: PDF_READING_PT, maxWidth: contentW - 34 })
-    const pointLineCount = section.points.reduce(
-      (sum, point) => sum + wrapText({ text: point, font: regularFont, fontSize: PDF_READING_PT, maxWidth: contentW - 54 }).length,
-      0
-    )
-    const sectionH = Math.max(112, 52 + bodyLines.length * PDF_READING_LH + pointLineCount * PDF_READING_LH + section.points.length * 8)
-
-    if (y - sectionH < 72) {
-      ;({ page, y } = addPage(`${kicker} continued`))
-    }
-
-    page.drawRectangle({
-      x: margin,
-      y: y - sectionH,
-      width: contentW,
-      height: sectionH,
-      color: pdfEmailTheme.white,
-      borderColor: pdfEmailTheme.sand,
-      borderWidth: 0.8
-    })
-    page.drawText(sanitizeStandardFontText(section.title), {
-      x: margin + 16,
-      y: y - 24,
-      font: boldFont,
-      size: 18,
-      color: pdfEmailTheme.ink
-    })
-    let cursor = drawTextBlock({
-      page,
-      text: section.body,
-      x: margin + 16,
-      y: y - 46,
-      font: regularFont,
-      fontSize: PDF_READING_PT,
-      color: pdfEmailTheme.muted,
-      maxWidth: contentW - 32,
-      lineHeight: PDF_READING_LH
-    }) - 8
-
-    section.points.forEach((point) => {
-      page.drawCircle({ x: margin + 22, y: cursor + 3, size: 2.4, color: pdfEmailTheme.goldDeep })
-      cursor = drawTextBlock({
-        page,
-        text: point,
-        x: margin + 34,
-        y: cursor,
-        font: regularFont,
-        fontSize: PDF_READING_PT,
-        color: pdfEmailTheme.ink,
-        maxWidth: contentW - 54,
-        lineHeight: PDF_READING_LH
-      }) - 6
-    })
-
-    y -= sectionH + 14
-  })
-
-  const pages = pdfDocument.getPages()
-  pages.forEach((pdfPage, index) => {
-    drawPdfLine(pdfPage, margin, 48, margin + contentW)
-    pdfPage.drawText(sanitizeStandardFontText(footerText), {
-      x: margin,
-      y: 30,
-      font: regularFont,
-      size: PDF_READING_PT,
-      color: pdfEmailTheme.muted
-    })
-    pdfPage.drawText(`Page ${index + 1} of ${pages.length}`, {
-      x: pageWidth - margin - 72,
-      y: 30,
-      font: regularFont,
-      size: PDF_READING_PT,
-      color: pdfEmailTheme.muted
-    })
-  })
-
-  return pdfDocument.save()
-}
-
-export const createTermsAndConditionsPdf = () =>
-  createSupplementalPdf({
-    title: 'Terms and conditions for GolfSol Ireland bookings',
-    kicker: 'Important booking terms',
-    subtitle:
-      'Please read these terms before paying a deposit or confirming a trip. They explain how deposits, balances, supplier rules, cancellations and liability work for GolfSol Ireland enquiries and bookings.',
-    sections: supplementalTermsSections,
-    footerText: `© ${new Date().getFullYear()} GolfSol Ireland · Terms and conditions summary.`
-  })
-
-export const createTravellerContactsPdf = () =>
-  createSupplementalPdf({
-    title: 'Costa del Sol traveller contacts for Irish golfers',
-    kicker: 'Useful numbers',
-    subtitle:
-      'A practical contact sheet for Irish travellers heading to Malaga and the Costa del Sol. Save it to your phone before you fly. Numbers can change, so check official websites for the latest details.',
-    sections: travellerContactSections,
-    footerText: `© ${new Date().getFullYear()} GolfSol Ireland · Traveller contact guide · In an emergency call 112.`
-  })
-
-export const createPackingChecklistPdf = async () => {
-  const pdfDocument = await PDFDocument.create()
-  const regularFont = await pdfDocument.embedFont(StandardFonts.Helvetica)
-  const boldFont = await pdfDocument.embedFont(StandardFonts.HelveticaBold)
-  const logoImage = await pdfDocument.embedPng(readFileSync(brandedPdfAssetPaths.logo))
-  const margin = 36
-  const contentW = pageWidth - margin * 2
-
-  const addPage = (continued = false) => {
-    const page = pdfDocument.addPage([pageWidth, pageHeight])
-    page.drawRectangle({ x: 0, y: 0, width: pageWidth, height: pageHeight, color: pdfEmailTheme.cream })
-    page.drawRectangle({ x: margin, y: pageHeight - 206, width: contentW, height: 160, color: pdfEmailTheme.green })
-    page.drawRectangle({ x: margin, y: pageHeight - 206, width: contentW, height: 5, color: pdfEmailTheme.gold })
-    const logoDims = logoImage.scale(0.24)
-    page.drawImage(logoImage, { x: margin + 18, y: pageHeight - 126, width: logoDims.width, height: logoDims.height })
-    page.drawText(continued ? 'PACKING CHECKLIST CONTINUED' : 'PACKING CHECKLIST', {
-      x: margin + 20,
-      y: pageHeight - 158,
-      font: boldFont,
-      size: PDF_READING_PT,
-      color: pdfEmailTheme.gold
-    })
-    drawTextBlock({
-      page,
-      text: 'Costa del Sol golf trip packing checklist',
-      x: margin + 20,
-      y: pageHeight - 180,
-      font: boldFont,
-      fontSize: 18,
-      color: pdfEmailTheme.white,
-      maxWidth: contentW - 40,
-      lineHeight: 21
-    })
-    return { page, y: pageHeight - 238 }
-  }
-
-  let { page, y } = addPage()
-  y = drawTextBlock({
-    page,
-    text: 'Tick each box before you leave Ireland. This guide is designed for golf groups travelling with clubs, hand luggage, transfer pickups and warm-weather rounds.',
-    x: margin,
-    y,
-    font: regularFont,
-    fontSize: PDF_READING_PT,
-    color: pdfEmailTheme.muted,
-    maxWidth: contentW,
-    lineHeight: PDF_READING_LH
-  }) - 20
-
-  packingChecklistSections.forEach((section) => {
-    const sectionH = 64 + section.points.length * 34
-    if (y - sectionH < 70) {
-      ;({ page, y } = addPage(true))
-    }
-
-    page.drawRectangle({
-      x: margin,
-      y: y - sectionH,
-      width: contentW,
-      height: sectionH,
-      color: pdfEmailTheme.white,
-      borderColor: pdfEmailTheme.sand,
-      borderWidth: 0.9
-    })
-    page.drawText(sanitizeStandardFontText(section.title), {
-      x: margin + 16,
-      y: y - 24,
-      font: boldFont,
-      size: 18,
-      color: pdfEmailTheme.ink
-    })
-    let cursor = drawTextBlock({
-      page,
-      text: section.body,
-      x: margin + 16,
-      y: y - 46,
-      font: regularFont,
-      fontSize: PDF_READING_PT,
-      color: pdfEmailTheme.muted,
-      maxWidth: contentW - 32,
-      lineHeight: PDF_READING_LH
-    }) - 10
-
-    section.points.forEach((point) => {
-      page.drawRectangle({
-        x: margin + 18,
-        y: cursor - 3,
-        width: 17,
-        height: 17,
-        borderColor: pdfEmailTheme.green,
-        borderWidth: 2.2,
-        color: pdfEmailTheme.white
-      })
-      page.drawText(sanitizeStandardFontText(point), {
-        x: margin + 46,
-        y: cursor,
-        font: regularFont,
-        size: PDF_READING_PT,
-        color: pdfEmailTheme.ink
-      })
-      cursor -= 34
-    })
-
-    y -= sectionH + 14
-  })
-
-  const pages = pdfDocument.getPages()
-  pages.forEach((pdfPage, index) => {
-    drawPdfLine(pdfPage, margin, 48, margin + contentW)
-    pdfPage.drawText(`© ${new Date().getFullYear()} GolfSol Ireland · Packing checklist · Tick boxes before departure.`, {
-      x: margin,
-      y: 30,
-      font: regularFont,
-      size: PDF_READING_PT,
-      color: pdfEmailTheme.muted
-    })
-    pdfPage.drawText(`Page ${index + 1} of ${pages.length}`, {
-      x: pageWidth - margin - 72,
-      y: 30,
-      font: regularFont,
-      size: PDF_READING_PT,
-      color: pdfEmailTheme.muted
-    })
-  })
-
-  return pdfDocument.save()
-}
+export { createBrandedEnquiryPdf, createTermsAndConditionsPdf, createTravellerContactsPdf, createPackingChecklistPdf }
 
 const buildCustomerHtml = (payload) => buildBrandedEnquiryEmailHtml(payload, 'customer')
 const buildOwnerHtml = (payload) => buildBrandedEnquiryEmailHtml(payload, 'admin')
 
-const attachmentFromBuffer = (filename, buffer, contentType, contentId) => ({
-  filename,
-  content: Buffer.from(buffer).toString('base64'),
-  contentType,
-  contentId
-})
+const DUPLICATE_PHONE_ENQUIRY_MESSAGE =
+  'This phone number already has a trip request with Golf Sol Ireland. Please sign in to your dashboard to continue instead of submitting a new form.'
 
-/** CID image attachments for branded transactional mail (enquiry, magic link, etc.). */
-export const getTransactionalEmailImageAttachments = async () => {
-  const [lockupBuf, shamrockBuf, li, fb, wa, bk] = await Promise.all([
-    getEmailBrandLockupForTransactionalMail(),
-    getEmailShamrockInlinePngBuffer(),
-    getSocialIconPng('linkedin', iconPaths.linkedin.vb, iconPaths.linkedin.d),
-    getSocialIconPng('facebook', iconPaths.facebook.vb, iconPaths.facebook.d),
-    getSocialIconPng('whatsapp', iconPaths.whatsapp.vb, iconPaths.whatsapp.d),
-    getSocialIconPng('bsky', iconPaths.bsky.vb, iconPaths.bsky.d)
-  ])
+/**
+ * Block repeat website enquiries for the same normalized mobile (see `phone_e164` migration).
+ * Fails open if Supabase is missing or columns are not migrated yet.
+ * @param {import('@supabase/supabase-js').SupabaseClient} sb
+ * @param {string} phoneWhatsApp
+ * @param {NodeJS.ProcessEnv} env
+ */
+const assertNoDuplicatePhoneForWebsiteEnquiry = async (sb, phoneWhatsApp, env) => {
+  if (env.ENQUIRY_PHONE_DEDUPE_DISABLE === '1' || env.ENQUIRY_PHONE_DEDUPE_DISABLE === 'true') {
+    return
+  }
+  const phoneKey = computePhoneUniquenessKey(phoneWhatsApp)
+  if (!phoneKey) {
+    return
+  }
 
-  return [
-    attachmentFromBuffer('gsol-brand-lockup-email.png', lockupBuf, 'image/png', logoLockupEmailContentId),
-    attachmentFromBuffer('golf-sol-shamrock.png', shamrockBuf, 'image/png', shamrockInlineContentId),
-    attachmentFromBuffer('social-linkedin.png', li, 'image/png', socialContentIds.linkedin),
-    attachmentFromBuffer('social-facebook.png', fb, 'image/png', socialContentIds.facebook),
-    attachmentFromBuffer('social-whatsapp.png', wa, 'image/png', socialContentIds.whatsapp),
-    attachmentFromBuffer('social-bluesky.png', bk, 'image/png', socialContentIds.bsky)
-  ]
+  const { data: enqRows, error: enqErr } = await sb.from('enquiries').select('id').eq('phone_e164', phoneKey).limit(1)
+  if (enqErr) {
+    const msg = String(enqErr.message ?? '')
+    if (msg.toLowerCase().includes('phone_e164') || msg.toLowerCase().includes('column')) {
+      console.warn('[enquiry-service] phone dedupe skipped (missing phone_e164 column):', msg)
+      return
+    }
+    console.warn('[enquiry-service] phone dedupe enquiry lookup failed:', msg)
+    return
+  }
+  if (enqRows?.length) {
+    const err = new Error(DUPLICATE_PHONE_ENQUIRY_MESSAGE)
+    err.statusCode = 409
+    err.code = 'EXISTING_PHONE_USE_LOGIN'
+    throw err
+  }
+
+  const { data: profRows, error: profErr } = await sb.from('profiles').select('id').eq('phone_e164', phoneKey).limit(1)
+  if (profErr) {
+    const msg = String(profErr.message ?? '')
+    if (msg.toLowerCase().includes('phone_e164') || msg.toLowerCase().includes('column')) {
+      console.warn('[enquiry-service] phone dedupe skipped (missing profiles.phone_e164):', msg)
+      return
+    }
+    console.warn('[enquiry-service] phone dedupe profile lookup failed:', msg)
+    return
+  }
+  if (profRows?.length) {
+    const err = new Error(DUPLICATE_PHONE_ENQUIRY_MESSAGE)
+    err.statusCode = 409
+    err.code = 'EXISTING_PHONE_USE_LOGIN'
+    throw err
+  }
 }
 
 const recordEnquiryToSupabase = async (enquiry, enquiryId, env) => {
@@ -1623,13 +751,15 @@ const recordEnquiryToSupabase = async (enquiry, enquiryId, env) => {
         fields: { ...prevFields, _accountAnchorRef: anchorRef }
       }
     }
+    const phoneE164 = computePhoneUniquenessKey(enquiry.phoneWhatsApp)
     const row = {
       reference_id: enquiryId,
       email: enquiry.email,
       full_name: enquiry.fullName,
       interest: enquiry.interest,
       phone_whatsapp: enquiry.phoneWhatsApp,
-      best_time_to_call: enquiry.bestTimeToCall
+      best_time_to_call: enquiry.bestTimeToCall,
+      ...(phoneE164 ? { phone_e164: phoneE164 } : {})
     }
     if (anchorRef) {
       row.account_anchor_ref = anchorRef
@@ -1638,6 +768,15 @@ const recordEnquiryToSupabase = async (enquiry, enquiryId, env) => {
       row.form_payload = mergedFormPayload
     }
     let { error } = await sb.from('enquiries').insert(row)
+
+    if (error && phoneE164 && String(error.message).toLowerCase().includes('phone_e164')) {
+      delete row.phone_e164
+      const retryPhone = await sb.from('enquiries').insert(row)
+      error = retryPhone.error
+      if (!retryPhone.error) {
+        console.warn('[enquiry-service] enquiries row saved without phone_e164; apply migration 20260510170000_profiles_enquiries_phone_e164.sql.')
+      }
+    }
 
     if (error && enquiry.formPayload && String(error.message).toLowerCase().includes('form_payload')) {
       delete row.form_payload
@@ -1747,6 +886,17 @@ export const handleEnquirySubmission = async (payload, env = process.env, runtim
     const error = new Error(missingConfigMessage)
     error.statusCode = 500
     throw error
+  }
+
+  const sbUrl = typeof env.SUPABASE_URL === 'string' ? env.SUPABASE_URL.trim() : ''
+  const sbKey = typeof env.SUPABASE_SERVICE_ROLE_KEY === 'string' ? env.SUPABASE_SERVICE_ROLE_KEY.trim() : ''
+  if (sbUrl && sbKey) {
+    const { createClient } = await import('@supabase/supabase-js')
+    const sb = createClient(sbUrl, sbKey, {
+      auth: { persistSession: false, autoRefreshToken: false }
+    })
+    await assertNoDuplicatePhoneForWebsiteEnquiry(sb, enquiry.phoneWhatsApp, env)
+    await assertEnquiryDriverDatesNotBlocked(sb, enquiry)
   }
 
   const resend = new Resend(resendApiKey)

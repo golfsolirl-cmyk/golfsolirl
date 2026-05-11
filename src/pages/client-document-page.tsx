@@ -20,6 +20,12 @@ const resolveVariant = (): DocumentVariant => {
 export function ClientDocumentPage() {
   const { session, isLoading: authLoading } = useAuth()
   const variant = useMemo(() => resolveVariant(), [])
+  const embedPreview = useMemo(() => {
+    if (typeof window === 'undefined') {
+      return false
+    }
+    return new URLSearchParams(window.location.search).get('embed') === '1'
+  }, [])
   const rootRef = useRef<HTMLDivElement | null>(null)
   const [pdfStatus, setPdfStatus] = useState<'idle' | 'saving' | 'error'>('idle')
   const [pdfMessage, setPdfMessage] = useState<string | null>(null)
@@ -127,47 +133,55 @@ export function ClientDocumentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#eef2eb] pdf-page-shell">
-      <PageIdentityBar
-        label={meta.title}
-        eyebrow={meta.kicker}
-        description="Read, save, and keep a clean PDF copy from your dashboard."
-        compact
-      />
-      <div
-        className="mx-auto mb-6 max-w-7xl px-4 pt-6 md:px-8 pdf-screen-only"
-        data-html2canvas-ignore="true"
-      >
-        <div className="flex flex-wrap items-center gap-3">
-          <button
-            aria-label="Save as PDF"
-            className="inline-flex min-h-11 items-center gap-2 rounded-full bg-forest-900 px-5 py-3 text-base font-semibold text-white transition-colors hover:bg-forest-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 disabled:opacity-70"
-            disabled={pdfStatus === 'saving'}
-            onClick={handleSavePdf}
-            type="button"
+    <div className={embedPreview ? 'min-h-0 bg-[#eef2eb] pdf-page-shell' : 'min-h-screen bg-[#eef2eb] pdf-page-shell'}>
+      {embedPreview ? (
+        <p className="sr-only">
+          {meta.title} — preview from your Golf Sol Ireland dashboard. Use the dashboard toolbar to print or share.
+        </p>
+      ) : (
+        <>
+          <PageIdentityBar
+            label={meta.title}
+            eyebrow={meta.kicker}
+            description="Read, save, and keep a clean PDF copy from your dashboard."
+            compact
+          />
+          <div
+            className="mx-auto mb-6 max-w-7xl px-4 pt-6 md:px-8 pdf-screen-only"
+            data-html2canvas-ignore="true"
           >
-            {pdfStatus === 'saving' ? (
-              <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />
-            ) : (
-              <Download className="h-4 w-4" aria-hidden="true" />
-            )}
-            {pdfStatus === 'saving' ? 'Preparing PDF…' : 'Save PDF'}
-          </button>
-          <a
-            className="text-base font-semibold text-gold-600 underline-offset-2 hover:text-gold-700 hover:underline"
-            href="/dashboard"
-          >
-            Back to dashboard
-          </a>
-          {pdfMessage ? (
-            <p className="text-base text-forest-700" role="status">
-              {pdfMessage}
-            </p>
-          ) : null}
-        </div>
-      </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                aria-label="Save as PDF"
+                className="inline-flex min-h-11 items-center gap-2 rounded-full bg-forest-900 px-5 py-3 text-base font-semibold text-white transition-colors hover:bg-forest-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 disabled:opacity-70"
+                disabled={pdfStatus === 'saving'}
+                onClick={handleSavePdf}
+                type="button"
+              >
+                {pdfStatus === 'saving' ? (
+                  <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  <Download className="h-4 w-4" aria-hidden="true" />
+                )}
+                {pdfStatus === 'saving' ? 'Preparing PDF…' : 'Save PDF'}
+              </button>
+              <a
+                className="text-base font-semibold text-gold-600 underline-offset-2 hover:text-gold-700 hover:underline"
+                href="/dashboard"
+              >
+                Back to dashboard
+              </a>
+              {pdfMessage ? (
+                <p className="text-base text-forest-700" role="status">
+                  {pdfMessage}
+                </p>
+              ) : null}
+            </div>
+          </div>
+        </>
+      )}
 
-      <div ref={rootRef} className="mx-auto max-w-7xl px-4 pb-10 md:px-8">
+      <div ref={rootRef} className={embedPreview ? 'mx-auto max-w-7xl px-3 pb-6 md:px-5' : 'mx-auto max-w-7xl px-4 pb-10 md:px-8'}>
         <PdfSiteShell>
           <main className="mx-auto max-w-3xl px-4 py-10 md:px-6 md:py-14">
             {variant === 'terms' ? <TermsBody kicker={meta.kicker} title={meta.title} /> : <WelcomeBody kicker={meta.kicker} title={meta.title} />}

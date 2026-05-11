@@ -15,6 +15,7 @@ import { formatTravelDateInput } from '../../../lib/format-travel-date'
 import { getLocalDateIso } from '../../../lib/local-date-iso'
 import { plannedTravelDatesErrorMessage, travelEndMinIso, travelStartMinIso } from '../../../lib/travel-date-bounds'
 import { getSupabaseBrowserClient } from '../../../lib/supabase-client'
+import { ENQUIRY_CONFLICT_EXISTING_PHONE, postWebsiteEnquiry } from '../../../lib/post-enquiry-client'
 
 interface GeQuickEnquiryFormProps {
   readonly title: string
@@ -56,6 +57,7 @@ export function GeQuickEnquiryForm({
   const [fieldValues, setFieldValues] = useState<Record<string, string>>(initialFieldValues)
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [errorCode, setErrorCode] = useState<string | null>(null)
   const [bookedDays, setBookedDays] = useState<Set<string>>(() => new Set())
   const confirmationRef = useRef<HTMLDivElement>(null)
 
@@ -76,6 +78,7 @@ export function GeQuickEnquiryForm({
     setFieldValues(initialFieldValues)
     setStatus('idle')
     setErrorMessage(null)
+    setErrorCode(null)
   }, [initialFieldValues])
 
   useEffect(() => {
@@ -242,6 +245,7 @@ export function GeQuickEnquiryForm({
     }
 
     setStatus('submitting')
+    setErrorCode(null)
     try {
       const interestLines = [
         interestPreset,
@@ -287,33 +291,34 @@ export function GeQuickEnquiryForm({
         }
       }
 
-      const response = await fetch('/api/enquiry', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fullName: name,
-          email: mail,
-          phoneWhatsApp: phone,
-          interest: interestLines.join('\n'),
-          bestTimeToCall: 'Any time',
-          formPayload: {
-            form: WEBSITE_ENQUIRY_FORM.contentQuickEnquiry,
-            fields: formFields
-          }
-        })
+      const result = await postWebsiteEnquiry({
+        fullName: name,
+        email: mail,
+        phoneWhatsApp: phone,
+        interest: interestLines.join('\n'),
+        bestTimeToCall: 'Any time',
+        formPayload: {
+          form: WEBSITE_ENQUIRY_FORM.contentQuickEnquiry,
+          fields: formFields
+        }
       })
-      const data = (await response.json().catch(() => ({}))) as { message?: string }
-      if (!response.ok) {
-        throw new Error(data.message ?? 'Could not send your request right now.')
+
+      if (!result.ok) {
+        setStatus('error')
+        setErrorMessage(result.message)
+        setErrorCode(result.code ?? null)
+        return
       }
 
       setStatus('success')
+      setErrorCode(null)
       setFullName('')
       setEmail('')
       setPhoneWhatsApp('')
       setFieldValues(initialFieldValues)
     } catch (error) {
       setStatus('error')
+      setErrorCode(null)
       setErrorMessage(error instanceof Error ? error.message : 'Could not send your request right now.')
     }
   }
@@ -481,9 +486,17 @@ export function GeQuickEnquiryForm({
           })}
 
           {status === 'error' && errorMessage ? (
-            <p className="rounded-lg border border-ge-orange/50 bg-orange-50 px-3 py-2.5 font-ge text-[1.02rem] leading-7 text-gs-dark sm:text-[1.04rem]">
-              {errorMessage}
-            </p>
+            <div className="rounded-lg border border-ge-orange/50 bg-orange-50 px-3 py-2.5 font-ge text-[1.02rem] leading-7 text-gs-dark sm:text-[1.04rem]">
+              <p>{errorMessage}</p>
+              {errorCode === ENQUIRY_CONFLICT_EXISTING_PHONE ? (
+                <p className="mt-3 text-[0.98rem] font-semibold text-gs-green">
+                  <a className="underline decoration-gs-green/50 underline-offset-2" href="/dashboard/login">
+                    Sign in to your trip desk
+                  </a>{' '}
+                  (same email you used before) — or contact us if you need help.
+                </p>
+              ) : null}
+            </div>
           ) : null}
 
           <GeButton className="w-full" type="submit" variant="gs-gold" size="lg" disabled={status === 'submitting'}>

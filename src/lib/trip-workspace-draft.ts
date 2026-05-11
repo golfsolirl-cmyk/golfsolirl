@@ -90,6 +90,24 @@ export const emptyTripWorkspaceDraft = (referenceId: string): TripWorkspaceDraft
   transferContactPhone: ''
 })
 
+/** True when a persisted workspace is only the auto-filled shell (no client edits to merge yet). */
+export const isUnsavedDefaultTripWorkspace = (d: TripWorkspaceDraft, referenceId: string): boolean => {
+  const ref = referenceId.trim()
+  const baseline = emptyTripWorkspaceDraft(ref)
+  const a = ensureTripWorkspaceDraftShape(d)
+  const b = ensureTripWorkspaceDraftShape(baseline)
+  return (
+    a.partySize === b.partySize &&
+    a.hotelNotes.trim() === b.hotelNotes.trim() &&
+    a.courseIds.length === 0 &&
+    (a.transferContactPhone ?? '').trim() === (b.transferContactPhone ?? '').trim() &&
+    a.stages.transfer === b.stages.transfer &&
+    a.stages.golf === b.stages.golf &&
+    a.stages.hotel === b.stages.hotel &&
+    JSON.stringify(a.transferStops) === JSON.stringify(b.transferStops)
+  )
+}
+
 export const isLikelyEnquiryReferenceId = (value: string): boolean => /^GSI-[A-Z0-9-]+$/i.test(value.trim())
 
 /**

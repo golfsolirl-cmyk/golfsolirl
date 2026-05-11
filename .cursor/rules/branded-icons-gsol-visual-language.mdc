@@ -1,0 +1,95 @@
+---
+description: Branded Golf Sol Ireland icons — logo as “us”, portal add-on glyphs, tiles, and a full Lucide catalogue for dashboards & site UI
+globs: "src/**/*.{tsx,ts}"
+alwaysApply: false
+---
+
+# Branded icons & Golf Sol visual language
+
+Use this when adding or changing **icons, avatars, category chips, or empty states** on **client portal**, **admin**, **transport**, **packages**, or **marketing** surfaces. Goal: **Golf Sol Ireland–branded**, not generic SaaS. Prefer **shared helpers** and **one logo path** over ad-hoc Lucide picks per screen.
+
+## Canonical brand assets
+
+| Asset | Path / import | Use when |
+|-------|----------------|----------|
+| **Primary logo (SVG)** | `/golf-sol-ireland-logo.svg` (public) or bundled import from `golf-sol-ireland-logo.svg` where the build already does so | **Golf Sol / admin / ops voice** in threads, receipts, headers, “message from us” rows |
+| **Site config reference** | `src/lib/business-cards-config.ts` → `siteLogoSvg` | Marketing / cards / shared constants |
+| **React logo wrapper** | `src/components/ui/logo.tsx` | Nav / layout when a component is required |
+
+**Admin → client messaging (and any “Golf Sol Ireland replied” row):** show the **logo image** (`<img src="/golf-sol-ireland-logo.svg" alt="Golf Sol Ireland" … />`) at a consistent height (**h-6**, **max-w-[7rem]**, **object-contain**), not a generic `Building2`, `Briefcase`, or default user silhouette. Client-side mirror: same treatment for `author_kind === 'admin'` in portal interest threads (see `portal-transfer-requests-section.tsx`, `client-dashboard-page.tsx`).
+
+**Client / guest side:** keep **`UserRound`** (or profile photo when you add it) for “You” — do not use the GSol logo for the client’s own messages.
+
+## Trip add-ons: single source of truth (transfers · golf · hotels)
+
+All **portal interest categories** (`PortalInterestCategory`: `transfers` | `golf_courses` | `hotels`) must use:
+
+- **Icon component:** `portalAddOnPremiumIcon(category)` from `src/lib/portal-add-on-premium-icons.ts`
+- **Green tile (white glyph):** `portalAddOnPremiumTileClass(category)`
+- **Stroke:** `PORTAL_ADD_ON_ICON_STROKE` on Lucide icons
+
+Current mapping (change only in this file so **Add to your trip**, **Interest tickets**, **team ticketing**, and **loading footers** stay aligned):
+
+| Category | Lucide | Meaning |
+|----------|--------|---------|
+| `transfers` | `PlaneLanding` | Airport / arrival / transport desk |
+| `golf_courses` | `Trophy` | Premium golf / rounds |
+| `hotels` | `Building2` | Accommodation / property |
+
+**Do not** reintroduce `Bus`, `MapPin`, `BedDouble`, or random icons for these three flows in portal UI — extend `portal-add-on-premium-icons.ts` if you need a different glyph, then consumers update automatically.
+
+## Colour tiles (portal)
+
+Pair icons with **forest / fairway / emerald** system (see `tailwind.config.js`):
+
+- Transfers tile: **emerald-600** + white icon  
+- Golf tile: **fairway-700** + white icon  
+- Hotels tile: **forest-800** + white icon  
+
+Optional **ring-1 ring-white/20–25** + **shadow-inner** for depth. Avoid neon or unrelated hues for these three categories.
+
+## Extended icon “menu” (when you need more UI)
+
+Use **Lucide** (`lucide-react`) with **stroke 2–2.25**, sized **h-4 w-4** (inline) to **h-6 w-6** (hero). Prefer names that read **travel / golf / hospitality / money / documents** — not generic “settings gears” unless it is truly settings.
+
+Suggested defaults (swap if a screen already establishes a different local convention):
+
+| Domain | Preferred Lucide (examples) | Avoid for GSol brand feel |
+|--------|------------------------------|----------------------------|
+| **Transfers / routes** | `PlaneLanding`, `Route`, `MapPinned`, `Navigation`, `CarFront` | Plain `Bus` for premium client UI |
+| **Golf** | `Trophy`, `Flag`, `LandPlot` / `Mountain` if available | Random sport icons unrelated to golf |
+| **Hotels** | `Building2`, `Hotel`, `BedDouble` | `Home` for “resort” marketing unless copy fits |
+| **Calendar / trips** | `CalendarRange`, `CalendarDays` | — |
+| **Payments** | `CreditCard`, `BadgeCheck`, `Wallet` | — |
+| **Documents / PDF** | `FileText`, `FileDown`, `ScrollText` | — |
+| **Alerts / ops** | `Bell`, `ShieldCheck`, `Info` | — |
+| **Success** | `CheckCircle2`, `Sparkles` (brand accent, not category) | — |
+| **External / CTA** | `ArrowRight`, `ExternalLink` | — |
+
+For **marketing / hero** sequences (e.g. trip desk loading), you may echo the **same three category icons** as the portal (`PlaneLanding`, `Trophy`, `Building2`) so dashboards and loaders feel **one system**.
+
+## Admin vs client dashboard
+
+| Surface | Icon tone | Notes |
+|---------|-----------|--------|
+| **Client portal** | Warm premium, gold accents, greens above | Interest tickets, Add to your trip, Linked requests — always use shared add-on helpers |
+| **Admin** | Efficient, readable, same **logo for “us”** | Queues, tables: small **h-4 w-4** Lucide for row type; **logo** for brand actions / replies to client |
+| **Driver** (if present) | Operational clarity | `MapPin`, `Route`, `Clock3` — distinct from client “holiday” tone |
+
+## Implementation checklist (new feature)
+
+1. **Trip add-on or interest ticket UI?** → Import from `portal-add-on-premium-icons.ts` only.  
+2. **Golf Sol speaking?** → Logo SVG + accessible `alt`.  
+3. **New category or product line?** → Extend `PortalInterestCategory` in `portal-interest-tickets.ts` **and** add icon + tile in `portal-add-on-premium-icons.ts`, then wire admin + client.  
+4. **One-off page icon?** → Pick from the extended table; match **stroke** and **forest/gold** palette from existing dashboard components.  
+5. **Never** mix Material Icons, Phosphor, and Lucide on the same card without a strong reason.
+
+## Files to treat as reference implementations
+
+- `src/lib/portal-add-on-premium-icons.ts` — category → icon + tile  
+- `src/components/portal-add-to-your-trip-strip.tsx` — large CTA tiles  
+- `src/components/portal-transfer-requests-section.tsx` — interest list + admin logo in thread  
+- `src/pages/client-dashboard-page.tsx` — `InterestCategoryGlyph`, thread modal, ticketing list  
+- `src/components/portal-account-loading-state.tsx` — loader trio aligned to categories  
+
+When in doubt, **extend the shared lib** rather than adding a second icon system.

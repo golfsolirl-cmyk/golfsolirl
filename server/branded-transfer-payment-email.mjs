@@ -18,7 +18,7 @@ export const buildTransferDepositThankYouEmail = (booking, depositPercent) => {
   const heroTitle = 'Deposit received — thank you'
   const heroLead = `We have recorded your ${depositPercent}% deposit for your Costa transfer. Your route: ${route}. We will hold your date and keep everything moving smoothly.`
   const bodyHtml = `<p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">If anything changes on your side, just reply to this email or WhatsApp us — we are happy to adjust timings where we can.</p>
-    <p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">You will receive a short <strong>friendly reminder</strong> about the outstanding balance when it is due — no surprises, just a gentle nudge.</p>
+    <p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">The <strong>remaining balance</strong> is due <strong>48 hours before your scheduled pickup</strong>. We will email you again at that point if it is still outstanding — please pay from your dashboard in good time so we can hold your driver.</p>
     <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Questions? Call <a href="tel:+353874464766" style="color:${gs.green};font-weight:600;">+353 87 446 4766</a> or open your <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">client dashboard</a>.</p>`
 
   const htmlRaw = buildGsolTransactionalEmail({
@@ -113,11 +113,11 @@ export const buildTransferBalanceReminderEmail = (booking, depositPercent) => {
   const site = getGsolSiteUrl()
   const route = `${esc(booking.pickup_label)} → ${esc(booking.dropoff_label)}`
   const remainder = Math.max(1, 100 - depositPercent)
-  const subject = 'Golf Sol Ireland — gentle reminder: transfer balance'
-  const heroTitle = 'Balance reminder'
-  const heroLead = `This is a quick, friendly reminder about the remaining balance for your Costa transfer (${route}). Your ${depositPercent}% deposit is safely on file — when you are ready, you can settle the remaining ${remainder}% with the team.`
-  const bodyHtml = `<p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">No rush if you are still finalising flights — reply to this email or WhatsApp us and we will send payment options that suit you.</p>
-    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Thank you for travelling with Golf Sol Ireland · <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">Dashboard</a> · <a href="tel:+353874464766" style="color:${gs.green};font-weight:600;">+353 87 446 4766</a></p>`
+  const subject = 'Golf Sol Ireland — action needed: transfer balance before pickup'
+  const heroTitle = 'Balance due — please pay to keep your booking'
+  const heroLead = `Your ${depositPercent}% deposit for (${route}) is on file. The remaining ${remainder}% is now due (48 hours before your scheduled pickup). Please pay the balance from your client dashboard without delay.`
+  const bodyHtml = `<p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};"><strong style="color:${gs.green};">Important:</strong> if the balance is not received by the due time, we may treat the booking as cancelled and <strong>the deposit may be forfeited</strong> under our payment terms. If you need help, reply to this email or WhatsApp us straight away.</p>
+    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Pay securely on your <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">client dashboard</a> (Pay balance) · <a href="tel:+353874464766" style="color:${gs.green};font-weight:600;">+353 87 446 4766</a></p>`
 
   const htmlRaw = buildGsolTransactionalEmail({
     documentTitle: subject,

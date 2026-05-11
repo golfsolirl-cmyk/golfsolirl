@@ -22,6 +22,7 @@ import {
   WEBSITE_ENQUIRY_FORM
 } from '../lib/enquiry-form-registry'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
+import { ENQUIRY_CONFLICT_EXISTING_PHONE, postWebsiteEnquiry } from '../lib/post-enquiry-client'
 
 type TravelMode = 'flight' | 'arrived'
 
@@ -112,6 +113,7 @@ export function ContinueTripPage() {
   const [bestTimeToCall, setBestTimeToCall] = useState('Any time')
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [submitErrorCode, setSubmitErrorCode] = useState<string | null>(null)
   const [bookedDays, setBookedDays] = useState<Set<string>>(() => new Set())
   const confirmationRef = useRef<HTMLDivElement>(null)
 
@@ -297,28 +299,29 @@ export function ContinueTripPage() {
     })
 
     setSubmitStatus('submitting')
+    setSubmitErrorCode(null)
     try {
-      const response = await fetch('/api/enquiry', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fullName: snap.fullName,
-          email: mail,
-          phoneWhatsApp: snap.mobile,
-          interest: interest.join('\n'),
-          bestTimeToCall: bestTimeToCall.trim() || 'Any time',
-          formPayload: {
-            form: WEBSITE_ENQUIRY_FORM.continueTrip,
-            fields: formFields
-          }
-        })
+      const result = await postWebsiteEnquiry({
+        fullName: snap.fullName,
+        email: mail,
+        phoneWhatsApp: snap.mobile,
+        interest: interest.join('\n'),
+        bestTimeToCall: bestTimeToCall.trim() || 'Any time',
+        formPayload: {
+          form: WEBSITE_ENQUIRY_FORM.continueTrip,
+          fields: formFields
+        }
       })
-      const data = (await response.json().catch(() => ({}))) as { message?: string }
-      if (!response.ok) {
-        throw new Error(data.message ?? 'Could not send your trip brief right now.')
+
+      if (!result.ok) {
+        setSubmitStatus('error')
+        setSubmitError(result.message)
+        setSubmitErrorCode(result.code ?? null)
+        return
       }
 
       setSubmitStatus('success')
+      setSubmitErrorCode(null)
       try {
         sessionStorage.removeItem(GOLF_SOL_TRIP_FLIGHT_PREFILL_KEY)
       } catch {
@@ -326,6 +329,7 @@ export function ContinueTripPage() {
       }
     } catch (error) {
       setSubmitStatus('error')
+      setSubmitErrorCode(null)
       setSubmitError(error instanceof Error ? error.message : 'Could not send your trip brief right now.')
     }
   }
@@ -697,9 +701,16 @@ export function ContinueTripPage() {
                     </label>
 
                     {submitStatus === 'error' && submitError ? (
-                      <p className="rounded-lg border border-ge-orange/50 bg-orange-50 px-3 py-2.5 font-ge text-sm leading-6 text-gs-dark sm:col-span-2">
-                        {submitError}
-                      </p>
+                      <div className="rounded-lg border border-ge-orange/50 bg-orange-50 px-3 py-2.5 font-ge text-sm leading-6 text-gs-dark sm:col-span-2">
+                        <p>{submitError}</p>
+                        {submitErrorCode === ENQUIRY_CONFLICT_EXISTING_PHONE ? (
+                          <p className="mt-2 font-semibold text-gs-green">
+                            <a className="underline underline-offset-2" href="/dashboard/login">
+                              Sign in to your trip desk
+                            </a>
+                          </p>
+                        ) : null}
+                      </div>
                     ) : null}
 
                     <button

@@ -16,6 +16,7 @@ import {
   WEBSITE_ENQUIRY_FORM
 } from '../../../lib/enquiry-form-registry'
 import { getSupabaseBrowserClient } from '../../../lib/supabase-client'
+import { ENQUIRY_CONFLICT_EXISTING_PHONE, postWebsiteEnquiry } from '../../../lib/post-enquiry-client'
 import { MAX_ENQUIRY_PEOPLE } from '../data/form-people-options'
 
 const labelClass =
@@ -52,6 +53,7 @@ export function TransportHeroEnquiryForm() {
   const [hideCollectionByAdmin, setHideCollectionByAdmin] = useState(false)
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [errorCode, setErrorCode] = useState<string | null>(null)
   const confirmationRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -309,29 +311,30 @@ export function TransportHeroEnquiryForm() {
     }
 
     setStatus('submitting')
+    setErrorCode(null)
     try {
-      const response = await fetch('/api/enquiry', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fullName: name,
-          email: mail,
-          phoneWhatsApp: phone,
-          interest,
-          bestTimeToCall,
-          formPayload: {
-            form: WEBSITE_ENQUIRY_FORM.transportServicePage,
-            fields: formFields
-          }
-        })
+      const result = await postWebsiteEnquiry({
+        fullName: name,
+        email: mail,
+        phoneWhatsApp: phone,
+        interest,
+        bestTimeToCall,
+        formPayload: {
+          form: WEBSITE_ENQUIRY_FORM.transportServicePage,
+          fields: formFields
+        }
       })
-      const data = (await response.json().catch(() => ({}))) as { message?: string }
-      if (!response.ok) {
-        throw new Error(data.message ?? transportEnquiryFormCopy.errorBody)
+      if (!result.ok) {
+        setStatus('error')
+        setErrorMessage(result.message)
+        setErrorCode(result.code ?? null)
+        return
       }
       setStatus('success')
+      setErrorCode(null)
     } catch (e) {
       setStatus('error')
+      setErrorCode(null)
       setErrorMessage(e instanceof Error ? e.message : transportEnquiryFormCopy.errorBody)
     }
   }
@@ -630,15 +633,24 @@ export function TransportHeroEnquiryForm() {
             </div>
 
             {status === 'error' && errorMessage ? (
-              <p
+              <div
                 className="rounded-lg border border-ge-orange/50 bg-orange-50 px-3 py-2 font-ge text-base text-gs-dark"
                 role="alert"
               >
-                {errorMessage}{' '}
-                <a href={mailtoHref} className="font-bold text-gs-green underline underline-offset-2 hover:text-gs-electric">
-                  Open email draft
-                </a>
-              </p>
+                <p>
+                  {errorMessage}{' '}
+                  <a href={mailtoHref} className="font-bold text-gs-green underline underline-offset-2 hover:text-gs-electric">
+                    Open email draft
+                  </a>
+                </p>
+                {errorCode === ENQUIRY_CONFLICT_EXISTING_PHONE ? (
+                  <p className="mt-2 text-sm font-semibold text-gs-green">
+                    <a className="underline underline-offset-2" href="/dashboard/login">
+                      Sign in to your trip desk
+                    </a>
+                  </p>
+                ) : null}
+              </div>
             ) : null}
 
             <GeButton type="submit" variant="gs-green" size="md" className="w-full" disabled={status === 'submitting'}>

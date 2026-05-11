@@ -26,6 +26,7 @@ import {
 import { footerSocialLinks, heroBackgroundImage } from '../data/site-content'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { WEBSITE_ENQUIRY_FORM } from '../lib/enquiry-form-registry'
+import { ENQUIRY_CONFLICT_EXISTING_PHONE, postWebsiteEnquiry } from '../lib/post-enquiry-client'
 import { buildPackageConfig, defaultLabelForBuild } from '../lib/package-build'
 import { cx } from '../lib/utils'
 import { useAuth } from '../providers/auth-provider'
@@ -217,6 +218,7 @@ function CustomerPackagePage() {
   const [enquiryBestTime, setEnquiryBestTime] = useState('Any time')
   const [enquiryStatus, setEnquiryStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [enquiryError, setEnquiryError] = useState<string | null>(null)
+  const [enquiryErrorCode, setEnquiryErrorCode] = useState<string | null>(null)
   const footerRef = useRef<HTMLElement | null>(null)
   const enquiryConfirmationRef = useRef<HTMLDivElement>(null)
   const whatsAppHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
@@ -413,6 +415,7 @@ function CustomerPackagePage() {
       event.preventDefault()
       setEnquiryStatus('idle')
       setEnquiryError(null)
+      setEnquiryErrorCode(null)
 
       const name = enquiryName.trim()
       const email = enquiryEmail.trim().toLowerCase()
@@ -431,34 +434,36 @@ function CustomerPackagePage() {
       }
 
       setEnquiryStatus('submitting')
+      setEnquiryErrorCode(null)
       try {
-        const response = await fetch('/api/enquiry', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            fullName: name,
-            email,
-            phoneWhatsApp: phone,
-            interest: `PACKAGE BUILDER — customer package enquiry\n${packageEnquirySummary}`,
-            bestTimeToCall: enquiryBestTime.trim() || 'Any time',
-            formPayload: {
-              form: WEBSITE_ENQUIRY_FORM.packageBuilder,
-              fields: packageEnquiryFormFields
-            }
-          })
+        const result = await postWebsiteEnquiry({
+          fullName: name,
+          email,
+          phoneWhatsApp: phone,
+          interest: `PACKAGE BUILDER — customer package enquiry\n${packageEnquirySummary}`,
+          bestTimeToCall: enquiryBestTime.trim() || 'Any time',
+          formPayload: {
+            form: WEBSITE_ENQUIRY_FORM.packageBuilder,
+            fields: packageEnquiryFormFields
+          }
         })
-        const data = (await response.json().catch(() => ({}))) as { message?: string }
-        if (!response.ok) {
-          throw new Error(data.message ?? 'Could not send your package enquiry right now.')
+
+        if (!result.ok) {
+          setEnquiryStatus('error')
+          setEnquiryError(result.message)
+          setEnquiryErrorCode(result.code ?? null)
+          return
         }
 
         setEnquiryStatus('success')
+        setEnquiryErrorCode(null)
         setEnquiryName('')
         setEnquiryEmail('')
         setEnquiryPhone('')
         setEnquiryBestTime('Any time')
       } catch (error) {
         setEnquiryStatus('error')
+        setEnquiryErrorCode(null)
         setEnquiryError(error instanceof Error ? error.message : 'Could not send your package enquiry right now.')
       }
     },
@@ -1105,9 +1110,16 @@ function CustomerPackagePage() {
                     </label>
 
                     {enquiryStatus === 'error' && enquiryError ? (
-                      <p className="rounded-xl border border-gold-300/40 bg-gold-300/10 px-3 py-2.5 text-sm leading-6 text-white" role="alert">
-                        {enquiryError}
-                      </p>
+                      <div className="rounded-xl border border-gold-300/40 bg-gold-300/10 px-3 py-2.5 text-sm leading-6 text-white" role="alert">
+                        <p>{enquiryError}</p>
+                        {enquiryErrorCode === ENQUIRY_CONFLICT_EXISTING_PHONE ? (
+                          <p className="mt-2 font-semibold text-gold-100">
+                            <a className="underline underline-offset-2" href="/dashboard/login">
+                              Sign in to your trip desk
+                            </a>
+                          </p>
+                        ) : null}
+                      </div>
                     ) : null}
 
                     <LuxuryButton className="w-full" disabled={enquiryStatus === 'submitting'} type="submit">
