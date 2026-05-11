@@ -4,15 +4,15 @@
   <defs>
     <!-- Gold gradient: shiny, top-lit, three-stop highlight + warm shadow -->
     <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#fff3b0"/>
-      <stop offset="14%" stop-color="#ffe07a"/>
-      <stop offset="48%" stop-color="#f4b41a"/>
-      <stop offset="78%" stop-color="#c98a17"/>
+      <stop offset="0%" stop-color="#EBE486"/>
+      <stop offset="14%" stop-color="#EBE486"/>
+      <stop offset="48%" stop-color="#D5C600"/>
+      <stop offset="78%" stop-color="#8A7F0B"/>
       <stop offset="100%" stop-color="#7a5512"/>
     </linearGradient>
     <linearGradient id="goldRibbon" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#ffe98a"/>
-      <stop offset="50%" stop-color="#ecae1c"/>
+      <stop offset="0%" stop-color="#EBE486"/>
+      <stop offset="50%" stop-color="#A59D13"/>
       <stop offset="100%" stop-color="#8a5e10"/>
     </linearGradient>
     <linearGradient id="goldHighlight" x1="0" y1="0" x2="0" y2="1">
@@ -76,7 +76,7 @@
              L 130 268
              C 115 245, 105 220, 105 195
              L 120 195 Z"
-          fill="url(#green)" stroke="#fff3b0" stroke-width="3"/>
+          fill="url(#green)" stroke="#EBE486" stroke-width="3"/>
     <!-- Inner highlight glow -->
     <path d="M140 130 L 460 130 L 460 230 L 300 350 L 140 230 Z" fill="url(#crestGlow)"/>
     <!-- Subtle top sheen -->
@@ -162,7 +162,7 @@
              L 154 286 Z"
           fill="url(#goldRibbon)" stroke="#5d3f0a" stroke-width="1.6"/>
     <!-- highlight stripe -->
-    <rect x="160" y="274" width="280" height="4" fill="#fff3b0" opacity=".55"/>
+    <rect x="160" y="274" width="280" height="4" fill="#EBE486" opacity=".55"/>
     <text x="300" y="294"
           text-anchor="middle"
           font-family="'Arial Black', 'Helvetica Neue', Impact, system-ui, sans-serif"
@@ -170,5 +170,17 @@
           font-size="22"
           letter-spacing="6"
           fill="#5d3f0a">IRELAND</text>
+  </g>
+  <g id="corridor-flags" filter="url(#softShadow)" transform="translate(0 6)">
+    <g transform="translate(198 318)">
+      <rect x="0" y="0" width="82" height="48" rx="8" fill="#ffffff" stroke="#EBE486" stroke-width="2"/>
+      <rect x="0" y="0" width="27.33" height="48" rx="8" fill="#169b62"/>
+      <rect x="54.66" y="0" width="27.34" height="48" rx="8" fill="#ff883e"/>
+      <rect x="25" y="0" width="32" height="48" fill="#ffffff"/>
+    </g>
+    <g transform="translate(320 318)">
+      <rect x="0" y="0" width="82" height="48" rx="8" fill="#aa151b" stroke="#EBE486" stroke-width="2"/>
+      <rect x="0" y="12" width="82" height="24" fill="#D5C600"/>
+    </g>
   </g>
 </svg>

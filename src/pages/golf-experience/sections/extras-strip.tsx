@@ -143,7 +143,7 @@ export function GeExtrasStrip() {
         className="pointer-events-none absolute inset-x-0 bottom-0 h-[3px]"
         style={{
           background:
-            'linear-gradient(90deg, transparent 0%, rgba(184,137,0,0.35) 18%, #FFC72C 40%, #FFE27A 50%, #FFC72C 60%, rgba(184,137,0,0.35) 82%, transparent 100%)'
+            'linear-gradient(90deg, transparent 0%, rgba(184,137,0,0.35) 18%, #D5C600 40%, #EBE486 50%, #D5C600 60%, rgba(184,137,0,0.35) 82%, transparent 100%)'
         }}
       />
     </GeSection>

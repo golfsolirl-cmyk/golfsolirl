@@ -59,11 +59,11 @@ export function GeDesignYourPackage() {
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,199,44,0.24),_transparent_28%),radial-gradient(circle_at_85%_16%,_rgba(6,59,42,0.15),_transparent_24%),linear-gradient(180deg,_rgba(255,255,255,0.9),_rgba(246,240,226,0.98)_36%,_rgba(235,227,207,0.96)_100%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(213,198,0,0.24),_transparent_28%),radial-gradient(circle_at_85%_16%,_rgba(6,59,42,0.15),_transparent_24%),linear-gradient(180deg,_rgba(255,255,255,0.9),_rgba(246,240,226,0.98)_36%,_rgba(235,227,207,0.96)_100%)]"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-[linear-gradient(90deg,transparent_0%,rgba(255,199,44,0.82)_20%,rgba(255,226,122,1)_50%,rgba(255,199,44,0.82)_80%,transparent_100%)] opacity-60"
+        className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-[linear-gradient(90deg,transparent_0%,rgba(213,198,0,0.82)_20%,rgba(235,228,134,1)_50%,rgba(213,198,0,0.82)_80%,transparent_100%)] opacity-60"
       />
       <div
         aria-hidden="true"
@@ -77,7 +77,7 @@ export function GeDesignYourPackage() {
         >
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,199,44,0.28),_transparent_24%),radial-gradient(circle_at_bottom_right,_rgba(255,255,255,0.08),_transparent_28%),linear-gradient(135deg,_rgba(6,59,42,0.96),_rgba(8,44,33,0.93)_48%,_rgba(10,30,22,0.96)_100%)]"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(213,198,0,0.28),_transparent_24%),radial-gradient(circle_at_bottom_right,_rgba(255,255,255,0.08),_transparent_28%),linear-gradient(135deg,_rgba(6,59,42,0.96),_rgba(8,44,33,0.93)_48%,_rgba(10,30,22,0.96)_100%)]"
           />
           <div
             aria-hidden="true"
@@ -151,7 +151,7 @@ export function GeDesignYourPackage() {
               </div>
               <span
                 aria-hidden="true"
-                className="absolute inset-x-0 bottom-0 h-[3px] origin-left scale-x-0 bg-gradient-to-r from-gs-gold via-[#f4b41a] to-ge-orange transition-transform duration-500 group-hover:scale-x-100"
+                className="absolute inset-x-0 bottom-0 h-[3px] origin-left scale-x-0 bg-gradient-to-r from-gs-gold via-[#D5C600] to-ge-orange transition-transform duration-500 group-hover:scale-x-100"
               />
             </motion.article>
           ))}

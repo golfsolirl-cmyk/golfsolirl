@@ -9,7 +9,7 @@ export function GeFinalCta() {
       <div className="relative overflow-hidden rounded-[2rem] border border-[#d9d2c1] bg-white px-6 py-10 text-center shadow-[0_26px_70px_rgba(40,33,19,0.12)] sm:px-10 sm:py-12">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,199,44,0.18),_transparent_28%),radial-gradient(circle_at_bottom_right,_rgba(6,59,42,0.08),_transparent_28%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(213,198,0,0.18),_transparent_28%),radial-gradient(circle_at_bottom_right,_rgba(6,59,42,0.08),_transparent_28%)]"
         />
         <div
           aria-hidden="true"

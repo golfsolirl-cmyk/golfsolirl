@@ -33,9 +33,8 @@ export const businessCardSocial = {
 } as const
 
 export const businessCardAssets = {
-  /** Wide crest used on homepage navbar / footer (PNG when generated; SVG fallback). */
-  crestWidePng: '/golfsol-crest-footer.png',
+  /** Crest SVG with Ireland / Spain flags, used across site chrome and cards. */
+  crestWidePng: '/golfsol-crest.svg',
   crestSvg: '/golfsol-crest.svg',
-  /** Inline wordmark + shamrock (site chrome). */
-  siteLogoSvg: '/golf-sol-ireland-logo.svg'
+  siteLogoSvg: '/golfsol-crest.svg'
 } as const

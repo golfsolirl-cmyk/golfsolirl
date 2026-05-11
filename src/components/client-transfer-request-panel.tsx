@@ -31,8 +31,8 @@ const MAX_VIAS = 7
 const MALAGA_AGP_CENTER: [number, number] = [36.6752, -4.4988]
 const MALAGA_AGP_ZOOM = 16
 
-const LOGO_PRIMARY_SRC = '/images/golfsol-header-logo-bitmap.png'
-const LOGO_FALLBACK_SRC = '/golf-sol-ireland-logo.svg'
+const LOGO_PRIMARY_SRC = '/golfsol-crest.svg'
+const LOGO_FALLBACK_SRC = '/golfsol-crest.svg'
 
 const MAP_MARKER_W = 118
 const MAP_MARKER_H = 92

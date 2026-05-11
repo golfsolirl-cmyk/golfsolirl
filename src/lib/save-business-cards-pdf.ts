@@ -1,7 +1,8 @@
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 
-const PDF_MARGIN_MM = 12
+const BUSINESS_CARD_SHORT_MM = 55
+const BUSINESS_CARD_LONG_MM = 85
 
 async function waitForImages(container: HTMLElement) {
   const imgs = [...container.querySelectorAll('img')]
@@ -80,9 +81,8 @@ async function captureSlideToCanvas(el: HTMLElement): Promise<HTMLCanvasElement>
 function addCanvasToPdfPage(pdf: jsPDF, canvas: HTMLCanvasElement, isFirstPage: boolean) {
   const pageW = pdf.internal.pageSize.getWidth()
   const pageH = pdf.internal.pageSize.getHeight()
-  const margin = PDF_MARGIN_MM
-  const maxW = pageW - 2 * margin
-  const maxH = pageH - 2 * margin
+  const maxW = pageW
+  const maxH = pageH
 
   let imgData: string
   try {
@@ -100,8 +100,8 @@ function addCanvasToPdfPage(pdf: jsPDF, canvas: HTMLCanvasElement, isFirstPage: 
     hMm = maxH
     wMm = hMm * ratio
   }
-  const x = margin + (maxW - wMm) / 2
-  const y = margin + (maxH - hMm) / 2
+  const x = (maxW - wMm) / 2
+  const y = (maxH - hMm) / 2
 
   if (!isFirstPage) {
     pdf.addPage()
@@ -119,10 +119,11 @@ export async function saveSingleBusinessCardPdf(slideEl: HTMLElement, filenameBa
 
   await waitForImages(slideEl)
 
+  const isLandscape = slideEl.getBoundingClientRect().width >= slideEl.getBoundingClientRect().height
   const pdf = new jsPDF({
-    orientation: 'portrait',
+    orientation: isLandscape ? 'landscape' : 'portrait',
     unit: 'mm',
-    format: 'a4',
+    format: [BUSINESS_CARD_SHORT_MM, BUSINESS_CARD_LONG_MM],
     compress: true
   })
 

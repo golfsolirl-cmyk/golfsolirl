@@ -36,8 +36,8 @@ export function PageIdentityBar({
         /** z-20: stay below cinematic heroes (z-[38]) and fixed nav (z-40) so eyebrow pills are never covered. */
         'relative z-20 overflow-hidden',
         isGe
-          ? 'border-b border-gs-gold/40 bg-[linear-gradient(135deg,#e8b41c_0%,#fff0c2_42%,#f0c94a_100%)] text-gs-dark shadow-[0_14px_36px_rgba(203,148,26,0.14)]'
-          : 'border-b border-[#9a6f08]/30 bg-[linear-gradient(135deg,#c48916_0%,#f7d978_44%,#dea41d_100%)] text-forest-950 shadow-[0_16px_38px_rgba(203,148,26,0.18)]',
+          ? 'border-b border-gs-gold/40 bg-[linear-gradient(135deg,#D5C600_0%,#F3F0B8_42%,#DDD13E_100%)] text-gs-dark shadow-[0_14px_36px_rgba(115,132,33,0.14)]'
+          : 'border-b border-[#9a6f08]/30 bg-[linear-gradient(135deg,#A59D13_0%,#EBE486_44%,#BDB00A_100%)] text-forest-950 shadow-[0_16px_38px_rgba(115,132,33,0.18)]',
         offsetHeader && headerOffsetClassName,
         className
       )}

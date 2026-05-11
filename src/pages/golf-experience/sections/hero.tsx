@@ -79,7 +79,7 @@ export function GeHero({
             />
             <div
               aria-hidden
-              className="absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_70%_20%,rgba(255,199,44,0.12),transparent_55%)]"
+              className="absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_70%_20%,rgba(213,198,0,0.12),transparent_55%)]"
             />
             <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/[0.93] via-gs-dark/50 to-transparent" />
             <div
@@ -105,7 +105,7 @@ export function GeHero({
             />
             <div
               aria-hidden
-              className="absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_72%_18%,rgba(255,199,44,0.1),transparent_55%)]"
+              className="absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_72%_18%,rgba(213,198,0,0.1),transparent_55%)]"
             />
             <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/[0.92] via-gs-dark/48 to-transparent" />
             <div
@@ -173,7 +173,7 @@ export function GeHero({
                 <div className="min-w-0">
                   {portalKicker ? (
                     <motion.p
-                      className="inline-flex rounded-full border border-gs-gold/50 bg-gradient-to-r from-white/[0.14] to-white/[0.06] px-3.5 py-1.5 text-[0.68rem] font-extrabold uppercase tracking-[0.24em] text-gs-gold shadow-[0_0_24px_rgba(255,199,44,0.15)] backdrop-blur-md sm:text-xs"
+                      className="inline-flex rounded-full border border-gs-gold/50 bg-gradient-to-r from-white/[0.14] to-white/[0.06] px-3.5 py-1.5 text-[0.68rem] font-extrabold uppercase tracking-[0.24em] text-gs-gold shadow-[0_0_24px_rgba(213,198,0,0.15)] backdrop-blur-md sm:text-xs"
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
@@ -240,7 +240,7 @@ export function GeHero({
                   href="/contact"
                   variant="gs-gold"
                   size="lg"
-                  className="relative w-full min-h-[50px] justify-center overflow-hidden !rounded-2xl !py-3 !text-[0.88rem] !tracking-[0.16em] shadow-[0_14px_42px_rgba(255,199,44,0.55)] ring-2 ring-white/35 ring-offset-2 ring-offset-transparent transition-[box-shadow,filter] duration-300 hover:shadow-[0_18px_52px_rgba(255,199,44,0.78)] hover:brightness-[1.03] sm:!min-h-[54px] sm:!px-8 sm:!text-[0.92rem]"
+                  className="relative w-full min-h-[50px] justify-center overflow-hidden !rounded-2xl !py-3 !text-[0.88rem] !tracking-[0.16em] shadow-[0_14px_42px_rgba(213,198,0,0.55)] ring-2 ring-white/35 ring-offset-2 ring-offset-transparent transition-[box-shadow,filter] duration-300 hover:shadow-[0_18px_52px_rgba(213,198,0,0.78)] hover:brightness-[1.03] sm:!min-h-[54px] sm:!px-8 sm:!text-[0.92rem]"
                 >
                   <Sparkles className="h-4 w-4 shrink-0 opacity-90 sm:h-[1.05rem] sm:w-[1.05rem]" aria-hidden />
                   Book now

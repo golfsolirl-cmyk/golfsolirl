@@ -34,7 +34,7 @@ export function HomeAirportTransfersCta() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'radial-gradient(circle at 12% 0%, rgba(255,199,44,0.2), transparent 28%), radial-gradient(circle at 88% 18%, rgba(6,59,42,0.14), transparent 26%), linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(244,239,227,0.98) 45%, rgba(236,228,209,0.98) 100%)'
+            'radial-gradient(circle at 12% 0%, rgba(213,198,0,0.2), transparent 28%), radial-gradient(circle at 88% 18%, rgba(6,59,42,0.14), transparent 26%), linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(244,239,227,0.98) 45%, rgba(236,228,209,0.98) 100%)'
         }}
       />
 
@@ -51,7 +51,7 @@ export function HomeAirportTransfersCta() {
             className="pointer-events-none absolute inset-0"
             style={{
               background:
-                'radial-gradient(circle at top left, rgba(255,199,44,0.18), transparent 24%), radial-gradient(circle at 82% 18%, rgba(6,59,42,0.08), transparent 24%), linear-gradient(135deg, rgba(255,255,255,0.72) 0%, rgba(248,241,225,0.2) 100%)'
+                'radial-gradient(circle at top left, rgba(213,198,0,0.18), transparent 24%), radial-gradient(circle at 82% 18%, rgba(6,59,42,0.08), transparent 24%), linear-gradient(135deg, rgba(255,255,255,0.72) 0%, rgba(248,241,225,0.2) 100%)'
             }}
           />
           <div
@@ -59,7 +59,7 @@ export function HomeAirportTransfersCta() {
             className="pointer-events-none absolute inset-x-0 top-0 h-[3px]"
             style={{
               background:
-                'linear-gradient(90deg, transparent 0%, rgba(255,199,44,0.12) 10%, #FFC72C 30%, #FFE27A 50%, #FFC72C 70%, rgba(255,199,44,0.12) 90%, transparent 100%)'
+                'linear-gradient(90deg, transparent 0%, rgba(213,198,0,0.12) 10%, #D5C600 30%, #EBE486 50%, #D5C600 70%, rgba(213,198,0,0.12) 90%, transparent 100%)'
             }}
           />
           <div
@@ -147,7 +147,7 @@ export function HomeAirportTransfersCta() {
                     className="rounded-[1.1rem] border border-[#e4d6b6] bg-white/86 px-3 py-2.5 shadow-[0_16px_30px_rgba(69,53,24,0.08)] backdrop-blur-sm sm:rounded-[1.35rem] sm:px-4 sm:py-4"
                   >
                     <div className="flex items-center gap-2.5">
-                      <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-gs-gold to-gs-gold-light text-gs-dark shadow-[0_8px_18px_rgba(255,199,44,0.22)] sm:h-10 sm:w-10 sm:rounded-xl">
+                      <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-gs-gold to-gs-gold-light text-gs-dark shadow-[0_8px_18px_rgba(213,198,0,0.22)] sm:h-10 sm:w-10 sm:rounded-xl">
                         <Icon className="h-5 w-5 sm:h-5 sm:w-5" aria-hidden />
                       </span>
                       <div className="min-w-0">
@@ -191,15 +191,15 @@ export function HomeAirportTransfersCta() {
                 <div className="mt-6">
                   <motion.a
                     href="/services/transport"
-                    className="group relative inline-flex min-h-[60px] w-full items-center justify-center gap-3 overflow-hidden rounded-full border border-[#fff4c6]/20 bg-[linear-gradient(135deg,#FFE27A_0%,#FFC72C_38%,#f4b41a_100%)] px-5 py-3.5 text-center font-ge text-[0.92rem] font-extrabold uppercase tracking-[0.12em] text-gs-dark shadow-[0_18px_40px_rgba(255,199,44,0.3)] transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_50px_rgba(255,199,44,0.38)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-gs-dark sm:min-h-[62px] sm:px-6 sm:py-4 sm:text-[0.98rem] sm:tracking-[0.16em]"
+                    className="group relative inline-flex min-h-[60px] w-full items-center justify-center gap-3 overflow-hidden rounded-full border border-[#EBE486]/20 bg-[linear-gradient(135deg,#EBE486_0%,#D5C600_38%,#D5C600_100%)] px-5 py-3.5 text-center font-ge text-[0.92rem] font-extrabold uppercase tracking-[0.12em] text-gs-dark shadow-[0_18px_40px_rgba(213,198,0,0.3)] transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_50px_rgba(213,198,0,0.38)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-gs-dark sm:min-h-[62px] sm:px-6 sm:py-4 sm:text-[0.98rem] sm:tracking-[0.16em]"
                     animate={
                       reduceMotion
                         ? undefined
                         : {
                             boxShadow: [
-                              '0 18px 40px rgba(255,199,44,0.26)',
-                              '0 24px 54px rgba(255,199,44,0.44)',
-                              '0 18px 40px rgba(255,199,44,0.26)'
+                              '0 18px 40px rgba(213,198,0,0.26)',
+                              '0 24px 54px rgba(213,198,0,0.44)',
+                              '0 18px 40px rgba(213,198,0,0.26)'
                             ]
                           }
                     }

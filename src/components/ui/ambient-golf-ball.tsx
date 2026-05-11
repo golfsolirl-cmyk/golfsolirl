@@ -5,13 +5,13 @@ import { cx } from '../../lib/utils'
 const toneClassMap = {
   hero: {
     primary:
-      'bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.24),rgba(255,255,255,0.06)_34%,rgba(80,163,45,0.3)_58%,rgba(220,88,1,0.22)_82%,transparent)]',
+      'bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.24),rgba(255,255,255,0.06)_34%,rgba(80,163,45,0.3)_58%,rgba(213,198,0,0.22)_82%,transparent)]',
     secondary:
-      'bg-[linear-gradient(140deg,rgba(255,255,255,0.12),rgba(110,191,71,0.24),rgba(220,88,1,0.18))]'
+      'bg-[linear-gradient(140deg,rgba(255,255,255,0.12),rgba(110,191,71,0.24),rgba(213,198,0,0.18))]'
   },
   light: {
     primary:
-      'bg-[radial-gradient(circle_at_35%_30%,rgba(80,163,45,0.18),rgba(80,163,45,0.04)_36%,rgba(255,255,255,0.45)_58%,rgba(220,88,1,0.14)_82%,transparent)]',
+      'bg-[radial-gradient(circle_at_35%_30%,rgba(80,163,45,0.18),rgba(80,163,45,0.04)_36%,rgba(255,255,255,0.45)_58%,rgba(213,198,0,0.14)_82%,transparent)]',
     secondary:
       'bg-[linear-gradient(140deg,rgba(255,255,255,0.42),rgba(240,247,238,0.58),rgba(253,186,116,0.2))]'
   },
@@ -29,15 +29,15 @@ const toneClassMap = {
   },
   dark: {
     primary:
-      'bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.2),rgba(255,255,255,0.04)_28%,rgba(80,163,45,0.3)_58%,rgba(220,88,1,0.18)_82%,transparent)]',
+      'bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.2),rgba(255,255,255,0.04)_28%,rgba(80,163,45,0.3)_58%,rgba(213,198,0,0.18)_82%,transparent)]',
     secondary:
-      'bg-[linear-gradient(140deg,rgba(255,255,255,0.08),rgba(110,191,71,0.22),rgba(220,88,1,0.14))]'
+      'bg-[linear-gradient(140deg,rgba(255,255,255,0.08),rgba(110,191,71,0.22),rgba(213,198,0,0.14))]'
   },
   footer: {
     primary:
-      'bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.18),rgba(255,255,255,0.03)_28%,rgba(80,163,45,0.2)_58%,rgba(220,88,1,0.16)_82%,transparent)]',
+      'bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.18),rgba(255,255,255,0.03)_28%,rgba(80,163,45,0.2)_58%,rgba(213,198,0,0.16)_82%,transparent)]',
     secondary:
-      'bg-[linear-gradient(140deg,rgba(255,255,255,0.06),rgba(80,163,45,0.18),rgba(220,88,1,0.1))]'
+      'bg-[linear-gradient(140deg,rgba(255,255,255,0.06),rgba(80,163,45,0.18),rgba(213,198,0,0.1))]'
   }
 } as const
 

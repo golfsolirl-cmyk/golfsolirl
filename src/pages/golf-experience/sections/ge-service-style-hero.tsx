@@ -151,7 +151,7 @@ export function GeServiceStyleHero({
             <motion.div
               className={
                 sunny
-                  ? 'mx-auto w-full max-w-[34rem] overflow-hidden rounded-[1.75rem] border border-amber-200/70 bg-white p-5 shadow-[0_22px_50px_rgba(203,148,26,0.18)]'
+                  ? 'mx-auto w-full max-w-[34rem] overflow-hidden rounded-[1.75rem] border border-amber-200/70 bg-white p-5 shadow-[0_22px_50px_rgba(115,132,33,0.18)]'
                   : 'mx-auto w-full max-w-[34rem] overflow-hidden rounded-[1.75rem] border border-gs-gold/30 bg-gs-dark/95 p-5 shadow-[0_26px_60px_rgba(1,16,12,0.62)] backdrop-blur-xl'
               }
               initial={{ opacity: 0, y: 20 }}
@@ -165,7 +165,7 @@ export function GeServiceStyleHero({
                     : 'inline-flex items-center gap-2 rounded-full border border-gs-gold/35 bg-gs-dark/45 px-3 py-1.5 font-ge text-[0.78rem] font-bold uppercase tracking-[0.16em] text-gs-gold'
                 }
               >
-                <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-gs-gold shadow-[0_0_10px_rgba(255,199,44,0.68)]" />
+                <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-gs-gold shadow-[0_0_10px_rgba(213,198,0,0.68)]" />
                 {eyebrow}
               </span>
               <h2
@@ -235,7 +235,7 @@ export function GeServiceStyleHero({
             className="pointer-events-none absolute inset-x-0 top-0 z-[7] hidden h-[3px] md:block"
             style={{
               background:
-                'linear-gradient(90deg, transparent 0%, rgba(184,137,0,0.5) 12%, #FFC72C 28%, #FFE27A 50%, #FFC72C 72%, rgba(184,137,0,0.5) 88%, transparent 100%)'
+                'linear-gradient(90deg, transparent 0%, rgba(184,137,0,0.5) 12%, #D5C600 28%, #EBE486 50%, #D5C600 72%, rgba(184,137,0,0.5) 88%, transparent 100%)'
             }}
           />
           <div
@@ -243,7 +243,7 @@ export function GeServiceStyleHero({
             className="pointer-events-none absolute inset-x-0 bottom-0 z-[7] hidden h-[3px] md:block"
             style={{
               background:
-                'linear-gradient(90deg, transparent 0%, rgba(184,137,0,0.45) 14%, #FFC72C 30%, #FFE27A 50%, #FFC72C 70%, rgba(184,137,0,0.45) 86%, transparent 100%)'
+                'linear-gradient(90deg, transparent 0%, rgba(184,137,0,0.45) 14%, #D5C600 30%, #EBE486 50%, #D5C600 70%, rgba(184,137,0,0.45) 86%, transparent 100%)'
             }}
           />
           <div
@@ -265,7 +265,7 @@ export function GeServiceStyleHero({
                       : 'inline-flex items-center gap-2 rounded-full border border-gs-gold/40 bg-gs-dark/35 px-3 py-1.5 font-ge text-[0.7rem] font-bold uppercase tracking-[0.18em] text-gs-gold backdrop-blur-sm sm:text-[0.78rem]'
                   }
                 >
-                  <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-gs-gold shadow-[0_0_10px_rgba(255,199,44,0.7)]" />
+                  <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-gs-gold shadow-[0_0_10px_rgba(213,198,0,0.7)]" />
                   {eyebrow}
                 </span>
                 <h2

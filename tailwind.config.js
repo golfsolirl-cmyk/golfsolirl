@@ -24,11 +24,37 @@ export default {
           50: '#f5fbf0'
         },
         gold: {
-          600: '#d97706',
-          500: '#f59e0b',
-          400: '#dc5801',
-          300: '#fdba74',
-          50: '#fffbeb'
+          600: '#8A7F0B',
+          500: '#D5C600',
+          400: '#D5C600',
+          300: '#EBE486',
+          50: '#FAF9E6'
+        },
+        amber: {
+          50: '#FAF9E6',
+          100: '#F3F0B8',
+          200: '#EBE486',
+          300: '#DDD13E',
+          400: '#D5C600',
+          500: '#BDB00A',
+          600: '#A59D13',
+          700: '#738421',
+          800: '#4F651D',
+          900: '#3E522D',
+          950: '#233C12'
+        },
+        yellow: {
+          50: '#FAF9E6',
+          100: '#F3F0B8',
+          200: '#EBE486',
+          300: '#DDD13E',
+          400: '#D5C600',
+          500: '#BDB00A',
+          600: '#A59D13',
+          700: '#738421',
+          800: '#4F651D',
+          900: '#3E522D',
+          950: '#233C12'
         },
         sky: {
           muted: '#e8f4fb',
@@ -42,8 +68,8 @@ export default {
           green: '#0B6B45',          // Primary Green — fresher, stronger
           dark: '#063B2A',            // Dark Green — text & deep surfaces
           electric: '#1ED760',        // Electric Green Accent — energy pop
-          gold: '#FFC72C',            // Gold — bright, sporty
-          'gold-light': '#FFE27A',    // Gold Highlight
+          gold: '#D5C600',            // Gold — bright, sporty
+          'gold-light': '#EBE486',    // Gold Highlight
           bg: '#F4F7F5'               // Light turf background
         },
         ge: {
@@ -75,10 +101,10 @@ export default {
         ge: ['"Open Sans"', 'system-ui', 'sans-serif']
       },
       boxShadow: {
-        glow: '0 24px 80px rgba(220, 88, 1, 0.18)',
+        glow: '0 24px 80px rgba(213, 198, 0, 0.18)',
         soft: '0 18px 60px rgba(22, 58, 19, 0.12)',
-        'gs-gold': '0 8px 22px rgba(255,199,44,0.42)',
-        'gs-gold-hover': '0 10px 28px rgba(255,199,44,0.62)',
+        'gs-gold': '0 8px 22px rgba(213,198,0,0.42)',
+        'gs-gold-hover': '0 10px 28px rgba(213,198,0,0.62)',
         'gs-green': '0 8px 22px rgba(11,107,69,0.32)'
       },
       backgroundImage: {
@@ -86,7 +112,7 @@ export default {
           'linear-gradient(90deg, rgba(10,32,8,0.92) 0%, rgba(10,32,8,0.72) 42%, rgba(10,32,8,0.28) 100%)',
         'hero-bottom':
           'linear-gradient(180deg, rgba(10,32,8,0.04) 0%, rgba(10,32,8,0.76) 100%)',
-        'gs-gold': 'linear-gradient(135deg, #FFC72C 0%, #FFE27A 100%)',
+        'gs-gold': 'linear-gradient(135deg, #D5C600 0%, #EBE486 100%)',
         'gs-energy': 'linear-gradient(90deg, #0B6B45 0%, #1ED760 100%)'
       },
       keyframes: {

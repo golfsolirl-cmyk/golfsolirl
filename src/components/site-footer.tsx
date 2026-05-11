@@ -80,7 +80,7 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
                   <a
                     key={label}
                     aria-label={`Visit our ${label} page`}
-                    className="group inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#dc5801]/25 bg-white/5 text-[#dc5801] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#dc5801]/65 hover:bg-[#dc5801] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dc5801] focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                    className="group inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#D5C600]/25 bg-white/5 text-[#D5C600] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#D5C600]/65 hover:bg-[#D5C600] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5C600] focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
                     href={href}
                     rel="noreferrer"
                     target="_blank"

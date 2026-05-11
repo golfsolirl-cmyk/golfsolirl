@@ -83,7 +83,7 @@ export function GePaymentsIreland() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'radial-gradient(ellipse at 18% 0%, rgba(255,199,44,0.26) 0%, rgba(255,199,44,0) 42%), radial-gradient(ellipse at 82% 20%, rgba(6,59,42,0.08) 0%, rgba(6,59,42,0) 38%), linear-gradient(180deg, rgba(255,255,255,0.75) 0%, rgba(245,241,230,0.96) 55%, rgba(238,230,212,0.94) 100%)'
+            'radial-gradient(ellipse at 18% 0%, rgba(213,198,0,0.26) 0%, rgba(213,198,0,0) 42%), radial-gradient(ellipse at 82% 20%, rgba(6,59,42,0.08) 0%, rgba(6,59,42,0) 38%), linear-gradient(180deg, rgba(255,255,255,0.75) 0%, rgba(245,241,230,0.96) 55%, rgba(238,230,212,0.94) 100%)'
         }}
       />
       <div
@@ -91,7 +91,7 @@ export function GePaymentsIreland() {
         className="pointer-events-none absolute inset-0 opacity-[0.05]"
         style={{
           backgroundImage:
-            'repeating-linear-gradient(45deg, transparent 0px, transparent 14px, #FFC72C 14px, #FFC72C 15px)'
+            'repeating-linear-gradient(45deg, transparent 0px, transparent 14px, #D5C600 14px, #D5C600 15px)'
         }}
       />
       <div
@@ -99,7 +99,7 @@ export function GePaymentsIreland() {
         className="absolute inset-x-0 top-0 h-[3px]"
         style={{
           background:
-            'linear-gradient(90deg, transparent 0%, #FFC72C 25%, #FFE27A 50%, #FFC72C 75%, transparent 100%)'
+            'linear-gradient(90deg, transparent 0%, #D5C600 25%, #EBE486 50%, #D5C600 75%, transparent 100%)'
         }}
       />
       <div
@@ -107,7 +107,7 @@ export function GePaymentsIreland() {
         className="absolute inset-x-0 bottom-0 h-[3px]"
         style={{
           background:
-            'linear-gradient(90deg, transparent 0%, #FFC72C 25%, #FFE27A 50%, #FFC72C 75%, transparent 100%)'
+            'linear-gradient(90deg, transparent 0%, #D5C600 25%, #EBE486 50%, #D5C600 75%, transparent 100%)'
         }}
       />
 
@@ -118,7 +118,7 @@ export function GePaymentsIreland() {
         >
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,199,44,0.28),_transparent_24%),radial-gradient(circle_at_bottom_right,_rgba(255,255,255,0.08),_transparent_28%),linear-gradient(135deg,_rgba(6,59,42,0.96),_rgba(8,44,33,0.93)_48%,_rgba(10,30,22,0.96)_100%)]"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(213,198,0,0.28),_transparent_24%),radial-gradient(circle_at_bottom_right,_rgba(255,255,255,0.08),_transparent_28%),linear-gradient(135deg,_rgba(6,59,42,0.96),_rgba(8,44,33,0.93)_48%,_rgba(10,30,22,0.96)_100%)]"
           />
           <div
             aria-hidden="true"
@@ -138,7 +138,7 @@ export function GePaymentsIreland() {
                 className="mt-4 flex items-center gap-3 font-ge text-[1.7rem] font-extrabold leading-tight text-white sm:text-[1.95rem] md:text-[2.2rem]"
               >
                 <ShieldCheck
-                  className="h-7 w-7 shrink-0 text-gs-gold drop-shadow-[0_4px_10px_rgba(255,199,44,0.5)] sm:h-8 sm:w-8"
+                  className="h-7 w-7 shrink-0 text-gs-gold drop-shadow-[0_4px_10px_rgba(213,198,0,0.5)] sm:h-8 sm:w-8"
                   aria-hidden="true"
                   strokeWidth={2.4}
                 />
@@ -181,7 +181,7 @@ export function GePaymentsIreland() {
               >
                 <span
                   aria-hidden="true"
-                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-gs-gold to-[#f4b41a] text-gs-dark shadow-[0_6px_14px_rgba(255,199,44,0.25)]"
+                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-gs-gold to-[#D5C600] text-gs-dark shadow-[0_6px_14px_rgba(213,198,0,0.25)]"
                 >
                   <Icon className="h-5 w-5" strokeWidth={2.4} />
                 </span>

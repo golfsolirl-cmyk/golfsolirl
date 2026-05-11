@@ -6,8 +6,8 @@ export const golfSolEmailPreviewText =
 const brand = {
   green: '#063B2A',
   greenSoft: '#0F513C',
-  gold: '#FFC72C',
-  goldDeep: '#D99A00',
+  gold: '#D5C600',
+  goldDeep: '#A59D13',
   cream: '#F7F0E2',
   sand: '#E9D9B6',
   ink: '#16231D',
@@ -16,7 +16,7 @@ const brand = {
 } as const
 
 const assets = {
-  logo: '/images/golfsol-header-logo-bitmap.png',
+  logo: '/golfsol-crest.svg',
   fleetLineup: '/images/gsol-airport-transfer-desk-hero.png',
   arrivals: '/images/transport-moment-arrivals.jpg',
   resort: '/images/transport-moment-resort.jpg',
@@ -116,7 +116,7 @@ export function getGolfSolBrandedEmailHtml() {
                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                           <tr>
                             <td class="mobile-stack" style="width:62%; vertical-align:top;">
-                              <div style="display:inline-block; border:1px solid rgba(255,199,44,0.55); border-radius:999px; padding:8px 12px; font-family:Arial, Helvetica, sans-serif; color:${brand.gold}; font-size:11px; line-height:14px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase;">
+                              <div style="display:inline-block; border:1px solid rgba(213,198,0,0.55); border-radius:999px; padding:8px 12px; font-family:Arial, Helvetica, sans-serif; color:${brand.gold}; font-size:11px; line-height:14px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase;">
                                 Trip plan ready
                               </div>
                               <h1 class="hero-title" style="margin:18px 0 0 0; font-family:Georgia, 'Times New Roman', serif; color:${brand.white}; font-size:43px; line-height:48px; font-weight:700; letter-spacing:-1.2px;">
@@ -127,7 +127,7 @@ export function getGolfSolBrandedEmailHtml() {
                               </p>
                             </td>
                             <td class="mobile-stack" style="width:38%; vertical-align:top; padding-left:22px;">
-                              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0B4935; border:1px solid rgba(255,199,44,0.32); border-radius:22px;">
+                              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0B4935; border:1px solid rgba(213,198,0,0.32); border-radius:22px;">
                                 <tr>
                                   <td style="padding:18px;">
                                     <p style="margin:0; font-family:Arial, Helvetica, sans-serif; color:${brand.gold}; font-size:11px; line-height:14px; font-weight:800; letter-spacing:1.6px; text-transform:uppercase;">Now boarding</p>

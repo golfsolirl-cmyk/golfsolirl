@@ -75,7 +75,7 @@ export function GeCourseCard({ course }: CourseCardProps) {
       {/* Bottom gold accent bar that grows on hover */}
       <span
         aria-hidden="true"
-        className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-gradient-to-r from-gs-gold via-[#f4b41a] to-ge-orange transition-transform duration-500 group-hover:scale-x-100"
+        className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-gradient-to-r from-gs-gold via-[#D5C600] to-ge-orange transition-transform duration-500 group-hover:scale-x-100"
       />
     </motion.article>
   )

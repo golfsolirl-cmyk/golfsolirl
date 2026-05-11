@@ -51,7 +51,7 @@ function makeCourseIcon(tier: CourseTier, selected: boolean): DivIcon {
     tier === 'luxury'
       ? 'linear-gradient(135deg,#3d2914,#8b5a2a)'
       : tier === 'premium'
-        ? 'linear-gradient(135deg,#9a6f08,#f7d978)'
+        ? 'linear-gradient(135deg,#9a6f08,#EBE486)'
         : 'linear-gradient(135deg,#063b2a,#1d9e75)'
   const size = selected ? 26 : 18
   const ring = selected ? '0 0 0 3px rgba(247,217,120,0.95),0 6px 18px rgba(6,59,42,0.45)' : '0 2px 8px rgba(0,0,0,0.28)'
@@ -474,7 +474,7 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
         </div>
 
         <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(260px,320px)] lg:items-stretch">
-          <div className="relative min-h-[min(72vh,520px)] overflow-hidden rounded-[1.85rem] border-2 border-amber-200/90 bg-white shadow-[0_24px_70px_rgba(203,148,26,0.15)] ring-1 ring-gs-green/10">
+          <div className="relative min-h-[min(72vh,520px)] overflow-hidden rounded-[1.85rem] border-2 border-amber-200/90 bg-white shadow-[0_24px_70px_rgba(115,132,33,0.15)] ring-1 ring-gs-green/10">
             <div
               aria-hidden
               className="pointer-events-none absolute inset-0 z-[5] rounded-[inherit] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),inset_0_-20px_50px_rgba(255,214,140,0.12)]"
@@ -495,7 +495,7 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
             </div>
           </div>
 
-          <aside className="flex max-h-[min(72vh,520px)] flex-col rounded-[1.5rem] border border-amber-200/70 bg-white p-4 shadow-[0_16px_40px_rgba(203,148,26,0.1)] sm:p-5">
+          <aside className="flex max-h-[min(72vh,520px)] flex-col rounded-[1.5rem] border border-amber-200/70 bg-white p-4 shadow-[0_16px_40px_rgba(115,132,33,0.1)] sm:p-5">
             <p className="font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.2em] text-gs-green">Course roster</p>
             <p className="mt-1 font-ge text-xs leading-relaxed text-ge-gray500">Select a row — the map and your brief stay in sync.</p>
             <div className="mt-4 flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto pr-1 [scrollbar-color:rgba(6,59,42,0.2)_transparent] [scrollbar-width:thin]">

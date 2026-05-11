@@ -428,7 +428,7 @@ export function GeAlreadyBookedFlightPanel() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="group relative w-full overflow-hidden rounded-full bg-gradient-to-r from-gs-gold via-[#f4b41a] to-gs-gold-light py-3.5 font-ge text-sm font-extrabold uppercase tracking-[0.16em] text-gs-dark shadow-[0_10px_28px_rgba(255,199,44,0.35)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.99]"
+                    className="group relative w-full overflow-hidden rounded-full bg-gradient-to-r from-gs-gold via-[#D5C600] to-gs-gold-light py-3.5 font-ge text-sm font-extrabold uppercase tracking-[0.16em] text-gs-dark shadow-[0_10px_28px_rgba(213,198,0,0.35)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.99]"
                   >
                     <span className="relative z-[1]">{submitting ? 'Sending...' : alreadyBookedHotelCopy.submit}</span>
                     <span

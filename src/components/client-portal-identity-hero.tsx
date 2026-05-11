@@ -170,7 +170,7 @@ export function ClientPortalIdentityHero(props: {
                   <li
                     className={`rounded-xl border px-3 py-2.5 transition-[box-shadow] duration-500 ${
                       emphasized
-                        ? 'border-amber-300/75 bg-amber-400/[0.14] shadow-[0_0_0_1px_rgba(251,191,36,0.35),0_12px_40px_rgba(251,191,36,0.15)]'
+                        ? 'border-amber-300/75 bg-amber-400/[0.14] shadow-[0_0_0_1px_rgba(213,198,0,0.35),0_12px_40px_rgba(213,198,0,0.15)]'
                         : 'border-white/10 bg-white/[0.06]'
                     }`}
                     key={t.id}

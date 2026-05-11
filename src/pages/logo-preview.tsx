@@ -1,13 +1,14 @@
 import { motion } from 'framer-motion'
 import { ArrowLeft, Sparkles } from 'lucide-react'
-import logoIcon from '../golf-sol-ireland-logo.svg'
 import { PageIdentityBar } from '../components/page-identity-bar'
 import { cx } from '../lib/utils'
+
+const logoIcon = '/golfsol-crest.svg'
 
 const wordmarkToneMap = {
   forest: {
     golfSol: 'text-neutral-950',
-    ireland: 'text-[#dc5801]',
+    ireland: 'text-[#D5C600]',
     tagline: 'text-neutral-700',
     shamrockDark: false
   },
@@ -58,7 +59,7 @@ const wordmarkToneMap = {
 export function LogoPreviewPage() {
   return (
     <div className="min-h-screen overflow-hidden bg-[#051006] text-white">
-      <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(80,163,45,0.2),_transparent_30%),radial-gradient(circle_at_85%_18%,_rgba(220,88,1,0.18),_transparent_24%),linear-gradient(180deg,_#09200b_0%,_#051006_52%,_#030803_100%)]" />
+      <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(80,163,45,0.2),_transparent_30%),radial-gradient(circle_at_85%_18%,_rgba(213,198,0,0.18),_transparent_24%),linear-gradient(180deg,_#09200b_0%,_#051006_52%,_#030803_100%)]" />
       <div aria-hidden="true" className="absolute left-[-8rem] top-24 h-72 w-72 rounded-full bg-fairway-500/15 blur-3xl" />
       <div aria-hidden="true" className="absolute bottom-[-6rem] right-[-4rem] h-80 w-80 rounded-full bg-gold-400/10 blur-3xl" />
       <AnimatedBlobGolfBall />
@@ -136,7 +137,7 @@ function AnimatedBlobGolfBall() {
             x: [0, 18, -12, 0],
             y: [0, -14, 10, 0]
           }}
-          className="absolute right-[-5rem] top-[-2rem] h-72 w-72 rounded-full bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.28),rgba(255,255,255,0.06)_34%,rgba(80,163,45,0.34)_58%,rgba(220,88,1,0.28)_82%,transparent)] blur-3xl md:h-96 md:w-96"
+          className="absolute right-[-5rem] top-[-2rem] h-72 w-72 rounded-full bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.28),rgba(255,255,255,0.06)_34%,rgba(80,163,45,0.34)_58%,rgba(213,198,0,0.28)_82%,transparent)] blur-3xl md:h-96 md:w-96"
           transition={{ duration: 14, ease: 'easeInOut', repeat: Infinity }}
         />
         <motion.div
@@ -146,7 +147,7 @@ function AnimatedBlobGolfBall() {
             x: [0, -20, 10, 0],
             y: [0, 18, -10, 0]
           }}
-          className="absolute right-12 top-12 h-56 w-56 rounded-[42%_58%_60%_40%/40%_44%_56%_60%] bg-[linear-gradient(140deg,rgba(255,255,255,0.12),rgba(110,191,71,0.28),rgba(220,88,1,0.2))] blur-[70px] md:h-72 md:w-72"
+          className="absolute right-12 top-12 h-56 w-56 rounded-[42%_58%_60%_40%/40%_44%_56%_60%] bg-[linear-gradient(140deg,rgba(255,255,255,0.12),rgba(110,191,71,0.28),rgba(213,198,0,0.2))] blur-[70px] md:h-72 md:w-72"
           transition={{ duration: 12, ease: 'easeInOut', repeat: Infinity }}
         />
         <motion.div
@@ -511,7 +512,7 @@ const logoStudies: readonly LogoStudy[] = [
     tone: 'sunset',
     ornament: 'ribbon',
     surfaceClassName:
-      'border-orange-100/20 bg-[linear-gradient(145deg,_#46220d_0%,_#8b3d12_42%,_#d97706_100%)]',
+      'border-orange-100/20 bg-[linear-gradient(145deg,_#46220d_0%,_#8b3d12_42%,_#8A7F0B_100%)]',
     iconShellClassName: 'h-20 w-20 rounded-[1.85rem] border-white/20 bg-white/10'
   },
   {

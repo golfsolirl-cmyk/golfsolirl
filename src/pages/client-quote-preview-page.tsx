@@ -189,7 +189,7 @@ export function ClientQuotePreviewPage() {
                 alt="GolfSol Ireland"
                 className="h-14 w-auto max-w-[260px] object-contain object-left drop-shadow-[0_6px_20px_rgba(0,0,0,0.45)] sm:h-[4.25rem] md:h-[4.75rem]"
                 height={140}
-                src="/golfsol-crest-footer.png"
+                src="/golfsol-crest.svg"
                 width={360}
               />
               <p className="mt-3 text-xs font-bold uppercase tracking-[0.22em] text-gs-gold sm:text-[0.8rem]">
@@ -215,7 +215,7 @@ export function ClientQuotePreviewPage() {
                   className="rounded-2xl border-2 border-[#E9D9B6] bg-white px-4 py-4 shadow-[0_10px_28px_rgba(6,59,42,0.07)] sm:px-5 sm:py-4"
                   key={key}
                 >
-                  <dt className="text-xs font-bold uppercase tracking-[0.12em] text-[#D99A00] sm:text-sm">
+                  <dt className="text-xs font-bold uppercase tracking-[0.12em] text-[#A59D13] sm:text-sm">
                     {getWebsiteFormFieldLabel(key)}
                   </dt>
                   <dd className="mt-2 whitespace-pre-wrap text-base font-semibold leading-snug text-gs-dark sm:text-lg">

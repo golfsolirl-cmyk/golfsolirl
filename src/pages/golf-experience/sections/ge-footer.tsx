@@ -20,7 +20,7 @@ export function GeFooter() {
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           {footerColumns.map((column) => (
             <div key={column.title}>
-              <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-gs-gold drop-shadow-[0_0_12px_rgba(255,199,44,0.22)] sm:text-[0.82rem]">
+              <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-gs-gold drop-shadow-[0_0_12px_rgba(213,198,0,0.22)] sm:text-[0.82rem]">
                 {column.title}
               </p>
               <ul className="mt-4 space-y-2.5">
@@ -40,7 +40,7 @@ export function GeFooter() {
           ))}
 
           <div id="contact-us">
-            <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-gs-gold drop-shadow-[0_0_12px_rgba(255,199,44,0.22)] sm:text-[0.82rem]">
+            <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-gs-gold drop-shadow-[0_0_12px_rgba(213,198,0,0.22)] sm:text-[0.82rem]">
               Contact Us
             </p>
             <ul className="mt-4 space-y-3">
@@ -55,7 +55,7 @@ export function GeFooter() {
                 </a>
               </li>
             </ul>
-            <p className="mt-6 font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-gs-gold drop-shadow-[0_0_12px_rgba(255,199,44,0.22)] sm:text-[0.82rem]">
+            <p className="mt-6 font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-gs-gold drop-shadow-[0_0_12px_rgba(213,198,0,0.22)] sm:text-[0.82rem]">
               Follow Social
             </p>
             <div className="mt-4 flex flex-wrap gap-3">
@@ -66,7 +66,7 @@ export function GeFooter() {
                   href={href}
                   rel="noreferrer"
                   target="_blank"
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gs-gold/45 bg-gs-dark/50 text-gs-gold shadow-[0_0_0_1px_rgba(255,199,44,0.2)] ring-1 ring-gs-gold/35 transition-all hover:-translate-y-0.5 hover:border-gs-gold hover:bg-white/[0.06] hover:text-gs-gold-light hover:shadow-[0_0_0_1px_rgba(255,226,122,0.35)] hover:ring-gs-gold/55"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gs-gold/45 bg-gs-dark/50 text-gs-gold shadow-[0_0_0_1px_rgba(213,198,0,0.2)] ring-1 ring-gs-gold/35 transition-all hover:-translate-y-0.5 hover:border-gs-gold hover:bg-white/[0.06] hover:text-gs-gold-light hover:shadow-[0_0_0_1px_rgba(235,228,134,0.35)] hover:ring-gs-gold/55"
                 >
                   <Icon className="h-4 w-4" />
                 </a>

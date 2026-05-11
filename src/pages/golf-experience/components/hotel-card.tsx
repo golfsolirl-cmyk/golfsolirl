@@ -55,8 +55,8 @@ export function GeHotelCard({ hotel }: HotelCardProps) {
                   key={idx}
                   className="h-3 w-3 sm:h-3.5 sm:w-3.5"
                   aria-hidden="true"
-                  fill="#FFC72C"
-                  stroke="#FFC72C"
+                  fill="#D5C600"
+                  stroke="#D5C600"
                   strokeWidth={1.5}
                 />
               ))}
@@ -99,7 +99,7 @@ export function GeHotelCard({ hotel }: HotelCardProps) {
       {/* Bottom gold accent bar that grows on hover */}
       <span
         aria-hidden="true"
-        className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-gradient-to-r from-gs-gold via-[#f4b41a] to-ge-orange transition-transform duration-500 group-hover:scale-x-100"
+        className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-gradient-to-r from-gs-gold via-[#D5C600] to-ge-orange transition-transform duration-500 group-hover:scale-x-100"
       />
     </motion.a>
   )

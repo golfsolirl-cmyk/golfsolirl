@@ -47,9 +47,9 @@ export function IrishOwnedSeal({ className, size = 180 }: IrishOwnedSealProps) {
 
         {/* Gold gradient — soft top-down */}
         <linearGradient id="seal-gold" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#FFE27A" />
-          <stop offset="55%" stopColor="#FFC72C" />
-          <stop offset="100%" stopColor="#D89A00" />
+          <stop offset="0%" stopColor="#EBE486" />
+          <stop offset="55%" stopColor="#D5C600" />
+          <stop offset="100%" stopColor="#738421" />
         </linearGradient>
 
         {/* Shamrock leaf gradient — bright top, deeper at base */}
@@ -121,7 +121,7 @@ export function IrishOwnedSeal({ className, size = 180 }: IrishOwnedSealProps) {
           the GolfSol Ireland header crest:
             • Four heart-shaped leaves arranged in an X (NE / SE / SW / NW)
             • Lime body with gold edge rim and dark forest outline
-            • Inner yellow-green highlight on each leaf for dimension
+            • Inner mustard-green highlight on each leaf for dimension
             • Small dark stem drops below                                       */}
       <g transform="translate(100 100)">
         {/*

@@ -63,7 +63,7 @@ export function TransportRouteStory() {
                 className="pointer-events-none absolute inset-x-0 bottom-0 h-[3px]"
                 style={{
                   background:
-                    'linear-gradient(90deg, transparent 0%, #B88900 15%, #FFC72C 35%, #FFE27A 50%, #FFC72C 65%, #B88900 85%, transparent 100%)'
+                    'linear-gradient(90deg, transparent 0%, #738421 15%, #D5C600 35%, #EBE486 50%, #D5C600 65%, #738421 85%, transparent 100%)'
                 }}
               />
               <span className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-gs-dark/60 px-3 py-1.5 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.18em] text-gs-gold backdrop-blur-md sm:text-[0.78rem]">

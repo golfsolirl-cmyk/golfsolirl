@@ -716,7 +716,7 @@ export function ContinueTripPage() {
                     <button
                       type="submit"
                       disabled={submitStatus === 'submitting'}
-                      className="group relative min-h-[52px] overflow-hidden rounded-full bg-gradient-to-r from-gs-gold via-[#f4b41a] to-gs-gold-light px-6 font-ge text-sm font-extrabold uppercase tracking-[0.14em] text-gs-dark shadow-gs-gold transition-transform duration-300 hover:scale-[1.02] active:scale-[0.99] disabled:cursor-wait disabled:opacity-70 sm:col-span-2"
+                      className="group relative min-h-[52px] overflow-hidden rounded-full bg-gradient-to-r from-gs-gold via-[#D5C600] to-gs-gold-light px-6 font-ge text-sm font-extrabold uppercase tracking-[0.14em] text-gs-dark shadow-gs-gold transition-transform duration-300 hover:scale-[1.02] active:scale-[0.99] disabled:cursor-wait disabled:opacity-70 sm:col-span-2"
                     >
                       <span className="relative z-[1] inline-flex items-center justify-center gap-2">
                         <Send className="h-4 w-4" aria-hidden />

@@ -437,7 +437,7 @@ const adminTripLabelClass = 'mb-1.5 block text-xs font-semibold uppercase tracki
 const adminTripInputClass =
   'w-full rounded-xl border border-forest-200 bg-white px-3 py-2.5 text-sm text-forest-900 outline-none transition-[border-color,box-shadow] focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/70'
 
-/** Manual customer proposal form — consistent yellow outline on every field. */
+/** Manual customer proposal form — consistent mustard-green outline on every field. */
 const manualProposalInputClass =
   'w-full rounded-xl border-2 border-yellow-400 bg-white px-3 py-2.5 text-sm text-forest-900 outline-none transition-[border-color,box-shadow] focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200/90 focus:ring-offset-0'
 
@@ -3729,7 +3729,7 @@ export function AdminDashboardPage() {
                               <img
                                 alt="Golf Sol Ireland"
                                 className="h-6 w-auto max-w-[7rem] object-contain object-left"
-                                src="/golf-sol-ireland-logo.svg"
+                                src="/golfsol-crest.svg"
                               />
                             </div>
                           ) : (
@@ -4252,7 +4252,7 @@ export function AdminDashboardPage() {
                 <strong className="font-medium text-forest-800">Apply</strong> to push into publish + PDF placeholders.
               </li>
               <li>
-                <strong className="text-forest-900">Manual customer proposal</strong> — complete yellow fields, preview, and email the PDF when ready.
+                <strong className="text-forest-900">Manual customer proposal</strong> — complete mustard-green fields, preview, and email the PDF when ready.
               </li>
             </ol>
             <div className="mt-4 rounded-xl border border-dashed border-fairway-300/70 bg-white/70 px-4 py-3 text-xs leading-relaxed text-forest-700">
@@ -6593,7 +6593,7 @@ export function AdminDashboardPage() {
                 </button>
                 <button
                   aria-label="Send thank you document to client email"
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border-2 border-[#dc5801] bg-white px-6 py-3 text-sm font-semibold text-[#b34701] transition-colors hover:bg-[#dc5801]/10 disabled:opacity-60"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border-2 border-[#D5C600] bg-white px-6 py-3 text-sm font-semibold text-[#b34701] transition-colors hover:bg-[#D5C600]/10 disabled:opacity-60"
                   disabled={crmDocSending !== 'idle'}
                   onClick={() => handleSendCrmDocument('welcome')}
                   type="button"

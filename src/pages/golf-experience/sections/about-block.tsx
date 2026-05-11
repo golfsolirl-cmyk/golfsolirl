@@ -81,13 +81,13 @@ export function GeAboutBlock() {
                 className="pointer-events-none absolute inset-x-0 bottom-0 h-[4px]"
                 style={{
                   background:
-                    'linear-gradient(90deg, transparent 0%, #B88900 12%, #FFC72C 38%, #FFE27A 50%, #FFC72C 62%, #B88900 88%, transparent 100%)'
+                    'linear-gradient(90deg, transparent 0%, #738421 12%, #D5C600 38%, #EBE486 50%, #D5C600 62%, #738421 88%, transparent 100%)'
                 }}
               />
               <div className="absolute inset-0 flex flex-col items-center justify-center p-6 sm:p-10">
                 <div className="rounded-[1.35rem] border border-white/25 bg-white/[0.12] p-5 shadow-[0_20px_50px_rgba(0,0,0,0.35)] backdrop-blur-md ring-1 ring-gs-gold/25 sm:p-7">
                   <img
-                    src="/golf-sol-ireland-logo.svg"
+                    src="/golfsol-crest.svg"
                     alt="GolfSol Ireland"
                     width={220}
                     height={120}

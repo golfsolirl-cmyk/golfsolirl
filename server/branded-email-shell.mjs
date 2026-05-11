@@ -10,8 +10,8 @@ export const gs = {
   bg: '#F4F7F5',
   dark: '#063B2A',
   green: '#0B6B45',
-  gold: '#FFC72C',
-  goldLight: '#FFE27A',
+  gold: '#D5C600',
+  goldLight: '#EBE486',
   card: '#FFFFFF',
   white: '#FFFFFF',
   text: '#063B2A',
@@ -34,7 +34,7 @@ export const EMAIL_LOGO_HERO_H = 122
 export const EMAIL_LOGO_FOOTER_W = 172
 
 export const assets = {
-  logo: '/images/golfsol-header-logo-bitmap.png',
+  logo: '/golfsol-crest.svg',
   fleetLineup: '/images/gsol-airport-transfer-desk-hero.png',
   arrivals: '/images/transport-moment-arrivals.jpg',
   resort: '/images/transport-moment-resort.jpg',
@@ -49,7 +49,7 @@ export const phoneIrelandHref = 'tel:+353874464766'
 export const phoneIrelandDisplay = '+353 87 446 4766'
 
 export const ctaGold =
-  `display:inline-block;border-radius:16px;background-color:#FFC72C;background-image:linear-gradient(135deg,#FFC72C 0%,#FFE27A 100%);color:#063B2A;font-family:${emailFonts.sans};font-size:14px;line-height:1.35;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;padding:18px 36px;box-shadow:0 8px 22px rgba(255,199,44,0.42);text-decoration:none;text-align:center;`
+  `display:inline-block;border-radius:16px;background-color:#D5C600;background-image:linear-gradient(135deg,#D5C600 0%,#EBE486 100%);color:#063B2A;font-family:${emailFonts.sans};font-size:14px;line-height:1.35;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;padding:18px 36px;box-shadow:0 8px 22px rgba(213,198,0,0.42);text-decoration:none;text-align:center;`
 
 export const ctaGreen =
   `display:inline-block;border-radius:16px;background:#0B6B45;color:#FFFFFF;font-family:${emailFonts.sans};font-size:14px;line-height:1.35;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;padding:18px 36px;box-shadow:0 8px 22px rgba(11,107,69,0.32);text-decoration:none;text-align:center;`
@@ -90,7 +90,7 @@ const heroMetaBlock = (heroMetaHtml) => {
                           <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin:22px auto 0 auto;max-width:520px;">
                             <tr>
                               <td align="center" style="padding:0;">
-                                <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="background:rgba(255,255,255,0.08);border-radius:24px;border:1px solid rgba(255,199,44,0.32);">
+                                <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="background:rgba(255,255,255,0.08);border-radius:24px;border:1px solid rgba(213,198,0,0.32);">
                                   <tr>
                                     <td style="padding:20px 26px;font-family:${emailFonts.sans};font-size:13px;line-height:1.62;color:rgba(255,255,255,0.92);">${h}</td>
                                   </tr>
@@ -425,7 +425,7 @@ export const buildBrandedTransactionalEmailHtml = ({
                         <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0">
                           <tr>
                             <td align="center" style="padding:0 0 26px 0;">
-                              <span style="display:inline-block;border:1px solid rgba(255,199,44,0.5);border-radius:999px;padding:12px 26px;font-family:${emailFonts.sans};color:#FFE27A;font-size:10px;line-height:14px;font-weight:800;letter-spacing:0.24em;text-transform:uppercase;background:rgba(6,59,42,0.72);">${kicker}</span>
+                              <span style="display:inline-block;border:1px solid rgba(213,198,0,0.5);border-radius:999px;padding:12px 26px;font-family:${emailFonts.sans};color:#EBE486;font-size:10px;line-height:14px;font-weight:800;letter-spacing:0.24em;text-transform:uppercase;background:rgba(6,59,42,0.72);">${kicker}</span>
                             </td>
                           </tr>
                           <tr>

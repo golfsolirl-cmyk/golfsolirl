@@ -952,7 +952,7 @@ function CustomerPackagePage() {
                   <BreakdownRow label="Estimated total per person" strong value={formatEuro(pricingSummary.estimatedPerPerson)} />
                 </div>
 
-                <div className="mt-6 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(220,88,1,0.18),rgba(253,186,116,0.1),rgba(80,163,45,0.12))] p-[1px]">
+                <div className="mt-6 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(213,198,0,0.18),rgba(253,186,116,0.1),rgba(80,163,45,0.12))] p-[1px]">
                   <div className="rounded-[1.7rem] bg-forest-950/96 p-5">
                     <p className="text-sm font-semibold uppercase tracking-[0.14em] text-white/72">Estimated group total</p>
                     <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
@@ -1153,7 +1153,7 @@ function CustomerRouteMapShowcase() {
       transition={{ delay: 0.18, duration: 0.85, ease: 'easeOut' }}
     >
       <div className="relative overflow-hidden rounded-[2.4rem] border border-white/10 bg-[linear-gradient(160deg,rgba(255,255,255,0.14),rgba(255,255,255,0.04))] p-5 shadow-soft backdrop-blur-md md:p-7">
-        <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(80,163,45,0.22),transparent_24%),radial-gradient(circle_at_82%_12%,rgba(220,88,1,0.22),transparent_22%),radial-gradient(circle_at_70%_70%,rgba(253,186,116,0.16),transparent_26%)]" />
+        <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(80,163,45,0.22),transparent_24%),radial-gradient(circle_at_82%_12%,rgba(213,198,0,0.22),transparent_22%),radial-gradient(circle_at_70%_70%,rgba(253,186,116,0.16),transparent_26%)]" />
         <div className="relative z-10 grid gap-6 md:grid-cols-[0.9fr_1.2fr]">
           <div className="space-y-3">
             {routeStops.map((item, index) => (
@@ -1181,7 +1181,7 @@ function CustomerRouteMapShowcase() {
                 <linearGradient id="customer-package-route-line" x1="60" x2="500" y1="120" y2="280">
                   <stop offset="0%" stopColor="rgba(80,163,45,0.95)" />
                   <stop offset="52%" stopColor="rgba(253,186,116,0.95)" />
-                  <stop offset="100%" stopColor="rgba(220,88,1,0.95)" />
+                  <stop offset="100%" stopColor="rgba(213,198,0,0.95)" />
                 </linearGradient>
               </defs>
               <path
@@ -1221,7 +1221,7 @@ function CustomerRouteMapShowcase() {
               <p className="mt-2 text-base font-semibold">1 to 8 golfers</p>
             </div>
 
-            <div className="absolute bottom-[11%] right-[8%] rounded-[1.5rem] border border-[#dc5801]/26 bg-forest-950/62 px-4 py-4 text-white backdrop-blur-sm">
+            <div className="absolute bottom-[11%] right-[8%] rounded-[1.5rem] border border-[#D5C600]/26 bg-forest-950/62 px-4 py-4 text-white backdrop-blur-sm">
               <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#f7a24f]">Live package view</p>
               <p className="mt-2 text-base font-semibold">Stay, golf, transfers</p>
               <p className="mt-1 text-sm text-white/60">A clearer way to price the trip</p>

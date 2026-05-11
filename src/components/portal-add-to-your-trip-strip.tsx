@@ -99,7 +99,7 @@ export function PortalAddToYourTripStrip(props: {
           >
             <span
               aria-hidden
-              className="pointer-events-none absolute inset-0 bg-[linear-gradient(110deg,transparent_0%,rgba(220,88,1,0.18)_42%,transparent_68%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+              className="pointer-events-none absolute inset-0 bg-[linear-gradient(110deg,transparent_0%,rgba(213,198,0,0.18)_42%,transparent_68%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
             />
             <span className="relative flex w-full items-start justify-between gap-2">
               <span

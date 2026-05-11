@@ -74,7 +74,7 @@ async function renderTransferVatPdf(opts: {
   const transfer = opts.transfer
 
   try {
-    const res = await fetch('/images/golfsol-header-logo-bitmap.png')
+    const res = await fetch('/golfsol-crest-footer.png')
     if (res.ok) {
       const blob = await res.blob()
       const dataUrl = await new Promise<string>((resolve, reject) => {

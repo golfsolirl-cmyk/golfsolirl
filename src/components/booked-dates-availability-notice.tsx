@@ -47,7 +47,7 @@ export function BookedDatesAvailabilityNotice({
 
   const shell =
     tone === 'forest'
-      ? 'border border-amber-200/90 bg-gradient-to-br from-amber-50/95 via-white to-[#f4faf6] text-forest-900 shadow-[0_12px_40px_rgba(180,130,20,0.12)]'
+      ? 'border border-amber-200/90 bg-gradient-to-br from-amber-50/95 via-white to-[#f4faf6] text-forest-900 shadow-[0_12px_40px_rgba(115,132,33,0.12)]'
       : 'border border-gs-gold/40 bg-gradient-to-br from-[#fffdf8] via-white to-[#eef8f3] text-gs-dark shadow-[0_14px_44px_rgba(6,59,42,0.1)]'
 
   const chip =

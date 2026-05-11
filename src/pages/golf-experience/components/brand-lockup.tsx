@@ -15,11 +15,11 @@ interface BrandLockupProps {
   readonly className?: string
 }
 
-const footerCrest = '/golfsol-crest-footer.png'
+const crestWithFlags = '/golfsol-crest.svg'
 
 /**
  * The brand lockup for the GolfSol Ireland home page (`/`).
- * The PNG crest contains the full wordmark, so every mode renders the
+ * The SVG crest contains the full wordmark and corridor flags, so every mode renders the
  * crest by itself with mode-specific sizing + entrance animations.
  */
 export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
@@ -29,7 +29,7 @@ export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
     return (
       <div className={cx('flex flex-col items-start', className)}>
         <img
-          src={footerCrest}
+          src={crestWithFlags}
           alt="GolfSol Ireland — Irish-owned Costa del Sol golf travel"
           width={800}
           height={533}
@@ -48,7 +48,7 @@ export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
     return (
       <div className={cx('flex flex-col items-start', className)}>
         <img
-          src={footerCrest}
+          src={crestWithFlags}
           alt="GolfSol Ireland"
           width={800}
           height={533}
@@ -81,7 +81,7 @@ export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
         transition={{ type: 'spring', stiffness: 220, damping: 18, mass: 0.7, delay: 0.05 }}
       >
         <img
-          src={footerCrest}
+          src={crestWithFlags}
           alt="GolfSol Ireland"
           width={800}
           height={533}
@@ -107,7 +107,7 @@ export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
             className="absolute inset-y-0 w-[55%] -skew-x-[20deg]"
             style={{
               background:
-                'linear-gradient(90deg, transparent 0%, rgba(255,231,122,0.0) 25%, rgba(255,231,122,0.85) 50%, rgba(255,231,122,0.0) 75%, transparent 100%)'
+                'linear-gradient(90deg, transparent 0%, rgba(235,228,134,0.0) 25%, rgba(235,228,134,0.85) 50%, rgba(235,228,134,0.0) 75%, transparent 100%)'
             }}
             initial={{ x: '-120%' }}
             animate={{ x: '220%' }}
@@ -120,7 +120,7 @@ export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
           className="pointer-events-none absolute -inset-4 -z-0"
           style={{
             background:
-              'radial-gradient(ellipse at 50% 55%, rgba(255,199,44,0.45) 0%, rgba(255,199,44,0.15) 40%, rgba(255,199,44,0) 70%)',
+              'radial-gradient(ellipse at 50% 55%, rgba(213,198,0,0.45) 0%, rgba(213,198,0,0.15) 40%, rgba(213,198,0,0) 70%)',
             filter: 'blur(12px)'
           }}
           animate={{ opacity: [0.35, 0.8, 0.35], scale: [0.94, 1.04, 0.94] }}

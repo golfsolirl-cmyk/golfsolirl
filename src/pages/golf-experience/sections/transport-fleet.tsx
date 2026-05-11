@@ -54,7 +54,7 @@ export function TransportFleet() {
             className="pointer-events-none absolute inset-x-0 bottom-0 h-[4px]"
             style={{
               background:
-                'linear-gradient(90deg, transparent 0%, #B88900 15%, #FFC72C 35%, #FFE27A 50%, #FFC72C 65%, #B88900 85%, transparent 100%)'
+                'linear-gradient(90deg, transparent 0%, #738421 15%, #D5C600 35%, #EBE486 50%, #D5C600 65%, #738421 85%, transparent 100%)'
             }}
           />
         </motion.div>

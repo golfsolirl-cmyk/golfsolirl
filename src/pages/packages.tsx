@@ -378,7 +378,7 @@ function PackageAdminPage() {
                   className="group relative overflow-hidden rounded-[2rem] border border-forest-100 bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(247,244,237,0.94))] p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                   {...revealUp}
                 >
-                  <div aria-hidden="true" className="absolute inset-x-0 top-0 h-24 bg-[radial-gradient(circle_at_top,rgba(220,88,1,0.14),transparent_72%)]" />
+                  <div aria-hidden="true" className="absolute inset-x-0 top-0 h-24 bg-[radial-gradient(circle_at_top,rgba(213,198,0,0.14),transparent_72%)]" />
                   <div className="relative z-10 flex h-full flex-col">
                     <div className="mb-5 flex items-start justify-between gap-4">
                       <div>
@@ -628,7 +628,7 @@ function PackageAdminPage() {
                   <BreakdownRow label="Profit per person" value={formatEuro(profitPerPerson)} />
                 </div>
 
-                <div className="mt-6 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(220,88,1,0.18),rgba(253,186,116,0.1),rgba(80,163,45,0.12))] p-[1px]">
+                <div className="mt-6 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(213,198,0,0.18),rgba(253,186,116,0.1),rgba(80,163,45,0.12))] p-[1px]">
                   <div className="rounded-[1.7rem] bg-forest-950/96 p-5">
                     <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/45">Recommended sell price</p>
                     <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
@@ -724,7 +724,7 @@ function RouteMapShowcase() {
       transition={{ delay: 0.18, duration: 0.85, ease: 'easeOut' }}
     >
       <div className="relative overflow-hidden rounded-[2.4rem] border border-white/10 bg-[linear-gradient(160deg,rgba(255,255,255,0.14),rgba(255,255,255,0.04))] p-5 shadow-soft backdrop-blur-md md:p-7">
-        <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(80,163,45,0.22),transparent_24%),radial-gradient(circle_at_82%_12%,rgba(220,88,1,0.22),transparent_22%),radial-gradient(circle_at_70%_70%,rgba(253,186,116,0.16),transparent_26%)]" />
+        <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(80,163,45,0.22),transparent_24%),radial-gradient(circle_at_82%_12%,rgba(213,198,0,0.22),transparent_22%),radial-gradient(circle_at_70%_70%,rgba(253,186,116,0.16),transparent_26%)]" />
         <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(140deg,rgba(255,255,255,0.06),transparent_32%,transparent_68%,rgba(255,255,255,0.04))]" />
 
         <div className="relative z-10 grid gap-6 md:grid-cols-[0.9fr_1.2fr]">
@@ -763,7 +763,7 @@ function RouteMapShowcase() {
                 <linearGradient id="package-route-line" x1="60" x2="500" y1="120" y2="280">
                   <stop offset="0%" stopColor="rgba(80,163,45,0.95)" />
                   <stop offset="52%" stopColor="rgba(253,186,116,0.95)" />
-                  <stop offset="100%" stopColor="rgba(220,88,1,0.95)" />
+                  <stop offset="100%" stopColor="rgba(213,198,0,0.95)" />
                 </linearGradient>
               </defs>
               <path
@@ -803,7 +803,7 @@ function RouteMapShowcase() {
               <p className="mt-2 text-base font-semibold">Smaller golf groups</p>
             </div>
 
-            <div className="absolute bottom-[11%] right-[8%] rounded-[1.5rem] border border-[#dc5801]/26 bg-forest-950/62 px-4 py-4 text-white backdrop-blur-sm">
+            <div className="absolute bottom-[11%] right-[8%] rounded-[1.5rem] border border-[#D5C600]/26 bg-forest-950/62 px-4 py-4 text-white backdrop-blur-sm">
               <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#f7a24f]">Costa del Sol arrival</p>
               <p className="mt-2 text-base font-semibold">Hotel, golf, driver, quote</p>
               <p className="mt-1 text-sm text-white/60">All costed before you sell it</p>
@@ -1029,7 +1029,7 @@ export function CookieBanner({
       initial={{ opacity: 0, y: 18 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
     >
-      <div aria-hidden="true" className="absolute inset-0 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(255,255,255,0.06),rgba(220,88,1,0.06),rgba(80,163,45,0.06))]" />
+      <div aria-hidden="true" className="absolute inset-0 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(255,255,255,0.06),rgba(213,198,0,0.06),rgba(80,163,45,0.06))]" />
       <div className="relative z-10">
         <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-gold-300">Cookie notice</p>
         <p className="mt-2 text-sm leading-relaxed text-white">
@@ -1037,7 +1037,7 @@ export function CookieBanner({
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
           <button
-            className="rounded-full bg-[#dc5801] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#c84f01]"
+            className="rounded-full bg-[#D5C600] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#c84f01]"
             onClick={onAccept}
             type="button"
           >

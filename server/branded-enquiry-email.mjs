@@ -205,7 +205,7 @@ export function buildBrandedEnquiryEmailHtml(payload, variant = 'customer') {
                         <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0">
                           <tr>
                             <td align="center" style="padding:0 0 26px 0;">
-                              <span style="display:inline-block;border:1px solid rgba(255,199,44,0.5);border-radius:999px;padding:12px 26px;font-family:${emailFonts.sans};color:#FFE27A;font-size:10px;line-height:14px;font-weight:800;letter-spacing:0.24em;text-transform:uppercase;background:rgba(6,59,42,0.72);">${escapeHtml(heroKicker)}</span>
+                              <span style="display:inline-block;border:1px solid rgba(213,198,0,0.5);border-radius:999px;padding:12px 26px;font-family:${emailFonts.sans};color:#EBE486;font-size:10px;line-height:14px;font-weight:800;letter-spacing:0.24em;text-transform:uppercase;background:rgba(6,59,42,0.72);">${escapeHtml(heroKicker)}</span>
                             </td>
                           </tr>
                           <tr>

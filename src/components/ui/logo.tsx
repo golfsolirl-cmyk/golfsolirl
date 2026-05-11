@@ -1,4 +1,3 @@
-import logoIcon from '../../golf-sol-ireland-logo.svg'
 import { cx } from '../../lib/utils'
 
 interface LogoProps {
@@ -38,78 +37,26 @@ export function Logo({ className, size = 'default', tone = 'light' }: LogoProps)
   const isHero = tone === 'hero'
   const isScrolled = tone === 'scrolled'
 
-  const primaryClassName = isHero ? 'text-white' : isScrolled ? 'text-white' : 'text-[#003805]'
-  const secondaryClassName = isHero || isScrolled ? 'text-orange-500' : 'text-orange-900'
-  const taglineClassName = isHero ? 'text-white' : isScrolled ? 'text-white' : 'text-[#4B5563]'
-  const heroWordmarkStyle = isHero
-    ? {
-        textShadow: '0 2px 28px rgba(0,0,0,0.35)'
-      }
-    : undefined
-  const heroTextStyle = isHero
-    ? {
-        textShadow: '0 2px 20px rgba(0,0,0,0.25)'
-      }
-    : undefined
-
   return (
     <span
       className={cx(
-        'logo-text-content flex min-w-0 items-center gap-4',
+        'logo-text-content inline-flex min-w-0 items-center',
         isHero && 'drop-shadow-[0_8px_24px_rgba(10,32,8,0.22)]',
+        isScrolled && 'drop-shadow-[0_10px_24px_rgba(0,0,0,0.35)]',
         className
       )}
     >
       <img
-        alt=""
-        aria-hidden="true"
+        alt="GolfSol Ireland"
         className={cx(
-          'shrink-0 object-contain',
+          'shrink-0 select-none object-contain',
           isLarge
-            ? 'h-32 w-32 scale-[1.55] sm:h-36 sm:w-36 md:h-40 md:w-40'
-            : 'h-[5.25rem] w-[5.25rem] scale-[1.2] md:h-28 md:w-28'
+            ? 'h-auto w-[18rem] sm:w-[21rem] md:w-[24rem]'
+            : 'h-auto w-[13rem] sm:w-[15rem] md:w-[17rem]'
         )}
-        src={logoIcon}
+        decoding="async"
+        src="/golfsol-crest.svg"
       />
-
-      <span className="flex min-w-0 flex-col justify-center gap-0.5">
-        <span className="flex flex-wrap items-baseline gap-2">
-          <span
-            className={cx(
-              'logo-wordmark logo-wordmark-main min-w-0 font-display font-black uppercase leading-none tracking-[-0.035em]',
-              isLarge ? 'text-[2.4rem] sm:text-[2.65rem] md:text-[2.9rem]' : 'text-[1.9rem] md:text-[2.15rem]',
-              primaryClassName
-            )}
-            style={heroWordmarkStyle}
-          >
-            GolfSol
-          </span>
-          <ShamrockIcon
-            className={cx('shrink-0 self-center', isLarge ? 'h-9 w-9 md:h-10 md:w-10' : 'h-7 w-7 md:h-8 md:w-8')}
-          />
-          <span
-            className={cx(
-              'logo-wordmark logo-wordmark-ireland font-display font-semibold uppercase leading-none tracking-[0.14em]',
-              isLarge ? 'text-[1rem] sm:text-[1.02rem] md:text-[1.1rem]' : 'text-[0.82rem] md:text-[0.92rem]',
-              secondaryClassName
-            )}
-            style={heroTextStyle}
-          >
-            Ireland
-          </span>
-        </span>
-
-        <span
-          className={cx(
-            'logo-tagline block pl-0.5 font-body font-medium uppercase tracking-[0.16em] leading-tight',
-            isLarge ? 'text-[0.82rem] md:text-[0.84rem]' : 'text-[0.74rem]',
-            taglineClassName
-          )}
-          style={heroTextStyle}
-        >
-          The future of your golf trip
-        </span>
-      </span>
     </span>
   )
 }

@@ -43,7 +43,7 @@ export type PortalTransferRequestBooking = {
   readonly created_at?: string | null
 }
 
-const GOLF_SOL_LOGO_SRC = '/golf-sol-ireland-logo.svg'
+const GOLF_SOL_LOGO_SRC = '/golfsol-crest.svg'
 
 const cardKicker = (
   build: ClientPackageBuildLite | null,

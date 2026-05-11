@@ -1400,7 +1400,7 @@ export function ClientDashboardPage() {
   const interestHeroAdornment =
     hasUnreadInterestReplies ? (
       <button
-        className="group relative flex max-w-full cursor-pointer items-center gap-3 rounded-2xl border border-emerald-400/45 bg-gradient-to-br from-emerald-900/80 via-[#0c3d2c]/85 to-gs-green/90 px-4 py-2.5 text-left shadow-[0_0_0_1px_rgba(255,199,44,0.12),0_12px_40px_rgba(16,185,129,0.28)] ring-1 ring-white/10 backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:border-gs-gold/50 hover:shadow-[0_0_0_1px_rgba(255,199,44,0.35),0_16px_48px_rgba(16,185,129,0.35)]"
+        className="group relative flex max-w-full cursor-pointer items-center gap-3 rounded-2xl border border-emerald-400/45 bg-gradient-to-br from-emerald-900/80 via-[#0c3d2c]/85 to-gs-green/90 px-4 py-2.5 text-left shadow-[0_0_0_1px_rgba(213,198,0,0.12),0_12px_40px_rgba(16,185,129,0.28)] ring-1 ring-white/10 backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:border-gs-gold/50 hover:shadow-[0_0_0_1px_rgba(213,198,0,0.35),0_16px_48px_rgba(16,185,129,0.35)]"
         onClick={() => openTeamMessagingAndScroll()}
         type="button"
       >
@@ -2104,7 +2104,7 @@ export function ClientDashboardPage() {
                             <img
                               alt="Golf Sol Ireland"
                               className="h-6 w-auto max-w-[7rem] object-contain object-left"
-                              src="/golf-sol-ireland-logo.svg"
+                              src="/golfsol-crest.svg"
                             />
                           </div>
                         ) : (

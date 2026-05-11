@@ -62,7 +62,7 @@ export function TransportHero() {
               transition={{ duration: 0.55, ease: 'easeOut' }}
             >
               <span className="inline-flex items-center gap-2 rounded-full border border-gs-gold/35 bg-gs-dark/45 px-3 py-1.5 font-ge text-[0.66rem] font-bold uppercase tracking-[0.18em] text-gs-gold">
-                <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-gs-gold shadow-[0_0_10px_rgba(255,199,44,0.68)]" />
+                <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-gs-gold shadow-[0_0_10px_rgba(213,198,0,0.68)]" />
                 {transportHeroCopy.eyebrow}
               </span>
               <h2 className="mt-4 font-ge text-[2.05rem] font-extrabold leading-[1.04] tracking-[-0.01em] text-white">
@@ -113,7 +113,7 @@ export function TransportHero() {
             className="pointer-events-none absolute inset-x-0 top-0 z-[7] hidden h-[3px] md:block"
             style={{
               background:
-                'linear-gradient(90deg, transparent 0%, rgba(184,137,0,0.5) 12%, #FFC72C 28%, #FFE27A 50%, #FFC72C 72%, rgba(184,137,0,0.5) 88%, transparent 100%)'
+                'linear-gradient(90deg, transparent 0%, rgba(184,137,0,0.5) 12%, #D5C600 28%, #EBE486 50%, #D5C600 72%, rgba(184,137,0,0.5) 88%, transparent 100%)'
             }}
           />
           <div
@@ -121,7 +121,7 @@ export function TransportHero() {
             className="pointer-events-none absolute inset-x-0 bottom-0 z-[7] hidden h-[3px] md:block"
             style={{
               background:
-                'linear-gradient(90deg, transparent 0%, rgba(184,137,0,0.45) 14%, #FFC72C 30%, #FFE27A 50%, #FFC72C 70%, rgba(184,137,0,0.45) 86%, transparent 100%)'
+                'linear-gradient(90deg, transparent 0%, rgba(184,137,0,0.45) 14%, #D5C600 30%, #EBE486 50%, #D5C600 70%, rgba(184,137,0,0.45) 86%, transparent 100%)'
             }}
           />
           <div
@@ -138,7 +138,7 @@ export function TransportHero() {
             <div className="mx-auto w-full max-w-[1180px] px-5 sm:px-8">
               <motion.div className="max-w-2xl" {...fadeUp}>
                 <span className="inline-flex items-center gap-2 rounded-full border border-gs-gold/40 bg-gs-dark/35 px-3 py-1.5 font-ge text-[0.7rem] font-bold uppercase tracking-[0.18em] text-gs-gold backdrop-blur-sm sm:text-[0.78rem]">
-                  <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-gs-gold shadow-[0_0_10px_rgba(255,199,44,0.7)]" />
+                  <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-gs-gold shadow-[0_0_10px_rgba(213,198,0,0.7)]" />
                   {transportHeroCopy.eyebrow}
                 </span>
                 <h2 className="mt-5 font-ge text-[2.25rem] font-extrabold leading-[1.05] tracking-[-0.005em] text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.55)] sm:text-[3rem] md:text-[3.5rem] lg:text-[4rem]">

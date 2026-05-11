@@ -70,7 +70,7 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
             glint
             lines="irish"
             borderClass="border-ge-gray200 text-gs-green"
-            hoverClass="hover:border-gs-gold/70 hover:text-gs-gold hover:shadow-[0_0_0_1px_rgba(255,199,44,0.2)]"
+            hoverClass="hover:border-gs-gold/70 hover:text-gs-gold hover:shadow-[0_0_0_1px_rgba(213,198,0,0.2)]"
           />
         </div>
 

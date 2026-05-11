@@ -47,7 +47,7 @@ export function PackageCard({ name, description, price, duration, highlight, inc
           'absolute inset-x-0 top-0 h-24',
           isFeaturedPackage
             ? 'bg-[radial-gradient(circle_at_top,rgba(253,186,116,0.28),transparent_68%)]'
-            : 'bg-[radial-gradient(circle_at_top,rgba(220,88,1,0.12),transparent_68%)]'
+            : 'bg-[radial-gradient(circle_at_top,rgba(213,198,0,0.12),transparent_68%)]'
         )}
       />
       <div
