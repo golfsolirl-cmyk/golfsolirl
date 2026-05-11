@@ -5857,8 +5857,9 @@ export function AdminDashboardPage() {
                           override: server env{' '}
                           <code className="rounded bg-offwhite px-1">TRANSFER_BALANCE_REMINDER_AFTER_MINUTES</code> schedules that moment{' '}
                           <strong>N minutes after</strong> the deposit instead — remove on production. Cron{' '}
-                          <code className="rounded bg-offwhite px-1">/api/transfer-balance-reminder-sweep</code> runs every two minutes
-                          when deployed.
+                          <code className="rounded bg-offwhite px-1">/api/transfer-balance-reminder-sweep</code> is scheduled{' '}
+                          <strong>once daily</strong> on Vercel Hobby (see <code className="rounded bg-offwhite px-1">vercel.json</code>).
+                          Use <strong>Send due balance reminders now</strong> anytime, or upgrade to Pro for frequent cron.
                         </p>
                         <label className="mt-3 flex cursor-pointer items-start gap-2.5 text-sm text-forest-800">
                           <input
