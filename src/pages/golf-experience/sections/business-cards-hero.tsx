@@ -54,7 +54,10 @@ export function BusinessCardsHero() {
             >
               Business cards matched to the supplied artwork.
             </h1>
-            <p className="mt-5 max-w-2xl font-ge text-base font-medium leading-relaxed text-white/76 sm:text-lg">
+            <p
+              className="mt-5 max-w-2xl font-ge text-base font-semibold leading-relaxed sm:text-lg"
+              style={{ color: 'rgba(255,255,255,0.86)' }}
+            >
               The old card catalogue is gone. This page now shows the exact PDF front and back in portrait, plus landscape
               versions generated from the same source artwork.
             </p>
