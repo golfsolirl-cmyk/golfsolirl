@@ -45,17 +45,28 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
           <p className="mt-4 text-[1.08rem] leading-8 text-white/76 md:text-[1.14rem]">{intro}</p>
           {showAuthFooter && !authLoading ? (
             <div className="mt-6 border-t border-white/10 pt-6">
-              <p className="text-[0.96rem] font-semibold uppercase tracking-[0.14em] text-white/72">Client area</p>
-              <ul className="mt-3">
+              <p className="text-[0.96rem] font-semibold uppercase tracking-[0.14em] text-white/72">Account</p>
+              <ul className="mt-3 space-y-2">
                 <li className="flex items-center gap-2">
                   <ChevronRight className="h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
                   <a
                     className="text-[1.05rem] font-medium text-white transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
                     href={session ? dashboardHref : '/dashboard/login'}
                   >
-                    {session ? 'My dashboard' : 'Sign in'}
+                    {session ? (profile?.role === 'admin' ? 'Admin dashboard' : 'Client dashboard') : 'Client sign-in'}
                   </a>
                 </li>
+                {!session || profile?.role !== 'admin' ? (
+                  <li className="flex items-center gap-2">
+                    <ChevronRight className="h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
+                    <a
+                      className="text-[1.05rem] font-medium text-white transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                      href="/dashboard/admin/login"
+                    >
+                      Admin sign-in
+                    </a>
+                  </li>
+                ) : null}
               </ul>
             </div>
           ) : null}
