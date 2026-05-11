@@ -310,7 +310,7 @@ export function AdminTransferPipeline() {
         <GeButton
           href="/driver"
           size="sm"
-          title="Admins: Vite dev opens a preview of the demo driver desk. Production: set VITE_DRIVER_DESK_ADMIN_PREVIEW=true, or sign in as a linked driver (see run-in-sql-editor-driver-test-account.sql)."
+          title="Open driver desk: sign in at /driver/login (admins see Irish Driver preview automatically). Real drivers: link auth to drivers.auth_user_id — see supabase/run-in-sql-editor-driver-test-account.sql."
           variant="outline-gs-green"
         >
           Open driver view

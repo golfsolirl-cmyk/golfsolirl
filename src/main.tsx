@@ -78,6 +78,7 @@ function syncReadableTypePageClass(path: string) {
   const nonReadableTypePaths = new Set([
     '/dashboard/login',
     '/dashboard/admin/login',
+    '/driver/login',
     '/dashboard/quote',
     '/proposal-template',
     '/package-proposal',
@@ -126,7 +127,12 @@ function resolvePage(): PageComponent {
     return LogoPreviewPage
   }
 
-  if (normalizedPath === '/login' || normalizedPath === '/dashboard/login' || normalizedPath === '/dashboard/admin/login') {
+  if (
+    normalizedPath === '/login' ||
+    normalizedPath === '/dashboard/login' ||
+    normalizedPath === '/dashboard/admin/login' ||
+    normalizedPath === '/driver/login'
+  ) {
     return LoginPage
   }
 

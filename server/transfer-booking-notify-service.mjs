@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { randomBytes } from 'node:crypto'
 import { ctaGold, emailFonts, gs } from './branded-email-shell.mjs'
+import { gsolEmailBrand } from './email-constants.mjs'
 import { buildGsolTransactionalEmail, finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
 
 const esc = (s) =>
@@ -131,14 +132,24 @@ export const handleTransferBookingNotify = async (env, meta = {}) => {
   let bodyHtml = ''
 
   if (event === 'allocated') {
-    const { data: dRow } = await admin.from('drivers').select('display_name').eq('id', booking.assigned_driver_id).maybeSingle()
+    const { data: dRow } = await admin
+      .from('drivers')
+      .select('display_name, phone')
+      .eq('id', booking.assigned_driver_id)
+      .maybeSingle()
     const dn = dRow?.display_name ? esc(dRow.display_name) : 'your driver'
+    const driverPhoneRaw = typeof dRow?.phone === 'string' ? dRow.phone.trim() : ''
+    const irishOpsTel = esc(gsolEmailBrand.phoneTel)
+    const irishOpsDisplay = esc(gsolEmailBrand.phoneDisplay)
+    const callDriverHtml = driverPhoneRaw
+      ? `<strong>${esc(driverPhoneRaw)}</strong> — call or WhatsApp your assigned driver for pickup coordination.`
+      : `Driver direct line: we’ll show it here once linked to your driver. Until then, call our Irish operations team on <strong>${irishOpsDisplay}</strong> (<a href="tel:${irishOpsTel}" style="color:${gs.green};font-weight:700;text-decoration:none;">tap to call</a>).`
     subject = 'Your Golf Sol transfer — driver allocated'
     heroTitle = 'Driver allocated'
-    heroLead = `We have assigned ${dn} to your Costa del Sol transfer. They will accept the job in the driver app and you will receive another note when they are on the way.`
+    heroLead = `We’ve assigned ${dn} to your Costa del Sol transfer. They’ll confirm in the driver app; you’ll get another email when they’re on the way to you. Need someone urgently? Use the Irish number below — or your driver’s direct line when shown.`
     const viaClient = viaLabelsHtml(booking)
     const whenLine = esc(formatTransferWhen(booking))
-    bodyHtml = `<p style="margin:0 0 12px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.7;color:${gs.text};">Pickup: <strong>${esc(booking.pickup_label)}</strong><br />Destination: <strong>${esc(booking.dropoff_label)}</strong>${viaClient ? `<br />Via: <strong>${viaClient}</strong>` : ''}<br />When: <strong>${whenLine}</strong></p>`
+    bodyHtml = `<p style="margin:0 0 12px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.7;color:${gs.text};">Pickup: <strong>${esc(booking.pickup_label)}</strong><br />Destination: <strong>${esc(booking.dropoff_label)}</strong>${viaClient ? `<br />Via: <strong>${viaClient}</strong>` : ''}<br />When: <strong>${whenLine}</strong></p><p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.7;color:${gs.text};">${callDriverHtml}</p><p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.65;color:${gs.text};"><strong>Irish operations (24/7 coordination):</strong> ${irishOpsDisplay} · <a href="tel:${irishOpsTel}" style="color:${gs.green};font-weight:800;text-decoration:none;">${irishOpsTel}</a></p>`
   } else if (event === 'driver_accepted') {
     subject = 'Your driver is preparing'
     heroTitle = 'Driver accepted'
@@ -171,7 +182,7 @@ export const handleTransferBookingNotify = async (env, meta = {}) => {
     heroKicker: 'Golf Sol Ireland',
     heroTitle,
     heroLead,
-    heroMetaHtml: `<div style="font-size:12px;line-height:1.6;color:rgba(255,255,255,0.82);">Questions? Call +353 87 446 4766</div>`,
+    heroMetaHtml: `<div style="font-size:12px;line-height:1.65;color:rgba(255,255,255,0.88);">Irish line: ${esc(gsolEmailBrand.phoneDisplay)} · <a href="tel:${esc(gsolEmailBrand.phoneTel)}" style="color:#ffe7a3;font-weight:700;text-decoration:none;">${esc(gsolEmailBrand.phoneTel)}</a></div>`,
     bodyHtml
   })
   const html = finalizeGsolEmailHtml(htmlRaw)

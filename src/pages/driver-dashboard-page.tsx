@@ -58,9 +58,7 @@ const TRANSFER_BOOKINGS_SELECT_NO_VIAS =
 const isRouteWaypointsColumnError = (message: string) =>
   /route_waypoints|42703|does not exist|schema cache/i.test(message)
 
-const adminPreviewEnvEnabled = () =>
-  Boolean(import.meta.env.DEV || import.meta.env.VITE_DRIVER_DESK_ADMIN_PREVIEW === 'true')
-
+/** Optional override UUID for the admin preview desk (defaults to seeded Irish Driver row). */
 const resolvePreviewDriverId = () =>
   (import.meta.env.VITE_PREVIEW_DRIVER_ID as string | undefined)?.trim() || DEFAULT_PREVIEW_DRIVER_ID
 
@@ -73,9 +71,8 @@ export function DriverDashboardPage() {
   const [msg, setMsg] = useState<string | null>(null)
   const [posBusy, setPosBusy] = useState(false)
 
-  const adminPreviewEnv = useMemo(() => adminPreviewEnvEnabled(), [])
   const previewDriverUuid = useMemo(() => resolvePreviewDriverId(), [])
-  const isAdminDriverPreview = adminPreviewEnv && profile?.role === 'admin'
+  const isAdminDriverPreview = profile?.role === 'admin'
 
   const refresh = useCallback(async () => {
     if (!supabase || !session?.user?.id) {
@@ -86,13 +83,13 @@ export function DriverDashboardPage() {
     try {
       let resolvedDriverId: string | null = null
 
-      if (adminPreviewEnv && profile?.role === 'admin') {
+      if (profile?.role === 'admin') {
         const { data: row, error: pvErr } = await supabase.from('drivers').select('id').eq('id', previewDriverUuid).maybeSingle()
         if (pvErr || !row?.id) {
           setDriverId(null)
           setBookings([])
           setMsg(
-            'Preview driver row not found. Apply migration 20260505200000_seed_demo_transfer_driver.sql (demo driver) or set VITE_PREVIEW_DRIVER_ID to an existing drivers.id.'
+            'Preview driver row not found. Apply migration 20260505200000_seed_demo_transfer_driver.sql (Irish Driver preview) or set VITE_PREVIEW_DRIVER_ID to an existing drivers.id.'
           )
           return
         }
@@ -145,13 +142,13 @@ export function DriverDashboardPage() {
     } finally {
       setLoading(false)
     }
-  }, [supabase, session?.user?.id, profile?.role, adminPreviewEnv, previewDriverUuid])
+  }, [supabase, session?.user?.id, profile?.role, previewDriverUuid])
 
   useEffect(() => {
-    if (!isLoading && session && (profile?.role === 'driver' || (adminPreviewEnv && profile?.role === 'admin'))) {
+    if (!isLoading && session && (profile?.role === 'driver' || profile?.role === 'admin')) {
       void refresh()
     }
-  }, [isLoading, session, profile?.role, refresh, adminPreviewEnv])
+  }, [isLoading, session, profile?.role, refresh])
 
   const pushPosition = async (bookingId: string) => {
     if (!supabase) {
@@ -233,7 +230,7 @@ export function DriverDashboardPage() {
     isAdminDriverPreview ? 'Driver desk (admin preview)' : greetingFirst ? `Hello, ${greetingFirst}` : 'Driver desk'
 
   const deskSubtitle = isAdminDriverPreview
-    ? `Preview: jobs for demo driver ${previewDriverUuid.slice(0, 8)}… (enabled in Vite dev, or set VITE_DRIVER_DESK_ADMIN_PREVIEW on prod). Real drivers: link profiles + drivers.auth_user_id — see repo file supabase/run-in-sql-editor-driver-test-account.sql.`
+    ? `Preview: jobs for Irish Driver ${previewDriverUuid.slice(0, 8)}… (admins always see this preview desk). Optional env VITE_PREVIEW_DRIVER_ID overrides the driver UUID. Real drivers: link profiles + drivers.auth_user_id — see supabase/run-in-sql-editor-driver-test-account.sql.`
     : 'Accept jobs, share your live location, and mark pickup and drop-off complete. Customer emails fire automatically.'
 
   const body = useMemo(() => {
@@ -262,7 +259,7 @@ export function DriverDashboardPage() {
     if (bookings.length === 0) {
       return (
         <p className="text-sm text-forest-600">
-          No jobs assigned to this driver yet. In admin, assign the demo driver to a pending transfer to see a job here.
+          No jobs assigned to this driver yet. In admin, assign Irish Driver (preview) to a pending transfer to see a job here.
         </p>
       )
     }
@@ -327,23 +324,24 @@ export function DriverDashboardPage() {
     return <DashboardLoadingShell label="Loading driver desk…" />
   }
 
-  const canAccessDriverDesk = profile?.role === 'driver' || (adminPreviewEnv && profile?.role === 'admin')
+  const canAccessDriverDesk = profile?.role === 'driver' || profile?.role === 'admin'
 
   if (!canAccessDriverDesk) {
     return (
       <div className="ge-page flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
         <p className="max-w-md font-ge text-forest-800">
-          This area is for drivers (profile role <span className="font-mono text-sm">driver</span>) or for admins in preview
-          mode. Sign in with a driver test account, or enable{' '}
-          <code className="rounded bg-offwhite px-1 font-mono text-xs ring-1 ring-forest-200">VITE_DRIVER_DESK_ADMIN_PREVIEW=true</code>{' '}
-          on the build and open <span className="font-mono text-sm">/driver</span> while signed in as admin. Vite dev enables
-          preview automatically.
+          This area is for drivers (profile role <span className="font-mono text-sm">driver</span>) or operators signed in as{' '}
+          <span className="font-mono text-sm">admin</span> (Irish Driver preview desk). Use{' '}
+          <a className="font-mono text-sm text-gs-green underline" href="/driver/login">
+            /driver/login
+          </a>{' '}
+          for magic-link access.
         </p>
         <GeButton href="/dashboard/admin" variant="outline-gs-green">
           Admin dashboard
         </GeButton>
-        <GeButton href="/dashboard/login" variant="gs-gold">
-          Client sign-in
+        <GeButton href="/driver/login" variant="gs-gold">
+          Driver sign-in
         </GeButton>
         <button className="text-sm text-gs-green underline" type="button" onClick={() => void signOut()}>
           Sign out
@@ -356,8 +354,8 @@ export function DriverDashboardPage() {
     <DashboardLayout kicker="Driver" subtitle={deskSubtitle} title={heroTitle} variant="driver">
       {isAdminDriverPreview ? (
         <p className="mb-4 rounded-2xl border border-amber-200/90 bg-amber-50/90 px-4 py-3 text-xs text-amber-950">
-          Admin preview — event log uses <span className="font-mono">actor_kind = admin</span>. Assign the demo driver in
-          Operations to exercise the flow.
+          Admin preview — event log uses <span className="font-mono">actor_kind = admin</span>. Assign Irish Driver in Operations
+          to exercise the flow.
         </p>
       ) : null}
       {msg ? <p className="mb-6 text-sm text-forest-800">{msg}</p> : null}

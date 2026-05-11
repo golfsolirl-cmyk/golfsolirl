@@ -126,6 +126,20 @@ export function LoginPage() {
       return
     }
 
+    if (explicitAs === 'driver') {
+      window.location.replace('/driver')
+      return
+    }
+
+    if (path === '/driver/login') {
+      if (profile?.role === 'driver' || profile?.role === 'admin') {
+        window.location.replace('/driver')
+      } else {
+        window.location.replace('/dashboard')
+      }
+      return
+    }
+
     if (safeReturnPath) {
       window.location.replace(safeReturnPath)
       return
@@ -255,6 +269,9 @@ export function LoginPage() {
     )
   }
 
+  const loginPathForHero = normalizeLoginPath()
+  const isDriverLoginPage = loginPathForHero === '/driver/login'
+
   if (isLoading) {
     return (
       <div className="ge-page flex min-h-screen flex-col overflow-x-hidden bg-white font-ge text-gs-dark">
@@ -293,13 +310,16 @@ export function LoginPage() {
         <div className="relative z-10 mx-auto max-w-[1180px] px-5 pb-16 pt-6 sm:px-8 md:pb-20 md:pt-8">
           <div className="grid gap-10 lg:grid-cols-[1fr_minmax(260px,440px)] lg:items-start lg:gap-12">
             <div className="min-w-0">
-              <p className="font-ge text-xs font-bold uppercase tracking-[0.22em] text-gs-gold">Account access</p>
+              <p className="font-ge text-xs font-bold uppercase tracking-[0.22em] text-gs-gold">
+                {isDriverLoginPage ? 'Driver desk' : 'Account access'}
+              </p>
               <h1 className="mt-5 max-w-3xl font-ge text-[2.1rem] font-extrabold leading-[1.08] tracking-[-0.02em] text-white md:text-[2.85rem]">
-                Sign in
+                {isDriverLoginPage ? 'Driver sign-in' : 'Sign in'}
               </h1>
               <p className="mt-4 max-w-xl font-ge text-base leading-8 text-white/88 md:text-[1.08rem]">
-                We&apos;ll email you a secure magic link — the same GolfSol Ireland experience as the rest of the site. No
-                password to remember.
+                {isDriverLoginPage
+                  ? 'Same secure magic link as the client portal and admin — after sign-in, admins use the Irish Driver preview desk; linked drivers see live jobs.'
+                  : "We'll email you a secure magic link — the same GolfSol Ireland experience as the rest of the site. No password to remember."}
               </p>
               {safeReturnPath ? (
                 <p className="mt-4 max-w-xl rounded-2xl border border-white/18 bg-white/10 px-4 py-3 font-ge text-base leading-7 text-white/92">
@@ -339,23 +359,31 @@ export function LoginPage() {
             ) : null}
 
             <p className="mb-6 font-ge text-xs leading-relaxed text-ge-gray600">
-              <span className="font-semibold text-gs-dark">Same email, two dashboards?</span> Use{' '}
+              <span className="font-semibold text-gs-dark">Same magic link everywhere.</span>{' '}
               <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.7rem] text-gs-dark ring-1 ring-ge-gray200">
                 /dashboard/login
               </code>{' '}
-              for the client portal and{' '}
+              (client),{' '}
               <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.7rem] text-gs-dark ring-1 ring-ge-gray200">
                 /dashboard/admin/login
               </code>{' '}
-              for operations — or add{' '}
+              (admin),{' '}
+              <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.7rem] text-gs-dark ring-1 ring-ge-gray200">
+                /driver/login
+              </code>{' '}
+              (driver desk). When already signed in, use{' '}
               <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.7rem] text-gs-dark ring-1 ring-ge-gray200">
                 ?as=client
-              </code>{' '}
-              /{' '}
+              </code>
+              ,{' '}
               <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.7rem] text-gs-dark ring-1 ring-ge-gray200">
                 ?as=admin
-              </code>{' '}
-              on this page when already signed in.
+              </code>
+              , or{' '}
+              <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.7rem] text-gs-dark ring-1 ring-ge-gray200">
+                ?as=driver
+              </code>
+              .
             </p>
 
             {queryError ? (

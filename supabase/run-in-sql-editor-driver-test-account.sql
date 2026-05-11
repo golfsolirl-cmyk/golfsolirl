@@ -21,12 +21,12 @@ begin
   update public.drivers
   set
     auth_user_id = uid,
-    display_name = 'Test Driver — Costa',
+    display_name = 'Irish Driver — Costa',
     email = driver_email,
     active = true
   where id = demo_driver_id;
 
   if not found then
-    raise exception 'Demo driver row % missing — apply migration 20260505200000_seed_demo_transfer_driver.sql.', demo_driver_id;
+    raise exception 'Irish Driver preview row % missing — apply migration 20260505200000_seed_demo_transfer_driver.sql.', demo_driver_id;
   end if;
 end $$;

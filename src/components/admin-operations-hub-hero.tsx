@@ -10,7 +10,7 @@ const JUMP_LINKS: readonly { readonly id: string; readonly label: string; readon
   { id: 'admin-hub-packages', label: 'Saved packages', hint: 'Calculator + portal rows' },
   { id: 'admin-hub-publish', label: 'Publish lines', hint: 'Golf / hotel / transfer' },
   { id: 'admin-hub-portal', label: 'Account & PDFs', hint: 'Account number, access' },
-  { id: 'admin-transfer-pipeline', label: 'Drivers', hint: 'Assign demo driver' }
+  { id: 'admin-transfer-pipeline', label: 'Drivers', hint: 'Assign Irish Driver' }
 ]
 
 const scrollToId = (id: string) => {
