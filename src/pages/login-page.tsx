@@ -358,34 +358,6 @@ export function LoginPage() {
               </div>
             ) : null}
 
-            <p className="mb-6 font-ge text-xs leading-relaxed text-ge-gray600">
-              <span className="font-semibold text-gs-dark">Same magic link everywhere.</span>{' '}
-              <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.7rem] text-gs-dark ring-1 ring-ge-gray200">
-                /dashboard/login
-              </code>{' '}
-              (client),{' '}
-              <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.7rem] text-gs-dark ring-1 ring-ge-gray200">
-                /dashboard/admin/login
-              </code>{' '}
-              (admin),{' '}
-              <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.7rem] text-gs-dark ring-1 ring-ge-gray200">
-                /driver/login
-              </code>{' '}
-              (driver desk). When already signed in, use{' '}
-              <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.7rem] text-gs-dark ring-1 ring-ge-gray200">
-                ?as=client
-              </code>
-              ,{' '}
-              <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.7rem] text-gs-dark ring-1 ring-ge-gray200">
-                ?as=admin
-              </code>
-              , or{' '}
-              <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.7rem] text-gs-dark ring-1 ring-ge-gray200">
-                ?as=driver
-              </code>
-              .
-            </p>
-
             {queryError ? (
               <div className="mb-6 space-y-2 rounded-2xl border border-gs-gold/50 bg-[#fff9e8] px-4 py-3 font-ge text-base text-gs-dark">
                 <p className="font-bold text-gs-dark">
