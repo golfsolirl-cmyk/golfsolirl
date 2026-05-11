@@ -33,6 +33,8 @@ export function LoginPage() {
   const sentConfirmationRef = useRef<HTMLDivElement>(null)
   const { signInWithMagicLink, session, profile, isLoading, isSupabaseConfigured } = useAuth()
   const [email, setEmail] = useState('')
+  /** Shown on `/dashboard/admin/login` — sent only with that portal; verified server-side when `ADMIN_OPERATOR_PASSCODE` is set. */
+  const [operatorCode, setOperatorCode] = useState('')
   const [formError, setFormError] = useState<string | null>(null)
   const [isSending, setIsSending] = useState(false)
   const [sent, setSent] = useState(false)
@@ -102,6 +104,10 @@ export function LoginPage() {
       cancelled = true
     }
   }, [])
+
+  const loginPathForHero = normalizeLoginPath()
+  const isAdminLoginPath = loginPathForHero === '/dashboard/admin/login'
+  const isDriverLoginPage = loginPathForHero === '/driver/login'
 
   useEffect(() => {
     if (isLoading || !session) {
@@ -182,21 +188,38 @@ export function LoginPage() {
       return
     }
 
+    const path = normalizeLoginPath()
     const callbackBase = `${window.location.origin}/auth/callback`
-    const redirectTo = safeReturnPath
-      ? `${callbackBase}?next=${encodeURIComponent(safeReturnPath)}`
-      : callbackBase
-
+    let redirectTo = `${callbackBase}`
     if (safeReturnPath) {
-      try {
-        sessionStorage.setItem(AUTH_NEXT_STORAGE_KEY, safeReturnPath)
-      } catch {
-        /* private mode */
-      }
+      redirectTo = `${callbackBase}?next=${encodeURIComponent(safeReturnPath)}`
+    } else if (path === '/dashboard/admin/login') {
+      redirectTo = `${callbackBase}?next=${encodeURIComponent('/dashboard/admin')}`
+    } else if (path === '/driver/login') {
+      redirectTo = `${callbackBase}?next=${encodeURIComponent('/driver')}`
     }
 
+    try {
+      if (safeReturnPath) {
+        sessionStorage.setItem(AUTH_NEXT_STORAGE_KEY, safeReturnPath)
+      } else if (path === '/dashboard/admin/login') {
+        sessionStorage.setItem(AUTH_NEXT_STORAGE_KEY, '/dashboard/admin')
+      } else if (path === '/driver/login') {
+        sessionStorage.setItem(AUTH_NEXT_STORAGE_KEY, '/driver')
+      }
+    } catch {
+      /* private mode */
+    }
+
+    const portal: 'client' | 'admin' | 'driver' =
+      path === '/dashboard/admin/login' ? 'admin' : path === '/driver/login' ? 'driver' : 'client'
+
     setIsSending(true)
-    const { error } = await signInWithMagicLink(email, { redirectTo })
+    const { error } = await signInWithMagicLink(email, {
+      redirectTo,
+      portal,
+      ...(portal === 'admin' ? { operatorCode } : {})
+    })
     setIsSending(false)
 
     if (error) {
@@ -269,9 +292,6 @@ export function LoginPage() {
     )
   }
 
-  const loginPathForHero = normalizeLoginPath()
-  const isDriverLoginPage = loginPathForHero === '/driver/login'
-
   if (isLoading) {
     return (
       <div className="ge-page flex min-h-screen flex-col overflow-x-hidden bg-white font-ge text-gs-dark">
@@ -311,15 +331,17 @@ export function LoginPage() {
           <div className="grid gap-10 lg:grid-cols-[1fr_minmax(260px,440px)] lg:items-start lg:gap-12">
             <div className="min-w-0">
               <p className="font-ge text-xs font-bold uppercase tracking-[0.22em] text-gs-gold">
-                {isDriverLoginPage ? 'Driver desk' : 'Account access'}
+                {isAdminLoginPath ? 'Operations' : isDriverLoginPage ? 'Driver desk' : 'Account access'}
               </p>
               <h1 className="mt-5 max-w-3xl font-ge text-[2.1rem] font-extrabold leading-[1.08] tracking-[-0.02em] text-white md:text-[2.85rem]">
-                {isDriverLoginPage ? 'Driver sign-in' : 'Sign in'}
+                {isAdminLoginPath ? 'Admin sign-in' : isDriverLoginPage ? 'Driver sign-in' : 'Sign in'}
               </h1>
               <p className="mt-4 max-w-xl font-ge text-base leading-8 text-white/88 md:text-[1.08rem]">
-                {isDriverLoginPage
-                  ? 'Same secure magic link as the client portal and admin — after sign-in, admins use the Irish Driver preview desk; linked drivers see live jobs.'
-                  : "We'll email you a secure magic link — the same GolfSol Ireland experience as the rest of the site. No password to remember."}
+                {isAdminLoginPath
+                  ? 'Magic link to the operator dashboard. Your profile must have the admin role in Supabase — the operator code only gates this page when your team sets it on the server.'
+                  : isDriverLoginPage
+                    ? 'Same secure magic link as the client portal and admin — after sign-in, admins use the Irish Driver preview desk; linked drivers see live jobs.'
+                    : "We'll email you a secure magic link — the same GolfSol Ireland experience as the rest of the site. No password to remember."}
               </p>
               {safeReturnPath ? (
                 <p className="mt-4 max-w-xl rounded-2xl border border-white/18 bg-white/10 px-4 py-3 font-ge text-base leading-7 text-white/92">
@@ -412,6 +434,31 @@ export function LoginPage() {
                     value={email}
                   />
                 </div>
+                {isAdminLoginPath ? (
+                  <div>
+                    <label
+                      className="mb-2 block font-ge text-sm font-bold uppercase tracking-[0.14em] text-gs-dark"
+                      htmlFor="login-operator-code"
+                    >
+                      Operator code
+                    </label>
+                    <input
+                      autoComplete="off"
+                      className="w-full rounded-xl border-2 border-ge-gray200 bg-white px-4 py-3.5 font-ge text-base text-gs-dark placeholder:text-ge-gray400 outline-none transition-[border-color,box-shadow] focus:border-gs-green focus:ring-2 focus:ring-gs-green/25"
+                      id="login-operator-code"
+                      name="operatorCode"
+                      onChange={(event) => setOperatorCode(event.target.value)}
+                      placeholder="Required if ADMIN_OPERATOR_PASSCODE is set on the server"
+                      type="password"
+                      value={operatorCode}
+                    />
+                    <p className="mt-2 font-ge text-xs leading-relaxed text-ge-gray600">
+                      Set <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.65rem]">ADMIN_OPERATOR_PASSCODE</code> in
+                      Vercel env to require this before a magic link is sent from this page. Same email as the client portal is fine;
+                      access still depends on <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.65rem]">profiles.role</code>.
+                    </p>
+                  </div>
+                ) : null}
                 {formError ? <p className="font-ge text-base font-semibold text-ge-orange">{formError}</p> : null}
                 <GeButton className="w-full" disabled={isSending} size="md" type="submit" variant="gs-gold">
                   {isSending ? 'Sending link…' : 'Email me a magic link'}

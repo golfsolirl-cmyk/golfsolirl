@@ -35,7 +35,11 @@ interface AuthContextValue {
   readonly isSupabaseConfigured: boolean
   readonly signInWithMagicLink: (
     email: string,
-    options?: { readonly redirectTo?: string }
+    options?: {
+      readonly redirectTo?: string
+      readonly portal?: 'client' | 'admin' | 'driver'
+      readonly operatorCode?: string
+    }
   ) => Promise<{ error: Error | null }>
   readonly signOut: () => Promise<void>
   readonly refreshProfile: () => Promise<void>
@@ -224,7 +228,15 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     }
   }, [supabase, fetchProfileRow])
 
-  const signInWithMagicLink = useCallback(async (email: string, options?: { readonly redirectTo?: string }) => {
+  const signInWithMagicLink = useCallback(
+    async (
+      email: string,
+      options?: {
+        readonly redirectTo?: string
+        readonly portal?: 'client' | 'admin' | 'driver'
+        readonly operatorCode?: string
+      }
+    ) => {
     if (!supabase) {
       return { error: new Error('Supabase is not configured (missing VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY).') }
     }
@@ -236,10 +248,22 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         : fallback
 
     try {
+      const portal = options?.portal
+      const operatorCode = options?.operatorCode
+      const body: Record<string, string> = {
+        email: email.trim().toLowerCase(),
+        redirectTo
+      }
+      if (portal) {
+        body.portal = portal
+      }
+      if (portal === 'admin') {
+        body.operatorCode = typeof operatorCode === 'string' ? operatorCode.trim() : ''
+      }
       const response = await fetch('/api/auth/magic-link', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim().toLowerCase(), redirectTo })
+        body: JSON.stringify(body)
       })
 
       const json = (await response.json().catch(() => ({}))) as { message?: string }
@@ -252,7 +276,9 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     } catch (err) {
       return { error: err instanceof Error ? err : new Error('Network error') }
     }
-  }, [supabase])
+    },
+    [supabase]
+  )
 
   const signOut = useCallback(async () => {
     if (supabase) {

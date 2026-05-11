@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'node:crypto'
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { buildBrandedPortalMagicLinkEmailHtml } from './branded-client-portal-email.mjs'
@@ -5,6 +6,20 @@ import { finalizeGsolEmailHtml } from './email-layout.mjs'
 import { isAuthEmailBlocked } from './email-address-registry.mjs'
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+
+/** When `ADMIN_OPERATOR_PASSCODE` is set, `/dashboard/admin/login` requests must include matching `operatorCode` (same string, UTF-8, length-sensitive compare). */
+const operatorPasscodeMatches = (provided, expected) => {
+  const p = Buffer.from(String(provided ?? ''), 'utf8')
+  const e = Buffer.from(String(expected ?? ''), 'utf8')
+  if (p.length !== e.length || p.length === 0) {
+    return false
+  }
+  try {
+    return timingSafeEqual(p, e)
+  } catch {
+    return false
+  }
+}
 
 const rateBucket = new Map()
 
@@ -94,6 +109,9 @@ const isAllowedRedirectTo = (redirectTo, env) => {
 export const handleMagicLinkRequest = async (payload, env = process.env, meta = {}) => {
   const email = typeof payload?.email === 'string' ? payload.email.trim().toLowerCase() : ''
   const redirectTo = typeof payload?.redirectTo === 'string' ? payload.redirectTo.trim() : ''
+  const portalRaw = typeof payload?.portal === 'string' ? payload.portal.trim().toLowerCase() : ''
+  const portal = portalRaw === 'admin' || portalRaw === 'driver' ? portalRaw : 'client'
+  const operatorCode = typeof payload?.operatorCode === 'string' ? payload.operatorCode.trim() : ''
 
   if (!email || !isValidEmail(email)) {
     const error = new Error('Please enter a valid email address.')
@@ -107,6 +125,15 @@ export const handleMagicLinkRequest = async (payload, env = process.env, meta = 
     )
     error.statusCode = 400
     throw error
+  }
+
+  const adminPass = env.ADMIN_OPERATOR_PASSCODE?.trim()
+  if (portal === 'admin' && adminPass) {
+    if (!operatorPasscodeMatches(operatorCode, adminPass)) {
+      const error = new Error('Invalid operator code.')
+      error.statusCode = 403
+      throw error
+    }
   }
 
   const supabaseUrl = env.SUPABASE_URL?.trim()
@@ -167,10 +194,15 @@ export const handleMagicLinkRequest = async (payload, env = process.env, meta = 
   const html = finalizeGsolEmailHtml(rawHtml)
   const resend = new Resend(resendKey)
 
+  const subject =
+    portal === 'admin'
+      ? 'Operator sign-in — Golf Sol Ireland — your secure link'
+      : 'Sign in to Golf Sol Ireland — your secure link'
+
   const { error: sendError } = await resend.emails.send({
     from: fromEmail,
     to: [email],
-    subject: 'Sign in to Golf Sol Ireland — your secure link',
+    subject,
     html
   })
 
