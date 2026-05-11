@@ -84,7 +84,7 @@ export const markTransferBookingPaid = async (supabase, bookingId, session, paym
   const { data: row, error: loadErr } = await supabase
     .from('transfer_bookings')
     .select(
-      'id, payment_status, admin_price_eur, deposit_percent, scheduled_at, next_available_driver, stripe_payment_intent_id, stripe_checkout_session_id'
+      'id, payment_status, transfer_refund_status, admin_price_eur, deposit_percent, scheduled_at, next_available_driver, stripe_payment_intent_id, stripe_checkout_session_id'
     )
     .eq('id', bookingId)
     .maybeSingle()
@@ -99,6 +99,10 @@ export const markTransferBookingPaid = async (supabase, bookingId, session, paym
   }
 
   const st = String(row.payment_status ?? 'unpaid').toLowerCase()
+  if (String(row.transfer_refund_status ?? 'none').toLowerCase() === 'full') {
+    console.warn('[stripe-webhook] ignoring paid checkout for fully refunded transfer', bookingId)
+    return false
+  }
   if (st === 'paid') {
     return true
   }

@@ -141,7 +141,7 @@ export const handleTransferStripeCheckout = async (body, env = process.env, meta
   const { data: booking, error: bErr } = await admin
     .from('transfer_bookings')
     .select(
-      'id, client_user_id, client_email, enquiry_reference_id, pickup_label, dropoff_label, admin_price_eur, payment_status, deposit_percent, scheduled_at, next_available_driver'
+      'id, client_user_id, client_email, enquiry_reference_id, pickup_label, dropoff_label, admin_price_eur, payment_status, deposit_percent, scheduled_at, next_available_driver, transfer_refund_status'
     )
     .eq('id', bookingId)
     .maybeSingle()
@@ -161,6 +161,11 @@ export const handleTransferStripeCheckout = async (body, env = process.env, meta
   const gross = Number(booking.admin_price_eur)
   if (!Number.isFinite(gross) || gross < 0.5) {
     throwStatus('This transfer does not have a payable quote yet. Your Golf Sol desk will add it shortly.', 400)
+  }
+
+  const refundSt = String(booking.transfer_refund_status ?? 'none').toLowerCase()
+  if (refundSt === 'full') {
+    throwStatus('This transfer has been fully refunded. Contact Golf Sol Ireland if you need a new booking.', 400)
   }
 
   const paySt = String(booking.payment_status ?? 'unpaid').toLowerCase()
