@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence,  m  } from 'framer-motion'
 import { ChevronDown, Hotel, MapPin, PlaneLanding, Sparkles, X } from 'lucide-react'
 import { cx } from '../../../lib/utils'
 import { WEBSITE_ENQUIRY_FORM } from '../../../lib/enquiry-form-registry'
@@ -158,7 +158,7 @@ export function GeAlreadyBookedFlightPanel() {
     <div id="already-booked-hotel" className="mt-10 w-full scroll-mt-28 lg:mt-12">
       <AnimatePresence mode="wait" initial={false}>
         {!open ? (
-          <motion.div
+          <m.div
             key="already-booked-cta"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -200,9 +200,9 @@ export function GeAlreadyBookedFlightPanel() {
                 {alreadyBookedHotelCopy.quickBookingTwilight}
               </a>
             </div>
-          </motion.div>
+          </m.div>
         ) : (
-          <motion.div
+          <m.div
             key="already-booked-panel"
             id="already-booked-flight-panel"
             role="region"
@@ -351,7 +351,7 @@ export function GeAlreadyBookedFlightPanel() {
 
                   <AnimatePresence initial={false} mode="wait">
                     {travelMode === 'flight' ? (
-                      <motion.div
+                      <m.div
                         key="mode-flight"
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -385,10 +385,10 @@ export function GeAlreadyBookedFlightPanel() {
                             className="h-11 w-full min-w-0 rounded-xl border border-white/20 bg-white/95 px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-gs-gold/40 transition-shadow focus:border-gs-gold focus:ring-2"
                           />
                         </label>
-                      </motion.div>
+                      </m.div>
                     ) : null}
                     {travelMode === 'arrived' ? (
-                      <motion.div
+                      <m.div
                         key="mode-arrived"
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -412,7 +412,7 @@ export function GeAlreadyBookedFlightPanel() {
                             {alreadyBookedHotelCopy.collectionTimeHint}
                           </span>
                         </label>
-                      </motion.div>
+                      </m.div>
                     ) : null}
                   </AnimatePresence>
 
@@ -439,7 +439,7 @@ export function GeAlreadyBookedFlightPanel() {
                 </form>
               </div>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

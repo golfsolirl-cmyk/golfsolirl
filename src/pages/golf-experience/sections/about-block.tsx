@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import { GeButton } from '../components/ge-button'
 import { GeSection } from '../components/ge-section'
 import { aboutCopy } from '../data/copy'
@@ -54,7 +54,7 @@ export function GeAboutBlock() {
       />
 
       <div className="grid gap-12 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)] lg:items-center lg:gap-14">
-        <motion.div
+        <m.div
           className="relative order-2 lg:order-1"
           {...fadeUp}
           transition={{ ...fadeUp.transition, delay: 0.04 }}
@@ -102,9 +102,9 @@ export function GeAboutBlock() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           className="relative order-1 lg:order-2"
           {...fadeUp}
           transition={{ ...fadeUp.transition, delay: 0.1 }}
@@ -132,7 +132,7 @@ export function GeAboutBlock() {
 
             <div className="mt-8 space-y-5 border-l-2 border-gs-green/20 pl-5 sm:space-y-6 sm:pl-6">
               {aboutCopy.paragraphs.map((paragraph, i) => (
-                <motion.p
+                <m.p
                   key={paragraph}
                   className="font-ge text-[1.02rem] leading-[1.7] text-ge-gray500 sm:text-[1.06rem]"
                   initial={{ opacity: 0, x: 8 }}
@@ -141,7 +141,7 @@ export function GeAboutBlock() {
                   transition={{ duration: 0.45, delay: 0.06 * i, ease: 'easeOut' }}
                 >
                   {paragraph}
-                </motion.p>
+                </m.p>
               ))}
             </div>
 
@@ -154,7 +154,7 @@ export function GeAboutBlock() {
               </p>
             </div>
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </GeSection>
   )

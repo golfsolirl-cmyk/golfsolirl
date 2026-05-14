@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence,  m  } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { contactInfo } from '../data/copy'
 
@@ -84,7 +84,7 @@ export function WhatsappFab() {
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.a
+        <m.a
           key="whatsapp-fab"
           href={WHATSAPP_URL}
           target="_blank"
@@ -113,7 +113,7 @@ export function WhatsappFab() {
           <span className="pointer-events-none absolute right-full mr-3 hidden whitespace-nowrap rounded-md border border-gs-gold/40 bg-gs-dark/95 px-3 py-1.5 font-ge text-xs font-extrabold uppercase tracking-[0.16em] text-gs-gold opacity-0 shadow-lg backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 md:block">
             Chat on WhatsApp
           </span>
-        </motion.a>
+        </m.a>
       )}
     </AnimatePresence>
   )

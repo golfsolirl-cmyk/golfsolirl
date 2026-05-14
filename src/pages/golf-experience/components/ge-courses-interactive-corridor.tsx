@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState, type FormEvent } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence,  m  } from 'framer-motion'
 import { CheckCircle2, Compass, MapPin, Send, Sparkles, X } from 'lucide-react'
 import L from 'leaflet'
 import type { DivIcon, Map as LeafletMap, Marker } from 'leaflet'
@@ -531,7 +531,7 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
 
         <AnimatePresence mode="wait">
           {selectedCourse ? (
-            <motion.div
+            <m.div
               key={selectedCourse.id}
               initial={{ opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}
@@ -723,9 +723,9 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
                 </form>
                 </>
               )}
-            </motion.div>
+            </m.div>
           ) : (
-            <motion.div
+            <m.div
               key="placeholder"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -736,7 +736,7 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
               <p className="mx-auto mt-2 max-w-lg font-ge text-xs leading-relaxed text-ge-gray500 sm:text-sm">
                 Your choice drives the enquiry — we attach routing context automatically so the Irish team sees the same course you tapped.
               </p>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       </div>

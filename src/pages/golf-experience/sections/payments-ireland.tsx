@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import { Euro, Lock, MapPin, ShieldCheck } from 'lucide-react'
 
 /**
@@ -112,7 +112,7 @@ export function GePaymentsIreland() {
       />
 
       <div className="relative z-10 mx-auto flex max-w-[1180px] flex-col gap-8 px-5 py-12 sm:px-8 sm:py-14 md:gap-10 md:py-16">
-        <motion.div
+        <m.div
           className="relative overflow-hidden rounded-[2rem] border border-white/80 bg-gs-dark px-6 py-8 text-white shadow-[0_26px_70px_rgba(6,59,42,0.22)] sm:px-8 sm:py-10"
           {...fadeUp}
         >
@@ -160,9 +160,9 @@ export function GePaymentsIreland() {
               </p>
             </div>
           </div>
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           className="grid gap-6 lg:grid-cols-[0.78fr_0.22fr] lg:items-start"
           initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -171,7 +171,7 @@ export function GePaymentsIreland() {
         >
           <ul className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 md:gap-3.5">
             {trustPills.map(({ icon: Icon, title, subtitle }, idx) => (
-              <motion.li
+              <m.li
                 key={title}
                 className="group relative flex items-center gap-3 overflow-hidden rounded-[1.35rem] border border-[#e3d6b7] bg-white/88 px-4 py-3.5 shadow-[0_16px_40px_rgba(69,53,24,0.09)] backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-gs-gold/60 hover:shadow-[0_20px_45px_rgba(69,53,24,0.14)]"
                 initial={{ opacity: 0, y: 10 }}
@@ -189,7 +189,7 @@ export function GePaymentsIreland() {
                   <p className="font-ge text-base font-extrabold text-gs-dark sm:text-[0.95rem]">{title}</p>
                   <p className="mt-0.5 font-ge text-sm text-ge-gray500 sm:text-[0.78rem]">{subtitle}</p>
                 </div>
-              </motion.li>
+              </m.li>
             ))}
           </ul>
 
@@ -199,7 +199,7 @@ export function GePaymentsIreland() {
               We keep the financial side calm and legible so organisers can focus on dates, golf, and the group.
             </p>
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   )

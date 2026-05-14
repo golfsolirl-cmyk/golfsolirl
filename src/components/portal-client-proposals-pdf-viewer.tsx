@@ -393,7 +393,7 @@ export function PortalClientProposalsPdfViewer({
 
   if (proposalsError && showFormalProposalsList && !hasTransferShelf) {
     return (
-      <div className="mb-8 rounded-3xl border border-red-200/80 bg-red-50/90 px-6 py-4 text-sm text-red-900 shadow-soft">
+      <div className="mb-8 rounded-3xl border border-red-200/80 bg-red-50/90 px-6 py-4 text-base text-red-900 shadow-soft">
         {proposalsError}
       </div>
     )
@@ -402,7 +402,7 @@ export function PortalClientProposalsPdfViewer({
   if (!hasAnyDoc) {
     if (profilePortalPdfEnabled && !showPdfLibraryOnDashboard && !hasTransferShelf) {
       return (
-        <div className="mb-8 rounded-[2rem] border border-forest-100 bg-offwhite/90 px-6 py-5 text-sm text-forest-700 shadow-soft">
+        <div className="mb-8 rounded-[2rem] border border-forest-100 bg-offwhite/90 px-6 py-5 text-base text-forest-700 shadow-soft">
           <p className="font-medium text-forest-900">PDF library</p>
           <p className="mt-1 max-w-xl">
             This area is enabled for your account; when we send you terms or our thank-you document, they will appear in the
@@ -436,7 +436,7 @@ export function PortalClientProposalsPdfViewer({
   return (
     <div className="mb-8 overflow-hidden rounded-[2rem] border border-forest-200/90 bg-[linear-gradient(165deg,#fffefb_0%,#f4faf6_40%,#eef6f0_100%)] shadow-[0_20px_60px_rgba(15,42,12,0.08)]">
       {proposalsError ? (
-        <div className="border-b border-red-200/80 bg-red-50/90 px-5 py-3 text-sm text-red-900" role="alert">
+        <div className="border-b border-red-200/80 bg-red-50/90 px-5 py-3 text-base text-red-900" role="alert">
           {proposalsError}
         </div>
       ) : null}
@@ -445,8 +445,8 @@ export function PortalClientProposalsPdfViewer({
         <aside className="border-b border-forest-100/90 bg-white/80 p-4 lg:border-b-0 lg:border-r lg:border-forest-100/90 lg:p-5">
           {hasTransferShelf ? (
             <>
-              <p className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-gold-600">Your paper trail</p>
-              <p className="mt-1 text-xs leading-snug text-forest-500">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-gold-600">Your paper trail</p>
+              <p className="mt-1 text-sm leading-snug text-forest-500">
                 Snapshot of your request, VAT quote PDF, and a short terms summary when your price is saved; deposit and paid-in-full
                 card receipts appear here after successful online payment.
               </p>
@@ -457,7 +457,7 @@ export function PortalClientProposalsPdfViewer({
                     <li key={row.id}>
                       <button
                         className={cx(
-                          'flex w-full flex-col rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition',
+                          'flex w-full flex-col rounded-xl px-3 py-2.5 text-left text-base font-semibold transition',
                           activeKey === k
                             ? 'bg-gradient-to-r from-emerald-950 to-forest-900 text-white shadow-md'
                             : 'text-forest-800 hover:bg-forest-50'
@@ -468,7 +468,7 @@ export function PortalClientProposalsPdfViewer({
                         <span className="leading-snug">{row.title}</span>
                         <span
                           className={cx(
-                            'mt-0.5 text-xs font-normal capitalize',
+                            'mt-0.5 text-sm font-normal capitalize',
                             activeKey === k ? 'text-emerald-100/90' : 'text-forest-500'
                           )}
                         >
@@ -482,7 +482,7 @@ export function PortalClientProposalsPdfViewer({
             </>
           ) : null}
 
-          <p className={cx('text-[0.65rem] font-bold uppercase tracking-[0.2em] text-gold-600', hasTransferShelf ? 'mt-6' : '')}>
+          <p className={cx('text-xs font-bold uppercase tracking-[0.18em] text-gold-600', hasTransferShelf ? 'mt-6' : '')}>
             Library
           </p>
           <ul className="mt-3 space-y-1.5">
@@ -490,7 +490,7 @@ export function PortalClientProposalsPdfViewer({
               <li>
                 <button
                   className={cx(
-                    'flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition',
+                    'flex w-full items-center rounded-xl px-3 py-2.5 text-left text-base font-semibold transition',
                     activeKey === 'terms'
                       ? 'bg-gradient-to-r from-emerald-950 to-forest-900 text-white shadow-md'
                       : 'text-forest-800 hover:bg-forest-50'
@@ -506,7 +506,7 @@ export function PortalClientProposalsPdfViewer({
               <li>
                 <button
                   className={cx(
-                    'flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition',
+                    'flex w-full items-center rounded-xl px-3 py-2.5 text-left text-base font-semibold transition',
                     activeKey === 'welcome'
                       ? 'bg-gradient-to-r from-emerald-950 to-forest-900 text-white shadow-md'
                       : 'text-forest-800 hover:bg-forest-50'
@@ -522,7 +522,7 @@ export function PortalClientProposalsPdfViewer({
 
           {showFormalProposalsList && proposals.length > 0 ? (
             <>
-              <p className="mt-6 text-[0.65rem] font-bold uppercase tracking-[0.2em] text-gold-600">Formal proposals</p>
+              <p className="mt-6 text-xs font-bold uppercase tracking-[0.18em] text-gold-600">Formal proposals</p>
               <ul className="mt-2 max-h-[min(40vh,22rem)] space-y-1 overflow-y-auto pr-1">
                 {proposals.map((row) => {
                   const hasPayload = Boolean(row.payload && typeof row.payload === 'object')
@@ -531,7 +531,7 @@ export function PortalClientProposalsPdfViewer({
                     <li key={row.id}>
                       <button
                         className={cx(
-                          'flex w-full flex-col rounded-xl px-3 py-2.5 text-left text-sm transition',
+                          'flex w-full flex-col rounded-xl px-3 py-2.5 text-left text-base transition',
                           activeKey === k
                             ? 'bg-gradient-to-r from-emerald-950 to-forest-900 text-white shadow-md'
                             : hasPayload
@@ -545,7 +545,7 @@ export function PortalClientProposalsPdfViewer({
                         <span className="font-semibold leading-snug">{row.title?.trim() || row.proposal_id}</span>
                         <span
                           className={cx(
-                            'mt-0.5 text-xs',
+                            'mt-0.5 text-sm',
                             activeKey === k ? 'text-emerald-100/90' : 'text-forest-500'
                           )}
                         >
@@ -565,13 +565,13 @@ export function PortalClientProposalsPdfViewer({
         <div className="flex min-h-0 flex-col bg-white/60">
           <div className="flex flex-col gap-3 border-b border-forest-100/90 px-4 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between md:px-6">
             <div className="min-w-0">
-              <p className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-gold-600">Preview</p>
-              <h3 className="font-display mt-1 truncate text-lg font-semibold text-forest-950">{viewerTitle}</h3>
-              <p className="mt-1 text-xs text-forest-500">Read-only — use print or share below.</p>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-gold-600">Preview</p>
+              <h3 className="font-display mt-1 truncate text-xl font-semibold text-forest-950">{viewerTitle}</h3>
+              <p className="mt-1 text-sm text-forest-500">Read-only — use print or share below.</p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <LuxuryButton
-                className="!gap-1.5 !rounded-full !px-4 !py-2.5 !text-xs"
+                className="!gap-1.5 !rounded-full !px-4 !py-2.5 !text-sm"
                 disabled={!iframeSrc || proposalLoading}
                 onClick={handlePrint}
                 type="button"
@@ -581,7 +581,7 @@ export function PortalClientProposalsPdfViewer({
                 Print
               </LuxuryButton>
               <LuxuryButton
-                className="!gap-1.5 !rounded-full !border-forest-200 !bg-white !px-4 !py-2.5 !text-xs !text-forest-900 shadow-sm hover:!bg-forest-50"
+                className="!gap-1.5 !rounded-full !border-forest-200 !bg-white !px-4 !py-2.5 !text-sm !text-forest-900 shadow-sm hover:!bg-forest-50"
                 disabled={!iframeSrc || proposalLoading}
                 onClick={openInNewTab}
                 type="button"
@@ -592,7 +592,7 @@ export function PortalClientProposalsPdfViewer({
               </LuxuryButton>
               {selection?.kind === 'proposal' || selection?.kind === 'transfer_portal' ? (
                 <LuxuryButton
-                  className="!gap-1.5 !rounded-full !border-forest-200 !bg-white !px-4 !py-2.5 !text-xs !text-forest-900 shadow-sm hover:!bg-forest-50"
+                  className="!gap-1.5 !rounded-full !border-forest-200 !bg-white !px-4 !py-2.5 !text-sm !text-forest-900 shadow-sm hover:!bg-forest-50"
                   disabled={!proposalBlobUrl || proposalLoading}
                   onClick={() => void handleDownloadProposal()}
                   type="button"
@@ -602,7 +602,7 @@ export function PortalClientProposalsPdfViewer({
                 </LuxuryButton>
               ) : null}
               <LuxuryButton
-                className="!gap-1.5 !rounded-full !border-forest-200 !bg-white !px-4 !py-2.5 !text-xs !text-forest-900 shadow-sm hover:!bg-forest-50"
+                className="!gap-1.5 !rounded-full !border-forest-200 !bg-white !px-4 !py-2.5 !text-sm !text-forest-900 shadow-sm hover:!bg-forest-50"
                 onClick={openWhatsApp}
                 type="button"
                 variant="white"
@@ -611,7 +611,7 @@ export function PortalClientProposalsPdfViewer({
                 WhatsApp
               </LuxuryButton>
               <LuxuryButton
-                className="!gap-1.5 !rounded-full !border-forest-200 !bg-white !px-4 !py-2.5 !text-xs !text-forest-900 shadow-sm hover:!bg-forest-50"
+                className="!gap-1.5 !rounded-full !border-forest-200 !bg-white !px-4 !py-2.5 !text-sm !text-forest-900 shadow-sm hover:!bg-forest-50"
                 onClick={openEmail}
                 type="button"
                 variant="white"
@@ -626,11 +626,11 @@ export function PortalClientProposalsPdfViewer({
             {proposalLoading ? (
               <div className="absolute inset-0 z-[2] flex flex-col items-center justify-center gap-3 bg-white/80 backdrop-blur-sm">
                 <Loader2 className="h-10 w-10 animate-spin text-emerald-700" aria-hidden />
-                <p className="text-sm font-medium text-forest-700">Preparing PDF…</p>
+                <p className="text-base font-medium text-forest-700">Preparing PDF…</p>
               </div>
             ) : null}
             {proposalLoadError ? (
-              <div className="rounded-2xl border border-red-200 bg-red-50/90 px-4 py-3 text-sm text-red-900" role="alert">
+              <div className="rounded-2xl border border-red-200 bg-red-50/90 px-4 py-3 text-base text-red-900" role="alert">
                 {proposalLoadError}
               </div>
             ) : null}
@@ -646,7 +646,7 @@ export function PortalClientProposalsPdfViewer({
                 />
               </div>
             ) : !proposalLoading && !proposalLoadError ? (
-              <div className="flex h-[min(40vh,24rem)] items-center justify-center rounded-2xl border border-dashed border-forest-200 bg-offwhite/80 px-6 text-center text-sm text-forest-600">
+              <div className="flex h-[min(40vh,24rem)] items-center justify-center rounded-2xl border border-dashed border-forest-200 bg-offwhite/80 px-6 text-center text-base text-forest-600">
                 Choose a document from the list.
               </div>
             ) : null}

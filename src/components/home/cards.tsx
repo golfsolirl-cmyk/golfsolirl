@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import { ArrowUpRight, CalendarDays, CheckCircle2, Star } from 'lucide-react'
 import type {
   CourseItem,
@@ -31,7 +31,7 @@ export function PackageCard({ name, description, price, duration, highlight, inc
   const isFeaturedPackage = highlight === 'Most requested itinerary'
 
   return (
-    <motion.article
+    <m.article
       className={cx(
         'group relative overflow-hidden rounded-[2rem] border p-7 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl',
         isFeaturedPackage && 'md:col-span-2',
@@ -154,13 +154,13 @@ export function PackageCard({ name, description, price, duration, highlight, inc
           </a>
         </div>
       </div>
-    </motion.article>
+    </m.article>
   )
 }
 
 export function CourseCard({ name, location, distance, badge, description, rate, image, tags }: CourseItem) {
   return (
-    <motion.article
+    <m.article
       className="group overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
       {...fadeUpProps}
     >
@@ -203,7 +203,7 @@ export function CourseCard({ name, location, distance, badge, description, rate,
           </a>
         </div>
       </div>
-    </motion.article>
+    </m.article>
   )
 }
 
@@ -216,7 +216,7 @@ export function HotelCard({ name, tier, area, image, description, perks, price }
         : 'border-white/15 bg-fairway-700 text-white'
 
   return (
-    <motion.article
+    <m.article
       className="group overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
       {...fadeUpProps}
     >
@@ -262,13 +262,13 @@ export function HotelCard({ name, tier, area, image, description, perks, price }
           </a>
         </div>
       </div>
-    </motion.article>
+    </m.article>
   )
 }
 
 export function FeatureTile({ title, description, icon: Icon }: TransferFeature) {
   return (
-    <motion.article
+    <m.article
       className="rounded-[2rem] border border-white/15 bg-white/10 p-6 backdrop-blur-md"
       {...fadeUpProps}
     >
@@ -277,13 +277,13 @@ export function FeatureTile({ title, description, icon: Icon }: TransferFeature)
       </div>
       <h3 className="mb-3 text-[1.18rem] font-semibold leading-7 text-white md:text-[1.24rem]">{title}</h3>
       <p className="text-[1.08rem] leading-8 text-white">{description}</p>
-    </motion.article>
+    </m.article>
   )
 }
 
 export function StepCard({ step, title, description, image }: PlanningStep) {
   return (
-    <motion.article
+    <m.article
       className="group overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
       {...fadeUpProps}
     >
@@ -300,13 +300,13 @@ export function StepCard({ step, title, description, image }: PlanningStep) {
         <h3 className="mb-2 text-base font-semibold text-forest-900">{title}</h3>
         <p className="text-base leading-relaxed text-forest-900/68">{description}</p>
       </div>
-    </motion.article>
+    </m.article>
   )
 }
 
 export function TestimonialCard({ quote, name, meta }: TestimonialItem) {
   return (
-    <motion.article
+    <m.article
       className="rounded-[2rem] border border-forest-100 bg-white p-6 shadow-sm"
       {...fadeUpProps}
     >
@@ -320,6 +320,6 @@ export function TestimonialCard({ quote, name, meta }: TestimonialItem) {
         <p className="text-[1.02rem] font-semibold text-forest-900">{name}</p>
         <p className="text-base text-forest-900/58">{meta}</p>
       </div>
-    </motion.article>
+    </m.article>
   )
 }

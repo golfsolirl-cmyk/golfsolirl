@@ -1,6 +1,4 @@
 import { useMemo, useRef, useState } from 'react'
-import html2canvas from 'html2canvas'
-import jsPDF from 'jspdf'
 import { Download, CheckCircle2, MapPinned, CalendarRange, BedDouble, Bus, Users, Printer, Share2, LoaderCircle, Send } from 'lucide-react'
 import { PageIdentityBar } from '../components/page-identity-bar'
 import { LuxuryButton } from '../components/ui/button'
@@ -182,6 +180,9 @@ function ProposalTemplatePage() {
         await document.fonts.ready
       }
 
+      const [{ default: html2canvas }, jspdfMod] = await Promise.all([import('html2canvas'), import('jspdf')])
+      const JsPDF = jspdfMod.default ?? (jspdfMod as unknown as { jsPDF: typeof jspdfMod.default }).jsPDF
+
       const canvas = await html2canvas(proposalNode, {
         backgroundColor: '#ffffff',
         scale: Math.max(3, Math.min((window.devicePixelRatio || 1) * 2, 4)),
@@ -193,7 +194,7 @@ function ProposalTemplatePage() {
       })
 
       const imageData = canvas.toDataURL('image/png', 1)
-      const pdf = new jsPDF({
+      const pdf = new JsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4',

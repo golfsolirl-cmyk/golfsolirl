@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dashboard UI preview — Golf Sol Ireland</title>
+    <link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
+    <link
+      href="https://fonts.bunny.net/css?family=open-sans:300,400,600,700,800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --gs-bg: #f4f7f5;
+        --gs-dark: #063b2a;
+        --gs-green: #0b6b45;
+        --ge-teal: #007c69;
+        --gold: #d5c600;
+        --gold-light: #ebe486;
+        --forest-100: #d9efd3;
+        --shadow-card: 0 24px 60px rgba(18, 42, 19, 0.12);
+        --radius: 2rem;
+        --font-ge: 'Open Sans', system-ui, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: var(--font-ge);
+        background: var(--gs-bg);
+        color: var(--gs-dark);
+        line-height: 1.68;
+        padding-top: 58px;
+        font-size: 1.125rem;
+      }
+      .preview-chrome {
+        position: fixed;
+        inset: 0 0 auto 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        min-height: 58px;
+        padding: 0.25rem 1rem 0.25rem 1rem;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        border-bottom: 1px solid rgba(6, 59, 42, 0.08);
+      }
+      .preview-chrome a {
+        display: flex;
+        align-items: flex-end;
+        line-height: 0;
+        text-decoration: none;
+      }
+      .preview-chrome img {
+        height: 48px;
+        width: auto;
+        display: block;
+      }
+      .chrome-title {
+        font-weight: 800;
+        font-size: 0.78rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ge-teal);
+      }
+      .wrap {
+        max-width: 44rem;
+        margin: 0 auto;
+        padding: 1.75rem 1.25rem 3rem;
+      }
+      h1 {
+        font-family: var(--font-ge);
+        font-weight: 800;
+        font-size: 2rem;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+        margin: 0 0 0.5rem;
+        color: var(--gs-dark);
+      }
+      p.lead {
+        margin: 0 0 2rem;
+        max-width: 40rem;
+        line-height: 1.55;
+        color: rgba(6, 59, 42, 0.82);
+        font-size: 1.125rem;
+      }
+      .cards {
+        display: grid;
+        gap: 1.25rem;
+      }
+      a.card {
+        display: block;
+        padding: 1.5rem 1.75rem;
+        border-radius: var(--radius);
+        background: #fff;
+        border: 1px solid rgba(215, 235, 210, 0.9);
+        box-shadow: var(--shadow-card);
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      a.card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 28px 70px rgba(18, 42, 19, 0.14);
+      }
+      a.card h2 {
+        font-family: var(--font-ge);
+        font-weight: 800;
+        font-size: 1.35rem;
+        margin: 0 0 0.35rem;
+        color: var(--gs-green);
+      }
+      a.card span.desc {
+        font-size: 1.0625rem;
+        color: rgba(6, 59, 42, 0.72);
+      }
+      .pill {
+        display: inline-block;
+        margin-top: 1.25rem;
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--gs-dark);
+        background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+        padding: 0.35rem 0.7rem;
+        border-radius: 999px;
+        box-shadow: 0 6px 18px rgba(213, 198, 0, 0.35);
+      }
+      .mapping {
+        margin-top: 2.75rem;
+        padding: 1.5rem 1.75rem;
+        border-radius: var(--radius);
+        background: #fff;
+        border: 1px solid rgba(215, 235, 210, 0.9);
+        box-shadow: var(--shadow-card);
+      }
+      .mapping h2 {
+        margin: 0 0 1rem;
+        font-size: 1.25rem;
+        color: var(--gs-green);
+      }
+      .mapping table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1rem;
+      }
+      .mapping th,
+      .mapping td {
+        text-align: left;
+        padding: 0.65rem 0.5rem;
+        border-bottom: 1px solid rgba(6, 59, 42, 0.08);
+        vertical-align: top;
+      }
+      .mapping th {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ge-teal);
+      }
+      .mapping code {
+        font-size: 0.9em;
+      }
+      code {
+        font-size: 0.95em;
+        color: var(--ge-teal);
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="preview-chrome">
+      <a href="/" aria-label="Golf Sol Ireland home">
+        <img src="/golfsol-crest-brand.svg" width="80" height="120" alt="" decoding="async" />
+      </a>
+      <span class="chrome-title">Dashboard previews</span>
+    </header>
+    <div class="wrap">
+      <h1>Portal UI mocks</h1>
+      <p class="lead">
+        Same palette and typography as the marketing home (<code>.ge-page</code>): turf background, deep green copy,
+        gold accents, Open Sans. Static HTML only — open while <code>npm run dev</code> is running.
+      </p>
+      <div class="cards">
+        <a class="card" href="./client.html">
+          <h2>Client dashboard mock</h2>
+          <span class="desc"
+            >Hero, overview card, quick actions (transfers · golf · hotels), resource cards, bottom nav — with crest
+            chrome.</span
+          >
+          <span class="pill">Preview only</span>
+        </a>
+        <a class="card" href="./admin.html">
+          <h2>Admin dashboard mock</h2>
+          <span class="desc">KPI strip, queue, chart, activity feed, dark mode — with crest chrome.</span>
+          <span class="pill">Preview only</span>
+        </a>
+      </div>
+
+      <section class="mapping" aria-labelledby="map-title">
+        <h2 id="map-title">Static mock → live React components</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Mock block</th>
+              <th>Production component / area</th>
+              <th>File</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Fixed crest chrome + nav</td>
+              <td><code>GeNavbar</code> + <code>GeBrandLockup</code></td>
+              <td><code>src/pages/golf-experience/sections/ge-navbar.tsx</code>, <code>src/pages/golf-experience/components/brand-lockup.tsx</code></td>
+            </tr>
+            <tr>
+              <td>Full-bleed hero (title, kicker, fleet art)</td>
+              <td><code>GeHero</code> <code>variant="portal"</code></td>
+              <td><code>src/pages/golf-experience/sections/hero.tsx</code></td>
+            </tr>
+            <tr>
+              <td>Main content shell</td>
+              <td><code>DashboardLayout</code> inner container</td>
+              <td><code>src/components/dashboard-layout.tsx</code></td>
+            </tr>
+            <tr>
+              <td colspan="3"><strong>Client</strong> (<code>/dashboard</code>)</td>
+            </tr>
+            <tr>
+              <td>Greeting · account · transfers strip</td>
+              <td><code>ClientPortalIdentityHero</code></td>
+              <td><code>src/components/client-portal-identity-hero.tsx</code></td>
+            </tr>
+            <tr>
+              <td>Quick actions (3 tiles)</td>
+              <td><code>PortalAddToYourTripStrip</code></td>
+              <td><code>src/components/portal-add-to-your-trip-strip.tsx</code></td>
+            </tr>
+            <tr>
+              <td>Overview / submitted details cards</td>
+              <td><code>PortalClientDataCard</code></td>
+              <td><code>src/components/portal-client-data-card.tsx</code></td>
+            </tr>
+            <tr>
+              <td>Transfers · enquiries · packages · tickets</td>
+              <td><code>PortalTransferRequestsSection</code></td>
+              <td><code>src/components/portal-transfer-requests-section.tsx</code></td>
+            </tr>
+            <tr>
+              <td>Invoices / itinerary</td>
+              <td><code>PortalInvoicesPanel</code></td>
+              <td><code>src/components/portal-invoices-panel.tsx</code></td>
+            </tr>
+            <tr>
+              <td>Proposals PDF viewer</td>
+              <td><code>PortalClientProposalsPdfViewer</code></td>
+              <td><code>src/components/portal-client-proposals-pdf-viewer.tsx</code></td>
+            </tr>
+            <tr>
+              <td>Page composer</td>
+              <td><code>ClientDashboardPage</code></td>
+              <td><code>src/pages/client-dashboard-page.tsx</code></td>
+            </tr>
+            <tr>
+              <td colspan="3"><strong>Admin</strong> (<code>/dashboard/admin</code>)</td>
+            </tr>
+            <tr>
+              <td>Welcome · steps · jump pills · hero image</td>
+              <td><code>AdminOperationsHubHero</code></td>
+              <td><code>src/components/admin-operations-hub-hero.tsx</code></td>
+            </tr>
+            <tr>
+              <td>Section cards (kicker + title + body)</td>
+              <td><code>AdminOperationsSectionShell</code></td>
+              <td><code>src/components/admin-operations-section-shell.tsx</code></td>
+            </tr>
+            <tr>
+              <td>Payments / CRM-style card</td>
+              <td><code>PortalClientDataCard</code> (shared)</td>
+              <td><code>src/components/portal-client-data-card.tsx</code></td>
+            </tr>
+            <tr>
+              <td>Account lookup · transfers hub · pipeline</td>
+              <td><code>AdminAccountTransfersHub</code>, <code>AdminTransferPipeline</code>, …</td>
+              <td><code>src/pages/admin-dashboard-page.tsx</code> + components under <code>src/components/admin-*</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="margin: 1rem 0 0; font-size: 1rem; color: rgba(6, 59, 42, 0.72)">
+          Live dashboards now use larger type (≈17–18px base + bumped headings). Static mocks are non-functional layout references only.
+        </p>
+      </section>
+    </div>
+  </body>
+</html>

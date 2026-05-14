@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Preview — Client portal (mock)</title>
+    <link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
+    <link
+      href="https://fonts.bunny.net/css?family=open-sans:300,400,600,700,800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --gs-bg: #f4f7f5;
+        --gs-green: #0b6b45;
+        --gs-dark: #063b2a;
+        --gs-electric: #1ed760;
+        --gold: #d5c600;
+        --gold-light: #ebe486;
+        --ge-teal: #007c69;
+        --forest-900: #163a13;
+        --forest-100: #d9efd3;
+        --shadow: 0 24px 60px rgba(18, 42, 19, 0.12);
+        --radius: 2rem;
+        --font-ge: 'Open Sans', system-ui, sans-serif;
+        --font-body: var(--font-ge);
+        --font-display: var(--font-ge);
+        --bottom-nav: 4.25rem;
+        --chrome-h: 58px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: var(--font-body);
+        background: var(--gs-bg);
+        color: var(--gs-dark);
+        line-height: 1.68;
+        font-size: 1.125rem;
+        padding-top: var(--chrome-h);
+        padding-bottom: calc(var(--bottom-nav) + 1rem);
+      }
+      .preview-chrome {
+        position: fixed;
+        inset: 0 0 auto 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        min-height: var(--chrome-h);
+        padding: 0.2rem 1rem;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        border-bottom: 1px solid rgba(6, 59, 42, 0.08);
+      }
+      .preview-chrome a.home {
+        display: flex;
+        align-items: flex-end;
+        line-height: 0;
+        text-decoration: none;
+      }
+      .preview-chrome img.crest {
+        height: 48px;
+        width: auto;
+        display: block;
+      }
+      .preview-chrome .chrome-right {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .preview-badge {
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--ge-teal);
+      }
+      @media (min-width: 900px) {
+        body {
+          padding-bottom: 1.5rem;
+          padding-top: var(--chrome-h);
+        }
+      }
+      .hero {
+        position: relative;
+        overflow: hidden;
+        padding: 1.5rem 1.25rem 2rem;
+        background: linear-gradient(135deg, #0b6b45 0%, #163a13 48%, #063b2a 100%);
+        color: #fff;
+      }
+      .hero::before {
+        content: '';
+        position: absolute;
+        right: -18%;
+        top: -40%;
+        width: 70%;
+        height: 140%;
+        background: radial-gradient(circle, rgba(30, 215, 96, 0.25) 0%, transparent 55%);
+        pointer-events: none;
+      }
+      .hero::after {
+        content: '';
+        position: absolute;
+        left: -10%;
+        bottom: -30%;
+        width: 50%;
+        height: 80%;
+        background: radial-gradient(circle, rgba(213, 198, 0, 0.18) 0%, transparent 50%);
+        pointer-events: none;
+      }
+      .hero-inner {
+        position: relative;
+        z-index: 1;
+        max-width: 720px;
+        margin: 0 auto;
+      }
+      .hero-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+      }
+      .status-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+      }
+      .chip {
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.35rem 0.65rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+      }
+      .chip.ok {
+        background: rgba(30, 215, 96, 0.2);
+        border-color: rgba(30, 215, 96, 0.45);
+      }
+      .icon-btn {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        cursor: default;
+      }
+      .avatar {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+        color: var(--gs-dark);
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 0.95rem;
+        display: grid;
+        place-items: center;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+      }
+      .kicker {
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--gold-light);
+        opacity: 0.95;
+        margin-bottom: 0.35rem;
+      }
+      h1 {
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: 1.75rem;
+        letter-spacing: -0.02em;
+        margin: 0;
+        line-height: 1.2;
+      }
+      .sub {
+        margin: 0.5rem 0 0;
+        font-size: 1.05rem;
+        opacity: 0.88;
+        max-width: 22rem;
+        line-height: 1.45;
+      }
+      main {
+        max-width: 720px;
+        margin: -1.25rem auto 0;
+        padding: 0 1.25rem;
+        position: relative;
+        z-index: 2;
+      }
+      .card {
+        background: #fff;
+        border-radius: var(--radius);
+        border: 1px solid rgba(215, 235, 210, 0.9);
+        box-shadow: var(--shadow);
+        padding: 1.35rem 1.35rem 1.5rem;
+        margin-bottom: 1.25rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 22px 64px rgba(18, 42, 19, 0.14);
+      }
+      .card h2 {
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: 1.2rem;
+        margin: 0 0 0.25rem;
+        color: var(--gs-green);
+      }
+      .section-kicker {
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #8a7f0b;
+        margin-bottom: 0.75rem;
+      }
+      .overview-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+        margin: 0.75rem 0 1rem;
+        font-size: 0.9375rem;
+        color: rgba(6, 59, 42, 0.72);
+      }
+      .dot-ok {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+      .dot-ok::before {
+        content: '';
+        width: 0.45rem;
+        height: 0.45rem;
+        border-radius: 999px;
+        background: var(--gs-electric);
+        box-shadow: 0 0 0 3px rgba(30, 215, 96, 0.25);
+      }
+      .actions-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .btn {
+        font-family: var(--font-body);
+        font-weight: 600;
+        font-size: 0.9375rem;
+        padding: 0.55rem 1rem;
+        border-radius: 999px;
+        border: none;
+        cursor: default;
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+        color: var(--gs-dark);
+        box-shadow: 0 8px 22px rgba(213, 198, 0, 0.35);
+      }
+      .btn-ghost {
+        background: var(--forest-100);
+        color: var(--gs-dark);
+      }
+      .quick-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.65rem;
+      }
+      @media (min-width: 520px) {
+        .quick-grid {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+      .quick-tile {
+        border-radius: 1.25rem;
+        padding: 0.85rem 0.65rem;
+        text-align: center;
+        background: linear-gradient(180deg, #fff 0%, #eef5f0 100%);
+        border: 1px solid rgba(6, 59, 42, 0.1);
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--gs-dark);
+        transition: transform 0.18s ease, border-color 0.18s ease;
+        min-height: 3.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .quick-tile:hover {
+        transform: translateY(-2px);
+        border-color: rgba(213, 198, 0, 0.45);
+      }
+      .quick-tile span {
+        display: block;
+        line-height: 1.25;
+      }
+      .resource-grid {
+        display: grid;
+        gap: 0.65rem;
+        grid-template-columns: 1fr;
+      }
+      @media (min-width: 560px) {
+        .resource-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      .resource {
+        border-radius: 1.35rem;
+        padding: 1rem;
+        background: #fff;
+        border: 1px solid rgba(6, 59, 42, 0.08);
+        box-shadow: 0 10px 32px rgba(18, 42, 19, 0.06);
+        transition: transform 0.18s ease;
+      }
+      .resource:hover {
+        transform: translateY(-2px);
+      }
+      .resource strong {
+        font-family: var(--font-display);
+        display: block;
+        font-size: 1.5rem;
+        color: var(--gs-green);
+        margin-bottom: 0.15rem;
+      }
+      .resource small {
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 700;
+        color: rgba(6, 59, 42, 0.55);
+      }
+      .badge {
+        display: inline-block;
+        margin-top: 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.2rem 0.45rem;
+        border-radius: 6px;
+        background: rgba(30, 215, 96, 0.12);
+        color: #1a4516;
+      }
+      .sidebar {
+        display: none;
+      }
+      @media (min-width: 900px) {
+        .app-shell {
+          display: grid;
+          grid-template-columns: 220px 1fr;
+          max-width: 1100px;
+          margin: 0 auto;
+          min-height: 100vh;
+        }
+        .sidebar {
+          display: flex;
+          flex-direction: column;
+          padding: 1.5rem 1rem;
+          background: var(--gs-dark);
+          color: #fff;
+        }
+        .sidebar .logo-area {
+          margin-bottom: 1.75rem;
+          padding: 0 0.35rem;
+        }
+        .sidebar .logo-area img {
+          height: 52px;
+          width: auto;
+          display: block;
+        }
+        .sidebar .logo-area .wordmark {
+          font-family: var(--font-display);
+          font-weight: 800;
+          font-size: 0.82rem;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+          margin-top: 0.5rem;
+          opacity: 0.85;
+          line-height: 1.25;
+        }
+        .nav-item {
+          padding: 0.65rem 0.75rem;
+          border-radius: 0.85rem;
+          font-size: 0.9375rem;
+          font-weight: 600;
+          margin-bottom: 0.25rem;
+          opacity: 0.75;
+        }
+        .nav-item.active {
+          background: rgba(255, 255, 255, 0.1);
+          opacity: 1;
+        }
+        body {
+          padding-bottom: 1rem;
+          padding-top: var(--chrome-h);
+        }
+        .bottom-nav {
+          display: none !important;
+        }
+        .hero,
+        main {
+          max-width: none;
+        }
+        main {
+          margin-top: 0;
+          padding: 1.5rem 1.5rem 2rem;
+        }
+        .hero {
+          border-radius: 0 0 0 2rem;
+        }
+      }
+      .bottom-nav {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: var(--bottom-nav);
+        background: rgba(255, 255, 255, 0.98);
+        border-top: 1px solid rgba(6, 59, 42, 0.1);
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 0 0.5rem;
+        z-index: 10;
+        box-shadow: 0 -8px 32px rgba(18, 42, 19, 0.06);
+      }
+      .bottom-nav button {
+        flex: 1;
+        max-width: 5rem;
+        border: none;
+        background: none;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: rgba(6, 59, 42, 0.55);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        cursor: default;
+      }
+      .bottom-nav button.active {
+        color: var(--gs-green);
+      }
+      .bottom-nav svg {
+        width: 1.35rem;
+        height: 1.35rem;
+        opacity: 0.85;
+      }
+      .note {
+        font-size: 0.875rem;
+        color: rgba(6, 59, 42, 0.55);
+        margin-top: 1rem;
+        line-height: 1.45;
+      }
+      a.back {
+        display: inline-block;
+        margin: 0 0 1rem;
+        font-size: 0.9375rem;
+        font-weight: 700;
+        color: var(--ge-teal);
+      }
+      .component-map {
+        margin-top: 1.5rem;
+        padding: 1.25rem 1.35rem;
+        border-radius: 1.25rem;
+        background: rgba(215, 235, 210, 0.35);
+        border: 1px solid rgba(6, 59, 42, 0.08);
+      }
+      .component-map h3 {
+        margin: 0 0 0.75rem;
+        font-size: 1.05rem;
+        font-family: var(--font-display);
+        color: var(--gs-green);
+      }
+      .component-map dl {
+        margin: 0;
+      }
+      .component-map dt {
+        font-weight: 800;
+        margin-top: 0.65rem;
+        font-size: 0.9375rem;
+      }
+      .component-map dt:first-child {
+        margin-top: 0;
+      }
+      .component-map dd {
+        margin: 0.25rem 0 0;
+        font-size: 0.875rem;
+        line-height: 1.45;
+        color: rgba(6, 59, 42, 0.76);
+      }
+      .component-map code {
+        font-size: 0.92em;
+        color: var(--ge-teal);
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="preview-chrome">
+      <a class="home" href="/" aria-label="Golf Sol Ireland home">
+        <img class="crest" src="/golfsol-crest-brand.svg" width="80" height="120" alt="" decoding="async" />
+      </a>
+      <div class="chrome-right">
+        <span class="preview-badge">Client preview</span>
+      </div>
+    </header>
+    <div class="app-shell">
+      <aside class="sidebar" aria-hidden="true">
+        <div class="logo-area">
+          <img src="/golfsol-crest-brand.svg" width="80" height="120" alt="" decoding="async" />
+          <div class="wordmark">Golf Sol Ireland</div>
+        </div>
+        <div class="nav-item active">My trip</div>
+        <div class="nav-item">Transfers</div>
+        <div class="nav-item">Documents</div>
+        <div class="nav-item">Messages</div>
+      </aside>
+      <div>
+        <header class="hero">
+          <div class="hero-inner">
+            <div class="hero-top">
+              <div style="display: flex; gap: 0.5rem; align-items: center">
+                <div class="avatar" aria-hidden="true">CM</div>
+                <div class="icon-btn" title="Notifications (mock)" aria-label="Notifications">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <p class="kicker">Your trip desk</p>
+            <h1>Welcome back, Ciaran</h1>
+            <p class="sub">Costa del Sol · reference <strong style="color: #ebe486">GSOL-10482</strong></p>
+            <div class="status-row">
+              <span class="chip ok">Trip desk active</span>
+              <span class="chip">Proposal ready to view</span>
+            </div>
+          </div>
+        </header>
+        <main>
+          <a class="back" href="./index.html">← Preview hub</a>
+          <section class="card" aria-labelledby="overview-h">
+            <p class="section-kicker" id="overview-h">Overview</p>
+            <h2>Your Costa del Sol golf trip</h2>
+            <p style="margin: 0.4rem 0 0; font-size: 1rem; line-height: 1.5; color: rgba(6, 59, 42, 0.78)">
+              One place for transfers, tee times, and stay — request changes anytime and we will update your quote.
+            </p>
+            <div class="overview-meta">
+              <span class="dot-ok">Desk responding</span>
+              <span>Party of 8 · Apr 2026</span>
+            </div>
+            <div class="actions-row">
+              <button type="button" class="btn btn-primary">View latest proposal</button>
+              <button type="button" class="btn btn-ghost">Share trip summary</button>
+            </div>
+          </section>
+          <p class="section-kicker" style="padding-left: 0.15rem">Quick actions</p>
+          <div class="quick-grid" style="margin-bottom: 1.25rem">
+            <div class="quick-tile"><span>Transfers</span></div>
+            <div class="quick-tile"><span>Golf courses</span></div>
+            <div class="quick-tile"><span>Hotels</span></div>
+            <div class="quick-tile"><span>Messages</span></div>
+          </div>
+          <p class="section-kicker" style="padding-left: 0.15rem">At a glance</p>
+          <div class="resource-grid">
+            <div class="resource">
+              <small>Open requests</small>
+              <strong>2</strong>
+              <span class="badge">In progress</span>
+            </div>
+            <div class="resource">
+              <small>Proposals</small>
+              <strong>1</strong>
+              <span class="badge">Awaiting review</span>
+            </div>
+            <div class="resource">
+              <small>Invoices</small>
+              <strong>0</strong>
+            </div>
+          </div>
+          <section class="component-map" aria-labelledby="map-client-title">
+            <h3 id="map-client-title">Mock blocks → production components</h3>
+            <dl>
+              <dt>Chrome header</dt>
+              <dd><code>GeNavbar</code> · <code>src/pages/golf-experience/sections/ge-navbar.tsx</code></dd>
+              <dt>Green hero band + welcome row</dt>
+              <dd><code>GeHero</code> (<code>variant=&quot;portal&quot;</code>) · <code>hero.tsx</code> above <code>ClientPortalIdentityHero</code></dd>
+              <dt>Overview card (“Your Costa…”)</dt>
+              <dd><code>PortalClientDataCard</code> · composed in <code>client-dashboard-page.tsx</code></dd>
+              <dt>Quick actions grid</dt>
+              <dd><code>PortalAddToYourTripStrip</code></dd>
+              <dt>Resource tiles</dt>
+              <dd><code>PortalTransferRequestsSection</code>, <code>PortalInvoicesPanel</code> (live data)</dd>
+              <dt>Bottom nav</dt>
+              <dd>Layout aid only — authenticated UI uses <code>DashboardLayout</code> + site chrome</dd>
+            </dl>
+          </section>
+          <p class="note">
+            This page is a static visual template. Real routes: <code>/dashboard</code> (authenticated). Cursor rule:
+            <code>.cursor/rules/dashboard-portal-ui-modernization.mdc</code>
+          </p>
+        </main>
+      </div>
+    </div>
+    <nav class="bottom-nav" aria-label="Primary (mock)">
+      <button type="button" class="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        </svg>
+        Home
+      </button>
+      <button type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="1" y="3" width="15" height="13" />
+          <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+        </svg>
+        Trip
+      </button>
+      <button type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg>
+        Chat
+      </button>
+      <button type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3" />
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+        </svg>
+        More
+      </button>
+    </nav>
+  </body>
+</html>

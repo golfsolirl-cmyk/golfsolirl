@@ -58,8 +58,8 @@ export function BusinessCardsHero() {
               className="mt-5 max-w-2xl font-ge text-base font-semibold leading-relaxed sm:text-lg"
               style={{ color: 'rgba(255,255,255,0.86)' }}
             >
-              The old card catalogue is gone. This page now shows the exact PDF front and back in portrait, plus landscape
-              versions generated from the same source artwork.
+              The old card catalogue is gone. This page shows the exact PDF front and back in portrait, plus the same
+              artwork in a landscape frame so everything reads upright on screen and in downloads.
             </p>
           </div>
 

@@ -3,7 +3,6 @@ import { Download, LoaderCircle } from 'lucide-react'
 import { PdfSiteShell } from '../components/pdf-site-shell'
 import { PageIdentityBar } from '../components/page-identity-bar'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
-import { saveElementAsPdf } from '../lib/save-element-as-pdf'
 import { useAuth } from '../providers/auth-provider'
 
 type DocumentVariant = 'terms' | 'welcome'
@@ -95,6 +94,7 @@ export function ClientDocumentPage() {
     try {
       setPdfStatus('saving')
       setPdfMessage(null)
+      const { saveElementAsPdf } = await import('../lib/save-element-as-pdf')
       await saveElementAsPdf(node, meta.filename)
       setPdfMessage('PDF saved.')
       setPdfStatus('idle')

@@ -55,7 +55,15 @@ const getClientIp = (req) => {
   return req.socket?.remoteAddress ?? 'unknown'
 }
 
+/** Baseline headers on every gateway response (JSON, HTML previews, PDF, webhook ack). */
+const applyApiSecurityHeaders = (res) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff')
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+}
+
 const jsonEnd = (res, statusCode, payload) => {
+  applyApiSecurityHeaders(res)
   res.statusCode = statusCode
   res.setHeader('Content-Type', 'application/json')
   res.end(JSON.stringify(payload))
@@ -138,6 +146,7 @@ export default async function handler(req, res) {
           const t = u.searchParams.get('t')?.trim() || 'enquiry-customer'
           const origin = `${safeProto}://${host}`
           const html = getFormEmailPreviewHtml(t, origin)
+          applyApiSecurityHeaders(res)
           res.statusCode = 200
           res.setHeader('Content-Type', 'text/html; charset=utf-8')
           res.setHeader('Cache-Control', 'no-store')
@@ -156,6 +165,7 @@ export default async function handler(req, res) {
         }
         try {
           const html = getBrandedSampleDocumentPreviewHtml()
+          applyApiSecurityHeaders(res)
           res.statusCode = 200
           res.setHeader('Content-Type', 'text/html; charset=utf-8')
           res.setHeader('Cache-Control', 'no-store')
@@ -212,6 +222,7 @@ export default async function handler(req, res) {
         const payload = rawBody ? JSON.parse(rawBody) : {}
         const { pdfBytes, proposal } = await createProposalPdf(payload)
         const filename = createProposalFilename(proposal.proposalId)
+        applyApiSecurityHeaders(res)
         res.statusCode = 200
         res.setHeader('Content-Type', 'application/pdf')
         res.setHeader('Content-Disposition', `attachment; filename="${filename}"`)

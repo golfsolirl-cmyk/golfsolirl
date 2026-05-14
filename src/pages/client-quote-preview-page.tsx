@@ -1,9 +1,7 @@
-import html2canvas from 'html2canvas'
-import { jsPDF } from 'jspdf'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+
 import { LuxuryButton } from '../components/ui/button'
 import { BRAND_FLEET_HERO_ALT, BRAND_FLEET_HERO_IMAGE_SRC } from '../lib/brand-visual-assets'
-import { addCanvasPagedToPdf } from '../lib/quote-pdf-canvas'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import {
   buildWebsiteFormAdminQuote,
@@ -107,6 +105,12 @@ export function ClientQuotePreviewPage() {
     }
     setPdfBusy(true)
     try {
+      const [{ default: html2canvas }, { jsPDF }, { addCanvasPagedToPdf }] = await Promise.all([
+        import('html2canvas'),
+        import('jspdf'),
+        import('../lib/quote-pdf-canvas')
+      ])
+
       const canvas = await html2canvas(el, {
         scale: 2.75,
         useCORS: true,

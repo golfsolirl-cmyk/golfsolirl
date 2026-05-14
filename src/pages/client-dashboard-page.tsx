@@ -20,13 +20,9 @@ import { LuxuryButton } from '../components/ui/button'
 import { COURSES } from '../data/coastal-golf-data'
 import { fetchPackageBuildsClientList } from '../lib/fetch-package-builds'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
+import type { TransferReceiptVatTreatment } from '../lib/transfer-vat-receipt-pdf'
 
 type BrowserSupabase = NonNullable<ReturnType<typeof getSupabaseBrowserClient>>
-import {
-  downloadTransferPaidInvoicePdf,
-  downloadTransferQuotePdf,
-  type TransferReceiptVatTreatment
-} from '../lib/transfer-vat-receipt-pdf'
 import {
   clearTripWorkspaceDraft,
   emptyTripWorkspaceDraft,
@@ -81,14 +77,14 @@ interface PackageBuildRow {
 }
 
 const inputClass =
-  'w-full rounded-2xl border-2 border-orange-400 bg-white px-4 py-3 text-sm text-forest-900 placeholder:text-forest-400 outline-none transition-[border-color,box-shadow] focus:border-orange-500 focus:ring-2 focus:ring-orange-300/70'
+  'w-full rounded-2xl border-2 border-orange-400 bg-white px-4 py-3.5 text-base text-forest-900 placeholder:text-forest-400 outline-none transition-[border-color,box-shadow] focus:border-orange-500 focus:ring-2 focus:ring-orange-300/70'
 
-const labelClass = 'mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-gold-600'
+const labelClass = 'mb-1.5 block text-sm font-semibold uppercase tracking-[0.12em] text-gold-600'
 
 const readOnlyCalcClass =
-  'w-full rounded-2xl border-2 border-forest-200/90 bg-offwhite px-4 py-3 text-sm text-forest-900'
+  'w-full rounded-2xl border-2 border-forest-200/90 bg-offwhite px-4 py-3.5 text-base text-forest-900'
 
-const readOnlyCalcHintClass = 'mt-1 text-xs text-forest-500'
+const readOnlyCalcHintClass = 'mt-1 text-sm text-forest-500'
 
 /** Full name for portal copy: profile row first, then auth user_metadata from signup/OAuth. */
 const resolveClientDisplayFullName = (session: Session, profile: Profile | null): string => {
@@ -1432,6 +1428,7 @@ export function ClientDashboardPage() {
         ? `${window.location.origin.replace(/\/+$/, '')}/dashboard`
         : 'https://golfsolirl.com/dashboard'
     try {
+      const { downloadTransferQuotePdf } = await import('../lib/transfer-vat-receipt-pdf')
       await downloadTransferQuotePdf({
         transfer: {
           id: t.id,
@@ -1456,6 +1453,7 @@ export function ClientDashboardPage() {
 
   const handleTransferPaidInvoicePdf = async (t: ClientPortalTransferHeroRow) => {
     try {
+      const { downloadTransferPaidInvoicePdf } = await import('../lib/transfer-vat-receipt-pdf')
       const row = transferBookingsPortal.find((r) => r.id === t.id)
       const paymentRecordedHint =
         row?.updated_at
@@ -1549,10 +1547,10 @@ export function ClientDashboardPage() {
                         <p className="font-display text-base font-semibold tracking-tight text-emerald-950 md:text-lg">
                           {dashboardPaymentBanner.headline}
                         </p>
-                        <p className="mt-2 text-sm leading-relaxed text-emerald-900/95">{dashboardPaymentBanner.detail}</p>
+                        <p className="mt-2 text-base leading-relaxed text-emerald-900/95 md:text-lg">{dashboardPaymentBanner.detail}</p>
                       </>
                     ) : (
-                      <p className="text-sm leading-relaxed text-emerald-950">{dashboardPaymentBanner.text}</p>
+                      <p className="text-base leading-relaxed text-emerald-950 md:text-lg">{dashboardPaymentBanner.text}</p>
                     )}
                   </div>
                   <div className="flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center">
@@ -1598,9 +1596,9 @@ export function ClientDashboardPage() {
         <section className="mb-12 rounded-[2rem] border border-fairway-200/90 bg-gradient-to-br from-offwhite via-white to-[#f4faf6] p-6 shadow-soft md:p-9">
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Enquiry workspace</p>
-              <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Build on your enquiry</h2>
-              <p className="mt-2 max-w-2xl text-sm text-forest-600">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-600">Enquiry workspace</p>
+              <h2 className="font-display mt-2 text-3xl font-semibold text-forest-950 sm:text-4xl">Build on your enquiry</h2>
+              <p className="mt-2 max-w-2xl text-base text-forest-600 md:text-lg">
                 Reference <span className="font-mono font-semibold text-forest-900">{tripDraft.referenceId}</span> — choose
                 what you want quoted next. This saves to this browser until we connect it to your account in the database;
                 use <span className="font-medium">Save preferences</span> after each change. Your team at Golf Sol Ireland sees
@@ -1614,7 +1612,7 @@ export function ClientDashboardPage() {
 
           <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(280px,400px)] lg:items-start">
             <div className="space-y-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-700">What should we quote?</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.12em] text-forest-700">What should we quote?</p>
               <div className="flex flex-col gap-3">
                 {tripStageOptionRows.map(([key, title, hint]) =>
                   key === 'transfer' ? (
@@ -1639,9 +1637,9 @@ export function ClientDashboardPage() {
                         onClick={handleOpenTransferBuilder}
                         type="button"
                       >
-                        <span className="block text-sm font-semibold text-forest-950">{title}</span>
-                        <span className="mt-0.5 block text-xs text-forest-600">{hint}</span>
-                        <span className="mt-1.5 block text-xs font-semibold text-fairway-800">
+                        <span className="block text-base font-semibold text-forest-950">{title}</span>
+                        <span className="mt-0.5 block text-sm text-forest-600">{hint}</span>
+                        <span className="mt-1.5 block text-sm font-semibold text-fairway-800">
                           Tap here to open the transfer planner (pick-up, drops, contact number).
                         </span>
                       </button>
@@ -1658,8 +1656,8 @@ export function ClientDashboardPage() {
                         type="checkbox"
                       />
                       <span>
-                        <span className="block text-sm font-semibold text-forest-950">{title}</span>
-                        <span className="mt-0.5 block text-xs text-forest-600">{hint}</span>
+                        <span className="block text-base font-semibold text-forest-950">{title}</span>
+                        <span className="mt-0.5 block text-sm text-forest-600">{hint}</span>
                       </span>
                     </label>
                   )
@@ -1783,12 +1781,12 @@ export function ClientDashboardPage() {
       ) : null}
 
       <section className="relative mb-10 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Your contact details</p>
-        <h2 className="font-display mt-2 text-xl font-semibold text-forest-950 md:text-2xl">How we reach you</h2>
+        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-600">Your contact details</p>
+        <h2 className="font-display mt-2 text-3xl font-semibold text-forest-950 md:text-4xl">How we reach you</h2>
 
         {needsManualContactForm ? (
           <>
-            <p className="mt-2 max-w-2xl text-sm text-forest-600">
+            <p className="mt-2 max-w-2xl text-base text-forest-600 md:text-lg">
               You signed in directly — add your name and phone once so we can reach you. Your email is the one you used to sign
               in. Website enquiries you submit later with the same email still appear in linked requests above.
               {accountRef ? (
@@ -1867,7 +1865,7 @@ export function ClientDashboardPage() {
           </>
         ) : needsConfirmImportedContact ? (
           <>
-            <p className="mt-2 max-w-2xl text-sm text-forest-600">
+            <p className="mt-2 max-w-2xl text-base text-forest-600 md:text-lg">
               We imported your name and phone from your website enquiry. Confirm they are correct for this account — we then
               {accountRef ? ' unlock messaging the team.' : ' assign your account number and unlock messaging the team.'}
               {accountRef ? (
@@ -1880,19 +1878,19 @@ export function ClientDashboardPage() {
             </p>
             <dl className="mt-5 grid gap-4 text-sm text-forest-800 sm:grid-cols-2">
               <div>
-                <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-500">Name</dt>
+                <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-forest-500">Name</dt>
                 <dd className="mt-1 font-medium text-forest-950">{profile?.full_name?.trim() || '—'}</dd>
               </div>
               <div>
-                <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-500">Email</dt>
+                <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-forest-500">Email</dt>
                 <dd className="mt-1 font-medium text-forest-950">{profile?.email ?? session.user.email ?? '—'}</dd>
               </div>
               <div>
-                <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-500">Phone</dt>
+                <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-forest-500">Phone</dt>
                 <dd className="mt-1 font-medium text-forest-950">{profile?.phone?.trim() || '—'}</dd>
               </div>
               <div className="sm:col-span-2">
-                <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-500">Account number</dt>
+                <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-forest-500">Account number</dt>
                 <dd className="mt-1 font-mono text-base font-semibold text-forest-950">
                   {accountRef || 'Assigned when you confirm'}
                 </dd>
@@ -1927,19 +1925,19 @@ export function ClientDashboardPage() {
         ) : (
           <dl className="mt-5 grid gap-4 text-sm text-forest-800 sm:grid-cols-2">
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-500">Name</dt>
+              <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-forest-500">Name</dt>
               <dd className="mt-1 font-medium text-forest-950">{clientDisplayFullName || '—'}</dd>
             </div>
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-500">Email</dt>
+              <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-forest-500">Email</dt>
               <dd className="mt-1 font-medium text-forest-950">{profile?.email ?? session.user.email ?? '—'}</dd>
             </div>
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-500">Phone</dt>
+              <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-forest-500">Phone</dt>
               <dd className="mt-1 font-medium text-forest-950">{clientDisplayPhone || '—'}</dd>
             </div>
             <div className="sm:col-span-2">
-              <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-500">Account number</dt>
+              <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-forest-500">Account number</dt>
               <dd className="mt-1 font-mono text-base font-semibold text-forest-950">{accountRef || '— pending'}</dd>
               {!accountRef ? (
                 <p className="mt-2 max-w-xl text-xs text-forest-600">
@@ -1955,7 +1953,7 @@ export function ClientDashboardPage() {
       <section className="relative mb-10 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Interest tickets</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-600">Interest tickets</p>
               <h2 className="font-display mt-2 text-xl font-semibold text-forest-950 md:text-2xl">Ask Golf Sol Ireland</h2>
               <p className="mt-1 max-w-2xl text-sm text-forest-600">
                 Open a ticket for transfers, golf courses, or hotels — we reply in the thread below.
@@ -2233,9 +2231,9 @@ export function ClientDashboardPage() {
             <section>
               <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Proposals &amp; PDFs</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-600">Proposals &amp; PDFs</p>
                   <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Documents from Golf Sol Ireland</h2>
-                  <p className="mt-2 max-w-2xl text-sm text-forest-600">
+                  <p className="mt-2 max-w-2xl text-base text-forest-600 md:text-lg">
                     Terms, thank-you letters, and formal proposals appear in the preview when Golf Sol Ireland enables them for
                     your account. After we save a transfer price for you, your original request snapshot, VAT quote PDF, and a
                     terms summary appear under <span className="font-semibold text-forest-800">Your paper trail</span>. The

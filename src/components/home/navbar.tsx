@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Menu, X } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m,  AnimatePresence  } from 'framer-motion'
 import { LuxuryButton } from '../ui/button'
 import { Logo } from '../ui/logo'
 import { integrationRegistry } from '../../config/integrations'
@@ -132,7 +132,7 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
 
         <AnimatePresence>
           {isMenuOpen ? (
-            <motion.div
+            <m.div
               animate={{ opacity: 1, y: 0 }}
               className="mt-4 flex flex-col gap-4 rounded-[1.5rem] border border-white/12 bg-forest-950/[0.94] px-4 pb-4 pt-4 shadow-soft backdrop-blur-xl md:hidden"
               exit={{ opacity: 0, y: -12 }}
@@ -163,7 +163,7 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
               <LuxuryButton href={primaryHref} onClick={handleCloseMenu}>
                 {primaryCta}
               </LuxuryButton>
-            </motion.div>
+            </m.div>
           ) : null}
         </AnimatePresence>
       </div>

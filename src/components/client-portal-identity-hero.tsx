@@ -84,11 +84,11 @@ export function ClientPortalIdentityHero(props: {
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0 flex-1 space-y-5">
           <div>
-            <p className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.28em] text-emerald-200/90">Your account</p>
-            <h2 className="font-display mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            <p className="font-ge text-xs font-extrabold uppercase tracking-[0.22em] text-emerald-200/90 sm:text-sm">Your account</p>
+            <h2 className="font-display mt-2 text-4xl font-bold tracking-tight text-white sm:text-5xl">
               {props.firstName.trim() ? <>Hello, {props.firstName.trim()}</> : <>Hello</>}
             </h2>
-            <p className="mt-2 font-ge text-sm leading-relaxed text-emerald-50/90">
+            <p className="mt-2 font-ge text-base leading-relaxed text-emerald-50/90">
               Signed in as{' '}
               <span className="break-all font-semibold text-white">{signedInLabel}</span>
             </p>
@@ -98,18 +98,18 @@ export function ClientPortalIdentityHero(props: {
             <div className="grid gap-3 sm:grid-cols-2">
               {emailDisplay ? (
                 <div className="rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-3.5 backdrop-blur-sm">
-                  <p className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.22em] text-emerald-200/85">Account email</p>
-                  <p className="mt-1.5 break-all font-ge text-sm font-semibold leading-snug text-white">{emailDisplay}</p>
+                  <p className="font-ge text-xs font-extrabold uppercase tracking-[0.18em] text-emerald-200/85 sm:text-sm">Account email</p>
+                  <p className="mt-1.5 break-all font-ge text-base font-semibold leading-snug text-white">{emailDisplay}</p>
                 </div>
               ) : null}
               {ref ? (
                 <div className="rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-3.5 backdrop-blur-sm">
-                  <p className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.22em] text-emerald-200/85">
+                  <p className="font-ge text-xs font-extrabold uppercase tracking-[0.18em] text-emerald-200/85 sm:text-sm">
                     Account number
                   </p>
-                  <p className="mt-1.5 font-mono text-lg font-bold tracking-wide text-amber-100 sm:text-xl">{ref}</p>
+                  <p className="mt-1.5 font-mono text-xl font-bold tracking-wide text-amber-100 sm:text-2xl">{ref}</p>
                   <button
-                    className="mt-3 inline-flex items-center gap-2 rounded-xl border border-amber-300/50 bg-amber-400/15 px-3 py-2 font-ge text-[0.62rem] font-bold uppercase tracking-[0.14em] text-amber-100 transition hover:bg-amber-400/25"
+                    className="mt-3 inline-flex items-center gap-2 rounded-xl border border-amber-300/50 bg-amber-400/15 px-3 py-2 font-ge text-xs font-bold uppercase tracking-[0.12em] text-amber-100 transition hover:bg-amber-400/25 sm:text-sm"
                     onClick={() => void copyRef()}
                     type="button"
                   >
@@ -119,10 +119,10 @@ export function ClientPortalIdentityHero(props: {
                 </div>
               ) : (
                 <div className="rounded-2xl border border-white/12 bg-black/15 px-4 py-3.5">
-                  <p className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.22em] text-emerald-200/85">
+                  <p className="font-ge text-xs font-extrabold uppercase tracking-[0.18em] text-emerald-200/85 sm:text-sm">
                     Account number
                   </p>
-                  <p className="mt-1.5 font-ge text-xs leading-relaxed text-emerald-100/85">
+                  <p className="mt-1.5 font-ge text-sm leading-relaxed text-emerald-100/85 sm:text-base">
                     Your personal account number appears after you submit a website form with this login email — same ref as on your
                     enquiry PDFs.
                   </p>
@@ -130,7 +130,7 @@ export function ClientPortalIdentityHero(props: {
               )}
             </div>
           ) : (
-            <p className="max-w-xl font-ge text-sm leading-relaxed text-emerald-100/85">
+            <p className="max-w-xl font-ge text-base leading-relaxed text-emerald-100/85 sm:text-lg">
               Your personal <strong className="font-semibold text-white">account email</strong> and{' '}
               <strong className="font-semibold text-white">account number</strong> show here once your profile is linked.
             </p>
@@ -139,8 +139,8 @@ export function ClientPortalIdentityHero(props: {
 
         {props.transfers.length > 0 ? (
           <div className="w-full shrink-0 rounded-2xl border border-white/12 bg-black/20 p-5 lg:max-w-md">
-            <p className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.2em] text-emerald-200/85">Your transfers</p>
-            <p className="mt-1 font-ge text-xs text-emerald-100/75">Live status from our operations desk.</p>
+            <p className="font-ge text-xs font-extrabold uppercase tracking-[0.14em] text-emerald-200/85 sm:text-sm">Your transfers</p>
+            <p className="mt-1 font-ge text-sm text-emerald-100/75 sm:text-base">Live status from our operations desk.</p>
             <ul className="mt-4 space-y-3">
               {props.transfers.slice(0, 5).map((t) => {
                 const pay = (t.payment_status ?? 'unpaid').toLowerCase()
@@ -175,14 +175,14 @@ export function ClientPortalIdentityHero(props: {
                     }`}
                     key={t.id}
                   >
-                    <p className="font-ge text-sm font-semibold leading-snug text-white">
+                    <p className="font-ge text-base font-semibold leading-snug text-white">
                       {t.pickup_label} → {t.dropoff_label}
                     </p>
-                    <p className="mt-1 font-ge text-[0.7rem] text-emerald-100/80">
+                    <p className="mt-1 font-ge text-sm text-emerald-100/80">
                       {src} · {clientTransferOperationalStatusLabel(t)} · {when}
                     </p>
                     {gross !== null ? (
-                      <div className="mt-2 space-y-0.5 font-ge text-[0.68rem] leading-snug text-emerald-50/95">
+                      <div className="mt-2 space-y-0.5 font-ge text-xs leading-snug text-emerald-50/95 sm:text-sm">
                         <p>
                           <span className="text-emerald-200/80">Total (VAT incl.):</span>{' '}
                           <span className="font-semibold text-amber-100">{formatEurInline(gross)}</span>
@@ -204,13 +204,13 @@ export function ClientPortalIdentityHero(props: {
                         )}
                       </div>
                     ) : null}
-                    <p className="mt-2 flex flex-wrap items-center gap-2 font-ge text-[0.68rem] text-emerald-50/90">
+                    <p className="mt-2 flex flex-wrap items-center gap-2 font-ge text-sm text-emerald-50/90">
                       <span className="rounded-full bg-white/10 px-2 py-0.5 font-bold uppercase tracking-wide text-amber-100/95">
                         {payLabel}
                       </span>
                       {showPay && fullUpfront ? (
                         <button
-                          className="inline-flex items-center gap-1 rounded-lg border border-emerald-300/50 bg-emerald-500/25 px-2 py-1 font-ge text-[0.62rem] font-bold uppercase tracking-[0.1em] text-emerald-50 transition hover:bg-emerald-500/40 disabled:opacity-50"
+                          className="inline-flex items-center gap-1 rounded-lg border border-emerald-300/50 bg-emerald-500/25 px-2 py-1 font-ge text-xs font-bold uppercase tracking-[0.1em] text-emerald-50 transition hover:bg-emerald-500/40 disabled:opacity-50"
                           disabled={payBusy}
                           onClick={() => {
                             setPayBusyId(t.id)
@@ -229,7 +229,7 @@ export function ClientPortalIdentityHero(props: {
                       {showPay && !fullUpfront && pay === 'unpaid' ? (
                         <>
                           <button
-                            className="inline-flex items-center gap-1 rounded-lg border border-emerald-300/50 bg-emerald-500/25 px-2 py-1 font-ge text-[0.62rem] font-bold uppercase tracking-[0.1em] text-emerald-50 transition hover:bg-emerald-500/40 disabled:opacity-50"
+                            className="inline-flex items-center gap-1 rounded-lg border border-emerald-300/50 bg-emerald-500/25 px-2 py-1 font-ge text-xs font-bold uppercase tracking-[0.1em] text-emerald-50 transition hover:bg-emerald-500/40 disabled:opacity-50"
                             disabled={payBusy}
                             onClick={() => {
                               setPayBusyId(t.id)
@@ -245,7 +245,7 @@ export function ClientPortalIdentityHero(props: {
                             {payBusy && payBusyPhase === 'deposit' ? 'Redirecting…' : `Pay deposit ${formatEurInline(depEur!)}`}
                           </button>
                           <button
-                            className="inline-flex items-center gap-1 rounded-lg border border-white/20 bg-white/10 px-2 py-1 font-ge text-[0.62rem] font-bold uppercase tracking-[0.1em] text-emerald-100/50"
+                            className="inline-flex items-center gap-1 rounded-lg border border-white/20 bg-white/10 px-2 py-1 font-ge text-xs font-bold uppercase tracking-[0.1em] text-emerald-100/50"
                             disabled
                             title="Pay the deposit first. Balance opens after your deposit is received."
                             type="button"
@@ -256,7 +256,7 @@ export function ClientPortalIdentityHero(props: {
                       ) : null}
                       {showPay && !fullUpfront && pay === 'deposit' ? (
                         <button
-                          className="inline-flex items-center gap-1 rounded-lg border border-emerald-300/50 bg-emerald-500/25 px-2 py-1 font-ge text-[0.62rem] font-bold uppercase tracking-[0.1em] text-emerald-50 transition hover:bg-emerald-500/40 disabled:opacity-50"
+                          className="inline-flex items-center gap-1 rounded-lg border border-emerald-300/50 bg-emerald-500/25 px-2 py-1 font-ge text-xs font-bold uppercase tracking-[0.1em] text-emerald-50 transition hover:bg-emerald-500/40 disabled:opacity-50"
                           disabled={payBusy}
                           onClick={() => {
                             setPayBusyId(t.id)
@@ -277,7 +277,7 @@ export function ClientPortalIdentityHero(props: {
                       !isPaid &&
                       props.onDownloadTransferQuotePdf ? (
                         <button
-                          className="inline-flex items-center gap-1 rounded-lg border border-amber-300/40 bg-amber-400/10 px-2 py-1 font-ge text-[0.62rem] font-bold uppercase tracking-[0.12em] text-amber-100 transition hover:bg-amber-400/20 disabled:opacity-50"
+                          className="inline-flex items-center gap-1 rounded-lg border border-amber-300/40 bg-amber-400/10 px-2 py-1 font-ge text-xs font-bold uppercase tracking-[0.12em] text-amber-100 transition hover:bg-amber-400/20 disabled:opacity-50"
                           disabled={quotePdfBusyId === t.id}
                           onClick={() => {
                             setQuotePdfBusyId(t.id)
@@ -296,7 +296,7 @@ export function ClientPortalIdentityHero(props: {
                       isPaid &&
                       props.onDownloadTransferPaidInvoicePdf ? (
                         <button
-                          className="inline-flex items-center gap-1 rounded-lg border border-emerald-300/55 bg-emerald-500/25 px-2 py-1 font-ge text-[0.62rem] font-bold uppercase tracking-[0.12em] text-emerald-50 transition hover:bg-emerald-500/40 disabled:opacity-50"
+                          className="inline-flex items-center gap-1 rounded-lg border border-emerald-300/55 bg-emerald-500/25 px-2 py-1 font-ge text-xs font-bold uppercase tracking-[0.12em] text-emerald-50 transition hover:bg-emerald-500/40 disabled:opacity-50"
                           disabled={paidInvoiceBusyId === t.id}
                           onClick={() => {
                             setPaidInvoiceBusyId(t.id)
@@ -313,7 +313,7 @@ export function ClientPortalIdentityHero(props: {
                     </p>
                     {typeof props.onViewTransferCard === 'function' ? (
                       <button
-                        className="mt-2 font-ge text-[0.62rem] font-bold uppercase tracking-[0.14em] text-emerald-200/95 underline decoration-emerald-400/45 underline-offset-2 transition hover:text-white"
+                        className="mt-2 font-ge text-xs font-bold uppercase tracking-[0.14em] text-emerald-200/95 underline decoration-emerald-400/45 underline-offset-2 transition hover:text-white"
                         onClick={() => void Promise.resolve(props.onViewTransferCard?.(t))}
                         type="button"
                       >
@@ -325,7 +325,7 @@ export function ClientPortalIdentityHero(props: {
               })}
             </ul>
             {props.transfers.length > 5 ? (
-              <p className="mt-3 font-ge text-[0.65rem] text-emerald-200/80">+{props.transfers.length - 5} more in your full list below.</p>
+              <p className="mt-3 font-ge text-sm text-emerald-200/80">+{props.transfers.length - 5} more in your full list below.</p>
             ) : null}
           </div>
         ) : null}

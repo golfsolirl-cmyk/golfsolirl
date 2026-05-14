@@ -26,17 +26,17 @@ export function AdminOperationsHubHero(props: { readonly adminFirstName: string 
     >
       <div className="grid gap-0 lg:grid-cols-[minmax(0,1.05fr)_minmax(260px,0.95fr)]">
         <div className="order-2 flex flex-col justify-center px-6 py-7 sm:px-8 sm:py-9 lg:order-1 lg:pr-4">
-          <p className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.24em] text-gold-600">Trip desk — today</p>
-          <h2 className="font-display mt-2 text-2xl font-bold tracking-tight text-forest-950 sm:text-3xl">
+          <p className="font-ge text-xs font-extrabold uppercase tracking-[0.2em] text-gold-600 sm:text-sm">Trip desk — today</p>
+          <h2 className="font-display mt-2 text-3xl font-bold tracking-tight text-forest-950 sm:text-4xl">
             {name ? `Hello, ${name}` : 'Welcome to operations'}
           </h2>
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-forest-700">
+          <p className="mt-3 max-w-xl text-base leading-relaxed text-forest-700 md:text-lg">
             Work in the same order your client sees on their dashboard: check who paid, open their saved trip, then use drivers when
             a transfer is ready. Use the buttons below to jump — no need to scroll hunting.
           </p>
-          <ol className="mt-5 space-y-2.5 text-sm text-forest-800">
+          <ol className="mt-5 space-y-2.5 text-base text-forest-800 md:text-lg">
             <li className="flex gap-2.5">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-fairway-800 text-xs font-bold text-white">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-fairway-800 text-sm font-bold text-white">
                 1
               </span>
               <span>
@@ -44,7 +44,7 @@ export function AdminOperationsHubHero(props: { readonly adminFirstName: string 
               </span>
             </li>
             <li className="flex gap-2.5">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-fairway-800 text-xs font-bold text-white">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-fairway-800 text-sm font-bold text-white">
                 2
               </span>
               <span>
@@ -52,7 +52,7 @@ export function AdminOperationsHubHero(props: { readonly adminFirstName: string 
               </span>
             </li>
             <li className="flex gap-2.5">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-fairway-800 text-xs font-bold text-white">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-fairway-800 text-sm font-bold text-white">
                 3
               </span>
               <span>
@@ -61,7 +61,7 @@ export function AdminOperationsHubHero(props: { readonly adminFirstName: string 
             </li>
           </ol>
           <nav aria-label="Jump to dashboard section" className="mt-6">
-            <p className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.18em] text-forest-500">Jump to</p>
+            <p className="font-ge text-xs font-extrabold uppercase tracking-[0.16em] text-forest-500 sm:text-sm">Jump to</p>
             <ul className="mt-2 flex flex-wrap gap-2">
               {JUMP_LINKS.map((item) => (
                 <li key={item.id}>
@@ -73,7 +73,7 @@ export function AdminOperationsHubHero(props: { readonly adminFirstName: string 
                     onClick={() => scrollToId(item.id)}
                     type="button"
                   >
-                    <span className="flex items-center gap-1.5 text-xs font-bold text-forest-900">
+                    <span className="flex items-center gap-1.5 text-sm font-bold text-forest-900">
                       {item.id === 'admin-hub-payments' ? (
                         <Wallet className="h-3.5 w-3.5 shrink-0 text-fairway-700" aria-hidden />
                       ) : item.id === 'admin-hub-forms' ? (
@@ -87,7 +87,7 @@ export function AdminOperationsHubHero(props: { readonly adminFirstName: string 
                       )}
                       {item.label}
                     </span>
-                    <span className="text-[0.65rem] font-medium leading-snug text-forest-500">{item.hint}</span>
+                    <span className="text-xs font-medium leading-snug text-forest-500 sm:text-sm">{item.hint}</span>
                   </button>
                 </li>
               ))}
@@ -106,7 +106,7 @@ export function AdminOperationsHubHero(props: { readonly adminFirstName: string 
             aria-hidden
             className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a2416]/90 via-transparent to-transparent lg:bg-gradient-to-l"
           />
-          <p className="pointer-events-none absolute bottom-4 left-4 right-4 font-ge text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-emerald-100/90 lg:bottom-6 lg:left-6">
+          <p className="pointer-events-none absolute bottom-4 left-4 right-4 font-ge text-xs font-semibold uppercase tracking-[0.14em] text-emerald-100/90 sm:text-sm lg:bottom-6 lg:left-6">
             Same colours as the client portal — familiar for you and for guests.
           </p>
         </div>

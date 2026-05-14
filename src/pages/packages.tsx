@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import { FaWhatsapp } from 'react-icons/fa6'
 import {
   BadgeEuro,
@@ -106,7 +106,10 @@ const revealUp = {
 } as const
 
 const adminSessionStorageKey = 'gsol-package-admin-authenticated'
-const adminAccessKey = (import.meta.env.VITE_PACKAGE_ADMIN_KEY ?? 'gsol-admin').trim()
+/** Build-time gate only — value is still present in the JS bundle; treat as UI obscurity, not access control. Prefer Supabase admin auth for real protection. */
+const adminAccessKey =
+  typeof import.meta.env.VITE_PACKAGE_ADMIN_KEY === 'string' ? import.meta.env.VITE_PACKAGE_ADMIN_KEY.trim() : ''
+const adminStudioConfigured = adminAccessKey.length > 0
 
 function PackageAdminPage() {
   const [selectedAccommodationName, setSelectedAccommodationName] = useState<string>(accommodationOptions[1].name)
@@ -183,6 +186,11 @@ function PackageAdminPage() {
   const handleUnlockAdminPage = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
+    if (!adminStudioConfigured) {
+      setLoginError('Internal package studio is not enabled for this deployment.')
+      return
+    }
+
     if (adminAccessCode.trim() !== adminAccessKey) {
       setLoginError('Incorrect admin access code')
       return
@@ -199,8 +207,17 @@ function PackageAdminPage() {
   }, [])
 
   useEffect(() => {
+    if (!adminStudioConfigured) {
+      try {
+        sessionStorage.removeItem(adminSessionStorageKey)
+      } catch {
+        /* private mode */
+      }
+      setIsUnlocked(false)
+      return
+    }
     setIsUnlocked(sessionStorage.getItem(adminSessionStorageKey) === 'true')
-  }, [])
+  }, [adminStudioConfigured])
 
   useEffect(() => {
     if (!footerRef.current) {
@@ -246,7 +263,7 @@ function PackageAdminPage() {
             </p>
           </div>
 
-          <motion.div
+          <m.div
             animate={{ opacity: 1, y: 0 }}
             className="rounded-[2.2rem] border border-white/10 bg-[linear-gradient(160deg,rgba(255,255,255,0.12),rgba(255,255,255,0.04))] p-6 shadow-soft backdrop-blur-md md:p-8"
             initial={{ opacity: 0, y: 30 }}
@@ -255,36 +272,49 @@ function PackageAdminPage() {
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gold-300">Admin login</p>
             <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-white">Unlock the internal package page</h2>
             <p className="mt-3 text-base leading-7 text-white/72">
-              Enter your admin access code to open the private pricing studio.
+              {adminStudioConfigured
+                ? 'Enter your admin access code to open the private pricing studio.'
+                : 'This internal studio is disabled until VITE_PACKAGE_ADMIN_KEY is set at build time (still only a client-side gate — use Supabase admin login for real access control).'}
             </p>
 
-            <form className="mt-6 space-y-4" onSubmit={handleUnlockAdminPage}>
-              <label className="block">
-                <span className="mb-2 block text-base font-medium text-white/80">Access code</span>
-                <input
-                  autoComplete="current-password"
-                  className="w-full rounded-2xl border border-white/10 bg-white/8 px-4 py-3.5 text-lg text-white outline-none transition focus:border-gold-400 focus:ring-2 focus:ring-gold-300/30"
-                  onChange={(event) => {
-                    setAdminAccessCode(event.target.value)
-                    if (loginError) {
-                      setLoginError('')
-                    }
-                  }}
-                  placeholder="Enter admin code"
-                  type="password"
-                  value={adminAccessCode}
-                />
-              </label>
+            {adminStudioConfigured ? (
+              <form className="mt-6 space-y-4" onSubmit={handleUnlockAdminPage}>
+                <label className="block">
+                  <span className="mb-2 block text-base font-medium text-white/80">Access code</span>
+                  <input
+                    autoComplete="current-password"
+                    className="w-full rounded-2xl border border-white/10 bg-white/8 px-4 py-3.5 text-lg text-white outline-none transition focus:border-gold-400 focus:ring-2 focus:ring-gold-300/30"
+                    onChange={(event) => {
+                      setAdminAccessCode(event.target.value)
+                      if (loginError) {
+                        setLoginError('')
+                      }
+                    }}
+                    placeholder="Enter admin code"
+                    type="password"
+                    value={adminAccessCode}
+                  />
+                </label>
 
-              {loginError ? <p className="text-base text-[#f7a24f]">{loginError}</p> : null}
+                {loginError ? <p className="text-base text-[#f7a24f]">{loginError}</p> : null}
 
-              <div className="flex flex-wrap gap-3">
-                <button
-                  className="inline-flex items-center justify-center rounded-full bg-gold-400 px-6 py-3.5 text-base font-semibold text-forest-950 transition-colors hover:bg-gold-300"
-                  type="submit"
-                >
-                  Unlock admin page
-                </button>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    className="inline-flex items-center justify-center rounded-full bg-gold-400 px-6 py-3.5 text-base font-semibold text-forest-950 transition-colors hover:bg-gold-300"
+                    type="submit"
+                  >
+                    Unlock admin page
+                  </button>
+                  <a
+                    className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-3.5 text-base font-semibold text-white/82 transition-colors hover:bg-white/10"
+                    href="/packages"
+                  >
+                    Go to customer packages
+                  </a>
+                </div>
+              </form>
+            ) : (
+              <div className="mt-6 flex flex-wrap gap-3">
                 <a
                   className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-3.5 text-base font-semibold text-white/82 transition-colors hover:bg-white/10"
                   href="/packages"
@@ -292,8 +322,8 @@ function PackageAdminPage() {
                   Go to customer packages
                 </a>
               </div>
-            </form>
-          </motion.div>
+            )}
+          </m.div>
         </div>
       </div>
     )
@@ -325,7 +355,7 @@ function PackageAdminPage() {
           <AmbientGolfBall className="right-[4%] top-[16%] opacity-90 lg:right-[7%]" size="lg" tone="hero" variant="hero" />
 
           <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
-            <motion.div
+            <m.div
               animate={{ opacity: 1, y: 0 }}
               initial={{ opacity: 0, y: 30 }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
@@ -357,7 +387,7 @@ function PackageAdminPage() {
                 <HeroStat label="Driver and diesel already counted" value="100%" />
                 <HeroStat label="Profit shown before you quote" value="EUR" />
               </div>
-            </motion.div>
+            </m.div>
 
             <RouteMapShowcase />
           </div>
@@ -373,7 +403,7 @@ function PackageAdminPage() {
 
             <div className="grid gap-6 lg:grid-cols-3">
               {packageOptions.map((option) => (
-                <motion.article
+                <m.article
                   key={option.name}
                   className="group relative overflow-hidden rounded-[2rem] border border-forest-100 bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(247,244,237,0.94))] p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                   {...revealUp}
@@ -415,7 +445,7 @@ function PackageAdminPage() {
                       </LuxuryButton>
                     </div>
                   </div>
-                </motion.article>
+                </m.article>
               ))}
             </div>
           </div>
@@ -434,7 +464,7 @@ function PackageAdminPage() {
                 const isSelected = option.name === selectedAccommodation.name
 
                 return (
-                  <motion.button
+                  <m.button
                     key={option.name}
                     aria-label={`Use ${option.name} pricing in the package calculator`}
                     className={cx(
@@ -479,7 +509,7 @@ function PackageAdminPage() {
                         </span>
                       ))}
                     </div>
-                  </motion.button>
+                  </m.button>
                 )
               })}
             </div>
@@ -495,7 +525,7 @@ function PackageAdminPage() {
             />
 
             <div className="grid gap-8 xl:grid-cols-[1.05fr_0.95fr]">
-              <motion.div className="rounded-[2rem] border border-forest-100 bg-[#f7f4ed] p-6 shadow-sm md:p-7" {...revealUp}>
+              <m.div className="rounded-[2rem] border border-forest-100 bg-[#f7f4ed] p-6 shadow-sm md:p-7" {...revealUp}>
                 <div className="mb-6 flex flex-wrap gap-3">
                   {planningPoints.map((item) => (
                     <span key={item} className="rounded-full border border-white/80 bg-white px-3 py-1.5 text-sm text-forest-900/68 shadow-sm">
@@ -596,9 +626,9 @@ function PackageAdminPage() {
                     value={profitPerPerson}
                   />
                 </div>
-              </motion.div>
+              </m.div>
 
-              <motion.div className="rounded-[2rem] border border-white/10 bg-forest-950 p-6 text-white shadow-soft md:p-7" {...revealUp}>
+              <m.div className="rounded-[2rem] border border-white/10 bg-forest-950 p-6 text-white shadow-soft md:p-7" {...revealUp}>
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gold-300">Live quote view</p>
@@ -649,7 +679,7 @@ function PackageAdminPage() {
                   <MiniSummaryCard label="Total profit" value={formatEuro(pricingSummary.totalProfit)} />
                   <MiniSummaryCard label="Room rate used" value={`${formatEuro(selectedAccommodation.pricePerPersonPerNight)} / night`} />
                 </div>
-              </motion.div>
+              </m.div>
             </div>
           </div>
         </section>
@@ -680,7 +710,7 @@ function PackageAdminPage() {
                 </div>
               </div>
 
-              <motion.div
+              <m.div
                 className="rounded-[2rem] border border-white/10 bg-white/6 p-6 text-white backdrop-blur-sm"
                 {...revealUp}
               >
@@ -698,7 +728,7 @@ function PackageAdminPage() {
                     </div>
                   ))}
                 </div>
-              </motion.div>
+              </m.div>
             </div>
           </div>
 
@@ -717,7 +747,7 @@ function PackageAdminPage() {
 
 function RouteMapShowcase() {
   return (
-    <motion.div
+    <m.div
       animate={{ opacity: 1, y: 0 }}
       className="relative"
       initial={{ opacity: 0, y: 36 }}
@@ -730,7 +760,7 @@ function RouteMapShowcase() {
         <div className="relative z-10 grid gap-6 md:grid-cols-[0.9fr_1.2fr]">
           <div className="space-y-3">
             {routeOrigins.map((route, index) => (
-              <motion.div
+              <m.div
                 key={route.title}
                 animate={{ x: [0, 6, 0] }}
                 className="rounded-[1.6rem] border border-white/10 bg-forest-950/58 p-4 text-white shadow-lg backdrop-blur-sm"
@@ -745,14 +775,14 @@ function RouteMapShowcase() {
                     <p className="text-sm leading-relaxed text-white/62">{route.note}</p>
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             ))}
           </div>
 
           <div className="relative min-h-[24rem] overflow-hidden rounded-[2rem] border border-white/10 bg-white/5">
             <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:44px_44px] opacity-25" />
 
-            <motion.div
+            <m.div
               animate={{ scale: [1, 1.04, 1], opacity: [0.32, 0.42, 0.32] }}
               className="absolute left-[14%] top-[18%] h-16 w-16 rounded-full border border-white/18"
               transition={{ duration: 7, ease: 'easeInOut', repeat: Infinity }}
@@ -774,7 +804,7 @@ function RouteMapShowcase() {
                 strokeLinecap="round"
                 strokeWidth="2"
               />
-              <motion.path
+              <m.path
                 animate={{ pathLength: [0.2, 1, 0.2] }}
                 d="M68 92C150 44 236 58 298 130C346 186 398 206 494 176"
                 pathLength={1}
@@ -785,7 +815,7 @@ function RouteMapShowcase() {
               />
             </svg>
 
-            <motion.div
+            <m.div
               animate={{
                 x: [0, 108, 216, 306, 382, 0],
                 y: [0, -36, 12, 64, 84, 0],
@@ -796,7 +826,7 @@ function RouteMapShowcase() {
             >
               <div className="absolute inset-[18%] rounded-full border border-slate-300/28" />
               <div className="absolute inset-[35%] rounded-full border border-slate-300/22" />
-            </motion.div>
+            </m.div>
 
             <div className="absolute left-[8%] top-[9%] rounded-[1.4rem] border border-gold-300/26 bg-forest-950/76 px-4 py-3 text-white backdrop-blur-sm">
               <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">Departing from Ireland</p>
@@ -819,7 +849,7 @@ function RouteMapShowcase() {
           </div>
         </div>
       </div>
-    </motion.div>
+    </m.div>
   )
 }
 
@@ -941,7 +971,7 @@ export function FloatingWhatsAppButton({
   readonly hidden: boolean
 }) {
   return (
-    <motion.a
+    <m.a
       animate={{
         y: [0, -5, 0],
         rotate: [0, -3, 2, 0],
@@ -976,7 +1006,7 @@ export function FloatingWhatsAppButton({
       <span aria-hidden="true" className="absolute inset-[1px] rounded-full bg-[linear-gradient(135deg,rgba(255,255,255,0.48),rgba(255,255,255,0.12))]" />
       <span aria-hidden="true" className="absolute inset-[1.5px] rounded-full bg-[rgba(255,255,255,0.58)]" />
       <span aria-hidden="true" className="absolute inset-[2px] rounded-full bg-[linear-gradient(135deg,rgba(255,255,255,0.72),rgba(255,255,255,0.42))]" />
-      <motion.span
+      <m.span
         aria-hidden="true"
         animate={{ rotate: [0, 360] }}
         className="absolute inset-[-35%] rounded-full bg-[conic-gradient(from_0deg,transparent_0deg,transparent_235deg,rgba(255,255,255,0.04)_255deg,rgba(37,211,102,0.8)_290deg,rgba(255,255,255,0.92)_320deg,rgba(18,140,74,0.7)_345deg,transparent_360deg)]"
@@ -1007,7 +1037,7 @@ export function FloatingWhatsAppButton({
       <span className="relative z-10 hidden pr-1 text-sm font-semibold text-forest-900 transition-colors duration-300 group-hover:text-forest-950 sm:inline">
         WhatsApp
       </span>
-    </motion.a>
+    </m.a>
   )
 }
 
@@ -1023,7 +1053,7 @@ export function CookieBanner({
   }
 
   return (
-    <motion.div
+    <m.div
       animate={{ opacity: 1, y: 0 }}
       className="fixed bottom-4 left-3 right-3 z-[55] rounded-[1.75rem] border border-white/15 bg-forest-950/92 p-4 text-white shadow-2xl backdrop-blur-md sm:left-4 sm:right-auto sm:max-w-md"
       initial={{ opacity: 0, y: 18 }}
@@ -1052,7 +1082,7 @@ export function CookieBanner({
           </button>
         </div>
       </div>
-    </motion.div>
+    </m.div>
   )
 }
 

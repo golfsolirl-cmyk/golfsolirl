@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import type { LucideIcon } from 'lucide-react'
 import { ArrowRight, CheckCircle2, ChevronDown } from 'lucide-react'
 import { GeButton } from '../components/ge-button'
@@ -148,7 +148,7 @@ export function GeServiceStyleHero({
           />
 
           <div className="relative z-[12] -mt-16 px-4 md:hidden">
-            <motion.div
+            <m.div
               className={
                 sunny
                   ? 'mx-auto w-full max-w-[34rem] overflow-hidden rounded-[1.75rem] border border-amber-200/70 bg-white p-5 shadow-[0_22px_50px_rgba(115,132,33,0.18)]'
@@ -210,7 +210,7 @@ export function GeServiceStyleHero({
               >
                 {trustLine}
               </p>
-            </motion.div>
+            </m.div>
           </div>
 
           <div
@@ -257,7 +257,7 @@ export function GeServiceStyleHero({
 
           <div className="absolute inset-0 z-[12] hidden items-end pb-12 sm:items-center sm:pb-0 md:flex md:pt-8 lg:pt-12">
             <div className="mx-auto w-full max-w-[1180px] px-5 sm:px-8">
-              <motion.div className="max-w-2xl" {...fadeUp}>
+              <m.div className="max-w-2xl" {...fadeUp}>
                 <span
                   className={
                     sunny
@@ -307,11 +307,11 @@ export function GeServiceStyleHero({
                 >
                   {trustLine}
                 </p>
-              </motion.div>
+              </m.div>
             </div>
           </div>
 
-          <motion.a
+          <m.a
             href={nextSectionId}
             onClick={(event) => handleScrollToFormTarget(event, nextSectionId)}
             aria-label="Scroll to the next section"
@@ -324,7 +324,7 @@ export function GeServiceStyleHero({
             transition={{ duration: 2, ease: 'easeInOut', repeat: Infinity }}
           >
             <ChevronDown className="h-5 w-5" />
-          </motion.a>
+          </m.a>
         </div>
       </div>
     </section>

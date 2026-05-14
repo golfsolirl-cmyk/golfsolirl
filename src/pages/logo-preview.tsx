@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import { ArrowLeft, Sparkles } from 'lucide-react'
 import { PageIdentityBar } from '../components/page-identity-bar'
 import { cx } from '../lib/utils'
@@ -130,7 +130,7 @@ function AnimatedBlobGolfBall() {
       className="pointer-events-none absolute inset-x-0 top-0 z-0 flex justify-end overflow-hidden"
     >
       <div className="relative h-[28rem] w-full max-w-[42rem] md:h-[34rem] md:max-w-[48rem]">
-        <motion.div
+        <m.div
           animate={{
             scale: [1, 1.08, 0.96, 1],
             rotate: [0, 12, -10, 0],
@@ -140,7 +140,7 @@ function AnimatedBlobGolfBall() {
           className="absolute right-[-5rem] top-[-2rem] h-72 w-72 rounded-full bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.28),rgba(255,255,255,0.06)_34%,rgba(80,163,45,0.34)_58%,rgba(213,198,0,0.28)_82%,transparent)] blur-3xl md:h-96 md:w-96"
           transition={{ duration: 14, ease: 'easeInOut', repeat: Infinity }}
         />
-        <motion.div
+        <m.div
           animate={{
             scale: [0.94, 1.06, 1],
             rotate: [0, -16, 10, 0],
@@ -150,7 +150,7 @@ function AnimatedBlobGolfBall() {
           className="absolute right-12 top-12 h-56 w-56 rounded-[42%_58%_60%_40%/40%_44%_56%_60%] bg-[linear-gradient(140deg,rgba(255,255,255,0.12),rgba(110,191,71,0.28),rgba(213,198,0,0.2))] blur-[70px] md:h-72 md:w-72"
           transition={{ duration: 12, ease: 'easeInOut', repeat: Infinity }}
         />
-        <motion.div
+        <m.div
           animate={{
             y: [0, -10, 0, 12, 0],
             x: [0, -8, 10, -6, 0]
@@ -160,7 +160,7 @@ function AnimatedBlobGolfBall() {
         >
           <div className="absolute inset-[-16%] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.28),rgba(255,255,255,0.02)_58%,transparent)] blur-2xl" />
           <div className="absolute bottom-[-9%] left-1/2 h-[18%] w-[72%] -translate-x-1/2 rounded-full bg-black/30 blur-[18px] md:blur-[22px]" />
-          <motion.div
+          <m.div
             animate={{ rotate: [0, -5, 4, 0] }}
             className="relative h-full w-full drop-shadow-[0_34px_80px_rgba(0,0,0,0.3)]"
             transition={{ duration: 12, ease: 'easeInOut', repeat: Infinity }}
@@ -230,8 +230,8 @@ function AnimatedBlobGolfBall() {
                 strokeWidth="3"
               />
             </svg>
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
       </div>
     </div>
   )
@@ -239,7 +239,7 @@ function AnimatedBlobGolfBall() {
 
 function LogoStudyCard({ index, study }: LogoStudyCardProps) {
   return (
-    <motion.article
+    <m.article
       animate={{ opacity: 1, y: 0 }}
       className="group overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 shadow-soft backdrop-blur-sm"
       initial={{ opacity: 0, y: 28 }}
@@ -262,7 +262,7 @@ function LogoStudyCard({ index, study }: LogoStudyCardProps) {
         <p className="mt-5 text-sm font-medium text-white/86">{study.direction}</p>
         <p className="mt-2 text-sm leading-relaxed text-white/60">{study.note}</p>
       </div>
-    </motion.article>
+    </m.article>
   )
 }
 

@@ -10,7 +10,9 @@
     "generate:sample-proposal-pdf": "node scripts/generate-sample-proposal-pdf.mjs",
     "generate:branded-sample-pdf": "node scripts/generate-branded-sample-pdf.mjs",
     "generate:unified-pdf-sample": "node scripts/generate-gsol-unified-pdf-sample.mjs",
-    "verify:enquiry-pdf-exports": "node scripts/verify-enquiry-pdf-exports.mjs"
+    "verify:enquiry-pdf-exports": "node scripts/verify-enquiry-pdf-exports.mjs",
+    "generate:business-card-pngs": "node scripts/regenerate-business-card-pngs.mjs",
+    "generate:blank-business-cards": "node scripts/generate-blank-business-card-templates.mjs"
   },
   "type": "module",
   "dependencies": {

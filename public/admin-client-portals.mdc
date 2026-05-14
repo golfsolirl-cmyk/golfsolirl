@@ -1,0 +1,251 @@
+You are a senior UI/UX engineer and frontend architect.
+
+Your task is to REBUILD and MODERNIZE the existing dashboard UI Client and admin without breaking any existing application logic, backend integrations, authentication, APIs, routing, database connections, environment variables, or business functionality.
+
+CRITICAL RULES:
+- DO NOT remove existing functionality.
+- DO NOT rename API endpoints.
+- DO NOT change backend logic.
+- DO NOT alter auth/session handling.
+- DO NOT modify database schema unless explicitly requested.
+- DO NOT break existing routes.
+- Preserve all working integrations.
+- Only improve:
+  - UI
+  - UX
+  - layout
+  - responsiveness
+  - accessibility
+  - component structure
+  - visual hierarchy
+  - animations
+  - dashboard flow
+
+====================================================
+DESIGN GOAL
+====================================================
+
+Create a PREMIUM MODERN DASHBOARD similar in feel to:
+- Vodafone/MyVodafone style dashboard
+- Modern fintech apps
+- Premium SaaS admin panels
+- Mobile-first polished UX
+- Clean cards and quick actions
+- Large welcoming hero sections
+- Friendly and intuitive navigation
+- High-end responsive design
+
+The interface must feel:
+- smooth
+- modern
+- premium
+- simple
+- fast
+- highly usable
+- touch friendly
+- visually balanced
+
+====================================================
+BRAND INTEGRATION
+====================================================
+
+Use the EXISTING:
+- logo
+- theme colors
+- typography
+- brand identity
+- icons where possible
+
+Do NOT invent unrelated branding.
+
+Create a refined design system from the existing branding:
+- primary color
+- secondary color
+- gradients
+- card styles
+- shadows
+- button styles
+- hover states
+- spacing system
+- border radius system
+
+====================================================
+USER DASHBOARD REQUIREMENTS
+====================================================
+
+Build a modern customer dashboard with:
+
+1. HERO HEADER
+- Greeting section
+- User name
+- Small status indicators
+- Notifications icon
+- Profile avatar
+- Gradient branded background
+- Smooth curved shapes or abstract background overlays
+
+2. MAIN OVERVIEW CARD
+Large polished card containing:
+- account/network/service status
+- green healthy indicators
+- quick actions
+- share button
+- shortcuts
+- connection/device overview
+
+3. QUICK ACTIONS
+Modern rounded buttons/cards:
+- Billing
+- Support
+- Devices
+- Messages
+- Settings
+- Upgrades
+- Usage
+- Reports
+
+4. DEVICE/RESOURCE CARDS
+Use modern cards with:
+- icons
+- counts
+- status badges
+- hover animation
+- subtle shadows
+
+5. BOTTOM / SIDE NAVIGATION
+Responsive:
+- mobile bottom nav
+- desktop sidebar
+- active indicators
+- animated transitions
+- clean iconography
+
+6. UX IMPROVEMENTS
+- smooth spacing
+- consistent alignment
+- proper typography scale
+- premium card hierarchy
+- intuitive navigation
+- responsive layouts
+- skeleton loading states
+- empty states
+- smooth micro animations
+- polished transitions
+
+====================================================
+ADMIN DASHBOARD REQUIREMENTS
+====================================================
+
+Create matching ADMIN PANEL UI with same design language.
+
+Admin dashboard should include:
+
+- KPI cards
+- analytics widgets
+- customer management
+- subscriptions/orders
+- charts
+- activity feed
+- system status
+- alerts
+- revenue widgets
+- tables
+- quick actions
+- filters/search
+- dark mode support
+
+Admin UI must feel:
+- enterprise-grade
+- clean
+- powerful
+- organized
+- highly readable
+
+====================================================
+TECHNICAL REQUIREMENTS
+====================================================
+
+Maintain current framework and architecture.
+
+Refactor carefully:
+- reusable components
+- layout system
+- UI consistency
+- responsiveness
+
+Use:
+- modern component patterns
+- reusable cards
+- centralized theme system
+- responsive grid layouts
+- modular structure
+
+Ensure:
+- accessibility
+- mobile responsiveness
+- performance optimization
+- scalable architecture
+
+====================================================
+UI STYLE GUIDE
+====================================================
+
+Visual direction:
+- rounded corners
+- soft shadows
+- layered cards
+- subtle gradients
+- premium spacing
+- glassmorphism only if tasteful
+- clean typography
+- bold section headers
+- modern icon set
+- polished empty states
+
+Animations:
+- subtle hover lifts
+- smooth transitions
+- animated nav states
+- fade-ins
+- loading skeletons
+
+Avoid:
+- clutter
+- tiny text
+- harsh borders
+- outdated admin styling
+- cramped layouts
+- inconsistent spacing
+
+====================================================
+IMPORTANT IMPLEMENTATION RULES
+====================================================
+
+Before changing files:
+1. Analyze project structure
+2. Identify reusable UI components
+3. Preserve all functionality
+4. Avoid breaking imports
+5. Keep routes intact
+6. Keep state management intact
+
+When editing:
+- update incrementally
+- avoid massive unsafe rewrites
+- preserve working logic
+- improve presentation layer only unless necessary
+
+====================================================
+DELIVERABLES
+====================================================
+
+Produce:
+- polished dashboard UI
+- polished admin dashboard UI
+- reusable component system
+- responsive layouts
+- refined theme styling
+- improved navigation
+- premium modern UX
+
+Final result should look production-ready and significantly more premium while remaining fully compatible with the current system.

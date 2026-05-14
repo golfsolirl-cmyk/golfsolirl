@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom/client'
 import { lazy, Suspense, type LazyExoticComponent, type ComponentType } from 'react'
-import { AppRouteFallback } from './components/app-route-fallback'
-import { AuthProvider } from './providers/auth-provider'
+import { pathnameNeedsImmediateSupabaseHydration } from './lib/auth-bootstrap-path'
+import { MotionRoot } from './providers/motion-root'
 import { isGeContentPagePath } from './pages/golf-experience/data/content-pages'
 import './index.css'
 
@@ -76,6 +76,9 @@ type PageComponent = LazyExoticComponent<ComponentType>
 
 function syncReadableTypePageClass(path: string) {
   const nonReadableTypePaths = new Set([
+    '/dashboard',
+    '/dashboard/admin',
+    '/driver',
     '/dashboard/login',
     '/dashboard/admin/login',
     '/driver/login',
@@ -210,10 +213,25 @@ function resolvePage(): PageComponent {
 
 const ActivePage = resolvePage()
 
+const normalizedBootstrapPath =
+  window.location.pathname === '/' || window.location.pathname === ''
+    ? '/'
+    : window.location.pathname.replace(/\/+$/, '')
+
+const AuthProviderShell = lazy(() =>
+  pathnameNeedsImmediateSupabaseHydration(normalizedBootstrapPath)
+    ? import('./providers/auth-provider-sync').then((m) => ({ default: m.AuthProvider }))
+    : import('./providers/auth-provider-deferred').then((m) => ({ default: m.AuthProvider }))
+)
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <AuthProvider>
-    <Suspense fallback={<AppRouteFallback />}>
-      <ActivePage />
-    </Suspense>
-  </AuthProvider>
+  <Suspense fallback={null}>
+    <AuthProviderShell>
+      <Suspense fallback={null}>
+        <MotionRoot>
+          <ActivePage />
+        </MotionRoot>
+      </Suspense>
+    </AuthProviderShell>
+  </Suspense>
 )

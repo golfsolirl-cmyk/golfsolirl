@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import { GeAlreadyBookedFlightPanel } from '../components/already-booked-flight-panel'
 import { designYourPackage, homeTripSnapshotBand } from '../data/copy'
@@ -71,7 +71,7 @@ export function GeDesignYourPackage() {
       />
 
       <div className="relative mx-auto max-w-[1180px] px-5 pb-24 pt-24 sm:px-8">
-        <motion.div
+        <m.div
           className="relative overflow-hidden rounded-[2rem] border border-white/70 bg-gs-dark px-6 py-10 text-center shadow-[0_28px_80px_rgba(6,59,42,0.22)] sm:px-10 sm:py-12"
           {...fadeUp}
         >
@@ -102,11 +102,11 @@ export function GeDesignYourPackage() {
               <span className="font-semibold text-gs-gold-light">We shape the full Sol itinerary around your group.</span>
             </p>
           </div>
-        </motion.div>
+        </m.div>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {steps.map((step) => (
-            <motion.article
+            <m.article
               key={step.badge}
               className="group relative flex flex-col overflow-hidden rounded-[1.8rem] border border-white/75 bg-white/88 text-gs-dark shadow-[0_18px_45px_rgba(69,53,24,0.14)] ring-1 ring-[#e6dcc5] backdrop-blur-sm transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_28px_60px_rgba(69,53,24,0.2)]"
               {...fadeUp}
@@ -153,11 +153,11 @@ export function GeDesignYourPackage() {
                 aria-hidden="true"
                 className="absolute inset-x-0 bottom-0 h-[3px] origin-left scale-x-0 bg-gradient-to-r from-gs-gold via-[#D5C600] to-ge-orange transition-transform duration-500 group-hover:scale-x-100"
               />
-            </motion.article>
+            </m.article>
           ))}
         </div>
 
-        <motion.div
+        <m.div
           className="mx-auto mt-16 max-w-3xl rounded-2xl border border-gs-dark/10 bg-white/90 px-6 py-6 text-center shadow-[0_18px_50px_rgba(6,59,42,0.08)] backdrop-blur-sm sm:px-8 sm:py-7"
           {...fadeUp}
         >
@@ -165,7 +165,7 @@ export function GeDesignYourPackage() {
           <p className="mt-3 font-ge text-sm font-medium leading-relaxed text-gs-dark/85 sm:text-[0.95rem] sm:leading-7">
             {homeTripSnapshotBand.body}
           </p>
-        </motion.div>
+        </m.div>
 
         <GeAlreadyBookedFlightPanel />
       </div>

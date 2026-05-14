@@ -1,8 +1,7 @@
 import { useCallback, useState, type ReactNode } from 'react'
 import { FileDown } from 'lucide-react'
 import { cx } from '../lib/utils'
-import { saveSingleBusinessCardPdf } from '../lib/save-business-cards-pdf'
-import { businessCardPerson } from '../lib/business-cards-config'
+import { businessCardContact, businessCardPerson } from '../lib/business-cards-config'
 
 type BusinessCardOrientation = 'portrait' | 'landscape'
 type BusinessCardSide = 'front' | 'back'
@@ -22,9 +21,7 @@ export type BusinessCardSpec = {
 
 const pdfFaceAssets = {
   portraitFront: '/images/business-cards/golfsol-business-card-front.png',
-  portraitBack: '/images/business-cards/golfsol-business-card-back.png',
-  landscapeFront: '/images/business-cards/golfsol-business-card-front-landscape.png',
-  landscapeBack: '/images/business-cards/golfsol-business-card-back-landscape.png'
+  portraitBack: '/images/business-cards/golfsol-business-card-back.png'
 } as const
 
 function BusinessCardArtwork({
@@ -41,28 +38,46 @@ function BusinessCardArtwork({
   readonly mode?: RenderMode
 }) {
   const isLandscape = orientation === 'landscape'
+  const landscapeImgClass =
+    mode === 'pdf'
+      ? 'pointer-events-none absolute left-1/2 top-1/2 block h-[850px] w-auto max-w-none -translate-x-1/2 -translate-y-1/2 -rotate-90 select-none object-cover'
+      : 'pointer-events-none absolute left-1/2 top-1/2 block h-[100cqw] w-auto max-w-none -translate-x-1/2 -translate-y-1/2 -rotate-90 select-none object-cover'
 
   return (
     <figure
       className={cx(
         'relative mx-auto overflow-hidden bg-white',
-        isLandscape ? 'aspect-[1446/936] w-full max-w-[680px]' : 'aspect-[936/1446] w-full max-w-[360px]',
+        isLandscape ? 'aspect-[1446/936] w-full max-w-[680px] [container-type:inline-size]' : 'aspect-[936/1446] w-full max-w-[360px]',
         mode === 'preview'
           ? 'rounded-[1.1rem] shadow-[0_28px_80px_rgba(39,49,17,0.26)] ring-1 ring-[#D5C600]/20'
           : 'rounded-none shadow-none ring-0',
         className
       )}
     >
-      <img
-        alt={`${businessCardPerson.name} business card ${side}, ${orientation}`}
-        className="block h-full w-full select-none object-cover"
-        decoding="async"
-        draggable={false}
-        height={height}
-        loading={mode === 'preview' ? 'lazy' : 'eager'}
-        src={imageSrc}
-        width={width}
-      />
+      {isLandscape ? (
+        /* Portrait PDF exports rotated 90° into the landscape frame (same physical card). */
+        <img
+          alt={`${businessCardPerson.name} business card ${side}, landscape`}
+          className={landscapeImgClass}
+          decoding="async"
+          draggable={false}
+          height={1446}
+          loading={mode === 'preview' ? 'lazy' : 'eager'}
+          src={imageSrc}
+          width={936}
+        />
+      ) : (
+        <img
+          alt={`${businessCardPerson.name} business card ${side}, portrait`}
+          className="block h-full w-full select-none object-cover"
+          decoding="async"
+          draggable={false}
+          height={height}
+          loading={mode === 'preview' ? 'lazy' : 'eager'}
+          src={imageSrc}
+          width={width}
+        />
+      )}
       <figcaption className="sr-only">{title}</figcaption>
     </figure>
   )
@@ -125,20 +140,20 @@ export const BUSINESS_CARD_SPECS: readonly BusinessCardSpec[] = [
   makeSpec(
     'landscape-front',
     'Landscape front',
-    'Supplied PDF page 1, rotated into landscape without changing the artwork.',
+    'Same portrait front artwork, shown in a standard landscape frame (rotated for reading).',
     'landscape',
     'front',
-    pdfFaceAssets.landscapeFront,
+    pdfFaceAssets.portraitFront,
     1446,
     936
   ),
   makeSpec(
     'landscape-back',
     'Landscape back',
-    'Supplied PDF page 2, rotated into landscape without changing the artwork.',
+    'Same portrait back artwork, shown in a standard landscape frame (rotated for reading).',
     'landscape',
     'back',
-    pdfFaceAssets.landscapeBack,
+    pdfFaceAssets.portraitBack,
     1446,
     936
   )
@@ -160,6 +175,7 @@ export function BusinessCardsCatalog() {
     setSinglePdfBusyId(spec.id)
     try {
       const filenameBase = `golfsol-business-card-${spec.id}`
+      const { saveSingleBusinessCardPdf } = await import('../lib/save-business-cards-pdf')
       await saveSingleBusinessCardPdf(slide, filenameBase)
     } catch (e) {
       const message = e instanceof Error ? e.message : 'Could not build the PDF.'
@@ -183,7 +199,13 @@ export function BusinessCardsCatalog() {
             Business cards rebuilt from the supplied front and back.
           </h2>
           <p className="mt-4 font-ge text-base font-medium leading-8 text-[#4e4e4e] sm:text-lg">
-            The old concept catalogue has been removed. These four downloadable faces use raster exports from the uploaded PDF so the portrait front/back match the file, with landscape versions generated from the same artwork.
+            The old concept catalogue has been removed. These four downloadable faces use raster exports from the uploaded PDF so the portrait front/back match the file. Landscape views use the same portrait artwork, rotated into a wide card frame so type reads naturally on screen and in PDFs.
+          </p>
+          <p className="mt-3 font-ge text-sm font-semibold text-[#063B2A]">
+            Contact on cards:{' '}
+            <a className="text-[#0B6B45] underline decoration-[#D5C600]/60 underline-offset-2 hover:text-[#007C69]" href={`mailto:${businessCardContact.email}`}>
+              {businessCardContact.email}
+            </a>
           </p>
         </div>
 

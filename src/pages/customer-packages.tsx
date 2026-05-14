@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import {
   BedDouble,
   Bus,
@@ -635,7 +635,7 @@ function CustomerPackagePage() {
           <AmbientGolfBall className="right-[4%] top-[16%] opacity-90 lg:right-[7%]" size="lg" tone="hero" variant="hero" />
 
           <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[1.02fr_0.98fr]">
-            <motion.div
+            <m.div
               animate={{ opacity: 1, y: 0 }}
               initial={{ opacity: 0, y: 30 }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
@@ -667,7 +667,7 @@ function CustomerPackagePage() {
                 <HeroStat label="Deposit shown clearly in the live estimate" value="20%" />
                 <HeroStat label="Flights are not included in package pricing" value="FYI" />
               </div>
-            </motion.div>
+            </m.div>
 
             <CustomerRouteMapShowcase />
           </div>
@@ -686,7 +686,7 @@ function CustomerPackagePage() {
                 const isSelected = item.name === selectedPackage.name
 
                 return (
-                  <motion.button
+                  <m.button
                     key={item.name}
                     aria-label={`Choose ${item.name} package style`}
                     className={cx(
@@ -726,7 +726,7 @@ function CustomerPackagePage() {
                         </div>
                       ))}
                     </div>
-                  </motion.button>
+                  </m.button>
                 )
               })}
             </div>
@@ -746,7 +746,7 @@ function CustomerPackagePage() {
                 const isSelected = item.name === selectedStay.name
 
                 return (
-                  <motion.button
+                  <m.button
                     key={item.name}
                     aria-label={`Choose ${item.name} stay option`}
                     className={cx(
@@ -775,7 +775,7 @@ function CustomerPackagePage() {
                     </div>
 
                     <p className={cx('mt-5 text-base leading-relaxed', isSelected ? 'text-white/74' : 'text-forest-900/68')}>{item.summary}</p>
-                  </motion.button>
+                  </m.button>
                 )
               })}
             </div>
@@ -804,7 +804,7 @@ function CustomerPackagePage() {
             ) : null}
 
             <div className="grid gap-8 xl:grid-cols-[1.05fr_0.95fr]">
-              <motion.div className="rounded-[2rem] border border-forest-100 bg-[#f7f4ed] p-6 shadow-sm md:p-7" {...revealUp}>
+              <m.div className="rounded-[2rem] border border-forest-100 bg-[#f7f4ed] p-6 shadow-sm md:p-7" {...revealUp}>
                 <div className="rounded-[1.6rem] border border-white/80 bg-white p-5 shadow-sm">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-forest-900 text-white">
@@ -909,9 +909,9 @@ function CustomerPackagePage() {
                     })}
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
 
-              <motion.div className="rounded-[2rem] border border-white/10 bg-forest-950 p-6 text-white shadow-soft md:p-7" {...revealUp}>
+              <m.div className="rounded-[2rem] border border-white/10 bg-forest-950 p-6 text-white shadow-soft md:p-7" {...revealUp}>
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">Your live estimate</p>
@@ -1013,7 +1013,7 @@ function CustomerPackagePage() {
                     Saved. You can review it anytime under your dashboard.
                   </p>
                 ) : null}
-              </motion.div>
+              </m.div>
             </div>
           </div>
         </section>
@@ -1046,7 +1046,7 @@ function CustomerPackagePage() {
                 </div>
               </div>
 
-              <motion.div className="rounded-[2rem] border border-white/10 bg-white/6 p-6 text-white backdrop-blur-sm" {...revealUp}>
+              <m.div className="rounded-[2rem] border border-white/10 bg-white/6 p-6 text-white backdrop-blur-sm" {...revealUp}>
                 {enquiryStatus === 'success' ? (
                   <div ref={enquiryConfirmationRef} className="rounded-[1.5rem] border border-gold-300/40 bg-gold-300/10 p-5 text-center">
                     <CheckCircle2 className="mx-auto h-8 w-8 text-gold-300" aria-hidden="true" />
@@ -1127,7 +1127,7 @@ function CustomerPackagePage() {
                     </LuxuryButton>
                   </form>
                 )}
-              </motion.div>
+              </m.div>
             </div>
           </div>
 
@@ -1146,7 +1146,7 @@ function CustomerPackagePage() {
 
 function CustomerRouteMapShowcase() {
   return (
-    <motion.div
+    <m.div
       animate={{ opacity: 1, y: 0 }}
       className="relative"
       initial={{ opacity: 0, y: 36 }}
@@ -1157,7 +1157,7 @@ function CustomerRouteMapShowcase() {
         <div className="relative z-10 grid gap-6 md:grid-cols-[0.9fr_1.2fr]">
           <div className="space-y-3">
             {routeStops.map((item, index) => (
-              <motion.div
+              <m.div
                 key={item}
                 animate={{ x: [0, 6, 0] }}
                 className="rounded-[1.6rem] border border-white/10 bg-forest-950/58 p-4 text-white shadow-lg backdrop-blur-sm"
@@ -1169,7 +1169,7 @@ function CustomerRouteMapShowcase() {
                   </div>
                   <p className="text-base font-semibold">{item}</p>
                 </div>
-              </motion.div>
+              </m.div>
             ))}
           </div>
 
@@ -1192,7 +1192,7 @@ function CustomerRouteMapShowcase() {
                 strokeLinecap="round"
                 strokeWidth="2"
               />
-              <motion.path
+              <m.path
                 animate={{ pathLength: [0.2, 1, 0.2] }}
                 d="M68 92C150 44 236 58 298 130C346 186 398 206 494 176"
                 pathLength={1}
@@ -1203,7 +1203,7 @@ function CustomerRouteMapShowcase() {
               />
             </svg>
 
-            <motion.div
+            <m.div
               animate={{
                 x: [0, 108, 216, 306, 382, 0],
                 y: [0, -36, 12, 64, 84, 0],
@@ -1214,7 +1214,7 @@ function CustomerRouteMapShowcase() {
             >
               <div className="absolute inset-[18%] rounded-full border border-slate-300/28" />
               <div className="absolute inset-[35%] rounded-full border border-slate-300/22" />
-            </motion.div>
+            </m.div>
 
             <div className="absolute left-[8%] top-[9%] rounded-[1.4rem] border border-gold-300/26 bg-forest-950/76 px-4 py-3 text-white backdrop-blur-sm">
               <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">Choose your group</p>
@@ -1229,7 +1229,7 @@ function CustomerRouteMapShowcase() {
           </div>
         </div>
       </div>
-    </motion.div>
+    </m.div>
   )
 }
 

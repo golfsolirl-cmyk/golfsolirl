@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import { CheckCircle2, MessageCircle } from 'lucide-react'
 import { GeDualPhoneEnquiryCallRow } from '../components/ge-dual-phone-contact'
 import { GeSection } from '../components/ge-section'
@@ -33,7 +33,7 @@ export function TransportEnquireBlock() {
       className="relative bg-[linear-gradient(180deg,_#FAF8F4_0%,_#FFFFFF_60%)]"
     >
       <div className="grid gap-10 lg:grid-cols-[1fr_1.05fr] lg:items-start lg:gap-14">
-        <motion.div {...fadeUp}>
+        <m.div {...fadeUp}>
           <p className="font-ge text-sm font-bold uppercase tracking-[0.18em] text-ge-orange sm:text-[0.85rem]">
             {transportEnquireBlockCopy.eyebrow}
           </p>
@@ -68,11 +68,11 @@ export function TransportEnquireBlock() {
               </li>
             ))}
           </ul>
-        </motion.div>
+        </m.div>
 
-        <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.1 }}>
+        <m.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.1 }}>
           <TransportHeroEnquiryForm />
-        </motion.div>
+        </m.div>
       </div>
     </GeSection>
   )

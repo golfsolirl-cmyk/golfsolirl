@@ -1,5 +1,5 @@
 import { useId } from 'react'
-import { motion, useScroll, useSpring, useTransform } from 'framer-motion'
+import { m,  useScroll,  useSpring,  useTransform  } from 'framer-motion'
 import { cx } from '../../lib/utils'
 
 const toneClassMap = {
@@ -171,36 +171,36 @@ export function AmbientGolfBall({
       aria-hidden="true"
       className={cx('pointer-events-none absolute z-0 hidden items-center justify-center md:flex', className)}
     >
-      <motion.div className={cx('relative', sizeClassMap[size])} style={heroWrapperStyle}>
+      <m.div className={cx('relative', sizeClassMap[size])} style={heroWrapperStyle}>
         {isHero ? (
           <>
-            <motion.div
+            <m.div
               animate={{ scale: [0.94, 1.04, 0.98, 0.94], opacity: [0.2, 0.38, 0.22, 0.2] }}
               className="absolute inset-[-20%] rounded-full border border-white/18"
               transition={{ duration: 7.5, ease: 'easeInOut', repeat: Infinity }}
             />
-            <motion.div
+            <m.div
               animate={{ scale: [1, 1.12, 1.02, 1], opacity: [0.1, 0.24, 0.12, 0.1] }}
               className="absolute inset-[-34%] rounded-full border border-gold-300/18"
               transition={{ duration: 9.5, ease: 'easeInOut', repeat: Infinity }}
             />
-            <motion.div
+            <m.div
               animate={{ rotate: [0, 360] }}
               className="absolute inset-[-26%]"
               transition={{ duration: 22, ease: 'linear', repeat: Infinity }}
             >
               <div className="absolute inset-0 rounded-full border border-transparent border-t-white/20 border-r-fairway-300/25" />
-            </motion.div>
-            <motion.div
+            </m.div>
+            <m.div
               animate={{ rotate: [360, 0] }}
               className="absolute inset-[-18%]"
               transition={{ duration: 18, ease: 'linear', repeat: Infinity }}
             >
               <div className="absolute inset-0 rounded-full border border-transparent border-b-gold-300/24 border-l-white/14" />
-            </motion.div>
+            </m.div>
           </>
         ) : null}
-        <motion.div
+        <m.div
           animate={{
             scale: isHero ? [1, 1.1, 0.96, 1] : [1, 1.06, 0.98, 1],
             rotate: isHero ? [0, 16, -12, 0] : [0, 10, -8, 0],
@@ -210,7 +210,7 @@ export function AmbientGolfBall({
           className={cx('absolute inset-[-24%] rounded-full blur-3xl', toneClasses.primary)}
           transition={{ duration: isHero ? 16 : 14, ease: 'easeInOut', repeat: Infinity }}
         />
-        <motion.div
+        <m.div
           animate={{
             scale: isHero ? [0.92, 1.08, 1] : [0.94, 1.04, 1],
             rotate: isHero ? [0, -20, 12, 0] : [0, -14, 9, 0],
@@ -223,7 +223,7 @@ export function AmbientGolfBall({
           )}
           transition={{ duration: isHero ? 14 : 12, ease: 'easeInOut', repeat: Infinity }}
         />
-        <motion.div
+        <m.div
           animate={{
             y: isHero ? [0, -14, 0, 16, 0] : [0, -8, 0, 10, 0],
             x: isHero ? [0, -16, 20, -10, 0] : [0, -8, 10, -5, 0],
@@ -233,7 +233,7 @@ export function AmbientGolfBall({
           transition={{ duration: isHero ? 10 : 8, ease: 'easeInOut', repeat: Infinity }}
         >
           <div className="absolute inset-[-16%] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.26),rgba(255,255,255,0.02)_58%,transparent)] blur-2xl" />
-          <motion.div
+          <m.div
             animate={{
               x: isHero ? [0, -10, 12, -6, 0] : [0, -5, 6, -3, 0],
               scaleX: isHero ? [0.92, 1.08, 0.94, 0.92] : [1, 1.05, 0.98, 1],
@@ -243,7 +243,7 @@ export function AmbientGolfBall({
             className="absolute bottom-[-9%] left-1/2 h-[18%] w-[72%] -translate-x-1/2 rounded-full bg-black/25 blur-[18px]"
             transition={{ duration: isHero ? 10 : 8, ease: 'easeInOut', repeat: Infinity }}
           />
-          <motion.div
+          <m.div
             animate={
               isHero
                 ? {
@@ -287,7 +287,7 @@ export function AmbientGolfBall({
               <circle cx="120" cy="120" fill={`url(#${shadowId})`} r="108" />
               <ellipse cx="120" cy="210" fill="rgba(30,41,59,0.14)" rx="62" ry="14" />
 
-              <motion.g
+              <m.g
                 animate={
                   isHero
                     ? {
@@ -321,7 +321,7 @@ export function AmbientGolfBall({
                     ))}
                   </g>
                 ))}
-              </motion.g>
+              </m.g>
 
               <circle cx="120" cy="120" fill="none" r="101" stroke="rgba(255,255,255,0.38)" strokeWidth="1.4" />
               <path
@@ -342,15 +342,15 @@ export function AmbientGolfBall({
               />
             </svg>
             {isHero ? (
-              <motion.div
+              <m.div
                 animate={{ x: ['-135%', '140%'] }}
                 className="absolute inset-y-[10%] left-[-22%] w-[42%] rotate-[16deg] bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.62),rgba(255,255,255,0.12),transparent)] blur-xl"
                 transition={{ duration: 4.8, ease: 'easeInOut', repeat: Infinity, repeatDelay: 1.8 }}
               />
             ) : null}
-          </motion.div>
-        </motion.div>
-      </motion.div>
+          </m.div>
+        </m.div>
+      </m.div>
     </div>
   )
 }

@@ -36,10 +36,10 @@ export function PortalAddToYourTripStrip(props: {
       <div className="relative">
         <div className="flex flex-wrap items-center gap-2">
           <Sparkles className="h-4 w-4 text-gold-500" aria-hidden />
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Add to your trip</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gold-600 sm:text-base">Add to your trip</p>
         </div>
         <div className="mt-2 h-px max-w-[7rem] rounded-full bg-gradient-to-r from-gold-400 via-gold-300/80 to-transparent" />
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-forest-700">
+        <p className="mt-3 max-w-2xl text-base leading-relaxed text-forest-700 md:text-lg">
           {overlay ? (
             <>
               You already have trip desk threads — add another request while we finish loading your dashboard.
@@ -56,7 +56,7 @@ export function PortalAddToYourTripStrip(props: {
             type="button"
             onClick={() => props.onSelect('transfers')}
             className={cx(
-              'group relative flex min-h-[5.25rem] flex-col items-start justify-between overflow-hidden rounded-2xl border border-emerald-700/25',
+              'group relative flex min-h-[5.75rem] flex-col items-start justify-between overflow-hidden rounded-2xl border border-emerald-700/25',
               'bg-gradient-to-br from-emerald-900 via-fairway-700 to-emerald-950 p-4 text-left text-white shadow-lg',
               'transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-400/40 hover:shadow-xl hover:shadow-emerald-950/25',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f4faf6]'
@@ -81,8 +81,8 @@ export function PortalAddToYourTripStrip(props: {
               />
             </span>
             <span className="relative mt-3 block w-full">
-              <span className="font-display text-base font-semibold tracking-tight">Transfers</span>
-              <span className="mt-0.5 block text-[0.72rem] font-medium uppercase tracking-[0.12em] text-emerald-100/85">
+              <span className="font-display text-lg font-semibold tracking-tight">Transfers</span>
+              <span className="mt-0.5 block text-sm font-medium uppercase tracking-[0.12em] text-emerald-100/85">
                 Airport · hotel · course
               </span>
             </span>
@@ -91,7 +91,7 @@ export function PortalAddToYourTripStrip(props: {
             type="button"
             onClick={() => props.onSelect('golf_courses')}
             className={cx(
-              'group relative flex min-h-[5.25rem] flex-col items-start justify-between overflow-hidden rounded-2xl border border-forest-800/30',
+              'group relative flex min-h-[5.75rem] flex-col items-start justify-between overflow-hidden rounded-2xl border border-forest-800/30',
               'bg-gradient-to-br from-forest-950 via-forest-900 to-[#0c2810] p-4 text-left text-white shadow-lg',
               'transition-all duration-300 hover:-translate-y-0.5 hover:border-gold-400/35 hover:shadow-xl hover:shadow-forest-950/40',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f4faf6]'
@@ -116,8 +116,8 @@ export function PortalAddToYourTripStrip(props: {
               />
             </span>
             <span className="relative mt-3 block w-full">
-              <span className="font-display text-base font-semibold tracking-tight">Golf courses</span>
-              <span className="mt-0.5 block text-[0.72rem] font-medium uppercase tracking-[0.12em] text-gold-100/80">
+              <span className="font-display text-lg font-semibold tracking-tight">Golf courses</span>
+              <span className="mt-0.5 block text-sm font-medium uppercase tracking-[0.12em] text-gold-100/80">
                 Rounds &amp; tee times
               </span>
             </span>
@@ -126,7 +126,7 @@ export function PortalAddToYourTripStrip(props: {
             type="button"
             onClick={() => props.onSelect('hotels')}
             className={cx(
-              'group relative flex min-h-[5.25rem] flex-col items-start justify-between overflow-hidden rounded-2xl border border-amber-900/25',
+              'group relative flex min-h-[5.75rem] flex-col items-start justify-between overflow-hidden rounded-2xl border border-amber-900/25',
               'bg-gradient-to-br from-[#1a2e22] via-forest-900 to-[#0f2414] p-4 text-left text-white shadow-lg',
               'transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-200/30 hover:shadow-xl hover:shadow-black/20',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f4faf6]'
@@ -151,8 +151,8 @@ export function PortalAddToYourTripStrip(props: {
               />
             </span>
             <span className="relative mt-3 block w-full">
-              <span className="font-display text-base font-semibold tracking-tight">Accommodation</span>
-              <span className="mt-0.5 block text-[0.72rem] font-medium uppercase tracking-[0.12em] text-amber-50/75">
+              <span className="font-display text-lg font-semibold tracking-tight">Accommodation</span>
+              <span className="mt-0.5 block text-sm font-medium uppercase tracking-[0.12em] text-amber-50/75">
                 Hotels &amp; villas
               </span>
             </span>

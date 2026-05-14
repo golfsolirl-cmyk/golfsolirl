@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import { Briefcase, Users } from 'lucide-react'
 import { GeSection } from '../components/ge-section'
 import { transportFleetIntroCopy, transportFleetTiers } from '../data/transport-service'
@@ -23,7 +23,7 @@ export function TransportFleet() {
       innerClassName="!pt-20 pb-20 sm:!pt-24 sm:pb-24 scroll-mt-28"
     >
       <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:gap-14">
-        <motion.div {...fadeUp}>
+        <m.div {...fadeUp}>
           <p className="font-ge text-sm font-bold uppercase tracking-[0.18em] text-ge-orange sm:text-[0.85rem]">
             {transportFleetIntroCopy.eyebrow}
           </p>
@@ -33,9 +33,9 @@ export function TransportFleet() {
           <p className="mt-5 font-ge text-base leading-7 text-ge-gray500 sm:text-[1.05rem] sm:leading-8">
             {transportFleetIntroCopy.body}
           </p>
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           className="relative overflow-hidden rounded-2xl border-2 border-gs-dark/10 shadow-[0_24px_60px_rgba(6,59,42,0.18)]"
           {...fadeUp}
           transition={{ ...fadeUp.transition, delay: 0.08 }}
@@ -57,14 +57,14 @@ export function TransportFleet() {
                 'linear-gradient(90deg, transparent 0%, #738421 15%, #D5C600 35%, #EBE486 50%, #D5C600 65%, #738421 85%, transparent 100%)'
             }}
           />
-        </motion.div>
+        </m.div>
       </div>
 
       <div className="mt-12 grid gap-5 md:grid-cols-3 md:gap-6">
         {transportFleetTiers.map((tier, i) => {
           const featured = i === 1
           return (
-            <motion.article
+            <m.article
               key={tier.name}
               className={[
                 'relative flex flex-col overflow-hidden rounded-2xl border-2 bg-white p-6 shadow-[0_14px_40px_rgba(6,59,42,0.08)] sm:p-7',
@@ -106,7 +106,7 @@ export function TransportFleet() {
                   </li>
                 ))}
               </ul>
-            </motion.article>
+            </m.article>
           )
         })}
       </div>

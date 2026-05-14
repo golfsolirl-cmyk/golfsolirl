@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import { cx } from '../../lib/utils'
 
 interface SectionHeaderProps {
@@ -62,14 +62,14 @@ export function AnimatedStepKicker({
   }
 
   return (
-    <motion.div
+    <m.div
       className={cx('mb-4 flex flex-wrap items-center gap-3', centered && 'justify-center', className)}
       initial="hidden"
       transition={{ staggerChildren: 0.08, delayChildren: 0.06 }}
       viewport={{ once: true, amount: 0.45 }}
       whileInView="visible"
     >
-      <motion.div
+      <m.div
         className={cx(
           'flex items-center gap-3 rounded-full border px-4 py-3',
           centered && 'justify-center',
@@ -97,8 +97,8 @@ export function AnimatedStepKicker({
         >
           {label}
         </span>
-      </motion.div>
-    </motion.div>
+      </m.div>
+    </m.div>
   )
 }
 
@@ -110,7 +110,7 @@ export function SectionHeader({
   dark = false
 }: SectionHeaderProps) {
   return (
-    <motion.div
+    <m.div
       className={cx(
         'mb-10 max-w-3xl md:mb-14',
         centered && 'mx-auto text-center',
@@ -128,6 +128,6 @@ export function SectionHeader({
       <p className={cx('max-w-2xl text-[1.08rem] leading-8 md:text-[1.16rem]', dark ? 'text-white/74' : 'text-forest-900/72', centered && 'mx-auto')}>
         {body}
       </p>
-    </motion.div>
+    </m.div>
   )
 }

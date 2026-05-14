@@ -4,15 +4,26 @@
     <meta charset="UTF-8" />
     <link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
     <link
-      href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800|rubik:300,400,500,600,700,800,900|dancing-script:600,700|open-sans:300,400,600,700,800&display=swap"
       rel="stylesheet"
+      href="https://fonts.bunny.net/css?family=manrope:400,600,700,800|rubik:400,500,600,700,800|dancing-script:600,700|open-sans:400,500,600,700,800&display=swap"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.bunny.net/css?family=manrope:400,600,700,800|rubik:400,500,600,700,800|dancing-script:600,700|open-sans:400,500,600,700,800&display=swap"
+      />
+    </noscript>
     <link
       rel="preload"
       as="image"
       href="/images/hero-sample-sunny-mercedes-03-mobile.webp"
       type="image/webp"
       media="(max-width: 639px)"
+      fetchpriority="high"
+      imagesizes="100vw"
+      imagesrcset="/images/hero-sample-sunny-mercedes-03-mobile.webp 1080w"
     />
     <link
       rel="preload"
@@ -20,6 +31,9 @@
       href="/images/hero-sample-sunny-mercedes-03.webp"
       type="image/webp"
       media="(min-width: 640px)"
+      fetchpriority="high"
+      imagesizes="100vw"
+      imagesrcset="/images/hero-sample-sunny-mercedes-03.webp 1600w"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta

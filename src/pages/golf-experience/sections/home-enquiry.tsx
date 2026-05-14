@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import { CheckCircle2, MessageCircle } from 'lucide-react'
 import { GeDualPhoneEnquiryCallRow } from '../components/ge-dual-phone-contact'
 import { GeQuickEnquiryForm } from '../components/ge-quick-enquiry-form'
@@ -92,7 +92,7 @@ export function GeHomeEnquiry() {
       className="relative bg-[linear-gradient(180deg,_#FAF8F4_0%,_#FFFFFF_62%)]"
     >
       <div className="grid gap-10 lg:grid-cols-[1fr_1.05fr] lg:items-start lg:gap-14">
-        <motion.div {...fadeUp}>
+        <m.div {...fadeUp}>
           <p className="font-ge text-[0.95rem] font-bold uppercase tracking-[0.16em] text-ge-orange sm:text-[1rem]">
             Get a quote
           </p>
@@ -125,9 +125,9 @@ export function GeHomeEnquiry() {
               </li>
             ))}
           </ul>
-        </motion.div>
+        </m.div>
 
-        <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.1 }}>
+        <m.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.1 }}>
           <GeQuickEnquiryForm
             title="Start your Costa del Sol quote"
             lead="A short brief is enough. We will fill in the details with you."
@@ -135,7 +135,7 @@ export function GeHomeEnquiry() {
             routeLabel="Homepage"
             formConfig={homeQuoteFormConfig}
           />
-        </motion.div>
+        </m.div>
       </div>
     </GeSection>
   )

@@ -1,4 +1,4 @@
-import { motion, type Transition } from 'framer-motion'
+import { m,  type Transition  } from 'framer-motion'
 import { ShieldCheck } from 'lucide-react'
 import { cx } from '../../../lib/utils'
 import { transportFleetInsuranceBannerCopy } from '../data/transport-service'
@@ -29,7 +29,7 @@ export function GeTransfersInsuranceBanner({
   const featured = variant === 'featured'
 
   return (
-    <motion.section
+    <m.section
       className={cx(
         'relative overflow-hidden text-left',
         featured
@@ -100,6 +100,6 @@ export function GeTransfersInsuranceBanner({
           </p>
         </div>
       </div>
-    </motion.section>
+    </m.section>
   )
 }

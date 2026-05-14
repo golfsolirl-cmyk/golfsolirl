@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { Quote, Star } from 'lucide-react'
 import { getSupabaseBrowserClient } from '../../../lib/supabase-client'
@@ -86,7 +86,7 @@ export function GeHomeTripadvisorReviews() {
       />
 
       <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
-        <motion.div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between" {...fadeUp}>
+        <m.div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between" {...fadeUp}>
           <div className="max-w-2xl">
             <p className="font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.22em] text-gs-green">{eyebrow}</p>
             <h2 className="mt-3 font-ge text-[1.85rem] font-extrabold leading-[1.08] tracking-[-0.02em] text-gs-dark sm:text-[2.15rem] lg:text-[2.35rem]">
@@ -108,11 +108,11 @@ export function GeHomeTripadvisorReviews() {
               {disclaimer}
             </p>
           </div>
-        </motion.div>
+        </m.div>
 
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
           {guestReviews.map((review, index) => (
-            <motion.article
+            <m.article
               key={review.id}
               className="group relative flex flex-col rounded-[1.65rem] border border-gs-gold/35 bg-gradient-to-b from-white to-gs-gold/[0.06] p-6 shadow-[0_18px_45px_rgba(6,59,42,0.07)] ring-1 ring-gs-dark/[0.04] transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-0.5 hover:border-gs-gold/60 hover:shadow-[0_24px_55px_rgba(6,59,42,0.1)] sm:p-7"
               {...fadeUp}
@@ -140,10 +140,10 @@ export function GeHomeTripadvisorReviews() {
                   Verified transfer review
                 </p>
               </div>
-            </motion.article>
+            </m.article>
           ))}
           {tripadvisorSampleReviews.map((review, index) => (
-            <motion.article
+            <m.article
               key={review.name}
               className="group relative flex flex-col rounded-[1.65rem] border border-ge-gray100 bg-gradient-to-b from-white to-ge-gray50/40 p-6 shadow-[0_18px_45px_rgba(6,59,42,0.07)] ring-1 ring-gs-dark/[0.04] transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-0.5 hover:border-gs-gold/35 hover:shadow-[0_24px_55px_rgba(6,59,42,0.1)] sm:p-7"
               {...fadeUp}
@@ -179,11 +179,11 @@ export function GeHomeTripadvisorReviews() {
                   {review.tripType}
                 </p>
               </div>
-            </motion.article>
+            </m.article>
           ))}
         </div>
 
-        <motion.div
+        <m.div
           className="mx-auto mt-12 flex max-w-2xl flex-col items-center gap-3 text-center sm:mt-14"
           {...fadeUp}
           transition={{ ...fadeUp.transition, delay: 0.2 }}
@@ -197,7 +197,7 @@ export function GeHomeTripadvisorReviews() {
             {ctaLabel}
           </a>
           <p className="max-w-md font-ge text-[0.72rem] leading-relaxed text-ge-gray500">{ctaNote}</p>
-        </motion.div>
+        </m.div>
       </div>
     </GeSection>
   )

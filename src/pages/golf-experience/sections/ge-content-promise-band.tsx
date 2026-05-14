@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { GeSection } from '../components/ge-section'
 import { transportPromiseStats } from '../data/transport-service'
@@ -29,7 +29,7 @@ export function GeContentPromiseBand({ eyebrow, title, body, bullets }: GeConten
       innerClassName="!pt-16 pb-14 sm:!pt-20 sm:pb-16 scroll-mt-28"
     >
       <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16">
-        <motion.div {...fadeUp}>
+        <m.div {...fadeUp}>
           <p className="font-ge text-[0.98rem] font-bold uppercase tracking-[0.16em] text-ge-orange sm:text-[0.9rem]">{eyebrow}</p>
           <h2 className="mt-3 font-ge text-[2.12rem] font-extrabold leading-[1.06] tracking-[0.005em] text-gs-green sm:text-[2.4rem] lg:text-[2.6rem]">{title}</h2>
           <p className="mt-5 font-ge text-[1.06rem] leading-8 text-ge-gray500 sm:text-[1.08rem] sm:leading-8">{body}</p>
@@ -44,9 +44,9 @@ export function GeContentPromiseBand({ eyebrow, title, body, bullets }: GeConten
               </li>
             ))}
           </ul>
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           className="grid grid-cols-2 gap-3 sm:gap-4"
           initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -66,7 +66,7 @@ export function GeContentPromiseBand({ eyebrow, title, body, bullets }: GeConten
               <p className="mt-2 font-ge text-[0.95rem] font-bold uppercase tracking-[0.12em] text-ge-gray500 sm:text-[0.82rem]">{stat.label}</p>
             </div>
           ))}
-        </motion.div>
+        </m.div>
       </div>
     </GeSection>
   )

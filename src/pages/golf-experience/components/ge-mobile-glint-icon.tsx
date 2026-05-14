@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import type { ComponentProps, ReactNode } from 'react'
 import { cx } from '../../../lib/utils'
 
@@ -19,18 +19,18 @@ const chromeInner =
 function GlintShimmerLayers() {
   return (
     <>
-      <motion.span
+      <m.span
         aria-hidden
         className="pointer-events-none absolute inset-0 overflow-hidden rounded-full"
         style={{ mixBlendMode: 'soft-light' }}
       >
-        <motion.span
+        <m.span
           className="absolute inset-y-0 w-[70%] -skew-x-[19deg] bg-gradient-to-r from-transparent via-white to-transparent opacity-80"
           animate={{ x: ['-150%', '170%'] }}
           transition={{ duration: 2.35, repeat: Infinity, repeatDelay: 2.4, ease: 'easeInOut' }}
         />
-      </motion.span>
-      <motion.span
+      </m.span>
+      <m.span
         aria-hidden
         className="pointer-events-none absolute inset-0 rounded-full"
         style={{

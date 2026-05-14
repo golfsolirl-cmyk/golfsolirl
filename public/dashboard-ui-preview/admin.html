@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Preview — Admin operations (mock)</title>
+    <link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
+    <link
+      href="https://fonts.bunny.net/css?family=open-sans:300,400,600,700,800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --gs-bg: #f4f7f5;
+        --gs-green: #0b6b45;
+        --gs-dark: #063b2a;
+        --gs-electric: #1ed760;
+        --gold: #d5c600;
+        --gold-light: #ebe486;
+        --ge-teal: #007c69;
+        --forest-100: #d9efd3;
+        --shadow: 0 24px 60px rgba(18, 42, 19, 0.12);
+        --radius: 2rem;
+        --font-ge: 'Open Sans', system-ui, sans-serif;
+        --font-body: var(--font-ge);
+        --font-display: var(--font-ge);
+        --page-bg: var(--gs-bg);
+        --card-bg: #fff;
+        --text: #063b2a;
+        --muted: rgba(6, 59, 42, 0.65);
+        --border: rgba(6, 59, 42, 0.1);
+        --hero-grad: linear-gradient(135deg, #0b6b45 0%, #163a13 55%, #063b2a 100%);
+        --chrome-h: 58px;
+      }
+      html.dark {
+        --page-bg: #0a1209;
+        --card-bg: #122016;
+        --text: #e3f5d3;
+        --muted: rgba(227, 245, 211, 0.65);
+        --border: rgba(227, 245, 211, 0.12);
+        --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+        --hero-grad: linear-gradient(135deg, #0d3020 0%, #0a2008 100%);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: var(--font-body);
+        background: var(--page-bg);
+        color: var(--text);
+        line-height: 1.68;
+        font-size: 1.125rem;
+        padding-top: var(--chrome-h);
+        transition: background 0.25s ease, color 0.25s ease;
+      }
+      .top-bar {
+        position: fixed;
+        inset: 0 0 auto 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        min-height: var(--chrome-h);
+        padding: 0.2rem 1.25rem;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        border-bottom: 1px solid rgba(6, 59, 42, 0.08);
+      }
+      html.dark .top-bar {
+        background: rgba(18, 32, 22, 0.92);
+        border-bottom-color: var(--border);
+      }
+      .top-bar .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        text-decoration: none;
+        color: inherit;
+      }
+      .top-bar .brand img {
+        height: 46px;
+        width: auto;
+        display: block;
+      }
+      .top-bar .brand strong {
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: 1rem;
+        letter-spacing: -0.01em;
+        line-height: 1.2;
+      }
+      .top-bar .brand small {
+        display: block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--ge-teal);
+        margin-top: 0.1rem;
+      }
+      .toggle-dark {
+        font-family: var(--font-body);
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.45rem 0.85rem;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--text);
+        cursor: pointer;
+      }
+      .wrap {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 1.35rem 1.25rem 2rem;
+      }
+      a.back {
+        display: inline-block;
+        margin-bottom: 1rem;
+        font-size: 0.9375rem;
+        font-weight: 700;
+        color: var(--ge-teal);
+      }
+      html.dark a.back {
+        color: var(--gold-light);
+      }
+      .hero {
+        border-radius: var(--radius);
+        padding: 1.5rem 1.35rem;
+        background: var(--hero-grad);
+        color: #fff;
+        margin-bottom: 1.25rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero::after {
+        content: '';
+        position: absolute;
+        right: -20%;
+        top: -50%;
+        width: 55%;
+        height: 160%;
+        background: radial-gradient(circle, rgba(213, 198, 0, 0.15) 0%, transparent 55%);
+        pointer-events: none;
+      }
+      .hero h1 {
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: 1.55rem;
+        margin: 0 0 0.35rem;
+        position: relative;
+        z-index: 1;
+      }
+      .hero p {
+        margin: 0;
+        font-size: 1rem;
+        opacity: 0.9;
+        max-width: 36rem;
+        line-height: 1.45;
+        position: relative;
+        z-index: 1;
+      }
+      .jumps {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        margin-top: 1rem;
+        position: relative;
+        z-index: 1;
+      }
+      .jump {
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        padding: 0.4rem 0.65rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        color: #fff;
+        cursor: default;
+      }
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.65rem;
+        margin-bottom: 1.25rem;
+      }
+      @media (min-width: 700px) {
+        .kpi-grid {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+      .kpi {
+        background: var(--card-bg);
+        border-radius: 1.35rem;
+        padding: 1rem 1.1rem;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        transition: transform 0.18s ease;
+      }
+      .kpi:hover {
+        transform: translateY(-2px);
+      }
+      .kpi span {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .kpi strong {
+        font-family: var(--font-display);
+        font-weight: 800;
+        display: block;
+        font-size: 1.65rem;
+        margin-top: 0.35rem;
+        color: var(--gs-green);
+      }
+      html.dark .kpi strong {
+        color: var(--gold-light);
+      }
+      .grid-2 {
+        display: grid;
+        gap: 1rem;
+      }
+      @media (min-width: 880px) {
+        .grid-2 {
+          grid-template-columns: 1.15fr 0.85fr;
+        }
+      }
+      .card {
+        background: var(--card-bg);
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        padding: 1.15rem 1.25rem 1.35rem;
+      }
+      .card h2 {
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: 1.1rem;
+        margin: 0 0 0.75rem;
+      }
+      .search {
+        width: 100%;
+        padding: 0.65rem 1rem;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--page-bg);
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 1rem;
+        margin-bottom: 1rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+      }
+      th {
+        text-align: left;
+        padding: 0.5rem 0.35rem;
+        color: var(--muted);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      td {
+        padding: 0.65rem 0.35rem;
+        border-top: 1px solid var(--border);
+      }
+      .pill-warn {
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.2rem 0.45rem;
+        border-radius: 6px;
+        background: rgba(255, 91, 45, 0.15);
+        color: #c2410c;
+      }
+      html.dark .pill-warn {
+        color: #fdba74;
+      }
+      .pill-ok {
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.2rem 0.45rem;
+        border-radius: 6px;
+        background: rgba(30, 215, 96, 0.15);
+        color: #166534;
+      }
+      html.dark .pill-ok {
+        color: #86efac;
+      }
+      .chart {
+        display: flex;
+        align-items: flex-end;
+        gap: 0.45rem;
+        height: 120px;
+        padding: 0.5rem 0 0;
+      }
+      .bar {
+        flex: 1;
+        border-radius: 0.5rem 0.5rem 0 0;
+        background: linear-gradient(180deg, var(--gold) 0%, #b89f0a 100%);
+        opacity: 0.85;
+        min-height: 18%;
+        transition: opacity 0.2s ease;
+      }
+      .bar:hover {
+        opacity: 1;
+      }
+      html.dark .bar {
+        background: linear-gradient(180deg, var(--gs-electric) 0%, var(--gs-green) 100%);
+      }
+      .feed {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .feed li {
+        padding: 0.65rem 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.9375rem;
+        line-height: 1.4;
+      }
+      .feed li:last-child {
+        border-bottom: none;
+      }
+      .feed time {
+        display: block;
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-top: 0.2rem;
+      }
+      .alert {
+        border-radius: 1rem;
+        padding: 0.75rem 1rem;
+        background: rgba(255, 91, 45, 0.1);
+        border: 1px solid rgba(255, 91, 45, 0.25);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
+      html.dark .alert {
+        background: rgba(255, 91, 45, 0.12);
+      }
+      .note {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-top: 1.25rem;
+        line-height: 1.5;
+      }
+      .component-map {
+        margin-top: 1.5rem;
+        padding: 1.25rem 1.35rem;
+        border-radius: var(--radius);
+        background: rgba(215, 235, 210, 0.35);
+        border: 1px solid var(--border);
+      }
+      html.dark .component-map {
+        background: rgba(30, 215, 96, 0.08);
+      }
+      .component-map h3 {
+        margin: 0 0 0.75rem;
+        font-size: 1.1rem;
+        font-family: var(--font-display);
+        color: var(--gs-green);
+      }
+      html.dark .component-map h3 {
+        color: var(--gold-light);
+      }
+      .component-map dl {
+        margin: 0;
+      }
+      .component-map dt {
+        font-weight: 800;
+        margin-top: 0.65rem;
+        font-size: 0.9375rem;
+      }
+      .component-map dt:first-child {
+        margin-top: 0;
+      }
+      .component-map dd {
+        margin: 0.25rem 0 0;
+        font-size: 0.875rem;
+        line-height: 1.45;
+        color: var(--muted);
+      }
+      .component-map code {
+        font-size: 0.92em;
+        color: var(--ge-teal);
+        font-weight: 600;
+      }
+      html.dark .component-map code {
+        color: var(--gold-light);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top-bar">
+      <a class="brand" href="/" aria-label="Golf Sol Ireland home">
+        <img src="/golfsol-crest-brand.svg" width="80" height="120" alt="" decoding="async" />
+        <span>
+          <strong>Operations desk</strong>
+          <small>Admin preview</small>
+        </span>
+      </a>
+      <button type="button" class="toggle-dark" id="darkToggle" aria-pressed="false">Dark mode</button>
+    </header>
+    <div class="wrap">
+      <a class="back" href="./index.html">← Preview hub</a>
+      <div class="alert">
+        <strong>System:</strong> all queues nominal (mock). This banner maps to “alerts / system status” in the spec.
+      </div>
+      <header class="hero">
+        <h1>Good afternoon — step through today’s queue</h1>
+        <p>
+          Website forms first, then packages and quotes, then drivers. Same look as the guest portal: calm cards, clear
+          jumps, no engineer jargon in primary copy.
+        </p>
+        <div class="jumps">
+          <span class="jump">1 · Forms</span>
+          <span class="jump">2 · Packages</span>
+          <span class="jump">3 · Drivers</span>
+          <span class="jump">Payments</span>
+          <span class="jump">Portal</span>
+        </div>
+      </header>
+      <section class="kpi-grid" aria-label="KPI summary (mock)">
+        <div class="kpi">
+          <span>New enquiries (24h)</span>
+          <strong>6</strong>
+        </div>
+        <div class="kpi">
+          <span>Awaiting quote</span>
+          <strong>3</strong>
+        </div>
+        <div class="kpi">
+          <span>Pipeline · allocated</span>
+          <strong>5</strong>
+        </div>
+        <div class="kpi">
+          <span>Portal logins</span>
+          <strong>12</strong>
+        </div>
+      </section>
+      <div class="grid-2">
+        <div class="card">
+          <h2>Guest queue</h2>
+          <input class="search" type="search" placeholder="Search name, email, or reference… (non-functional)" readonly />
+          <table>
+            <thead>
+              <tr>
+                <th>Guest</th>
+                <th>Reference</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Moira K.</td>
+                <td>GSOL-10490</td>
+                <td><span class="pill-warn">Needs quote</span></td>
+              </tr>
+              <tr>
+                <td>Society Dublin 4</td>
+                <td>GSOL-10482</td>
+                <td><span class="pill-ok">Proposal sent</span></td>
+              </tr>
+              <tr>
+                <td>James F.</td>
+                <td>GSOL-10471</td>
+                <td><span class="pill-ok">Paid deposit</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom: 1rem">
+            <h2>Enquiries trend (mock chart)</h2>
+            <div class="chart" aria-hidden="true">
+              <div class="bar" style="height: 45%"></div>
+              <div class="bar" style="height: 62%"></div>
+              <div class="bar" style="height: 38%"></div>
+              <div class="bar" style="height: 88%"></div>
+              <div class="bar" style="height: 55%"></div>
+              <div class="bar" style="height: 72%"></div>
+              <div class="bar" style="height: 95%"></div>
+            </div>
+          </div>
+          <div class="card">
+            <h2>Activity feed</h2>
+            <ul class="feed">
+              <li>
+                Proposal PDF published for GSOL-10482.
+                <time>Today · 11:02</time>
+              </li>
+              <li>
+                Transfer booking marked paid — Stripe receipt attached.
+                <time>Today · 09:41</time>
+              </li>
+              <li>
+                New website form: party of 12, Málaga corridor.
+                <time>Yesterday · 16:18</time>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <section class="component-map" aria-labelledby="map-admin-title">
+        <h3 id="map-admin-title">Mock blocks → production components</h3>
+        <dl>
+          <dt>Top chrome</dt>
+          <dd><code>GeNavbar</code> on live admin route · mock uses simplified bar</dd>
+          <dt>Hero + jump pills</dt>
+          <dd><code>AdminOperationsHubHero</code> · <code>src/components/admin-operations-hub-hero.tsx</code></dd>
+          <dt>KPI cards row</dt>
+          <dd>Summaries inline in <code>admin-dashboard-page.tsx</code> (same card language as <code>AdminOperationsSectionShell</code>)</dd>
+          <dt>Queue card + search + table</dt>
+          <dd>Account lookup / enquiry lists in <code>admin-dashboard-page.tsx</code> + <code>AdminAccountTransfersHub</code></dd>
+          <dt>Chart + activity column</dt>
+          <dd>Optional widgets — pair with portal pipeline views (<code>AdminTransferPipeline</code>, etc.)</dd>
+          <dt>Dark mode toggle</dt>
+          <dd>Mock only — production theme follows site / user prefs unless you add a class toggle</dd>
+        </dl>
+      </section>
+      <p class="note">
+        Maps spec sections: KPI cards, filters/search, table, charts widget, activity feed, alerts, dark mode, quick jump
+        pills. Real route: <code>/dashboard/admin</code>. Pair with
+        <code>.cursor/rules/admin-operations-dashboard.mdc</code> when implementing.
+      </p>
+    </div>
+    <script>
+      document.getElementById('darkToggle').addEventListener('click', function () {
+        var root = document.documentElement
+        var on = root.classList.toggle('dark')
+        this.setAttribute('aria-pressed', on ? 'true' : 'false')
+        this.textContent = on ? 'Light mode' : 'Dark mode'
+      })
+    </script>
+  </body>
+</html>

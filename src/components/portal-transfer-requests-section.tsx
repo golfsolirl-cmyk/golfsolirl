@@ -71,8 +71,8 @@ const DetailGrid = ({ rows }: { readonly rows: readonly ClientDataCardRow[] }) =
   <dl className="grid gap-0 divide-y divide-emerald-900/15 sm:grid-cols-2">
     {rows.map((row, idx) => (
       <div key={`${idx}-${row.label}`} className="px-4 py-3 sm:px-5">
-        <dt className="text-[0.62rem] font-extrabold uppercase tracking-[0.16em] text-emerald-200/90">{row.label}</dt>
-        <dd className="mt-1.5 text-sm font-medium leading-relaxed text-white/95">{row.value}</dd>
+        <dt className="text-xs font-extrabold uppercase tracking-[0.16em] text-emerald-200/90">{row.label}</dt>
+        <dd className="mt-1.5 text-base font-medium leading-relaxed text-white/95">{row.value}</dd>
       </div>
     ))}
   </dl>
@@ -155,8 +155,8 @@ export function PortalTransferRequestsSection(props: {
   return (
     <section ref={rootRef} aria-label="Linked requests" className="space-y-6">
       <div className="px-1 sm:px-0">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Linked requests</p>
-        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-forest-700">
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gold-600 sm:text-base">Linked requests</p>
+        <p className="mt-2 max-w-3xl text-base leading-relaxed text-forest-700 md:text-lg">
           {hasTransfers ? (
             <>
               Other map transfers on the same enquiry reference, plus your golf, hotel, and transfer message threads. Tap an interest
@@ -177,12 +177,12 @@ export function PortalTransferRequestsSection(props: {
         <header className="border-b border-ge-gray100 bg-gradient-to-r from-[#0f3d24]/95 via-[#143d28] to-[#0a2416] px-6 py-5 sm:px-8">
           <div className="flex flex-wrap items-center gap-2">
             <MapPinned className="h-4 w-4 text-gold-400" aria-hidden />
-            <p className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.22em] text-emerald-200/90">Transfer requests</p>
+            <p className="font-ge text-xs font-extrabold uppercase tracking-[0.14em] text-emerald-200/90 sm:text-sm">Transfer requests</p>
           </div>
           <h2 className="font-display mt-2 text-lg font-semibold tracking-tight text-white sm:text-xl">
             Map requests and saved trip routes
           </h2>
-          <p className="mt-2 max-w-2xl font-ge text-xs font-semibold uppercase leading-relaxed tracking-[0.12em] text-emerald-100/80">
+          <p className="mt-2 max-w-2xl font-ge text-sm font-semibold uppercase leading-relaxed tracking-[0.12em] text-emerald-100/80 sm:text-base">
             Shared with Golf Sol Ireland — Trip details opens your first submitted form snapshot plus related threads.
           </p>
         </header>
@@ -233,7 +233,7 @@ export function PortalTransferRequestsSection(props: {
               <div className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7 sm:py-4">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-ge text-[0.95rem] font-semibold leading-snug text-forest-950 sm:text-base">
+                    <p className="font-ge text-lg font-semibold leading-snug text-forest-950 sm:text-xl">
                       {b.pickup_label} → {b.dropoff_label}
                     </p>
                     {(() => {
@@ -249,7 +249,7 @@ export function PortalTransferRequestsSection(props: {
                       return (
                         <span
                           className={cx(
-                            'inline-flex shrink-0 items-center rounded-full border px-2.5 py-0.5 font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.12em]',
+                            'inline-flex shrink-0 items-center rounded-full border px-2.5 py-0.5 font-ge text-xs font-extrabold uppercase tracking-[0.12em]',
                             pillClass
                           )}
                         >
@@ -304,7 +304,7 @@ export function PortalTransferRequestsSection(props: {
                 >
                   <div className="overflow-hidden rounded-2xl border border-gold-500/30 shadow-[0_12px_40px_rgba(0,0,0,0.35)] ring-1 ring-white/10">
                     <div className="border-b border-white/10 bg-gradient-to-r from-emerald-950/90 to-[#0c2810] px-4 py-3 sm:px-5">
-                      <p className="text-[0.65rem] font-extrabold uppercase tracking-[0.18em] text-gold-300/90">First submitted form</p>
+                      <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-gold-300/90">First submitted form</p>
                       <p className="mt-1 font-display text-sm font-semibold text-white sm:text-base">
                         {cardKicker(kickerBuild, ref || undefined, kickerEnquiry)}
                       </p>
@@ -314,7 +314,7 @@ export function PortalTransferRequestsSection(props: {
                         </p>
                       ) : null}
                       {linkedPackageDiffers ? (
-                        <p className="mt-2 rounded-lg border border-gold-400/25 bg-black/25 px-3 py-2 text-[0.7rem] font-medium leading-snug text-gold-100/95">
+                        <p className="mt-2 rounded-lg border border-gold-400/25 bg-black/25 px-3 py-2 text-sm font-medium leading-snug text-gold-100/95">
                           Showing the earliest saved website snapshot for this reference. A newer package revision may exist in
                           &ldquo;Your packages&rdquo; — fields below match what you first sent.
                         </p>
@@ -333,7 +333,7 @@ export function PortalTransferRequestsSection(props: {
                     <div className="border-t border-white/10 bg-[#071910]/90 px-4 py-4 sm:px-5">
                       {siblingTransfers.length > 0 ? (
                         <div>
-                          <p className="flex items-center gap-2 text-[0.62rem] font-bold uppercase tracking-[0.14em] text-gold-300/90">
+                          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-gold-300/90">
                             <MapPin className="h-3.5 w-3.5" aria-hidden />
                             More transfers (same trip ref)
                           </p>
@@ -382,7 +382,7 @@ export function PortalTransferRequestsSection(props: {
       ) : (
         <div
           role="status"
-          className="rounded-2xl border border-dashed border-forest-200/90 bg-offwhite/80 px-5 py-4 text-sm text-forest-700 shadow-inner"
+          className="rounded-2xl border border-dashed border-forest-200/90 bg-offwhite/80 px-5 py-4 text-base text-forest-700 shadow-inner md:text-lg"
         >
           <p className="font-display font-semibold text-forest-900">No transfer requests yet</p>
           <p className="mt-1 leading-relaxed">
@@ -401,16 +401,16 @@ export function PortalTransferRequestsSection(props: {
         <div className="relative">
           <div className="flex flex-wrap items-center gap-2">
             <Sparkles className="h-4 w-4 text-gold-500" aria-hidden />
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Interest tickets</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gold-600 sm:text-base">Interest tickets</p>
           </div>
           <div className="mt-2 h-px max-w-[7rem] rounded-full bg-gradient-to-r from-gold-400 via-gold-300/80 to-transparent" />
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-forest-700">
+          <p className="mt-3 max-w-2xl text-base leading-relaxed text-forest-700 md:text-lg">
             Golf, hotel, and transfer threads from <span className="font-semibold text-forest-800">Add to your trip</span>. Tap a
             row to read the conversation — read-only here; reply via <span className="font-semibold text-forest-800">Message the team</span>.
           </p>
           <ul className="mt-5 grid gap-3 sm:grid-cols-1" aria-label="Interest ticket threads">
             {sortedTickets.length === 0 ? (
-              <li className="list-none rounded-2xl border border-dashed border-forest-200/90 bg-white/80 px-5 py-10 text-center text-sm leading-relaxed text-forest-600 shadow-inner">
+              <li className="list-none rounded-2xl border border-dashed border-forest-200/90 bg-white/80 px-5 py-10 text-center text-base leading-relaxed text-forest-600 shadow-inner md:text-lg">
                 <p className="font-medium text-forest-800">No tickets yet</p>
                 <p className="mt-2">
                   When you use <span className="font-semibold text-forest-900">Add to your trip</span> above, threads show here —
@@ -424,7 +424,7 @@ export function PortalTransferRequestsSection(props: {
                 return (
                   <li
                     key={t.id}
-                    className="overflow-hidden rounded-2xl border border-forest-200/90 bg-white/90 text-sm text-forest-900 shadow-sm ring-1 ring-forest-900/[0.04]"
+                    className="overflow-hidden rounded-2xl border border-forest-200/90 bg-white/90 text-base text-forest-900 shadow-sm ring-1 ring-forest-900/[0.04] md:text-lg"
                   >
                     <button
                       type="button"
@@ -451,7 +451,7 @@ export function PortalTransferRequestsSection(props: {
                         <span className="mt-0.5 block text-xs capitalize text-forest-600">
                           {t.status.replace(/_/g, ' ')} · {formatDateTimeDdMmYy(t.created_at)}
                         </span>
-                        <span className="mt-1 block text-[0.65rem] font-medium text-emerald-800/90">
+                        <span className="mt-1 block text-xs font-medium text-emerald-800/90">
                           {threadOpen ? 'Hide messages' : 'View full messages'}
                         </span>
                       </span>
@@ -465,8 +465,8 @@ export function PortalTransferRequestsSection(props: {
                     </button>
                     {threadOpen ? (
                       <div className="border-t border-forest-100 bg-offwhite/95 px-4 py-4">
-                        <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-gold-700">Your trip messages</p>
-                        <p className="mt-1 text-[0.65rem] leading-relaxed text-forest-600">
+                        <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-gold-700">Your trip messages</p>
+                        <p className="mt-1 text-xs leading-relaxed text-forest-600">
                           Read-only preview — use <span className="font-semibold text-forest-800">Message the team</span> to reply.
                         </p>
                         {interestThreadLoading ? (
@@ -498,15 +498,15 @@ export function PortalTransferRequestsSection(props: {
                                     />
                                   </div>
                                 ) : (
-                                  <p className="flex items-center gap-1.5 text-[0.58rem] font-extrabold uppercase tracking-[0.12em] text-forest-700">
+                                  <p className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-[0.12em] text-forest-700">
                                     <UserRound className="h-3.5 w-3.5 shrink-0 text-forest-600" aria-hidden />
                                     You
                                   </p>
                                 )}
-                                <p className="mt-1.5 whitespace-pre-wrap text-[0.8125rem] font-medium leading-relaxed text-forest-900">
+                                <p className="mt-1.5 whitespace-pre-wrap text-base font-medium leading-relaxed text-forest-900">
                                   {m.body}
                                 </p>
-                                <p className="mt-2 text-[0.65rem] tabular-nums text-forest-500">
+                                <p className="mt-2 text-xs tabular-nums text-forest-500">
                                   {formatDateTimeDdMmYy(m.created_at)}
                                 </p>
                               </li>

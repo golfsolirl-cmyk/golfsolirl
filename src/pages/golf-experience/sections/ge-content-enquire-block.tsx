@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import { CheckCircle2, MessageCircle } from 'lucide-react'
 import { GeDualPhoneEnquiryCallRow } from '../components/ge-dual-phone-contact'
 import { GeSection } from '../components/ge-section'
@@ -58,7 +58,7 @@ export function GeContentEnquireBlock({
       className="relative bg-[linear-gradient(180deg,_#FAF8F4_0%,_#FFFFFF_60%)]"
     >
       <div className="grid gap-10 lg:grid-cols-[1fr_1.05fr] lg:items-start lg:gap-14">
-        <motion.div {...fadeUp}>
+        <m.div {...fadeUp}>
           <p className="font-ge text-[0.95rem] font-bold uppercase tracking-[0.16em] text-ge-orange sm:text-[1rem]">{eyebrow}</p>
           <h2 className="mt-3 font-ge text-[2.15rem] font-extrabold leading-[1.05] tracking-[0.005em] text-gs-green sm:text-[2.55rem] lg:text-[2.75rem]">{title}</h2>
           <p className="mt-5 font-ge text-[1.08rem] leading-8 text-ge-gray500 sm:text-[1.12rem] sm:leading-8">{body}</p>
@@ -84,9 +84,9 @@ export function GeContentEnquireBlock({
               </li>
             ))}
           </ul>
-        </motion.div>
+        </m.div>
 
-        <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.1 }}>
+        <m.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.1 }}>
           <GeQuickEnquiryForm
             title={formTitle}
             lead={formLead}
@@ -94,7 +94,7 @@ export function GeContentEnquireBlock({
             routeLabel={routeLabel}
             formConfig={formConfig}
           />
-        </motion.div>
+        </m.div>
       </div>
     </GeSection>
   )

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence,  m  } from 'framer-motion'
 import { ChevronDown, Menu, X } from 'lucide-react'
 import { cx } from '../../../lib/utils'
 import { GeBrandLockup } from '../components/brand-lockup'
@@ -47,7 +47,7 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
   return (
     <header
       className={cx(
-        'fixed inset-x-0 top-0 z-40 transition-all duration-300',
+        'fixed inset-x-0 top-0 z-40 overflow-visible transition-all duration-300',
         isOverlay
           ? 'bg-transparent'
           : 'bg-white/95 shadow-[0_2px_12px_rgba(0,0,0,0.06)] backdrop-blur'
@@ -59,7 +59,7 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
           // Mobile (< lg): 3-column grid — phone | crest | menu share one vertical
           //   alignment axis (no absolute centering drift vs the scaled crest).
           // Desktop (lg+): flex row, brand left, nav right.
-          'relative mx-auto w-full max-w-[1340px] px-3 transition-all duration-300 sm:px-5',
+          'relative mx-auto w-full max-w-[1340px] overflow-visible px-3 transition-all duration-300 sm:px-5',
           'max-lg:grid max-lg:grid-cols-[auto_minmax(0,1fr)_auto] max-lg:items-center max-lg:gap-x-2 max-lg:gap-y-0',
           'lg:flex lg:items-center lg:justify-between lg:gap-4',
           isOverlay ? 'py-4' : 'py-2 max-lg:py-2.5 lg:py-1'
@@ -77,7 +77,7 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
         <a
           href="/#top"
           aria-label="GolfSol Ireland home"
-          className="mx-auto flex min-w-0 max-w-full shrink-0 justify-self-center transition-transform duration-300 max-lg:px-1 lg:mx-0 lg:justify-self-auto"
+          className="mx-auto flex min-w-0 max-w-full shrink-0 justify-self-center overflow-visible transition-transform duration-300 max-lg:px-1 lg:mx-0 lg:justify-self-auto lg:self-end"
         >
           <GeBrandLockup tone={isOverlay ? 'on-dark' : 'on-light'} mode={isOverlay ? 'overlay' : 'sticky'} />
         </a>
@@ -129,7 +129,7 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
 
       <AnimatePresence>
         {isMenuOpen ? (
-          <motion.div
+          <m.div
             id="ge-mobile-menu"
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -161,7 +161,7 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
                         </button>
                         <AnimatePresence initial={false}>
                           {openSubmenu === link.label ? (
-                            <motion.ul
+                            <m.ul
                               key="sublist"
                               initial={{ height: 0, opacity: 0 }}
                               animate={{ height: 'auto', opacity: 1 }}
@@ -180,7 +180,7 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
                                   </a>
                                 </li>
                               ))}
-                            </motion.ul>
+                            </m.ul>
                           ) : null}
                         </AnimatePresence>
                       </div>
@@ -212,7 +212,7 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
                 </div>
               ) : null}
             </nav>
-          </motion.div>
+          </m.div>
         ) : null}
       </AnimatePresence>
     </header>
@@ -299,7 +299,7 @@ function DesktopNavItem({ link, colorClass }: { readonly link: GeNavLink; readon
       </a>
       <AnimatePresence>
         {open && hasChildren && link.children ? (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 6 }}
@@ -315,7 +315,7 @@ function DesktopNavItem({ link, colorClass }: { readonly link: GeNavLink; readon
                 {child.label}
               </a>
             ))}
-          </motion.div>
+          </m.div>
         ) : null}
       </AnimatePresence>
     </div>

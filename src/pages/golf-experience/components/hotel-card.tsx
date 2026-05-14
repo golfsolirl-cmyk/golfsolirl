@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import { ArrowRight, MapPin, Star } from 'lucide-react'
 import { cx } from '../../../lib/utils'
 import type { GeHotel } from '../data/hotels'
@@ -24,7 +24,7 @@ export function GeHotelCard({ hotel }: HotelCardProps) {
   const isHighlight = Boolean(hotel.highlight)
 
   return (
-    <motion.a
+    <m.a
       href={hotel.href}
       className={cx(
         'group relative flex flex-col overflow-hidden rounded-2xl bg-white transition-all duration-500 hover:-translate-y-1.5',
@@ -101,6 +101,6 @@ export function GeHotelCard({ hotel }: HotelCardProps) {
         aria-hidden="true"
         className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-gradient-to-r from-gs-gold via-[#D5C600] to-ge-orange transition-transform duration-500 group-hover:scale-x-100"
       />
-    </motion.a>
+    </m.a>
   )
 }

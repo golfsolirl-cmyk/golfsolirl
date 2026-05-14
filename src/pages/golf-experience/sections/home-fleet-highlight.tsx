@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import { ArrowRight, Briefcase, Users } from 'lucide-react'
 import { GeButton } from '../components/ge-button'
 import { GeTransfersInsuranceBanner } from '../components/ge-transfers-insurance-banner'
@@ -23,7 +23,7 @@ export function GeHomeFleetHighlight() {
     <GeSection background="cream" className="pt-20 pb-20 sm:pt-24 sm:pb-24">
       <div className="grid gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-start lg:gap-12">
         <div className="flex min-w-0 flex-col gap-4 sm:gap-5">
-          <motion.div
+          <m.div
             className="relative isolate aspect-[4/3] min-h-[220px] w-full overflow-hidden rounded-[2rem] border border-[#d6ccb8] bg-gs-dark shadow-[0_26px_70px_rgba(6,59,42,0.18)] sm:aspect-[5/4] sm:min-h-[260px] lg:min-h-[300px]"
             {...fadeUp}
           >
@@ -45,7 +45,7 @@ export function GeHomeFleetHighlight() {
                 Premium Mercedes only
               </div>
             </div>
-          </motion.div>
+          </m.div>
 
           <GeTransfersInsuranceBanner
             variant="featured"
@@ -53,7 +53,7 @@ export function GeHomeFleetHighlight() {
           />
         </div>
 
-        <motion.div
+        <m.div
           className="relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/92 p-6 shadow-[0_24px_55px_rgba(69,53,24,0.1)] ring-1 ring-[#e5dcc8] backdrop-blur-sm sm:p-8"
           {...fadeUp}
           transition={{ ...fadeUp.transition, delay: 0.08 }}
@@ -117,7 +117,7 @@ export function GeHomeFleetHighlight() {
               </p>
             </div>
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </GeSection>
   )

@@ -16,7 +16,7 @@ export function PortalClientDataCard({ sections }: { readonly sections: readonly
         role="region"
         aria-label="Dashboard details"
       >
-        <p className="font-ge text-sm leading-relaxed text-ge-gray500">
+        <p className="font-ge text-base leading-relaxed text-ge-gray500 md:text-lg">
           When you submit forms on the website with this account&apos;s email, your answers will appear here in clear
           sections — nothing is shown until there is something to display.
         </p>
@@ -35,9 +35,9 @@ export function PortalClientDataCard({ sections }: { readonly sections: readonly
           )}
         >
           <header className="border-b border-ge-gray100 bg-ge-gray50/60 px-6 py-5 sm:px-8">
-            <h2 className="font-ge text-lg font-extrabold tracking-tight text-gs-dark sm:text-xl">{section.title}</h2>
+            <h2 className="font-ge text-xl font-extrabold tracking-tight text-gs-dark sm:text-2xl">{section.title}</h2>
             {section.subtitle ? (
-              <p className="mt-1 font-ge text-xs font-semibold uppercase tracking-[0.16em] text-ge-gray500">
+              <p className="mt-1 font-ge text-sm font-semibold uppercase tracking-[0.14em] text-ge-gray500">
                 {section.subtitle}
               </p>
             ) : null}
@@ -45,10 +45,10 @@ export function PortalClientDataCard({ sections }: { readonly sections: readonly
           <dl className="grid gap-0 divide-y divide-ge-gray100 sm:grid-cols-2">
             {section.rows.map((row) => (
               <div key={`${section.id}-${row.label}`} className="px-6 py-4 sm:px-8">
-                <dt className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.18em] text-gs-green">
+                <dt className="font-ge text-xs font-extrabold uppercase tracking-[0.14em] text-gs-green sm:text-sm">
                   {row.label}
                 </dt>
-                <dd className="mt-1.5 font-ge text-sm font-medium leading-relaxed text-gs-dark sm:text-[0.95rem]">
+                <dd className="mt-1.5 font-ge text-base font-medium leading-relaxed text-gs-dark sm:text-lg">
                   {row.value}
                 </dd>
               </div>

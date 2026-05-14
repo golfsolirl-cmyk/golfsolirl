@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import { ArrowRight, ChevronDown, Clock3, PlaneLanding, ShieldCheck } from 'lucide-react'
 import { GeButton } from '../components/ge-button'
 import { GeDualPhoneHeroButtons } from '../components/ge-dual-phone-contact'
@@ -55,7 +55,7 @@ export function TransportHero() {
 
           {/* Mobile composition — detached content card to avoid cramped overlays */}
           <div className="relative z-[12] -mt-16 px-4 md:hidden">
-            <motion.div
+            <m.div
               className="mx-auto w-full max-w-[34rem] overflow-hidden rounded-[1.75rem] border border-gs-gold/30 bg-gs-dark/95 p-5 shadow-[0_26px_60px_rgba(1,16,12,0.62)] backdrop-blur-xl"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -94,7 +94,7 @@ export function TransportHero() {
               <p className="mt-4 font-ge text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-white/68">
                 Irish-owned · Mercedes fleet · Replies inside 2 hours
               </p>
-            </motion.div>
+            </m.div>
           </div>
 
           {/* Vignette + readability scrims (left-anchored copy) */}
@@ -136,7 +136,7 @@ export function TransportHero() {
           {/* Overlay copy */}
           <div className="absolute inset-0 z-[12] hidden items-end pb-12 sm:items-center sm:pb-0 md:flex md:pt-8 lg:pt-12">
             <div className="mx-auto w-full max-w-[1180px] px-5 sm:px-8">
-              <motion.div className="max-w-2xl" {...fadeUp}>
+              <m.div className="max-w-2xl" {...fadeUp}>
                 <span className="inline-flex items-center gap-2 rounded-full border border-gs-gold/40 bg-gs-dark/35 px-3 py-1.5 font-ge text-[0.7rem] font-bold uppercase tracking-[0.18em] text-gs-gold backdrop-blur-sm sm:text-[0.78rem]">
                   <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-gs-gold shadow-[0_0_10px_rgba(213,198,0,0.7)]" />
                   {transportHeroCopy.eyebrow}
@@ -160,11 +160,11 @@ export function TransportHero() {
                 <p className="mt-5 font-ge text-sm font-semibold uppercase tracking-[0.16em] text-white/70 sm:text-[0.78rem]">
                   Irish-owned · Mercedes fleet · Replies inside 2 hours
                 </p>
-              </motion.div>
+              </m.div>
             </div>
           </div>
 
-          <motion.a
+          <m.a
             href="#transport-promise"
             onClick={(event) => handleScrollToFormTarget(event, '#transport-promise')}
             aria-label="Scroll to the GolfSol Ireland transport promise"
@@ -173,7 +173,7 @@ export function TransportHero() {
             transition={{ duration: 2, ease: 'easeInOut', repeat: Infinity }}
           >
             <ChevronDown className="h-5 w-5" />
-          </motion.a>
+          </m.a>
         </div>
       </div>
     </section>

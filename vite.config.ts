@@ -848,27 +848,59 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
   }
 })
 
+/** DNS + TLS handshake for Supabase before the deferred auth chunk executes */
+const supabasePreconnectInjectPlugin = (env: Record<string, string>) => ({
+  name: 'supabase-origin-preconnect',
+  transformIndexHtml(html: string) {
+    const raw = typeof env.VITE_SUPABASE_URL === 'string' ? env.VITE_SUPABASE_URL.trim() : ''
+    if (raw === '' || !/^https?:\/\//i.test(raw)) {
+      return html
+    }
+
+    try {
+      const origin = new URL(raw).origin
+      if (html.includes(`href="${origin}"`)) return html
+
+      const tag = `    <link rel="dns-prefetch" href="${origin}" />\n    <link rel="preconnect" href="${origin}" crossorigin />\n`
+      return html.replace('<head>', `<head>\n${tag}`)
+    } catch {
+      return html
+    }
+  }
+})
+
 export default defineConfig(({ mode }) => {
   const serverEnv = loadEnv(mode, process.cwd(), '')
 
   return {
-    plugins: [react(), stripHidethisPlugin(), devEnquiryApiPlugin(serverEnv)],
+    plugins: [
+      react(),
+      stripHidethisPlugin(),
+      supabasePreconnectInjectPlugin(serverEnv),
+      devEnquiryApiPlugin(serverEnv)
+    ],
     /**
      * Rolldown emits PLUGIN_TIMINGS when the Rust build exceeds ~3s and plugin hooks dominate vs link.
      * Informative only — suppress to keep CI logs readable (see https://rolldown.rs/options/checks).
+     * Use a single `build.rolldownOptions`: in Vite 8, `build.rollupOptions` is a deprecated alias of the
+     * same object; splitting options across both can drop merges (e.g. `checks`) so warnings still print.
      */
     build: {
-      rollupOptions: {
+      target: 'es2022',
+      sourcemap: false,
+      rolldownOptions: {
         output: {
           manualChunks(id) {
-            if (!id.includes('node_modules')) return
+            if (!id.includes('node_modules')) return undefined
             if (id.includes('leaflet')) return 'leaflet'
             if (id.includes('framer-motion')) return 'motion'
-            if (id.includes('jspdf') || id.includes('html2canvas') || id.includes('pdf-lib')) return 'pdf'
+            if (id.includes('html2canvas')) return 'html2canvas'
+            if (id.includes('jspdf')) return 'jspdf'
+            if (id.includes('pdf-lib')) return 'vendor-pdf-lib'
+            if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) return 'vendor-react'
+            if (id.includes('@supabase')) return 'vendor-supabase'
           }
-        }
-      },
-      rolldownOptions: {
+        },
         checks: {
           pluginTimings: false
         }

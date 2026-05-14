@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import type { LucideIcon } from 'lucide-react'
 import { MapPin, PhoneCall, Users } from 'lucide-react'
 import { IrishOwnedSeal } from '../components/irish-owned-seal'
@@ -36,7 +36,7 @@ export function GeFacts() {
       />
 
       <div className="grid gap-14 lg:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] lg:items-start lg:gap-16">
-        <motion.div className="flex flex-col items-center text-center lg:items-start lg:text-left" {...fadeUp}>
+        <m.div className="flex flex-col items-center text-center lg:items-start lg:text-left" {...fadeUp}>
           <div className="inline-flex flex-col items-center gap-3 lg:items-start">
             <p className="font-ge text-[0.78rem] font-extrabold uppercase tracking-[0.22em] text-gs-green sm:text-[0.82rem]">
               {factsCopy.eyebrow}
@@ -52,13 +52,13 @@ export function GeFacts() {
           <div className="mt-10">
             <IrishOwnedSeal size={188} className="drop-shadow-[0_16px_40px_rgba(6,59,42,0.22)]" />
           </div>
-        </motion.div>
+        </m.div>
 
         <div className="flex flex-col gap-5 sm:gap-6">
           {factsCopy.pillars.map((pillar, index) => {
             const Icon = pillarIcons[index] ?? Users
             return (
-              <motion.article
+              <m.article
                 key={pillar.title}
                 className="group relative overflow-hidden rounded-[1.65rem] border border-gs-green/10 bg-white/95 p-6 shadow-[0_20px_50px_rgba(6,59,42,0.07)] ring-1 ring-gs-green/[0.04] transition-shadow duration-300 hover:shadow-[0_26px_60px_rgba(6,59,42,0.1)] sm:p-7"
                 {...fadeUp}
@@ -85,7 +85,7 @@ export function GeFacts() {
                     </p>
                   </div>
                 </div>
-              </motion.article>
+              </m.article>
             )
           })}
         </div>

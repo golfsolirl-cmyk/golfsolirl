@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import { GeSection } from '../components/ge-section'
 import type { GeContentPageSection } from '../data/content-pages'
@@ -37,17 +37,17 @@ export function GeContentStoryGrid({ eyebrow, title, lead, cards }: GeContentSto
       innerClassName="!pt-20 pb-20 sm:!pt-24 sm:pb-24 scroll-mt-28"
       className="relative"
     >
-      <motion.div className="mx-auto max-w-3xl text-center" {...fadeUp}>
+      <m.div className="mx-auto max-w-3xl text-center" {...fadeUp}>
         <p className="font-ge text-[0.95rem] font-bold uppercase tracking-[0.18em] text-gs-gold sm:text-[1rem]">{eyebrow}</p>
         <h2 className="mt-3 font-ge text-[2.12rem] font-extrabold leading-[1.06] tracking-[0.01em] text-white sm:text-[2.45rem] lg:text-[2.7rem]">{title}</h2>
         <p className="mx-auto mt-4 max-w-2xl font-ge text-[1.06rem] leading-8 text-white/85 sm:text-[1.12rem]">{lead}</p>
-      </motion.div>
+      </m.div>
 
       <div
         className={`mt-14 grid gap-7 ${cards.length === 1 ? 'md:max-w-lg md:mx-auto' : ''} ${cards.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'}`}
       >
         {cards.map((card, i) => (
-          <motion.article
+          <m.article
             key={card.section.title}
             className="group relative flex flex-col overflow-hidden rounded-2xl bg-gs-dark/40 ring-1 ring-white/10 shadow-[0_22px_60px_rgba(0,0,0,0.45)] transition-all duration-500 hover:-translate-y-1 hover:ring-gs-gold/40"
             {...fadeUp}
@@ -91,7 +91,7 @@ export function GeContentStoryGrid({ eyebrow, title, lead, cards }: GeContentSto
                 </p>
               ) : null}
             </div>
-          </motion.article>
+          </m.article>
         ))}
       </div>
     </GeSection>

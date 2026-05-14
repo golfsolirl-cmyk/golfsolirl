@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import { Send } from 'lucide-react'
 import { BookedDatesAvailabilityNotice } from '../../../components/booked-dates-availability-notice'
 import { GeButton } from './ge-button'
@@ -380,7 +380,7 @@ export function TransportHeroEnquiryForm() {
       : null
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: 'easeOut', delay: 0.12 }}
@@ -661,6 +661,6 @@ export function TransportHeroEnquiryForm() {
           </>
         )}
       </div>
-    </motion.div>
+    </m.div>
   )
 }

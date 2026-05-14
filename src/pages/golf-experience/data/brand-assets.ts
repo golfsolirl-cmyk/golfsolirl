@@ -1,5 +1,9 @@
-/** Crest SVG lockup with Ireland / Spain flags for navbar and footer. */
-export const golfsolCrestFooterPng = '/golfsol-crest.svg'
+import { GOLFSOL_BRAND_LOGO, GOLFSOL_BRAND_LOGO_INTRINSIC } from '../../../lib/brand-logo-assets'
+
+export { GOLFSOL_BRAND_LOGO, GOLFSOL_BRAND_LOGO_INTRINSIC }
+
+/** Primary crest URL for prompts / single-URL uses (SVG; UI uses `BrandLogoPicture`). */
+export const golfsolCrestFooterPng = GOLFSOL_BRAND_LOGO.svg
 
 /**
  * Append to image-generation prompts when the user asks for a branded premium shot.

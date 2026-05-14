@@ -2,13 +2,12 @@ import { ChevronRight } from 'lucide-react'
 import { FaBluesky, FaFacebookF, FaLinkedinIn, FaWhatsapp } from 'react-icons/fa6'
 import { integrationRegistry } from '../config/integrations'
 import { FooterCompanyContact } from './footer-company-contact'
+import { FooterBrandLogoPicture } from './brand-logo-picture'
 import { AmbientGolfBall } from './ui/ambient-golf-ball'
 import { footerGroups, footerSocialLinks } from '../data/site-content'
+import { GOLFSOL_BRAND_LOGO_INTRINSIC } from '../lib/brand-logo-assets'
 import { useAuth } from '../providers/auth-provider'
 import type { RefObject } from 'react'
-
-// Crest lives in /workspace/public so Vite serves it at the site root.
-const golfsolCrest = '/golfsol-crest.svg'
 
 const footerSocialIconMap = {
   LinkedIn: FaLinkedinIn,
@@ -29,15 +28,14 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
   const dashboardHref = profile?.role === 'admin' ? '/dashboard/admin' : '/dashboard'
 
   return (
-    <footer ref={footerRef} className="relative overflow-hidden border-t border-white/10 bg-forest-950 px-6 py-12 text-white">
+    <footer ref={footerRef} className="relative overflow-x-hidden border-t border-white/10 bg-forest-950 px-6 py-12 text-white">
       <AmbientGolfBall className="right-[3%] top-2 opacity-75 xl:right-[6%]" size="sm" tone="footer" />
       <div className="mx-auto flex max-w-7xl flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-md">
-          <img
-            src={golfsolCrest}
+          <FooterBrandLogoPicture
             alt="Golf Sol Ireland"
-            width={320}
-            height={213}
+            width={GOLFSOL_BRAND_LOGO_INTRINSIC.width}
+            height={GOLFSOL_BRAND_LOGO_INTRINSIC.height}
             loading="lazy"
             decoding="async"
             className="h-auto w-[14rem] select-none drop-shadow-[0_12px_28px_rgba(0,0,0,0.45)] sm:w-[16rem] md:w-[18rem]"

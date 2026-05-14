@@ -131,12 +131,12 @@ export function PortalInvoicesPanel(props: {
   const itinerarySection = enquiryLite ? buildEnquiryItinerarySection(enquiryLite) : null
 
   if (loading && rows.length === 0) {
-    return <p className="text-sm font-medium text-forest-600">Loading trip invoices…</p>
+    return <p className="text-base font-medium text-forest-600 md:text-lg">Loading trip invoices…</p>
   }
 
   if (error) {
     return (
-      <div className="rounded-3xl border border-amber-200/90 bg-amber-50/90 px-5 py-4 text-sm text-amber-950 shadow-soft">
+      <div className="rounded-3xl border border-amber-200/90 bg-amber-50/90 px-5 py-4 text-base text-amber-950 shadow-soft md:text-lg">
         <p className="font-medium">Could not load invoices.</p>
         <p className="mt-2 text-amber-900/85">{error}</p>
       </div>
@@ -151,9 +151,9 @@ export function PortalInvoicesPanel(props: {
     <section className="rounded-[2rem] border border-fairway-200/80 bg-gradient-to-br from-white via-offwhite/40 to-fairway-50/30 p-6 shadow-soft md:p-8">
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-600">Trip invoices</p>
-          <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Your itinerary &amp; payment</h2>
-          <p className="mt-2 max-w-2xl text-sm text-forest-600">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gold-600 sm:text-base">Trip invoices</p>
+          <h2 className="font-display mt-2 text-3xl font-semibold text-forest-950 sm:text-[2rem]">Your itinerary &amp; payment</h2>
+          <p className="mt-2 max-w-2xl text-base text-forest-600 md:text-lg">
             Each row below is a priced response from Golf Sol. Open one to see what you submitted and your invoice-style summary. Pay
             securely with Stripe when status shows due.
           </p>
@@ -174,7 +174,7 @@ export function PortalInvoicesPanel(props: {
             type="button"
           >
             {row.invoice_number}
-            <span className="ml-2 font-mono normal-case tracking-normal text-[10px] opacity-90">
+            <span className="ml-2 font-mono normal-case tracking-normal text-xs opacity-90 sm:text-sm">
               {row.status === 'paid' ? '· Paid' : '· Due'}
             </span>
           </button>
@@ -184,22 +184,22 @@ export function PortalInvoicesPanel(props: {
       {selected ? (
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
           <div className="rounded-2xl border border-forest-100 bg-white p-5 shadow-inner md:p-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gold-600">Card 1 — Your submission</p>
-            <h3 className="font-display mt-2 text-lg font-semibold text-forest-950">
+            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-600 sm:text-base">Card 1 — Your submission</p>
+            <h3 className="font-display mt-2 text-xl font-semibold text-forest-950 sm:text-2xl">
               {itinerarySection?.title ?? `Enquiry ${selected.enquiry_reference_id}`}
             </h3>
-            {itinerarySection?.subtitle ? <p className="mt-1 text-xs text-forest-500">{itinerarySection.subtitle}</p> : null}
+            {itinerarySection?.subtitle ? <p className="mt-1 text-sm text-forest-500 sm:text-base">{itinerarySection.subtitle}</p> : null}
             {itinerarySection && itinerarySection.rows.length > 0 ? (
               <dl className="mt-4 grid gap-3 sm:grid-cols-1">
                 {itinerarySection.rows.map((r) => (
                   <div className="rounded-xl border border-forest-100 bg-offwhite/60 px-3 py-2.5" key={r.label}>
-                    <dt className="text-[10px] font-semibold uppercase tracking-[0.12em] text-gold-600">{r.label}</dt>
-                    <dd className="mt-1 whitespace-pre-wrap break-words text-sm font-medium text-forest-900">{r.value}</dd>
+                    <dt className="text-xs font-semibold uppercase tracking-[0.1em] text-gold-600 sm:text-sm">{r.label}</dt>
+                    <dd className="mt-1 whitespace-pre-wrap break-words text-base font-medium text-forest-900 sm:text-lg">{r.value}</dd>
                   </div>
                 ))}
               </dl>
             ) : (
-              <p className="mt-4 text-sm text-forest-600">
+              <p className="mt-4 text-base text-forest-600 md:text-lg">
                 We linked this invoice to reference <span className="font-mono">{selected.enquiry_reference_id}</span>
                 {joinedEnquiry?.full_name ? (
                   <>
@@ -213,19 +213,19 @@ export function PortalInvoicesPanel(props: {
           </div>
 
           <div className="rounded-2xl border border-forest-900/15 bg-forest-950 p-5 text-white shadow-lg md:p-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gold-300">Card 2 — Invoice summary</p>
-            <h3 className="font-display mt-2 text-lg font-semibold text-white">{selected.invoice_number}</h3>
-            <p className="mt-3 text-sm text-white/80">
+            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-300 sm:text-base">Card 2 — Invoice summary</p>
+            <h3 className="font-display mt-2 text-xl font-semibold text-white sm:text-2xl">{selected.invoice_number}</h3>
+            <p className="mt-3 text-base text-white/80 md:text-lg">
               Account reference:{' '}
               <span className="font-mono font-semibold text-gold-200">
                 {props.accountReferenceLabel?.trim() || '— assign in portal / ask admin'}
               </span>
             </p>
-            <p className="mt-2 text-sm text-white/80">
+            <p className="mt-2 text-base text-white/80 md:text-lg">
               Trip reference: <span className="font-mono text-white">{selected.enquiry_reference_id}</span>
             </p>
             <p className="mt-4 font-display text-3xl font-bold text-gold-300">{formatEurFromCents(selected.amount_cents)}</p>
-            <p className="mt-1 text-xs uppercase tracking-[0.14em] text-white/55">
+            <p className="mt-1 text-sm uppercase tracking-[0.14em] text-white/55">
               {selected.status === 'paid' ? 'Paid — thank you' : 'Payment due'}
             </p>
             {selected.status !== 'paid' && selected.stripe_checkout_url ? (
@@ -239,11 +239,11 @@ export function PortalInvoicesPanel(props: {
                 Pay now
               </LuxuryButton>
             ) : selected.status !== 'paid' ? (
-              <p className="mt-4 text-sm text-amber-200/90">Checkout link is not ready — refresh the page or contact Golf Sol.</p>
+              <p className="mt-4 text-base text-amber-200/90 md:text-lg">Checkout link is not ready — refresh the page or contact Golf Sol.</p>
             ) : (
-              <p className="mt-4 text-sm text-emerald-200/90">This invoice is marked paid. Keep the PDF from your email for records.</p>
+              <p className="mt-4 text-base text-emerald-200/90 md:text-lg">This invoice is marked paid. Keep the PDF from your email for records.</p>
             )}
-            <p className="mt-6 text-[11px] leading-relaxed text-white/45">
+            <p className="mt-6 text-xs leading-relaxed text-white/45 sm:text-sm">
               A matching PDF was attached to your email. Card totals are inclusive of the amount we quoted for this trip row.
             </p>
           </div>

@@ -31,13 +31,13 @@ export function AdminOperationsSectionShell(props: {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0 flex-1">
               {props.kicker ? (
-                <p className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.22em] text-gold-600">{props.kicker}</p>
+                <p className="font-ge text-xs font-extrabold uppercase tracking-[0.18em] text-gold-600 sm:text-sm">{props.kicker}</p>
               ) : null}
               {props.title ? (
-                <h2 className="font-display mt-2 text-xl font-semibold tracking-tight text-forest-950 sm:text-2xl">{props.title}</h2>
+                <h2 className="font-display mt-2 text-2xl font-semibold tracking-tight text-forest-950 sm:text-3xl">{props.title}</h2>
               ) : null}
               {props.description ? (
-                <div className="mt-2 max-w-3xl text-sm leading-relaxed text-forest-700">{props.description}</div>
+                <div className="mt-2 max-w-3xl text-base leading-relaxed text-forest-700 md:text-lg">{props.description}</div>
               ) : null}
             </div>
             {props.headerAside ? <div className="flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center">{props.headerAside}</div> : null}

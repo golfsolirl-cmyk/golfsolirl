@@ -1,6 +1,6 @@
 /**
- * Rebuilds `public/images/hero-sample-sunny-mercedes-03` (2:1 desktop) and
- * `hero-sample-sunny-mercedes-03-mobile` (9:16 phone — simplified overlay vs desktop).
+ * Rebuilds `public/images/hero-sample-sunny-mercedes-03` (~1920×960, 2:1 desktop) and
+ * `hero-sample-sunny-mercedes-03-mobile` (~1296×2304, 9:16 phone — simplified overlay vs desktop).
  *
  * Usage: node scripts/rebuild-hero-sample-03.mjs
  */
@@ -14,28 +14,45 @@ const root = join(__dirname, '..')
 const fleetPath = join(root, 'public', 'images', 'transport-fleet-lineup.jpg')
 const outDir = join(root, 'public', 'images')
 
-const width = 1600
-const height = 800
+/** Logical coordinate space for desktop overlay art (2:1). */
+const deskLogicalW = 1600
+const deskLogicalH = 800
 
-/** Portrait hero for narrow viewports (matches GeHero max-width:639px) */
-const mobileWidth = 1080
-const mobileHeight = 1920
+/** Raster exports — higher res + viewBox scaling keeps layout identical but sharper on retina. */
+const deskOutW = 1920
+const deskOutH = 960
+
+/** Portrait hero logical + export (matches GeHero 9:16 family). */
+const mobileLogicalW = 1080
+const mobileLogicalH = 1920
+const mobileOutW = 1296
+const mobileOutH = 2304
+
+/**
+ * Homepage / Tailwind `gs-gold` family — mustard sport gold, not lemon yellow.
+ * See tailwind.config.js: gs.gold `#D5C600`, gs-gold-light `#EBE486`.
+ */
+const BRAND_GOLD = '#D5C600'
+const BRAND_GOLD_DEEP = '#A59D13'
+const BRAND_GOLD_LIGHT = '#EBE486'
+const BRAND_GOLD_CREAM = '#EDE9CE'
 
 const variant = {
   tint: '#0b4934',
-  accent: '#f4c934',
+  accent: BRAND_GOLD,
   crop: 'entropy',
   titleY: 290,
-  background: { brightness: 1.12, saturation: 1.28, hue: 0 },
+  /** Slightly restrained saturation so the fleet photo stays premium, not neon. */
+  background: { brightness: 1.07, saturation: 1.18, hue: 0 },
 }
 
 /** Call line — horizontal centre (BOOK NOW is a live HTML button on the page). */
 const ctaCenterX = 1160 + 360 / 2
 
-function overlaySvg() {
+function overlaySvg(outW, outH) {
   const { tint, accent, titleY } = variant
   return Buffer.from(`
-<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+<svg width="${outW}" height="${outH}" viewBox="0 0 ${deskLogicalW} ${deskLogicalH}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="leftPanel" x1="0" x2="1" y1="0" y2="0">
       <stop offset="0" stop-color="${tint}" stop-opacity="0.96"/>
@@ -44,31 +61,31 @@ function overlaySvg() {
       <stop offset="1" stop-color="${tint}" stop-opacity="0.06"/>
     </linearGradient>
     <linearGradient id="goldBar" x1="0" x2="1" y1="0" y2="0">
-      <stop offset="0" stop-color="#f8d84e"/>
-      <stop offset="0.5" stop-color="#ffe77a"/>
-      <stop offset="1" stop-color="#f0bf26"/>
+      <stop offset="0" stop-color="${BRAND_GOLD_DEEP}"/>
+      <stop offset="0.48" stop-color="${BRAND_GOLD}"/>
+      <stop offset="1" stop-color="${BRAND_GOLD_LIGHT}"/>
     </linearGradient>
     <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
       <feDropShadow dx="0" dy="14" stdDeviation="12" flood-color="#001f16" flood-opacity="0.32"/>
     </filter>
   </defs>
 
-  <rect width="${width}" height="${height}" fill="url(#leftPanel)"/>
-  <rect x="0" y="0" width="${width}" height="72" fill="url(#goldBar)"/>
-  <rect x="0" y="72" width="${width}" height="2" fill="#ffffff" opacity="0.34"/>
+  <rect width="${deskLogicalW}" height="${deskLogicalH}" fill="url(#leftPanel)"/>
+  <rect x="0" y="0" width="${deskLogicalW}" height="72" fill="url(#goldBar)"/>
+  <rect x="0" y="72" width="${deskLogicalW}" height="2" fill="#ffffff" opacity="0.34"/>
   <text x="78" y="47" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="900" letter-spacing="15" fill="#073d2b">MALAGA</text>
   <text x="382" y="47" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="900" fill="#073d2b">→</text>
   <text x="495" y="47" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="900" letter-spacing="15" fill="#073d2b">COSTA DEL SOL GOLF TRANSFERS</text>
 
   <g filter="url(#softShadow)">
-    <rect x="58" y="102" width="305" height="48" rx="24" fill="#0e7458" opacity="0.92" stroke="#d9c866" stroke-opacity="0.45"/>
+    <rect x="58" y="102" width="305" height="48" rx="24" fill="#0e7458" opacity="0.92" stroke="${BRAND_GOLD}" stroke-opacity="0.42"/>
     <text x="93" y="133" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="900" letter-spacing="5" fill="#f8f3d0">MALAGA ARRIVALS</text>
 
-    <rect x="980" y="102" width="372" height="48" rx="24" fill="#0e7458" opacity="0.92" stroke="#d9c866" stroke-opacity="0.45"/>
+    <rect x="980" y="102" width="372" height="48" rx="24" fill="#0e7458" opacity="0.92" stroke="${BRAND_GOLD}" stroke-opacity="0.42"/>
     <text x="1021" y="133" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="900" letter-spacing="5" fill="#f8f3d0">COSTA DEL SOL TEE-OFF</text>
 
     <rect x="58" y="172" width="812" height="42" rx="21" fill="#028a56" opacity="0.94" stroke="#59d56f" stroke-opacity="0.75"/>
-    <text x="97" y="199" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="900" letter-spacing="4" fill="#fff4ad">WE MEET YOU AT THE GATE · AND OFF TO THE COURSE</text>
+    <text x="97" y="199" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="900" letter-spacing="4" fill="${BRAND_GOLD_CREAM}">WE MEET YOU AT THE GATE · AND OFF TO THE COURSE</text>
   </g>
 
   <g font-family="Arial, Helvetica, sans-serif" font-weight="900">
@@ -83,8 +100,8 @@ function overlaySvg() {
     <tspan x="60" dy="42">of from the carousel to the first cut.</tspan>
   </text>
 
-  <line x1="0" y1="565" x2="${width}" y2="565" stroke="${accent}" stroke-width="4" opacity="0.9"/>
-  <rect x="0" y="568" width="${width}" height="232" fill="${tint}" opacity="0.88"/>
+  <line x1="0" y1="565" x2="${deskLogicalW}" y2="565" stroke="${accent}" stroke-width="4" opacity="0.9"/>
+  <rect x="0" y="568" width="${deskLogicalW}" height="232" fill="${tint}" opacity="0.88"/>
 
   <g font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="900" fill="#ffffff">
     <circle cx="74" cy="650" r="24" fill="#1dcf65"/>
@@ -103,7 +120,7 @@ function overlaySvg() {
   </g>
 
   <g filter="url(#softShadow)">
-    <text x="${ctaCenterX}" y="738" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="900" letter-spacing="5" fill="#fff2b1">CALL +353 87 446 4766</text>
+    <text x="${ctaCenterX}" y="738" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="900" letter-spacing="5" fill="${BRAND_GOLD_LIGHT}">CALL +353 87 446 4766</text>
   </g>
 
   <g transform="translate(1396 116)">
@@ -113,23 +130,23 @@ function overlaySvg() {
     <text x="70" y="93" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="900" letter-spacing="3" fill="${accent}">SERVICE</text>
   </g>
 
-  <rect x="0" y="0" width="${width}" height="${height}" fill="none" stroke="#f1cf55" stroke-opacity="0.26" stroke-width="6"/>
+  <rect x="0" y="0" width="${deskLogicalW}" height="${deskLogicalH}" fill="none" stroke="${BRAND_GOLD}" stroke-opacity="0.28" stroke-width="6"/>
 </svg>`)
 }
 
 /**
  * Portrait 9:16 — **mobile-only** simplified art direction: fewer blocks, more air,
  * centred type. Omits desktop pills, green strip, checklist wall, and 24/7 seal.
- * Desktop `overlaySvg()` is unchanged.
+ * Desktop overlay uses the same logical layout scaled via viewBox.
  */
-function overlaySvgMobile() {
+function overlaySvgMobile(outW, outH) {
   const { tint, accent } = variant
-  const w = mobileWidth
-  const h = mobileHeight
+  const w = mobileLogicalW
+  const h = mobileLogicalH
   const cx = w / 2
   const barH = 96
   return Buffer.from(`
-<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+<svg width="${outW}" height="${outH}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <!-- Softer than desktop left panel: let van + course show through -->
     <linearGradient id="mLeftPanel" x1="0" x2="1" y1="0" y2="0">
@@ -139,9 +156,9 @@ function overlaySvgMobile() {
       <stop offset="1" stop-color="${tint}" stop-opacity="0.02"/>
     </linearGradient>
     <linearGradient id="mGoldBar" x1="0" x2="1" y1="0" y2="0">
-      <stop offset="0" stop-color="#f8d84e"/>
-      <stop offset="0.5" stop-color="#ffe77a"/>
-      <stop offset="1" stop-color="#f0bf26"/>
+      <stop offset="0" stop-color="${BRAND_GOLD_DEEP}"/>
+      <stop offset="0.48" stop-color="${BRAND_GOLD}"/>
+      <stop offset="1" stop-color="${BRAND_GOLD_LIGHT}"/>
     </linearGradient>
     <linearGradient id="mLowerWash" gradientUnits="userSpaceOnUse" x1="0" y1="720" x2="0" y2="${h}">
       <stop offset="0" stop-color="${tint}" stop-opacity="0"/>
@@ -185,30 +202,30 @@ function overlaySvgMobile() {
   <rect x="0" y="744" width="${w}" height="${h - 744}" fill="url(#mLowerWash)"/>
 
   <g filter="url(#mTrustEmph)" font-family="Arial, Helvetica, sans-serif" font-weight="900">
-    <text x="${cx}" y="808" text-anchor="middle" font-size="38" letter-spacing="5" fill="#fff8dc">IRISH-OWNED · GOLF-BAG FRIENDLY</text>
+    <text x="${cx}" y="808" text-anchor="middle" font-size="38" letter-spacing="5" fill="${BRAND_GOLD_CREAM}">IRISH-OWNED · GOLF-BAG FRIENDLY</text>
     <text x="${cx}" y="872" text-anchor="middle" font-size="46" letter-spacing="3" fill="#ffffff">
       <tspan x="${cx}" dy="0">ALL TRANSFERS</tspan>
       <tspan x="${cx}" dy="52" font-size="46">FULLY INSURED</tspan>
     </text>
-    <text x="${cx}" y="1008" text-anchor="middle" font-size="36" letter-spacing="3" fill="#ffe566">IRISH &amp; SPANISH PHONE SUPPORT</text>
+    <text x="${cx}" y="1008" text-anchor="middle" font-size="36" letter-spacing="3" fill="${BRAND_GOLD_LIGHT}">IRISH &amp; SPANISH PHONE SUPPORT</text>
     <text x="${cx}" y="1082" text-anchor="middle" font-size="50" letter-spacing="3" fill="#ffffff">+353 87 446 4766</text>
     <text x="${cx}" y="1168" text-anchor="middle" font-size="50" letter-spacing="3" fill="#ffffff">+34 641 81 53 66</text>
   </g>
 
   <g filter="url(#mSoftShadow)">
-    <text x="${cx}" y="1710" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="900" letter-spacing="5" fill="#fff2b1">CALL +353 87 446 4766</text>
+    <text x="${cx}" y="1710" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="900" letter-spacing="5" fill="${BRAND_GOLD_LIGHT}">CALL +353 87 446 4766</text>
   </g>
 
-  <rect x="0" y="0" width="${w}" height="${h}" fill="none" stroke="#f1cf55" stroke-opacity="0.2" stroke-width="4"/>
+  <rect x="0" y="0" width="${w}" height="${h}" fill="none" stroke="${BRAND_GOLD}" stroke-opacity="0.22" stroke-width="4"/>
 </svg>`)
 }
 
-function rightWarmth(w, h) {
+function rightWarmth(outW, outH) {
   return Buffer.from(`
-<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+<svg width="${outW}" height="${outH}" viewBox="0 0 ${deskLogicalW} ${deskLogicalH}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="sun" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0" stop-color="#ffe28a" stop-opacity="0.28"/>
+      <stop offset="0" stop-color="${BRAND_GOLD_LIGHT}" stop-opacity="0.24"/>
       <stop offset="0.42" stop-color="#ffffff" stop-opacity="0.03"/>
       <stop offset="1" stop-color="#00643c" stop-opacity="0.08"/>
     </linearGradient>
@@ -219,18 +236,18 @@ function rightWarmth(w, h) {
       <stop offset="1" stop-color="#03291d" stop-opacity="0.08"/>
     </linearGradient>
   </defs>
-  <rect width="${w}" height="${h}" fill="url(#sun)"/>
-  <rect width="${w}" height="${h}" fill="url(#readability)"/>
+  <rect width="${deskLogicalW}" height="${deskLogicalH}" fill="url(#sun)"/>
+  <rect width="${deskLogicalW}" height="${deskLogicalH}" fill="url(#readability)"/>
 </svg>`)
 }
 
 /** Lighter warmth so the fleet + fairway photo stays vivid on portrait crops. */
-function rightWarmthMobile(w, h) {
+function rightWarmthMobile(outW, outH) {
   return Buffer.from(`
-<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+<svg width="${outW}" height="${outH}" viewBox="0 0 ${mobileLogicalW} ${mobileLogicalH}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="sunM" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0" stop-color="#ffe28a" stop-opacity="0.12"/>
+      <stop offset="0" stop-color="${BRAND_GOLD_LIGHT}" stop-opacity="0.11"/>
       <stop offset="0.45" stop-color="#ffffff" stop-opacity="0.02"/>
       <stop offset="1" stop-color="#00643c" stop-opacity="0.04"/>
     </linearGradient>
@@ -241,8 +258,8 @@ function rightWarmthMobile(w, h) {
       <stop offset="1" stop-color="#03291d" stop-opacity="0.04"/>
     </linearGradient>
   </defs>
-  <rect width="${w}" height="${h}" fill="url(#sunM)"/>
-  <rect width="${w}" height="${h}" fill="url(#readabilityM)"/>
+  <rect width="${mobileLogicalW}" height="${mobileLogicalH}" fill="url(#sunM)"/>
+  <rect width="${mobileLogicalW}" height="${mobileLogicalH}" fill="url(#readabilityM)"/>
 </svg>`)
 }
 
@@ -251,19 +268,20 @@ async function writeHeroVariant(outW, outH, overlayBuf, warmthBuf, baseName, opt
   const resizedBackground = await sharp(fleetPath)
     .resize(outW, outH, { fit: 'cover', position: coverPosition })
     .modulate(variant.background)
-    .blur(0.3)
     .toBuffer()
 
-  const base = sharp(resizedBackground).composite([
-    { input: warmthBuf, blend: 'over' },
-    { input: overlayBuf, blend: 'over' },
-  ])
+  const base = sharp(resizedBackground)
+    .composite([
+      { input: warmthBuf, blend: 'over' },
+      { input: overlayBuf, blend: 'over' },
+    ])
+    .sharpen({ sigma: 0.65, m1: 1.2, m2: 2 })
 
   const pngPath = join(outDir, `${baseName}.png`)
   const webpPath = join(outDir, `${baseName}.webp`)
 
-  await base.clone().png({ quality: 92, compressionLevel: 8 }).toFile(pngPath)
-  await base.clone().webp({ quality: 90 }).toFile(webpPath)
+  await base.clone().png({ quality: 96, compressionLevel: 7 }).toFile(pngPath)
+  await base.clone().webp({ quality: 94, effort: 6, smartSubsample: true }).toFile(webpPath)
 
   console.log('Wrote', pngPath)
   console.log('Wrote', webpPath)
@@ -272,12 +290,12 @@ async function writeHeroVariant(outW, outH, overlayBuf, warmthBuf, baseName, opt
 async function main() {
   mkdirSync(outDir, { recursive: true })
 
-  await writeHeroVariant(width, height, overlaySvg(), rightWarmth(width, height), 'hero-sample-sunny-mercedes-03')
+  await writeHeroVariant(deskOutW, deskOutH, overlaySvg(deskOutW, deskOutH), rightWarmth(deskOutW, deskOutH), 'hero-sample-sunny-mercedes-03')
   await writeHeroVariant(
-    mobileWidth,
-    mobileHeight,
-    overlaySvgMobile(),
-    rightWarmthMobile(mobileWidth, mobileHeight),
+    mobileOutW,
+    mobileOutH,
+    overlaySvgMobile(mobileOutW, mobileOutH),
+    rightWarmthMobile(mobileOutW, mobileOutH),
     'hero-sample-sunny-mercedes-03-mobile',
     { coverPosition: 'south' }
   )

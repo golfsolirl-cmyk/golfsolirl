@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { GeSection } from '../components/ge-section'
 import { transportPromiseCopy, transportPromiseStats } from '../data/transport-service'
@@ -24,7 +24,7 @@ export function TransportPromise() {
       innerClassName="!pt-16 pb-14 sm:!pt-20 sm:pb-16 scroll-mt-28"
     >
       <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16">
-        <motion.div {...fadeUp}>
+        <m.div {...fadeUp}>
           <p className="font-ge text-sm font-bold uppercase tracking-[0.18em] text-ge-orange sm:text-[0.85rem]">
             {transportPromiseCopy.eyebrow}
           </p>
@@ -45,9 +45,9 @@ export function TransportPromise() {
               </li>
             ))}
           </ul>
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           className="grid grid-cols-2 gap-3 sm:gap-4"
           initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -71,7 +71,7 @@ export function TransportPromise() {
               </p>
             </div>
           ))}
-        </motion.div>
+        </m.div>
       </div>
     </GeSection>
   )

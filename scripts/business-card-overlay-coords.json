@@ -1,0 +1,51 @@
+{
+  "logoPath": "public/golfsol-crest-brand.png",
+  "faces": {
+    "greenContact": {
+      "output": "public/images/business-cards/golfsol-business-card-front.png",
+      "crestWipe": {
+        "left": 40,
+        "top": 18,
+        "width": 856,
+        "height": 448,
+        "rx": 30,
+        "fill": "#466212"
+      },
+      "logo": {
+        "width": 428,
+        "top": 72
+      },
+      "contactPatches": [
+        {
+          "left": 78,
+          "top": 918,
+          "width": 780,
+          "height": 38,
+          "rx": 6,
+          "fill": "#416509",
+          "fontSize": 26,
+          "fontFamily": "Arial, Helvetica, sans-serif",
+          "textFill": "#FFFFFF",
+          "text": "Email: info@golfsolirl.com"
+        },
+        {
+          "left": 78,
+          "top": 1074,
+          "width": 780,
+          "height": 40,
+          "rx": 6,
+          "fill": "#416509",
+          "fontSize": 26,
+          "fontFamily": "Arial, Helvetica, sans-serif",
+          "textFill": "#FFFFFF",
+          "text": "Web: www.golfsolirl.com"
+        }
+      ]
+    },
+    "mustardMarketing": {
+      "output": "public/images/business-cards/golfsol-business-card-back.png",
+      "logo": null,
+      "contactPatches": []
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import { GeSection } from '../components/ge-section'
 import { transportRouteStory } from '../data/transport-service'
@@ -23,7 +23,7 @@ export function TransportRouteStory() {
       innerClassName="!pt-20 pb-20 sm:!pt-24 sm:pb-24 scroll-mt-28"
       className="relative"
     >
-      <motion.div className="mx-auto max-w-3xl text-center" {...fadeUp}>
+      <m.div className="mx-auto max-w-3xl text-center" {...fadeUp}>
         <p className="font-ge text-sm font-bold uppercase tracking-[0.2em] text-gs-gold sm:text-[0.85rem]">
           The route
         </p>
@@ -34,11 +34,11 @@ export function TransportRouteStory() {
           We run the same proven choreography for every Irish group — so the
           only thing you’re thinking about by Tuesday lunch is the back nine.
         </p>
-      </motion.div>
+      </m.div>
 
       <div className="mt-14 grid gap-7 md:grid-cols-3">
         {transportRouteStory.map((step, i) => (
-          <motion.article
+          <m.article
             key={step.badge}
             className="group relative flex flex-col overflow-hidden rounded-2xl bg-gs-dark/40 ring-1 ring-white/10 shadow-[0_22px_60px_rgba(0,0,0,0.45)] transition-all duration-500 hover:-translate-y-1 hover:ring-gs-gold/40"
             {...fadeUp}
@@ -84,7 +84,7 @@ export function TransportRouteStory() {
                 {step.bullet}
               </p>
             </div>
-          </motion.article>
+          </m.article>
         ))}
       </div>
     </GeSection>

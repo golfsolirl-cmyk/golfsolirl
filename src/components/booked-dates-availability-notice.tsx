@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m,  AnimatePresence  } from 'framer-motion'
 import { CalendarOff, Sparkles } from 'lucide-react'
 import { formatBookedDayShortLabel, upcomingBookedDaysSorted } from '../lib/booked-service-days'
 import { getLocalDateIso } from '../lib/local-date-iso'
@@ -64,7 +64,7 @@ export function BookedDatesAvailabilityNotice({
     <div className={`space-y-3 ${className}`.trim()}>
       <AnimatePresence initial={false}>
         {conflictingDays.length > 0 ? (
-          <motion.div
+          <m.div
             animate={{ opacity: 1, y: 0 }}
             className={`rounded-2xl px-4 py-3 sm:px-5 sm:py-3.5 ${clashShell}`}
             exit={{ opacity: 0, y: -6 }}
@@ -87,7 +87,7 @@ export function BookedDatesAvailabilityNotice({
                 </li>
               ))}
             </ul>
-          </motion.div>
+          </m.div>
         ) : null}
       </AnimatePresence>
 

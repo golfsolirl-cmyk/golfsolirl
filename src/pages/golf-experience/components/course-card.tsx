@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m  } from 'framer-motion'
 import { ArrowRight, MapPin } from 'lucide-react'
 import type { GeCourse } from '../data/courses'
 
@@ -23,7 +23,7 @@ const fadeUp = {
  */
 export function GeCourseCard({ course }: CourseCardProps) {
   return (
-    <motion.article
+    <m.article
       className="group relative flex flex-col overflow-hidden rounded-2xl border border-ge-gray100 bg-white shadow-[0_6px_20px_rgba(6,59,42,0.08)] transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_22px_50px_rgba(6,59,42,0.18)]"
       {...fadeUp}
     >
@@ -77,6 +77,6 @@ export function GeCourseCard({ course }: CourseCardProps) {
         aria-hidden="true"
         className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-gradient-to-r from-gs-gold via-[#D5C600] to-ge-orange transition-transform duration-500 group-hover:scale-x-100"
       />
-    </motion.article>
+    </m.article>
   )
 }

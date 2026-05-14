@@ -1,0 +1,81 @@
+---
+description: Business cards page — official PNG fronts/backs are source of truth; mustard front + forest back; homepage crest only
+globs:
+  - src/components/business-cards-catalog.tsx
+  - src/lib/business-cards-config.ts
+  - src/pages/golf-experience/sections/business-cards-hero.tsx
+  - public/business-cards/**
+alwaysApply: false
+---
+
+# Business cards (`/business-cards`)
+
+## Authority
+
+1. **Official reference artwork** (mustard marketing front + forest operational back) — kept as design targets when exported PNGs are attached to the task or saved under project assets.
+2. **`business-card/Golf-Sol-Ireland-Business-Card.pdf`** — supplementary print proof only; **do not** revert the live page to unrelated ivory/fleet-column layouts unless product asks.
+
+The marketing **front** is **not** the operational ivory duplex from older explorations: it is a **solid mustard / gold field** with centred copy and a **four-icon social row** (Facebook, Instagram, X, LinkedIn).
+
+The **back** is **deep forest green** with **only** the **homepage crest** (`/golfsol-crest-footer.png`, fallback `/golfsol-crest.svg`) — **no** separate wordmark SVG (`golf-sol-ireland-logo.svg`) on the card faces.
+
+## Required faces (exactly eight)
+
+Implement **only** these tiles — **no** extra “concept library” cards:
+
+**Gregg McDonald**
+
+1. Portrait · front  
+2. Portrait · back  
+3. Landscape · front  
+4. Landscape · back  
+
+**Martin Kelly**
+
+5. Portrait · front  
+6. Portrait · back  
+7. Landscape · front  
+8. Landscape · back  
+
+Spec IDs: `GRPF`, `GRPB`, `GRLF`, `GRLB`, `MKPF`, `MKPB`, `MKLF`, `MKLB`.
+
+Group the grid under section headings **Gregg McDonald** and **Martin Kelly**.
+
+## Front (mustard) — copy & structure
+
+- Background: bright mustard / golden yellow (tokenised in catalog as `MUSTARD`, aligned to `#EEC339`-class tones — adjust only to match reference screenshots).
+- Centred layout; generous padding.
+- **Slogan (italic, large):** “From Plane To Fairway” — **From Plane** white; **To Fairway** forest green `#063B2A`.
+- **Headline (bold caps):**  
+  `ARRIVE IN MALAGA`  
+  `LET US DO THE REST`
+- **Body (italic, smaller, white):** four lines — meet & greet, flight awareness, clubs, hotel (exact strings in `CardMustardFront`).
+- **Footer:** social buttons styled per reference — Facebook ring in forest green; Instagram gradient tile; X black disc; LinkedIn blue tile. URLs from `businessCardSocial` + `xTwitter`.
+
+## Back (forest) — structure
+
+- Background: `#063B2A` with **fleet lineup** photo strip (`BRAND_FLEET_LINEUP_IMAGE_SRC`) along the **bottom**, blended upward with a **forest gradient** (no harsh cut).
+- **Logo:** homepage crest only (`businessCardAssets.crestWidePng` → PNG/SVG fallback).
+- **Name** + **OPERATIONS MANAGER** (Gregg vs Martin only difference between people).
+- **Phones:** Ireland / Spain labels italic white; numbers **bold gold** `#FFC72C`. Display formats mirror reference (`353 …`, `0034 …`) via helpers — **tel:** links use normalised digits from `businessCardContact`.
+- **Email / Web:** `businessCardContact.email`, `businessCardContact.websiteDisplay` — **Email:** / **Web:** prefixes.
+
+Do **not** add Co. Reg. or extra logos unless reference artwork explicitly includes them.
+
+## Landscape behaviour
+
+- **Front:** split marketing copy into **two columns** on wide cards (slogan + headline vs body), social row **anchored bottom** — do **not** only rotate the portrait layout.
+- **Back:** **crest column + credentials column** with fleet band still **full width** at bottom.
+
+## Data
+
+- People: `businessCardOperationsTeam` in `business-cards-config.ts`.
+- Contact + social: `businessCardContact`, `businessCardSocial` (includes `xTwitter`).
+
+## PDF export
+
+Hidden `#business-cards-pdf-export-root` must expose one `[data-pdf-page]` block per spec ID for `save-business-cards-pdf.ts`.
+
+---
+
+When editing this page, **preserve reference fidelity** — treat changes as **implementation tweaks** (spacing, colour tokens, responsive breakpoints), not a new creative direction.

@@ -1,0 +1,78 @@
+---
+description: Premium portal dashboard UI refresh — client & admin presentation layer only (Golf Sol Ireland)
+globs:
+  - src/pages/client-dashboard-page.tsx
+  - src/pages/admin-dashboard-page.tsx
+  - src/components/dashboard-layout.tsx
+  - src/components/admin-operations-*.tsx
+  - src/components/client-portal-*.tsx
+  - src/components/portal-*.tsx
+alwaysApply: false
+---
+
+# Dashboard portal UI modernization
+
+When refactoring **client** (`/dashboard`) or **admin** (`/dashboard/admin`) **UI only**, follow this spec. Full narrative lives in [public/admin-client-portals.mdc](mdc:public/admin-client-portals.mdc). **Do not** change APIs, auth, routes, env, or DB without an explicit request.
+
+## Hard constraints
+
+- Preserve behaviour: same Supabase queries, gateway calls, forms, and publish flows.
+- No renames of endpoints, tables, or route paths.
+- Prefer **incremental** layout/component extraction over rewriting `admin-dashboard-page.tsx` wholesale.
+
+## Cohesion (do not contradict)
+
+- [quote-first-client-admin-dashboards.mdc](mdc:.cursor/rules/quote-first-client-admin-dashboards.mdc) — one trip story; **three** client-facing services: **transfers**, **golf courses**, **hotels** (accommodation). Map “quick actions” to these plus **documents / proposals / messages**, not generic telecom (“devices”, “usage”) unless product expands.
+- [admin-operations-dashboard.mdc](mdc:.cursor/rules/admin-operations-dashboard.mdc) — hero + jump anchors, forest / fairway / gold, `rounded-[2rem]`, `shadow-soft`, non-technical copy.
+
+## Visual system (from existing brand)
+
+- Colours: `gs.bg` (`#F4F7F5`), `gs.dark` (`#063B2A`) body copy on marketing, `gs.green`, `forest-*`, `gold-*`, `ge.teal` accents — see `tailwind.config.js` and `.ge-page` in `src/index.css`.
+- Typography: marketing home uses `fontFamily.ge` (**Open Sans**); dashboard previews under `public/dashboard-ui-preview/` mirror that + crest `/golfsol-crest-brand.svg`.
+- Components: layered **cards**, **soft shadows**, **2rem** rounding, subtle **gradients** on hero only; **glassmorphism** sparingly.
+- Motion: **hover lift** on cards/buttons, **fade-in** on sections, **skeleton** loaders and **empty states** where data can be absent.
+
+## Client dashboard — target layout blocks
+
+1. **Hero header** — greeting + name; optional status chips (e.g. proposal ready); avatar + notification affordance; branded gradient / soft shape **behind** content (decorative).
+2. **Primary overview card** — single “your trip” summary (latest enquiry / package), healthy status cues, primary CTAs (e.g. view proposal, message desk).
+3. **Quick actions** — short grid: Transfers · Golf · Hotels · Support/docs; touch-friendly targets (min ~44px height).
+4. **Secondary resource cards** — counts/badges for open interest threads, invoices, transfer rows; hover + shadow.
+5. **Navigation** — responsive: **bottom bar** on small screens, **sidebar or top** pattern consistent with `DashboardLayout`; clear active state.
+
+## Admin dashboard — target layout blocks
+
+1. **Same design language** as client (not a separate “legacy admin” skin).
+2. **KPI strip** — operational metrics staff care about (e.g. pending enquiries, pipeline stages) using cards, not dense tables above the fold.
+3. **Queue mindset** — filters/search + scannable rows; charts/widgets **secondary** to actions.
+4. **Activity / alerts** — compact feed or banner region for time-sensitive items.
+5. **Dark mode** — if implemented, use CSS variables + `class` on root; keep contrast for forest/gold on dark surfaces.
+
+## Implementation checklist
+
+- [ ] Reuse or extend `DashboardLayout`, `AdminOperationsHubHero`, portal cards — avoid duplicate “design systems”.
+- [ ] New sections: stable `id` + `scroll-mt-*` when sticky chrome exists.
+- [ ] Loading: skeletons or existing shells — no layout jump.
+- [ ] a11y: focus order, `aria-` on nav/toggles, visible focus rings.
+- [ ] Preview static mocks before large merges: `public/dashboard-ui-preview/` (see `index.html`).
+
+## Static previews ↔ production mapping
+
+| Mock region (`public/dashboard-ui-preview/`) | Production component(s) | Primary file(s) |
+|---|---|---|
+| Hub index table | (documentation only) | `index.html` |
+| Chrome / crest bar | `GeNavbar`, `GeBrandLockup` | `ge-navbar.tsx`, `src/pages/golf-experience/components/brand-lockup.tsx` |
+| Portal gradient hero | `GeHero` `variant="portal"` | `hero.tsx` |
+| Content shell | `DashboardLayout` | `dashboard-layout.tsx` |
+| Client greeting / identity row | `ClientPortalIdentityHero` | `client-portal-identity-hero.tsx` |
+| Trip overview / submitted details | `PortalClientDataCard` | `portal-client-data-card.tsx` |
+| Transfers · golf · hotels tiles | `PortalAddToYourTripStrip` | `portal-add-to-your-trip-strip.tsx` |
+| Threads, transfers, tickets | `PortalTransferRequestsSection` | `portal-transfer-requests-section.tsx` |
+| Invoices / itinerary | `PortalInvoicesPanel` | `portal-invoices-panel.tsx` |
+| Proposal PDF UI | `PortalClientProposalsPdfViewer` | `portal-client-proposals-pdf-viewer.tsx` |
+| Client page wiring | `ClientDashboardPage` | `client-dashboard-page.tsx` |
+| Admin hub hero + jumps | `AdminOperationsHubHero` | `admin-operations-hub-hero.tsx` |
+| Admin section chrome | `AdminOperationsSectionShell` | `admin-operations-section-shell.tsx` |
+| Admin queue / tooling | `AdminAccountTransfersHub`, `AdminTransferPipeline`, … | `admin-dashboard-page.tsx`, `admin-*.tsx` |
+
+Full mock pages also embed a short **component-map** section at the bottom of `client.html` and `admin.html`.

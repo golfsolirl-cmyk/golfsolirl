@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from 'framer-motion'
+import { m,  useReducedMotion  } from 'framer-motion'
 import { ArrowRight, Clock3, MapPin, PlaneLanding, ShieldCheck } from 'lucide-react'
 import { GeDualPhoneAirportTransferCalls } from '../components/ge-dual-phone-contact'
 
@@ -39,7 +39,7 @@ export function HomeAirportTransfersCta() {
       />
 
       <div className="relative mx-auto max-w-[1180px] px-4 py-8 sm:px-8 sm:py-10 lg:py-12">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.25 }}
@@ -70,7 +70,7 @@ export function HomeAirportTransfersCta() {
             aria-hidden="true"
             className="pointer-events-none absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-gs-gold/[0.2] to-transparent"
           />
-          <motion.div
+          <m.div
             aria-hidden="true"
             className="pointer-events-none absolute inset-y-4 left-[-22%] w-[38%] bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.35)_45%,transparent_100%)] blur-md"
             animate={reduceMotion ? undefined : { x: ['0%', '320%'] }}
@@ -101,7 +101,7 @@ export function HomeAirportTransfersCta() {
                 Meet and greet at the airport, live flight awareness, room for clubs, then straight on to your hotel.
               </p>
 
-              <motion.div
+              <m.div
                 className="relative mt-6 overflow-hidden rounded-[1.7rem] border border-[#dbcda9] bg-white shadow-[0_24px_60px_rgba(69,53,24,0.12)]"
                 initial={{ opacity: 0, y: 18 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -134,11 +134,11 @@ export function HomeAirportTransfersCta() {
                     E-Class, V-Class and Sprinter options matched to the group and the bag count.
                   </p>
                 </div>
-              </motion.div>
+              </m.div>
 
               <div className="mt-4 grid gap-2 sm:mt-5 sm:grid-cols-3 sm:gap-3">
                 {transferSignals.map(({ icon: Icon, title, detail }, index) => (
-                  <motion.div
+                  <m.div
                     key={title}
                     initial={{ opacity: 0, y: 14 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -155,7 +155,7 @@ export function HomeAirportTransfersCta() {
                         <p className="mt-0.5 font-ge text-[0.76rem] leading-5 text-gs-dark/72 sm:mt-1 sm:text-[0.9rem] sm:leading-6">{detail}</p>
                       </div>
                     </div>
-                  </motion.div>
+                  </m.div>
                 ))}
               </div>
             </div>
@@ -189,7 +189,7 @@ export function HomeAirportTransfersCta() {
                 </div>
 
                 <div className="mt-6">
-                  <motion.a
+                  <m.a
                     href="/services/transport"
                     className="group relative inline-flex min-h-[60px] w-full items-center justify-center gap-3 overflow-hidden rounded-full border border-[#EBE486]/20 bg-[linear-gradient(135deg,#EBE486_0%,#D5C600_38%,#D5C600_100%)] px-5 py-3.5 text-center font-ge text-[0.92rem] font-extrabold uppercase tracking-[0.12em] text-gs-dark shadow-[0_18px_40px_rgba(213,198,0,0.3)] transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_50px_rgba(213,198,0,0.38)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-gs-dark sm:min-h-[62px] sm:px-6 sm:py-4 sm:text-[0.98rem] sm:tracking-[0.16em]"
                     animate={
@@ -205,7 +205,7 @@ export function HomeAirportTransfersCta() {
                     }
                     transition={reduceMotion ? undefined : { duration: 2.4, ease: 'easeInOut', repeat: Infinity }}
                   >
-                    <motion.span
+                    <m.span
                       aria-hidden="true"
                       className="pointer-events-none absolute inset-y-1 left-[-35%] w-[38%] rounded-full bg-white/30 blur-md"
                       animate={reduceMotion ? undefined : { x: ['0%', '300%'] }}
@@ -216,14 +216,14 @@ export function HomeAirportTransfersCta() {
                       Explore airport transfers
                       <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
                     </span>
-                  </motion.a>
+                  </m.a>
                 </div>
 
                 <GeDualPhoneAirportTransferCalls />
               </div>
             </div>
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   )
