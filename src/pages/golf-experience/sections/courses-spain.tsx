@@ -12,6 +12,9 @@ export function GeCoursesSpain() {
           {courseListsCopy.spainHeading}
         </h2>
         <span aria-hidden="true" className="mx-auto mt-3 block h-1 w-16 rounded-full bg-gs-gold" />
+        <p className="mx-auto mt-5 max-w-3xl text-balance font-ge text-[1.04rem] leading-8 text-ge-gray500 sm:text-[1.08rem]">
+          {courseListsCopy.intro}
+        </p>
       </div>
 
       <div className="mt-12 grid gap-7 md:grid-cols-3">
