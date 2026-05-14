@@ -53,6 +53,12 @@
   }
 }
 
+@media (max-width: 767px) {
+  html {
+    font-size: 18px;
+  }
+}
+
 /* Leaflet map tiles + divIcon markers (CourseHotelMapPicker) */
 .leaflet-container {
   font-family: inherit;
