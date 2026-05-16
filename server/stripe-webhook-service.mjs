@@ -24,7 +24,10 @@ const throwWebhookProcessingError = (message) => {
 
 const checkoutSessionPaymentStatus = (session) => String(session?.payment_status ?? '').toLowerCase()
 
-const assertMarkedPaid = (ok, targetKind, targetId) => {
+export const isPaidCheckoutSessionPaymentEvent = (eventType, session) =>
+  checkoutSessionPaymentEvents.has(eventType) && checkoutSessionPaymentStatus(session) === 'paid'
+
+export const assertMarkedPaid = (ok, targetKind, targetId) => {
   if (ok) {
     return
   }
@@ -329,8 +332,7 @@ export const handleStripeWebhook = async (rawBody, signatureHeader, env = proces
 
     const session = /** @type {import('stripe').Stripe.Checkout.Session} */ (event.data.object)
 
-    const paymentStatus = checkoutSessionPaymentStatus(session)
-    if (paymentStatus !== 'paid') {
+    if (!isPaidCheckoutSessionPaymentEvent(event.type, session)) {
       return { received: true, ignored: true, paymentStatus: session.payment_status ?? null }
     }
 
