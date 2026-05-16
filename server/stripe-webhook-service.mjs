@@ -11,6 +11,30 @@ import {
 import { publishTransferPortalPaymentReceipt } from './transfer-portal-publish-payment-pdf.mjs'
 
 
+const checkoutSessionPaymentEvents = new Set([
+  'checkout.session.completed',
+  'checkout.session.async_payment_succeeded'
+])
+
+const throwWebhookProcessingError = (message) => {
+  const err = new Error(message)
+  err.statusCode = 500
+  throw err
+}
+
+const checkoutSessionPaymentStatus = (session) => String(session?.payment_status ?? '').toLowerCase()
+
+export const isPaidCheckoutSessionPaymentEvent = (eventType, session) =>
+  checkoutSessionPaymentEvents.has(eventType) && checkoutSessionPaymentStatus(session) === 'paid'
+
+export const assertMarkedPaid = (ok, targetKind, targetId) => {
+  if (ok) {
+    return
+  }
+
+  throwWebhookProcessingError(`Paid Stripe Checkout session could not mark ${targetKind} ${targetId} as paid.`)
+}
+
 
 /**
 
@@ -304,9 +328,13 @@ export const handleStripeWebhook = async (rawBody, signatureHeader, env = proces
 
 
 
-  if (event.type === 'checkout.session.completed') {
+  if (checkoutSessionPaymentEvents.has(event.type)) {
 
     const session = /** @type {import('stripe').Stripe.Checkout.Session} */ (event.data.object)
+
+    if (!isPaidCheckoutSessionPaymentEvent(event.type, session)) {
+      return { received: true, ignored: true, paymentStatus: session.payment_status ?? null }
+    }
 
     const meta = /** @type {Record<string, string | undefined>} */ (session.metadata ?? {})
 
@@ -380,11 +408,13 @@ export const handleStripeWebhook = async (rawBody, signatureHeader, env = proces
 
     if (metaPortal) {
 
-      await markPortalInvoicePaid(supabase, metaPortal, paymentIntent, paidAt)
+      const ok = await markPortalInvoicePaid(supabase, metaPortal, paymentIntent, paidAt)
+      assertMarkedPaid(ok, 'portal invoice', metaPortal)
 
     } else if (metaTransfer) {
 
-      await markTransferBookingPaid(supabase, metaTransfer, session, paymentIntent, paymentKind)
+      const ok = await markTransferBookingPaid(supabase, metaTransfer, session, paymentIntent, paymentKind)
+      assertMarkedPaid(ok, 'transfer booking', metaTransfer)
 
     } else if (cref) {
 
@@ -392,7 +422,8 @@ export const handleStripeWebhook = async (rawBody, signatureHeader, env = proces
 
       if (!invOk) {
 
-        await markTransferBookingPaid(supabase, cref, session, paymentIntent, paymentKind)
+        const transferOk = await markTransferBookingPaid(supabase, cref, session, paymentIntent, paymentKind)
+        assertMarkedPaid(transferOk, 'portal invoice or transfer booking', cref)
 
       }
 

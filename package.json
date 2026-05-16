@@ -12,7 +12,8 @@
     "generate:unified-pdf-sample": "node scripts/generate-gsol-unified-pdf-sample.mjs",
     "verify:enquiry-pdf-exports": "node scripts/verify-enquiry-pdf-exports.mjs",
     "generate:business-card-pngs": "node scripts/regenerate-business-card-pngs.mjs",
-    "generate:blank-business-cards": "node scripts/generate-blank-business-card-templates.mjs"
+    "generate:blank-business-cards": "node scripts/generate-blank-business-card-templates.mjs",
+    "test": "node --test tests/*.test.mjs"
   },
   "type": "module",
   "dependencies": {

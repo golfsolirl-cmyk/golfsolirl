@@ -120,6 +120,12 @@ export const handleTransferCheckoutSync = async (body, env = process.env, meta =
   const paymentKind = typeof sessionMeta.payment_kind === 'string' ? sessionMeta.payment_kind : null
 
   const updated = await markTransferBookingPaid(admin, bookingId, session, paymentIntent, paymentKind)
+  if (!updated) {
+    throwStatus(
+      'Payment was received, but this transfer could not be marked paid yet. We will retry automatically; contact Golf Sol Ireland if it still looks unpaid shortly.',
+      409
+    )
+  }
 
   return { ok: true, updated, bookingId }
 }
