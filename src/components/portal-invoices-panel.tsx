@@ -212,7 +212,7 @@ export function PortalInvoicesPanel(props: {
             )}
           </div>
 
-          <div className="rounded-2xl border border-forest-900/15 bg-forest-950 p-5 text-white shadow-lg md:p-6">
+          <div className="ge-on-dark rounded-2xl border border-forest-900/15 bg-forest-950 p-5 text-white shadow-lg md:p-6">
             <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-300 sm:text-base">Card 2 — Invoice summary</p>
             <h3 className="font-display mt-2 text-xl font-semibold text-white sm:text-2xl">{selected.invoice_number}</h3>
             <p className="mt-3 text-base text-white/80 md:text-lg">

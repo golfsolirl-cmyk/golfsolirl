@@ -1397,7 +1397,7 @@ export function ClientDashboardPage() {
   const interestHeroAdornment =
     hasUnreadInterestReplies ? (
       <button
-        className="group relative flex max-w-full cursor-pointer items-center gap-3 rounded-2xl border border-emerald-400/45 bg-gradient-to-br from-emerald-900/80 via-[#0c3d2c]/85 to-gs-green/90 px-4 py-2.5 text-left shadow-[0_0_0_1px_rgba(19, 96, 71,0.12),0_12px_40px_rgba(16,185,129,0.28)] ring-1 ring-white/10 backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:border-brand-700/50 hover:shadow-[0_0_0_1px_rgba(19, 96, 71,0.35),0_16px_48px_rgba(16,185,129,0.35)]"
+        className="ge-on-dark group relative flex max-w-full cursor-pointer items-center gap-3 rounded-2xl border border-emerald-400/45 bg-gradient-to-br from-emerald-900/80 via-[#0c3d2c]/85 to-gs-green/90 px-4 py-2.5 text-left shadow-[0_0_0_1px_rgba(19, 96, 71,0.12),0_12px_40px_rgba(16,185,129,0.28)] ring-1 ring-white/10 backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:border-brand-700/50 hover:shadow-[0_0_0_1px_rgba(19, 96, 71,0.35),0_16px_48px_rgba(16,185,129,0.35)]"
         onClick={() => openTeamMessagingAndScroll()}
         type="button"
       >
@@ -1964,7 +1964,7 @@ export function ClientDashboardPage() {
               aria-expanded={teamMessagingOpen}
               className={cx(
                 'group relative inline-flex shrink-0 items-center gap-2.5 overflow-hidden rounded-full border border-fairway-600/40',
-                'bg-gradient-to-r from-forest-950 via-[#0c3d2c] to-forest-950 px-6 py-3.5 text-sm font-semibold text-white',
+                'ge-on-dark bg-gradient-to-r from-forest-950 via-[#0c3d2c] to-forest-950 px-6 py-3.5 text-sm font-semibold text-white',
                 'shadow-[0_10px_36px_rgba(16,185,129,0.28)] ring-1 ring-white/15 transition duration-300',
                 'hover:-translate-y-0.5 hover:border-brand-400/50 hover:shadow-[0_14px_44px_rgba(16,185,129,0.38)]',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white'

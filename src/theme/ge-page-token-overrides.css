@@ -300,7 +300,14 @@
 .ge-page .ge-on-dark h3:not([data-keep-color]),
 .ge-page .ge-on-dark h4:not([data-keep-color]),
 .ge-page .ge-on-dark p:not([data-keep-color]),
-.ge-page .ge-on-dark li:not([data-keep-color]) {
+.ge-page .ge-on-dark li:not([data-keep-color]),
+.ge-page .ge-on-dark dt:not([data-keep-color]),
+.ge-page .ge-on-dark dd:not([data-keep-color]),
+.ge-page .ge-on-dark span:not([data-keep-color]),
+.ge-page .ge-on-dark label:not([data-keep-color]),
+.ge-page .ge-on-dark strong:not([data-keep-color]),
+.ge-page .ge-on-dark a:not([data-keep-color]),
+.ge-page .ge-on-dark button:not([data-keep-color]) {
   color: #ffffff !important;
 }
 
@@ -328,7 +335,17 @@
     .ge-on-dark,
     [class*='from-forest-9'],
     [class*='from-brand-8'],
-    [class*='from-brand-9']
+    [class*='from-brand-9'],
+    [class*='from-[#0f3d24'],
+    [class*='from-[#0c3d2c'],
+    [class*='via-[#143d28'],
+    [class*='via-[#0c3d2c'],
+    [class*='to-[#0a2416'],
+    [class*='from-emerald-9'],
+    [class*='#0f3d24'],
+    [class*='#0c3d2c'],
+    [class*='#0a2416'],
+    [class*='linear-gradient(180deg,#0f3d24']
   )
   :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small):not(
     .bg-white :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
@@ -337,10 +354,17 @@
     .bg-white\/92 :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
     .bg-white\/95 :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
     [class*='bg-white'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
+    [class*='bg-offwhite'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
+    [class*='bg-gs-bg'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
     [class*='bg-chrome'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
     [class*='bg-cream'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
     [class*='bg-\\[\\#f'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
     [class*='bg-\\[\\#e'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
+    /* Light gradient shells — never force white body type on cream/white fades */
+    [class*='from-white'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
+    [class*='via-white'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
+    [class*='to-white'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
+    [class*='from-offwhite'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
     .bg-clip-text,
     [style*='clip-text']
   ) {
@@ -350,7 +374,9 @@
 .ge-page :is(.bg-gs-dark, .bg-forest-900, .bg-forest-950, .bg-brand-900, .bg-brand-950, .ge-on-dark)
   :is(.text-brand-700, .text-brand-800, [class*='text-brand-7'], [class*='text-brand-8']):not(
     .bg-white :is(.text-brand-700, .text-brand-800, [class*='text-brand-7'], [class*='text-brand-8']),
-    [class*='bg-white'] :is(.text-brand-700, .text-brand-800, [class*='text-brand-7'], [class*='text-brand-8'])
+    [class*='bg-white'] :is(.text-brand-700, .text-brand-800, [class*='text-brand-7'], [class*='text-brand-8']),
+    [class*='bg-offwhite'] :is(.text-brand-700, .text-brand-800, [class*='text-brand-7'], [class*='text-brand-8']),
+    [class*='bg-gs-bg'] :is(.text-brand-700, .text-brand-800, [class*='text-brand-7'], [class*='text-brand-8'])
   ) {
   color: #fbe8b5 !important;
 }
@@ -358,7 +384,7 @@
 /* Forest gradient CTAs must not use body-dark label colour */
 .ge-page
   :is([class*='from-brand-8'], [class*='from-brand-9'], [class*='via-\\[\\#136047\\]'])
-  :is(.text-gs-dark, .text-forest-900, [class*='text-\\[\\#0']):not([class*='bg-white'] *) {
+  :is(.text-gs-dark, .text-forest-900, [class*='text-\\[\\#0']):not([class*='bg-white'] *, [class*='bg-offwhite'] *) {
   color: #ffffff !important;
 }
 
@@ -513,3 +539,102 @@
    after the rules above and forces plaque copy to inherit `.ge-page`’s dark
    body colour onto the dark forest plaque (unreadable). Eyebrow/label use the
    two explicit selectors above. */
+
+/* —— Client portal dark panels — beat global `.text-forest-*` / heading rules —— */
+.ge-page .ge-on-dark :is(.text-forest-600, .text-forest-700, .text-forest-800, .text-forest-900, .text-forest-950, .text-gs-dark, .text-ge-ink) {
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.ge-page .ge-on-dark :is(.text-brand-600, .text-brand-700, .text-brand-800) {
+  color: #fbe8b5 !important;
+}
+
+.ge-page .ge-on-dark :is(.text-brand-300, .text-brand-200, .text-brand-100) {
+  color: #fbe8b5 !important;
+}
+
+/* —— Dashboards (client / admin / driver) — forest panels; excludes light fades (no `to-gs-green` match — it caught `from-white … to-gs-green/15` shells). —— */
+.ge-page:is([data-dashboard-variant='client'], [data-dashboard-variant='admin'], [data-dashboard-variant='driver']) :is(
+    .ge-on-dark,
+    .bg-gs-dark,
+    .bg-forest-900,
+    .bg-forest-950,
+    [class*='from-[#0f3d24'],
+    [class*='from-[#0c3d2c'],
+    [class*='via-[#143d28'],
+    [class*='via-[#0c3d2c'],
+    [class*='to-[#0a2416'],
+    [class*='from-emerald-9'],
+    [class*='#0f3d24'],
+    [class*='#0c3d2c'],
+    [class*='linear-gradient(180deg,#0f3d24']
+  )
+  :is(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    li,
+    dt,
+    dd,
+    label,
+    span,
+    strong,
+    a,
+    button,
+    small
+  ):not(
+    .bg-white :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, strong, a, button, small),
+    [class*='bg-white'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, strong, a, button, small),
+    [class*='bg-offwhite'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, strong, a, button, small),
+    [class*='bg-gs-bg'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, strong, a, button, small),
+    [class*='bg-chrome'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, strong, a, button, small),
+    [class*='from-white'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, strong, a, button, small),
+    [class*='via-white'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, strong, a, button, small),
+    [class*='to-white'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, strong, a, button, small),
+    [class*='from-offwhite'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, strong, a, button, small),
+    .bg-clip-text,
+    [style*='clip-text']
+  ) {
+  color: #ffffff !important;
+}
+
+.ge-page:is([data-dashboard-variant='client'], [data-dashboard-variant='admin'], [data-dashboard-variant='driver']) :is(.ge-on-dark, .bg-forest-950, [class*='#0f3d24'], [class*='#0c3d2c'])
+  :is(
+    .text-forest-600,
+    .text-forest-700,
+    .text-forest-800,
+    .text-forest-900,
+    .text-forest-950,
+    .text-gs-dark,
+    .text-ge-ink
+  ):not([class*='bg-white'] *, [class*='bg-offwhite'] *, [class*='bg-gs-bg'] *, [class*='from-white'] *, [class*='via-white'] *, [class*='to-white'] *) {
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.ge-page:is([data-dashboard-variant='client'], [data-dashboard-variant='admin'], [data-dashboard-variant='driver']) :is(.ge-on-dark, .bg-forest-950, [class*='#0f3d24'], [class*='#0c3d2c'])
+  :is(.text-brand-600, .text-brand-700, .text-brand-800, .text-brand-300, .text-brand-200, .text-brand-100):not(
+    [class*='bg-white'] *,
+    [class*='bg-offwhite'] *,
+    [class*='bg-gs-bg'] *,
+    [class*='from-white'] *,
+    [class*='via-white'] *,
+    [class*='to-white'] *
+  ) {
+  color: #fbe8b5 !important;
+}
+
+.ge-page:is([data-dashboard-variant='client'], [data-dashboard-variant='admin'], [data-dashboard-variant='driver']) :is(.ge-on-dark, .bg-forest-950, [class*='#0f3d24'], [class*='#0c3d2c'])
+  :is(.text-emerald-100, .text-emerald-200, .text-fairway-50, [class*='text-emerald-'], [class*='text-fairway-5']):not(
+    [class*='bg-white'] *,
+    [class*='bg-offwhite'] *,
+    [class*='bg-gs-bg'] *,
+    [class*='from-white'] *,
+    [class*='via-white'] *,
+    [class*='to-white'] *
+  ) {
+  color: rgba(236, 253, 245, 0.92) !important;
+}

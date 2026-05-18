@@ -175,7 +175,7 @@ export function PortalTransferRequestsSection(props: {
 
       {hasTransfers ? (
       <div className="overflow-hidden rounded-3xl border-2 border-brand-700/40 bg-gradient-to-br from-white via-white to-[#f3faf6] shadow-[0_22px_56px_rgba(11,73,52,0.1)] ring-1 ring-gs-green/15">
-        <header className="border-b border-ge-gray100 bg-gradient-to-r from-[#0f3d24]/95 via-[#143d28] to-[#0a2416] px-6 py-5 sm:px-8">
+        <header className="ge-on-dark border-b border-ge-gray100 bg-gradient-to-r from-[#0f3d24]/95 via-[#143d28] to-[#0a2416] px-6 py-5 sm:px-8">
           <div className="flex flex-wrap items-center gap-2">
             <MapPinned className="h-4 w-4 text-brand-400" aria-hidden />
             <p className="font-ge text-xs font-extrabold uppercase tracking-[0.14em] text-emerald-200/90 sm:text-sm">Transfer requests</p>
@@ -301,7 +301,7 @@ export function PortalTransferRequestsSection(props: {
                   id={panelId}
                   role="region"
                   aria-labelledby={btnId}
-                  className="border-t border-forest-100 bg-[linear-gradient(180deg,#0f3d24_0%,#0a2416_100%)] px-3 pb-4 pt-3 sm:px-4"
+                  className="ge-on-dark border-t border-forest-100 bg-[linear-gradient(180deg,#0f3d24_0%,#0a2416_100%)] px-3 pb-4 pt-3 sm:px-4"
                 >
                   <div className="overflow-hidden rounded-2xl border border-brand-500/30 shadow-[0_12px_40px_rgba(0,0,0,0.35)] ring-1 ring-white/10">
                     <div className="border-b border-white/10 bg-gradient-to-r from-forest-950/90 to-[#0c2810] px-4 py-3 sm:px-5">

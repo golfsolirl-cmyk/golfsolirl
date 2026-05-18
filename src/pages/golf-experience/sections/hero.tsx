@@ -139,7 +139,7 @@ export function GeHero({
         )}
 
         {isPortal && (portalTitle || portalKicker || portalSubtitle || portalTimestamp) ? (
-          <div className="pointer-events-none absolute inset-0 z-30 flex flex-col justify-end bg-gradient-to-t from-black/92 via-gs-dark/50 to-transparent pb-[12%] pt-32 max-sm:pb-[18%] sm:pb-[10%]">
+          <div className="ge-on-dark pointer-events-none absolute inset-0 z-30 flex flex-col justify-end bg-gradient-to-t from-black/92 via-gs-dark/50 to-transparent pb-[12%] pt-32 max-sm:pb-[18%] sm:pb-[10%]">
             <div className="pointer-events-auto mx-auto w-full max-w-[1180px] px-5 sm:px-8">
               <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <div className="min-w-0">

@@ -459,7 +459,7 @@ export function PortalClientProposalsPdfViewer({
                         className={cx(
                           'flex w-full flex-col rounded-xl px-3 py-2.5 text-left text-base font-semibold transition',
                           activeKey === k
-                            ? 'bg-gradient-to-r from-forest-950 to-forest-900 text-white shadow-md'
+                            ? 'ge-on-dark bg-gradient-to-r from-forest-950 to-forest-900 text-white shadow-md'
                             : 'text-forest-800 hover:bg-forest-50'
                         )}
                         onClick={() => pick(k)}
@@ -492,7 +492,7 @@ export function PortalClientProposalsPdfViewer({
                   className={cx(
                     'flex w-full items-center rounded-xl px-3 py-2.5 text-left text-base font-semibold transition',
                     activeKey === 'terms'
-                      ? 'bg-gradient-to-r from-forest-950 to-forest-900 text-white shadow-md'
+                      ? 'ge-on-dark bg-gradient-to-r from-forest-950 to-forest-900 text-white shadow-md'
                       : 'text-forest-800 hover:bg-forest-50'
                   )}
                   onClick={() => pick('terms')}
@@ -508,7 +508,7 @@ export function PortalClientProposalsPdfViewer({
                   className={cx(
                     'flex w-full items-center rounded-xl px-3 py-2.5 text-left text-base font-semibold transition',
                     activeKey === 'welcome'
-                      ? 'bg-gradient-to-r from-forest-950 to-forest-900 text-white shadow-md'
+                      ? 'ge-on-dark bg-gradient-to-r from-forest-950 to-forest-900 text-white shadow-md'
                       : 'text-forest-800 hover:bg-forest-50'
                   )}
                   onClick={() => pick('welcome')}
@@ -533,7 +533,7 @@ export function PortalClientProposalsPdfViewer({
                         className={cx(
                           'flex w-full flex-col rounded-xl px-3 py-2.5 text-left text-base transition',
                           activeKey === k
-                            ? 'bg-gradient-to-r from-forest-950 to-forest-900 text-white shadow-md'
+                            ? 'ge-on-dark bg-gradient-to-r from-forest-950 to-forest-900 text-white shadow-md'
                             : hasPayload
                               ? 'text-forest-800 hover:bg-forest-50'
                               : 'cursor-not-allowed text-forest-400'

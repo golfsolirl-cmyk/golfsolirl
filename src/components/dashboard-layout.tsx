@@ -61,7 +61,10 @@ export function DashboardLayout({ title, subtitle, kicker, variant, titleAdornme
   )
 
   return (
-    <div className="ge-page flex min-h-screen flex-col overflow-x-hidden bg-white font-ge text-gs-dark">
+    <div
+      className="ge-page flex min-h-screen flex-col overflow-x-hidden bg-white font-ge text-gs-dark"
+      data-dashboard-variant={variant}
+    >
       <GeNavbar portalSlot={portalSlot} />
 
       <main id="main" className="flex flex-1 flex-col">

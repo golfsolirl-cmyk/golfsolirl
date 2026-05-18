@@ -57,7 +57,7 @@ export function PortalAddToYourTripStrip(props: {
             onClick={() => props.onSelect('transfers')}
             className={cx(
               'group relative flex min-h-[5.75rem] flex-col items-start justify-between overflow-hidden rounded-2xl border border-fairway-700/25',
-              'bg-gradient-to-br from-emerald-900 via-fairway-700 to-forest-950 p-4 text-left text-white shadow-lg',
+              'ge-on-dark bg-gradient-to-br from-emerald-900 via-fairway-700 to-forest-950 p-4 text-left text-white shadow-lg',
               'transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-400/40 hover:shadow-xl hover:shadow-forest-950/25',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f4faf6]'
             )}
@@ -92,7 +92,7 @@ export function PortalAddToYourTripStrip(props: {
             onClick={() => props.onSelect('golf_courses')}
             className={cx(
               'group relative flex min-h-[5.75rem] flex-col items-start justify-between overflow-hidden rounded-2xl border border-forest-800/30',
-              'bg-gradient-to-br from-forest-950 via-forest-900 to-[#0c2810] p-4 text-left text-white shadow-lg',
+              'ge-on-dark bg-gradient-to-br from-forest-950 via-forest-900 to-[#0c2810] p-4 text-left text-white shadow-lg',
               'transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-400/35 hover:shadow-xl hover:shadow-forest-950/40',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f4faf6]'
             )}
@@ -127,7 +127,7 @@ export function PortalAddToYourTripStrip(props: {
             onClick={() => props.onSelect('hotels')}
             className={cx(
               'group relative flex min-h-[5.75rem] flex-col items-start justify-between overflow-hidden rounded-2xl border border-chrome-900/25',
-              'bg-gradient-to-br from-[#1a2e22] via-forest-900 to-[#0f2414] p-4 text-left text-white shadow-lg',
+              'ge-on-dark bg-gradient-to-br from-[#1a2e22] via-forest-900 to-[#0f2414] p-4 text-left text-white shadow-lg',
               'transition-all duration-300 hover:-translate-y-0.5 hover:border-chrome-200/30 hover:shadow-xl hover:shadow-black/20',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f4faf6]'
             )}

@@ -1,4 +1,4 @@
-import { jsPDF } from 'jspdf'
+import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import {
   buildWebsiteFormAdminQuote,
   IRISH_VAT_REDUCED_TOURISM_RATE,
@@ -31,22 +31,49 @@ export type TransferReceiptPdfTransfer = {
   readonly booking_source?: string | null
 }
 
-type TransferDocTheme = {
-  readonly ink: [number, number, number]
-  readonly muted: [number, number, number]
-  readonly gold: [number, number, number]
-  readonly payLink: [number, number, number]
+const THEME = {
+  green: rgb(6 / 255, 59 / 255, 42 / 255),
+  greenSoft: rgb(15 / 255, 81 / 255, 60 / 255),
+  gold: rgb(212 / 255, 168 / 255, 67 / 255),
+  goldDeep: rgb(184 / 255, 146 / 255, 46 / 255),
+  cream: rgb(238 / 255, 242 / 255, 239 / 255),
+  sand: rgb(217 / 255, 217 / 255, 217 / 255),
+  ink: rgb(22 / 255, 35 / 255, 29 / 255),
+  muted: rgb(102 / 255, 115 / 255, 109 / 255),
+  white: rgb(1, 1, 1),
+  paleGreen: rgb(246 / 255, 251 / 255, 248 / 255),
+  paleGold: rgb(255 / 255, 251 / 255, 235 / 255),
+  payLink: rgb(0, 102 / 255, 204 / 255)
 }
 
-const THEME: TransferDocTheme = {
-  ink: [22, 59, 42],
-  muted: [75, 95, 85],
-  gold: [250, 232, 46],
-  payLink: [0, 102, 204]
+const PAGE_W = 595.28
+const PAGE_H = 841.89
+const MARGIN = 48
+const CONTENT_W = PAGE_W - MARGIN * 2
+const HEADER_BAND_H = 100
+const HEADER_BAND_BOTTOM = PAGE_H - 128
+
+function sanitize(text: string): string {
+  return text
+    .replace(/[\u2018\u2019\u201A]/g, "'")
+    .replace(/[\u201C\u201D\u201E]/g, '"')
+    .replace(/\u2026/g, '...')
+    .replace(/[\u2013\u2014]/g, '-')
+    .replace(/\u00A0/g, ' ')
+    .replace(/[^\x00-\xFF]/g, '?')
 }
 
-/** Load logo and draw PDF body (shared layout). */
-async function renderTransferVatPdf(opts: {
+async function loadLogoPng(): Promise<Uint8Array | null> {
+  try {
+    const res = await fetch('/golfsol-crest-brand.png')
+    if (!res.ok) return null
+    return new Uint8Array(await res.arrayBuffer())
+  } catch {
+    return null
+  }
+}
+
+async function renderTransferPdf(opts: {
   readonly transfer: TransferReceiptPdfTransfer
   readonly customerName: string
   readonly accountRef: string | null
@@ -55,7 +82,7 @@ async function renderTransferVatPdf(opts: {
   readonly paymentLine: string
   readonly paySection: { readonly dashboardPayUrl: string } | null
   readonly footerNote: string
-}): Promise<jsPDF> {
+}): Promise<Uint8Array> {
   const gross = opts.transfer.admin_price_eur
   if (typeof gross !== 'number' || !Number.isFinite(gross) || gross <= 0) {
     throw new Error('No quoted amount on file for this transfer.')
@@ -64,176 +91,166 @@ async function renderTransferVatPdf(opts: {
   const treatment = opts.transfer.admin_price_vat_treatment
   const rate = vatRateForTransferTreatment(treatment)
   const quote = buildWebsiteFormAdminQuote(gross, rate)
-
-  const doc = new jsPDF({ unit: 'pt', format: 'a4' })
-  const pageW = doc.internal.pageSize.getWidth()
-  const margin = 48
-
-  let y = margin
-  const { ink, muted, gold, payLink } = THEME
   const transfer = opts.transfer
 
-  try {
-    const res = await fetch('/golfsol-crest-footer.png')
-    if (res.ok) {
-      const blob = await res.blob()
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        const r = new FileReader()
-        r.onload = () => resolve(String(r.result))
-        r.onerror = () => reject(new Error('read'))
-        r.readAsDataURL(blob)
-      })
-      const logoW = 132
-      const logoH = 36
-      doc.addImage(dataUrl, 'PNG', margin, y, logoW, logoH)
-      y += logoH + 18
+  const doc = await PDFDocument.create()
+  const font = await doc.embedFont(StandardFonts.Helvetica)
+  const fontBold = await doc.embedFont(StandardFonts.HelveticaBold)
+
+  let logoImage: Awaited<ReturnType<typeof doc.embedPng>> | null = null
+  let logoW = 0
+  let logoH = 0
+  const logoBytes = await loadLogoPng()
+  if (logoBytes) {
+    try {
+      logoImage = await doc.embedPng(logoBytes)
+      logoW = 140
+      logoH = (logoImage.height / logoImage.width) * logoW
+    } catch {
+      logoImage = null
     }
-  } catch {
-    y += 6
   }
 
-  doc.setFillColor(ink[0], ink[1], ink[2])
-  doc.rect(0, 0, pageW, 72, 'F')
-  doc.setTextColor(255, 255, 255)
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(16)
-  doc.text(opts.bannerTitle, margin, 46)
+  const page = doc.addPage([PAGE_W, PAGE_H])
 
-  y = 92
-  doc.setTextColor(ink[0], ink[1], ink[2])
-  doc.setFontSize(11)
-  doc.setFont('helvetica', 'normal')
-  doc.text(`Issued ${new Date().toLocaleString('en-IE', { dateStyle: 'long', timeStyle: 'short' })}`, margin, y)
-  y += 18
+  page.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: THEME.cream })
 
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(12)
-  doc.text('Bill to', margin, y)
-  y += 16
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(11)
-  doc.text(opts.customerName.trim() || 'Guest', margin, y)
-  y += 14
+  const bandBottom = HEADER_BAND_BOTTOM
+  const bandTop = bandBottom + HEADER_BAND_H
+  page.drawRectangle({ x: MARGIN, y: bandBottom, width: CONTENT_W, height: HEADER_BAND_H, color: THEME.green })
+  page.drawRectangle({ x: MARGIN, y: bandBottom, width: CONTENT_W, height: 4, color: THEME.gold })
+  page.drawRectangle({ x: MARGIN, y: bandBottom + 4, width: CONTENT_W, height: 0.35, color: THEME.goldDeep })
+
+  if (logoImage) {
+    const logoBottom = bandBottom + (HEADER_BAND_H - logoH) / 2
+    page.drawImage(logoImage, { x: MARGIN + 16, y: logoBottom, width: logoW, height: logoH })
+  }
+
+  const textLeft = logoImage ? MARGIN + 16 + logoW + 20 : MARGIN + 16
+  page.drawText(sanitize('GOLF SOL IRELAND'), {
+    x: textLeft, y: bandTop - 26, font: fontBold, size: 8.5, color: THEME.gold
+  })
+  page.drawText(sanitize(opts.bannerTitle), {
+    x: textLeft, y: bandTop - 48, font: fontBold, size: 16, color: THEME.white
+  })
+  page.drawText(sanitize(`Issued ${new Date().toLocaleString('en-IE', { dateStyle: 'long', timeStyle: 'short' })}`), {
+    x: textLeft, y: bandTop - 68, font, size: 9, color: rgb(220 / 255, 232 / 255, 226 / 255)
+  })
+
+  let y = bandBottom - 36
+
+  // Bill to
+  page.drawText('Bill to', { x: MARGIN, y, font: fontBold, size: 11, color: THEME.greenSoft })
+  y -= 16
+  page.drawText(sanitize(opts.customerName.trim() || 'Guest'), { x: MARGIN, y, font, size: 10.5, color: THEME.ink })
+  y -= 14
   if (opts.customerEmail?.trim()) {
-    doc.text(opts.customerEmail.trim(), margin, y)
-    y += 14
+    page.drawText(sanitize(opts.customerEmail.trim()), { x: MARGIN, y, font, size: 10, color: THEME.muted })
+    y -= 14
   }
   if (opts.accountRef?.trim()) {
-    doc.setTextColor(muted[0], muted[1], muted[2])
-    doc.text(`Account: ${opts.accountRef.trim()}`, margin, y)
-    doc.setTextColor(ink[0], ink[1], ink[2])
-    y += 20
+    page.drawText(sanitize(`Account: ${opts.accountRef.trim()}`), { x: MARGIN, y, font, size: 9.5, color: THEME.muted })
+    y -= 20
   } else {
-    y += 10
+    y -= 10
   }
 
-  doc.setDrawColor(220, 232, 220)
-  doc.setLineWidth(0.5)
-  doc.roundedRect(margin, y, pageW - margin * 2, 120, 6, 6, 'S')
-  y += 18
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(11)
-  doc.setTextColor(ink[0], ink[1], ink[2])
-  doc.text('Transfer details', margin + 14, y)
-  y += 18
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(10)
-  const route = `${transfer.pickup_label} → ${transfer.dropoff_label}`
-  doc.text(route, margin + 14, y)
-  y += 14
+  // Gold rule separator
+  page.drawRectangle({ x: MARGIN, y: y - 1, width: CONTENT_W * 0.22, height: 2.5, color: THEME.gold })
+  page.drawRectangle({ x: MARGIN + CONTENT_W * 0.22 + 6, y: y - 0.5, width: CONTENT_W * 0.78 - 6, height: 0.55, color: THEME.sand })
+  y -= 24
+
+  // Transfer details card
+  const cardH = 110
+  page.drawRectangle({ x: MARGIN, y: y - cardH, width: CONTENT_W, height: cardH, color: THEME.white, borderColor: THEME.sand, borderWidth: 0.75 })
+  const cardTop = y
+  y -= 18
+  page.drawText('TRANSFER DETAILS', { x: MARGIN + 14, y, font: fontBold, size: 8, color: THEME.greenSoft })
+  y -= 16
+  page.drawText(sanitize(`${transfer.pickup_label}  \u2192  ${transfer.dropoff_label}`), { x: MARGIN + 14, y, font: fontBold, size: 11, color: THEME.ink })
+  y -= 16
   const when = transfer.scheduled_at
     ? new Date(transfer.scheduled_at).toLocaleString('en-IE', { dateStyle: 'medium', timeStyle: 'short' })
     : 'Pick-up time to be confirmed'
-  doc.text(`Timing: ${when}`, margin + 14, y)
-  y += 14
-  const src =
-    transfer.booking_source === 'website_enquiry'
-      ? 'Website enquiry'
-      : transfer.booking_source === 'client_dashboard'
-        ? 'Client dashboard / trip planner'
-        : 'Client dashboard'
-  doc.text(`Source: ${src}`, margin + 14, y)
-  y += 14
-  doc.text(`Status: ${transfer.status.replace(/_/g, ' ')}`, margin + 14, y)
-  y += 14
-  doc.text(`Payment: ${opts.paymentLine}`, margin + 14, y)
-  y += 14
-  doc.setFont('helvetica', 'normal')
-  doc.setTextColor(muted[0], muted[1], muted[2])
-  doc.setFontSize(8)
-  doc.text(`Reference: ${transfer.id}`, margin + 14, y)
-  doc.setTextColor(ink[0], ink[1], ink[2])
-  y += 28
+  page.drawText(sanitize(`Timing: ${when}`), { x: MARGIN + 14, y, font, size: 10, color: THEME.muted })
+  y -= 14
+  const src = transfer.booking_source === 'website_enquiry' ? 'Website enquiry'
+    : transfer.booking_source === 'client_dashboard' ? 'Client dashboard / trip planner'
+    : 'Client dashboard'
+  page.drawText(sanitize(`Source: ${src}`), { x: MARGIN + 14, y, font, size: 10, color: THEME.muted })
+  y -= 14
+  page.drawText(sanitize(`Payment: ${opts.paymentLine}`), { x: MARGIN + 14, y, font, size: 10, color: THEME.muted })
+  y -= 14
+  page.drawText(sanitize(`Reference: ${transfer.id}`), { x: MARGIN + 14, y, font, size: 8, color: THEME.muted })
 
-  doc.setFillColor(246, 251, 248)
-  doc.roundedRect(margin, y, pageW - margin * 2, 118, 6, 6, 'F')
-  doc.setDrawColor(211, 219, 207)
-  doc.roundedRect(margin, y, pageW - margin * 2, 118, 6, 6, 'S')
-  y += 20
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(11)
-  doc.setTextColor(ink[0], ink[1], ink[2])
-  doc.text('VAT summary (Irish VAT)', margin + 14, y)
-  y += 18
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(10)
+  y = cardTop - cardH - 22
 
-  const treatmentLabel =
-    treatment === 'services'
-      ? `Standard rate (${pctLabel(IRISH_VAT_STANDARD_RATE)}) — passenger transport / services`
-      : `Reduced tourism-related rate (${pctLabel(IRISH_VAT_REDUCED_TOURISM_RATE)})`
+  // VAT summary card
+  const vatCardH = 108
+  page.drawRectangle({ x: MARGIN, y: y - vatCardH, width: CONTENT_W, height: vatCardH, color: THEME.paleGreen, borderColor: THEME.sand, borderWidth: 0.5 })
+  const vatTop = y
+  y -= 18
+  page.drawText('VAT SUMMARY (IRISH VAT)', { x: MARGIN + 14, y, font: fontBold, size: 8, color: THEME.greenSoft })
+  y -= 16
 
-  doc.text(`Treatment: ${treatmentLabel}`, margin + 14, y)
-  y += 16
-  doc.text('Total quoted is VAT-inclusive (gross).', margin + 14, y)
-  y += 18
+  const treatmentLabel = treatment === 'services'
+    ? `Standard rate (${pctLabel(IRISH_VAT_STANDARD_RATE)}) - passenger transport / services`
+    : `Reduced tourism-related rate (${pctLabel(IRISH_VAT_REDUCED_TOURISM_RATE)})`
+  page.drawText(sanitize(`Treatment: ${treatmentLabel}`), { x: MARGIN + 14, y, font, size: 10, color: THEME.ink })
+  y -= 14
+  page.drawText('Total quoted is VAT-inclusive (gross).', { x: MARGIN + 14, y, font, size: 9.5, color: THEME.muted })
+  y -= 18
+  page.drawText(sanitize(`Net (ex VAT): ${formatEur(quote.netServicesEur)}`), { x: MARGIN + 14, y, font, size: 10.5, color: THEME.ink })
+  y -= 14
+  page.drawText(sanitize(`VAT @ ${pctLabel(rate)}: ${formatEur(quote.vatAmountEur)}`), { x: MARGIN + 14, y, font, size: 10.5, color: THEME.ink })
+  y -= 16
+  page.drawText(sanitize(`Total (incl. VAT): ${formatEur(quote.grossTotalEur)}`), { x: MARGIN + 14, y, font: fontBold, size: 12, color: THEME.gold })
 
-  doc.text(`Net (ex VAT): ${formatEur(quote.netServicesEur)}`, margin + 14, y)
-  y += 14
-  doc.text(`VAT @ ${pctLabel(rate)}: ${formatEur(quote.vatAmountEur)}`, margin + 14, y)
-  y += 14
-  doc.setFont('helvetica', 'bold')
-  doc.setTextColor(gold[0], gold[1], gold[2])
-  doc.text(`Total (incl. VAT): ${formatEur(quote.grossTotalEur)}`, margin + 14, y)
-  doc.setTextColor(ink[0], ink[1], ink[2])
-  y += 28
+  y = vatTop - vatCardH - 22
 
+  // Pay section
   if (opts.paySection) {
-    doc.setFillColor(255, 251, 235)
-    doc.roundedRect(margin, y, pageW - margin * 2, 92, 6, 6, 'F')
-    doc.setDrawColor(234, 214, 170)
-    doc.roundedRect(margin, y, pageW - margin * 2, 92, 6, 6, 'S')
-    y += 18
-    doc.setFont('helvetica', 'bold')
-    doc.setFontSize(11)
-    doc.setTextColor(ink[0], ink[1], ink[2])
-    doc.text('Pay online (secure card payment)', margin + 14, y)
-    y += 16
-    doc.setFont('helvetica', 'normal')
-    doc.setFontSize(10)
-    const payLines = doc.splitTextToSize(
-      'Sign in to your client dashboard and use Pay now next to this transfer. Most PDF viewers turn the URL below into a clickable link.',
-      pageW - margin * 2 - 28
-    )
-    doc.text(payLines, margin + 14, y)
-    y += 14 * payLines.length + 4
-    doc.setFont('helvetica', 'bold')
-    doc.setTextColor(payLink[0], payLink[1], payLink[2])
-    const urlLines = doc.splitTextToSize(opts.paySection.dashboardPayUrl, pageW - margin * 2 - 28)
-    doc.text(urlLines, margin + 14, y)
-    doc.setTextColor(ink[0], ink[1], ink[2])
-    y += 14 * urlLines.length + 18
-  } else {
-    y += 12
+    const payCardH = 82
+    page.drawRectangle({ x: MARGIN, y: y - payCardH, width: CONTENT_W, height: payCardH, color: THEME.paleGold, borderColor: THEME.sand, borderWidth: 0.5 })
+    const py = y
+    y -= 18
+    page.drawText('PAY ONLINE (SECURE CARD PAYMENT)', { x: MARGIN + 14, y, font: fontBold, size: 8, color: THEME.greenSoft })
+    y -= 16
+    page.drawText(sanitize('Sign in to your client dashboard and use Pay now next to this transfer.'), { x: MARGIN + 14, y, font, size: 9.5, color: THEME.ink })
+    y -= 14
+    page.drawText(sanitize('Most PDF viewers turn the URL below into a clickable link.'), { x: MARGIN + 14, y, font, size: 9, color: THEME.muted })
+    y -= 16
+    page.drawText(sanitize(opts.paySection.dashboardPayUrl), { x: MARGIN + 14, y, font: fontBold, size: 9.5, color: THEME.payLink })
+    y = py - payCardH - 18
   }
 
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(8)
-  doc.setTextColor(muted[0], muted[1], muted[2])
-  const splitFoot = doc.splitTextToSize(opts.footerNote, pageW - margin * 2)
-  doc.text(splitFoot, margin, y)
+  // Footer
+  page.drawRectangle({ x: MARGIN, y: 52, width: CONTENT_W, height: 0.65, color: THEME.sand })
+  const footerLines = [
+    'Golf Sol Ireland - Irish-owned Costa del Sol golf travel',
+    opts.footerNote
+  ]
+  let fy = 44
+  for (const line of footerLines) {
+    page.drawText(sanitize(line), { x: MARGIN, y: fy, font, size: 8, color: THEME.muted, maxWidth: CONTENT_W * 0.85 })
+    fy -= 12
+  }
 
-  return doc
+  return doc.save()
+}
+
+function downloadBlob(bytes: Uint8Array, filename: string) {
+  const blob = new Blob([bytes.buffer as ArrayBuffer], { type: 'application/pdf' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  setTimeout(() => {
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }, 200)
 }
 
 /**
@@ -244,7 +261,6 @@ export async function downloadTransferQuotePdf(opts: {
   readonly customerName: string
   readonly accountRef: string | null
   readonly customerEmail?: string | null
-  /** Full URL to the client dashboard (e.g. https://golfsolirl.com/dashboard or http://localhost:5173/dashboard). */
   readonly dashboardPayUrl: string
 }): Promise<void> {
   const pay = (opts.transfer.payment_status ?? 'unpaid').toLowerCase()
@@ -252,10 +268,10 @@ export async function downloadTransferQuotePdf(opts: {
     pay === 'paid'
       ? 'Paid in full'
       : pay === 'deposit'
-        ? 'Deposit recorded — balance outstanding'
-        : 'Outstanding — quote only until paid'
+        ? 'Deposit recorded - balance outstanding'
+        : 'Outstanding - quote only until paid'
 
-  const doc = await renderTransferVatPdf({
+  const bytes = await renderTransferPdf({
     transfer: opts.transfer,
     customerName: opts.customerName,
     accountRef: opts.accountRef,
@@ -264,10 +280,10 @@ export async function downloadTransferQuotePdf(opts: {
     paymentLine: payLine,
     paySection: { dashboardPayUrl: opts.dashboardPayUrl.trim() },
     footerNote:
-      'Golf Sol Ireland · This document is a VAT-transparent quote for this transfer. Payment is due according to your dashboard; after payment you can download a separate paid invoice PDF from the same place.'
+      'This document is a VAT-transparent quote for this transfer. Payment is due according to your dashboard; after payment you can download a separate paid invoice PDF from the same place.'
   })
 
-  doc.save(`golfsol-transfer-quote-${opts.transfer.id.slice(0, 8)}.pdf`)
+  downloadBlob(bytes, `golfsol-transfer-quote-${opts.transfer.id.slice(0, 8)}.pdf`)
 }
 
 /**
@@ -278,7 +294,6 @@ export async function downloadTransferPaidInvoicePdf(opts: {
   readonly customerName: string
   readonly accountRef: string | null
   readonly customerEmail?: string | null
-  /** Optional note under Payment (e.g. booking row updated_at from Supabase). */
   readonly paymentRecordedHint?: string | null
 }): Promise<void> {
   const pay = (opts.transfer.payment_status ?? 'unpaid').toLowerCase()
@@ -289,10 +304,10 @@ export async function downloadTransferPaidInvoicePdf(opts: {
   let paymentLine = 'Paid in full (thank you)'
   const hint = opts.paymentRecordedHint?.trim()
   if (hint) {
-    paymentLine = `Paid in full · ${hint}`
+    paymentLine = `Paid in full - ${hint}`
   }
 
-  const doc = await renderTransferVatPdf({
+  const bytes = await renderTransferPdf({
     transfer: opts.transfer,
     customerName: opts.customerName,
     accountRef: opts.accountRef,
@@ -301,10 +316,10 @@ export async function downloadTransferPaidInvoicePdf(opts: {
     paymentLine,
     paySection: null,
     footerNote:
-      'Golf Sol Ireland · Paid invoice for your records (Irish VAT breakdown shown for transparency). For accounting questions, retain this PDF alongside your card receipt from Stripe.'
+      'Paid invoice for your records (Irish VAT breakdown shown for transparency). For accounting questions, retain this PDF alongside your card receipt from Stripe.'
   })
 
-  doc.save(`golfsol-transfer-invoice-paid-${opts.transfer.id.slice(0, 8)}.pdf`)
+  downloadBlob(bytes, `golfsol-transfer-invoice-paid-${opts.transfer.id.slice(0, 8)}.pdf`)
 }
 
 /**

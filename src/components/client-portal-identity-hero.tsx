@@ -77,7 +77,7 @@ export function ClientPortalIdentityHero(props: {
   return (
     <div
       className={cx(
-        'mb-10 overflow-hidden rounded-[2rem] border-2 border-brand-700/45 bg-gradient-to-br from-[#0f3d24] via-[#143d28] to-[#0a2416] p-6 text-white shadow-[0_24px_60px_rgba(11,73,52,0.35)] ring-1 ring-white/10 sm:p-8',
+        'ge-on-dark mb-10 overflow-hidden rounded-[2rem] border-2 border-brand-700/45 bg-gradient-to-br from-[#0f3d24] via-[#143d28] to-[#0a2416] p-6 text-white shadow-[0_24px_60px_rgba(11,73,52,0.35)] ring-1 ring-white/10 sm:p-8',
         props.className
       )}
     >

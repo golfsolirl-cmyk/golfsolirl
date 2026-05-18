@@ -376,6 +376,23 @@
     color: var(--text-secondary);
   }
 
+  /* Portal / dashboard dark panels set `text-white` or `.ge-on-dark` on the shell — do not force marketing body colour here. */
+  .ge-page .ge-on-dark h1,
+  .ge-page .ge-on-dark h2,
+  .ge-page .ge-on-dark h3,
+  .ge-page .ge-on-dark h4,
+  .ge-page .ge-on-dark h5,
+  .ge-page .ge-on-dark h6,
+  .ge-page .ge-on-dark p,
+  .ge-page .ge-on-dark li,
+  .ge-page .ge-on-dark dt,
+  .ge-page .ge-on-dark dd,
+  .ge-page .ge-on-dark label,
+  .ge-page .ge-on-dark a,
+  .ge-page .ge-on-dark button {
+    color: inherit;
+  }
+
   .ge-page input,
   .ge-page textarea,
   .ge-page select {

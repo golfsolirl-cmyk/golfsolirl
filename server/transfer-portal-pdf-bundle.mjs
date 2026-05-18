@@ -3,7 +3,7 @@
  */
 import { readFileSync } from 'node:fs'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
-import { brandedPdfAssetPaths, pdfEmailTheme } from './pdf-email-brand.mjs'
+import { brandedPdfAssetPaths, heroDescriptionColor, pdfEmailTheme } from './pdf-email-brand.mjs'
 import { sanitizeStandardFontText } from '../shared/pdf-winansi-sanitize.mjs'
 import { getGsolSiteUrl } from './site-url.mjs'
 import { balanceAmountEur, normalizedDepositPercent } from './transfer-payment-amounts.mjs'
@@ -57,26 +57,60 @@ const humanizeFieldKey = (key) =>
     .replace(/_/g, ' ')
     .replace(/\b\w/g, (c) => c.toUpperCase())
 
+const HEADER_BAND_H = 100
+const HEADER_BAND_BOTTOM = H - 128
+
 const drawHeaderBand = async (doc, page, title, fontBold, font) => {
   const t = pdfEmailTheme
-  page.drawRectangle({ x: 0, y: H - 84, width: W, height: 84, color: t.green })
-  page.drawText(sanitizeStandardFontText(title), { x: m, y: H - 42, size: 16, font: fontBold, color: t.white })
+  const contentW = W - m * 2
+  const bandBottom = HEADER_BAND_BOTTOM
+  const bandTop = bandBottom + HEADER_BAND_H
+
+  page.drawRectangle({ x: 0, y: 0, width: W, height: H, color: t.cream })
+  page.drawRectangle({ x: m, y: bandBottom, width: contentW, height: HEADER_BAND_H, color: t.green })
+  page.drawRectangle({ x: m, y: bandBottom, width: contentW, height: 4, color: t.gold })
+  page.drawRectangle({ x: m, y: bandBottom + 4, width: contentW, height: 0.35, color: t.goldDeep })
+
+  let textLeft = m + 16
   try {
     const logoBytes = readFileSync(brandedPdfAssetPaths.logo)
     const logo = await doc.embedPng(logoBytes)
-    const lw = 118
+    const lw = 140
     const lh = (logo.height / logo.width) * lw
-    page.drawImage(logo, { x: W - m - lw, y: H - lh - 14, width: lw, height: lh })
+    const logoBottom = bandBottom + (HEADER_BAND_H - lh) / 2
+    page.drawImage(logo, { x: m + 16, y: logoBottom, width: lw, height: lh })
+    textLeft = m + 16 + lw + 20
   } catch {
-    /* optional */
+    /* logo optional */
   }
-  page.drawText(`Issued ${new Date().toLocaleString('en-IE', { dateStyle: 'long', timeStyle: 'short' })}`, {
-    x: m,
-    y: H - 96,
-    size: 10,
-    font,
-    color: t.muted
+
+  page.drawText(sanitizeStandardFontText('GOLF SOL IRELAND'), {
+    x: textLeft, y: bandTop - 26, font: fontBold, size: 8.5, color: t.gold
   })
+  page.drawText(sanitizeStandardFontText(title), {
+    x: textLeft, y: bandTop - 48, font: fontBold, size: 16, color: t.white
+  })
+  page.drawText(sanitizeStandardFontText(`Issued ${new Date().toLocaleString('en-IE', { dateStyle: 'long', timeStyle: 'short' })}`), {
+    x: textLeft, y: bandTop - 68, font, size: 9, color: heroDescriptionColor
+  })
+}
+
+const drawFooterLine = (page, font, text) => {
+  const contentW = W - m * 2
+  page.drawRectangle({ x: m, y: 52, width: contentW, height: 0.65, color: pdfEmailTheme.sand })
+  const lines = wrapLines(text, font, 8, contentW * 0.85)
+  let fy = 44
+  for (const ln of lines) {
+    page.drawText(sanitizeStandardFontText(ln), { x: m, y: fy, size: 8, font, color: pdfEmailTheme.muted })
+    fy -= 11
+  }
+}
+
+const drawGoldRule = (page, y) => {
+  const contentW = W - m * 2
+  page.drawRectangle({ x: m, y: y - 1, width: contentW * 0.22, height: 2.5, color: pdfEmailTheme.gold })
+  page.drawRectangle({ x: m + contentW * 0.22 + 6, y: y - 0.5, width: contentW * 0.78 - 6, height: 0.55, color: pdfEmailTheme.sand })
+  return y - 20
 }
 
 /**
@@ -116,7 +150,7 @@ export const createTransferFormSubmissionPdf = async (ctx) => {
   let page = doc.addPage([W, H])
   await drawHeaderBand(doc, page, 'Your original request (snapshot)', fontBold, font)
 
-  let y = H - 128
+  let y = HEADER_BAND_BOTTOM - 36
   page.drawText('Submitted details as on file when Golf Sol Ireland quoted this transfer.', {
     x: m,
     y,
@@ -124,7 +158,8 @@ export const createTransferFormSubmissionPdf = async (ctx) => {
     font,
     color: t.ink
   })
-  y -= 28
+  y -= 22
+  y = drawGoldRule(page, y)
 
   const colW = (W - 2 * m - 12) * 0.34
   const valW = W - 2 * m - 12 - colW
@@ -134,9 +169,10 @@ export const createTransferFormSubmissionPdf = async (ctx) => {
     const valLines = wrapLines(value, font, 10, valW)
     const blockH = Math.max(22, 12 + valLines.length * 12 + 10)
     if (y < m + blockH + 40) {
+      drawFooterLine(page, font, 'Golf Sol Ireland · Continued on next page.')
       page = doc.addPage([W, H])
       await drawHeaderBand(doc, page, 'Your original request (continued)', fontBold, font)
-      y = H - 128
+      y = HEADER_BAND_BOTTOM - 36
     }
     page.drawRectangle({
       x: m,
@@ -156,16 +192,7 @@ export const createTransferFormSubmissionPdf = async (ctx) => {
     y -= blockH + 8
   }
 
-  let footY = m + 16
-  for (const ln of wrapLines(
-    'Golf Sol Ireland · This snapshot reflects the information supplied for this transfer. It is not a contract or invoice by itself.',
-    font,
-    8,
-    W - 2 * m
-  )) {
-    page.drawText(sanitizeStandardFontText(ln), { x: m, y: footY, size: 8, font, color: t.muted })
-    footY += 10
-  }
+  drawFooterLine(page, font, 'Golf Sol Ireland · This snapshot reflects the information supplied for this transfer. It is not a contract or invoice by itself.')
 
   return doc.save()
 }
@@ -191,7 +218,7 @@ export const createTransferVatQuotePdf = async (ctx) => {
   const page = doc.addPage([W, H])
   await drawHeaderBand(doc, page, 'Transfer quote & VAT summary', fontBold, font)
 
-  let y = H - 128
+  let y = HEADER_BAND_BOTTOM - 36
   page.drawText(sanitizeStandardFontText(`Bill to: ${ctx.profileName}`), { x: m, y, size: 11, font: fontBold, color: t.ink })
   y -= 16
   if (ctx.profileEmail?.trim()) {
@@ -202,18 +229,20 @@ export const createTransferVatQuotePdf = async (ctx) => {
     page.drawText(sanitizeStandardFontText(`Account: ${ctx.accountRef.trim()}`), { x: m, y, size: 10, font, color: t.muted })
     y -= 14
   }
-  y -= 10
+  y -= 6
+  y = drawGoldRule(page, y)
 
   page.drawRectangle({
     x: m,
     y: y - 118,
     width: W - 2 * m,
     height: 118,
-    borderColor: rgb(0.86, 0.91, 0.86),
-    borderWidth: 0.5
+    color: t.white,
+    borderColor: t.sand,
+    borderWidth: 0.75
   })
   let ty = y - 18
-  page.drawText('Transfer details', { x: m + 14, y: ty, size: 11, font: fontBold, color: t.ink })
+  page.drawText('TRANSFER DETAILS', { x: m + 14, y: ty, size: 8, font: fontBold, color: t.greenSoft })
   ty -= 18
   const route = `${String(ctx.booking.pickup_label)} → ${String(ctx.booking.dropoff_label)}`
   page.drawText(sanitizeStandardFontText(route), { x: m + 14, y: ty, size: 10, font, color: t.ink })
@@ -283,16 +312,7 @@ export const createTransferVatQuotePdf = async (ctx) => {
     y -= 100
   }
 
-  let fy = m + 20
-  for (const ln of wrapLines(
-    'Golf Sol Ireland · VAT-transparent quote for this transfer. After payment, download your paid invoice PDF from the same dashboard.',
-    font,
-    8,
-    W - 2 * m
-  )) {
-    page.drawText(sanitizeStandardFontText(ln), { x: m, y: fy, size: 8, font, color: t.muted })
-    fy += 10
-  }
+  drawFooterLine(page, font, 'Golf Sol Ireland · VAT-transparent quote for this transfer. After payment, download your paid invoice PDF from the same dashboard.')
 
   return doc.save()
 }
@@ -323,7 +343,7 @@ export const createTransferPaymentReceiptPdf = async (ctx) => {
     ctx.receiptType === 'deposit' ? 'Deposit payment confirmation' : 'Payment received in full'
   await drawHeaderBand(doc, page, headerTitle, fontBold, font)
 
-  let y = H - 128
+  let y = HEADER_BAND_BOTTOM - 36
   page.drawText(sanitizeStandardFontText(`Bill to: ${ctx.profileName}`), { x: m, y, size: 11, font: fontBold, color: t.ink })
   y -= 16
   if (ctx.profileEmail?.trim()) {
@@ -415,21 +435,7 @@ export const createTransferPaymentReceiptPdf = async (ctx) => {
   }
 
   const dash = `${getGsolSiteUrl().replace(/\/+$/, '')}/dashboard`
-  let fy = Math.min(y - 8, m + 120)
-  for (const ln of wrapLines(
-    'Golf Sol Ireland · This document confirms the card payment recorded above. For tax or accounting, keep this PDF with your dashboard paid invoice when available.',
-    font,
-    9,
-    W - 2 * m
-  )) {
-    page.drawText(sanitizeStandardFontText(ln), { x: m, y: fy, size: 9, font, color: t.muted })
-    fy += 11
-  }
-  fy += 6
-  for (const ln of wrapLines(`Your dashboard: ${dash}`, font, 9, W - 2 * m)) {
-    page.drawText(sanitizeStandardFontText(ln), { x: m, y: fy, size: 9, font: fontBold, color: t.greenSoft })
-    fy += 11
-  }
+  drawFooterLine(page, font, `Golf Sol Ireland · This document confirms the card payment recorded above. Your dashboard: ${dash}`)
 
   return doc.save()
 }
@@ -451,27 +457,23 @@ export const createTermsSummaryPdf = async () => {
   const t = pdfEmailTheme
   let page = doc.addPage([W, H])
   await drawHeaderBand(doc, page, 'Terms & conditions (summary)', fontBold, font)
-  let y = H - 128
+  let y = HEADER_BAND_BOTTOM - 36
+  y = drawGoldRule(page, y)
   const maxW = W - 2 * m
   for (const para of TERMS_SUMMARY_PARAS) {
     const lines = wrapLines(para, font, 11, maxW)
     for (const ln of lines) {
       if (y < m + 60) {
+        drawFooterLine(page, font, 'Golf Sol Ireland · Continued on next page.')
         page = doc.addPage([W, H])
         await drawHeaderBand(doc, page, 'Terms & conditions (continued)', fontBold, font)
-        y = H - 128
+        y = HEADER_BAND_BOTTOM - 36
       }
       page.drawText(sanitizeStandardFontText(ln), { x: m, y, size: 11, font, color: t.ink, maxWidth: maxW })
       y -= 14
     }
     y -= 8
   }
-  page.drawText(sanitizeStandardFontText(`More: ${getGsolSiteUrl()}/documents/terms`), {
-    x: m,
-    y: m + 36,
-    size: 9,
-    font: fontBold,
-    color: t.greenSoft
-  })
+  drawFooterLine(page, font, `Golf Sol Ireland · Full terms: ${getGsolSiteUrl()}/documents/terms`)
   return doc.save()
 }

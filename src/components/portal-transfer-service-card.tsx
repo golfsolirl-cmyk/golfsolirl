@@ -71,7 +71,7 @@ export function PortalTransferServiceCard(props: { readonly transfer: PortalTran
 
       <p className="mt-2 font-ge text-xs text-forest-600">Live status from our operations desk.</p>
 
-      <div className="mt-5 overflow-hidden rounded-2xl border-2 border-brand-700/35 bg-gradient-to-br from-[#0f3d24] via-[#143d28] to-[#0a2416] p-5 text-white shadow-[0_20px_50px_rgba(11,73,52,0.28)] ring-1 ring-white/10">
+      <div className="ge-on-dark mt-5 overflow-hidden rounded-2xl border-2 border-brand-700/35 bg-gradient-to-br from-[#0f3d24] via-[#143d28] to-[#0a2416] p-5 text-white shadow-[0_20px_50px_rgba(11,73,52,0.28)] ring-1 ring-white/10">
         <p className="font-ge text-sm font-semibold leading-snug text-white">
           {t.pickupLabel} → {t.dropoffLabel}
         </p>
