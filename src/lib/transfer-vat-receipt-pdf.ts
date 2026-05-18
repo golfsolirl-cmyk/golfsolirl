@@ -50,8 +50,7 @@ const PAGE_W = 595.28
 const PAGE_H = 841.89
 const MARGIN = 48
 const CONTENT_W = PAGE_W - MARGIN * 2
-const HEADER_BAND_H = 100
-const HEADER_BAND_BOTTOM = PAGE_H - 128
+const HEADER_H = 84
 
 function sanitize(text: string): string {
   return text
@@ -65,7 +64,7 @@ function sanitize(text: string): string {
 
 async function loadLogoPng(): Promise<Uint8Array | null> {
   try {
-    const res = await fetch('/golfsol-crest-brand.png')
+    const res = await fetch('/images/g-sol-logo.png')
     if (!res.ok) return null
     return new Uint8Array(await res.arrayBuffer())
   } catch {
@@ -97,47 +96,42 @@ async function renderTransferPdf(opts: {
   const font = await doc.embedFont(StandardFonts.Helvetica)
   const fontBold = await doc.embedFont(StandardFonts.HelveticaBold)
 
-  let logoImage: Awaited<ReturnType<typeof doc.embedPng>> | null = null
-  let logoW = 0
-  let logoH = 0
-  const logoBytes = await loadLogoPng()
-  if (logoBytes) {
-    try {
-      logoImage = await doc.embedPng(logoBytes)
-      logoW = 140
-      logoH = (logoImage.height / logoImage.width) * logoW
-    } catch {
-      logoImage = null
-    }
-  }
-
   const page = doc.addPage([PAGE_W, PAGE_H])
 
   page.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: THEME.cream })
 
-  const bandBottom = HEADER_BAND_BOTTOM
-  const bandTop = bandBottom + HEADER_BAND_H
-  page.drawRectangle({ x: MARGIN, y: bandBottom, width: CONTENT_W, height: HEADER_BAND_H, color: THEME.green })
-  page.drawRectangle({ x: MARGIN, y: bandBottom, width: CONTENT_W, height: 4, color: THEME.gold })
-  page.drawRectangle({ x: MARGIN, y: bandBottom + 4, width: CONTENT_W, height: 0.35, color: THEME.goldDeep })
+  // Green header bar (full width, top)
+  page.drawRectangle({ x: 0, y: PAGE_H - HEADER_H, width: PAGE_W, height: HEADER_H, color: THEME.green })
+  // Gold accent line at header bottom edge
+  page.drawRectangle({ x: 0, y: PAGE_H - HEADER_H, width: PAGE_W, height: 3, color: THEME.gold })
 
-  if (logoImage) {
-    const logoBottom = bandBottom + (HEADER_BAND_H - logoH) / 2
-    page.drawImage(logoImage, { x: MARGIN + 16, y: logoBottom, width: logoW, height: logoH })
-  }
-
-  const textLeft = logoImage ? MARGIN + 16 + logoW + 20 : MARGIN + 16
-  page.drawText(sanitize('GOLF SOL IRELAND'), {
-    x: textLeft, y: bandTop - 26, font: fontBold, size: 8.5, color: THEME.gold
-  })
+  // Header text
   page.drawText(sanitize(opts.bannerTitle), {
-    x: textLeft, y: bandTop - 48, font: fontBold, size: 16, color: THEME.white
+    x: MARGIN + 8, y: PAGE_H - 34, font: fontBold, size: 18, color: THEME.white
   })
   page.drawText(sanitize(`Issued ${new Date().toLocaleString('en-IE', { dateStyle: 'long', timeStyle: 'short' })}`), {
-    x: textLeft, y: bandTop - 68, font, size: 9, color: rgb(220 / 255, 232 / 255, 226 / 255)
+    x: MARGIN + 8, y: PAGE_H - 56, font, size: 9.5, color: rgb(220 / 255, 232 / 255, 226 / 255)
   })
 
-  let y = bandBottom - 36
+  // Logo (homepage crest) — right side of header
+  const logoBytes = await loadLogoPng()
+  if (logoBytes) {
+    try {
+      const logoImage = await doc.embedPng(logoBytes)
+      const lh = 62
+      const lw = (logoImage.width / logoImage.height) * lh
+      page.drawImage(logoImage, {
+        x: PAGE_W - MARGIN - lw,
+        y: PAGE_H - HEADER_H + (HEADER_H - lh) / 2,
+        width: lw,
+        height: lh
+      })
+    } catch {
+      /* logo optional */
+    }
+  }
+
+  let y = PAGE_H - HEADER_H - 28
 
   // Bill to
   page.drawText('Bill to', { x: MARGIN, y, font: fontBold, size: 11, color: THEME.greenSoft })

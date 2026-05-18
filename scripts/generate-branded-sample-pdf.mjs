@@ -22,16 +22,17 @@ const run = async () => {
   const page = doc.addPage([W, H])
   const fontBold = await doc.embedFont(StandardFonts.HelveticaBold)
   const font = await doc.embedFont(StandardFonts.Helvetica)
-  const logoBytes = fs.readFileSync(brandedPdfAssetPaths.logo)
+  const logoBytes = fs.readFileSync(brandedPdfAssetPaths.homepageCrest)
   const logo = await doc.embedPng(logoBytes)
-  const logoW = 120
-  const logoH = (logo.height / logo.width) * logoW
+  const logoH = 62
+  const logoW = (logo.width / logo.height) * logoH
   const y0 = H - m
 
   page.drawRectangle({ x: 0, y: H - 84, width: W, height: 84, color: t.green })
+  page.drawRectangle({ x: 0, y: H - 84, width: W, height: 3, color: t.gold })
   page.drawText('Golf Sol Ireland', { x: m + 8, y: y0 - 14, size: 20, font: fontBold, color: t.white })
   page.drawText('Sample branded layout (PDF)', { x: m + 8, y: y0 - 40, size: 11, font, color: rgb(0.92, 0.95, 0.93) })
-  page.drawImage(logo, { x: W - m - logoW, y: y0 - logoH - 4, width: logoW, height: logoH })
+  page.drawImage(logo, { x: W - m - logoW, y: H - 84 + (84 - logoH) / 2, width: logoW, height: logoH })
 
   let y = y0 - 100
   const line = (text, size, color, f = font, weight = 400) => {

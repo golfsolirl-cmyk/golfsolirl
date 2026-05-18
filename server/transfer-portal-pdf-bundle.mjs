@@ -57,52 +57,40 @@ const humanizeFieldKey = (key) =>
     .replace(/_/g, ' ')
     .replace(/\b\w/g, (c) => c.toUpperCase())
 
-const HEADER_BAND_H = 100
-const HEADER_BAND_BOTTOM = H - 128
+const HEADER_H = 84
+const BODY_START_Y = H - HEADER_H - 28
 
 const drawHeaderBand = async (doc, page, title, fontBold, font) => {
   const t = pdfEmailTheme
-  const contentW = W - m * 2
-  const bandBottom = HEADER_BAND_BOTTOM
-  const bandTop = bandBottom + HEADER_BAND_H
 
   page.drawRectangle({ x: 0, y: 0, width: W, height: H, color: t.cream })
-  page.drawRectangle({ x: m, y: bandBottom, width: contentW, height: HEADER_BAND_H, color: t.green })
-  page.drawRectangle({ x: m, y: bandBottom, width: contentW, height: 4, color: t.gold })
-  page.drawRectangle({ x: m, y: bandBottom + 4, width: contentW, height: 0.35, color: t.goldDeep })
+  page.drawRectangle({ x: 0, y: H - HEADER_H, width: W, height: HEADER_H, color: t.green })
+  page.drawRectangle({ x: 0, y: H - HEADER_H, width: W, height: 3, color: t.gold })
 
-  let textLeft = m + 16
+  page.drawText(sanitizeStandardFontText(title), { x: m + 8, y: H - 34, size: 18, font: fontBold, color: t.white })
+  page.drawText(sanitizeStandardFontText(`Issued ${new Date().toLocaleString('en-IE', { dateStyle: 'long', timeStyle: 'short' })}`), {
+    x: m + 8, y: H - 56, size: 9.5, font, color: heroDescriptionColor
+  })
+
   try {
-    const logoBytes = readFileSync(brandedPdfAssetPaths.logo)
+    const logoBytes = readFileSync(brandedPdfAssetPaths.homepageCrest)
     const logo = await doc.embedPng(logoBytes)
-    const lw = 140
-    const lh = (logo.height / logo.width) * lw
-    const logoBottom = bandBottom + (HEADER_BAND_H - lh) / 2
-    page.drawImage(logo, { x: m + 16, y: logoBottom, width: lw, height: lh })
-    textLeft = m + 16 + lw + 20
+    const lh = 62
+    const lw = (logo.width / logo.height) * lh
+    page.drawImage(logo, { x: W - m - lw, y: H - HEADER_H + (HEADER_H - lh) / 2, width: lw, height: lh })
   } catch {
     /* logo optional */
   }
-
-  page.drawText(sanitizeStandardFontText('GOLF SOL IRELAND'), {
-    x: textLeft, y: bandTop - 26, font: fontBold, size: 8.5, color: t.gold
-  })
-  page.drawText(sanitizeStandardFontText(title), {
-    x: textLeft, y: bandTop - 48, font: fontBold, size: 16, color: t.white
-  })
-  page.drawText(sanitizeStandardFontText(`Issued ${new Date().toLocaleString('en-IE', { dateStyle: 'long', timeStyle: 'short' })}`), {
-    x: textLeft, y: bandTop - 68, font, size: 9, color: heroDescriptionColor
-  })
 }
 
 const drawFooterLine = (page, font, text) => {
   const contentW = W - m * 2
   page.drawRectangle({ x: m, y: 52, width: contentW, height: 0.65, color: pdfEmailTheme.sand })
-  const lines = wrapLines(text, font, 8, contentW * 0.85)
+  const lines = wrapLines(text, font, 8.5, contentW * 0.85)
   let fy = 44
   for (const ln of lines) {
-    page.drawText(sanitizeStandardFontText(ln), { x: m, y: fy, size: 8, font, color: pdfEmailTheme.muted })
-    fy -= 11
+    page.drawText(sanitizeStandardFontText(ln), { x: m, y: fy, size: 8.5, font, color: pdfEmailTheme.muted })
+    fy -= 12
   }
 }
 
@@ -150,7 +138,7 @@ export const createTransferFormSubmissionPdf = async (ctx) => {
   let page = doc.addPage([W, H])
   await drawHeaderBand(doc, page, 'Your original request (snapshot)', fontBold, font)
 
-  let y = HEADER_BAND_BOTTOM - 36
+  let y = BODY_START_Y
   page.drawText('Submitted details as on file when Golf Sol Ireland quoted this transfer.', {
     x: m,
     y,
@@ -172,7 +160,7 @@ export const createTransferFormSubmissionPdf = async (ctx) => {
       drawFooterLine(page, font, 'Golf Sol Ireland · Continued on next page.')
       page = doc.addPage([W, H])
       await drawHeaderBand(doc, page, 'Your original request (continued)', fontBold, font)
-      y = HEADER_BAND_BOTTOM - 36
+      y = BODY_START_Y
     }
     page.drawRectangle({
       x: m,
@@ -218,7 +206,7 @@ export const createTransferVatQuotePdf = async (ctx) => {
   const page = doc.addPage([W, H])
   await drawHeaderBand(doc, page, 'Transfer quote & VAT summary', fontBold, font)
 
-  let y = HEADER_BAND_BOTTOM - 36
+  let y = BODY_START_Y
   page.drawText(sanitizeStandardFontText(`Bill to: ${ctx.profileName}`), { x: m, y, size: 11, font: fontBold, color: t.ink })
   y -= 16
   if (ctx.profileEmail?.trim()) {
@@ -343,7 +331,7 @@ export const createTransferPaymentReceiptPdf = async (ctx) => {
     ctx.receiptType === 'deposit' ? 'Deposit payment confirmation' : 'Payment received in full'
   await drawHeaderBand(doc, page, headerTitle, fontBold, font)
 
-  let y = HEADER_BAND_BOTTOM - 36
+  let y = BODY_START_Y
   page.drawText(sanitizeStandardFontText(`Bill to: ${ctx.profileName}`), { x: m, y, size: 11, font: fontBold, color: t.ink })
   y -= 16
   if (ctx.profileEmail?.trim()) {
@@ -457,7 +445,7 @@ export const createTermsSummaryPdf = async () => {
   const t = pdfEmailTheme
   let page = doc.addPage([W, H])
   await drawHeaderBand(doc, page, 'Terms & conditions (summary)', fontBold, font)
-  let y = HEADER_BAND_BOTTOM - 36
+  let y = BODY_START_Y
   y = drawGoldRule(page, y)
   const maxW = W - 2 * m
   for (const para of TERMS_SUMMARY_PARAS) {
@@ -467,7 +455,7 @@ export const createTermsSummaryPdf = async () => {
         drawFooterLine(page, font, 'Golf Sol Ireland · Continued on next page.')
         page = doc.addPage([W, H])
         await drawHeaderBand(doc, page, 'Terms & conditions (continued)', fontBold, font)
-        y = HEADER_BAND_BOTTOM - 36
+        y = BODY_START_Y
       }
       page.drawText(sanitizeStandardFontText(ln), { x: m, y, size: 11, font, color: t.ink, maxWidth: maxW })
       y -= 14
