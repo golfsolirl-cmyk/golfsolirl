@@ -44,7 +44,7 @@ export const buildWebsiteQuotePdfBytes = async (row) => {
   const doc = await PDFDocument.create()
   const font = await doc.embedFont(StandardFonts.Helvetica)
   const fontBold = await doc.embedFont(StandardFonts.HelveticaBold)
-  const logoImage = await doc.embedPng(readFileSync(brandedPdfAssetPaths.logo))
+  const logoImage = await doc.embedPng(readFileSync(brandedPdfAssetPaths.homepageCrest))
 
   const margin = 34
   const contentW = pageWidth - margin * 2

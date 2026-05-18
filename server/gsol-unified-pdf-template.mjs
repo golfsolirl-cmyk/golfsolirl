@@ -34,7 +34,7 @@ export const loadUnifiedPdfFonts = async (doc) => ({
  * @param {import('pdf-lib').PDFDocument} doc
  */
 export const embedUnifiedLogo = async (doc) => {
-  const logoImage = await doc.embedPng(readFileSync(brandedPdfAssetPaths.logo))
+  const logoImage = await doc.embedPng(readFileSync(brandedPdfAssetPaths.homepageCrest))
   const w = UNIFIED_PDF_LOGO_TARGET_WIDTH_PT
   const logoW = w
   const logoH = (logoImage.height / logoImage.width) * w

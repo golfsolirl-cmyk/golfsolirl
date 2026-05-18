@@ -275,7 +275,7 @@ export const createProposalPdf = async (rawPayload = {}) => {
   const pdfDocument = await PDFDocument.create()
   const regularFont = await pdfDocument.embedFont(StandardFonts.Helvetica)
   const boldFont = await pdfDocument.embedFont(StandardFonts.HelveticaBold)
-  const logoImage = await pdfDocument.embedPng(readFileSync(brandedPdfAssetPaths.logo))
+  const logoImage = await pdfDocument.embedPng(readFileSync(brandedPdfAssetPaths.homepageCrest))
   const fleetImage = await embedPdfJpg(pdfDocument, brandedPdfAssetPaths.fleetLineup, 1280, 390)
 
   const margin = 40
