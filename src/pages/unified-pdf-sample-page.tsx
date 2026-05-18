@@ -8,7 +8,7 @@ export function UnifiedPdfSamplePage() {
   const pdfSrc = `${window.location.origin}/samples/golfsol-unified-document-template.pdf`
 
   return (
-    <div className="min-h-screen bg-[#f7f0e2] px-4 py-8 text-forest-900 md:px-8">
+    <div className="min-h-screen bg-[#eef2ef] px-4 py-8 text-forest-900 md:px-8">
       <PageIdentityBar
         compact
         label="Unified PDF template"

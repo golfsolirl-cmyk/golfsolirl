@@ -19,7 +19,7 @@ const fadeUp = {
  *  - Gradient scrim so overlaid badges stay legible on any photo
  *  - Gold "character" badge top-left, green location chip top-right
  *  - Info panel lifts on hover with a soft gold underline reveal
- *  - Body uses the gs/dark + ge-orange palette only — no blue anywhere
+ *  - Body uses the gs/dark + brand-700 palette only — no blue anywhere
  */
 export function GeCourseCard({ course }: CourseCardProps) {
   return (
@@ -42,7 +42,7 @@ export function GeCourseCard({ course }: CourseCardProps) {
         />
         {/* Top row: flex + wrap stops character badge and area chip colliding on narrow columns */}
         <div className="pointer-events-none absolute left-2 right-2 top-2 z-10 flex flex-wrap items-start justify-between gap-2 sm:left-3 sm:right-3 sm:top-3">
-          <span className="inline-flex min-w-0 max-w-[min(100%,11.5rem)] items-center gap-1 rounded-full border border-gs-gold/60 bg-gs-dark/90 px-3 py-1.5 font-ge text-[0.76rem] font-extrabold uppercase leading-tight tracking-[0.08em] text-gs-gold shadow-[0_8px_18px_rgba(0,0,0,0.45)] backdrop-blur-sm sm:max-w-[13rem] sm:gap-1.5 sm:px-3 sm:py-1.5 sm:text-[0.8rem] sm:tracking-[0.1em]">
+          <span className="inline-flex min-w-0 max-w-[min(100%,11.5rem)] items-center gap-1 rounded-full border border-brand-700/60 bg-gs-dark/90 px-3 py-1.5 font-ge text-[0.76rem] font-extrabold uppercase leading-tight tracking-[0.08em] text-brand-700 shadow-[0_8px_18px_rgba(0,0,0,0.45)] backdrop-blur-sm sm:max-w-[13rem] sm:gap-1.5 sm:px-3 sm:py-1.5 sm:text-[0.8rem] sm:tracking-[0.1em]">
             <span className="truncate">{course.badge}</span>
           </span>
           <span className="inline-flex min-w-0 max-w-[min(100%,10.5rem)] items-center gap-1 rounded-full bg-white/95 px-3 py-1.5 font-ge text-[0.76rem] font-bold uppercase leading-tight tracking-[0.08em] text-gs-green shadow-[0_4px_12px_rgba(0,0,0,0.18)] sm:max-w-[12rem] sm:text-[0.8rem] sm:tracking-[0.1em]">
@@ -62,7 +62,7 @@ export function GeCourseCard({ course }: CourseCardProps) {
         </p>
         <a
           href={course.href}
-          className="mt-5 inline-flex min-h-[44px] items-center gap-2 self-start rounded-full bg-gs-dark/5 px-4 py-2.5 font-ge text-[0.96rem] font-bold uppercase tracking-[0.12em] text-gs-green transition-all duration-300 hover:bg-gs-gold hover:text-gs-dark group-hover:bg-gs-gold group-hover:text-gs-dark sm:text-[0.92rem]"
+          className="mt-5 inline-flex min-h-[44px] items-center gap-2 self-start rounded-full bg-gs-dark/5 px-4 py-2.5 font-ge text-[0.96rem] font-bold uppercase tracking-[0.12em] text-gs-green transition-all duration-300 hover:bg-brand-700 hover:text-gs-dark group-hover:bg-brand-700 group-hover:text-gs-dark sm:text-[0.92rem]"
         >
           Get Tee-Time Quote
           <ArrowRight
@@ -75,7 +75,7 @@ export function GeCourseCard({ course }: CourseCardProps) {
       {/* Bottom gold accent bar that grows on hover */}
       <span
         aria-hidden="true"
-        className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-gradient-to-r from-gs-gold via-[#D5C600] to-ge-orange transition-transform duration-500 group-hover:scale-x-100"
+        className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-gradient-to-r from-brand-800 via-[#136047] to-brand-700 transition-transform duration-500 group-hover:scale-x-100"
       />
     </m.article>
   )

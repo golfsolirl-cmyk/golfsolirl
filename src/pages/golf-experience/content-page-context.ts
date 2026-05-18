@@ -137,8 +137,8 @@ export function getContentPageHeroMedia(path: string, page: GeContentPageData): 
       }
     case 'booking':
       return {
-        image: '/images/transport-fleet-lineup.jpg',
-        alt: 'Golf Sol Ireland transfer fleet and booking support service.',
+        image: '/images/88054e80-6dd1-483f-8557-cdc45caa2442.png',
+        alt: 'GolfSol Ireland Mercedes fleet on the Costa del Sol — booking service.',
         stripeLabel
       }
     case 'testimonial':
@@ -194,8 +194,8 @@ export function getContentStorySectionMedia(
       alt: 'Luxury Costa del Sol resort entrance with golf luggage and transfer vehicle.'
     },
     {
-      image: '/images/transport-fleet-lineup.jpg',
-      alt: 'Mercedes transfer fleet ready for Irish golf groups on the Costa del Sol.'
+      image: '/images/88054e80-6dd1-483f-8557-cdc45caa2442.png',
+      alt: 'GolfSol Ireland Mercedes fleet on the Costa del Sol.'
     },
     {
       image: '/images/transport-hero-coastal-drive.jpg',

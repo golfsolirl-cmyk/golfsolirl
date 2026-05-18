@@ -1,0 +1,197 @@
+{
+  "project": "GolfSol Ireland premium Vite app redesign",
+  "sourceSiteScanned": "https://golfsolirl.com/",
+  "sitePositioning": "Premium Costa del Sol golf holidays for Irish travellers with packages, hotels, tee times, and transfers.",
+  "designGoal": "Replicate the supplied mockup as a real working Vite/React website theme across the entire existing app while keeping routes and logic intact.",
+  "brandPersonality": [
+    "Irish-owned",
+    "premium golf concierge",
+    "executive Mercedes transfers",
+    "Costa del Sol hospitality",
+    "trusted group travel",
+    "mobile-first conversion"
+  ],
+  "visualPrinciples": {
+    "keepLayout": true,
+    "changeThemeOnly": true,
+    "style": "cream luxury travel UI with forest green panels and yellow/gold conversion accents",
+    "density": "rich but clean, card-based, premium spacing",
+    "motion": "subtle fade-up, lift, zoom, and soft glow interactions",
+    "imagery": "cinematic Costa del Sol golf courses, mountains, Mercedes V-Class/Sprinter, palm resorts, clubhouse hospitality"
+  },
+  "colors": {
+    "forest": "#064B35",
+    "forestDark": "#043626",
+    "forestDeep": "#012F23",
+    "greenBlack": "#071B14",
+    "cream": "#F7F1DF",
+    "creamSoft": "#FBF7EC",
+    "ivory": "#FFFAF0",
+    "whiteWarm": "#FFFDF7",
+    "gold": "#D7C600",
+    "goldSoft": "#EEE35A",
+    "goldGlow": "#F4E95B",
+    "olive": "#7F8A42",
+    "border": "#E7DCC4",
+    "borderStrong": "#D6C7A8",
+    "ink": "#10231C",
+    "muted": "#6F756C",
+    "success": "#0F7B45",
+    "danger": "#B83232"
+  },
+  "gradients": {
+    "heroOverlay": "linear-gradient(90deg, rgba(1,47,35,0.92) 0%, rgba(6,75,53,0.72) 42%, rgba(6,75,53,0.14) 100%)",
+    "greenPanel": "linear-gradient(135deg, #012F23 0%, #064B35 58%, #043626 100%)",
+    "goldButton": "linear-gradient(135deg, #F4E95B 0%, #D7C600 65%, #B8A900 100%)",
+    "creamPage": "linear-gradient(180deg, #FBF7EC 0%, #F7F1DF 100%)"
+  },
+  "typography": {
+    "bodyFont": "Inter, Manrope, system-ui, sans-serif",
+    "headingFont": "Inter, Manrope, system-ui, sans-serif",
+    "editorialFont": "Playfair Display, Cormorant Garamond, serif",
+    "heroDesktop": {
+      "fontSize": "clamp(56px, 6vw, 104px)",
+      "lineHeight": "0.88",
+      "fontWeight": 900,
+      "letterSpacing": "-0.055em",
+      "textTransform": "uppercase"
+    },
+    "heroMobile": {
+      "fontSize": "clamp(42px, 14vw, 64px)",
+      "lineHeight": "0.9",
+      "fontWeight": 900,
+      "letterSpacing": "-0.05em"
+    },
+    "sectionLabel": {
+      "fontSize": "11px",
+      "fontWeight": 800,
+      "letterSpacing": "0.18em",
+      "textTransform": "uppercase"
+    }
+  },
+  "radii": {
+    "small": "10px",
+    "medium": "16px",
+    "large": "24px",
+    "xl": "32px",
+    "pill": "999px"
+  },
+  "shadows": {
+    "card": "0 16px 40px rgba(16,35,28,0.08)",
+    "cardHover": "0 22px 60px rgba(16,35,28,0.14)",
+    "hero": "0 30px 90px rgba(1,47,35,0.28)",
+    "buttonGlow": "0 0 0 1px rgba(215,198,0,0.35), 0 14px 30px rgba(215,198,0,0.28)"
+  },
+  "layout": {
+    "containerMaxWidth": "1440px",
+    "containerPaddingDesktop": "40px",
+    "containerPaddingMobile": "18px",
+    "sectionSpacingDesktop": "96px",
+    "sectionSpacingMobile": "54px",
+    "gridGap": "24px"
+  },
+  "components": {
+    "header": {
+      "heightDesktop": "92px",
+      "heightMobile": "74px",
+      "background": "rgba(255,250,240,0.94)",
+      "logoTreatment": "crest left, MALAGA · COSTA DEL SOL wordmark, GOLF TRANSFERS subline",
+      "navItems": ["Home", "Services", "Golf Courses", "Accommodation", "Transport", "More"],
+      "cta": "Get Quote"
+    },
+    "hero": {
+      "headline": "FROM PLANE TO FAIRWAY.",
+      "eyebrow": "Malaga Airport Specialist",
+      "subheading": "Mercedes transfers. Golf-bag friendly. Your group looked after, gate to fairway.",
+      "primaryCta": "Book Your Transfer",
+      "secondaryCta": "Our Services",
+      "badge": "24/7 Support",
+      "bullets": [
+        "Irish-owned · Golf-bag friendly",
+        "All transfers fully insured",
+        "Irish & Spanish phone support",
+        "24/7 flight monitoring"
+      ],
+      "desktopHeight": "620px",
+      "mobileHeight": "540px",
+      "backgroundInstruction": "Use golf course + mountain + Mercedes image with deep green overlay. If separate images exist, layer Mercedes image to right on desktop and lower hero on mobile."
+    },
+    "featureStrip": {
+      "style": "dark green floating rounded card overlapping hero bottom",
+      "items": [
+        {"title": "Airport Specialist", "text": "AGP transfers our speciality", "icon": "plane"},
+        {"title": "Golf Bag Friendly", "text": "No extra hassle", "icon": "briefcase"},
+        {"title": "Fully Insured", "text": "Your journey protected", "icon": "shield"},
+        {"title": "Irish & Spanish Support", "text": "We're here for you", "icon": "headphones"}
+      ]
+    },
+    "airportSection": {
+      "title": "Arrive in Malaga. Let Us Do The Rest.",
+      "copy": "Meet and greet at the airport, live flight awareness, room for clubs, then straight on to your hotel.",
+      "cards": ["AGP Arrivals Tracked", "Direct To Resort", "Golf Bags Welcome"],
+      "sidePanelTitle": "Now Boarding",
+      "sidePanelSubtitle": "Airport transfers",
+      "route": "Malaga Airport to your resort",
+      "status": "Ready on landing",
+      "cta": "Explore Airport Transfers"
+    },
+    "tripBuilder": {
+      "title": "Design Your Costa del Sol Golf Trip",
+      "subtitle": "Choose your destination · Choose your golf course · Choose your accommodation",
+      "cta": "Start Planning",
+      "steps": [
+        "Pick Your Sol Base",
+        "Pick Your Tee Times",
+        "Pick Your Hotel",
+        "Leave the rest to us"
+      ]
+    },
+    "adminDashboard": {
+      "background": "#FBF7EC",
+      "sidebar": "cream sidebar with active pale highlight and dark green text",
+      "cards": "ivory rounded cards with thin border and clean stat hierarchy",
+      "chart": "green line chart, minimal grid",
+      "tables": "compact rounded rows, status pills, green/gold state colours"
+    },
+    "clientDashboard": {
+      "background": "#FBF7EC",
+      "style": "luxury member portal",
+      "bookingCard": "large rounded ivory card with date tile, route, passenger, vehicle, status, and download button"
+    },
+    "forms": {
+      "background": "ivory/cream cards",
+      "inputs": "rounded fields, subtle border, green focus ring",
+      "submit": "gold full-width or pill button with dark green text",
+      "labels": "small dark green labels"
+    },
+    "businessCards": {
+      "landscape": "cream front with crest, forest back with gold details and QR",
+      "portrait": "dark green luxury card with crest top, Mercedes/golf texture, contact icons, QR bottom"
+    }
+  },
+  "pageCoverage": [
+    "home",
+    "transport",
+    "airport transfers",
+    "golf courses",
+    "accommodation",
+    "packages",
+    "testimonials",
+    "contact/enquiry",
+    "admin dashboard",
+    "client dashboard",
+    "pricing management",
+    "email templates",
+    "business cards"
+  ],
+  "implementationChecklist": [
+    "Add/import crest logo asset and use it in header, admin, client dashboard, mobile nav, business cards, and email templates.",
+    "Create or update global Tailwind design tokens/classes.",
+    "Restyle hero to match mockup exactly.",
+    "Restyle all cards, buttons, inputs, nav, tables, tabs, and badges.",
+    "Make admin and client pages cream/green, not generic SaaS.",
+    "Ensure mobile homepage strongly matches uploaded mobile mockup style.",
+    "Run npx tsc --noEmit and npm run build.",
+    "Do not break existing live logic."
+  ]
+}

@@ -52,6 +52,7 @@ import {
   type CostaMapBookingPreviewRow
 } from '../lib/admin-trip-workspace-hydrate'
 import { integrationRegistry } from '../config/integrations'
+import { GOLFSOL_BRAND_LOGO } from '../lib/brand-logo-assets'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { formatTravelDateInput } from '../lib/format-travel-date'
 import { createProposalId, formatDocumentDate } from '../lib/document-templates'
@@ -428,18 +429,18 @@ const formatEur = (value: number) =>
 const proposalStatusStyles: Record<string, string> = {
   draft: 'bg-forest-800 text-white',
   sent: 'bg-fairway-700 text-white',
-  accepted: 'bg-gold-50 text-gold-700',
+  accepted: 'bg-brand-50 text-brand-700',
   archived: 'bg-forest-800 text-white'
 }
 
-const adminTripLabelClass = 'mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600'
+const adminTripLabelClass = 'mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600'
 
 const adminTripInputClass =
   'w-full rounded-xl border border-forest-200 bg-white px-3 py-2.5 text-sm text-forest-900 outline-none transition-[border-color,box-shadow] focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/70'
 
 /** Manual customer proposal form — consistent mustard-green outline on every field. */
 const manualProposalInputClass =
-  'w-full rounded-xl border-2 border-yellow-400 bg-white px-3 py-2.5 text-sm text-forest-900 outline-none transition-[border-color,box-shadow] focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200/90 focus:ring-offset-0'
+  'w-full rounded-xl border-2 border-chrome-400 bg-white px-3 py-2.5 text-sm text-forest-900 outline-none transition-[border-color,box-shadow] focus:border-chrome-500 focus:ring-2 focus:ring-yellow-200/90 focus:ring-offset-0'
 
 interface ManualProposalForm {
   clientFullName: string
@@ -3543,9 +3544,9 @@ export function AdminDashboardPage() {
         title="Admin dashboard"
         variant="admin"
       >
-        <div className="rounded-3xl border border-amber-200/90 bg-amber-50/90 px-6 py-5 text-sm text-amber-950 shadow-soft">
+        <div className="rounded-3xl border border-chrome-200/90 bg-chrome-50/90 px-6 py-5 text-sm text-brand-950 shadow-soft">
           <p className="font-medium">Cannot verify admin access without a profile.</p>
-          <p className="mt-2 text-amber-900/90">
+          <p className="mt-2 text-brand-900/90">
             If your account is an admin, confirm <code className="rounded bg-white/80 px-1">profiles.role</code> is{' '}
             <code className="rounded bg-white/80 px-1">admin</code> for this user in Supabase, then retry.
           </p>
@@ -3584,7 +3585,7 @@ export function AdminDashboardPage() {
         >
           <PortalClientDataCard sections={adminDataCardSections} />
 
-          <div className="rounded-[1.35rem] border border-amber-200/90 bg-gradient-to-br from-amber-50/95 via-white to-fairway-50/35 px-5 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] ring-1 ring-amber-900/[0.07] sm:px-6 sm:py-5">
+          <div className="rounded-[1.35rem] border border-chrome-200/90 bg-gradient-to-br from-brand-50/95 via-white to-fairway-50/35 px-5 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] ring-1 ring-amber-900/[0.07] sm:px-6 sm:py-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
               <span className="inline-flex w-fit shrink-0 rounded-lg bg-forest-950 px-2.5 py-1.5 font-ge text-[0.58rem] font-extrabold uppercase tracking-[0.18em] text-white">
                 Stripe &amp; receipts
@@ -3599,7 +3600,7 @@ export function AdminDashboardPage() {
 
           <div className="relative border-t border-forest-200/80 pt-8">
             <div className="mb-6 max-w-3xl">
-              <p className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.22em] text-gold-600">Client interest tickets</p>
+              <p className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.22em] text-brand-600">Client interest tickets</p>
               <h3 className="font-display mt-2 text-xl font-semibold tracking-tight text-forest-950 sm:text-2xl">
                 Transfers, golf &amp; hotels
               </h3>
@@ -3609,7 +3610,7 @@ export function AdminDashboardPage() {
               </p>
             </div>
             {interestAdminTicketsError ? (
-              <p className="mb-6 text-sm text-amber-900" role="alert">
+              <p className="mb-6 text-sm text-brand-900" role="alert">
                 {interestAdminTicketsError}
               </p>
             ) : null}
@@ -3619,7 +3620,7 @@ export function AdminDashboardPage() {
                   <p className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-700">Open tickets</p>
                   {openInterestTicketCount > 0 ? (
                     <span
-                      className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-950 ring-1 ring-amber-200/80"
+                      className="inline-flex items-center rounded-full bg-chrome-100 px-2.5 py-0.5 text-xs font-semibold text-brand-950 ring-1 ring-amber-200/80"
                       title="Tickets still open — client is waiting for your first reply or follow-up."
                     >
                       {openInterestTicketCount} awaiting reply
@@ -3652,7 +3653,7 @@ export function AdminDashboardPage() {
                               <div className="flex flex-wrap items-center gap-2">
                               <span className="font-semibold text-forest-950">{PORTAL_INTEREST_LABELS[t.category]}</span>
                               {t.status === 'open' ? (
-                                <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-900 ring-1 ring-amber-200/70">
+                                <span className="rounded-full bg-chrome-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-900 ring-1 ring-amber-200/70">
                                   New
                                 </span>
                               ) : null}
@@ -3729,7 +3730,7 @@ export function AdminDashboardPage() {
                               <img
                                 alt="Golf Sol Ireland"
                                 className="h-6 w-auto max-w-[7rem] object-contain object-left"
-                                src="/golfsol-crest.svg"
+                                src={GOLFSOL_BRAND_LOGO.svg}
                               />
                             </div>
                           ) : (
@@ -3743,7 +3744,7 @@ export function AdminDashboardPage() {
                         </li>
                       ))}
                     </ul>
-                    <label className="mb-2 mt-4 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="admin-ticket-reply">
+                    <label className="mb-2 mt-4 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="admin-ticket-reply">
                       Your reply
                     </label>
                     <textarea
@@ -3776,7 +3777,7 @@ export function AdminDashboardPage() {
           </div>
 
           <section className="relative mt-10 scroll-mt-28 border-t border-forest-200/80 pt-8" id="admin-hub-publish">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Publish client packages</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Publish client packages</p>
             <h3 className="font-display mt-2 text-xl font-semibold text-forest-950 md:text-2xl">Transfers, golf &amp; hotel</h3>
 
             <form
@@ -3972,7 +3973,7 @@ export function AdminDashboardPage() {
               ) : null}
 
                 <details className="rounded-2xl border border-forest-100 bg-offwhite/70 px-4 py-3 text-sm text-forest-700">
-                  <summary className="cursor-pointer text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">
+                  <summary className="cursor-pointer text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">
                     Setup &amp; imports
                   </summary>
                   <p className="mt-3 text-sm leading-relaxed text-forest-600">
@@ -4033,7 +4034,7 @@ export function AdminDashboardPage() {
                       >
                         <td className="whitespace-nowrap px-4 py-4 font-mono text-xs md:px-6">
                           <button
-                            className="rounded-full bg-gold-50 px-3 py-1.5 font-mono text-xs font-semibold text-gold-800 underline-offset-2 transition-colors hover:bg-gold-100 hover:underline"
+                            className="rounded-full bg-brand-50 px-3 py-1.5 font-mono text-xs font-semibold text-brand-800 underline-offset-2 transition-colors hover:bg-brand-100 hover:underline"
                             aria-label={`Fill account lookup with ${row.reference_id} and show submission detail`}
                             onClick={() => {
                               setSelectedEnquiryDetailRef((current) =>
@@ -4049,7 +4050,7 @@ export function AdminDashboardPage() {
                         <td className="whitespace-nowrap px-4 py-4 font-medium md:px-6">{row.full_name}</td>
                         <td className="px-4 py-4 md:px-6">
                           <a
-                            className="font-medium text-gold-600 underline-offset-2 transition-colors hover:text-gold-700 hover:underline"
+                            className="font-medium text-brand-600 underline-offset-2 transition-colors hover:text-brand-700 hover:underline"
                             href={`mailto:${row.email}`}
                           >
                             {row.email}
@@ -4083,10 +4084,10 @@ export function AdminDashboardPage() {
             )}
 
             {selectedEnquiryDetail ? (
-              <div className="mt-6 rounded-[2rem] border border-gold-200 bg-white p-6 shadow-soft md:p-8">
+              <div className="mt-6 rounded-[2rem] border border-brand-200 bg-white p-6 shadow-soft md:p-8">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-600">Submission detail</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-600">Submission detail</p>
                     <h3 className="font-display mt-2 text-xl font-semibold text-forest-950">
                       {selectedEnquiryDetail.reference_id} — {selectedEnquiryDetail.full_name}
                     </h3>
@@ -4125,7 +4126,7 @@ export function AdminDashboardPage() {
                 </div>
 
                 {websiteFormPackageBuildForSelectedEnquiry ? (
-                  <div className="mt-5 rounded-2xl border border-emerald-200/90 bg-gradient-to-br from-emerald-50/90 to-white px-4 py-4 text-sm text-forest-900 shadow-sm">
+                  <div className="mt-5 rounded-2xl border border-emerald-200/90 bg-gradient-to-br from-fairway-50/90 to-white px-4 py-4 text-sm text-forest-900 shadow-sm">
                     <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-900">Linked client package</p>
                     <p className="mt-2 text-sm text-forest-700">
                       This enquiry is mirrored as a dashboard package row. Open it to enter the VAT-inclusive total, save the quote to
@@ -4146,9 +4147,9 @@ export function AdminDashboardPage() {
                     </LuxuryButton>
                   </div>
                 ) : (
-                  <div className="mt-5 rounded-2xl border border-amber-200/80 bg-amber-50/80 px-4 py-4 text-sm text-amber-950">
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-900">No linked package for this ref in the list</p>
-                    <p className="mt-2 text-sm text-amber-950/90">
+                  <div className="mt-5 rounded-2xl border border-chrome-200/80 bg-chrome-50/80 px-4 py-4 text-sm text-brand-950">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-900">No linked package for this ref in the list</p>
+                    <p className="mt-2 text-sm text-brand-950/90">
                       A quotable <strong className="font-medium">website form</strong> package is created automatically only when the
                       submitter&apos;s email already had a <strong className="font-medium">portal profile</strong> at submit time. If they
                       were new, you still have this enquiry record — use <strong className="font-medium">Use in manual proposal</strong>, or
@@ -4208,14 +4209,14 @@ export function AdminDashboardPage() {
                       )}
                       key={`${rowIndex}-${label}`}
                     >
-                      <dt className="text-[11px] font-semibold uppercase tracking-[0.12em] text-gold-600">{label}</dt>
+                      <dt className="text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-600">{label}</dt>
                       <dd className="mt-1 whitespace-pre-wrap break-words text-sm font-medium text-forest-900">{value}</dd>
                     </div>
                   ))}
                 </dl>
 
                 <details className="mt-5 rounded-2xl border border-forest-100 bg-forest-950 p-4 text-white">
-                  <summary className="cursor-pointer text-xs font-semibold uppercase tracking-[0.16em] text-gold-300">
+                  <summary className="cursor-pointer text-xs font-semibold uppercase tracking-[0.16em] text-brand-300">
                     Raw database row
                   </summary>
                   <pre className="mt-4 max-h-72 overflow-auto rounded-xl bg-black/30 p-4 text-xs leading-relaxed text-white/85">
@@ -4234,7 +4235,7 @@ export function AdminDashboardPage() {
           {SHOW_ADMIN_WORKSPACE_UI ? (
             <>
           <section className="mb-8 rounded-[2rem] border border-fairway-300/70 bg-gradient-to-br from-fairway-50/95 to-white px-6 py-5 shadow-sm md:mb-10 md:px-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Recommended workflow</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Recommended workflow</p>
             <h3 className="font-display mt-2 text-lg font-semibold text-forest-950 md:text-xl">
               Add the customer · Build transfers · Fill the proposal · Send the PDF
             </h3>
@@ -4272,7 +4273,7 @@ export function AdminDashboardPage() {
             </button>
             {adminShowTransferBuilder ? (
               <>
-                <p className="mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Transfer package builder</p>
+                <p className="mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Transfer package builder</p>
                 <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Airport-only vs golf-course legs</h2>
             <p className="mt-2 max-w-2xl text-sm text-forest-600">
               Pick <strong className="font-medium text-forest-800">airport-only</strong> (AGP → hotel or course) or{' '}
@@ -4365,7 +4366,7 @@ export function AdminDashboardPage() {
                     </div>
                     {tbReferenceLookupMessage ? (
                       <p
-                        className={`text-sm font-medium ${tbReferenceResolvedRow ? 'text-fairway-900' : 'text-amber-900'}`}
+                        className={`text-sm font-medium ${tbReferenceResolvedRow ? 'text-fairway-900' : 'text-brand-900'}`}
                         role="status"
                       >
                         {tbReferenceLookupMessage}
@@ -4693,14 +4694,14 @@ export function AdminDashboardPage() {
             </button>
             {adminShowManualProposal ? (
               <>
-                <p className="mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Manual customer proposal</p>
+                <p className="mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Manual customer proposal</p>
                 <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">
                   Add a customer, fill the proposal, send the PDF
                 </h2>
             <p className="mt-2 max-w-3xl text-sm text-forest-600">
               Step after <strong className="font-medium text-forest-800">Transfer package builder</strong>: paste a <strong className="font-medium text-forest-800">Ref ID</strong> into Proposal ID or Booking reference to load customer details, travel timing hints, and a{' '}
               <strong className="font-medium text-forest-800">quick view</strong>. Open <strong className="font-medium text-forest-800">transfers &amp; golf</strong> for the full Costa course list. Or start blank. Sample layout:{' '}
-              <a className="font-semibold text-gold-700 underline-offset-2 hover:underline" href="/proposal-pdf-sample" target="_blank" rel="noreferrer">
+              <a className="font-semibold text-brand-700 underline-offset-2 hover:underline" href="/proposal-pdf-sample" target="_blank" rel="noreferrer">
                 /proposal-pdf-sample
               </a>
               .
@@ -4844,7 +4845,7 @@ export function AdminDashboardPage() {
                 ) : manualLinkBuildChoices.length > 0 ? (
                   <div className="mt-3 space-y-2">
                     {!manualSaveProposalToPortal ? (
-                      <p className="text-xs text-amber-800">
+                      <p className="text-xs text-brand-800">
                         Turn on <strong className="font-medium">Save this formal proposal to their portal</strong> above to link package builds to this proposal.
                       </p>
                     ) : null}
@@ -5183,7 +5184,7 @@ export function AdminDashboardPage() {
                             Search courses
                           </label>
                           <input
-                            className={cx(adminTripInputClass, 'mt-1 max-w-md border-yellow-400')}
+                            className={cx(adminTripInputClass, 'mt-1 max-w-md border-chrome-400')}
                             id="manual-golf-filter"
                             onChange={(e) => setManualGolfPickerQuery(e.target.value)}
                             placeholder="Name, town, or id (e.g. lasbrisas)"
@@ -5210,7 +5211,7 @@ export function AdminDashboardPage() {
                                           {nearest.stars}★)
                                         </p>
                                       ) : (
-                                        <p className="mt-1 text-xs text-amber-800">No hotel list for this id — type hotel manually in the full form.</p>
+                                        <p className="mt-1 text-xs text-brand-800">No hotel list for this id — type hotel manually in the full form.</p>
                                       )}
                                       {hotels.length > 1 ? (
                                         <p className="mt-0.5 text-[11px] text-forest-500">
@@ -5390,7 +5391,7 @@ export function AdminDashboardPage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-yellow-300/60 bg-yellow-50/40 p-4 md:p-5">
+              <div className="rounded-2xl border border-chrome-300/60 bg-chrome-50/40 p-4 md:p-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-700">
                   PDF — Trip shape card
                 </p>
@@ -5511,7 +5512,7 @@ export function AdminDashboardPage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-yellow-300/60 bg-yellow-50/40 p-4 md:p-5">
+              <div className="rounded-2xl border border-chrome-300/60 bg-chrome-50/40 p-4 md:p-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-700">
                   PDF — Proposal details &amp; logistics cards
                 </p>
@@ -5720,7 +5721,7 @@ export function AdminDashboardPage() {
           </section>
 
           <section>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Trip proposal workspace</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Trip proposal workspace</p>
             <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Match an enquiry → sketch a quote</h2>
             <p className="mt-2 max-w-3xl text-sm text-forest-600">
               Pick the enquiry reference (same ID as in the customer email subject). After you choose <strong>Active enquiry</strong>, use{' '}
@@ -5737,7 +5738,7 @@ export function AdminDashboardPage() {
               <div className="mt-6 space-y-6 rounded-[2rem] border border-forest-100 bg-offwhite/90 p-6 shadow-soft md:p-8">
                 <div className="flex flex-col flex-wrap gap-4 md:flex-row md:items-end md:justify-between">
                   <div className="min-w-0 flex-1">
-                    <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="ws-enquiry">
+                    <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="ws-enquiry">
                       Active enquiry
                     </label>
                     <select
@@ -5777,10 +5778,10 @@ export function AdminDashboardPage() {
                 </div>
 
                 {activeWorkspaceEnquiry ? (
-                  <div className="rounded-2xl border border-gold-200 bg-white p-4 shadow-sm">
+                  <div className="rounded-2xl border border-brand-200 bg-white p-4 shadow-sm">
                     <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                       <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">Active enquiry details</p>
+                        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Active enquiry details</p>
                         <h3 className="mt-1 text-lg font-semibold text-forest-950">
                           {activeWorkspaceEnquiry.reference_id} — {activeWorkspaceEnquiry.full_name}
                         </h3>
@@ -5911,7 +5912,7 @@ export function AdminDashboardPage() {
                                       paySt === 'paid'
                                         ? 'bg-fairway-100 text-fairway-900'
                                         : paySt === 'deposit'
-                                          ? 'bg-amber-100 text-amber-950'
+                                          ? 'bg-chrome-100 text-brand-950'
                                           : 'bg-offwhite text-forest-600'
                                     }`}
                                   >
@@ -5935,14 +5936,14 @@ export function AdminDashboardPage() {
                                       <span className="text-forest-600"> · VAT tourism 13.5%</span>
                                     )}
                                     {paySt === 'paid' ? (
-                                      <span className="ml-2 inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-emerald-950 ring-1 ring-emerald-400/35">
+                                      <span className="ml-2 inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-forest-950 ring-1 ring-emerald-400/35">
                                         Paid · confirmed
                                       </span>
                                     ) : null}
                                   </p>
                                 ) : paySt === 'paid' ? (
                                   <p className="mt-2">
-                                    <span className="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-emerald-950 ring-1 ring-emerald-400/35">
+                                    <span className="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-forest-950 ring-1 ring-emerald-400/35">
                                       Paid · card confirmed
                                     </span>
                                   </p>
@@ -6175,7 +6176,7 @@ export function AdminDashboardPage() {
 
                 {workspaceEnquiryRef ? (
                   <div className="rounded-2xl border border-forest-200 bg-white p-4 shadow-sm md:p-6">
-                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">
                       Linked package · update pricing for this enquiry
                     </p>
                     {workspaceLinkedWebsiteFormBuild ? (
@@ -6281,7 +6282,7 @@ export function AdminDashboardPage() {
                         </label>
                       ))}
                       <div>
-                        <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="ws-party">
+                        <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="ws-party">
                           Party size
                         </label>
                         <select
@@ -6301,7 +6302,7 @@ export function AdminDashboardPage() {
                       </div>
                     </div>
                     <div className="space-y-4">
-                      <label className="block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="ws-courses">
+                      <label className="block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="ws-courses">
                         Courses (multi-select)
                       </label>
                       <select
@@ -6323,7 +6324,7 @@ export function AdminDashboardPage() {
                         ))}
                       </select>
                       <div>
-                        <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="ws-hotel">
+                        <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="ws-hotel">
                           Hotel notes
                         </label>
                         <textarea
@@ -6353,7 +6354,7 @@ export function AdminDashboardPage() {
                 {workspaceDraft &&
                 (workspaceDraft.stages.transfer || workspaceDraft.stages.golf || workspaceDraft.stages.hotel) ? (
                   <div className="space-y-4 rounded-2xl border border-forest-200 bg-white p-4 md:p-6">
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-gold-600">Trip length and admin total</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-brand-600">Trip length and admin total</p>
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div>
                         <label className={adminTripLabelClass} htmlFor="ws-nights">
@@ -6440,7 +6441,7 @@ export function AdminDashboardPage() {
                     ) : null}
 
                     <div className="border-t border-forest-100 pt-4">
-                      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-gold-600">Email actions</p>
+                      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-brand-600">Email actions</p>
                       <div className="mt-3 grid gap-4 lg:grid-cols-2">
                         <div className="space-y-2">
                           <label className={adminTripLabelClass} htmlFor="ws-client-email">
@@ -6561,11 +6562,11 @@ export function AdminDashboardPage() {
           ) : null}
 
           <section>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">CRM — client PDFs</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">CRM — client PDFs</p>
             <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Terms and thank-you documents</h2>
 
             <div className="mt-6 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
-              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="crm-doc-email">
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="crm-doc-email">
                 Client account email
               </label>
               <input
@@ -6593,7 +6594,7 @@ export function AdminDashboardPage() {
                 </button>
                 <button
                   aria-label="Send thank you document to client email"
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border-2 border-[#D5C600] bg-white px-6 py-3 text-sm font-semibold text-[#b34701] transition-colors hover:bg-[#D5C600]/10 disabled:opacity-60"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border-2 border-[#136047] bg-white px-6 py-3 text-sm font-semibold text-[#b34701] transition-colors hover:bg-[#136047]/10 disabled:opacity-60"
                   disabled={crmDocSending !== 'idle'}
                   onClick={() => handleSendCrmDocument('welcome')}
                   type="button"
@@ -6611,7 +6612,7 @@ export function AdminDashboardPage() {
           </section>
 
           <section>
-            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Manual clients</p>
+            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Manual clients</p>
             <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Add or remove portal logins</h2>
             <p className="mt-2 max-w-2xl text-sm text-forest-600">
               Create a dashboard login with only name and email. An account number (same format as enquiry references) is assigned automatically. The client can add or update their mobile number after they sign in. Removing an enquiry from “Recent form submissions” does{' '}
@@ -6620,8 +6621,8 @@ export function AdminDashboardPage() {
 
             <div className="mt-6 grid gap-6 lg:grid-cols-2">
               <div className="rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">Add client</p>
-                <label className="mb-2 mt-4 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="manual-portal-full-name">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Add client</p>
+                <label className="mb-2 mt-4 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="manual-portal-full-name">
                   Full name
                 </label>
                 <input
@@ -6633,7 +6634,7 @@ export function AdminDashboardPage() {
                   type="text"
                   value={manualPortalCreateName}
                 />
-                <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="manual-portal-email">
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="manual-portal-email">
                   Email (sign-in)
                 </label>
                 <input
@@ -6672,7 +6673,7 @@ export function AdminDashboardPage() {
                 <p className="mt-2 text-sm text-forest-600">
                   Deletes the Supabase auth user and cascades their profile, package builds, and portal inbox rows. Does not remove enquiry history rows.
                 </p>
-                <label className="mb-2 mt-4 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="manual-portal-delete-email">
+                <label className="mb-2 mt-4 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="manual-portal-delete-email">
                   Client login email
                 </label>
                 <input
@@ -6703,7 +6704,7 @@ export function AdminDashboardPage() {
           </section>
 
           <section className="scroll-mt-28" id="admin-hub-portal">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Client portal</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Client portal</p>
             <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Account number &amp; document area</h2>
             <p className="mt-2 max-w-2xl text-sm text-forest-600">
               Set the account number clients see after login. Use <strong className="font-medium text-forest-800">Formal proposals</strong> and{' '}
@@ -6711,7 +6712,7 @@ export function AdminDashboardPage() {
             </p>
 
             <div className="mt-6 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
-              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="portal-client-email">
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="portal-client-email">
                 Client login email
               </label>
               <input
@@ -6727,7 +6728,7 @@ export function AdminDashboardPage() {
                 value={portalClientEmail}
               />
 
-              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="portal-account-ref">
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="portal-account-ref">
                 Account number (enquiry reference)
               </label>
               <input
@@ -6812,7 +6813,7 @@ export function AdminDashboardPage() {
                 Clears name, phone, account number, and the “contact saved” flag for this login email so the client (or your own
                 admin test account) sees the one-time contact form again. Does not remove admin role or delete the auth user.
               </p>
-              <label className="mb-2 mt-4 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="portal-onboarding-reset-email">
+              <label className="mb-2 mt-4 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="portal-onboarding-reset-email">
                 Login email
               </label>
               <input
@@ -6844,7 +6845,7 @@ export function AdminDashboardPage() {
           </section>
 
           <section className="mb-14 md:mb-16">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Driver calendar</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Driver calendar</p>
             <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Booked days &amp; printable runs</h2>
             <p className="mt-2 max-w-2xl text-sm text-forest-600">
               Add a row for each day that is <strong className="font-medium text-forest-800">fully booked</strong>. You do not need a real
@@ -6858,7 +6859,7 @@ export function AdminDashboardPage() {
           </section>
 
           <section className="mb-14 md:mb-16">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Studio → client email</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Studio → client email</p>
             <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Branded send + PDFs</h2>
             <p className="mt-2 max-w-2xl text-sm text-forest-600">
               Same visual family as enquiry and proposal mail — optional PDF attachments (quotes, hotel PDFs, etc.). Sends with
@@ -6951,7 +6952,7 @@ export function AdminDashboardPage() {
           </section>
 
           <section className="scroll-mt-28" id="admin-hub-packages">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Client package builds</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Client package builds</p>
             <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">All saved &amp; published packages</h2>
             <p className="mt-2 max-w-2xl text-sm text-forest-600">
               Calculator saves, website form captures (signed-in email), and manual lines you publish. Use View to open the trip
@@ -6972,10 +6973,10 @@ export function AdminDashboardPage() {
             ) : null}
 
             {buildsLoadError ? (
-              <div className="mt-6 rounded-3xl border border-amber-200/90 bg-amber-50/90 px-6 py-4 text-sm text-amber-950 shadow-soft">
+              <div className="mt-6 rounded-3xl border border-chrome-200/90 bg-chrome-50/90 px-6 py-4 text-sm text-brand-950 shadow-soft">
                 <p className="font-medium">Package builds could not be loaded.</p>
-                <p className="mt-2 text-amber-900/85">{buildsLoadError}</p>
-                <p className="mt-2 text-xs text-amber-900/70">
+                <p className="mt-2 text-brand-900/85">{buildsLoadError}</p>
+                <p className="mt-2 text-xs text-brand-900/70">
                   If the error mentions <code className="rounded bg-white/80 px-1">client_details</code>, run{' '}
                   <code className="rounded bg-white/80 px-1">supabase/run-in-sql-editor-add-client-details.sql</code> in Supabase
                   SQL. Otherwise check the <code className="rounded bg-white/80 px-1">package_builds</code> migration and the{' '}
@@ -7020,7 +7021,7 @@ export function AdminDashboardPage() {
                             <p className="font-medium text-forest-900">{prof?.full_name?.trim() || '—'}</p>
                             {prof?.email ? (
                               <a
-                                className="text-xs font-medium text-gold-600 underline-offset-2 hover:text-gold-700 hover:underline"
+                                className="text-xs font-medium text-brand-600 underline-offset-2 hover:text-brand-700 hover:underline"
                                 href={`mailto:${prof.email}`}
                               >
                                 {prof.email}
@@ -7086,7 +7087,7 @@ export function AdminDashboardPage() {
           </section>
 
           <section>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Proposals</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Proposals</p>
             <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">CRM records</h2>
             <p className="mt-2 max-w-2xl text-sm text-forest-600">
               Populated when you insert rows (or automate later). Owners see their own rows on the client dashboard.
@@ -7166,7 +7167,7 @@ export function AdminDashboardPage() {
                     {prof.full_name?.trim() ? <span>{prof.full_name.trim()}</span> : null}
                     {prof.full_name?.trim() && prof.email ? <span className="text-forest-400"> · </span> : null}
                     {prof.email ? (
-                      <a className="text-gold-600 underline-offset-2 hover:text-gold-700 hover:underline" href={`mailto:${prof.email}`}>
+                      <a className="text-brand-600 underline-offset-2 hover:text-brand-700 hover:underline" href={`mailto:${prof.email}`}>
                         {prof.email}
                       </a>
                     ) : null}
@@ -7181,7 +7182,7 @@ export function AdminDashboardPage() {
               <div className="flex-1 overflow-y-auto px-6 py-6 md:px-8 md:py-8">
                 {detailCalc ? (
                   <div className="mb-8 rounded-2xl border border-forest-100 bg-white px-4 py-4 text-sm text-forest-900">
-                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">Calculator config (reference)</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Calculator config (reference)</p>
                     <p className="mt-2 font-medium">
                       {detailCalc.packageStyle} · {detailCalc.groupSize} golfers · {detailCalc.nights} nights /{' '}
                       {detailCalc.rounds} rounds
@@ -7195,7 +7196,7 @@ export function AdminDashboardPage() {
 
                 {detailManual ? (
                   <div className="mb-8 rounded-2xl border border-fairway-200/80 bg-fairway-50/40 px-4 py-4 text-sm text-forest-900">
-                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">Manual package (published)</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Manual package (published)</p>
                     <p className="mt-2 font-display text-lg font-semibold text-forest-950">{detailManual.title}</p>
                     <p className="mt-2 text-sm font-semibold text-forest-800">{formatEur(detailManual.priceEur)} total</p>
                     {detailManual.summary.trim() ? (
@@ -7207,7 +7208,7 @@ export function AdminDashboardPage() {
 
                 {detailWebsite ? (
                   <div className="mb-8 rounded-2xl border border-forest-100 bg-white px-4 py-4 text-sm text-forest-900">
-                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">Website form snapshot</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Website form snapshot</p>
                     <p className="mt-2 font-medium">
                       {humanizeFormKey(detailWebsite.formKey)} · enquiry {detailWebsite.enquiryReferenceId}
                     </p>
@@ -7217,7 +7218,7 @@ export function AdminDashboardPage() {
                     <dl className="mt-4 grid max-h-72 gap-3 overflow-y-auto text-xs sm:grid-cols-2">
                       {orderedWebsiteFormFieldEntries(detailWebsite.fields).map(([k, v]) => (
                         <div className="rounded-2xl border-2 border-orange-400/70 bg-offwhite/50 px-3 py-2.5" key={k}>
-                          <dt className="text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-gold-600">
+                          <dt className="text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-brand-600">
                             {getWebsiteFormFieldLabel(k)}
                           </dt>
                           <dd className="mt-1 whitespace-pre-wrap text-sm font-medium text-forest-900">
@@ -7282,7 +7283,7 @@ export function AdminDashboardPage() {
                 ) : null}
 
                 {detailWebsite ? (
-                  <div className="mb-8 rounded-2xl border border-emerald-200/90 bg-gradient-to-br from-emerald-50/80 to-white px-4 py-5 text-sm text-forest-900 shadow-sm">
+                  <div className="mb-8 rounded-2xl border border-emerald-200/90 bg-gradient-to-br from-fairway-50/80 to-white px-4 py-5 text-sm text-forest-900 shadow-sm">
                     <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-900">Client quote &amp; VAT</p>
                     <p className="mt-2 text-xs text-forest-600">
                       Enter the <strong className="font-medium text-forest-800">VAT-inclusive total</strong> the client pays. We
@@ -7367,7 +7368,7 @@ export function AdminDashboardPage() {
                   </div>
                 ) : null}
 
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Trip details (editable)</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Trip details (editable)</p>
                 <p className="mt-1 text-sm text-forest-600">
                   {detailManual
                     ? 'Locked package lines on the client dashboard match this manual quote — adjust them here if the quote changes. The client can still edit open fields (dates, notes, etc.).'
@@ -7476,7 +7477,7 @@ export function AdminDashboardPage() {
             Use <strong className="font-medium text-forest-900">client login email</strong> and/or an <strong className="font-medium text-forest-900">account or enquiry ref</strong> (GSI-…) so we match the same profile that owns the inbox. Signed links use the account ref field and{' '}
             <code className="rounded bg-white/90 px-1 font-mono text-xs ring-1 ring-forest-200">PORTAL_LINK_SIGNING_SECRET</code> on the server.
           </p>
-          <label className="mb-2 mt-5 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="bottom-clear-portal-client-email">
+          <label className="mb-2 mt-5 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="bottom-clear-portal-client-email">
             Client login email
           </label>
           <input
@@ -7493,7 +7494,7 @@ export function AdminDashboardPage() {
             type="email"
             value={clearPortalClientEmail}
           />
-          <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="bottom-clear-dashboard-ref">
+          <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="bottom-clear-dashboard-ref">
             Account or enquiry reference (optional if email above is set)
           </label>
           <input
@@ -7519,7 +7520,7 @@ export function AdminDashboardPage() {
           </p>
           <div className="flex flex-col flex-wrap gap-3 sm:flex-row sm:items-center">
             <button
-              className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-amber-300 bg-white px-6 py-3 text-sm font-semibold text-amber-950 transition-colors hover:bg-amber-50 disabled:opacity-60"
+              className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-chrome-300 bg-white px-6 py-3 text-sm font-semibold text-brand-950 transition-colors hover:bg-chrome-50 disabled:opacity-60"
               disabled={clearPortalInboxBusy || clearDashboardBusy}
               onClick={() => void handleClearPortalMessagesOnly()}
               type="button"
@@ -7552,7 +7553,7 @@ export function AdminDashboardPage() {
             </button>
           </div>
           {clearPortalInboxMessage ? (
-            <p className="mt-4 text-sm font-medium text-amber-950" role="status">
+            <p className="mt-4 text-sm font-medium text-brand-950" role="status">
               {clearPortalInboxMessage}
             </p>
           ) : null}
@@ -7576,7 +7577,7 @@ export function AdminDashboardPage() {
           </p>
           <div className="mt-5 flex max-w-xl flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
             <div className="min-w-0 flex-1">
-              <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="auth-block-email">
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="auth-block-email">
                 Email to block
               </label>
               <input
@@ -7590,7 +7591,7 @@ export function AdminDashboardPage() {
               />
             </div>
             <div className="min-w-0 flex-1 sm:min-w-[12rem]">
-              <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="auth-block-reason">
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="auth-block-reason">
                 Reason (optional)
               </label>
               <input
@@ -7618,7 +7619,7 @@ export function AdminDashboardPage() {
           ) : null}
           <div className="mt-8">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">Currently blocked</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Currently blocked</p>
               <button
                 className="text-xs font-semibold text-gs-green underline decoration-gs-green/40 hover:decoration-gs-green"
                 disabled={authBlockListLoading}

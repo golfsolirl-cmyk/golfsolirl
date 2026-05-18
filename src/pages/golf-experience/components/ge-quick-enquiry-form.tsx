@@ -335,7 +335,7 @@ export function GeQuickEnquiryForm({
       id="ge-enquiry-form"
       className="rounded-[1.75rem] border border-gs-dark/10 bg-white p-5 shadow-[0_24px_60px_rgba(6,59,42,0.12)] sm:p-6"
     >
-      <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.14em] text-ge-orange sm:text-[0.95rem]">
+      <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.14em] text-brand-700 sm:text-[0.95rem]">
         {formConfig.badge}
       </p>
       <h2 className="mt-3 font-ge text-[1.95rem] font-extrabold leading-tight tracking-[-0.01em] text-gs-green sm:text-[2.1rem]">
@@ -486,7 +486,7 @@ export function GeQuickEnquiryForm({
           })}
 
           {status === 'error' && errorMessage ? (
-            <div className="rounded-lg border border-ge-orange/50 bg-orange-50 px-3 py-2.5 font-ge text-[1.02rem] leading-7 text-gs-dark sm:text-[1.04rem]">
+            <div className="rounded-lg border border-brand-700/50 bg-orange-50 px-3 py-2.5 font-ge text-[1.02rem] leading-7 text-gs-dark sm:text-[1.04rem]">
               <p>{errorMessage}</p>
               {errorCode === ENQUIRY_CONFLICT_EXISTING_PHONE ? (
                 <p className="mt-3 text-[0.98rem] font-semibold text-gs-green">
@@ -499,7 +499,7 @@ export function GeQuickEnquiryForm({
             </div>
           ) : null}
 
-          <GeButton className="w-full" type="submit" variant="gs-gold" size="lg" disabled={status === 'submitting'}>
+          <GeButton className="w-full" type="submit" variant="gs-green" size="lg" disabled={status === 'submitting'}>
             <Send className="h-4 w-4" aria-hidden />
             {status === 'submitting' ? 'Sending...' : formConfig.submitLabel}
           </GeButton>

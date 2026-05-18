@@ -56,7 +56,7 @@ const flagClass =
 export function GeHomeEuNordicWelcome() {
   return (
     <section
-      className="border-b border-[#e8e4dc] bg-[#faf9f6] text-gs-dark"
+      className="border-b border-[#e8e4dc] bg-[#f4f7f5] text-gs-dark"
       aria-labelledby="home-eu-nordic-welcome-heading"
     >
       <div className="mx-auto flex max-w-[1180px] flex-col items-center justify-center gap-2.5 px-4 py-3 sm:flex-row sm:gap-5 sm:px-8 sm:py-3.5">

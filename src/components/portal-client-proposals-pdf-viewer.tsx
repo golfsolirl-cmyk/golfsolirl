@@ -416,7 +416,7 @@ export function PortalClientProposalsPdfViewer({
         <div className="relative overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-soft">
           <div
             aria-hidden="true"
-            className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-gold-400 via-fairway-500 to-forest-700"
+            className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-brand-400 via-fairway-500 to-forest-700"
           />
           <div className="px-6 py-10 md:px-10 md:py-12">
             <h3 className="font-display text-xl font-semibold text-forest-950">No formal proposals yet</h3>
@@ -445,7 +445,7 @@ export function PortalClientProposalsPdfViewer({
         <aside className="border-b border-forest-100/90 bg-white/80 p-4 lg:border-b-0 lg:border-r lg:border-forest-100/90 lg:p-5">
           {hasTransferShelf ? (
             <>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-gold-600">Your paper trail</p>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-600">Your paper trail</p>
               <p className="mt-1 text-sm leading-snug text-forest-500">
                 Snapshot of your request, VAT quote PDF, and a short terms summary when your price is saved; deposit and paid-in-full
                 card receipts appear here after successful online payment.
@@ -459,7 +459,7 @@ export function PortalClientProposalsPdfViewer({
                         className={cx(
                           'flex w-full flex-col rounded-xl px-3 py-2.5 text-left text-base font-semibold transition',
                           activeKey === k
-                            ? 'bg-gradient-to-r from-emerald-950 to-forest-900 text-white shadow-md'
+                            ? 'bg-gradient-to-r from-forest-950 to-forest-900 text-white shadow-md'
                             : 'text-forest-800 hover:bg-forest-50'
                         )}
                         onClick={() => pick(k)}
@@ -482,7 +482,7 @@ export function PortalClientProposalsPdfViewer({
             </>
           ) : null}
 
-          <p className={cx('text-xs font-bold uppercase tracking-[0.18em] text-gold-600', hasTransferShelf ? 'mt-6' : '')}>
+          <p className={cx('text-xs font-bold uppercase tracking-[0.18em] text-brand-600', hasTransferShelf ? 'mt-6' : '')}>
             Library
           </p>
           <ul className="mt-3 space-y-1.5">
@@ -492,7 +492,7 @@ export function PortalClientProposalsPdfViewer({
                   className={cx(
                     'flex w-full items-center rounded-xl px-3 py-2.5 text-left text-base font-semibold transition',
                     activeKey === 'terms'
-                      ? 'bg-gradient-to-r from-emerald-950 to-forest-900 text-white shadow-md'
+                      ? 'bg-gradient-to-r from-forest-950 to-forest-900 text-white shadow-md'
                       : 'text-forest-800 hover:bg-forest-50'
                   )}
                   onClick={() => pick('terms')}
@@ -508,7 +508,7 @@ export function PortalClientProposalsPdfViewer({
                   className={cx(
                     'flex w-full items-center rounded-xl px-3 py-2.5 text-left text-base font-semibold transition',
                     activeKey === 'welcome'
-                      ? 'bg-gradient-to-r from-emerald-950 to-forest-900 text-white shadow-md'
+                      ? 'bg-gradient-to-r from-forest-950 to-forest-900 text-white shadow-md'
                       : 'text-forest-800 hover:bg-forest-50'
                   )}
                   onClick={() => pick('welcome')}
@@ -522,7 +522,7 @@ export function PortalClientProposalsPdfViewer({
 
           {showFormalProposalsList && proposals.length > 0 ? (
             <>
-              <p className="mt-6 text-xs font-bold uppercase tracking-[0.18em] text-gold-600">Formal proposals</p>
+              <p className="mt-6 text-xs font-bold uppercase tracking-[0.18em] text-brand-600">Formal proposals</p>
               <ul className="mt-2 max-h-[min(40vh,22rem)] space-y-1 overflow-y-auto pr-1">
                 {proposals.map((row) => {
                   const hasPayload = Boolean(row.payload && typeof row.payload === 'object')
@@ -533,7 +533,7 @@ export function PortalClientProposalsPdfViewer({
                         className={cx(
                           'flex w-full flex-col rounded-xl px-3 py-2.5 text-left text-base transition',
                           activeKey === k
-                            ? 'bg-gradient-to-r from-emerald-950 to-forest-900 text-white shadow-md'
+                            ? 'bg-gradient-to-r from-forest-950 to-forest-900 text-white shadow-md'
                             : hasPayload
                               ? 'text-forest-800 hover:bg-forest-50'
                               : 'cursor-not-allowed text-forest-400'
@@ -565,7 +565,7 @@ export function PortalClientProposalsPdfViewer({
         <div className="flex min-h-0 flex-col bg-white/60">
           <div className="flex flex-col gap-3 border-b border-forest-100/90 px-4 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between md:px-6">
             <div className="min-w-0">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-gold-600">Preview</p>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-600">Preview</p>
               <h3 className="font-display mt-1 truncate text-xl font-semibold text-forest-950">{viewerTitle}</h3>
               <p className="mt-1 text-sm text-forest-500">Read-only — use print or share below.</p>
             </div>
@@ -607,7 +607,7 @@ export function PortalClientProposalsPdfViewer({
                 type="button"
                 variant="white"
               >
-                <Share2 className="h-3.5 w-3.5 text-emerald-700" aria-hidden />
+                <Share2 className="h-3.5 w-3.5 text-fairway-700" aria-hidden />
                 WhatsApp
               </LuxuryButton>
               <LuxuryButton
@@ -625,7 +625,7 @@ export function PortalClientProposalsPdfViewer({
           <div className="relative min-h-[min(72vh,52rem)] flex-1 p-3 md:p-5">
             {proposalLoading ? (
               <div className="absolute inset-0 z-[2] flex flex-col items-center justify-center gap-3 bg-white/80 backdrop-blur-sm">
-                <Loader2 className="h-10 w-10 animate-spin text-emerald-700" aria-hidden />
+                <Loader2 className="h-10 w-10 animate-spin text-fairway-700" aria-hidden />
                 <p className="text-base font-medium text-forest-700">Preparing PDF…</p>
               </div>
             ) : null}
@@ -636,7 +636,7 @@ export function PortalClientProposalsPdfViewer({
             ) : null}
 
             {iframeSrc && !proposalLoadError ? (
-              <div className="relative h-[min(72vh,52rem)] overflow-hidden rounded-2xl border-2 border-forest-200/80 bg-forest-950/5 shadow-inner ring-1 ring-gold-200/30">
+              <div className="relative h-[min(72vh,52rem)] overflow-hidden rounded-2xl border-2 border-forest-200/80 bg-forest-950/5 shadow-inner ring-1 ring-brand-200/30">
                 <iframe
                   ref={iframeRef}
                   className="h-full w-full bg-white"

@@ -11,6 +11,7 @@ import { handlePortalContactSetup } from '../server/portal-contact-setup-service
 import { handleSendClientPortalEmail } from '../server/client-portal-email-service.mjs'
 import { handleSendWebsiteQuoteEmail } from '../server/website-quote-email.mjs'
 import { createProposalFilename, createProposalPdf } from '../server/proposal-service.mjs'
+import { buildHomepageBrandedClientPdfBytes } from '../server/homepage-branded-client-pdf.mjs'
 import { handleSendClientDocument } from '../server/send-client-document-service.mjs'
 import {
   handleSendHotelReservationBrief,
@@ -226,6 +227,26 @@ export default async function handler(req, res) {
         res.statusCode = 200
         res.setHeader('Content-Type', 'application/pdf')
         res.setHeader('Content-Disposition', `attachment; filename="${filename}"`)
+        res.end(Buffer.from(pdfBytes))
+        return
+      }
+
+      case 'homepage-client-pdf': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const rawBody = await readIncomingMessageBodyUtf8(req)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const pdfBytes = await buildHomepageBrandedClientPdfBytes(payload)
+        const ref =
+          typeof payload.enquiryRef === 'string' && payload.enquiryRef.trim()
+            ? payload.enquiryRef.trim().replace(/[^\w-]+/g, '-')
+            : 'trip-overview'
+        applyApiSecurityHeaders(res)
+        res.statusCode = 200
+        res.setHeader('Content-Type', 'application/pdf')
+        res.setHeader('Content-Disposition', `attachment; filename="GolfSol-${ref}.pdf"`)
         res.end(Buffer.from(pdfBytes))
         return
       }

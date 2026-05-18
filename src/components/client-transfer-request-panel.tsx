@@ -7,6 +7,7 @@ import { GeButton } from '../pages/golf-experience/components/ge-button'
 import { ClientTransferTrackMap } from './client-transfer-track-map'
 import { filterTransferPlaceOptions, type TransferPlaceOption } from '../lib/transfer-location-suggestions'
 import { cx } from '../lib/utils'
+import { GOLFSOL_BRAND_LOGO } from '../lib/brand-logo-assets'
 
 type BookingRow = {
   id: string
@@ -31,8 +32,8 @@ const MAX_VIAS = 7
 const MALAGA_AGP_CENTER: [number, number] = [36.6752, -4.4988]
 const MALAGA_AGP_ZOOM = 16
 
-const LOGO_PRIMARY_SRC = '/golfsol-crest.svg'
-const LOGO_FALLBACK_SRC = '/golfsol-crest.svg'
+const LOGO_PRIMARY_SRC = GOLFSOL_BRAND_LOGO.svg
+const LOGO_FALLBACK_SRC = GOLFSOL_BRAND_LOGO.png
 
 const MAP_MARKER_W = 118
 const MAP_MARKER_H = 92
@@ -41,7 +42,7 @@ const MAP_ICON_ANCHOR_Y = MAP_MARKER_H
 
 const makeBrandedTransferMapIcon = (kind: 'pickup' | 'dropoff') => {
   const label = kind === 'pickup' ? 'Pickup point' : 'Drop off point'
-  const chipBorder = kind === 'pickup' ? '#c9a227' : '#0b4934'
+  const chipBorder = kind === 'pickup' ? '#136047' : '#0b4934'
   const chipBg = kind === 'pickup' ? 'rgba(255,249,234,0.97)' : 'rgba(246,251,248,0.97)'
   const chipColor = kind === 'pickup' ? '#1a1404' : '#0a2008'
   const html = `<div class="gsol-transfer-map-marker-inner" style="width:${MAP_MARKER_W}px;height:${MAP_MARKER_H}px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:5px;">
@@ -564,7 +565,7 @@ export function ClientTransferRequestPanel() {
       </p>
 
       <div className="mt-4 rounded-2xl border border-forest-200/90 bg-offwhite/70 px-4 py-3 text-sm text-forest-800">
-        <span className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">Next map tap sets</span>
+        <span className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Next map tap sets</span>
         <div className="mt-2 flex flex-wrap gap-3">
           <label className="flex cursor-pointer items-center gap-2">
             <input
@@ -598,7 +599,7 @@ export function ClientTransferRequestPanel() {
       </div>
 
       <fieldset className="mt-5 rounded-2xl border border-forest-200/90 bg-offwhite/60 px-4 py-4">
-        <legend className="px-1 text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">When do you need pickup?</legend>
+        <legend className="px-1 text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">When do you need pickup?</legend>
         <div className="mt-2 space-y-3">
           <label className="flex cursor-pointer items-start gap-3 text-sm text-forest-800">
             <input
@@ -690,7 +691,7 @@ export function ClientTransferRequestPanel() {
       <div className="mt-6 rounded-2xl border border-forest-200/90 bg-white/90 px-4 py-4 shadow-inner">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">Via stops (optional)</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Via stops (optional)</p>
             <p className="mt-1 text-xs text-forest-600">Up to {MAX_VIAS} intermediate points — same suggestions as labels. Route updates on the map.</p>
           </div>
           <GeButton
@@ -710,7 +711,7 @@ export function ClientTransferRequestPanel() {
                 <div className="flex items-start justify-between gap-2">
                   <span className="text-xs font-semibold text-forest-600">Via {idx + 1}</span>
                   <button
-                    className="text-xs font-semibold text-amber-800 underline decoration-amber-600/50"
+                    className="text-xs font-semibold text-brand-800 underline decoration-amber-600/50"
                     onClick={() => removeViaRow(row.id)}
                     type="button"
                   >
@@ -737,7 +738,7 @@ export function ClientTransferRequestPanel() {
       </div>
 
       <div className="mt-4 flex flex-wrap gap-3">
-        <GeButton size="md" type="button" variant="gs-gold" className="disabled:opacity-50" disabled={busy} onClick={() => void submit()}>
+        <GeButton size="md" type="button" variant="gs-green" className="disabled:opacity-50" disabled={busy} onClick={() => void submit()}>
           {busy ? 'Sending…' : 'Submit transfer request'}
         </GeButton>
         <GeButton
@@ -779,7 +780,7 @@ export function ClientTransferRequestPanel() {
               <li
                 key={b.id}
                 className={`rounded-xl border border-forest-200/80 px-3 py-2 ${
-                  b.status === 'cancelled' ? 'bg-amber-50/90 text-forest-800' : 'bg-offwhite/80'
+                  b.status === 'cancelled' ? 'bg-chrome-50/90 text-forest-800' : 'bg-offwhite/80'
                 }`}
               >
                 <span className="font-semibold capitalize">{statusLine(b)}</span> · {formatScheduledShort(b.scheduled_at ?? null)} ·{' '}

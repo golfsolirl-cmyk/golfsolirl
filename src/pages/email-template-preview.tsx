@@ -2,9 +2,21 @@ import { useCallback, useMemo, useState } from 'react'
 import { Check, Copy, Mail, Smartphone } from 'lucide-react'
 import { getGolfSolBrandedEmailHtml, golfSolEmailSubject } from '../lib/golfsol-email-template'
 
-type ResendSampleId = 'enquiry-customer' | 'enquiry-admin' | 'terms' | 'portal-invite'
+type ResendSampleId = 'enquiry-customer' | 'enquiry-admin' | 'terms' | 'portal-invite' | 'form-autoresponse' | 'sign-in'
 
 const RESEND_SAMPLES: { id: ResendSampleId | 'legacy'; label: string; subject: string; note: string }[] = [
+  {
+    id: 'form-autoresponse',
+    label: 'Form auto-response',
+    subject: 'Golf Sol Ireland — We\'ve received your enquiry (GSI-SAMPLE-001)',
+    note: 'Sent immediately when a visitor submits any form. Confirms receipt, shows next steps, and provides contact details.'
+  },
+  {
+    id: 'sign-in',
+    label: 'Sign-in / magic link',
+    subject: 'Golf Sol Ireland — Sign in to your trip desk',
+    note: 'Sent when a user requests a magic link to access their trip desk / client portal.'
+  },
   {
     id: 'enquiry-customer',
     label: 'Enquiry (customer)',
@@ -37,9 +49,15 @@ const RESEND_SAMPLES: { id: ResendSampleId | 'legacy'; label: string; subject: s
   }
 ]
 
+function withLocalAssetOrigin(html: string) {
+  if (typeof window === 'undefined') return html
+  const base = window.location.origin.replace(/\/+$/, '')
+  return html.replace(/src="\/images\//g, `src="${base}/images/`)
+}
+
 export function EmailTemplatePreviewPage() {
-  const legacyEmailHtml = useMemo(() => getGolfSolBrandedEmailHtml(), [])
-  const [activeId, setActiveId] = useState<ResendSampleId | 'legacy'>('enquiry-customer')
+  const legacyEmailHtml = useMemo(() => withLocalAssetOrigin(getGolfSolBrandedEmailHtml()), [])
+  const [activeId, setActiveId] = useState<ResendSampleId | 'legacy'>('form-autoresponse')
   const [copied, setCopied] = useState(false)
 
   const iframeSrc =
@@ -69,7 +87,7 @@ export function EmailTemplatePreviewPage() {
         className="pointer-events-none fixed inset-0 opacity-90"
         style={{
           background:
-            'radial-gradient(ellipse 120% 70% at 50% -20%, rgba(213,198,0,0.18), transparent 55%), radial-gradient(circle at 12% 22%, rgba(255,255,255,0.08), transparent 32%), radial-gradient(circle at 88% 8%, rgba(11,107,69,0.2), transparent 26%), linear-gradient(180deg, #063B2A 0%, #041F17 100%)'
+            'radial-gradient(ellipse 120% 70% at 50% -20%, rgba(19, 96, 71,0.18), transparent 55%), radial-gradient(circle at 12% 22%, rgba(255,255,255,0.08), transparent 32%), radial-gradient(circle at 88% 8%, rgba(11,107,69,0.2), transparent 26%), linear-gradient(180deg, #08120d 0%, #041F17 100%)'
         }}
       />
 
@@ -77,7 +95,7 @@ export function EmailTemplatePreviewPage() {
         <section className="rounded-[2rem] border border-white/14 bg-white/[0.07] p-6 shadow-[0_32px_120px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#D5C600]/50 bg-[#D5C600]/14 px-3.5 py-1.5 font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.24em] text-[#EBE486]">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#136047]/50 bg-[#136047]/14 px-3.5 py-1.5 font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.24em] text-[#d9be7a]">
                 <Mail className="h-3.5 w-3.5" aria-hidden />
                 Email template preview
               </div>
@@ -95,7 +113,7 @@ export function EmailTemplatePreviewPage() {
             <button
               type="button"
               onClick={() => void copyHtml()}
-              className="inline-flex min-h-[52px] shrink-0 items-center justify-center gap-2 rounded-full bg-[#D5C600] px-6 py-3.5 font-ge text-sm font-extrabold uppercase tracking-[0.16em] text-[#16231D] shadow-[0_20px_48px_rgba(213,198,0,0.32)] transition hover:-translate-y-0.5 hover:shadow-[0_26px_60px_rgba(213,198,0,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#052A1F]"
+              className="inline-flex min-h-[52px] shrink-0 items-center justify-center gap-2 rounded-full bg-[#136047] px-6 py-3.5 font-ge text-sm font-extrabold uppercase tracking-[0.16em] text-white shadow-[0_20px_48px_rgba(19,96,71,0.32)] transition hover:-translate-y-0.5 hover:shadow-[0_26px_60px_rgba(19,96,71,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#052A1F]"
             >
               {copied ? <Check className="h-4 w-4" aria-hidden /> : <Copy className="h-4 w-4" aria-hidden />}
               {copied ? 'HTML copied' : 'Copy email HTML'}
@@ -110,7 +128,7 @@ export function EmailTemplatePreviewPage() {
                 onClick={() => setActiveId(s.id)}
                 className={
                   activeId === s.id
-                    ? 'rounded-full border border-[#D5C600] bg-[#D5C600]/22 px-4 py-2.5 text-xs font-extrabold uppercase tracking-[0.14em] text-[#EBE486] shadow-sm'
+                    ? 'rounded-full border border-[#136047] bg-[#136047]/22 px-4 py-2.5 text-xs font-extrabold uppercase tracking-[0.14em] text-[#d9be7a] shadow-sm'
                     : 'rounded-full border border-white/18 bg-white/[0.06] px-4 py-2.5 text-xs font-bold uppercase tracking-[0.14em] text-white/82 transition hover:border-white/32 hover:bg-white/10'
                 }
               >
@@ -121,23 +139,23 @@ export function EmailTemplatePreviewPage() {
         </section>
 
         <section className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1fr)_420px]">
-          <div className="rounded-[2rem] border border-[#063B2A]/12 bg-[#F4F7F5] p-4 shadow-[0_32px_100px_rgba(6,59,42,0.18)] ring-1 ring-black/[0.04] sm:p-6">
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-2 px-1 font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.2em] text-[#063B2A]/65">
+          <div className="rounded-[2rem] border border-[#08120d]/12 bg-[#F4F7F5] p-4 shadow-[0_32px_100px_rgba(6,59,42,0.18)] ring-1 ring-black/[0.04] sm:p-6">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2 px-1 font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.2em] text-[#08120d]/65">
               <span>Desktop preview</span>
-              <span className="rounded-full bg-[#063B2A]/08 px-2.5 py-1 text-[#063B2A]/80">640px · transactional shell</span>
+              <span className="rounded-full bg-[#08120d]/08 px-2.5 py-1 text-[#08120d]/80">640px · transactional shell</span>
             </div>
             {iframeSrc ? (
               <iframe
                 key={iframeSrc}
                 title="Email desktop preview"
                 src={iframeSrc}
-                className="h-[min(920px,88vh)] min-h-[720px] w-full rounded-2xl border border-[#d9d2c1] bg-white shadow-inner"
+                className="h-[min(920px,88vh)] min-h-[720px] w-full rounded-2xl border border-[#d9d9d9] bg-white shadow-inner"
               />
             ) : (
               <iframe
                 title="GolfSol branded email desktop preview"
                 srcDoc={legacyEmailHtml}
-                className="h-[min(920px,88vh)] min-h-[720px] w-full rounded-2xl border border-[#d9d2c1] bg-white shadow-inner"
+                className="h-[min(920px,88vh)] min-h-[720px] w-full rounded-2xl border border-[#d9d9d9] bg-white shadow-inner"
               />
             )}
           </div>
@@ -145,7 +163,7 @@ export function EmailTemplatePreviewPage() {
           <div className="rounded-[2rem] border border-white/14 bg-[#0c241c] p-5 shadow-[0_32px_100px_rgba(0,0,0,0.32)]">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-2 px-0.5 font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.2em] text-white/65">
               <span className="inline-flex items-center gap-2">
-                <Smartphone className="h-4 w-4 text-[#D5C600]/90" aria-hidden />
+                <Smartphone className="h-4 w-4 text-[#136047]/90" aria-hidden />
                 Mobile preview
               </span>
               <span className="rounded-full bg-white/[0.08] px-2.5 py-1 text-white/75">375px</span>
@@ -168,10 +186,10 @@ export function EmailTemplatePreviewPage() {
             </div>
 
             <div className="mt-6 rounded-2xl border border-white/12 bg-white/[0.05] p-4 font-ge text-sm leading-relaxed text-white/75">
-              <p className="font-extrabold uppercase tracking-[0.16em] text-[#D5C600]">Open directly</p>
+              <p className="font-extrabold uppercase tracking-[0.16em] text-[#d9be7a]">Open directly</p>
               <p className="mt-2">
                 Same previews load at{' '}
-                <code className="rounded bg-black/30 px-1.5 py-0.5 font-mono text-xs text-[#D5C600]/90">
+                <code className="rounded bg-black/30 px-1.5 py-0.5 font-mono text-xs text-[#136047]/90">
                   /api/email-preview-html?t=enquiry-customer
                 </code>{' '}
                 (swap <span className="font-mono">t</span>). Terms preview swaps{' '}

@@ -19,6 +19,7 @@ import { buildClientDataCardSections, type ClientEnquiryRowLite } from '../lib/c
 import { LuxuryButton } from '../components/ui/button'
 import { COURSES } from '../data/coastal-golf-data'
 import { fetchPackageBuildsClientList } from '../lib/fetch-package-builds'
+import { GOLFSOL_BRAND_LOGO } from '../lib/brand-logo-assets'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import type { TransferReceiptVatTreatment } from '../lib/transfer-vat-receipt-pdf'
 
@@ -79,7 +80,7 @@ interface PackageBuildRow {
 const inputClass =
   'w-full rounded-2xl border-2 border-orange-400 bg-white px-4 py-3.5 text-base text-forest-900 placeholder:text-forest-400 outline-none transition-[border-color,box-shadow] focus:border-orange-500 focus:ring-2 focus:ring-orange-300/70'
 
-const labelClass = 'mb-1.5 block text-sm font-semibold uppercase tracking-[0.12em] text-gold-600'
+const labelClass = 'mb-1.5 block text-sm font-semibold uppercase tracking-[0.12em] text-brand-600'
 
 const readOnlyCalcClass =
   'w-full rounded-2xl border-2 border-forest-200/90 bg-offwhite px-4 py-3.5 text-base text-forest-900'
@@ -1396,16 +1397,16 @@ export function ClientDashboardPage() {
   const interestHeroAdornment =
     hasUnreadInterestReplies ? (
       <button
-        className="group relative flex max-w-full cursor-pointer items-center gap-3 rounded-2xl border border-emerald-400/45 bg-gradient-to-br from-emerald-900/80 via-[#0c3d2c]/85 to-gs-green/90 px-4 py-2.5 text-left shadow-[0_0_0_1px_rgba(213,198,0,0.12),0_12px_40px_rgba(16,185,129,0.28)] ring-1 ring-white/10 backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:border-gs-gold/50 hover:shadow-[0_0_0_1px_rgba(213,198,0,0.35),0_16px_48px_rgba(16,185,129,0.35)]"
+        className="group relative flex max-w-full cursor-pointer items-center gap-3 rounded-2xl border border-emerald-400/45 bg-gradient-to-br from-emerald-900/80 via-[#0c3d2c]/85 to-gs-green/90 px-4 py-2.5 text-left shadow-[0_0_0_1px_rgba(19, 96, 71,0.12),0_12px_40px_rgba(16,185,129,0.28)] ring-1 ring-white/10 backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:border-brand-700/50 hover:shadow-[0_0_0_1px_rgba(19, 96, 71,0.35),0_16px_48px_rgba(16,185,129,0.35)]"
         onClick={() => openTeamMessagingAndScroll()}
         type="button"
       >
         <span className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10">
-          <MessageCircle className="relative z-[1] h-5 w-5 text-emerald-50 drop-shadow-sm" aria-hidden />
+          <MessageCircle className="relative z-[1] h-5 w-5 text-fairway-50 drop-shadow-sm" aria-hidden />
           <span className="pointer-events-none absolute inset-0 rounded-full bg-emerald-400/25 blur-md" aria-hidden />
           <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-300/90 opacity-80" />
-            <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-amber-400 ring-2 ring-emerald-950/80" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-chrome-300/90 opacity-80" />
+            <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-chrome-400 ring-2 ring-forest-950/80" />
           </span>
         </span>
         <span className="min-w-0 text-left">
@@ -1538,19 +1539,19 @@ export function ClientDashboardPage() {
               />
               {dashboardPaymentBanner ? (
                 <div
-                  className="flex flex-col gap-3 rounded-2xl border border-emerald-300/80 bg-emerald-50/95 px-4 py-3.5 text-emerald-950 shadow-sm sm:flex-row sm:items-start sm:justify-between sm:gap-4"
+                  className="flex flex-col gap-3 rounded-2xl border border-emerald-300/80 bg-fairway-50/95 px-4 py-3.5 text-forest-950 shadow-sm sm:flex-row sm:items-start sm:justify-between sm:gap-4"
                   role="status"
                 >
                   <div className="min-w-0 flex-1">
                     {dashboardPaymentBanner.kind === 'transfer_paid' ? (
                       <>
-                        <p className="font-display text-base font-semibold tracking-tight text-emerald-950 md:text-lg">
+                        <p className="font-display text-base font-semibold tracking-tight text-forest-950 md:text-lg">
                           {dashboardPaymentBanner.headline}
                         </p>
                         <p className="mt-2 text-base leading-relaxed text-emerald-900/95 md:text-lg">{dashboardPaymentBanner.detail}</p>
                       </>
                     ) : (
-                      <p className="text-base leading-relaxed text-emerald-950 md:text-lg">{dashboardPaymentBanner.text}</p>
+                      <p className="text-base leading-relaxed text-forest-950 md:text-lg">{dashboardPaymentBanner.text}</p>
                     )}
                   </div>
                   <div className="flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center">
@@ -1565,7 +1566,7 @@ export function ClientDashboardPage() {
                       </LuxuryButton>
                     ) : null}
                     <button
-                      className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-800 underline decoration-emerald-600/60"
+                      className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-800 underline decoration-fairway-600/60"
                       onClick={() => {
                         setInvoiceUrlBanner(null)
                         setStripePaidTransferBookingId(null)
@@ -1596,7 +1597,7 @@ export function ClientDashboardPage() {
         <section className="mb-12 rounded-[2rem] border border-fairway-200/90 bg-gradient-to-br from-offwhite via-white to-[#f4faf6] p-6 shadow-soft md:p-9">
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-600">Enquiry workspace</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Enquiry workspace</p>
               <h2 className="font-display mt-2 text-3xl font-semibold text-forest-950 sm:text-4xl">Build on your enquiry</h2>
               <p className="mt-2 max-w-2xl text-base text-forest-600 md:text-lg">
                 Reference <span className="font-mono font-semibold text-forest-900">{tripDraft.referenceId}</span> — choose
@@ -1664,7 +1665,7 @@ export function ClientDashboardPage() {
                 )}
               </div>
               <div>
-                <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="trip-party">
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="trip-party">
                   Guests (1–8)
                 </label>
                 <select
@@ -1683,7 +1684,7 @@ export function ClientDashboardPage() {
 
               {tripDraft.stages.golf ? (
                 <div>
-                  <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="trip-courses">
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="trip-courses">
                     Preferred courses (multi-select)
                   </label>
                   <select
@@ -1708,7 +1709,7 @@ export function ClientDashboardPage() {
 
               {tripDraft.stages.hotel ? (
                 <div>
-                  <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-gold-600" htmlFor="trip-hotel">
+                  <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="trip-hotel">
                     Hotel notes
                   </label>
                   <textarea
@@ -1781,7 +1782,7 @@ export function ClientDashboardPage() {
       ) : null}
 
       <section className="relative mb-10 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-600">Your contact details</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Your contact details</p>
         <h2 className="font-display mt-2 text-3xl font-semibold text-forest-950 md:text-4xl">How we reach you</h2>
 
         {needsManualContactForm ? (
@@ -1953,7 +1954,7 @@ export function ClientDashboardPage() {
       <section className="relative mb-10 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-600">Interest tickets</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Interest tickets</p>
               <h2 className="font-display mt-2 text-xl font-semibold text-forest-950 md:text-2xl">Ask Golf Sol Ireland</h2>
               <p className="mt-1 max-w-2xl text-sm text-forest-600">
                 Open a ticket for transfers, golf courses, or hotels — we reply in the thread below.
@@ -1962,11 +1963,11 @@ export function ClientDashboardPage() {
             <button
               aria-expanded={teamMessagingOpen}
               className={cx(
-                'group relative inline-flex shrink-0 items-center gap-2.5 overflow-hidden rounded-full border border-emerald-600/40',
-                'bg-gradient-to-r from-emerald-950 via-[#0c3d2c] to-forest-950 px-6 py-3.5 text-sm font-semibold text-white',
+                'group relative inline-flex shrink-0 items-center gap-2.5 overflow-hidden rounded-full border border-fairway-600/40',
+                'bg-gradient-to-r from-forest-950 via-[#0c3d2c] to-forest-950 px-6 py-3.5 text-sm font-semibold text-white',
                 'shadow-[0_10px_36px_rgba(16,185,129,0.28)] ring-1 ring-white/15 transition duration-300',
-                'hover:-translate-y-0.5 hover:border-gold-400/50 hover:shadow-[0_14px_44px_rgba(16,185,129,0.38)]',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white'
+                'hover:-translate-y-0.5 hover:border-brand-400/50 hover:shadow-[0_14px_44px_rgba(16,185,129,0.38)]',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white'
               )}
               onClick={() => setTeamMessagingOpen((o) => !o)}
               type="button"
@@ -1975,7 +1976,7 @@ export function ClientDashboardPage() {
                 aria-hidden
                 className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.12)_45%,transparent_90%)] opacity-0 transition group-hover:translate-x-full group-hover:opacity-100 group-hover:duration-700"
               />
-              <Ticket className="relative h-4 w-4 shrink-0 text-gold-300" strokeWidth={2.25} aria-hidden />
+              <Ticket className="relative h-4 w-4 shrink-0 text-brand-300" strokeWidth={2.25} aria-hidden />
               <span className="relative">{teamMessagingOpen ? 'Hide ticketing' : 'Open ticketing'}</span>
               <ChevronDown
                 aria-hidden
@@ -2003,7 +2004,7 @@ export function ClientDashboardPage() {
                 </LuxuryButton>
               </div>
               {interestTicketsError ? (
-                <p className="mt-3 text-sm text-amber-900" role="alert">
+                <p className="mt-3 text-sm text-brand-900" role="alert">
                   {interestTicketsError}
                 </p>
               ) : null}
@@ -2102,7 +2103,7 @@ export function ClientDashboardPage() {
                             <img
                               alt="Golf Sol Ireland"
                               className="h-6 w-auto max-w-[7rem] object-contain object-left"
-                              src="/golfsol-crest.svg"
+                              src={GOLFSOL_BRAND_LOGO.svg}
                             />
                           </div>
                         ) : (
@@ -2231,7 +2232,7 @@ export function ClientDashboardPage() {
             <section>
               <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-600">Proposals &amp; PDFs</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Proposals &amp; PDFs</p>
                   <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Documents from Golf Sol Ireland</h2>
                   <p className="mt-2 max-w-2xl text-base text-forest-600 md:text-lg">
                     Terms, thank-you letters, and formal proposals appear in the preview when Golf Sol Ireland enables them for
@@ -2270,14 +2271,14 @@ export function ClientDashboardPage() {
             <section className="relative overflow-hidden rounded-[2rem] border border-forest-100/90 bg-gradient-to-br from-offwhite via-white to-[#eef6f0] px-6 py-9 text-sm text-forest-700 shadow-soft md:px-10 md:py-10">
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full bg-gold-200/25 blur-3xl"
+                className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full bg-brand-200/25 blur-3xl"
               />
               <div
                 aria-hidden="true"
                 className="pointer-events-none absolute -bottom-24 -left-12 h-40 w-40 rounded-full bg-fairway-400/15 blur-3xl"
               />
               <div className="relative">
-                <p className="text-xs font-bold uppercase tracking-[0.22em] text-gold-600">Your paper trail, in one place</p>
+                <p className="text-xs font-bold uppercase tracking-[0.22em] text-brand-600">Your paper trail, in one place</p>
                 <h3 className="font-display mt-3 text-xl font-semibold tracking-tight text-forest-950 md:text-2xl">
                   The PDF shelf is almost ready
                 </h3>

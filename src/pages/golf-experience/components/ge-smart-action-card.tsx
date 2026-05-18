@@ -50,14 +50,14 @@ export function GeSmartActionCard({ action, appearance = 'brand' }: GeSmartActio
     }
 
     const tones = {
-      gold: 'border-gs-gold/80 bg-gs-dark text-white shadow-[0_10px_28px_rgba(6,59,42,0.5)]',
-      dark: 'border-gs-gold/40 bg-gs-dark/90 text-white shadow-[0_8px_24px_rgba(6,59,42,0.4)]',
+      gold: 'border-brand-700/80 bg-gs-dark text-white shadow-[0_10px_28px_rgba(6,59,42,0.5)]',
+      dark: 'border-brand-700/40 bg-gs-dark/90 text-white shadow-[0_8px_24px_rgba(6,59,42,0.4)]',
       light:
-        'border-2 border-gs-gold bg-gs-green text-white shadow-[0_8px_28px_rgba(6,59,42,0.4)]'
+        'border-2 border-brand-700 bg-gs-green text-white shadow-[0_8px_28px_rgba(6,59,42,0.4)]'
     } as const
 
     const bodyTone = 'text-white/85'
-    const linkTone = 'font-ge text-[0.82rem] font-bold text-white underline decoration-white/40 underline-offset-2 hover:decoration-gs-gold'
+    const linkTone = 'font-ge text-[0.82rem] font-bold text-white underline decoration-white/40 underline-offset-2 hover:decoration-brand-600'
 
     return (
       <div
@@ -110,10 +110,10 @@ export function GeSmartActionCard({ action, appearance = 'brand' }: GeSmartActio
   }
 
   const tones = {
-    gold: 'border-gs-gold/80 bg-gs-dark text-white shadow-[0_10px_28px_rgba(6,59,42,0.5)] hover:bg-[#05291f] hover:border-gs-gold',
-    dark: 'border-gs-gold/40 bg-gs-dark/90 text-white shadow-[0_8px_24px_rgba(6,59,42,0.4)] hover:bg-gs-dark hover:border-gs-gold',
+    gold: 'border-brand-700/80 bg-gs-dark text-white shadow-[0_10px_28px_rgba(6,59,42,0.5)] hover:bg-[#05291f] hover:border-brand-700',
+    dark: 'border-brand-700/40 bg-gs-dark/90 text-white shadow-[0_8px_24px_rgba(6,59,42,0.4)] hover:bg-gs-dark hover:border-brand-700',
     light:
-      'border-2 border-gs-gold bg-gs-green text-white shadow-[0_8px_24px_rgba(6,59,42,0.4)] hover:bg-[#0a5c3c] hover:border-gs-gold-light hover:shadow-[0_12px_28px_rgba(11,107,69,0.45)]'
+      'border-2 border-brand-700 bg-gs-green text-white shadow-[0_8px_24px_rgba(6,59,42,0.4)] hover:bg-[#0a5c3c] hover:border-brand-700-light hover:shadow-[0_12px_28px_rgba(11,107,69,0.45)]'
   } as const
 
   const bodyTone = 'text-white/85'

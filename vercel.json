@@ -41,6 +41,7 @@
     { "source": "/api/portal-contact-setup", "destination": "/api/gateway?r=portal-contact-setup" },
     { "source": "/api/auth/magic-link", "destination": "/api/gateway?r=magic-link" },
     { "source": "/api/proposal-pdf", "destination": "/api/gateway?r=proposal-pdf" },
+    { "source": "/api/homepage-client-pdf", "destination": "/api/gateway?r=homepage-client-pdf" },
     { "source": "/api/send-client-document", "destination": "/api/gateway?r=send-client-document" },
     { "source": "/api/send-proposal-to-client", "destination": "/api/gateway?r=send-proposal-to-client" },
     { "source": "/api/send-client-portal-email", "destination": "/api/gateway?r=send-client-portal-email" },

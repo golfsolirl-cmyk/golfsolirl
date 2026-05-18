@@ -1,0 +1,22 @@
+# GolfSol Ireland Cursor Rules
+
+## Project rule
+Preserve existing architecture, routes, Supabase logic, auth, forms, data flow, admin/client functionality, and APIs. Only improve UI, UX, styling, responsiveness, content presentation, and reusable design-system components unless explicitly instructed otherwise.
+
+## Design rule
+All UI must match the GolfSol premium mockup system: cream background, deep forest green surfaces, yellow/gold CTAs, crest identity, rounded luxury cards, subtle shadows, cinematic golf/Mercedes visuals, strong mobile typography.
+
+## Components rule
+Before creating new components, search for existing reusable components and update them. Prefer shared tokens/classes over one-off styling.
+
+## Tailwind rule
+Use consistent Tailwind utilities and create reusable CSS classes/tokens where repeated. Avoid random colours; use only the brand tokens from design.json.
+
+## Safety rule
+Do not delete forms, handlers, database calls, auth guards, admin actions, client booking actions, routes, PDF/email logic, or existing business functionality.
+
+## Mobile rule
+Mobile must be first-class. Large readable headings, sticky CTAs where useful, generous tap targets, no cramped layouts, no desktop-only polish.
+
+## Verification rule
+Run TypeScript and build checks after changes. Fix errors introduced by styling or component edits.

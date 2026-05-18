@@ -41,9 +41,9 @@ const tierLabel: Record<CourseTier, string> = {
 }
 
 const tierAccent: Record<CourseTier, string> = {
-  value: 'from-gs-green/90 to-emerald-700',
-  premium: 'from-amber-600 to-gs-gold',
-  luxury: 'from-amber-900 to-gs-gold'
+  value: 'from-gs-green/90 to-fairway-700',
+  premium: 'from-brand-600 to-brand-700',
+  luxury: 'from-brand-900 to-brand-700'
 }
 
 function makeCourseIcon(tier: CourseTier, selected: boolean): DivIcon {
@@ -51,8 +51,8 @@ function makeCourseIcon(tier: CourseTier, selected: boolean): DivIcon {
     tier === 'luxury'
       ? 'linear-gradient(135deg,#3d2914,#8b5a2a)'
       : tier === 'premium'
-        ? 'linear-gradient(135deg,#9a6f08,#EBE486)'
-        : 'linear-gradient(135deg,#063b2a,#1d9e75)'
+        ? 'linear-gradient(135deg,#9a6f08,#d9be7a)'
+        : 'linear-gradient(135deg,#08120d,#1d9e75)'
   const size = selected ? 26 : 18
   const ring = selected ? '0 0 0 3px rgba(247,217,120,0.95),0 6px 18px rgba(6,59,42,0.45)' : '0 2px 8px rgba(0,0,0,0.28)'
   return L.divIcon({
@@ -436,7 +436,7 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
     <section
       id={GOLF_COURSES_MAP_SECTION_ID}
       aria-labelledby={`${formId}-corridor-title`}
-      className="relative scroll-mt-28 overflow-hidden border-y border-amber-200/50 bg-[linear-gradient(180deg,#fffdf8_0%,#fff6e8_42%,#f3faf6_100%)] py-16 text-gs-dark sm:py-20"
+      className="relative scroll-mt-28 overflow-hidden border-y border-chrome-200/50 bg-[linear-gradient(180deg,#fffdf8_0%,#fff6e8_42%,#f3faf6_100%)] py-16 text-gs-dark sm:py-20"
     >
       <div
         aria-hidden
@@ -451,7 +451,7 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <p className="inline-flex items-center gap-2 font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.24em] text-gs-green">
-              <Compass className="h-4 w-4 text-gs-gold" aria-hidden />
+              <Compass className="h-4 w-4 text-brand-700" aria-hidden />
               Interactive corridor
             </p>
             <h2
@@ -459,12 +459,12 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
               className="mt-3 font-ge text-[2rem] font-extrabold leading-[1.05] tracking-[-0.02em] text-gs-dark sm:text-[2.45rem] lg:text-[2.75rem]"
             >
               Pin your course.{' '}
-              <span className="bg-gradient-to-r from-amber-700 via-gs-gold to-amber-600 bg-clip-text text-transparent">We build the sheet.</span>
+              <span className="bg-gradient-to-r from-brand-700 via-brand-700 to-brand-600 bg-clip-text text-transparent">We build the sheet.</span>
             </h2>
             <p className="mt-4 max-w-2xl font-ge text-[1.05rem] leading-8 text-ge-gray600 sm:text-[1.08rem]">{corridorSubtitle(path)}</p>
           </div>
           <div className="flex flex-wrap gap-2 lg:justify-end">
-            <span className="rounded-full border border-amber-200/80 bg-white px-3 py-1.5 font-ge text-[0.68rem] font-bold uppercase tracking-[0.14em] text-gs-dark shadow-sm">
+            <span className="rounded-full border border-chrome-200/80 bg-white px-3 py-1.5 font-ge text-[0.68rem] font-bold uppercase tracking-[0.14em] text-gs-dark shadow-sm">
               {visibleCourses.length} courses
             </span>
             <span className="rounded-full border border-gs-green/25 bg-[#e8f5ef] px-3 py-1.5 font-ge text-[0.68rem] font-bold uppercase tracking-[0.14em] text-gs-green">
@@ -474,28 +474,28 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
         </div>
 
         <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(260px,320px)] lg:items-stretch">
-          <div className="relative min-h-[min(72vh,520px)] overflow-hidden rounded-[1.85rem] border-2 border-amber-200/90 bg-white shadow-[0_24px_70px_rgba(115,132,33,0.15)] ring-1 ring-gs-green/10">
+          <div className="relative min-h-[min(72vh,520px)] overflow-hidden rounded-[1.85rem] border-2 border-chrome-200/90 bg-white shadow-[0_24px_70px_rgba(115,132,33,0.15)] ring-1 ring-gs-green/10">
             <div
               aria-hidden
               className="pointer-events-none absolute inset-0 z-[5] rounded-[inherit] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),inset_0_-20px_50px_rgba(255,214,140,0.12)]"
             />
             <div ref={mapRef} className="relative z-[1] h-full min-h-[min(72vh,520px)] w-full bg-[#eef6f1]" role="application" aria-label="Interactive map of Costa del Sol golf courses" />
-            <div className="pointer-events-none absolute bottom-4 left-4 z-[400] flex max-w-[min(100%,260px)] flex-col gap-1.5 rounded-xl border-2 border-amber-200/90 bg-[#fffdf8] px-3 py-2.5 text-[0.7rem] font-medium text-gs-dark shadow-md sm:text-[0.72rem]">
+            <div className="pointer-events-none absolute bottom-4 left-4 z-[400] flex max-w-[min(100%,260px)] flex-col gap-1.5 rounded-xl border-2 border-chrome-200/90 bg-[#fffdf8] px-3 py-2.5 text-[0.7rem] font-medium text-gs-dark shadow-md sm:text-[0.72rem]">
               <span className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.14em] text-gs-green">Legend</span>
               <span className="flex items-center gap-2 text-ge-gray600">
-                <span className="h-2.5 w-2.5 rounded-full bg-gradient-to-br from-gs-green to-emerald-600" aria-hidden /> Value
+                <span className="h-2.5 w-2.5 rounded-full bg-gradient-to-br from-gs-green to-fairway-600" aria-hidden /> Value
               </span>
               <span className="flex items-center gap-2 text-ge-gray600">
-                <span className="h-2.5 w-2.5 rounded-full bg-gradient-to-br from-amber-600 to-gs-gold" aria-hidden /> Premium
+                <span className="h-2.5 w-2.5 rounded-full bg-gradient-to-br from-brand-600 to-brand-700" aria-hidden /> Premium
               </span>
               <span className="flex items-center gap-2 text-ge-gray600">
-                <span className="h-2.5 w-2.5 rounded-full bg-gradient-to-br from-amber-950 to-amber-700" aria-hidden /> Luxury
+                <span className="h-2.5 w-2.5 rounded-full bg-gradient-to-br from-brand-950 to-brand-700" aria-hidden /> Luxury
               </span>
-              <span className="mt-1 border-t border-amber-100 pt-1.5 text-[0.65rem] text-ge-gray500">Two-finger pan · + / − to zoom</span>
+              <span className="mt-1 border-t border-chrome-100 pt-1.5 text-[0.65rem] text-ge-gray500">Two-finger pan · + / − to zoom</span>
             </div>
           </div>
 
-          <aside className="flex max-h-[min(72vh,520px)] flex-col rounded-[1.5rem] border border-amber-200/70 bg-white p-4 shadow-[0_16px_40px_rgba(115,132,33,0.1)] sm:p-5">
+          <aside className="flex max-h-[min(72vh,520px)] flex-col rounded-[1.5rem] border border-chrome-200/70 bg-white p-4 shadow-[0_16px_40px_rgba(115,132,33,0.1)] sm:p-5">
             <p className="font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.2em] text-gs-green">Course roster</p>
             <p className="mt-1 font-ge text-xs leading-relaxed text-ge-gray500">Select a row — the map and your brief stay in sync.</p>
             <div className="mt-4 flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto pr-1 [scrollbar-color:rgba(6,59,42,0.2)_transparent] [scrollbar-width:thin]">
@@ -509,16 +509,16 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
                     className={cx(
                       'group flex w-full flex-col rounded-xl border px-3.5 py-3 text-left transition-all duration-300',
                       active
-                        ? 'border-gs-gold/70 bg-gradient-to-br from-amber-50 to-white shadow-md ring-1 ring-gs-gold/30'
-                        : 'border-ge-gray100 bg-[#fffef9] hover:border-amber-200 hover:bg-white'
+                        ? 'border-brand-700/70 bg-gradient-to-br from-brand-50 to-white shadow-md ring-1 ring-brand-700/30'
+                        : 'border-ge-gray100 bg-[#fffef9] hover:border-chrome-200 hover:bg-white'
                     )}
                   >
                     <span className="flex items-start justify-between gap-2">
                       <span className="font-ge text-[0.95rem] font-bold leading-snug text-gs-dark">{course.name}</span>
-                      <MapPin className={cx('mt-0.5 h-4 w-4 shrink-0', active ? 'text-gs-gold' : 'text-ge-gray300')} aria-hidden />
+                      <MapPin className={cx('mt-0.5 h-4 w-4 shrink-0', active ? 'text-brand-700' : 'text-ge-gray300')} aria-hidden />
                     </span>
                     <span className="mt-1 font-ge text-[0.78rem] text-ge-gray500">{course.region}</span>
-                    <span className="mt-2 inline-flex w-fit items-center gap-1.5 rounded-full bg-amber-50/90 px-2 py-0.5 font-ge text-[0.65rem] font-bold uppercase tracking-[0.12em] text-gs-dark">
+                    <span className="mt-2 inline-flex w-fit items-center gap-1.5 rounded-full bg-chrome-50/90 px-2 py-0.5 font-ge text-[0.65rem] font-bold uppercase tracking-[0.12em] text-gs-dark">
                       <span className={cx('h-1.5 w-8 rounded-full bg-gradient-to-r', tierAccent[course.tier])} aria-hidden />
                       {tierLabel[course.tier]}
                     </span>
@@ -537,13 +537,13 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 16 }}
               transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-10 overflow-hidden rounded-[1.85rem] border border-gs-gold/35 bg-[linear-gradient(145deg,rgba(255,250,240,0.98)_0%,#fff_48%,#faf6ec_100%)] text-gs-dark shadow-[0_32px_90px_rgba(6,59,42,0.28)]"
+              className="mt-10 overflow-hidden rounded-[1.85rem] border border-brand-700/35 bg-[linear-gradient(145deg,rgba(255,250,240,0.98)_0%,#fff_48%,#eef2ef_100%)] text-gs-dark shadow-[0_32px_90px_rgba(6,59,42,0.28)]"
             >
               <div className="relative border-b border-gs-dark/8 bg-[linear-gradient(90deg,rgba(6,59,42,0.04),transparent)] px-6 py-5 sm:px-8 sm:py-6">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <p className="inline-flex items-center gap-2 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.2em] text-gs-green">
-                      <Sparkles className="h-4 w-4 text-gs-gold" aria-hidden />
+                      <Sparkles className="h-4 w-4 text-brand-700" aria-hidden />
                       Brief unlocked
                     </p>
                     <h3 className="mt-2 font-ge text-[1.65rem] font-extrabold leading-tight text-gs-dark sm:text-[1.9rem]">{selectedCourse.name}</h3>
@@ -695,7 +695,7 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
                   </div>
 
                   {status === 'error' && errorMessage ? (
-                    <div className="rounded-xl border border-ge-orange/40 bg-orange-50 px-3 py-2.5 font-ge text-sm text-gs-dark">
+                    <div className="rounded-xl border border-brand-700/40 bg-orange-50 px-3 py-2.5 font-ge text-sm text-gs-dark">
                       <p>{errorMessage}</p>
                       {errorCode === ENQUIRY_CONFLICT_EXISTING_PHONE ? (
                         <p className="mt-2 font-semibold text-gs-green">
@@ -710,12 +710,12 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
                   <div className="flex flex-col gap-4 border-t border-gs-dark/6 pt-5 sm:flex-row sm:items-center sm:justify-between">
                     <p className="max-w-md font-ge text-xs leading-relaxed text-ge-gray500">
                       Prefer the long-form brief?{' '}
-                      <a href="#ge-content-enquire" className="font-bold text-gs-green underline decoration-gs-gold/40 decoration-2 underline-offset-4 hover:text-gs-dark">
+                      <a href="#ge-content-enquire" className="font-bold text-gs-green underline decoration-brand-600/40 decoration-2 underline-offset-4 hover:text-gs-dark">
                         Jump to the full enquiry
                       </a>
                       .
                     </p>
-                    <GeButton type="submit" variant="gs-gold" size="lg" disabled={status === 'submitting'} className="w-full min-w-[200px] sm:w-auto">
+                    <GeButton type="submit" variant="gs-green" size="lg" disabled={status === 'submitting'} className="w-full min-w-[200px] sm:w-auto">
                       <Send className="h-4 w-4" aria-hidden />
                       {status === 'submitting' ? 'Sending…' : 'Send course brief'}
                     </GeButton>
@@ -730,7 +730,7 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="mt-10 rounded-2xl border border-dashed border-amber-200/90 bg-white/80 px-6 py-8 text-center shadow-sm sm:py-10"
+              className="mt-10 rounded-2xl border border-dashed border-chrome-200/90 bg-white/80 px-6 py-8 text-center shadow-sm sm:py-10"
             >
               <p className="font-ge text-sm font-semibold text-gs-dark sm:text-base">Select a course on the map or from the roster to generate your branded brief card.</p>
               <p className="mx-auto mt-2 max-w-lg font-ge text-xs leading-relaxed text-ge-gray500 sm:text-sm">

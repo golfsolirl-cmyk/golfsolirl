@@ -20,10 +20,10 @@ export function PortalAccountLoadingState({ compact = false }: PortalAccountLoad
         aria-live="polite"
       >
         <span className="sr-only">Loading your dashboard.</span>
-        <div aria-hidden className="pointer-events-none absolute -right-12 -top-10 h-32 w-32 rounded-full bg-gold-200/25 blur-2xl" />
+        <div aria-hidden className="pointer-events-none absolute -right-12 -top-10 h-32 w-32 rounded-full bg-brand-200/25 blur-2xl" />
         <div className="relative flex h-16 w-16 items-center justify-center">
           <m.span
-            className="absolute inset-0 rounded-xl border-2 border-emerald-500/45"
+            className="absolute inset-0 rounded-xl border-2 border-fairway-500/45"
             animate={pulseRing}
             transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }}
           />
@@ -54,23 +54,23 @@ export function PortalAccountLoadingState({ compact = false }: PortalAccountLoad
         Loading. Transfers, Golf Courses and Accommodation from the Golf Sol Ireland Trip Desk. Your packages, transfers, and
         messages will appear shortly.
       </span>
-      <div aria-hidden className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-gold-300/20 blur-3xl" />
+      <div aria-hidden className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-brand-300/20 blur-3xl" />
       <div aria-hidden className="pointer-events-none absolute -bottom-28 -left-16 h-56 w-56 rounded-full bg-fairway-500/15 blur-3xl" />
 
       <div className="relative flex flex-col items-center">
         <div className="relative flex h-28 w-28 items-center justify-center">
           <m.span
-            className="absolute inset-0 rounded-2xl border-2 border-gold-400/60"
+            className="absolute inset-0 rounded-2xl border-2 border-brand-400/60"
             animate={pulseRing}
             transition={{ duration: 2.4, repeat: Infinity, ease: 'easeOut' }}
           />
           <m.span
-            className="absolute inset-[-6px] rounded-[1.35rem] border border-emerald-600/30"
+            className="absolute inset-[-6px] rounded-[1.35rem] border border-fairway-600/30"
             animate={pulseRing}
             transition={{ duration: 2.4, repeat: Infinity, ease: 'easeOut', delay: 0.35 }}
           />
           <m.div
-            className="relative flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-2xl bg-gradient-to-br from-forest-950 via-emerald-950 to-[#0a2416] shadow-[0_12px_40px_rgba(11,73,52,0.35)] ring-1 ring-white/10"
+            className="relative flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-2xl bg-gradient-to-br from-forest-950 via-forest-950 to-[#0a2416] shadow-[0_12px_40px_rgba(11,73,52,0.35)] ring-1 ring-white/10"
             initial={{ scale: 0.92, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 260, damping: 22 }}
@@ -79,7 +79,7 @@ export function PortalAccountLoadingState({ compact = false }: PortalAccountLoad
               animate={{ rotate: [0, 8, -8, 0] }}
               transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
             >
-              <Sparkles className="h-9 w-9 text-gold-300" strokeWidth={1.75} aria-hidden />
+              <Sparkles className="h-9 w-9 text-brand-300" strokeWidth={1.75} aria-hidden />
             </m.div>
           </m.div>
         </div>
@@ -148,7 +148,7 @@ export function PortalAccountLoadingState({ compact = false }: PortalAccountLoad
             transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay: 0.25 }}
             className="flex h-11 w-11 items-center justify-center rounded-xl border border-forest-200/80 bg-white/90 shadow-sm"
           >
-            <Trophy className="h-5 w-5 text-gold-600" strokeWidth={2} aria-hidden />
+            <Trophy className="h-5 w-5 text-brand-600" strokeWidth={2} aria-hidden />
           </m.span>
           <m.span
             animate={{ y: [0, -5, 0] }}

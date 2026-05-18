@@ -12,7 +12,7 @@ export function PortalClientDataCard({ sections }: { readonly sections: readonly
   if (sections.length === 0) {
     return (
       <div
-        className="rounded-3xl border-2 border-gs-gold/35 bg-gradient-to-br from-white to-ge-gray50/80 p-8 shadow-[0_20px_50px_rgba(11,73,52,0.08)] ring-1 ring-gs-green/10"
+        className="rounded-3xl border-2 border-brand-700/35 bg-gradient-to-br from-white to-ge-gray50/80 p-8 shadow-[0_20px_50px_rgba(11,73,52,0.08)] ring-1 ring-gs-green/10"
         role="region"
         aria-label="Dashboard details"
       >
@@ -30,7 +30,7 @@ export function PortalClientDataCard({ sections }: { readonly sections: readonly
         <article
           key={section.id}
           className={cx(
-            'overflow-hidden rounded-3xl border-2 border-gs-gold/40 bg-gradient-to-br from-white via-white to-ge-gray50/90',
+            'overflow-hidden rounded-3xl border-2 border-brand-700/40 bg-gradient-to-br from-white via-white to-ge-gray50/90',
             'shadow-[0_22px_56px_rgba(11,73,52,0.1)] ring-1 ring-gs-green/15'
           )}
         >

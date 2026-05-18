@@ -120,7 +120,7 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
             aria-expanded={isMenuOpen}
             aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             className={cx(
-              'inline-flex h-11 w-11 items-center justify-center rounded-full border text-white transition-colors hover:border-gold-400 hover:text-gold-400 md:hidden',
+              'inline-flex h-11 w-11 items-center justify-center rounded-full border text-white transition-colors hover:border-brand-400 hover:text-brand-400 md:hidden',
               isMenuOpen ? 'border-white/20 bg-black/30' : 'border-white/20 bg-white/10'
             )}
             onClick={handleToggleMenu}
@@ -142,7 +142,7 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
               {links.map((link) => (
                 <a
                   key={link}
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-[1rem] font-medium text-white transition-colors hover:border-gold-400/40 hover:text-white"
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-[1rem] font-medium text-white transition-colors hover:border-brand-400/40 hover:text-white"
                   href={navHrefForLink(link)}
                   onClick={handleCloseMenu}
                 >

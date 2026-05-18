@@ -90,27 +90,27 @@ export function WhatsappFab() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`Chat with GolfSol Ireland on WhatsApp at ${contactInfo.phoneDisplay}`}
-          className="group fixed bottom-5 right-5 z-[60] inline-flex h-14 w-14 items-center justify-center rounded-full bg-gs-dark text-gs-gold shadow-[0_8px_24px_rgba(0,0,0,0.35),0_0_0_1px_rgba(213,198,0,0.55)] ring-1 ring-gs-gold/70 transition-all duration-300 hover:scale-105 hover:bg-[#063B2A] hover:text-gs-gold-light hover:shadow-[0_12px_32px_rgba(0,0,0,0.45),0_0_0_2px_rgba(235,228,134,0.7)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gs-gold focus-visible:ring-offset-2 focus-visible:ring-offset-gs-dark sm:bottom-6 sm:right-6 md:h-16 md:w-16"
+          className="group fixed bottom-5 right-5 z-[60] inline-flex h-14 w-14 items-center justify-center rounded-full bg-gs-dark text-[#25D366] shadow-[0_8px_24px_rgba(0,0,0,0.35),0_0_0_1px_rgba(37,211,102,0.55)] ring-1 ring-[#25D366]/80 transition-all duration-300 hover:scale-105 hover:bg-[#08120d] hover:text-[#5cf08c] hover:shadow-[0_12px_32px_rgba(0,0,0,0.45),0_0_0_2px_rgba(37,211,102,0.85)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2 focus-visible:ring-offset-gs-dark sm:bottom-6 sm:right-6 md:h-16 md:w-16"
           initial={{ opacity: 0, scale: 0.6, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.7, y: 20 }}
           transition={{ type: 'spring', stiffness: 220, damping: 18 }}
           data-mobile={isMobile ? 'true' : 'false'}
         >
-          {/* Gold hairline halo ping — drawn behind the button itself */}
+          {/* Bright green hairline halo ping — drawn behind the button itself */}
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 rounded-full ring-1 ring-gs-gold/60"
+            className="pointer-events-none absolute inset-0 rounded-full ring-1 ring-[#25D366]/65"
           />
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 animate-ping rounded-full ring-1 ring-gs-gold/40"
+            className="pointer-events-none absolute inset-0 animate-ping rounded-full ring-2 ring-[#25D366]/45"
             style={{ animationDuration: '2.6s' }}
           />
-          <WhatsappGlyph className="relative h-7 w-7 drop-shadow-[0_2px_6px_rgba(213,198,0,0.45)] md:h-8 md:w-8" />
+          <WhatsappGlyph className="relative h-7 w-7 drop-shadow-[0_0_10px_rgba(37,211,102,0.55)] md:h-8 md:w-8" />
 
           {/* Optional label that only appears on hover, desktop+ */}
-          <span className="pointer-events-none absolute right-full mr-3 hidden whitespace-nowrap rounded-md border border-gs-gold/40 bg-gs-dark/95 px-3 py-1.5 font-ge text-xs font-extrabold uppercase tracking-[0.16em] text-gs-gold opacity-0 shadow-lg backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 md:block">
+          <span className="pointer-events-none absolute right-full mr-3 hidden whitespace-nowrap rounded-md border border-[#25D366]/55 bg-gs-dark/95 px-3 py-1.5 font-ge text-xs font-extrabold uppercase tracking-[0.16em] text-[#5cf08c] opacity-0 shadow-lg backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 md:block">
             Chat on WhatsApp
           </span>
         </m.a>

@@ -291,7 +291,7 @@ export function AdminTransferPipeline() {
 
   if (error) {
     return (
-      <div className="rounded-3xl border border-amber-200/90 bg-amber-50/90 px-5 py-4 text-sm text-amber-950">
+      <div className="rounded-3xl border border-chrome-200/90 bg-chrome-50/90 px-5 py-4 text-sm text-brand-950">
         {error}
       </div>
     )
@@ -304,7 +304,7 @@ export function AdminTransferPipeline() {
     >
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.22em] text-gold-600">Step 3 · Drivers</p>
+          <p className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.22em] text-brand-600">Step 3 · Drivers</p>
           <h2 className="font-display mt-1 text-xl font-bold tracking-tight text-forest-950 sm:text-2xl">Operations — Costa del Sol transfers</h2>
         </div>
         <GeButton
@@ -381,7 +381,7 @@ export function AdminTransferPipeline() {
                     )}
                   </p>
                   {(b.payment_status ?? 'unpaid').toLowerCase() === 'paid' ? (
-                    <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-emerald-950 ring-1 ring-emerald-400/35">
+                    <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-forest-950 ring-1 ring-emerald-400/35">
                       Paid · card confirmed
                     </span>
                   ) : null}
@@ -416,7 +416,7 @@ export function AdminTransferPipeline() {
                 {b.status === 'pending' && !b.assigned_driver_id ? (
                   <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
                     <div className="flex flex-wrap items-end gap-3">
-                      <label className="block text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">
+                      <label className="block text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">
                         Assign driver
                         <select
                           className="mt-1 block w-56 rounded-xl border-2 border-forest-200 bg-white px-3 py-2 text-sm text-forest-900"
@@ -441,7 +441,7 @@ export function AdminTransferPipeline() {
                       </LuxuryButton>
                     </div>
                     <LuxuryButton
-                      className="!border-amber-300 !text-amber-950 hover:!bg-amber-50"
+                      className="!border-chrome-300 !text-brand-950 hover:!bg-chrome-50"
                       disabled={rejectingId === b.id || assigningId === b.id || deletingId === b.id}
                       onClick={() => void rejectNoDriver(b.id)}
                       type="button"

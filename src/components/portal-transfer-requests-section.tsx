@@ -30,6 +30,7 @@ import {
   clientTransferPaymentBadgeKind
 } from '../lib/transfer-payment-breakdown'
 import { cx } from '../lib/utils'
+import { GOLFSOL_BRAND_LOGO } from '../lib/brand-logo-assets'
 
 export type PortalTransferRequestBooking = {
   readonly id: string
@@ -43,7 +44,7 @@ export type PortalTransferRequestBooking = {
   readonly created_at?: string | null
 }
 
-const GOLF_SOL_LOGO_SRC = '/golfsol-crest.svg'
+const GOLF_SOL_LOGO_SRC = GOLFSOL_BRAND_LOGO.svg
 
 const cardKicker = (
   build: ClientPackageBuildLite | null,
@@ -155,7 +156,7 @@ export function PortalTransferRequestsSection(props: {
   return (
     <section ref={rootRef} aria-label="Linked requests" className="space-y-6">
       <div className="px-1 sm:px-0">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gold-600 sm:text-base">Linked requests</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-600 sm:text-base">Linked requests</p>
         <p className="mt-2 max-w-3xl text-base leading-relaxed text-forest-700 md:text-lg">
           {hasTransfers ? (
             <>
@@ -173,10 +174,10 @@ export function PortalTransferRequestsSection(props: {
       </div>
 
       {hasTransfers ? (
-      <div className="overflow-hidden rounded-3xl border-2 border-gs-gold/40 bg-gradient-to-br from-white via-white to-[#f3faf6] shadow-[0_22px_56px_rgba(11,73,52,0.1)] ring-1 ring-gs-green/15">
+      <div className="overflow-hidden rounded-3xl border-2 border-brand-700/40 bg-gradient-to-br from-white via-white to-[#f3faf6] shadow-[0_22px_56px_rgba(11,73,52,0.1)] ring-1 ring-gs-green/15">
         <header className="border-b border-ge-gray100 bg-gradient-to-r from-[#0f3d24]/95 via-[#143d28] to-[#0a2416] px-6 py-5 sm:px-8">
           <div className="flex flex-wrap items-center gap-2">
-            <MapPinned className="h-4 w-4 text-gold-400" aria-hidden />
+            <MapPinned className="h-4 w-4 text-brand-400" aria-hidden />
             <p className="font-ge text-xs font-extrabold uppercase tracking-[0.14em] text-emerald-200/90 sm:text-sm">Transfer requests</p>
           </div>
           <h2 className="font-display mt-2 text-lg font-semibold tracking-tight text-white sm:text-xl">
@@ -244,8 +245,8 @@ export function PortalTransferRequestsSection(props: {
                       const label = kind === 'deposit_paid' ? 'Deposit paid' : 'Paid in full'
                       const pillClass =
                         kind === 'deposit_paid'
-                          ? 'border-amber-400/70 bg-amber-50 text-amber-950'
-                          : 'border-emerald-500/50 bg-emerald-50 text-emerald-950'
+                          ? 'border-chrome-400/70 bg-chrome-50 text-brand-950'
+                          : 'border-fairway-500/50 bg-fairway-50 text-forest-950'
                       return (
                         <span
                           className={cx(
@@ -278,8 +279,8 @@ export function PortalTransferRequestsSection(props: {
                   onClick={() => setOpenId(expanded ? null : b.id)}
                   className={cx(
                     'group relative inline-flex shrink-0 items-center justify-center gap-2 overflow-hidden rounded-full border-2 px-5 py-2.5 text-sm font-semibold transition-all duration-300',
-                    'border-gold-400/70 bg-gradient-to-r from-gold-400 via-[#f0b429] to-gold-300 text-forest-950 shadow-md',
-                    'hover:-translate-y-0.5 hover:border-gold-300 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2'
+                    'border-brand-400/70 bg-gradient-to-r from-brand-400 via-[#f0b429] to-brand-300 text-forest-950 shadow-md',
+                    'hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2'
                   )}
                 >
                   <span
@@ -302,9 +303,9 @@ export function PortalTransferRequestsSection(props: {
                   aria-labelledby={btnId}
                   className="border-t border-forest-100 bg-[linear-gradient(180deg,#0f3d24_0%,#0a2416_100%)] px-3 pb-4 pt-3 sm:px-4"
                 >
-                  <div className="overflow-hidden rounded-2xl border border-gold-500/30 shadow-[0_12px_40px_rgba(0,0,0,0.35)] ring-1 ring-white/10">
-                    <div className="border-b border-white/10 bg-gradient-to-r from-emerald-950/90 to-[#0c2810] px-4 py-3 sm:px-5">
-                      <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-gold-300/90">First submitted form</p>
+                  <div className="overflow-hidden rounded-2xl border border-brand-500/30 shadow-[0_12px_40px_rgba(0,0,0,0.35)] ring-1 ring-white/10">
+                    <div className="border-b border-white/10 bg-gradient-to-r from-forest-950/90 to-[#0c2810] px-4 py-3 sm:px-5">
+                      <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand-300/90">First submitted form</p>
                       <p className="mt-1 font-display text-sm font-semibold text-white sm:text-base">
                         {cardKicker(kickerBuild, ref || undefined, kickerEnquiry)}
                       </p>
@@ -314,7 +315,7 @@ export function PortalTransferRequestsSection(props: {
                         </p>
                       ) : null}
                       {linkedPackageDiffers ? (
-                        <p className="mt-2 rounded-lg border border-gold-400/25 bg-black/25 px-3 py-2 text-sm font-medium leading-snug text-gold-100/95">
+                        <p className="mt-2 rounded-lg border border-brand-400/25 bg-black/25 px-3 py-2 text-sm font-medium leading-snug text-brand-100/95">
                           Showing the earliest saved website snapshot for this reference. A newer package revision may exist in
                           &ldquo;Your packages&rdquo; — fields below match what you first sent.
                         </p>
@@ -333,7 +334,7 @@ export function PortalTransferRequestsSection(props: {
                     <div className="border-t border-white/10 bg-[#071910]/90 px-4 py-4 sm:px-5">
                       {siblingTransfers.length > 0 ? (
                         <div>
-                          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-gold-300/90">
+                          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-300/90">
                             <MapPin className="h-3.5 w-3.5" aria-hidden />
                             More transfers (same trip ref)
                           </p>
@@ -362,7 +363,7 @@ export function PortalTransferRequestsSection(props: {
                         )}
                       >
                         <a
-                          className="font-semibold text-gold-200/95 underline decoration-gold-400/50 underline-offset-2 hover:text-gold-100"
+                          className="font-semibold text-brand-200/95 underline decoration-gold-400/50 underline-offset-2 hover:text-brand-100"
                           href="#portal-linked-interest-tickets"
                         >
                           Interest tickets
@@ -396,14 +397,14 @@ export function PortalTransferRequestsSection(props: {
         id="portal-linked-interest-tickets"
         className="relative overflow-hidden rounded-[1.85rem] border border-forest-200/80 bg-[linear-gradient(145deg,#fffefb_0%,#f4faf6_38%,#eef6f0_100%)] px-5 py-6 shadow-[0_20px_50px_-12px_rgba(15,61,46,0.18)] sm:px-7 sm:py-7"
       >
-        <div aria-hidden className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-gold-300/15 blur-3xl" />
+        <div aria-hidden className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-brand-300/15 blur-3xl" />
         <div aria-hidden className="pointer-events-none absolute -bottom-24 -left-12 h-48 w-48 rounded-full bg-fairway-600/10 blur-3xl" />
         <div className="relative">
           <div className="flex flex-wrap items-center gap-2">
-            <Sparkles className="h-4 w-4 text-gold-500" aria-hidden />
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gold-600 sm:text-base">Interest tickets</p>
+            <Sparkles className="h-4 w-4 text-brand-500" aria-hidden />
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-600 sm:text-base">Interest tickets</p>
           </div>
-          <div className="mt-2 h-px max-w-[7rem] rounded-full bg-gradient-to-r from-gold-400 via-gold-300/80 to-transparent" />
+          <div className="mt-2 h-px max-w-[7rem] rounded-full bg-gradient-to-r from-brand-400 via-brand-300/80 to-transparent" />
           <p className="mt-3 max-w-2xl text-base leading-relaxed text-forest-700 md:text-lg">
             Golf, hotel, and transfer threads from <span className="font-semibold text-forest-800">Add to your trip</span>. Tap a
             row to read the conversation — read-only here; reply via <span className="font-semibold text-forest-800">Message the team</span>.
@@ -432,7 +433,7 @@ export function PortalTransferRequestsSection(props: {
                       onClick={() => toggleInterestTicketThread(t.id)}
                       className={cx(
                         'flex w-full gap-3 px-4 py-3 text-left transition-colors',
-                        threadOpen ? 'bg-emerald-50/80' : 'hover:bg-offwhite/90'
+                        threadOpen ? 'bg-fairway-50/80' : 'hover:bg-offwhite/90'
                       )}
                     >
                       <span
@@ -446,7 +447,7 @@ export function PortalTransferRequestsSection(props: {
                       <span className="min-w-0 flex-1">
                         <span className="flex flex-wrap items-center gap-2">
                           <span className="font-display font-semibold text-forest-950">{PORTAL_INTEREST_LABELS[t.category]}</span>
-                          <MessageSquareText className="h-3.5 w-3.5 shrink-0 text-emerald-700/70" aria-hidden />
+                          <MessageSquareText className="h-3.5 w-3.5 shrink-0 text-fairway-700/70" aria-hidden />
                         </span>
                         <span className="mt-0.5 block text-xs capitalize text-forest-600">
                           {t.status.replace(/_/g, ' ')} · {formatDateTimeDdMmYy(t.created_at)}
@@ -465,7 +466,7 @@ export function PortalTransferRequestsSection(props: {
                     </button>
                     {threadOpen ? (
                       <div className="border-t border-forest-100 bg-offwhite/95 px-4 py-4">
-                        <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-gold-700">Your trip messages</p>
+                        <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-brand-700">Your trip messages</p>
                         <p className="mt-1 text-xs leading-relaxed text-forest-600">
                           Read-only preview — use <span className="font-semibold text-forest-800">Message the team</span> to reply.
                         </p>
@@ -485,7 +486,7 @@ export function PortalTransferRequestsSection(props: {
                                 className={cx(
                                   'rounded-xl border px-3 py-2.5 text-left',
                                   m.author_kind === 'admin'
-                                    ? 'border-emerald-200/90 bg-emerald-50/90'
+                                    ? 'border-emerald-200/90 bg-fairway-50/90'
                                     : 'border-forest-200/80 bg-white'
                                 )}
                               >

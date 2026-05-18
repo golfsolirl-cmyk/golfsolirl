@@ -1,118 +1,143 @@
-import { m,  useReducedMotion  } from 'framer-motion'
+import { m, useReducedMotion, type Variants } from 'framer-motion'
 import { ArrowRight, Clock3, MapPin, PlaneLanding, ShieldCheck } from 'lucide-react'
 import { GeDualPhoneAirportTransferCalls } from '../components/ge-dual-phone-contact'
+import { homeAirportTransferSignals, homeAirportTransfersCopy } from '../data/copy'
 
-const transferSignals = [
-  {
-    icon: PlaneLanding,
-    title: 'AGP arrivals tracked',
-    detail: 'Flight-aware collection window'
-  },
-  {
-    icon: MapPin,
-    title: 'Direct to resort',
-    detail: 'No taxi-rank scramble'
-  },
-  {
-    icon: ShieldCheck,
-    title: 'Golf bags welcome',
-    detail: 'Driver + luggage-ready vehicles'
-  }
-] as const
+const signalIcons = [PlaneLanding, MapPin, ShieldCheck] as const
+
+const fadeUp = {
+  initial: { opacity: 0, y: 18 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.2 },
+  transition: { duration: 0.55, ease: 'easeOut' }
+} as const
+
+const headlineContainer: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } }
+}
+
+const headlineItem: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: 'easeOut' } }
+}
 
 export function HomeAirportTransfersCta() {
   const reduceMotion = useReducedMotion()
+  const copy = homeAirportTransfersCopy
 
   return (
     <section
       id="home-airport-transfers"
       aria-labelledby="home-airport-transfers-title"
-      className="relative isolate overflow-hidden bg-[#f4efe3] text-gs-dark"
+      className="relative isolate overflow-hidden bg-[#eef2ef] text-gs-dark"
     >
-      <div
+      <m.div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'radial-gradient(circle at 12% 0%, rgba(213,198,0,0.2), transparent 28%), radial-gradient(circle at 88% 18%, rgba(6,59,42,0.14), transparent 26%), linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(244,239,227,0.98) 45%, rgba(236,228,209,0.98) 100%)'
+            'radial-gradient(circle at 10% 0%, rgba(19,96,71,0.2), transparent 30%), radial-gradient(circle at 90% 14%, rgba(217,190,122,0.12), transparent 26%), linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(244,239,227,0.98) 42%, rgba(236,228,209,0.98) 100%)'
         }}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.7 }}
+      />
+      <m.div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px origin-center bg-gradient-to-r from-transparent via-brand-700/50 to-transparent"
+        initial={{ scaleX: 0 }}
+        whileInView={{ scaleX: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.65, ease: 'easeOut' }}
       />
 
-      <div className="relative mx-auto max-w-[1180px] px-4 py-8 sm:px-8 sm:py-10 lg:py-12">
+      <div className="relative mx-auto max-w-[1180px] px-4 py-10 sm:px-8 sm:py-12 lg:py-14">
         <m.div
-          initial={{ opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.25 }}
-          transition={{ duration: 0.55, ease: 'easeOut' }}
-          className="relative overflow-hidden rounded-[2rem] border border-[#d7c8a4] bg-[linear-gradient(180deg,rgba(255,252,245,0.98)_0%,rgba(248,241,225,0.96)_100%)] p-4 shadow-[0_32px_80px_rgba(69,53,24,0.16)] sm:p-6 lg:p-7"
+          {...fadeUp}
+          className="relative overflow-hidden rounded-[2rem] border border-chrome-300/90 bg-[linear-gradient(165deg,rgba(255,255,255,0.98)_0%,rgba(238,242,239,0.96)_55%,rgba(232,238,234,0.94)_100%)] px-4 pb-5 pt-8 shadow-[0_36px_88px_rgba(6,32,22,0.14)] sm:px-7 sm:pb-7 sm:pt-11 lg:px-9 lg:pb-9 lg:pt-14"
         >
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0"
-            style={{
-              background:
-                'radial-gradient(circle at top left, rgba(213,198,0,0.18), transparent 24%), radial-gradient(circle at 82% 18%, rgba(6,59,42,0.08), transparent 24%), linear-gradient(135deg, rgba(255,255,255,0.72) 0%, rgba(248,241,225,0.2) 100%)'
-            }}
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_8%_0%,rgba(19,96,71,0.16),transparent_28%),radial-gradient(circle_at_92%_20%,rgba(6,59,42,0.06),transparent_24%)]"
           />
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-0 h-[3px]"
-            style={{
-              background:
-                'linear-gradient(90deg, transparent 0%, rgba(213,198,0,0.12) 10%, #D5C600 30%, #EBE486 50%, #D5C600 70%, rgba(213,198,0,0.12) 90%, transparent 100%)'
-            }}
+            className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,transparent_0%,#136047_22%,#d9be7a_50%,#136047_78%,transparent_100%)]"
           />
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 left-0 w-px bg-gradient-to-b from-transparent via-gs-gold/[0.25] to-transparent"
+            className="pointer-events-none absolute inset-y-0 left-0 w-px bg-gradient-to-b from-transparent via-brand-700/30 to-transparent"
           />
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-gs-gold/[0.2] to-transparent"
+            className="pointer-events-none absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-brand-700/25 to-transparent"
           />
           <m.div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-y-4 left-[-22%] w-[38%] bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.35)_45%,transparent_100%)] blur-md"
+            className="pointer-events-none absolute inset-y-6 left-[-22%] w-[38%] bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.4)_45%,transparent_100%)] blur-md"
             animate={reduceMotion ? undefined : { x: ['0%', '320%'] }}
-            transition={reduceMotion ? undefined : { duration: 4.8, ease: 'easeInOut', repeat: Infinity, repeatDelay: 1.2 }}
+            transition={
+              reduceMotion ? undefined : { duration: 5.2, ease: 'easeInOut', repeat: Infinity, repeatDelay: 1.4 }
+            }
           />
 
-          <div className="relative grid gap-4 sm:gap-6 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:gap-8">
-            <div className="max-w-3xl">
-              <div className="flex flex-col items-start gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2.5">
-                <span className="inline-flex min-h-[36px] items-center gap-2 rounded-full border border-gs-gold/40 bg-white/85 px-3 py-1.5 font-ge text-[0.66rem] font-extrabold uppercase tracking-[0.14em] text-gs-dark shadow-[0_8px_20px_rgba(69,53,24,0.08)] backdrop-blur-sm sm:min-h-[38px] sm:px-3.5 sm:py-1.5 sm:text-[0.72rem] sm:tracking-[0.22em]">
-                  <span aria-hidden className="h-2 w-2 rounded-full bg-gs-electric shadow-[0_0_14px_rgba(30,215,96,0.95)]" />
-                  Airport transfer desk
-                </span>
-                <span className="inline-flex min-h-[36px] items-center rounded-full border border-[#e4d6b6] bg-[#fffaf0] px-3 py-1.5 font-ge text-[0.66rem] font-bold uppercase tracking-[0.12em] text-gs-dark/80 shadow-[0_8px_20px_rgba(69,53,24,0.05)] sm:min-h-[38px] sm:px-3.5 sm:py-1.5 sm:text-[0.72rem] sm:tracking-[0.18em]">
-                  AGP arrivals / Costa del Sol
-                </span>
-              </div>
-
-              <h2
-                id="home-airport-transfers-title"
-                className="mt-4 max-w-2xl font-ge text-[1.88rem] font-extrabold leading-[1.04] text-gs-dark sm:text-[2.8rem] lg:text-[3.1rem]"
+          <div className="relative z-10 grid gap-6 lg:grid-cols-[1.06fr_0.94fr] lg:items-start lg:gap-x-10 lg:gap-y-6">
+            <m.div
+              className="max-w-3xl min-w-0"
+              variants={headlineContainer}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+            >
+              <m.div
+                variants={headlineItem}
+                className="flex w-full flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center"
               >
-                Arrive in Malaga.
-                <span className="block text-gs-gold">Let Us Do The Rest.</span>
-              </h2>
+                <span className="inline-flex min-h-[44px] w-fit max-w-full items-center gap-2 rounded-full border border-brand-700/40 bg-white/95 px-4 py-2.5 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.16em] text-gs-dark shadow-[0_10px_24px_rgba(6,32,22,0.08)] backdrop-blur-sm sm:tracking-[0.18em]">
+                  <span
+                    aria-hidden
+                    className="h-2 w-2 shrink-0 rounded-full bg-gs-electric shadow-[0_0_14px_rgba(30,215,96,0.9)]"
+                  />
+                  {copy.eyebrow}
+                </span>
+                <span className="inline-flex min-h-[44px] w-full min-w-0 items-center justify-center rounded-full border border-chrome-300 bg-cream/90 px-3 py-2.5 text-center font-ge text-[0.62rem] font-bold uppercase leading-snug tracking-[0.06em] text-gs-dark shadow-[0_8px_22px_rgba(6,32,22,0.06)] sm:w-auto sm:max-w-full sm:px-5 sm:text-[0.72rem] sm:tracking-[0.08em]">
+                  <span className="text-balance">{copy.regionBadge}</span>
+                </span>
+              </m.div>
 
-              <p className="mt-3.5 max-w-2xl font-ge text-[0.92rem] leading-6 text-gs-dark/82 sm:mt-4 sm:text-[1.14rem] sm:leading-8">
-                Meet and greet at the airport, live flight awareness, room for clubs, then straight on to your hotel.
-              </p>
+              <m.h2
+                id="home-airport-transfers-title"
+                variants={headlineItem}
+                className="mt-5 max-w-[14ch] font-ge text-[2rem] font-extrabold leading-[1.02] tracking-[-0.02em] text-gs-dark sm:max-w-2xl sm:text-[2.75rem] lg:text-[3.05rem]"
+              >
+                {copy.titleLine1}
+                <span className="relative mt-1 block text-brand-700">
+                  {copy.titleLine2}
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-x-0 -bottom-1 h-[3px] rounded-full bg-gradient-to-r from-brand-800/15 via-brand-700 to-brand-800/15 sm:-bottom-1.5 sm:h-1"
+                  />
+                </span>
+              </m.h2>
+
+              <m.p
+                variants={headlineItem}
+                className="mt-4 max-w-2xl font-ge text-[1rem] leading-7 text-gs-dark/84 sm:text-[1.12rem] sm:leading-8"
+              >
+                {copy.body}
+              </m.p>
 
               <m.div
-                className="relative mt-6 overflow-hidden rounded-[1.7rem] border border-[#dbcda9] bg-white shadow-[0_24px_60px_rgba(69,53,24,0.12)]"
-                initial={{ opacity: 0, y: 18 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.25 }}
-                transition={{ duration: 0.5, ease: 'easeOut', delay: 0.06 }}
+                variants={headlineItem}
+                className="relative mt-7 overflow-hidden rounded-[1.75rem] border border-chrome-300 bg-white shadow-[0_26px_64px_rgba(6,32,22,0.12)]"
               >
-                <div className="relative aspect-[16/10] min-h-[205px] sm:aspect-[21/10] sm:min-h-0">
+                <div className="relative aspect-[16/10] min-h-[200px] overflow-hidden sm:aspect-[21/10] sm:min-h-0">
                   <img
-                    src="/images/transport-fleet-lineup.jpg"
-                    alt="Mercedes E-Class, V-Class and Sprinter parked together on a Costa del Sol forecourt with mountains behind."
-                    className="absolute inset-0 h-full w-full object-cover"
+                    src={copy.fleetImageSrc}
+                    alt={copy.fleetImageAlt}
+                    className="absolute inset-x-0 top-4 h-[112%] w-full object-cover object-[center_78%] sm:top-5 sm:object-[center_74%]"
                     loading="lazy"
                     decoding="async"
                     width={1800}
@@ -120,107 +145,136 @@ export function HomeAirportTransfersCta() {
                   />
                   <div
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gs-dark/18 via-transparent to-transparent"
+                    className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gs-dark/22 via-transparent to-transparent"
                   />
                   <div className="absolute left-3 top-3 sm:left-5 sm:top-5">
-                    <span className="inline-flex items-center gap-2 rounded-full border border-white/35 bg-gs-dark/72 px-3 py-1.5 font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.1em] text-white backdrop-blur-sm sm:px-3.5 sm:py-2 sm:text-[0.72rem] sm:tracking-[0.16em]">
-                      Fleet ready for golf bags
+                    <span className="inline-flex items-center gap-2 rounded-full border border-brand-700/40 bg-white px-3.5 py-2 font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.14em] text-gs-dark shadow-[0_10px_24px_rgba(6,32,22,0.12)] sm:text-[0.72rem]">
+                      {copy.fleetImageBadge}
                     </span>
                   </div>
                 </div>
-                <div className="border-t border-[#ece1c5] bg-[#fffaf2] px-4 py-3.5 sm:px-5 sm:py-4">
-                  <p className="font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.12em] text-gs-green sm:text-[0.7rem] sm:tracking-[0.16em]">Mercedes fleet</p>
-                  <p className="mt-1.5 font-ge text-[0.88rem] font-semibold leading-5 text-gs-dark/82 sm:mt-1 sm:text-[0.96rem] sm:leading-6">
-                    E-Class, V-Class and Sprinter options matched to the group and the bag count.
+                <div className="border-t border-[#e3ebe6] bg-[#fffaf2] px-4 py-4 sm:px-5">
+                  <p className="font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.18em] text-gs-green">
+                    {copy.fleetCardLabel}
+                  </p>
+                  <p className="mt-1.5 font-ge text-[0.92rem] font-semibold leading-6 text-gs-dark/85 sm:text-[0.98rem]">
+                    {copy.fleetCardBody}
                   </p>
                 </div>
               </m.div>
+            </m.div>
 
-              <div className="mt-4 grid gap-2 sm:mt-5 sm:grid-cols-3 sm:gap-3">
-                {transferSignals.map(({ icon: Icon, title, detail }, index) => (
-                  <m.div
-                    key={title}
-                    initial={{ opacity: 0, y: 14 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, amount: 0.35 }}
-                    transition={{ duration: 0.45, ease: 'easeOut', delay: 0.1 + index * 0.08 }}
-                    className="rounded-[1.1rem] border border-[#e4d6b6] bg-white/86 px-3 py-2.5 shadow-[0_16px_30px_rgba(69,53,24,0.08)] backdrop-blur-sm sm:rounded-[1.35rem] sm:px-4 sm:py-4"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-gs-gold to-gs-gold-light text-gs-dark shadow-[0_8px_18px_rgba(213,198,0,0.22)] sm:h-10 sm:w-10 sm:rounded-xl">
-                        <Icon className="h-5 w-5 sm:h-5 sm:w-5" aria-hidden />
-                      </span>
-                      <div className="min-w-0">
-                        <p className="font-ge text-[0.78rem] font-extrabold tracking-[0.02em] text-gs-dark sm:text-[0.92rem] sm:uppercase sm:tracking-[0.12em]">{title}</p>
-                        <p className="mt-0.5 font-ge text-[0.76rem] leading-5 text-gs-dark/72 sm:mt-1 sm:text-[0.9rem] sm:leading-6">{detail}</p>
-                      </div>
-                    </div>
-                  </m.div>
-                ))}
-              </div>
-            </div>
-
-            <div className="w-full max-w-full self-stretch lg:max-w-[24rem]">
-              <div className="relative flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-[#d9c99e] bg-white/92 p-3.5 shadow-[0_24px_60px_rgba(69,53,24,0.12)] backdrop-blur-sm sm:rounded-[1.75rem] sm:p-5">
+            <m.div
+              className="w-full max-w-full self-stretch lg:max-w-[24.5rem] lg:justify-self-end"
+              {...fadeUp}
+              transition={{ ...fadeUp.transition, delay: 0.1 }}
+            >
+              <div className="relative flex h-full flex-col overflow-hidden rounded-[1.65rem] border border-chrome-300 bg-white/95 p-4 shadow-[0_28px_68px_rgba(6,32,22,0.12)] backdrop-blur-sm sm:rounded-[1.85rem] sm:p-5">
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute inset-x-5 top-[4.75rem] h-px bg-gradient-to-r from-transparent via-gs-gold/75 to-transparent"
+                  className="pointer-events-none absolute inset-x-6 top-[4.85rem] h-px bg-gradient-to-r from-transparent via-brand-700/75 to-transparent"
                 />
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="font-ge text-[0.68rem] font-bold uppercase tracking-[0.14em] text-gs-green sm:text-[0.72rem] sm:tracking-[0.22em]">Now boarding</p>
-                    <p className="mt-2 font-ge text-[1.24rem] font-extrabold leading-tight text-gs-dark sm:text-[1.48rem]">Airport transfers</p>
+                    <p className="font-ge text-[0.68rem] font-bold uppercase tracking-[0.2em] text-gs-green">
+                      {copy.boardingEyebrow}
+                    </p>
+                    <p className="mt-2 font-ge text-[1.28rem] font-extrabold leading-tight text-gs-dark sm:text-[1.5rem]">
+                      {copy.boardingTitle}
+                    </p>
                   </div>
-                  <div className="rounded-full border border-gs-gold/30 bg-gs-gold/10 px-2.5 py-1.5 font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.12em] text-gs-gold sm:px-3 sm:py-1 sm:text-[0.68rem] sm:tracking-[0.18em]">
-                    LIVE
+                  <div className="rounded-full border border-brand-700/35 bg-brand-700/12 px-3 py-1.5 font-ge text-[0.66rem] font-extrabold uppercase tracking-[0.16em] text-brand-700">
+                    {copy.boardingLive}
                   </div>
                 </div>
 
-                <div className="mt-5 grid grid-cols-[auto,1fr] gap-x-3 gap-y-2.5 text-gs-dark/[0.88]">
-                  <span className="font-ge text-[0.66rem] font-bold uppercase tracking-[0.12em] text-gs-dark/[0.54] sm:text-[0.72rem] sm:tracking-[0.18em]">Route</span>
-                  <span className="font-ge text-[0.8rem] font-semibold tracking-[0.01em] text-gs-dark/[0.92] sm:text-[0.92rem] sm:uppercase sm:tracking-[0.12em]">Malaga Airport to your resort</span>
-                  <span className="font-ge text-[0.66rem] font-bold uppercase tracking-[0.12em] text-gs-dark/[0.54] sm:text-[0.72rem] sm:tracking-[0.18em]">Status</span>
-                  <span className="inline-flex items-center gap-2 font-ge text-[0.8rem] font-semibold tracking-[0.01em] text-gs-dark/[0.92] sm:text-[0.92rem] sm:uppercase sm:tracking-[0.12em]">
-                    <Clock3 className="h-4 w-4 text-gs-gold" aria-hidden />
-                    Ready on landing
-                  </span>
-                  <span className="font-ge text-[0.66rem] font-bold uppercase tracking-[0.12em] text-gs-dark/[0.54] sm:text-[0.72rem] sm:tracking-[0.18em]">Desk</span>
-                  <span className="font-ge text-[0.8rem] font-semibold tracking-[0.01em] text-gs-dark/[0.92] sm:text-[0.92rem] sm:uppercase sm:tracking-[0.12em]">Irish support line active</span>
-                </div>
+                <dl className="mt-5 grid grid-cols-[auto,1fr] gap-x-3 gap-y-3 text-gs-dark/90">
+                  <dt className="font-ge text-[0.66rem] font-bold uppercase tracking-[0.14em] text-gs-dark/55 sm:tracking-[0.18em]">
+                    {copy.boardingRouteLabel}
+                  </dt>
+                  <dd className="font-ge text-[0.84rem] font-semibold text-gs-dark sm:text-[0.92rem]">
+                    {copy.boardingRouteValue}
+                  </dd>
+                  <dt className="font-ge text-[0.66rem] font-bold uppercase tracking-[0.14em] text-gs-dark/55 sm:tracking-[0.18em]">
+                    {copy.boardingStatusLabel}
+                  </dt>
+                  <dd className="inline-flex items-center gap-2 font-ge text-[0.84rem] font-semibold text-gs-dark sm:text-[0.92rem]">
+                    <Clock3 className="h-4 w-4 shrink-0 text-brand-700" aria-hidden />
+                    {copy.boardingStatusValue}
+                  </dd>
+                  <dt className="font-ge text-[0.66rem] font-bold uppercase tracking-[0.14em] text-gs-dark/55 sm:tracking-[0.18em]">
+                    {copy.boardingDeskLabel}
+                  </dt>
+                  <dd className="font-ge text-[0.84rem] font-semibold text-gs-dark sm:text-[0.92rem]">
+                    {copy.boardingDeskValue}
+                  </dd>
+                </dl>
 
                 <div className="mt-6">
                   <m.a
                     href="/services/transport"
-                    className="group relative inline-flex min-h-[60px] w-full items-center justify-center gap-3 overflow-hidden rounded-full border border-[#EBE486]/20 bg-[linear-gradient(135deg,#EBE486_0%,#D5C600_38%,#D5C600_100%)] px-5 py-3.5 text-center font-ge text-[0.92rem] font-extrabold uppercase tracking-[0.12em] text-gs-dark shadow-[0_18px_40px_rgba(213,198,0,0.3)] transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_50px_rgba(213,198,0,0.38)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-gs-dark sm:min-h-[62px] sm:px-6 sm:py-4 sm:text-[0.98rem] sm:tracking-[0.16em]"
+                    className="group relative inline-flex min-h-[58px] w-full items-center justify-center gap-3 overflow-hidden rounded-full border border-[#d9be7a]/25 bg-[linear-gradient(135deg,#d9be7a_0%,#136047_40%,#0f4f3c_100%)] px-5 py-3.5 text-center font-ge text-[0.9rem] font-extrabold uppercase tracking-[0.14em] text-gs-dark shadow-[0_20px_44px_rgba(19,96,71,0.28)] transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-[0_24px_52px_rgba(19,96,71,0.36)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 sm:min-h-[60px] sm:text-[0.96rem]"
                     animate={
                       reduceMotion
                         ? undefined
                         : {
                             boxShadow: [
-                              '0 18px 40px rgba(213,198,0,0.26)',
-                              '0 24px 54px rgba(213,198,0,0.44)',
-                              '0 18px 40px rgba(213,198,0,0.26)'
+                              '0 20px 44px rgba(19,96,71,0.24)',
+                              '0 26px 56px rgba(19,96,71,0.4)',
+                              '0 20px 44px rgba(19,96,71,0.24)'
                             ]
                           }
                     }
-                    transition={reduceMotion ? undefined : { duration: 2.4, ease: 'easeInOut', repeat: Infinity }}
+                    transition={reduceMotion ? undefined : { duration: 2.6, ease: 'easeInOut', repeat: Infinity }}
                   >
                     <m.span
                       aria-hidden="true"
-                      className="pointer-events-none absolute inset-y-1 left-[-35%] w-[38%] rounded-full bg-white/30 blur-md"
+                      className="pointer-events-none absolute inset-y-1 left-[-35%] w-[38%] rounded-full bg-white/28 blur-md"
                       animate={reduceMotion ? undefined : { x: ['0%', '300%'] }}
-                      transition={reduceMotion ? undefined : { duration: 2.2, ease: 'easeInOut', repeat: Infinity, repeatDelay: 0.8 }}
+                      transition={
+                        reduceMotion ? undefined : { duration: 2.4, ease: 'easeInOut', repeat: Infinity, repeatDelay: 0.9 }
+                      }
                     />
                     <span className="relative inline-flex items-center gap-3">
-                      <PlaneLanding className="h-5 w-5" aria-hidden />
-                      Explore airport transfers
-                      <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
+                      <PlaneLanding className="h-5 w-5 shrink-0" aria-hidden />
+                      {copy.ctaLabel}
+                      <ArrowRight className="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
                     </span>
                   </m.a>
                 </div>
 
                 <GeDualPhoneAirportTransferCalls />
               </div>
+            </m.div>
+
+            <div className="relative z-10 col-span-full mt-6 grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
+              {homeAirportTransferSignals.map(({ title, detail }, index) => {
+                const Icon = signalIcons[index] ?? PlaneLanding
+                return (
+                  <m.div
+                    key={title}
+                    initial={{ opacity: 0, y: 14 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.35 }}
+                    transition={{ duration: 0.45, ease: 'easeOut', delay: 0.08 + index * 0.07 }}
+                    className="min-w-0 w-full rounded-[1.25rem] border border-chrome-300/90 bg-white/90 px-4 py-4 shadow-[0_18px_36px_rgba(6,32,22,0.08)] backdrop-blur-sm sm:rounded-[1.35rem] sm:px-5 sm:py-4"
+                  >
+                    <div className="flex min-w-0 items-start gap-3.5">
+                      <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-800 to-brand-600 text-white shadow-[0_10px_22px_rgba(19,96,71,0.22)]">
+                        <Icon className="h-5 w-5" aria-hidden />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-balance font-ge text-[0.88rem] font-extrabold leading-snug text-gs-dark sm:text-[0.94rem]">
+                          {title}
+                        </p>
+                        <p className="mt-1.5 text-pretty font-ge text-[0.84rem] leading-6 text-gs-dark/72 sm:text-[0.9rem]">
+                          {detail}
+                        </p>
+                      </div>
+                    </div>
+                  </m.div>
+                )
+              })}
             </div>
           </div>
         </m.div>

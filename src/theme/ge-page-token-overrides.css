@@ -1,0 +1,514 @@
+/**
+ * Premium token enforcement inside the marketing shell.
+ * Many sections use Tailwind arbitrary hex (bg-[#…]) which ignores :root variables.
+ * These overrides remap visible surfaces without changing layout or TSX.
+ */
+
+.ge-page {
+  background: linear-gradient(180deg, var(--chrome-50) 0%, var(--bg-section-alt) 42%, var(--bg-main) 100%);
+  color: var(--text-primary);
+}
+
+/* —— Section backgrounds (hardcoded arbitrary classes) —— */
+.ge-page .bg-\[\#eef2ef\],
+.ge-page .bg-\[\#eef2ef\],
+.ge-page .bg-\[\#eef2ef\],
+.ge-page .bg-\[\#f4f7f5\],
+.ge-page .bg-\[\#eef2ef\],
+.ge-page .bg-\[\#f4f7f5\],
+.ge-page .bg-\[\#f7f4ec\]:not(header *):not(header) {
+  background-color: var(--chrome-100) !important;
+}
+
+.ge-page .bg-\[\#f4f7f5\],
+.ge-page .bg-\[\#f4f7f5\],
+.ge-page .bg-\[\#fffef9\],
+.ge-page .bg-\[\#fffdf8\],
+.ge-page .bg-\[\#fffaf2\],
+.ge-page .bg-\[\#eef2ef\],
+.ge-page .bg-\[\#eef2ef\]\/85 {
+  background-color: var(--bg-section) !important;
+}
+
+.ge-page .bg-\[\#eef6f1\],
+.ge-page .bg-\[\#e8f5ef\] {
+  background-color: var(--bg-section-alt) !important;
+}
+
+/* —— Forest panels —— */
+.ge-page .bg-gs-dark,
+.ge-page .bg-forest-900,
+.ge-page .bg-forest-950,
+.ge-page .bg-brand-900,
+.ge-page .bg-brand-950 {
+  background-color: var(--brand-900) !important;
+  color: var(--text-on-dark) !important;
+}
+
+.ge-page .bg-gs-dark *,
+.ge-page .bg-forest-900 *,
+.ge-page .bg-forest-950 * {
+  --tw-text-opacity: 1;
+}
+
+.ge-page footer.bg-gs-dark {
+  background: var(--bg-footer) !important;
+  color: var(--footer-text);
+}
+
+.ge-page footer.bg-gs-dark .text-brand-700,
+.ge-page footer.bg-gs-dark [class*='text-brand-700'],
+.ge-page footer.bg-gs-dark .text-brand-400,
+.ge-page footer.bg-gs-dark .text-brand-500 {
+  color: var(--silver-300) !important;
+}
+
+.ge-page footer.bg-gs-dark a {
+  color: var(--footer-link);
+}
+
+.ge-page footer.bg-gs-dark a:hover {
+  color: var(--footer-link-hover) !important;
+}
+
+/* —— Cards & white surfaces —— */
+.ge-page .bg-white,
+.ge-page .bg-white\/88,
+.ge-page .bg-white\/90,
+.ge-page .bg-white\/92,
+.ge-page .bg-white\/95,
+.ge-page .bg-white\/78,
+.ge-page .bg-white\/86 {
+  background-color: var(--card-bg) !important;
+  border-color: var(--border-light);
+  color: var(--text-on-light);
+}
+
+.ge-page [class*='rounded'][class*='border'][class*='bg-white'],
+.ge-page [class*='rounded'][class*='border'][class*='shadow'] {
+  box-shadow: var(--card-shadow);
+}
+
+.ge-page [class*='hover\\:shadow']:hover {
+  box-shadow: var(--card-hover-shadow);
+}
+
+/* —— Primary / secondary buttons —— */
+.ge-page .gsol-cta-primary,
+.ge-page .gsol-cta-primary:hover,
+.ge-page a.gsol-cta-primary,
+.ge-page button.gsol-cta-primary,
+.ge-page .btn-primary {
+  background: var(--btn-primary-bg) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: var(--shadow-btn-primary), inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
+}
+
+.ge-page .gsol-cta-primary:hover,
+.ge-page .btn-primary:hover {
+  background: var(--btn-primary-hover) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  box-shadow: var(--shadow-btn-primary-hover), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.ge-page .gsol-cta-secondary {
+  background: var(--btn-secondary-bg) !important;
+  color: var(--btn-secondary-text) !important;
+  border-color: var(--btn-secondary-border) !important;
+}
+
+.ge-page .gsol-cta-secondary:hover {
+  background: var(--btn-secondary-hover) !important;
+  color: var(--brand-900) !important;
+}
+
+.ge-page .gsol-cta-gold,
+.ge-page .btn-premium {
+  background: var(--btn-primary-bg) !important;
+  color: #ffffff !important;
+}
+
+.ge-page a.font-ge.font-bold.uppercase.tracking-\[0\.14em\].rounded-md.gsol-cta-primary,
+.ge-page button.font-ge.font-bold.uppercase.tracking-\[0\.14em\].rounded-md.gsol-cta-primary {
+  background: var(--btn-primary-bg) !important;
+  color: #ffffff !important;
+}
+
+/* Green filled buttons → white text */
+.ge-page [class*='bg-brand-7'],
+.ge-page [class*='bg-brand-8'],
+.ge-page [class*='bg-gs-green'],
+.ge-page [class*='bg-gs-primary'],
+.ge-page [class*='bg-fairway-6'],
+.ge-page [class*='bg-fairway-7'],
+.ge-page [class*='bg-forest-7'],
+.ge-page [class*='bg-forest-8'] {
+  color: #ffffff !important;
+}
+
+/* —— Text hierarchy —— */
+.ge-page .text-gs-dark,
+.ge-page .text-forest-900,
+.ge-page .text-ge-ink {
+  color: var(--text-primary) !important;
+}
+
+.ge-page .text-gs-green,
+.ge-page .text-gs-primary,
+.ge-page .text-fairway-600,
+.ge-page .text-forest-700,
+.ge-page .text-brand-700,
+.ge-page .text-brand-800 {
+  color: var(--brand-700) !important;
+}
+
+.ge-page .text-brand-700,
+.ge-page .text-brand-400,
+.ge-page .text-brand-500,
+.ge-page .text-brand-400,
+.ge-page .text-brand-500,
+.ge-page .text-brand-400,
+.ge-page .text-brand-500 {
+  color: var(--brand-700) !important;
+}
+
+.ge-page h1,
+.ge-page h2,
+.ge-page h3,
+.ge-page h4 {
+  color: var(--heading-color);
+}
+
+#business-cards-pdf-export-root h1,
+#business-cards-pdf-export-root h2,
+#business-cards-pdf-export-root h3,
+#business-cards-pdf-export-root h4,
+#business-cards-pdf-export-root p,
+#business-cards-pdf-export-root a,
+#business-cards-pdf-export-root span {
+  color: inherit;
+}
+
+/* Light chrome sections → forest text */
+.ge-page .bg-chrome-50,
+.ge-page .bg-chrome-100,
+.ge-page .bg-offwhite,
+.ge-page .bg-gs-bg {
+  color: var(--text-on-light);
+}
+
+/* —— Borders —— */
+.ge-page [class*='border-\\[\\#e'],
+.ge-page [class*='border-ge-gray'],
+.ge-page .border-gs-dark\/10,
+.ge-page .border-gs-green\/12 {
+  border-color: var(--border-light) !important;
+}
+
+.ge-page .border-brand-700,
+.ge-page .border-brand-700\/35,
+.ge-page .border-brand-700\/45,
+.ge-page .border-brand-700\/50,
+.ge-page .border-brand-400,
+.ge-page .border-brand-500 {
+  border-color: var(--border-chrome) !important;
+}
+
+/* —— Forms —— */
+.ge-page input,
+.ge-page textarea,
+.ge-page select {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+  color: var(--text-primary) !important;
+}
+
+.ge-page input:focus,
+.ge-page textarea:focus,
+.ge-page select:focus {
+  border-color: var(--input-focus) !important;
+  outline-color: var(--brand-500);
+  box-shadow: 0 0 0 2px rgba(11, 77, 59, 0.14) !important;
+}
+
+/* —— Nav links (header bg locked separately) —— */
+.ge-page header a[class*='text-gs-dark'] {
+  color: var(--text-primary);
+}
+
+.ge-page header a[class*='text-gs-dark']:hover,
+.ge-page header a[class*='hover\\:text-gs-primary']:hover {
+  color: var(--brand-700) !important;
+}
+
+/* —— Accent gradients (crest green, not gold) —— */
+.ge-page [class*='via-brand-700'],
+.ge-page [class*='from-brand-800'],
+.ge-page [class*='to-brand-700'],
+.ge-page [class*='via-brand-'],
+.ge-page [class*='from-brand-'],
+.ge-page [class*='to-brand-'] {
+  --tw-gradient-from: var(--brand-800) var(--tw-gradient-from-position);
+  --tw-gradient-to: var(--brand-600) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+/* —— Design package hero (beats .ge-page h2/p dark text rules) —— */
+.ge-page #design-package .design-package-hero {
+  background: var(--btn-primary-bg) !important;
+}
+
+.ge-page #design-package .design-package-hero-title,
+.ge-page #design-package .design-package-hero-lead,
+.ge-page #design-package .design-package-hero-body,
+.ge-page #design-package .design-package-hero-kicker {
+  color: #f2f2f2 !important;
+}
+
+.ge-page #design-package .design-package-hero-body-emphasis {
+  color: #ffffff !important;
+}
+
+.ge-page #design-package .design-package-hero-kicker svg {
+  color: #d9be7a !important;
+}
+
+/* —— Forest "extras" section — force readable white type on dark base.
+   Beats the global `.ge-page h2/h3 { color: var(--heading-color) }` rule. —— */
+.ge-page #extras h1,
+.ge-page #extras h2,
+.ge-page #extras h3,
+.ge-page #extras h4,
+.ge-page #extras p,
+.ge-page #extras li,
+.ge-page #extras span:not([data-keep-color]) {
+  color: #ffffff;
+}
+
+/* Restore the few accents that should stay gold/cream inside #extras. */
+.ge-page #extras .extras-kicker,
+.ge-page #extras .extras-kicker svg,
+.ge-page #extras .extras-badge {
+  color: #fbe8b5 !important;
+}
+
+/* —— Dark insurance banner — opt-in via `.ge-on-dark` class —— */
+.ge-page .ge-on-dark h1:not([data-keep-color]),
+.ge-page .ge-on-dark h2:not([data-keep-color]),
+.ge-page .ge-on-dark h3:not([data-keep-color]),
+.ge-page .ge-on-dark h4:not([data-keep-color]),
+.ge-page .ge-on-dark p:not([data-keep-color]),
+.ge-page .ge-on-dark li:not([data-keep-color]) {
+  color: #ffffff !important;
+}
+
+.ge-page .ge-on-dark [data-keep-color] p,
+.ge-page .ge-on-dark [data-keep-color] h1,
+.ge-page .ge-on-dark [data-keep-color] h2,
+.ge-page .ge-on-dark [data-keep-color] h3,
+.ge-page .ge-on-dark [data-keep-color] h4 {
+  color: inherit !important;
+}
+
+.ge-page .ge-on-dark .ge-on-dark-kicker {
+  color: #fbe8b5 !important;
+}
+
+/* —— Auto on-dark typography inside forest/charcoal surfaces (marketing pages).
+   Beats `.ge-page h1..h4` / `.ge-page p` dark defaults when authors omit `.ge-on-dark`.
+   Light nested cards (bg-white, chrome) keep forest text. —— */
+.ge-page :is(
+    .bg-gs-dark,
+    .bg-forest-900,
+    .bg-forest-950,
+    .bg-brand-900,
+    .bg-brand-950,
+    .ge-on-dark,
+    [class*='from-forest-9'],
+    [class*='from-brand-8'],
+    [class*='from-brand-9']
+  )
+  :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small):not(
+    .bg-white :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
+    .bg-white\/88 :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
+    .bg-white\/90 :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
+    .bg-white\/92 :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
+    .bg-white\/95 :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
+    [class*='bg-white'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
+    [class*='bg-chrome'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
+    [class*='bg-cream'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
+    [class*='bg-\\[\\#f'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
+    [class*='bg-\\[\\#e'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
+    .bg-clip-text,
+    [style*='clip-text']
+  ) {
+  color: #ffffff !important;
+}
+
+.ge-page :is(.bg-gs-dark, .bg-forest-900, .bg-forest-950, .bg-brand-900, .bg-brand-950, .ge-on-dark)
+  :is(.text-brand-700, .text-brand-800, [class*='text-brand-7'], [class*='text-brand-8']):not(
+    .bg-white :is(.text-brand-700, .text-brand-800, [class*='text-brand-7'], [class*='text-brand-8']),
+    [class*='bg-white'] :is(.text-brand-700, .text-brand-800, [class*='text-brand-7'], [class*='text-brand-8'])
+  ) {
+  color: #fbe8b5 !important;
+}
+
+/* Forest gradient CTAs must not use body-dark label colour */
+.ge-page
+  :is([class*='from-brand-8'], [class*='from-brand-9'], [class*='via-\\[\\#136047\\]'])
+  :is(.text-gs-dark, .text-forest-900, [class*='text-\\[\\#0']):not([class*='bg-white'] *) {
+  color: #ffffff !important;
+}
+
+/* —— Footer — make every line readable on the deep forest base —— */
+.ge-page footer.bg-gs-dark,
+.ge-page footer.bg-gs-dark p,
+.ge-page footer.bg-gs-dark li,
+.ge-page footer.bg-gs-dark a {
+  color: #ffffff !important;
+}
+
+.ge-page footer.bg-gs-dark a:hover {
+  color: #fbe8b5 !important;
+}
+
+.ge-page footer.bg-gs-dark p[class*='text-white\\/'],
+.ge-page footer.bg-gs-dark p[class*='text-white/'] {
+  color: rgba(255, 255, 255, 0.94) !important;
+}
+
+/* Footer column titles + small "Stay in touch" / Follow Social kickers in bright gold-cream */
+.ge-page footer.bg-gs-dark .text-brand-700,
+.ge-page footer.bg-gs-dark [class*='text-brand-700'] {
+  color: #fbe8b5 !important;
+  text-shadow: 0 0 18px rgba(217, 190, 122, 0.25);
+}
+
+/* Bottom legal strip — was washed out at /60 /70 /78 — push to readable white */
+.ge-page footer.bg-gs-dark .text-white\/60,
+.ge-page footer.bg-gs-dark .text-white\/70,
+.ge-page footer.bg-gs-dark .text-white\/78,
+.ge-page footer.bg-gs-dark .text-white\/80,
+.ge-page footer.bg-gs-dark .text-white\/90,
+.ge-page footer.bg-gs-dark .text-white\/95 {
+  color: rgba(255, 255, 255, 0.94) !important;
+}
+
+/* —— Course cards — h3 was being forced dark by the global `.ge-page h3` rule —— */
+.ge-page #golf-courses-spain article h3,
+.ge-page #golf-courses-spain article h3 * {
+  color: #ffffff !important;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.65);
+}
+
+/* —— Hotel cards — same fix: their h3 title sits on a dark photo scrim and
+   was being forced dark by the global `.ge-page h3 { color: var(--heading-color) }`
+   rule. Force pure white + readable shadow. The card body (white surface) is
+   not affected because no h3 lives in the body. —— */
+.ge-page #accommodation-spain a h3,
+.ge-page #accommodation-spain article h3,
+.ge-page #accommodation-spain a h3 *,
+.ge-page #accommodation-spain article h3 * {
+  color: #ffffff !important;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+}
+
+/* —— Why-book-with-us closing CTA panel ("Let us design your perfect…") ——
+   The panel uses `.facts-cta`. `.ge-on-dark` already forces white text on the
+   panel; this carves out the gold gradient span on the headline so it can
+   keep `color: transparent` for the bg-clip-text effect. —— */
+.ge-page .facts-cta h3 .bg-clip-text,
+.ge-page .facts-cta h3 [style*='clip-text'] {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent;
+}
+
+/* —— Premium Hero (every public page) — same carve-out for the gold
+   gradient span on h1, plus enforce white on primary headline span and
+   restore drop-shadow that the global rule otherwise drops. —— */
+.ge-page .premium-hero h1 .bg-clip-text,
+.ge-page .premium-hero h1 [style*='clip-text'] {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent;
+}
+
+.ge-page .premium-hero h1,
+.ge-page .premium-hero p {
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+}
+
+/* —— Transport route (dark forest section "Plane to fairway, in three calm beats.") ——
+   Carves out the gold gradient span on the h2 + protects the gold step badges
+   and bullet labels from the global heading + .ge-on-dark white rules. —— */
+.ge-page .transport-route h2 .bg-clip-text,
+.ge-page .transport-route h2 [style*='clip-text'] {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent;
+}
+
+.ge-page .transport-route [data-keep-color],
+.ge-page .transport-route [data-keep-color] svg {
+  color: #fbe8b5 !important;
+}
+
+.ge-page .transport-route h2,
+.ge-page .transport-route h3 {
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+}
+
+/* —— Payments Ireland trust band — fix dark-on-dark inside the forest panel.
+   The .ge-on-dark class already forces white on h1–h4/p/li; this carves out
+   the gold gradient text-clip span on the h2 and protects the gold kickers
+   ("Irish-owned · paid in Ireland", "What this means") from being overridden
+   to white. —— */
+.ge-page .payments-ireland h2 .bg-clip-text,
+.ge-page .payments-ireland h2 [style*='clip-text'] {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent;
+}
+
+.ge-page .payments-ireland [data-keep-color],
+.ge-page .payments-ireland [data-keep-color] svg {
+  color: #fbe8b5 !important;
+}
+
+.ge-page .payments-ireland h2 {
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
+}
+
+/* —— Transport hero (cinematic Mercedes fleet shot) — protects the
+   gold gradient text-clip span on the headline and keeps the cream-gold
+   kicker line + accents readable against the bright daylight photo. —— */
+.ge-page .transport-hero h2 .bg-clip-text,
+.ge-page .transport-hero h2 [style*='clip-text'] {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent;
+}
+
+.ge-page .transport-hero [data-keep-color],
+.ge-page .transport-hero [data-keep-color] svg {
+  color: #fbe8b5 !important;
+}
+
+.ge-page .transport-hero h2 {
+  text-shadow: 0 3px 22px rgba(0, 0, 0, 0.55);
+}
+
+/* —— Page nameplate (engraved brass plaque that replaces the old
+   gold band + glass pill) — keeps the cream-gold eyebrow / white label
+   intact even on pages that wrap content inside `.ge-page`. —— */
+.page-nameplate .page-nameplate-eyebrow,
+.page-nameplate .page-nameplate-eyebrow * {
+  color: #fbe8b5 !important;
+}
+
+.page-nameplate .page-nameplate-label {
+  color: #ffffff !important;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.page-nameplate [data-keep-color] {
+  color: inherit !important;
+}

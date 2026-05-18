@@ -47,18 +47,18 @@ export function BookedDatesAvailabilityNotice({
 
   const shell =
     tone === 'forest'
-      ? 'border border-amber-200/90 bg-gradient-to-br from-amber-50/95 via-white to-[#f4faf6] text-forest-900 shadow-[0_12px_40px_rgba(115,132,33,0.12)]'
-      : 'border border-gs-gold/40 bg-gradient-to-br from-[#fffdf8] via-white to-[#eef8f3] text-gs-dark shadow-[0_14px_44px_rgba(6,59,42,0.1)]'
+      ? 'border border-chrome-200/90 bg-gradient-to-br from-brand-50/95 via-white to-[#f4faf6] text-forest-900 shadow-[0_12px_40px_rgba(115,132,33,0.12)]'
+      : 'border border-brand-700/40 bg-gradient-to-br from-[#fffdf8] via-white to-[#eef8f3] text-gs-dark shadow-[0_14px_44px_rgba(6,59,42,0.1)]'
 
   const chip =
     tone === 'forest'
-      ? 'border border-amber-300/70 bg-white/90 text-forest-900'
+      ? 'border border-chrome-300/70 bg-white/90 text-forest-900'
       : 'border border-gs-green/20 bg-white/95 text-gs-dark'
 
   const clashShell =
     tone === 'forest'
       ? 'border border-rose-200 bg-rose-50/90 text-rose-950'
-      : 'border border-ge-orange/40 bg-orange-50/95 text-gs-dark'
+      : 'border border-brand-700/40 bg-orange-50/95 text-gs-dark'
 
   return (
     <div className={`space-y-3 ${className}`.trim()}>
@@ -74,9 +74,9 @@ export function BookedDatesAvailabilityNotice({
             transition={{ duration: 0.28, ease: 'easeOut' }}
           >
             <p className="flex items-start gap-2 font-ge text-sm font-bold leading-snug sm:text-[0.95rem]">
-              <CalendarOff className="mt-0.5 h-4 w-4 shrink-0 text-ge-orange" aria-hidden />
+              <CalendarOff className="mt-0.5 h-4 w-4 shrink-0 text-brand-700" aria-hidden />
               <span>
-                That date is on our <span className="text-ge-orange">fully booked</span> list — the form won&apos;t send until you pick
+                That date is on our <span className="text-brand-700">fully booked</span> list — the form won&apos;t send until you pick
                 open dates. Call or WhatsApp us if you need an exception.
               </span>
             </p>
@@ -97,14 +97,14 @@ export function BookedDatesAvailabilityNotice({
             <span
               className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl shadow-sm ${
                 tone === 'forest'
-                  ? 'bg-gradient-to-br from-gold-400/95 to-amber-200/90 text-forest-950'
-                  : 'bg-gradient-to-br from-gs-gold/90 to-amber-200/80 text-gs-dark'
+                  ? 'bg-gradient-to-br from-brand-400/95 to-brand-200/90 text-forest-950'
+                  : 'bg-gradient-to-br from-brand-800/90 to-brand-200/80 text-gs-dark'
               }`}
             >
               <Sparkles className="h-4 w-4" aria-hidden />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.2em] text-ge-orange sm:text-[0.7rem]">
+              <p className="font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.2em] text-brand-700 sm:text-[0.7rem]">
                 Diary snapshot
               </p>
               <p className="mt-1 font-ge text-sm leading-relaxed text-ge-gray600 sm:text-[0.95rem]">

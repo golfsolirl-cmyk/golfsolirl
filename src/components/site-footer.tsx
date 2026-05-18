@@ -46,9 +46,9 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
               <p className="text-[0.96rem] font-semibold uppercase tracking-[0.14em] text-white/72">Account</p>
               <ul className="mt-3 space-y-2">
                 <li className="flex items-center gap-2">
-                  <ChevronRight className="h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
+                  <ChevronRight className="h-4 w-4 shrink-0 text-brand-400" aria-hidden="true" />
                   <a
-                    className="text-[1.05rem] font-medium text-white transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                    className="text-[1.05rem] font-medium text-white transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
                     href={session ? dashboardHref : '/dashboard/login'}
                   >
                     {session ? (profile?.role === 'admin' ? 'Admin dashboard' : 'Client dashboard') : 'Client sign-in'}
@@ -56,9 +56,9 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
                 </li>
                 {!session || profile?.role !== 'admin' ? (
                   <li className="flex items-center gap-2">
-                    <ChevronRight className="h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
+                    <ChevronRight className="h-4 w-4 shrink-0 text-brand-400" aria-hidden="true" />
                     <a
-                      className="text-[1.05rem] font-medium text-white transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                      className="text-[1.05rem] font-medium text-white transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
                       href="/dashboard/admin/login"
                     >
                       Admin sign-in
@@ -78,7 +78,7 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
                   <a
                     key={label}
                     aria-label={`Visit our ${label} page`}
-                    className="group inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#D5C600]/25 bg-white/5 text-[#D5C600] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#D5C600]/65 hover:bg-[#D5C600] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D5C600] focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                    className="group inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#136047]/25 bg-white/5 text-[#136047] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#136047]/65 hover:bg-[#136047] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#136047] focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
                     href={href}
                     rel="noreferrer"
                     target="_blank"
@@ -98,9 +98,9 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
               <ul className="mt-4 space-y-2.5">
                 {group.links.map((item) => (
                   <li key={item.href} className="flex items-center gap-2">
-                    <ChevronRight className="h-4 w-4 shrink-0 text-gold-400" aria-hidden="true" />
+                    <ChevronRight className="h-4 w-4 shrink-0 text-brand-400" aria-hidden="true" />
                     <a
-                      className="text-[1.05rem] font-medium text-white transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                      className="text-[1.05rem] font-medium text-white transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
                       href={item.href}
                     >
                       {item.label}

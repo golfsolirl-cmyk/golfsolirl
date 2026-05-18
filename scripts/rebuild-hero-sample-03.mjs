@@ -30,15 +30,27 @@ const mobileOutH = 2304
 
 /**
  * Homepage / Tailwind `gs-gold` family — mustard sport gold, not lemon yellow.
- * See tailwind.config.js: gs.gold `#D5C600`, gs-gold-light `#EBE486`.
+ * See tailwind.config.js: gs.gold `#fae82e`, gs-gold-light `#fdf28a`.
  */
-const BRAND_GOLD = '#D5C600'
+const BRAND_GOLD = '#fae82e'
 const BRAND_GOLD_DEEP = '#A59D13'
-const BRAND_GOLD_LIGHT = '#EBE486'
+const BRAND_GOLD_LIGHT = '#fdf28a'
 const BRAND_GOLD_CREAM = '#EDE9CE'
 
+/**
+ * Mustard / antique-gold wave panels (replaces former forest-green tint) so the
+ * hero frame matches brand gold while staying readable on photography.
+ */
+const WAVE_MUSTARD_DEEP = '#6b4a12'
+const WAVE_MUSTARD_MID = '#9a7218'
+const WAVE_MUSTARD_SOFT = '#e6cf26'
+const ON_GOLD_BAR_TEXT = '#1f1708'
+const PILL_FILL = '#7a5a16'
+const PILL_STROKE_MINT = '#d4c878'
+const CHECK_CIRCLE = '#fae82e'
+const CHECK_MARK_ON = '#3d2a0a'
+
 const variant = {
-  tint: '#0b4934',
   accent: BRAND_GOLD,
   crop: 'entropy',
   titleY: 290,
@@ -50,15 +62,15 @@ const variant = {
 const ctaCenterX = 1160 + 360 / 2
 
 function overlaySvg(outW, outH) {
-  const { tint, accent, titleY } = variant
+  const { accent, titleY } = variant
   return Buffer.from(`
 <svg width="${outW}" height="${outH}" viewBox="0 0 ${deskLogicalW} ${deskLogicalH}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="leftPanel" x1="0" x2="1" y1="0" y2="0">
-      <stop offset="0" stop-color="${tint}" stop-opacity="0.96"/>
-      <stop offset="0.45" stop-color="${tint}" stop-opacity="0.82"/>
-      <stop offset="0.7" stop-color="${tint}" stop-opacity="0.32"/>
-      <stop offset="1" stop-color="${tint}" stop-opacity="0.06"/>
+      <stop offset="0" stop-color="${WAVE_MUSTARD_DEEP}" stop-opacity="0.94"/>
+      <stop offset="0.38" stop-color="${WAVE_MUSTARD_MID}" stop-opacity="0.78"/>
+      <stop offset="0.68" stop-color="${WAVE_MUSTARD_SOFT}" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="${WAVE_MUSTARD_SOFT}" stop-opacity="0.05"/>
     </linearGradient>
     <linearGradient id="goldBar" x1="0" x2="1" y1="0" y2="0">
       <stop offset="0" stop-color="${BRAND_GOLD_DEEP}"/>
@@ -66,25 +78,25 @@ function overlaySvg(outW, outH) {
       <stop offset="1" stop-color="${BRAND_GOLD_LIGHT}"/>
     </linearGradient>
     <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="14" stdDeviation="12" flood-color="#001f16" flood-opacity="0.32"/>
+      <feDropShadow dx="0" dy="14" stdDeviation="12" flood-color="#1a1204" flood-opacity="0.34"/>
     </filter>
   </defs>
 
   <rect width="${deskLogicalW}" height="${deskLogicalH}" fill="url(#leftPanel)"/>
   <rect x="0" y="0" width="${deskLogicalW}" height="72" fill="url(#goldBar)"/>
   <rect x="0" y="72" width="${deskLogicalW}" height="2" fill="#ffffff" opacity="0.34"/>
-  <text x="78" y="47" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="900" letter-spacing="15" fill="#073d2b">MALAGA</text>
-  <text x="382" y="47" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="900" fill="#073d2b">→</text>
-  <text x="495" y="47" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="900" letter-spacing="15" fill="#073d2b">COSTA DEL SOL GOLF TRANSFERS</text>
+  <text x="78" y="47" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="900" letter-spacing="15" fill="${ON_GOLD_BAR_TEXT}">MALAGA</text>
+  <text x="382" y="47" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="900" fill="${ON_GOLD_BAR_TEXT}">→</text>
+  <text x="495" y="47" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="900" letter-spacing="15" fill="${ON_GOLD_BAR_TEXT}">COSTA DEL SOL GOLF TRANSFERS</text>
 
   <g filter="url(#softShadow)">
-    <rect x="58" y="102" width="305" height="48" rx="24" fill="#0e7458" opacity="0.92" stroke="${BRAND_GOLD}" stroke-opacity="0.42"/>
+    <rect x="58" y="102" width="305" height="48" rx="24" fill="${PILL_FILL}" opacity="0.94" stroke="${BRAND_GOLD}" stroke-opacity="0.5"/>
     <text x="93" y="133" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="900" letter-spacing="5" fill="#f8f3d0">MALAGA ARRIVALS</text>
 
-    <rect x="980" y="102" width="372" height="48" rx="24" fill="#0e7458" opacity="0.92" stroke="${BRAND_GOLD}" stroke-opacity="0.42"/>
+    <rect x="980" y="102" width="372" height="48" rx="24" fill="${PILL_FILL}" opacity="0.94" stroke="${BRAND_GOLD}" stroke-opacity="0.5"/>
     <text x="1021" y="133" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="900" letter-spacing="5" fill="#f8f3d0">COSTA DEL SOL TEE-OFF</text>
 
-    <rect x="58" y="172" width="812" height="42" rx="21" fill="#028a56" opacity="0.94" stroke="#59d56f" stroke-opacity="0.75"/>
+    <rect x="58" y="172" width="812" height="42" rx="21" fill="${WAVE_MUSTARD_MID}" opacity="0.92" stroke="${PILL_STROKE_MINT}" stroke-opacity="0.8"/>
     <text x="97" y="199" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="900" letter-spacing="4" fill="${BRAND_GOLD_CREAM}">WE MEET YOU AT THE GATE · AND OFF TO THE COURSE</text>
   </g>
 
@@ -101,21 +113,21 @@ function overlaySvg(outW, outH) {
   </text>
 
   <line x1="0" y1="565" x2="${deskLogicalW}" y2="565" stroke="${accent}" stroke-width="4" opacity="0.9"/>
-  <rect x="0" y="568" width="${deskLogicalW}" height="232" fill="${tint}" opacity="0.88"/>
+  <rect x="0" y="568" width="${deskLogicalW}" height="232" fill="${WAVE_MUSTARD_DEEP}" opacity="0.88"/>
 
   <g font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="900" fill="#ffffff">
-    <circle cx="74" cy="650" r="24" fill="#1dcf65"/>
-    <text x="66" y="660" font-size="24" fill="${tint}">✓</text>
+    <circle cx="74" cy="650" r="24" fill="${CHECK_CIRCLE}"/>
+    <text x="66" y="660" font-size="24" fill="${CHECK_MARK_ON}">✓</text>
     <text x="112" y="660" font-size="23">Meet &amp; Greet at Malaga AGP</text>
-    <circle cx="74" cy="710" r="24" fill="#1dcf65"/>
-    <text x="66" y="720" font-size="24" fill="${tint}">✓</text>
+    <circle cx="74" cy="710" r="24" fill="${CHECK_CIRCLE}"/>
+    <text x="66" y="720" font-size="24" fill="${CHECK_MARK_ON}">✓</text>
     <text x="112" y="720" font-size="23">Irish-owned operator support</text>
 
-    <circle cx="655" cy="650" r="24" fill="#1dcf65"/>
-    <text x="647" y="660" font-size="24" fill="${tint}">✓</text>
+    <circle cx="655" cy="650" r="24" fill="${CHECK_CIRCLE}"/>
+    <text x="647" y="660" font-size="24" fill="${CHECK_MARK_ON}">✓</text>
     <text x="693" y="660" font-size="23">Golf-bag friendly Mercedes V-Class</text>
-    <circle cx="655" cy="710" r="24" fill="#1dcf65"/>
-    <text x="647" y="720" font-size="24" fill="${tint}">✓</text>
+    <circle cx="655" cy="710" r="24" fill="${CHECK_CIRCLE}"/>
+    <text x="647" y="720" font-size="24" fill="${CHECK_MARK_ON}">✓</text>
     <text x="693" y="720" font-size="23">Pre-booked tee times &amp; resort transfers</text>
   </g>
 
@@ -124,7 +136,7 @@ function overlaySvg(outW, outH) {
   </g>
 
   <g transform="translate(1396 116)">
-    <circle cx="70" cy="70" r="61" fill="#0e7458" stroke="${accent}" stroke-width="8"/>
+    <circle cx="70" cy="70" r="61" fill="${PILL_FILL}" stroke="${accent}" stroke-width="8"/>
     <circle cx="70" cy="70" r="69" fill="none" stroke="${accent}" stroke-width="4" stroke-dasharray="3 8"/>
     <text x="70" y="64" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="43" font-weight="900" fill="#ffffff">24/7</text>
     <text x="70" y="93" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="900" letter-spacing="3" fill="${accent}">SERVICE</text>
@@ -136,11 +148,11 @@ function overlaySvg(outW, outH) {
 
 /**
  * Portrait 9:16 — **mobile-only** simplified art direction: fewer blocks, more air,
- * centred type. Omits desktop pills, green strip, checklist wall, and 24/7 seal.
+ * centred type. Omits desktop pills, lower strip, checklist wall, and 24/7 seal.
  * Desktop overlay uses the same logical layout scaled via viewBox.
  */
 function overlaySvgMobile(outW, outH) {
-  const { tint, accent } = variant
+  const { accent } = variant
   const w = mobileLogicalW
   const h = mobileLogicalH
   const cx = w / 2
@@ -150,10 +162,10 @@ function overlaySvgMobile(outW, outH) {
   <defs>
     <!-- Softer than desktop left panel: let van + course show through -->
     <linearGradient id="mLeftPanel" x1="0" x2="1" y1="0" y2="0">
-      <stop offset="0" stop-color="${tint}" stop-opacity="0.52"/>
-      <stop offset="0.38" stop-color="${tint}" stop-opacity="0.28"/>
-      <stop offset="0.62" stop-color="${tint}" stop-opacity="0.1"/>
-      <stop offset="1" stop-color="${tint}" stop-opacity="0.02"/>
+      <stop offset="0" stop-color="${WAVE_MUSTARD_DEEP}" stop-opacity="0.5"/>
+      <stop offset="0.36" stop-color="${WAVE_MUSTARD_MID}" stop-opacity="0.28"/>
+      <stop offset="0.64" stop-color="${WAVE_MUSTARD_SOFT}" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="${WAVE_MUSTARD_SOFT}" stop-opacity="0.02"/>
     </linearGradient>
     <linearGradient id="mGoldBar" x1="0" x2="1" y1="0" y2="0">
       <stop offset="0" stop-color="${BRAND_GOLD_DEEP}"/>
@@ -161,30 +173,30 @@ function overlaySvgMobile(outW, outH) {
       <stop offset="1" stop-color="${BRAND_GOLD_LIGHT}"/>
     </linearGradient>
     <linearGradient id="mLowerWash" gradientUnits="userSpaceOnUse" x1="0" y1="720" x2="0" y2="${h}">
-      <stop offset="0" stop-color="${tint}" stop-opacity="0"/>
-      <stop offset="0.22" stop-color="${tint}" stop-opacity="0.38"/>
-      <stop offset="1" stop-color="${tint}" stop-opacity="0.82"/>
+      <stop offset="0" stop-color="${WAVE_MUSTARD_DEEP}" stop-opacity="0"/>
+      <stop offset="0.22" stop-color="${WAVE_MUSTARD_MID}" stop-opacity="0.4"/>
+      <stop offset="1" stop-color="${WAVE_MUSTARD_DEEP}" stop-opacity="0.84"/>
     </linearGradient>
     <filter id="mSoftShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="14" stdDeviation="12" flood-color="#001f16" flood-opacity="0.32"/>
+      <feDropShadow dx="0" dy="14" stdDeviation="12" flood-color="#1a1204" flood-opacity="0.34"/>
     </filter>
     <filter id="mTrustEmph" x="-30%" y="-40%" width="160%" height="180%">
-      <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#000a08" flood-opacity="0.95" result="sh"/>
+      <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#140c02" flood-opacity="0.92" result="sh"/>
       <feMerge>
         <feMergeNode in="sh"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
     <filter id="mHeadLeg" x="-15%" y="-15%" width="130%" height="140%">
-      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#02150f" flood-opacity="0.72"/>
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#1a1204" flood-opacity="0.7"/>
     </filter>
   </defs>
 
   <rect width="${w}" height="${h}" fill="url(#mLeftPanel)"/>
   <rect x="0" y="0" width="${w}" height="${barH}" fill="url(#mGoldBar)"/>
   <rect x="0" y="${barH}" width="${w}" height="2" fill="#ffffff" opacity="0.34"/>
-  <text x="${cx}" y="46" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="900" letter-spacing="7" fill="#073d2b">MALAGA → COSTA DEL SOL</text>
-  <text x="${cx}" y="80" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="900" letter-spacing="11" fill="#073d2b">GOLF TRANSFERS</text>
+  <text x="${cx}" y="46" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="900" letter-spacing="7" fill="${ON_GOLD_BAR_TEXT}">MALAGA → COSTA DEL SOL</text>
+  <text x="${cx}" y="80" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="900" letter-spacing="11" fill="${ON_GOLD_BAR_TEXT}">GOLF TRANSFERS</text>
 
   <g filter="url(#mHeadLeg)">
     <text x="${cx}" y="280" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="108" font-weight="900" letter-spacing="0.5" fill="#ffffff">FROM PLANE</text>
@@ -227,13 +239,13 @@ function rightWarmth(outW, outH) {
     <linearGradient id="sun" x1="0" x2="1" y1="0" y2="1">
       <stop offset="0" stop-color="${BRAND_GOLD_LIGHT}" stop-opacity="0.24"/>
       <stop offset="0.42" stop-color="#ffffff" stop-opacity="0.03"/>
-      <stop offset="1" stop-color="#00643c" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="${WAVE_MUSTARD_DEEP}" stop-opacity="0.1"/>
     </linearGradient>
     <linearGradient id="readability" x1="0" x2="1" y1="0" y2="0">
-      <stop offset="0" stop-color="#03291d" stop-opacity="0.72"/>
-      <stop offset="0.43" stop-color="#03291d" stop-opacity="0.3"/>
-      <stop offset="0.72" stop-color="#03291d" stop-opacity="0"/>
-      <stop offset="1" stop-color="#03291d" stop-opacity="0.08"/>
+      <stop offset="0" stop-color="#2a1f0a" stop-opacity="0.62"/>
+      <stop offset="0.43" stop-color="#2a1f0a" stop-opacity="0.26"/>
+      <stop offset="0.72" stop-color="#2a1f0a" stop-opacity="0"/>
+      <stop offset="1" stop-color="#2a1f0a" stop-opacity="0.08"/>
     </linearGradient>
   </defs>
   <rect width="${deskLogicalW}" height="${deskLogicalH}" fill="url(#sun)"/>
@@ -249,13 +261,13 @@ function rightWarmthMobile(outW, outH) {
     <linearGradient id="sunM" x1="0" x2="1" y1="0" y2="1">
       <stop offset="0" stop-color="${BRAND_GOLD_LIGHT}" stop-opacity="0.11"/>
       <stop offset="0.45" stop-color="#ffffff" stop-opacity="0.02"/>
-      <stop offset="1" stop-color="#00643c" stop-opacity="0.04"/>
+      <stop offset="1" stop-color="${WAVE_MUSTARD_DEEP}" stop-opacity="0.06"/>
     </linearGradient>
     <linearGradient id="readabilityM" x1="0" x2="1" y1="0" y2="0">
-      <stop offset="0" stop-color="#03291d" stop-opacity="0.38"/>
-      <stop offset="0.4" stop-color="#03291d" stop-opacity="0.14"/>
-      <stop offset="0.68" stop-color="#03291d" stop-opacity="0"/>
-      <stop offset="1" stop-color="#03291d" stop-opacity="0.04"/>
+      <stop offset="0" stop-color="#2a1f0a" stop-opacity="0.34"/>
+      <stop offset="0.4" stop-color="#2a1f0a" stop-opacity="0.12"/>
+      <stop offset="0.68" stop-color="#2a1f0a" stop-opacity="0"/>
+      <stop offset="1" stop-color="#2a1f0a" stop-opacity="0.04"/>
     </linearGradient>
   </defs>
   <rect width="${mobileLogicalW}" height="${mobileLogicalH}" fill="url(#sunM)"/>

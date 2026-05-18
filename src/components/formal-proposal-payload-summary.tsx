@@ -67,7 +67,7 @@ export function FormalProposalPayloadSummary(props: {
     <div className="rounded-2xl border border-fairway-200/90 bg-gradient-to-br from-offwhite via-white to-[#f4faf6] p-5 shadow-inner md:p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-600">Formal proposal</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-600">Formal proposal</p>
           <p className="mt-1 font-mono text-sm font-semibold text-forest-950">{props.proposalIdText}</p>
           <p className="mt-2 max-w-2xl text-xs text-forest-600">
             Details Golf Sol Ireland prepared for this package build. Use Download PDF for the same document as email.

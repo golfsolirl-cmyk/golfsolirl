@@ -24,12 +24,12 @@ export function GeHomeFleetHighlight() {
       <div className="grid gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-start lg:gap-12">
         <div className="flex min-w-0 flex-col gap-4 sm:gap-5">
           <m.div
-            className="relative isolate aspect-[4/3] min-h-[220px] w-full overflow-hidden rounded-[2rem] border border-[#d6ccb8] bg-gs-dark shadow-[0_26px_70px_rgba(6,59,42,0.18)] sm:aspect-[5/4] sm:min-h-[260px] lg:min-h-[300px]"
+            className="relative isolate aspect-[16/9] min-h-[220px] w-full overflow-hidden rounded-[2rem] border border-[#d9d9d9] bg-gs-dark shadow-[0_26px_70px_rgba(6,59,42,0.18)] sm:aspect-[16/10] sm:min-h-[260px] lg:min-h-[300px]"
             {...fadeUp}
           >
             <img
-              src="/images/transport-fleet-lineup.jpg"
-              alt="Mercedes E-Class, V-Class and Sprinter parked together on a Costa del Sol forecourt with mountains behind."
+              src="/images/88054e80-6dd1-483f-8557-cdc45caa2442.png"
+              alt="GolfSol Ireland Mercedes V-Class, E-Class and Sprinter lined up on a Costa del Sol fairway with La Concha mountain in the background."
               className="absolute inset-0 h-full w-full object-cover"
               loading="lazy"
               decoding="async"
@@ -38,13 +38,8 @@ export function GeHomeFleetHighlight() {
             />
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 bg-gradient-to-br from-gs-dark/25 via-transparent to-gs-dark/40"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gs-dark/25 via-transparent to-transparent"
             />
-            <div className="absolute left-4 top-4 z-[1] sm:left-5 sm:top-5">
-              <div className="inline-flex items-center gap-2 rounded-full border border-gs-gold/45 bg-gs-dark/70 px-3.5 py-2 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.18em] text-gs-gold-light shadow-lg backdrop-blur-sm sm:text-[0.72rem]">
-                Premium Mercedes only
-              </div>
-            </div>
           </m.div>
 
           <GeTransfersInsuranceBanner
@@ -54,13 +49,13 @@ export function GeHomeFleetHighlight() {
         </div>
 
         <m.div
-          className="relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/92 p-6 shadow-[0_24px_55px_rgba(69,53,24,0.1)] ring-1 ring-[#e5dcc8] backdrop-blur-sm sm:p-8"
+          className="relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/92 p-6 shadow-[0_24px_55px_rgba(6,32,22,0.1)] ring-1 ring-[#d9d9d9] backdrop-blur-sm sm:p-8"
           {...fadeUp}
           transition={{ ...fadeUp.transition, delay: 0.08 }}
         >
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-[12%] top-0 h-px bg-gradient-to-r from-transparent via-gs-gold/90 to-transparent"
+            className="pointer-events-none absolute inset-x-[12%] top-0 h-px bg-gradient-to-r from-transparent via-brand-700/90 to-transparent"
           />
           <p className="relative z-[1] font-ge text-[0.78rem] font-bold uppercase tracking-[0.22em] text-gs-green sm:text-[0.82rem]">
             {transportFleetIntroCopy.eyebrow}
@@ -76,7 +71,7 @@ export function GeHomeFleetHighlight() {
             {featuredTiers.map((tier, index) => (
               <div
                 key={tier.name}
-                className="flex items-start gap-3 rounded-[1.35rem] border border-[#e6dcc8] bg-[#fffcf6] px-4 py-3.5 shadow-[0_12px_30px_rgba(69,53,24,0.06)] sm:items-center sm:gap-4"
+                className="flex items-start gap-3 rounded-[1.35rem] border border-chrome-300 bg-chrome-50 px-4 py-3.5 shadow-[0_12px_30px_rgba(6,32,22,0.06)] sm:items-center sm:gap-4"
               >
                 <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gs-dark text-white shadow-[0_10px_24px_rgba(6,59,42,0.18)]">
                   {index === 0 ? <Users className="h-4 w-4" aria-hidden /> : <Briefcase className="h-4 w-4" aria-hidden />}
@@ -95,11 +90,11 @@ export function GeHomeFleetHighlight() {
             ))}
           </div>
 
-          <div className="relative z-[1] mt-8 overflow-hidden rounded-[1.4rem] border border-[#e6dcc8] bg-[#fffcf6] shadow-[0_12px_32px_rgba(69,53,24,0.08)]">
+          <div className="relative z-[1] mt-8 overflow-hidden rounded-[1.4rem] border border-chrome-300 bg-chrome-50 shadow-[0_12px_32px_rgba(6,32,22,0.08)]">
             <div className="p-4 sm:p-5">
               <GeButton
                 href="/transport"
-                variant="gs-gold"
+                variant="gs-green"
                 size="md"
                 className="w-full justify-center px-4 text-[0.78rem] tracking-[0.1em] sm:text-[0.9rem] sm:tracking-[0.14em]"
               >
@@ -107,10 +102,10 @@ export function GeHomeFleetHighlight() {
                 <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
               </GeButton>
             </div>
-            <div className="border-t border-gs-gold/35 bg-gs-dark px-4 py-3.5 sm:px-5 sm:py-4">
-              <p className="text-center font-ge text-[0.8rem] font-extrabold uppercase leading-snug tracking-[0.14em] text-gs-gold-light sm:text-[0.88rem] sm:tracking-[0.16em]">
+            <div className="border-t border-brand-700/35 bg-gs-dark px-4 py-3.5 sm:px-5 sm:py-4">
+              <p className="text-center font-ge text-[0.8rem] font-extrabold uppercase leading-snug tracking-[0.14em] text-silver-200 sm:text-[0.88rem] sm:tracking-[0.16em]">
                 <span className="text-white">1 to 8 max</span>
-                <span className="mx-2 text-gs-gold sm:mx-2.5" aria-hidden="true">
+                <span className="mx-2 text-brand-700 sm:mx-2.5" aria-hidden="true">
                   ·
                 </span>
                 <span className="text-white">Golf-bag friendly</span>

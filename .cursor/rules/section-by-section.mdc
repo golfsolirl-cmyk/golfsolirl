@@ -1,0 +1,198 @@
+---
+alwaysApply: true
+---
+
+# Section-by-Section Page Improvement Rule
+
+When I provide a page name and section title, only edit that specific section unless I clearly ask for a full-page change.
+
+## Main Goal
+
+Improve each selected section so it feels premium, modern, polished, creative, and visually stronger while keeping the existing site structure and functionality intact.
+
+## Strict Editing Scope
+
+When I give a page name and section title:
+
+1. Locate the exact section.
+2. Improve only that section.
+3. Keep the rest of the page unchanged.
+4. Do not make broad redesign decisions outside the requested section.
+5. Briefly explain what was changed.
+6. Mention any files edited.
+
+## Visual Quality Rules
+
+For the selected section:
+
+- Improve layout, spacing, alignment, padding, margins, and visual hierarchy.
+- Make typography stronger, cleaner, and more premium.
+- Improve grammar, wording, headings, CTAs, and supporting text.
+- Strengthen font weights, line heights, letter spacing, and heading scale.
+- Improve background colours and section contrast.
+- Add subtle flair such as dividers, badges, premium cards, animated accents, glow lines, or decorative shapes.
+- If a section looks boring, be creative and make it feel more custom, polished, and brand-led.
+- Keep animations smooth, subtle, and professional.
+- Make the section fully responsive across desktop, laptop, tablet, and mobile.
+
+## Important Contrast Rule
+
+Never place dark text on a dark background.
+
+Always check contrast carefully:
+
+- Dark backgrounds must use white, cream, pale gold, or light text.
+- Light backgrounds may use forest green, charcoal, or near-black text.
+- Buttons must always have strong readable contrast.
+- Green buttons should usually use white or cream text.
+- Mustard/gold buttons should use dark green or near-black text.
+- Avoid low-contrast muted text that is hard to read.
+
+## Hero Image Rule
+
+Use this image on every page hero section except the homepage:
+
+`88054e80-6dd1-483f-8557-cdc45caa2442.png`
+
+Each page hero must still clearly show what page the user is on.
+
+Hero sections should include:
+
+- Page-specific heading.
+- Short supporting text explaining the page.
+- Optional badge, breadcrumb, or small intro label.
+- Clear CTA where suitable.
+- Strong responsive cropping for mobile.
+- No generic hero copy.
+
+## Image Replacement Rule
+
+Any existing use of:
+
+`transport-fleet-lineup.jpg`
+
+Must be replaced with:
+
+`88054e80-6dd1-483f-8557-cdc45caa2442.png`
+
+Do not leave the old transport-fleet-lineup image in any edited section unless I specifically ask.
+
+## Form Styling Rule
+
+Any form on an edited page should mirror the homepage form style.
+
+Forms should feel consistent across the site:
+
+- Same premium card style.
+- Same input styling.
+- Same button styling.
+- Same spacing and label treatment.
+- Same border radius and brand colours.
+- Same mobile stacking behavior.
+- Same focus states and accessibility.
+- Do not create a totally different form design unless I request it.
+
+## Background Rules
+
+Do not use background designs with lines, stripes, wireframes, grids, or busy patterns.
+
+Background sections should use solid colours only.
+
+Preferred section backgrounds:
+
+- Solid deep forest green.
+- Solid cream / off-white.
+- Solid white.
+- Solid charcoal / near-black.
+- Solid muted gold only where tasteful.
+- Very subtle gradient accents are allowed only for small UI elements, not full busy backgrounds.
+
+Avoid:
+
+- Line-pattern backgrounds.
+- Grid backgrounds.
+- Cheap neon gradients.
+- Overly busy decorative backgrounds.
+- Glassmorphism unless I specifically ask.
+
+## Colour Direction
+
+Use the current brand as the base, but improve it with:
+
+- Deep forest green.
+- Cream / off-white.
+- Mustard / muted gold.
+- White.
+- Charcoal / near-black.
+- Chrome silver accents.
+- Blue-to-green gradients.
+- Blue-to-silver chrome gradients.
+- Green-to-silver chrome gradients.
+
+For existing gradient elements, prefer premium blue / green / silver chrome-style gradients.
+
+Avoid harsh colours or random colours that do not match the brand.
+
+## Section Dividers
+
+Where suitable, add premium section dividers such as:
+
+- Soft curved dividers.
+- Thin chrome gradient divider lines.
+- Angled background breaks.
+- Subtle wave shapes.
+- Decorative top/bottom borders.
+- Small branded accent strips.
+
+Dividers should improve flow between sections without clutter.
+
+## Typography Rules
+
+Improve copy and typography while keeping the message clear.
+
+- Headings should feel bold, premium, and confident.
+- Body text should be easy to read.
+- Avoid weak generic wording.
+- Fix grammar, spelling, capitalization, and punctuation.
+- Improve CTAs so they feel direct and persuasive.
+- Use strong but professional language.
+
+## Styling Rules
+
+Do not rebuild the entire app.
+
+Do not change unrelated pages or sections.
+
+Do not remove existing functionality.
+
+Do not change routing, forms, database logic, Supabase logic, Resend logic, auth, or business logic unless I specifically ask.
+
+Do not reduce accessibility.
+
+Do not make the design look like glassmorphism unless I specifically request it.
+
+Avoid overusing shadows, blur, or gradients.
+
+## Responsiveness
+
+Every edited section must look excellent on:
+
+- Large desktop.
+- Laptop.
+- Tablet.
+- Mobile.
+
+Pay special attention to:
+
+- Mobile spacing.
+- Heading size.
+- Button stacking.
+- Image cropping.
+- Text contrast.
+- Form layout.
+- Overflow.
+- Tap target sizes.
+
+## Design Feel
+
+The final result should feel like a premium travel, golf, and luxury transfer brand with stronger UI, better spacing, better fonts, richer colours, cleaner cards, subtle motion, polished section transitions, and a more creative high-end feel.

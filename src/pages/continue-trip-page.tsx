@@ -85,7 +85,7 @@ type SnapState = FlightSnap | null | undefined
 
 const continueLabelClass = 'mb-1.5 block font-ge text-[0.72rem] font-bold uppercase tracking-[0.14em] text-gs-dark/72'
 const continueInputClass =
-  'h-12 w-full rounded-xl border border-ge-gray200 bg-white px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-gs-gold/40 transition-shadow placeholder:text-ge-gray300 focus:border-gs-gold focus:ring-2'
+  'h-12 w-full rounded-xl border border-ge-gray200 bg-white px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-brand-700/40 transition-shadow placeholder:text-ge-gray300 focus:border-brand-700 focus:ring-2'
 
 function formatSnapForInterest(snap: FlightSnap) {
   const arrival =
@@ -357,7 +357,7 @@ export function ContinueTripPage() {
       <div className="ge-page min-h-screen overflow-x-hidden bg-white">
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-gs-gold focus:px-4 focus:py-2 focus:font-ge focus:text-sm focus:font-bold focus:uppercase focus:tracking-[0.14em] focus:text-gs-dark"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-brand-700 focus:px-4 focus:py-2 focus:font-ge focus:text-sm focus:font-bold focus:uppercase focus:tracking-[0.14em] focus:text-white"
         >
           Skip to content
         </a>
@@ -389,7 +389,7 @@ export function ContinueTripPage() {
             <div className="mx-auto max-w-lg px-5 text-center sm:px-8">
               <a
                 href="/"
-                className="inline-flex min-h-[48px] items-center gap-2 rounded-full border-2 border-gs-gold/60 bg-gs-gold px-6 py-3 font-ge text-sm font-extrabold uppercase tracking-[0.14em] text-gs-dark transition-colors hover:bg-gs-gold-light"
+                className="inline-flex min-h-[48px] items-center gap-2 rounded-full border-2 border-brand-700/60 bg-brand-700 px-6 py-3 font-ge text-sm font-extrabold uppercase tracking-[0.14em] text-white transition-colors hover:bg-brand-600"
               >
                 <ArrowLeft className="h-4 w-4" aria-hidden />
                 Back to homepage
@@ -409,7 +409,7 @@ export function ContinueTripPage() {
     <div className="ge-page min-h-screen overflow-x-hidden bg-white">
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-gs-gold focus:px-4 focus:py-2 focus:font-ge focus:text-sm focus:font-bold focus:uppercase focus:tracking-[0.14em] focus:text-gs-dark"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-brand-700 focus:px-4 focus:py-2 focus:font-ge focus:text-sm focus:font-bold focus:uppercase focus:tracking-[0.14em] focus:text-white"
       >
         Skip to content
       </a>
@@ -449,7 +449,7 @@ export function ContinueTripPage() {
           <div className="mx-auto max-w-2xl px-5 sm:px-8">
             <a
               href="/"
-              className="inline-flex items-center gap-2 font-ge text-sm font-semibold text-gs-green transition-colors hover:text-gs-gold"
+              className="inline-flex items-center gap-2 font-ge text-sm font-semibold text-gs-green transition-colors hover:text-brand-700"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden />
               Back to GolfSol Ireland
@@ -457,7 +457,7 @@ export function ContinueTripPage() {
 
             <section id="continue-carried" className="mt-10 scroll-mt-28 rounded-2xl border border-ge-gray100 bg-ge-gray50/50 p-6 shadow-[0_10px_30px_rgba(6,59,42,0.06)] sm:p-8">
               <h2 className="flex items-center gap-2 font-ge text-sm font-extrabold uppercase tracking-[0.16em] text-gs-green">
-                <CheckCircle2 className="h-5 w-5 text-gs-gold" aria-hidden />
+                <CheckCircle2 className="h-5 w-5 text-brand-700" aria-hidden />
                 Carried from last screen
               </h2>
               <dl className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -509,14 +509,14 @@ export function ContinueTripPage() {
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 <a
                   href="/services/tee-time-bookings"
-                  className="flex min-h-[52px] flex-col justify-center rounded-xl border border-gs-green/25 bg-ge-gray50/80 px-4 py-3 font-ge text-sm font-bold text-gs-dark transition-colors hover:border-gs-gold hover:bg-white"
+                  className="flex min-h-[52px] flex-col justify-center rounded-xl border border-gs-green/25 bg-ge-gray50/80 px-4 py-3 font-ge text-sm font-bold text-gs-dark transition-colors hover:border-brand-700 hover:bg-white"
                 >
                   <span className="text-gs-green">Tee time bookings only</span>
                   <span className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-ge-gray500">Prime &amp; full-day sheets</span>
                 </a>
                 <a
                   href="/services/twilight-golf"
-                  className="flex min-h-[52px] flex-col justify-center rounded-xl border border-gs-green/25 bg-ge-gray50/80 px-4 py-3 font-ge text-sm font-bold text-gs-dark transition-colors hover:border-gs-gold hover:bg-white"
+                  className="flex min-h-[52px] flex-col justify-center rounded-xl border border-gs-green/25 bg-ge-gray50/80 px-4 py-3 font-ge text-sm font-bold text-gs-dark transition-colors hover:border-brand-700 hover:bg-white"
                 >
                   <span className="text-gs-green">Twilight golf</span>
                   <span className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-ge-gray500">Golden-hour rounds</span>
@@ -696,12 +696,12 @@ export function ContinueTripPage() {
                         onChange={(event) => setNotes(event.target.value)}
                         rows={5}
                         placeholder="Tell us anything useful: handicaps, rooming, luggage, preferred resort, transfer notes or budget."
-                        className="w-full rounded-xl border border-ge-gray200 bg-white px-3.5 py-3 font-ge text-sm leading-7 text-gs-dark shadow-sm outline-none ring-gs-gold/40 transition-shadow placeholder:text-ge-gray300 focus:border-gs-gold focus:ring-2"
+                        className="w-full rounded-xl border border-ge-gray200 bg-white px-3.5 py-3 font-ge text-sm leading-7 text-gs-dark shadow-sm outline-none ring-brand-700/40 transition-shadow placeholder:text-ge-gray300 focus:border-brand-700 focus:ring-2"
                       />
                     </label>
 
                     {submitStatus === 'error' && submitError ? (
-                      <div className="rounded-lg border border-ge-orange/50 bg-orange-50 px-3 py-2.5 font-ge text-sm leading-6 text-gs-dark sm:col-span-2">
+                      <div className="rounded-lg border border-brand-700/50 bg-orange-50 px-3 py-2.5 font-ge text-sm leading-6 text-gs-dark sm:col-span-2">
                         <p>{submitError}</p>
                         {submitErrorCode === ENQUIRY_CONFLICT_EXISTING_PHONE ? (
                           <p className="mt-2 font-semibold text-gs-green">
@@ -716,7 +716,7 @@ export function ContinueTripPage() {
                     <button
                       type="submit"
                       disabled={submitStatus === 'submitting'}
-                      className="group relative min-h-[52px] overflow-hidden rounded-full bg-gradient-to-r from-gs-gold via-[#D5C600] to-gs-gold-light px-6 font-ge text-sm font-extrabold uppercase tracking-[0.14em] text-gs-dark shadow-gs-gold transition-transform duration-300 hover:scale-[1.02] active:scale-[0.99] disabled:cursor-wait disabled:opacity-70 sm:col-span-2"
+                      className="group relative min-h-[52px] overflow-hidden rounded-full bg-gradient-to-r from-brand-800 via-[#136047] to-brand-600 px-6 font-ge text-sm font-extrabold uppercase tracking-[0.14em] text-white shadow-gs-green transition-transform duration-300 hover:scale-[1.02] active:scale-[0.99] disabled:cursor-wait disabled:opacity-70 sm:col-span-2"
                     >
                       <span className="relative z-[1] inline-flex items-center justify-center gap-2">
                         <Send className="h-4 w-4" aria-hidden />

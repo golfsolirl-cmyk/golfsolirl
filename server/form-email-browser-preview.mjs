@@ -1,7 +1,8 @@
 import { formatDocumentDate } from '../shared/document-templates.mjs'
 import { buildBrandedEnquiryEmailHtml } from './branded-enquiry-email.mjs'
 import { buildBrandedPostEnquiryPortalInviteHtml } from './branded-post-enquiry-portal-invite-email.mjs'
-import { adaptTransactionalEmailHtmlForBrowserPreview, getGsolSiteUrl } from './email-layout.mjs'
+import { buildFormAutoresponseEmailHtml, buildSignInEmailHtml } from './branded-autoresponse-email.mjs'
+import { adaptTransactionalEmailHtmlForBrowserPreview, finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
 import { getTermsEmailHtmlSampleForPreview } from './enquiry-service.mjs'
 
 const sampleEnquiryPayload = () => ({
@@ -23,15 +24,19 @@ export const getFormEmailPreviewHtml = (kind, requestOrigin = '') => {
   const origin = (requestOrigin || '').replace(/\/+$/, '') || getGsolSiteUrl()
   const p = sampleEnquiryPayload()
 
+  let html
   switch (kind) {
     case 'enquiry-customer':
-      return buildBrandedEnquiryEmailHtml(p, 'customer')
+      html = buildBrandedEnquiryEmailHtml(p, 'customer')
+      break
     case 'enquiry-admin':
-      return buildBrandedEnquiryEmailHtml(p, 'admin')
+      html = buildBrandedEnquiryEmailHtml(p, 'admin')
+      break
     case 'terms':
-      return adaptTransactionalEmailHtmlForBrowserPreview(getTermsEmailHtmlSampleForPreview(), origin)
+      html = getTermsEmailHtmlSampleForPreview()
+      break
     case 'portal-invite':
-      return buildBrandedPostEnquiryPortalInviteHtml({
+      html = buildBrandedPostEnquiryPortalInviteHtml({
         fullName: p.fullName,
         email: p.email,
         enquiryId: p.enquiryId,
@@ -39,7 +44,30 @@ export const getFormEmailPreviewHtml = (kind, requestOrigin = '') => {
         actionLink: `${origin}/dashboard/login?next=${encodeURIComponent(`/dashboard?enquiry_ref=${p.enquiryId}`)}`,
         sentAtDisplay: p.enquiryDate
       })
+      break
+    case 'form-autoresponse':
+      html = finalizeGsolEmailHtml(
+        buildFormAutoresponseEmailHtml({
+          fullName: p.fullName,
+          email: p.email,
+          enquiryId: p.enquiryId,
+          interest: p.interest
+        })
+      )
+      break
+    case 'sign-in':
+      html = finalizeGsolEmailHtml(
+        buildSignInEmailHtml({
+          fullName: p.fullName,
+          email: p.email,
+          magicLink: `${origin}/dashboard/login?token=sample-magic-link-token-preview`,
+          enquiryId: p.enquiryId
+        })
+      )
+      break
     default:
       throw new Error(`Unknown email preview kind: ${kind}`)
   }
+
+  return adaptTransactionalEmailHtmlForBrowserPreview(html, origin)
 }

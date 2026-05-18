@@ -688,7 +688,7 @@ export function AdminAccountTransfersHub(props: {
 
         <div className="mt-4 flex flex-col gap-3 border-t border-forest-100 pt-4 sm:flex-row sm:flex-wrap sm:items-end">
           <label className="block">
-            <span className="mb-1 block text-[0.65rem] font-bold uppercase tracking-wide text-gold-600">Quoted EUR (VAT incl.)</span>
+            <span className="mb-1 block text-[0.65rem] font-bold uppercase tracking-wide text-brand-600">Quoted EUR (VAT incl.)</span>
             <div className="flex flex-wrap items-center gap-2">
               <input
                 className="w-28 rounded-xl border border-forest-200 px-3 py-2 text-sm text-forest-900"
@@ -798,7 +798,7 @@ export function AdminAccountTransfersHub(props: {
               paySt === 'paid'
                 ? 'bg-fairway-100 text-fairway-900'
                 : paySt === 'deposit'
-                  ? 'bg-amber-100 text-amber-950'
+                  ? 'bg-chrome-100 text-brand-950'
                   : 'bg-offwhite text-forest-600'
             }`}
           >
@@ -811,7 +811,7 @@ export function AdminAccountTransfersHub(props: {
             </span>
           ) : null}
           {paySt === 'paid' ? (
-            <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-emerald-950 ring-1 ring-emerald-400/35">
+            <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-forest-950 ring-1 ring-emerald-400/35">
               Card paid · Stripe
             </span>
           ) : null}
@@ -891,7 +891,7 @@ export function AdminAccountTransfersHub(props: {
             Paid in full
           </LuxuryButton>
           <LuxuryButton
-            className="!px-3 !py-2 !text-xs !font-semibold !border-2 !border-amber-700/35 !bg-amber-100 !text-amber-950 hover:!bg-amber-200/90 hover:!border-amber-800/40"
+            className="!px-3 !py-2 !text-xs !font-semibold !border-2 !border-chrome-700/35 !bg-chrome-100 !text-brand-950 hover:!bg-chrome-200/90 hover:!border-chrome-800/40"
             disabled={reqBusy || !clientMail}
             onClick={() => void sendPaymentRequestEmail(b.id)}
             title={!clientMail ? 'No client email on this transfer row' : 'Branded email with dashboard payment preview link'}
@@ -977,10 +977,10 @@ export function AdminAccountTransfersHub(props: {
   return (
     <section
       aria-label="Look up transfers by account number"
-      className="scroll-mt-28 overflow-hidden rounded-[2rem] border-2 border-gs-gold/35 bg-gradient-to-br from-white via-offwhite/95 to-fairway-50/40 p-6 shadow-[0_22px_56px_rgba(11,73,52,0.08)] ring-1 ring-forest-900/[0.06] sm:p-8"
+      className="scroll-mt-28 overflow-hidden rounded-[2rem] border-2 border-brand-700/35 bg-gradient-to-br from-white via-offwhite/95 to-fairway-50/40 p-6 shadow-[0_22px_56px_rgba(11,73,52,0.08)] ring-1 ring-forest-900/[0.06] sm:p-8"
       id="admin-hub-account-lookup"
     >
-      <p className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.22em] text-gold-600">Account lookup</p>
+      <p className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.22em] text-brand-600">Account lookup</p>
       <h2 className="font-display mt-2 text-xl font-bold tracking-tight text-forest-950 sm:text-2xl">Customer activity &amp; transfers</h2>
       <p className="mt-2 max-w-3xl text-sm text-forest-600">
         Paste an <strong className="font-medium text-forest-800">account number</strong> or{' '}
@@ -1016,7 +1016,7 @@ export function AdminAccountTransfersHub(props: {
       </label>
 
       {error ? (
-        <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50/90 px-4 py-3 text-sm text-amber-950" role="alert">
+        <p className="mt-4 rounded-xl border border-chrome-200 bg-chrome-50/90 px-4 py-3 text-sm text-brand-950" role="alert">
           {error}
         </p>
       ) : null}
@@ -1028,7 +1028,7 @@ export function AdminAccountTransfersHub(props: {
 
       {lookupSession ? (
         <div
-          className="mt-6 overflow-hidden rounded-[1.35rem] border-2 border-fairway-400/45 bg-gradient-to-br from-fairway-50/95 via-white to-amber-50/35 shadow-[0_14px_44px_rgba(11,73,52,0.08)] ring-1 ring-fairway-900/[0.07]"
+          className="mt-6 overflow-hidden rounded-[1.35rem] border-2 border-fairway-400/45 bg-gradient-to-br from-fairway-50/95 via-white to-brand-50/35 shadow-[0_14px_44px_rgba(11,73,52,0.08)] ring-1 ring-fairway-900/[0.07]"
           role="status"
         >
           <div className="border-b border-fairway-200/70 bg-white/55 px-4 py-3.5 sm:px-5">
@@ -1091,10 +1091,10 @@ export function AdminAccountTransfersHub(props: {
         <div className="mt-8">
           <div className="flex flex-wrap items-end justify-between gap-3 border-b border-forest-100 pb-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">Activity timeline</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Activity timeline</p>
               <p className="mt-1 max-w-prose text-xs leading-relaxed text-forest-600">
                 Newest first. Colour icons separate{' '}
-                <span className="font-medium text-amber-800">transfers</span>,{' '}
+                <span className="font-medium text-brand-800">transfers</span>,{' '}
                 <span className="font-medium text-sky-800">website enquiries</span>,{' '}
                 <span className="font-medium text-fairway-900">saved packages</span>, and{' '}
                 <span className="font-medium text-violet-900">portal requests</span>.
@@ -1111,7 +1111,7 @@ export function AdminAccountTransfersHub(props: {
             {activityTimeline.length > 1 ? (
               <div
                 aria-hidden
-                className="pointer-events-none absolute left-[21px] top-12 bottom-12 z-0 w-[3px] rounded-full bg-gradient-to-b from-amber-400/90 via-fairway-300/80 to-violet-400/90 opacity-75"
+                className="pointer-events-none absolute left-[21px] top-12 bottom-12 z-0 w-[3px] rounded-full bg-gradient-to-b from-brand-400/90 via-fairway-300/80 to-violet-400/90 opacity-75"
               />
             ) : null}
             <ul className="relative z-[1] space-y-8">
@@ -1135,14 +1135,14 @@ export function AdminAccountTransfersHub(props: {
                   return (
                     <li className="flex gap-3 sm:gap-4" key={key}>
                       <div className="relative flex shrink-0 flex-col items-center">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-full border-[3px] border-white bg-gradient-to-br from-amber-500 to-amber-700 shadow-lg shadow-amber-900/15 ring-2 ring-amber-400/40">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-full border-[3px] border-white bg-gradient-to-br from-brand-500 to-brand-700 shadow-lg shadow-amber-900/15 ring-2 ring-amber-400/40">
                           <Car className="h-5 w-5 text-white" aria-hidden />
                         </div>
                         <span className="mt-2 font-mono text-[0.6rem] font-bold tabular-nums text-forest-400">#{step}</span>
                       </div>
                       <div className="min-w-0 flex-1 pt-0.5">
                         <div className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1">
-                          <span className="rounded-lg bg-amber-100 px-2 py-0.5 font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-amber-950 ring-1 ring-amber-300/60">
+                          <span className="rounded-lg bg-chrome-100 px-2 py-0.5 font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-brand-950 ring-1 ring-amber-300/60">
                             Transfer job
                           </span>
                           <span className="text-[0.65rem] font-semibold tabular-nums text-forest-500">{when}</span>
@@ -1191,7 +1191,7 @@ export function AdminAccountTransfersHub(props: {
                   return (
                     <li className="flex gap-3 sm:gap-4" key={key}>
                       <div className="relative flex shrink-0 flex-col items-center">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-full border-[3px] border-white bg-gradient-to-br from-fairway-600 to-emerald-800 shadow-lg shadow-emerald-950/20 ring-2 ring-fairway-400/40">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-full border-[3px] border-white bg-gradient-to-br from-fairway-600 to-emerald-800 shadow-lg shadow-forest-950/20 ring-2 ring-fairway-400/40">
                           <Package className="h-5 w-5 text-white" aria-hidden />
                         </div>
                         <span className="mt-2 font-mono text-[0.6rem] font-bold tabular-nums text-forest-400">#{step}</span>

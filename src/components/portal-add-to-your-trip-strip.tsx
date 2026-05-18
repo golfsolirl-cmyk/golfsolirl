@@ -27,7 +27,7 @@ export function PortalAddToYourTripStrip(props: {
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-gold-300/15 blur-3xl"
+        className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-brand-300/15 blur-3xl"
       />
       <div
         aria-hidden
@@ -35,10 +35,10 @@ export function PortalAddToYourTripStrip(props: {
       />
       <div className="relative">
         <div className="flex flex-wrap items-center gap-2">
-          <Sparkles className="h-4 w-4 text-gold-500" aria-hidden />
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gold-600 sm:text-base">Add to your trip</p>
+          <Sparkles className="h-4 w-4 text-brand-500" aria-hidden />
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-600 sm:text-base">Add to your trip</p>
         </div>
-        <div className="mt-2 h-px max-w-[7rem] rounded-full bg-gradient-to-r from-gold-400 via-gold-300/80 to-transparent" />
+        <div className="mt-2 h-px max-w-[7rem] rounded-full bg-gradient-to-r from-brand-400 via-brand-300/80 to-transparent" />
         <p className="mt-3 max-w-2xl text-base leading-relaxed text-forest-700 md:text-lg">
           {overlay ? (
             <>
@@ -56,10 +56,10 @@ export function PortalAddToYourTripStrip(props: {
             type="button"
             onClick={() => props.onSelect('transfers')}
             className={cx(
-              'group relative flex min-h-[5.75rem] flex-col items-start justify-between overflow-hidden rounded-2xl border border-emerald-700/25',
-              'bg-gradient-to-br from-emerald-900 via-fairway-700 to-emerald-950 p-4 text-left text-white shadow-lg',
-              'transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-400/40 hover:shadow-xl hover:shadow-emerald-950/25',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f4faf6]'
+              'group relative flex min-h-[5.75rem] flex-col items-start justify-between overflow-hidden rounded-2xl border border-fairway-700/25',
+              'bg-gradient-to-br from-emerald-900 via-fairway-700 to-forest-950 p-4 text-left text-white shadow-lg',
+              'transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-400/40 hover:shadow-xl hover:shadow-forest-950/25',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f4faf6]'
             )}
           >
             <span
@@ -76,7 +76,7 @@ export function PortalAddToYourTripStrip(props: {
                 <TransferGlyph className="h-5 w-5 text-white" strokeWidth={PORTAL_ADD_ON_ICON_STROKE} aria-hidden />
               </span>
               <ArrowRight
-                className="mt-1 h-4 w-4 shrink-0 text-white/50 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-gold-200"
+                className="mt-1 h-4 w-4 shrink-0 text-white/50 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-brand-200"
                 aria-hidden
               />
             </span>
@@ -93,13 +93,13 @@ export function PortalAddToYourTripStrip(props: {
             className={cx(
               'group relative flex min-h-[5.75rem] flex-col items-start justify-between overflow-hidden rounded-2xl border border-forest-800/30',
               'bg-gradient-to-br from-forest-950 via-forest-900 to-[#0c2810] p-4 text-left text-white shadow-lg',
-              'transition-all duration-300 hover:-translate-y-0.5 hover:border-gold-400/35 hover:shadow-xl hover:shadow-forest-950/40',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f4faf6]'
+              'transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-400/35 hover:shadow-xl hover:shadow-forest-950/40',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f4faf6]'
             )}
           >
             <span
               aria-hidden
-              className="pointer-events-none absolute inset-0 bg-[linear-gradient(110deg,transparent_0%,rgba(213,198,0,0.18)_42%,transparent_68%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+              className="pointer-events-none absolute inset-0 bg-[linear-gradient(110deg,transparent_0%,rgba(19, 96, 71,0.18)_42%,transparent_68%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
             />
             <span className="relative flex w-full items-start justify-between gap-2">
               <span
@@ -111,13 +111,13 @@ export function PortalAddToYourTripStrip(props: {
                 <GolfGlyph className="h-5 w-5 text-white" strokeWidth={PORTAL_ADD_ON_ICON_STROKE} aria-hidden />
               </span>
               <ArrowRight
-                className="mt-1 h-4 w-4 shrink-0 text-white/45 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-gold-300"
+                className="mt-1 h-4 w-4 shrink-0 text-white/45 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-brand-300"
                 aria-hidden
               />
             </span>
             <span className="relative mt-3 block w-full">
               <span className="font-display text-lg font-semibold tracking-tight">Golf courses</span>
-              <span className="mt-0.5 block text-sm font-medium uppercase tracking-[0.12em] text-gold-100/80">
+              <span className="mt-0.5 block text-sm font-medium uppercase tracking-[0.12em] text-brand-100/80">
                 Rounds &amp; tee times
               </span>
             </span>
@@ -126,10 +126,10 @@ export function PortalAddToYourTripStrip(props: {
             type="button"
             onClick={() => props.onSelect('hotels')}
             className={cx(
-              'group relative flex min-h-[5.75rem] flex-col items-start justify-between overflow-hidden rounded-2xl border border-amber-900/25',
+              'group relative flex min-h-[5.75rem] flex-col items-start justify-between overflow-hidden rounded-2xl border border-chrome-900/25',
               'bg-gradient-to-br from-[#1a2e22] via-forest-900 to-[#0f2414] p-4 text-left text-white shadow-lg',
-              'transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-200/30 hover:shadow-xl hover:shadow-black/20',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f4faf6]'
+              'transition-all duration-300 hover:-translate-y-0.5 hover:border-chrome-200/30 hover:shadow-xl hover:shadow-black/20',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f4faf6]'
             )}
           >
             <span
@@ -146,13 +146,13 @@ export function PortalAddToYourTripStrip(props: {
                 <HotelGlyph className="h-5 w-5 text-white" strokeWidth={PORTAL_ADD_ON_ICON_STROKE} aria-hidden />
               </span>
               <ArrowRight
-                className="mt-1 h-4 w-4 shrink-0 text-white/45 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-amber-100"
+                className="mt-1 h-4 w-4 shrink-0 text-white/45 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-brand-100"
                 aria-hidden
               />
             </span>
             <span className="relative mt-3 block w-full">
               <span className="font-display text-lg font-semibold tracking-tight">Accommodation</span>
-              <span className="mt-0.5 block text-sm font-medium uppercase tracking-[0.12em] text-amber-50/75">
+              <span className="mt-0.5 block text-sm font-medium uppercase tracking-[0.12em] text-brand-50/75">
                 Hotels &amp; villas
               </span>
             </span>

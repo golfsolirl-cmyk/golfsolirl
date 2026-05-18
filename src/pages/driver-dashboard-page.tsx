@@ -239,7 +239,7 @@ export function DriverDashboardPage() {
     }
     if (!driverId) {
       return (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50/90 p-6 text-sm text-amber-950">
+        <div className="rounded-2xl border border-chrome-200 bg-chrome-50/90 p-6 text-sm text-brand-950">
           {profile?.role === 'driver' ? (
             <p>
               Your account is not linked to a driver profile yet. Ask Golf Sol Ireland ops to connect your login to a row
@@ -340,7 +340,7 @@ export function DriverDashboardPage() {
         <GeButton href="/dashboard/admin" variant="outline-gs-green">
           Admin dashboard
         </GeButton>
-        <GeButton href="/driver/login" variant="gs-gold">
+        <GeButton href="/driver/login" variant="gs-green">
           Driver sign-in
         </GeButton>
         <button className="text-sm text-gs-green underline" type="button" onClick={() => void signOut()}>
@@ -353,7 +353,7 @@ export function DriverDashboardPage() {
   return (
     <DashboardLayout kicker="Driver" subtitle={deskSubtitle} title={heroTitle} variant="driver">
       {isAdminDriverPreview ? (
-        <p className="mb-4 rounded-2xl border border-amber-200/90 bg-amber-50/90 px-4 py-3 text-xs text-amber-950">
+        <p className="mb-4 rounded-2xl border border-chrome-200/90 bg-chrome-50/90 px-4 py-3 text-xs text-brand-950">
           Admin preview — event log uses <span className="font-mono">actor_kind = admin</span>. Assign Irish Driver in Operations
           to exercise the flow.
         </p>

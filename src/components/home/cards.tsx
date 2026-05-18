@@ -21,7 +21,7 @@ const fadeUpProps = {
 export function TrustStat({ value, label }: StatItem) {
   return (
     <div className="min-w-[88px]">
-      <p className="font-display text-[1.95rem] font-bold text-gold-300 md:text-[2.25rem]">{value}</p>
+      <p className="font-display text-[1.95rem] font-bold text-brand-300 md:text-[2.25rem]">{value}</p>
       <p className="mt-1 text-base leading-7 text-white">{label}</p>
     </div>
   )
@@ -36,8 +36,8 @@ export function PackageCard({ name, description, price, duration, highlight, inc
         'group relative overflow-hidden rounded-[2rem] border p-7 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl',
         isFeaturedPackage && 'md:col-span-2',
         isFeaturedPackage
-          ? 'border-gold-300 bg-gradient-to-br from-forest-950 via-forest-900 to-forest-800 text-white'
-          : 'border-forest-100 bg-gradient-to-br from-white via-white to-gold-50/60'
+          ? 'border-brand-300 bg-gradient-to-br from-forest-950 via-forest-900 to-forest-800 text-white'
+          : 'border-forest-100 bg-gradient-to-br from-white via-white to-brand-50/60'
       )}
       {...fadeUpProps}
     >
@@ -47,14 +47,14 @@ export function PackageCard({ name, description, price, duration, highlight, inc
           'absolute inset-x-0 top-0 h-24',
           isFeaturedPackage
             ? 'bg-[radial-gradient(circle_at_top,rgba(253,186,116,0.28),transparent_68%)]'
-            : 'bg-[radial-gradient(circle_at_top,rgba(213,198,0,0.12),transparent_68%)]'
+            : 'bg-[radial-gradient(circle_at_top,rgba(19, 96, 71,0.12),transparent_68%)]'
         )}
       />
       <div
         aria-hidden="true"
         className={cx(
           'absolute -right-10 top-14 h-28 w-28 rounded-full blur-3xl transition-transform duration-500 group-hover:scale-110',
-          isFeaturedPackage ? 'bg-gold-400/20' : 'bg-gold-400/10'
+          isFeaturedPackage ? 'bg-brand-400/20' : 'bg-brand-400/10'
         )}
       />
 
@@ -65,8 +65,8 @@ export function PackageCard({ name, description, price, duration, highlight, inc
               className={cx(
                 'inline-flex rounded-full border px-3 py-1.5 text-sm font-semibold uppercase tracking-[0.1em]',
                 isFeaturedPackage
-                  ? 'border-gold-300/40 bg-gold-400/15 text-gold-300'
-                  : 'border-gold-200 bg-gold-50 text-forest-950'
+                  ? 'border-brand-300/40 bg-brand-400/15 text-brand-300'
+                  : 'border-brand-200 bg-brand-50 text-forest-950'
               )}
             >
               {highlight}
@@ -127,7 +127,7 @@ export function PackageCard({ name, description, price, duration, highlight, inc
               )}
             >
               <CheckCircle2
-                className={cx('h-4 w-4 shrink-0', isFeaturedPackage ? 'text-gold-300' : 'text-gold-500')}
+                className={cx('h-4 w-4 shrink-0', isFeaturedPackage ? 'text-brand-300' : 'text-brand-500')}
                 aria-hidden="true"
               />
               <span>{item}</span>
@@ -144,8 +144,8 @@ export function PackageCard({ name, description, price, duration, highlight, inc
             className={cx(
               'inline-flex items-center justify-center gap-2 rounded-full px-4 py-3 text-base font-semibold transition-all duration-300 sm:min-w-[170px]',
               isFeaturedPackage
-                ? 'bg-white text-forest-900 hover:bg-gold-300 hover:text-forest-950'
-                : 'bg-forest-900 text-white hover:bg-gold-500'
+                ? 'bg-white text-forest-900 hover:bg-brand-300 hover:text-forest-950'
+                : 'bg-forest-900 text-white hover:bg-brand-500'
             )}
             href="/packages"
           >
@@ -171,7 +171,7 @@ export function CourseCard({ name, location, distance, badge, description, rate,
           src={image}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-forest-900/75 via-transparent to-transparent" />
-        <span className="absolute left-4 top-4 rounded-full bg-gold-400 px-3 py-1.5 text-sm font-semibold text-forest-950">
+        <span className="absolute left-4 top-4 rounded-full bg-brand-400 px-3 py-1.5 text-sm font-semibold text-forest-950">
           {badge}
         </span>
         <div className="absolute bottom-4 left-4 right-4">
@@ -190,7 +190,7 @@ export function CourseCard({ name, location, distance, badge, description, rate,
           {tags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full border border-gold-200 bg-gold-50 px-3 py-1.5 text-sm font-medium text-forest-900"
+              className="rounded-full border border-brand-200 bg-brand-50 px-3 py-1.5 text-sm font-medium text-forest-900"
             >
               {tag}
             </span>
@@ -198,7 +198,7 @@ export function CourseCard({ name, location, distance, badge, description, rate,
         </div>
         <div className="flex items-center justify-between border-t border-forest-100 pt-4">
           <p className="text-base font-semibold text-forest-900">{rate}</p>
-          <a className="text-base font-semibold text-forest-900 transition-colors hover:text-gold-600" href="/packages">
+          <a className="text-base font-semibold text-forest-900 transition-colors hover:text-brand-600" href="/packages">
             Request details
           </a>
         </div>
@@ -210,7 +210,7 @@ export function CourseCard({ name, location, distance, badge, description, rate,
 export function HotelCard({ name, tier, area, image, description, perks, price }: HotelItem) {
   const tierClassName =
     tier === 5
-      ? 'border-gold-200 bg-gold-50 text-gold-600'
+      ? 'border-brand-200 bg-brand-50 text-brand-600'
       : tier === 4
         ? 'border-white/15 bg-forest-800 text-white'
         : 'border-white/15 bg-fairway-700 text-white'
@@ -233,7 +233,7 @@ export function HotelCard({ name, tier, area, image, description, perks, price }
           </span>
           <div className="flex gap-0.5">
             {Array.from({ length: tier }).map((_, index) => (
-              <Star key={index} className="h-4 w-4 fill-gold-400 text-gold-400" aria-hidden="true" />
+              <Star key={index} className="h-4 w-4 fill-gold-400 text-brand-400" aria-hidden="true" />
             ))}
           </div>
         </div>
@@ -257,7 +257,7 @@ export function HotelCard({ name, tier, area, image, description, perks, price }
         </div>
         <div className="flex items-center justify-between border-t border-forest-100 pt-4">
           <p className="text-base font-semibold text-forest-900">{price}</p>
-          <a className="text-base font-semibold text-forest-900 transition-colors hover:text-gold-600" href={`/packages?stay=${tier}`}>
+          <a className="text-base font-semibold text-forest-900 transition-colors hover:text-brand-600" href={`/packages?stay=${tier}`}>
             Match with package
           </a>
         </div>
@@ -294,7 +294,7 @@ export function StepCard({ step, title, description, image }: PlanningStep) {
           src={image}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-forest-900/70 via-transparent to-transparent" />
-        <span className="absolute left-4 top-4 font-display text-3xl font-bold leading-none text-gold-400">{step}</span>
+        <span className="absolute left-4 top-4 font-display text-3xl font-bold leading-none text-brand-400">{step}</span>
       </div>
       <div className="p-6">
         <h3 className="mb-2 text-base font-semibold text-forest-900">{title}</h3>
@@ -312,7 +312,7 @@ export function TestimonialCard({ quote, name, meta }: TestimonialItem) {
     >
       <div className="mb-4 flex gap-1">
         {Array.from({ length: 5 }).map((_, index) => (
-          <Star key={index} className="h-4 w-4 fill-gold-400 text-gold-400" aria-hidden="true" />
+          <Star key={index} className="h-4 w-4 fill-gold-400 text-brand-400" aria-hidden="true" />
         ))}
       </div>
       <p className="mb-5 text-[1.02rem] leading-8 text-forest-900/80">"{quote}"</p>

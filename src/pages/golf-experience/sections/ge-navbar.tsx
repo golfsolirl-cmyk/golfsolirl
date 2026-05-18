@@ -42,7 +42,7 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
   // Always render the solid white sticky bar. The hero image is now its own
   // self-contained brand creative below the navbar.
   const isOverlay = false
-  const linkColor = 'text-gs-dark hover:text-gs-green'
+  const linkColor = 'text-gs-dark hover:text-gs-primary'
 
   return (
     <header
@@ -50,7 +50,7 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
         'fixed inset-x-0 top-0 z-40 overflow-visible transition-all duration-300',
         isOverlay
           ? 'bg-transparent'
-          : 'bg-white/95 shadow-[0_2px_12px_rgba(0,0,0,0.06)] backdrop-blur'
+          : 'bg-cream shadow-[0_2px_12px_rgba(8,46,35,0.08)]'
       )}
     >
       {isOverlay ? <GeTopBar /> : null}
@@ -70,7 +70,7 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
             glint
             lines="irish"
             borderClass="border-ge-gray200 text-gs-green"
-            hoverClass="hover:border-gs-gold/70 hover:text-gs-gold hover:shadow-[0_0_0_1px_rgba(213,198,0,0.2)]"
+            hoverClass="hover:border-brand-700/70 hover:text-brand-700 hover:shadow-[0_0_0_1px_rgba(19, 96, 71,0.2)]"
           />
         </div>
 
@@ -206,7 +206,7 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
               ) : null}
               {!portalSlot ? (
                 <div className="mt-4">
-                  <GeButton href="/contact" size="md" variant="gs-gold" className="w-full">
+                  <GeButton href="/contact" size="md" variant="gs-green" className="w-full">
                     Get a Quote
                   </GeButton>
                 </div>
@@ -264,7 +264,7 @@ function PortalNavActions({
           Client dashboard
         </GeButton>
       ) : null}
-      <GeButton className={btnGold} size="sm" variant="gs-gold" type="button" onClick={() => void onSignOut()}>
+      <GeButton className={btnGold} size="sm" variant="gs-green" type="button" onClick={() => void onSignOut()}>
         Sign out
       </GeButton>
     </div>

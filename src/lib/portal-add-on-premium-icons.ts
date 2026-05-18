@@ -18,7 +18,7 @@ export function portalAddOnPremiumIcon(category: PortalInterestCategory): Lucide
 export function portalAddOnPremiumTileClass(category: PortalInterestCategory): string {
   switch (category) {
     case 'transfers':
-      return 'bg-emerald-600 ring-1 ring-white/25 shadow-inner'
+      return 'bg-fairway-600 ring-1 ring-white/25 shadow-inner'
     case 'golf_courses':
       return 'bg-fairway-700 ring-1 ring-white/25 shadow-inner'
     case 'hotels':

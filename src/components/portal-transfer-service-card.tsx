@@ -71,7 +71,7 @@ export function PortalTransferServiceCard(props: { readonly transfer: PortalTran
 
       <p className="mt-2 font-ge text-xs text-forest-600">Live status from our operations desk.</p>
 
-      <div className="mt-5 overflow-hidden rounded-2xl border-2 border-gs-gold/35 bg-gradient-to-br from-[#0f3d24] via-[#143d28] to-[#0a2416] p-5 text-white shadow-[0_20px_50px_rgba(11,73,52,0.28)] ring-1 ring-white/10">
+      <div className="mt-5 overflow-hidden rounded-2xl border-2 border-brand-700/35 bg-gradient-to-br from-[#0f3d24] via-[#143d28] to-[#0a2416] p-5 text-white shadow-[0_20px_50px_rgba(11,73,52,0.28)] ring-1 ring-white/10">
         <p className="font-ge text-sm font-semibold leading-snug text-white">
           {t.pickupLabel} → {t.dropoffLabel}
         </p>
@@ -79,7 +79,7 @@ export function PortalTransferServiceCard(props: { readonly transfer: PortalTran
           {src} · {t.status.replace(/_/g, ' ')} · {when}
         </p>
         <div className="mt-4 space-y-3 border-t border-white/10 pt-4">
-          <span className="inline-flex rounded-full bg-white/12 px-3 py-1 font-ge text-[0.68rem] font-bold uppercase tracking-wide text-amber-100">
+          <span className="inline-flex rounded-full bg-white/12 px-3 py-1 font-ge text-[0.68rem] font-bold uppercase tracking-wide text-brand-100">
             {payLabel}
           </span>
           {gross !== null ? (
@@ -87,7 +87,7 @@ export function PortalTransferServiceCard(props: { readonly transfer: PortalTran
               <p className="font-ge text-[0.62rem] font-bold uppercase tracking-[0.18em] text-emerald-200/90">
                 Quoted total (VAT incl.)
               </p>
-              <p className="font-display text-2xl font-bold tracking-tight text-amber-100 md:text-3xl">{formatEur(gross)}</p>
+              <p className="font-display text-2xl font-bold tracking-tight text-brand-100 md:text-3xl">{formatEur(gross)}</p>
               {!fullUp && pay === 'deposit' && depEur !== null ? (
                 <p className="mt-1 font-ge text-[0.7rem] text-emerald-100/90">
                   Your card deposit recorded: <span className="font-semibold text-white">{formatEur(depEur)}</span> ({pct}% of
@@ -98,7 +98,7 @@ export function PortalTransferServiceCard(props: { readonly transfer: PortalTran
           ) : null}
         </div>
         {gross !== null ? (
-          <div className="mt-3 space-y-1 border-t border-white/10 pt-3 font-ge text-[0.72rem] leading-snug text-emerald-50/95">
+          <div className="mt-3 space-y-1 border-t border-white/10 pt-3 font-ge text-[0.72rem] leading-snug text-fairway-50/95">
             {fullUp ? (
               <p>Full payment in one step (ASAP / next available) — no deposit split.</p>
             ) : (

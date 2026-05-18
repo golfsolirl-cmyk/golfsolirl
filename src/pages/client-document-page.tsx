@@ -122,7 +122,7 @@ export function ClientDocumentPage() {
             will appear on your client dashboard after you sign in.
           </p>
           <a
-            className="mt-8 inline-flex text-base font-semibold text-gold-600 underline-offset-2 hover:text-gold-700 hover:underline"
+            className="mt-8 inline-flex text-base font-semibold text-brand-600 underline-offset-2 hover:text-brand-700 hover:underline"
             href="/dashboard"
           >
             Back to your dashboard
@@ -153,7 +153,7 @@ export function ClientDocumentPage() {
             <div className="flex flex-wrap items-center gap-3">
               <button
                 aria-label="Save as PDF"
-                className="inline-flex min-h-11 items-center gap-2 rounded-full bg-forest-900 px-5 py-3 text-base font-semibold text-white transition-colors hover:bg-forest-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 disabled:opacity-70"
+                className="inline-flex min-h-11 items-center gap-2 rounded-full bg-forest-900 px-5 py-3 text-base font-semibold text-white transition-colors hover:bg-forest-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 disabled:opacity-70"
                 disabled={pdfStatus === 'saving'}
                 onClick={handleSavePdf}
                 type="button"
@@ -166,7 +166,7 @@ export function ClientDocumentPage() {
                 {pdfStatus === 'saving' ? 'Preparing PDF…' : 'Save PDF'}
               </button>
               <a
-                className="text-base font-semibold text-gold-600 underline-offset-2 hover:text-gold-700 hover:underline"
+                className="text-base font-semibold text-brand-600 underline-offset-2 hover:text-brand-700 hover:underline"
                 href="/dashboard"
               >
                 Back to dashboard
@@ -321,7 +321,7 @@ const termsClauses = [
 function TermsBody({ kicker, title }: { readonly kicker: string; readonly title: string }) {
   return (
     <article className="rounded-[2rem] border border-forest-100 bg-white p-8 shadow-soft md:p-12">
-      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">{kicker}</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">{kicker}</p>
       <h1 className="font-display mt-3 text-3xl font-bold text-forest-950 md:text-4xl">{title}</h1>
       <p className="mt-4 text-sm leading-relaxed text-forest-600">
         Plain-language booking terms for Golf Sol Ireland groups. They explain deposits, balance payments, cancellations,
@@ -337,7 +337,7 @@ function TermsBody({ kicker, title }: { readonly kicker: string; readonly title:
             <ul className="space-y-2.5">
               {clause.points.map((point) => (
                 <li key={point} className="flex gap-3 text-sm leading-relaxed text-forest-700">
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold-500" aria-hidden="true" />
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500" aria-hidden="true" />
                   <span>{point}</span>
                 </li>
               ))}
@@ -346,7 +346,7 @@ function TermsBody({ kicker, title }: { readonly kicker: string; readonly title:
         ))}
       </div>
 
-      <section className="mt-10 rounded-2xl border border-gold-200/60 bg-gold-50/40 p-6">
+      <section className="mt-10 rounded-2xl border border-brand-200/60 bg-brand-50/40 p-6">
         <h2 className="font-display text-xl font-semibold text-forest-900">Important legal note</h2>
         <p className="mt-3 text-sm leading-relaxed text-forest-700">
           This document is a practical business draft for customer clarity. Before relying on it as your final enforceable
@@ -364,7 +364,7 @@ function WelcomeBody({ kicker, title }: { readonly kicker: string; readonly titl
   return (
     <article className="overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-soft">
       <div className="bg-gradient-to-br from-forest-950 via-forest-900 to-[#0f2a0c] px-8 py-10 text-white md:px-12 md:py-12">
-        <p className="text-sm font-semibold uppercase tracking-[0.22em] text-gold-300">{kicker}</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.22em] text-brand-300">{kicker}</p>
         <h1 className="font-display mt-4 max-w-xl text-[2.35rem] font-bold leading-[1.02] tracking-[-0.03em] md:text-[3rem]">{title}</h1>
         <p className="mt-5 max-w-lg text-base leading-8 text-white/78">
           You did not choose the nearest brochure — you chose a crew who lose sleep over tee sheets so you do not have to.
@@ -399,7 +399,7 @@ function WelcomeBody({ kicker, title }: { readonly kicker: string; readonly titl
             { t: 'Calm', d: 'One thread, one team — fewer spreadsheets, more fairways.' }
           ].map((item) => (
             <div key={item.t}>
-              <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-600">{item.t}</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-600">{item.t}</p>
               <p className="mt-2 text-base leading-7 text-forest-700">{item.d}</p>
             </div>
           ))}

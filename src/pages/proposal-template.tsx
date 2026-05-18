@@ -306,7 +306,7 @@ function ProposalTemplatePage() {
           <div className="flex flex-wrap gap-3">
             <button
               aria-label="Save proposal as PDF"
-              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-forest-900 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-forest-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#eef2eb] disabled:cursor-not-allowed disabled:opacity-70"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-forest-900 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-forest-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#eef2eb] disabled:cursor-not-allowed disabled:opacity-70"
               disabled={isSavingPdf}
               onClick={handleSavePdf}
               type="button"
@@ -317,7 +317,7 @@ function ProposalTemplatePage() {
 
             <button
               aria-label="Print proposal"
-              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-forest-200 bg-white px-5 py-3 text-sm font-semibold text-forest-900 transition-colors hover:bg-forest-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#eef2eb]"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-forest-200 bg-white px-5 py-3 text-sm font-semibold text-forest-900 transition-colors hover:bg-forest-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#eef2eb]"
               onClick={handlePrint}
               type="button"
             >
@@ -327,7 +327,7 @@ function ProposalTemplatePage() {
 
             <button
               aria-label="Share proposal"
-              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-forest-200 bg-white px-5 py-3 text-sm font-semibold text-forest-900 transition-colors hover:bg-forest-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#eef2eb] disabled:cursor-not-allowed disabled:opacity-70"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-forest-200 bg-white px-5 py-3 text-sm font-semibold text-forest-900 transition-colors hover:bg-forest-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#eef2eb] disabled:cursor-not-allowed disabled:opacity-70"
               disabled={isSharing}
               onClick={handleShare}
               type="button"
@@ -354,7 +354,7 @@ function ProposalTemplatePage() {
             className="mt-6 rounded-[1.75rem] border border-forest-200 bg-white p-5 shadow-sm md:p-6"
             data-html2canvas-ignore="true"
           >
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-600">Send to client</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-600">Send to client</p>
             <p className="mt-2 text-sm text-forest-600">
               Emails the PDF, saves a <strong className="font-semibold text-forest-800">sent</strong> proposal row linked to
               the client&apos;s account (they need an existing login). Uses the same PDF as{' '}
@@ -400,7 +400,7 @@ function ProposalTemplatePage() {
             <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
               <button
                 aria-label="Send proposal PDF to client email"
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#D5C600] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#c24f01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 disabled:cursor-not-allowed disabled:opacity-65"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#136047] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#c24f01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 disabled:cursor-not-allowed disabled:opacity-65"
                 disabled={sendStatus === 'sending'}
                 onClick={handleSendToClient}
                 type="button"
@@ -427,11 +427,11 @@ function ProposalTemplatePage() {
 
       <div ref={proposalCardRef} className="mx-auto max-w-[1100px] overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-[0_22px_70px_rgba(10,32,8,0.12)] print:shadow-none">
         <div className="relative overflow-hidden bg-forest-950 px-8 py-8 text-white md:px-10">
-          <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(80,163,45,0.18),transparent_24%),radial-gradient(circle_at_top_right,rgba(213,198,0,0.14),transparent_20%)]" />
+          <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(80,163,45,0.18),transparent_24%),radial-gradient(circle_at_top_right,rgba(19, 96, 71,0.14),transparent_20%)]" />
           <div className="relative z-10 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
             <div>
               <Logo tone="scrolled" />
-              <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.24em] text-gold-300">{documentTemplate.hero.kicker}</p>
+              <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-300">{documentTemplate.hero.kicker}</p>
               <h1 className="mt-3 max-w-2xl font-display text-4xl font-bold leading-tight text-white md:text-5xl">
                 {documentTemplate.hero.title}
               </h1>
@@ -463,7 +463,7 @@ function ProposalTemplatePage() {
           <section className="rounded-[1.8rem] border border-forest-100 bg-[linear-gradient(135deg,#f7f9f5,#ffffff)] p-6">
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-gold-500">{documentTemplate.summary.kicker}</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-500">{documentTemplate.summary.kicker}</p>
                 <h2 className="mt-2 font-display text-3xl font-bold text-forest-900">{documentTemplate.summary.title}</h2>
               </div>
               <p className="text-sm text-forest-900/54">{documentTemplate.summary.aside}</p>
@@ -493,11 +493,11 @@ function ProposalTemplatePage() {
 
           <section className="grid gap-6 md:grid-cols-[1.05fr_0.95fr]">
             <div className="rounded-[1.8rem] border border-forest-100 bg-white p-6">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-gold-500">{documentTemplate.lower.left.kicker}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-500">{documentTemplate.lower.left.kicker}</p>
               <div className="mt-5 space-y-4">
                 {documentTemplate.lower.left.items.map((item) => (
                   <div key={item} className="flex items-start gap-3 text-sm text-forest-900/72">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" aria-hidden="true" />
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brand-500" aria-hidden="true" />
                     <span>{item}</span>
                   </div>
                 ))}
@@ -511,7 +511,7 @@ function ProposalTemplatePage() {
             </div>
 
             <div className="rounded-[1.8rem] border border-forest-100 bg-forest-950 p-6 text-white">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-gold-300">{documentTemplate.lower.right.kicker}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-300">{documentTemplate.lower.right.kicker}</p>
               <div className="mt-5 space-y-4 text-sm leading-relaxed text-white/76">
                 {documentTemplate.lower.right.paragraphs.map((paragraph) => (
                   <p key={paragraph}>{paragraph}</p>
@@ -530,9 +530,9 @@ function ProposalTemplatePage() {
           </section>
 
           {documentTemplate.messageBlock ? (
-            <section className="rounded-[1.8rem] border border-dashed border-gold-300/70 bg-gold-50/40 p-6">
+            <section className="rounded-[1.8rem] border border-dashed border-brand-300/70 bg-brand-50/40 p-6">
               <div className="flex items-start gap-3">
-                <BedDouble className="mt-1 h-5 w-5 shrink-0 text-gold-500" aria-hidden="true" />
+                <BedDouble className="mt-1 h-5 w-5 shrink-0 text-brand-500" aria-hidden="true" />
                 <div>
                   <p className="text-sm font-semibold text-forest-900">{documentTemplate.messageBlock.title}</p>
                   <p className="mt-2 text-sm leading-relaxed text-forest-900/68">{documentTemplate.messageBlock.body}</p>
@@ -541,8 +541,8 @@ function ProposalTemplatePage() {
             </section>
           ) : null}
 
-          <section className="rounded-[1.8rem] border border-[#D5C600]/25 bg-[linear-gradient(135deg,rgba(213,198,0,0.08),rgba(255,255,255,0.94))] p-6">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#D5C600]">{documentTemplate.disclaimer.title}</p>
+          <section className="rounded-[1.8rem] border border-[#136047]/25 bg-[linear-gradient(135deg,rgba(19, 96, 71,0.08),rgba(255,255,255,0.94))] p-6">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#136047]">{documentTemplate.disclaimer.title}</p>
             <div className="mt-4 space-y-3 text-sm leading-relaxed text-forest-900/72">
               {documentTemplate.disclaimer.paragraphs.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
@@ -597,7 +597,7 @@ function InfoCard({
 function PriceTile({ label, value }: { readonly label: string; readonly value: string }) {
   return (
     <div className="rounded-[1.5rem] border border-forest-100 bg-white p-5">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gold-500">{label}</p>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-500">{label}</p>
       <p className="mt-3 font-display text-3xl font-bold text-forest-900">{value}</p>
     </div>
   )

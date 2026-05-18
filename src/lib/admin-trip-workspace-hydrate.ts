@@ -373,7 +373,7 @@ export const buildAdminTransferLegsPreviewHtml = (
 
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><title>Transfer legs</title>
 <style>
-  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;margin:24px;color:#14221a;background:#faf9f6;}
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;margin:24px;color:#14221a;background:#f4f7f5;}
   h1{font-size:1.25rem;margin:0 0 16px;}
   h2{font-size:0.75rem;text-transform:uppercase;letter-spacing:.12em;color:#6b7c72;margin:20px 0 8px;}
   table{width:100%;border-collapse:collapse;font-size:0.9rem;}

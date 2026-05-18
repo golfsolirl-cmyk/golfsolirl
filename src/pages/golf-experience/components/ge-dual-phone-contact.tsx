@@ -5,7 +5,7 @@ import { GeButton } from './ge-button'
 import { GeMobileGlintIconLink } from './ge-mobile-glint-icon'
 
 const topLinkClass =
-  'flex min-h-[36px] items-center gap-2 transition-colors hover:text-gs-gold'
+  'flex min-h-[36px] items-center gap-2 transition-colors hover:text-brand-700'
 
 /** Desktop top strip: both voice lines (parent row adds mail). */
 export function GeDualPhoneTopBarDesktop() {
@@ -55,7 +55,7 @@ export function GeDualPhoneTopBarMobileIcons() {
 }
 
 const navPhoneIconClass =
-  'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gs-gold focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:h-11 sm:w-11'
+  'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:h-11 sm:w-11'
 
 const glintPhoneIconClass = 'h-[1.35rem] w-[1.35rem] sm:h-6 sm:w-6 shrink-0 stroke-[2]'
 
@@ -125,7 +125,7 @@ export function GeDualPhoneFooterLines() {
   return (
     <>
       <li className="flex items-start gap-2">
-        <Phone className="mt-1 h-4 w-4 shrink-0 text-gs-gold/85" aria-hidden="true" />
+        <Phone className="mt-1 h-4 w-4 shrink-0 text-brand-700/85" aria-hidden="true" />
         <span className="min-w-0 font-ge text-[1.05rem] leading-7 text-white/95 sm:text-[0.98rem]">
           <span className="block text-[0.68rem] font-bold uppercase tracking-[0.12em] text-white/60">
             {contactInfo.phoneIrishLineLabel}
@@ -136,7 +136,7 @@ export function GeDualPhoneFooterLines() {
         </span>
       </li>
       <li className="flex items-start gap-2">
-        <Phone className="mt-1 h-4 w-4 shrink-0 text-gs-gold/85" aria-hidden="true" />
+        <Phone className="mt-1 h-4 w-4 shrink-0 text-brand-700/85" aria-hidden="true" />
         <span className="min-w-0 font-ge text-[1.05rem] leading-7 text-white/95 sm:text-[0.98rem]">
           <span className="block text-[0.68rem] font-bold uppercase tracking-[0.12em] text-white/60">
             {contactInfo.phoneSpanishLineLabel}
@@ -216,7 +216,7 @@ export function GeDualPhoneFinalCtaRow() {
 }
 
 const airportCardClass =
-  'group inline-flex min-h-[62px] w-full items-center justify-center gap-3 rounded-full border border-[#ddd0b0] bg-[#fffaf0] px-4 py-3 font-ge font-extrabold text-gs-dark shadow-[0_14px_28px_rgba(69,53,24,0.08)] transition-colors hover:border-gs-gold/[0.5] hover:text-gs-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gs-gold focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[64px] sm:px-5'
+  'group inline-flex min-h-[62px] w-full items-center justify-center gap-3 rounded-full border border-[#d9d9d9] bg-[#f4f7f5] px-4 py-3 font-ge font-extrabold text-gs-dark shadow-[0_14px_28px_rgba(6,32,22,0.08)] transition-colors hover:border-brand-700/[0.5] hover:text-gs-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[64px] sm:px-5'
 
 /** Home airport transfers: stacked Irish + Spanish call cards. */
 export function GeDualPhoneAirportTransferCalls() {

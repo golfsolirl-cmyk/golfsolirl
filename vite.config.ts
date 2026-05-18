@@ -296,6 +296,37 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
       }
     })
 
+    server.middlewares.use('/api/homepage-client-pdf', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const rawBody = await readRequestBody(request)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const { buildHomepageBrandedClientPdfBytes } = await import('./server/homepage-branded-client-pdf.mjs')
+        const pdfBytes = await buildHomepageBrandedClientPdfBytes(payload)
+        const ref =
+          typeof payload.enquiryRef === 'string' && payload.enquiryRef.trim()
+            ? payload.enquiryRef.trim().replace(/[^\w-]+/g, '-')
+            : 'trip-overview'
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/pdf')
+        response.setHeader('Content-Disposition', `attachment; filename="GolfSol-${ref}.pdf"`)
+        response.end(Buffer.from(pdfBytes))
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : 'Unable to generate homepage client PDF right now.'
+        response.statusCode = 500
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
     server.middlewares.use('/api/send-client-document', async (request, response) => {
       if (request.method !== 'POST') {
         response.statusCode = 405

@@ -390,7 +390,7 @@ export function TransportHeroEnquiryForm() {
         id="transport-enquiry"
         className="relative rounded-2xl border-2 border-gs-dark/10 bg-white shadow-[0_20px_50px_rgba(6,59,42,0.12)]"
       >
-        <div className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-gs-gold via-gs-gold-light to-gs-gold" aria-hidden />
+        <div className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-brand-800 via-brand-600 to-brand-700" aria-hidden />
 
         {status === 'success' ? (
           <div ref={confirmationRef} className="px-5 py-8 text-center sm:px-7 sm:py-9">
@@ -407,7 +407,7 @@ export function TransportHeroEnquiryForm() {
             <BookedDatesAvailabilityNotice bookedDays={bookedDays} className="px-5 pt-5 sm:px-6 sm:pt-6" watchDates={transportWatchDates} />
             <form onSubmit={handleSubmit} className="space-y-4 px-5 pb-6 pt-2 sm:px-6 sm:pb-7 sm:pt-3" noValidate>
             <header className="border-b border-ge-gray100 pb-4">
-              <p className="font-ge text-sm font-bold uppercase tracking-[0.18em] text-ge-orange sm:text-[0.85rem]">
+              <p className="font-ge text-sm font-bold uppercase tracking-[0.18em] text-brand-700 sm:text-[0.85rem]">
                 {transportEnquiryFormCopy.sheetEyebrow}
               </p>
               <h2 className="mt-3 font-ge text-[1.85rem] font-extrabold leading-tight tracking-[0.02em] text-gs-green sm:text-[2.2rem]">
@@ -634,7 +634,7 @@ export function TransportHeroEnquiryForm() {
 
             {status === 'error' && errorMessage ? (
               <div
-                className="rounded-lg border border-ge-orange/50 bg-orange-50 px-3 py-2 font-ge text-base text-gs-dark"
+                className="rounded-lg border border-brand-700/50 bg-orange-50 px-3 py-2 font-ge text-base text-gs-dark"
                 role="alert"
               >
                 <p>

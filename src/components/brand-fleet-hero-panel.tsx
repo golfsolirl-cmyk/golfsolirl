@@ -21,7 +21,7 @@ export function BrandFleetHeroPanel({
   return (
     <div
       className={cx(
-        'overflow-hidden rounded-[1.35rem] border border-[#E9D9B6]/90 bg-[#F7F0E2]/95 shadow-[0_18px_48px_rgba(6,59,42,0.12)] ring-1 ring-white/60 backdrop-blur-sm',
+        'overflow-hidden rounded-[1.35rem] border border-[#d9d9d9]/90 bg-[#eef2ef]/95 shadow-[0_18px_48px_rgba(6,59,42,0.12)] ring-1 ring-white/60 backdrop-blur-sm',
         isLogin && 'lg:max-w-none',
         isPdf && 'rounded-xl border-ge-gray200 bg-offwhite',
         className
@@ -30,15 +30,15 @@ export function BrandFleetHeroPanel({
       {showBadges ? (
         <div
           className={cx(
-            'flex flex-wrap items-center gap-2 border-b border-[#E9D9B6]/80 bg-[#FFFBF3] px-4 py-3 sm:px-5',
+            'flex flex-wrap items-center gap-2 border-b border-[#d9d9d9]/80 bg-[#FFFBF3] px-4 py-3 sm:px-5',
             isPdf && 'px-3 py-2.5'
           )}
         >
           <span className="inline-flex items-center gap-2 rounded-full border border-gs-green/25 bg-white/90 px-3 py-1 font-ge text-[0.62rem] font-bold uppercase tracking-[0.2em] text-gs-green shadow-sm">
-            <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-fairway-500" />
             Airport transfer desk
           </span>
-          <span className="inline-flex rounded-full border border-gs-gold/40 bg-gs-gold/15 px-3 py-1 font-ge text-[0.62rem] font-bold uppercase tracking-[0.18em] text-gs-dark">
+          <span className="inline-flex rounded-full border border-brand-700/40 bg-brand-700/15 px-3 py-1 font-ge text-[0.62rem] font-bold uppercase tracking-[0.18em] text-gs-dark">
             AGP arrivals · Costa del Sol
           </span>
         </div>
@@ -63,7 +63,7 @@ export function BrandFleetHeroPanel({
       </div>
       <p
         className={cx(
-          'border-t border-[#E9D9B6]/80 bg-[#FFF9EA] px-4 py-3 font-ge text-sm font-semibold leading-snug text-gs-dark sm:px-5 sm:text-[0.95rem]',
+          'border-t border-[#d9d9d9]/80 bg-[#FFF9EA] px-4 py-3 font-ge text-sm font-semibold leading-snug text-gs-dark sm:px-5 sm:text-[0.95rem]',
           isPdf && 'py-2.5 text-xs sm:text-sm'
         )}
       >

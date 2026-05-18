@@ -23,13 +23,13 @@ const backgrounds = {
   white: 'bg-white text-gs-dark',
   gray: 'bg-ge-gray50 text-gs-dark',
   soft: 'bg-gs-bg text-gs-dark',
-  cream: 'bg-[#f6f0e2] text-gs-dark',
+  cream: 'bg-cream text-gs-dark',
   sky: 'bg-sky-muted text-gs-dark',
   brand: 'bg-gs-green text-white',
   brandDark: 'bg-gs-dark text-white',
   // Legacy aliases kept so older sections still render, but "blue" now maps
   // to a lighter editorial surface rather than another green slab.
-  teal: 'bg-gs-green text-white',
+  teal: 'bg-gs-green text-white ge-on-dark',
   tealDark: 'bg-gs-dark text-white',
   blue: 'bg-sky-muted text-gs-dark',
   ink: 'bg-gs-dark text-white'

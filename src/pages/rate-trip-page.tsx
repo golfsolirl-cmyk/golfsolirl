@@ -92,7 +92,7 @@ export function RateTripPage() {
               />
             </label>
             {msg ? <p className="text-sm text-red-700">{msg}</p> : null}
-            <GeButton disabled={busy} type="submit" variant="gs-gold">
+            <GeButton disabled={busy} type="submit" variant="gs-green">
               {busy ? 'Sending…' : 'Submit review'}
             </GeButton>
           </form>

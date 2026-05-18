@@ -1,0 +1,44 @@
+---
+description: GolfSol premium mockup theme — design pack tokens, copy, and UI constraints (cream / forest / gold)
+globs:
+  - tailwind.config.js
+  - src/index.css
+  - src/pages/golf-experience/**/*.tsx
+  - src/components/dashboard-layout.tsx
+  - src/pages/client-dashboard-page.tsx
+  - src/pages/admin-dashboard-page.tsx
+  - src/pages/driver-dashboard-page.tsx
+alwaysApply: false
+---
+
+# GolfSol premium mockup theme (design pack)
+
+Canonical artefacts vendored from `golfsol-cursor-design-pack`:
+
+- [design/golfsol-premium-design.json](mdc:design/golfsol-premium-design.json) — colours, gradients, typography, radii, shadows, layout, component notes, implementation checklist.
+- [design/golfsol-premium-cursor-prompt.md](mdc:design/golfsol-premium-cursor-prompt.md) — full implementation narrative, suggested global utility names (`.gs-page`, `.gs-card`, …), page-by-page guidance.
+- [design/golfsol-premium-cursor-rules.txt](mdc:design/golfsol-premium-cursor-rules.txt) — original short rules from the pack’s `.cursorrules` (same intent as below).
+
+## Non-negotiables
+
+- Do **not** rebuild from scratch or remove routes, Supabase, auth, forms, admin/client logic, or PDF/email pipelines unless explicitly requested.
+- Theme work is **presentation-only** unless paired with an approved behaviour change.
+
+## Visual direction
+
+- Cream page backgrounds, deep forest green surfaces, gold/yellow CTAs, crest identity, rounded luxury cards, soft shadows, cinematic golf and Mercedes imagery.
+- Mobile-first: large hero type, generous tap targets, no cramped layouts.
+
+## Implementation
+
+- Prefer extending existing primitives (`ge-page`, `GeNavbar`, `GeHero`, `GeButton`, `lux-card`, `lux-field`, `tailwind.config.js`) over parallel one-off hex values.
+- When updating colours or gradients, align with `golfsol-premium-design.json` `colors` and `gradients` (resolve small drift vs older mockup JSON by treating this file as the in-repo premium reference).
+
+## Cohesion with other rules
+
+- Product and data model: [quote-first-client-admin-dashboards.mdc](mdc:.cursor/rules/quote-first-client-admin-dashboards.mdc).
+- Dashboard UI refactors: [dashboard-portal-ui-modernization.mdc](mdc:.cursor/rules/dashboard-portal-ui-modernization.mdc) — do not contradict phone-first / three-service story; update **visual** prose there over time if it drifts from this pack.
+
+## Verification
+
+After substantive UI edits: `npx tsc --noEmit` and `npm run build`.

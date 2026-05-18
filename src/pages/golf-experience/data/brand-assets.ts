@@ -2,8 +2,8 @@ import { GOLFSOL_BRAND_LOGO, GOLFSOL_BRAND_LOGO_INTRINSIC } from '../../../lib/b
 
 export { GOLFSOL_BRAND_LOGO, GOLFSOL_BRAND_LOGO_INTRINSIC }
 
-/** Primary crest URL for prompts / single-URL uses (SVG; UI uses `BrandLogoPicture`). */
-export const golfsolCrestFooterPng = GOLFSOL_BRAND_LOGO.svg
+/** Primary crest URL for prompts / single-URL uses (UI prefers WebP via `BrandLogoPicture`). */
+export const golfsolCrestFooterPng = GOLFSOL_BRAND_LOGO.png
 
 /**
  * Append to image-generation prompts when the user asks for a branded premium shot.

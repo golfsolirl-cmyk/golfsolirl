@@ -21,12 +21,12 @@ export function AdminOperationsHubHero(props: { readonly adminFirstName: string 
   const name = props.adminFirstName.trim()
   return (
     <div
-      className="mb-10 overflow-hidden rounded-[2rem] border-2 border-gs-gold/40 bg-gradient-to-br from-white via-white to-[#f0faf4] shadow-[0_22px_56px_rgba(11,73,52,0.08)] ring-1 ring-forest-900/[0.06]"
+      className="mb-10 overflow-hidden rounded-[2rem] border-2 border-brand-700/40 bg-gradient-to-br from-white via-white to-[#f0faf4] shadow-[0_22px_56px_rgba(11,73,52,0.08)] ring-1 ring-forest-900/[0.06]"
       id="admin-hub-welcome"
     >
       <div className="grid gap-0 lg:grid-cols-[minmax(0,1.05fr)_minmax(260px,0.95fr)]">
         <div className="order-2 flex flex-col justify-center px-6 py-7 sm:px-8 sm:py-9 lg:order-1 lg:pr-4">
-          <p className="font-ge text-xs font-extrabold uppercase tracking-[0.2em] text-gold-600 sm:text-sm">Trip desk — today</p>
+          <p className="font-ge text-xs font-extrabold uppercase tracking-[0.2em] text-brand-600 sm:text-sm">Trip desk — today</p>
           <h2 className="font-display mt-2 text-3xl font-bold tracking-tight text-forest-950 sm:text-4xl">
             {name ? `Hello, ${name}` : 'Welcome to operations'}
           </h2>

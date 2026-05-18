@@ -279,7 +279,7 @@ export function CourseHotelMapPicker({ onSelectionChange, initialCourseId, initi
                   >
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-forest-900">{hotel.name}</p>
-                      <p className="mt-0.5 text-xs text-gold-700">
+                      <p className="mt-0.5 text-xs text-brand-700">
                         {'★'.repeat(hotel.stars)}
                         {'☆'.repeat(5 - hotel.stars)}
                       </p>
@@ -309,14 +309,14 @@ export function CourseHotelMapPicker({ onSelectionChange, initialCourseId, initi
       )}
 
       {selectedCourse && selectedHotel && activeCourse ? (
-        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-lg border border-gold-200/60 bg-offwhite px-3 py-2.5 text-sm text-forest-900">
+        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-lg border border-brand-200/60 bg-offwhite px-3 py-2.5 text-sm text-forest-900">
           <span>
             <strong>{activeCourse.name}</strong> + <strong>{selectedHotel.name}</strong> {`${'★'.repeat(selectedHotel.stars)}`}
           </span>
-          <span className="text-xs font-medium text-gold-600">{selectedHotel.dist} from course</span>
+          <span className="text-xs font-medium text-brand-600">{selectedHotel.dist} from course</span>
           <button
             type="button"
-            className="ml-auto text-xs font-semibold text-gold-700 underline decoration-gold-500/50 hover:text-gold-800"
+            className="ml-auto text-xs font-semibold text-brand-700 underline decoration-gold-500/50 hover:text-brand-800"
             onClick={() => setSelectedHotel(null)}
           >
             Change hotel

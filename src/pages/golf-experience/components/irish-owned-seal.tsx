@@ -45,11 +45,19 @@ export function IrishOwnedSeal({ className, size = 180 }: IrishOwnedSealProps) {
             which means text characters stand upright above the curve. */}
         <path id="seal-arc-bottom" d="M 28 100 a 72 72 0 0 0 144 0" fill="none" />
 
-        {/* Gold gradient — soft top-down */}
+        {/* Gold gradient — soft top-down (used for rings + dividers) */}
         <linearGradient id="seal-gold" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#EBE486" />
-          <stop offset="55%" stopColor="#D5C600" />
-          <stop offset="100%" stopColor="#738421" />
+          <stop offset="0%" stopColor="#f4dfa6" />
+          <stop offset="55%" stopColor="#d9be7a" />
+          <stop offset="100%" stopColor="#b89a5a" />
+        </linearGradient>
+
+        {/* Bright cream gradient — used for the arched text so it stays
+            legible against the dark forest disc. */}
+        <linearGradient id="seal-text" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fff8e6" />
+          <stop offset="60%" stopColor="#f4dfa6" />
+          <stop offset="100%" stopColor="#e7d399" />
         </linearGradient>
 
         {/* Shamrock leaf gradient — bright top, deeper at base */}
@@ -60,7 +68,7 @@ export function IrishOwnedSeal({ className, size = 180 }: IrishOwnedSealProps) {
       </defs>
 
       {/* Outer disc */}
-      <circle cx="100" cy="100" r="96" fill="#063B2A" />
+      <circle cx="100" cy="100" r="96" fill="#08120d" />
 
       {/* Bold gold ring border */}
       <circle
@@ -85,7 +93,7 @@ export function IrishOwnedSeal({ className, size = 180 }: IrishOwnedSealProps) {
 
       {/* Top arched text */}
       <text
-        fill="url(#seal-gold)"
+        fill="url(#seal-text)"
         fontFamily="Oswald, 'Open Sans', sans-serif"
         fontWeight="700"
         fontSize="13"
@@ -98,7 +106,7 @@ export function IrishOwnedSeal({ className, size = 180 }: IrishOwnedSealProps) {
 
       {/* Bottom arched text */}
       <text
-        fill="url(#seal-gold)"
+        fill="url(#seal-text)"
         fontFamily="Oswald, 'Open Sans', sans-serif"
         fontWeight="700"
         fontSize="11.5"

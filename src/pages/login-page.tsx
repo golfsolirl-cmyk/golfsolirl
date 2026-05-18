@@ -1,31 +1,17 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { PageIdentityBar } from '../components/page-identity-bar'
-import { WaveDivider } from '../components/ui/wave-divider'
+import { Mail, Send, ShieldCheck } from 'lucide-react'
+import { PremiumHero, PremiumCard, PremiumPageShell } from '../components/premium'
 import { GeButton } from '../pages/golf-experience/components/ge-button'
-import { GeFooter } from '../pages/golf-experience/sections/ge-footer'
-import { GeNavbar } from '../pages/golf-experience/sections/ge-navbar'
-import { BrandFleetHeroPanel } from '../components/brand-fleet-hero-panel'
 import { GeBrandLockup } from '../pages/golf-experience/components/brand-lockup'
 import { integrationRegistry } from '../config/integrations'
 import { AUTH_NEXT_STORAGE_KEY, AUTH_PORTAL_CTX_LABEL_KEY, isSafeInternalPath } from '../lib/internal-redirect'
 import { useAuth } from '../providers/auth-provider'
 
-const LoginHeroBackdrop = () => (
-  <>
-    <div
-      aria-hidden="true"
-      className="pointer-events-none absolute -left-32 top-28 h-80 w-80 rounded-full bg-gs-green/25 blur-3xl"
-    />
-    <div
-      aria-hidden="true"
-      className="pointer-events-none absolute -right-24 top-36 h-72 w-72 rounded-full bg-gs-gold/20 blur-3xl"
-    />
-    <div
-      aria-hidden="true"
-      className="pointer-events-none absolute bottom-32 left-1/3 h-48 w-48 rounded-full bg-ge-orange/20 blur-3xl"
-    />
-  </>
-)
+/**
+ * Login page — premium re-skin using the shared Premium Kit. ALL auth /
+ * magic-link / redirect / Supabase logic is preserved character-for-character;
+ * only the visual shell is replaced with the homepage design language.
+ */
 
 const normalizeLoginPath = () => (window.location.pathname.replace(/\/+$/, '') || '/') as string
 
@@ -230,48 +216,44 @@ export function LoginPage() {
     setSent(true)
   }
 
+  // Page-specific copy driven by which login route we're on.
+  const heroKicker = isAdminLoginPath ? 'Operations' : isDriverLoginPage ? 'Driver desk' : 'Account access'
+  const heroHeadlinePrimary = isAdminLoginPath ? 'Admin' : isDriverLoginPage ? 'Driver' : 'Welcome'
+  const heroHeadlineAccent = isAdminLoginPath
+    ? 'sign-in.'
+    : isDriverLoginPage
+      ? 'sign-in.'
+      : 'back to your trip.'
+  const heroLead = isAdminLoginPath
+    ? 'Operator dashboard · Magic link · Server-gated'
+    : isDriverLoginPage
+      ? 'Live jobs · Same magic link · Driver desk'
+      : 'Saved trips · Quotes · Account access'
+  const heroBody = isAdminLoginPath
+    ? 'Magic link to the operator dashboard. Your profile must have the admin role in Supabase — the operator code only gates this page when your team sets it on the server.'
+    : isDriverLoginPage
+      ? 'Same secure magic link as the client portal and admin — after sign-in, admins use the Irish Driver preview desk; linked drivers see live jobs.'
+      : "We'll email you a secure magic link — the same GolfSol Ireland experience as the rest of the site. No password to remember."
+
+  // —— Supabase-not-configured fallback ——
   if (!integrationRegistry.supabase.enabled || !isSupabaseConfigured) {
     return (
-      <div className="ge-page flex min-h-screen flex-col overflow-x-hidden bg-white font-ge text-gs-dark">
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-gs-gold focus:px-4 focus:py-2 focus:font-ge focus:text-sm focus:font-bold focus:uppercase focus:tracking-[0.14em] focus:text-gs-dark"
-        >
-          Skip to content
-        </a>
-        <GeNavbar />
-        <section className="relative overflow-hidden bg-gs-dark pb-0" id="main">
-          <div aria-hidden="true" className="h-[134px] w-full bg-white sm:h-[148px] md:h-[164px] lg:h-[130px] xl:h-[142px]" />
-          <LoginHeroBackdrop />
-          <div className="relative z-10 mx-auto max-w-[1180px] px-5 pb-16 pt-6 sm:px-8 md:pb-20 md:pt-8">
-            <div className="grid gap-10 lg:grid-cols-[1fr_minmax(260px,440px)] lg:items-start lg:gap-12">
-              <div className="min-w-0">
-                <p className="font-ge text-xs font-bold uppercase tracking-[0.22em] text-gs-gold">Account access</p>
-                <h1 className="mt-5 max-w-3xl font-ge text-[2.1rem] font-extrabold leading-[1.08] tracking-[-0.02em] text-white md:text-[2.65rem]">
-                  Sign in
-                </h1>
-                <p className="mt-4 max-w-xl font-ge text-base leading-8 text-white/86 md:text-[1.05rem]">
-                  Connect Supabase to enable secure magic-link sign-in.
-                </p>
-              </div>
-              <BrandFleetHeroPanel className="hidden shadow-[0_24px_60px_rgba(0,0,0,0.35)] ring-white/25 lg:block" variant="login" />
-            </div>
-            <BrandFleetHeroPanel className="mt-8 shadow-[0_20px_50px_rgba(0,0,0,0.28)] ring-white/20 lg:hidden" variant="login" />
-          </div>
-          <div className="relative z-[2] -mb-px">
-            <WaveDivider fill="#ffffff" />
-          </div>
-        </section>
-        <PageIdentityBar
-          compact
-          description="Secure magic-link sign-in for saved trips, proposals, and account access."
-          label="Sign in"
-          offsetHeader
-          tone="ge"
+      <PremiumPageShell
+        identityLabel="Sign in"
+        identityDescription="Secure magic-link sign-in for saved trips, proposals, and account access."
+      >
+        <PremiumHero
+          variant="login"
+          kicker="Account access"
+          kickerIcon={ShieldCheck}
+          headlinePrimary="Sign"
+          headlineAccent="in."
+          lead="Magic link · Secure · No password"
+          body="Connect Supabase to enable secure magic-link sign-in."
         />
-        <main className="relative z-[1] mx-auto w-full max-w-lg flex-1 px-5 pb-20 pt-6 sm:px-8 md:pb-28 md:pt-8">
-          <div className="rounded-2xl border border-ge-gray100 bg-white p-8 shadow-[0_20px_50px_rgba(15,42,12,0.06)] md:p-10">
-            <p className="font-ge text-sm leading-relaxed text-ge-gray600 sm:text-[0.95rem]">
+        <main className="relative z-[1] mx-auto w-full max-w-2xl flex-1 px-5 pb-20 pt-12 sm:px-8 md:pb-28">
+          <PremiumCard tone="light">
+            <p className="font-ge text-[1.04rem] leading-[1.72] text-ge-gray500">
               Add{' '}
               <code className="rounded-md border border-ge-gray200 bg-ge-gray50 px-1.5 py-0.5 font-mono text-xs text-gs-dark">
                 VITE_SUPABASE_URL
@@ -282,200 +264,176 @@ export function LoginPage() {
               </code>{' '}
               to your environment, then restart the dev server.
             </p>
-            <GeButton className="mt-8 w-full sm:w-auto" href="/" size="md" variant="gs-green">
-              Back to home
-            </GeButton>
-          </div>
+            <div className="mt-8 border-t border-gs-green/15 pt-6">
+              <GeButton className="w-full sm:w-auto" href="/" size="md" variant="gs-green">
+                Back to home
+              </GeButton>
+            </div>
+          </PremiumCard>
         </main>
-        <GeFooter />
-      </div>
+      </PremiumPageShell>
     )
   }
 
+  // —— Loading state ——
   if (isLoading) {
     return (
-      <div className="ge-page flex min-h-screen flex-col overflow-x-hidden bg-white font-ge text-gs-dark">
-        <GeNavbar />
-        <PageIdentityBar
-          compact
-          description="Secure magic-link sign-in for saved trips, proposals, and account access."
-          label="Sign in"
-          offsetHeader
-          tone="ge"
-        />
-        <div className="flex flex-1 flex-col items-center justify-center px-6 pb-24 pt-6">
+      <PremiumPageShell
+        identityLabel="Sign in"
+        identityDescription="Secure magic-link sign-in for saved trips, proposals, and account access."
+      >
+        <div className="flex flex-1 flex-col items-center justify-center px-6 pb-24 pt-24 sm:pt-28">
           <div className="mb-8 scale-[0.92] opacity-95">
             <GeBrandLockup tone="on-light" mode="footer" />
           </div>
           <p className="font-ge text-sm font-bold uppercase tracking-[0.16em] text-ge-gray500">Loading…</p>
         </div>
-        <GeFooter />
-      </div>
+      </PremiumPageShell>
     )
   }
 
+  // —— Main signed-out / sign-in screen ——
   return (
-    <div className="ge-page flex min-h-screen flex-col overflow-x-hidden bg-white font-ge text-gs-dark">
-      <a
-        href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-gs-gold focus:px-4 focus:py-2 focus:font-ge focus:text-sm focus:font-bold focus:uppercase focus:tracking-[0.14em] focus:text-gs-dark"
-      >
-        Skip to content
-      </a>
-      <GeNavbar />
+    <PremiumPageShell
+      identityLabel="Sign in"
+      identityDescription="Secure magic-link sign-in for saved trips, proposals, and account access."
+    >
+      <PremiumHero
+        variant="login"
+        kicker={heroKicker}
+        kickerIcon={ShieldCheck}
+        headlinePrimary={heroHeadlinePrimary}
+        headlineAccent={heroHeadlineAccent}
+        lead={heroLead}
+        body={
+          <>
+            {heroBody}
+            {safeReturnPath ? (
+              <span className="mt-4 block max-w-xl rounded-2xl border border-white/18 bg-white/10 px-4 py-3 font-ge text-base leading-7 text-white/92">
+                After you sign in, we&apos;ll bring you back to your package so you can save it to your account.
+              </span>
+            ) : null}
+          </>
+        }
+        aside="Magic link · No password · Inbox-fast"
+      />
 
-      <section className="relative overflow-hidden bg-gs-dark pb-0" id="main">
-        <div aria-hidden="true" className="h-[134px] w-full bg-white sm:h-[148px] md:h-[164px] lg:h-[130px] xl:h-[142px]" />
-        <LoginHeroBackdrop />
-        <div className="relative z-10 mx-auto max-w-[1180px] px-5 pb-16 pt-6 sm:px-8 md:pb-20 md:pt-8">
-          <div className="grid gap-10 lg:grid-cols-[1fr_minmax(260px,440px)] lg:items-start lg:gap-12">
-            <div className="min-w-0">
-              <p className="font-ge text-xs font-bold uppercase tracking-[0.22em] text-gs-gold">
-                {isAdminLoginPath ? 'Operations' : isDriverLoginPage ? 'Driver desk' : 'Account access'}
+      <main className="relative z-[1] mx-auto w-full max-w-2xl flex-1 px-5 pb-20 pt-12 sm:px-8 md:pb-28">
+        <PremiumCard tone="light">
+          {/* Top brand stripe carried over from the original card */}
+          <div
+            aria-hidden="true"
+            className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-brand-800 via-gs-green to-gs-electric"
+          />
+
+          {portalCtxBanner ? (
+            <div className="mb-6 rounded-2xl border border-gs-green/40 bg-ge-gray50 px-4 py-3 font-ge text-sm leading-relaxed text-gs-dark">
+              {portalCtxBanner}
+            </div>
+          ) : null}
+
+          {queryError ? (
+            <div className="mb-6 space-y-2 rounded-2xl border border-brand-700/50 bg-[#fff9e8] px-4 py-3 font-ge text-base text-gs-dark">
+              <p className="font-bold text-gs-dark">
+                {queryError === 'no_session'
+                  ? 'We could not complete sign-in from that link. Request a new magic link below.'
+                  : queryError === 'auth'
+                    ? 'Supabase returned an error for this sign-in attempt.'
+                    : 'Something went wrong. Try again.'}
               </p>
-              <h1 className="mt-5 max-w-3xl font-ge text-[2.1rem] font-extrabold leading-[1.08] tracking-[-0.02em] text-white md:text-[2.85rem]">
-                {isAdminLoginPath ? 'Admin sign-in' : isDriverLoginPage ? 'Driver sign-in' : 'Sign in'}
-              </h1>
-              <p className="mt-4 max-w-xl font-ge text-base leading-8 text-white/88 md:text-[1.08rem]">
-                {isAdminLoginPath
-                  ? 'Magic link to the operator dashboard. Your profile must have the admin role in Supabase — the operator code only gates this page when your team sets it on the server.'
-                  : isDriverLoginPage
-                    ? 'Same secure magic link as the client portal and admin — after sign-in, admins use the Irish Driver preview desk; linked drivers see live jobs.'
-                    : "We'll email you a secure magic link — the same GolfSol Ireland experience as the rest of the site. No password to remember."}
-              </p>
-              {safeReturnPath ? (
-                <p className="mt-4 max-w-xl rounded-2xl border border-white/18 bg-white/10 px-4 py-3 font-ge text-base leading-7 text-white/92">
-                  After you sign in, we&apos;ll bring you back to your package so you can save it to your account.
+              {queryHint ? <p className="text-sm text-ge-gray600">{decodeURIComponent(queryHint)}</p> : null}
+              {queryError === 'no_session' ? (
+                <p className="text-sm text-ge-gray600">
+                  Check Supabase → Authentication → URL configuration: add{' '}
+                  <code className="rounded bg-white px-1 py-0.5 font-mono text-xs text-gs-dark ring-1 ring-ge-gray200">
+                    {`${window.location.origin}/auth/callback`}
+                  </code>{' '}
+                  under Redirect URLs, then try again.
                 </p>
               ) : null}
             </div>
-            <BrandFleetHeroPanel className="hidden shadow-[0_24px_60px_rgba(0,0,0,0.35)] ring-white/25 lg:block" variant="login" />
-          </div>
-          <BrandFleetHeroPanel className="mt-8 shadow-[0_20px_50px_rgba(0,0,0,0.28)] ring-white/20 lg:hidden" variant="login" />
-        </div>
-        <div className="relative z-[2] -mb-px">
-          <WaveDivider fill="#ffffff" />
-        </div>
-      </section>
+          ) : null}
 
-      <PageIdentityBar
-        compact
-        description="Secure magic-link sign-in for saved trips, proposals, and account access."
-        label="Sign in"
-        offsetHeader
-        tone="ge"
-      />
-
-      <main className="relative z-[1] mx-auto w-full max-w-lg flex-1 px-5 pb-20 pt-4 sm:px-8 md:pb-28 md:pt-6">
-        <div className="relative overflow-hidden rounded-2xl border border-ge-gray100 bg-white shadow-[0_20px_50px_rgba(15,42,12,0.06)]">
-          <div
-            aria-hidden="true"
-            className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-gs-gold via-gs-green to-gs-electric"
-          />
-
-          <div className="px-6 py-9 md:px-10 md:py-11">
-            {portalCtxBanner ? (
-              <div className="mb-6 rounded-2xl border border-gs-green/40 bg-ge-gray50 px-4 py-3 font-ge text-sm leading-relaxed text-gs-dark">
-                {portalCtxBanner}
+          {sent ? (
+            <div
+              ref={sentConfirmationRef}
+              className="rounded-2xl border border-gs-green/30 bg-gs-green/[0.04] px-5 py-5 font-ge text-base leading-8 text-gs-dark"
+            >
+              <p className="inline-flex items-center gap-2 font-extrabold uppercase tracking-[0.12em] text-gs-dark">
+                <Mail className="h-4 w-4 text-gs-green" aria-hidden /> Check your inbox
+              </p>
+              <p className="mt-2 text-ge-gray600">
+                Open the link from GolfSol Ireland to finish signing in. You can close this tab — the link opens in
+                your browser.
+              </p>
+            </div>
+          ) : (
+            <form className="space-y-6" noValidate onSubmit={handleSubmit}>
+              <div>
+                <label
+                  className="mb-2 block font-ge text-sm font-bold uppercase tracking-[0.14em] text-gs-dark"
+                  htmlFor="login-email"
+                >
+                  Email
+                </label>
+                <input
+                  autoComplete="email"
+                  className="w-full rounded-xl border-2 border-ge-gray200 bg-white px-4 py-3.5 font-ge text-base text-gs-dark placeholder:text-ge-gray400 outline-none transition-[border-color,box-shadow] focus:border-gs-green focus:ring-2 focus:ring-gs-green/25"
+                  id="login-email"
+                  name="email"
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder="you@example.com"
+                  required
+                  type="email"
+                  value={email}
+                />
               </div>
-            ) : null}
-
-            {queryError ? (
-              <div className="mb-6 space-y-2 rounded-2xl border border-gs-gold/50 bg-[#fff9e8] px-4 py-3 font-ge text-base text-gs-dark">
-                <p className="font-bold text-gs-dark">
-                  {queryError === 'no_session'
-                    ? 'We could not complete sign-in from that link. Request a new magic link below.'
-                    : queryError === 'auth'
-                      ? 'Supabase returned an error for this sign-in attempt.'
-                      : 'Something went wrong. Try again.'}
-                </p>
-                {queryHint ? <p className="text-sm text-ge-gray600">{decodeURIComponent(queryHint)}</p> : null}
-                {queryError === 'no_session' ? (
-                  <p className="text-sm text-ge-gray600">
-                    Check Supabase → Authentication → URL configuration: add{' '}
-                    <code className="rounded bg-white px-1 py-0.5 font-mono text-xs text-gs-dark ring-1 ring-ge-gray200">
-                      {`${window.location.origin}/auth/callback`}
-                    </code>{' '}
-                    under Redirect URLs, then try again.
-                  </p>
-                ) : null}
-              </div>
-            ) : null}
-
-            {sent ? (
-              <div
-                ref={sentConfirmationRef}
-                className="rounded-2xl border border-ge-gray200 bg-ge-gray50 px-4 py-4 font-ge text-base leading-8 text-gs-dark"
-              >
-                <p className="font-bold text-gs-dark">Check your inbox</p>
-                <p className="mt-2 text-ge-gray600">
-                  Open the link from GolfSol Ireland to finish signing in. You can close this tab — the link opens in
-                  your browser.
-                </p>
-              </div>
-            ) : (
-              <form className="space-y-6" noValidate onSubmit={handleSubmit}>
+              {isAdminLoginPath ? (
                 <div>
                   <label
                     className="mb-2 block font-ge text-sm font-bold uppercase tracking-[0.14em] text-gs-dark"
-                    htmlFor="login-email"
+                    htmlFor="login-operator-code"
                   >
-                    Email
+                    Operator code
                   </label>
                   <input
-                    autoComplete="email"
+                    autoComplete="off"
                     className="w-full rounded-xl border-2 border-ge-gray200 bg-white px-4 py-3.5 font-ge text-base text-gs-dark placeholder:text-ge-gray400 outline-none transition-[border-color,box-shadow] focus:border-gs-green focus:ring-2 focus:ring-gs-green/25"
-                    id="login-email"
-                    name="email"
-                    onChange={(event) => setEmail(event.target.value)}
-                    placeholder="you@example.com"
-                    required
-                    type="email"
-                    value={email}
+                    id="login-operator-code"
+                    name="operatorCode"
+                    onChange={(event) => setOperatorCode(event.target.value)}
+                    placeholder="Required if ADMIN_OPERATOR_PASSCODE is set on the server"
+                    type="password"
+                    value={operatorCode}
                   />
+                  <p className="mt-2 font-ge text-xs leading-relaxed text-ge-gray600">
+                    Set <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.65rem]">ADMIN_OPERATOR_PASSCODE</code> in
+                    Vercel env to require this before a magic link is sent from this page. Same email as the client portal is fine;
+                    access still depends on <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.65rem]">profiles.role</code>.
+                  </p>
                 </div>
-                {isAdminLoginPath ? (
-                  <div>
-                    <label
-                      className="mb-2 block font-ge text-sm font-bold uppercase tracking-[0.14em] text-gs-dark"
-                      htmlFor="login-operator-code"
-                    >
-                      Operator code
-                    </label>
-                    <input
-                      autoComplete="off"
-                      className="w-full rounded-xl border-2 border-ge-gray200 bg-white px-4 py-3.5 font-ge text-base text-gs-dark placeholder:text-ge-gray400 outline-none transition-[border-color,box-shadow] focus:border-gs-green focus:ring-2 focus:ring-gs-green/25"
-                      id="login-operator-code"
-                      name="operatorCode"
-                      onChange={(event) => setOperatorCode(event.target.value)}
-                      placeholder="Required if ADMIN_OPERATOR_PASSCODE is set on the server"
-                      type="password"
-                      value={operatorCode}
-                    />
-                    <p className="mt-2 font-ge text-xs leading-relaxed text-ge-gray600">
-                      Set <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.65rem]">ADMIN_OPERATOR_PASSCODE</code> in
-                      Vercel env to require this before a magic link is sent from this page. Same email as the client portal is fine;
-                      access still depends on <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.65rem]">profiles.role</code>.
-                    </p>
-                  </div>
-                ) : null}
-                {formError ? <p className="font-ge text-base font-semibold text-ge-orange">{formError}</p> : null}
-                <GeButton className="w-full" disabled={isSending} size="md" type="submit" variant="gs-gold">
-                  {isSending ? 'Sending link…' : 'Email me a magic link'}
-                </GeButton>
-              </form>
-            )}
-
-            <div className="mt-8 flex flex-col items-center gap-3 border-t border-ge-gray100 pt-8 sm:flex-row sm:justify-center sm:gap-4">
-              <GeButton className="w-full sm:w-auto" href="/" size="md" variant="outline-gs-green">
-                ← Back to website
+              ) : null}
+              {formError ? <p className="font-ge text-base font-semibold text-brand-700">{formError}</p> : null}
+              <GeButton className="w-full" disabled={isSending} size="md" type="submit" variant="gs-green">
+                {isSending ? (
+                  'Sending link…'
+                ) : (
+                  <>
+                    Email me a magic link
+                    <Send className="ml-2 h-4 w-4" aria-hidden />
+                  </>
+                )}
               </GeButton>
-            </div>
-          </div>
-        </div>
-      </main>
+            </form>
+          )}
 
-      <GeFooter />
-    </div>
+          <div className="mt-8 flex flex-col items-center gap-3 border-t border-gs-green/15 pt-7 sm:flex-row sm:justify-center sm:gap-4">
+            <GeButton className="w-full sm:w-auto" href="/" size="md" variant="outline-gs-green">
+              ← Back to website
+            </GeButton>
+          </div>
+        </PremiumCard>
+      </main>
+    </PremiumPageShell>
   )
 }

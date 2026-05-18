@@ -1,0 +1,90 @@
+@import url('https://fonts.bunny.net/css?family=cormorant-garamond:400,500,600,700|manrope:500,600,700,800&display=swap');
+
+.cinematic-root {
+  --cin-fog-1: rgba(4, 20, 12, 0.45);
+  --cin-fog-2: rgba(11, 77, 59, 0.35);
+  --cin-gold-glow: rgba(19, 96, 71, 0.22);
+  --cin-vignette: rgba(4, 20, 12, 0.75);
+  --cin-grain-opacity: 0.07;
+  font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  color: var(--text-light, #f8f7f2);
+  background: var(--brand-950, #04140c);
+  -webkit-font-smoothing: antialiased;
+}
+
+.cinematic-root h1,
+.cinematic-root h2,
+.cinematic-root h3,
+.cinematic-root .cin-display {
+  font-family: 'Cormorant Garamond', ui-serif, Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-light, #f8f7f2);
+}
+
+@keyframes cin-fog-drift {
+  0% {
+    transform: translate3d(-2%, 0, 0) scale(1.02);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate3d(2%, -1%, 0) scale(1.04);
+    opacity: 0.72;
+  }
+  100% {
+    transform: translate3d(-1%, 1%, 0) scale(1.02);
+    opacity: 0.55;
+  }
+}
+
+@keyframes cin-fog-drift-slow {
+  0% {
+    transform: translate3d(1%, 0, 0);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translate3d(-3%, 2%, 0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate3d(0, -1%, 0);
+    opacity: 0.35;
+  }
+}
+
+.cin-fog-layer {
+  animation: cin-fog-drift 48s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.cin-fog-layer--slow {
+  animation: cin-fog-drift-slow 64s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cin-fog-layer,
+  .cin-fog-layer--slow {
+    animation: none;
+    opacity: 0.45;
+  }
+}
+
+.cin-grain {
+  position: absolute;
+  inset: 0;
+  opacity: var(--cin-grain-opacity);
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+.cin-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 35%, var(--cin-vignette) 100%);
+}
+
+.cin-logo-rim {
+  filter: drop-shadow(0 12px 32px rgba(4, 20, 12, 0.45));
+}

@@ -10,13 +10,13 @@ export function FooterCompanyContact() {
       <div className="relative overflow-hidden rounded-[1.75rem] border border-white/14 bg-[linear-gradient(152deg,rgba(255,255,255,0.09)_0%,rgba(255,255,255,0.02)_48%,rgba(80,163,45,0.06)_100%)] p-6 shadow-[0_28px_72px_rgba(0,0,0,0.28)] ring-1 ring-white/[0.06] md:p-8">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_90%_80%_at_0%_-20%,rgba(213,198,0,0.14),transparent_50%),radial-gradient(ellipse_70%_60%_at_100%_100%,rgba(80,163,45,0.11),transparent_45%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_90%_80%_at_0%_-20%,rgba(19, 96, 71,0.14),transparent_50%),radial-gradient(ellipse_70%_60%_at_100%_100%,rgba(80,163,45,0.11),transparent_45%)]"
         />
         <div className="relative z-10 grid gap-8 md:grid-cols-2 md:items-start md:gap-12 lg:gap-20">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-300/95">Dublin office</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-300/95">Dublin office</p>
             <div className="mt-4 flex gap-4">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white/[0.06] text-gold-300">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white/[0.06] text-brand-300">
                 <MapPin className="h-5 w-5" aria-hidden="true" />
               </div>
               <div className="min-w-0">
@@ -29,7 +29,7 @@ export function FooterCompanyContact() {
                   <span className="mt-1 block text-sm font-semibold tracking-[0.12em] text-white/58">{companyContact.eircode}</span>
                 </address>
                 <a
-                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
                   href={mapsHref}
                   rel="noreferrer"
                   target="_blank"
@@ -42,22 +42,22 @@ export function FooterCompanyContact() {
           </div>
 
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-300/95">Phone &amp; WhatsApp</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-300/95">Phone &amp; WhatsApp</p>
             <div className="mt-4 flex gap-4">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white/[0.06] text-gold-300">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white/[0.06] text-brand-300">
                 <Phone className="h-5 w-5" aria-hidden="true" />
               </div>
               <div className="min-w-0 space-y-3">
                 <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-white/50">{companyContact.phoneIrishLineLabel}</p>
                 <a
-                  className="block font-display text-[1.9rem] font-bold tracking-[-0.03em] text-white transition-colors hover:text-gold-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950 md:text-[2.1rem]"
+                  className="block font-display text-[1.9rem] font-bold tracking-[-0.03em] text-white transition-colors hover:text-brand-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950 md:text-[2.1rem]"
                   href={`tel:${companyContact.phoneTel}`}
                 >
                   {companyContact.phoneDisplay}
                 </a>
                 <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-white/50">{companyContact.phoneSpanishLineLabel}</p>
                 <a
-                  className="block font-display text-[1.65rem] font-bold tracking-[-0.03em] text-white transition-colors hover:text-gold-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950 md:text-[1.85rem]"
+                  className="block font-display text-[1.65rem] font-bold tracking-[-0.03em] text-white transition-colors hover:text-brand-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950 md:text-[1.85rem]"
                   href={`tel:${companyContact.spanishPhoneTel}`}
                 >
                   {companyContact.spanishPhoneDisplay}
@@ -67,7 +67,7 @@ export function FooterCompanyContact() {
                 </p>
                 <a
                   aria-label={`Message Golf Sol Ireland on WhatsApp at ${companyContact.phoneDisplay}`}
-                  className="group inline-flex min-h-11 items-center gap-2.5 rounded-full border border-white/25 bg-white/10 px-5 py-3 text-base font-semibold text-white transition-all hover:border-white/40 hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                  className="group inline-flex min-h-11 items-center gap-2.5 rounded-full border border-white/25 bg-white/10 px-5 py-3 text-base font-semibold text-white transition-all hover:border-white/40 hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
                   href={companyContact.whatsappHref}
                   rel="noreferrer"
                   target="_blank"

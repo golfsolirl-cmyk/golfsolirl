@@ -110,7 +110,7 @@ function addCanvasToPdfPage(pdf: jsPDF, canvas: HTMLCanvasElement, isFirstPage: 
 }
 
 /**
- * Single A4 PDF with one card slide (hidden print markup under `#business-cards-pdf-export-root`).
+ * Single card-sized PDF (55×85mm) — for direct-to-printer use.
  */
 export async function saveSingleBusinessCardPdf(slideEl: HTMLElement, filenameBase: string) {
   if (document.fonts?.ready) {
@@ -132,4 +132,116 @@ export async function saveSingleBusinessCardPdf(slideEl: HTMLElement, filenameBa
 
   const safeName = sanitizePdfFilenameBase(filenameBase)
   triggerPdfDownload(pdf.output('blob'), `${safeName}.pdf`)
+}
+
+/**
+ * Single card on an A4 page, scaled up to fill — for on-screen proofing.
+ */
+export async function saveSingleBusinessCardProofPdf(slideEl: HTMLElement, filenameBase: string) {
+  if (document.fonts?.ready) {
+    await document.fonts.ready
+  }
+
+  await waitForImages(slideEl)
+
+  const isLandscape = slideEl.getBoundingClientRect().width >= slideEl.getBoundingClientRect().height
+  const pdf = new jsPDF({
+    orientation: isLandscape ? 'landscape' : 'portrait',
+    unit: 'mm',
+    format: 'a4',
+    compress: true
+  })
+
+  const canvas = await captureSlideToCanvas(slideEl)
+
+  const pageW = pdf.internal.pageSize.getWidth()
+  const pageH = pdf.internal.pageSize.getHeight()
+  const margin = 15
+  const maxW = pageW - margin * 2
+  const maxH = pageH - margin * 2
+
+  let imgData: string
+  try {
+    imgData = canvas.toDataURL('image/png', 0.92)
+  } catch {
+    throw new Error('Could not read the rendered page. Try again after refreshing.')
+  }
+
+  const ratio = canvas.width / canvas.height
+  let wMm = maxW
+  let hMm = wMm / ratio
+  if (hMm > maxH) {
+    hMm = maxH
+    wMm = hMm * ratio
+  }
+  const x = (pageW - wMm) / 2
+  const y = (pageH - hMm) / 2
+
+  pdf.addImage(imgData, 'PNG', x, y, wMm, hMm, undefined, 'FAST')
+
+  const safeName = sanitizePdfFilenameBase(filenameBase)
+  triggerPdfDownload(pdf.output('blob'), `${safeName}-proof.pdf`)
+}
+
+/**
+ * All cards on A4 pages (one per page) — full proof book.
+ */
+export async function saveAllBusinessCardProofsPdf(
+  slides: { el: HTMLElement; title: string }[]
+) {
+  if (document.fonts?.ready) {
+    await document.fonts.ready
+  }
+
+  for (const s of slides) {
+    await waitForImages(s.el)
+  }
+
+  const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true })
+  const pageW = pdf.internal.pageSize.getWidth()
+  const pageH = pdf.internal.pageSize.getHeight()
+  const margin = 15
+
+  for (let i = 0; i < slides.length; i++) {
+    const slide = slides[i]
+    const canvas = await captureSlideToCanvas(slide.el)
+
+    let imgData: string
+    try {
+      imgData = canvas.toDataURL('image/png', 0.92)
+    } catch {
+      continue
+    }
+
+    const isLandscape = canvas.width > canvas.height
+    if (i > 0) {
+      pdf.addPage('a4', isLandscape ? 'landscape' : 'portrait')
+    } else if (isLandscape) {
+      pdf.deletePage(1)
+      pdf.addPage('a4', 'landscape')
+    }
+
+    const pw = pdf.internal.pageSize.getWidth()
+    const ph = pdf.internal.pageSize.getHeight()
+    const maxW = pw - margin * 2
+    const maxH = ph - margin * 2
+
+    const ratio = canvas.width / canvas.height
+    let wMm = maxW
+    let hMm = wMm / ratio
+    if (hMm > maxH) {
+      hMm = maxH
+      wMm = hMm * ratio
+    }
+    const x = (pw - wMm) / 2
+    const y = (ph - hMm) / 2
+
+    pdf.addImage(imgData, 'PNG', x, y, wMm, hMm, undefined, 'FAST')
+
+    pdf.setFontSize(8)
+    pdf.setTextColor(100)
+    pdf.text(slide.title, pw / 2, ph - 6, { align: 'center' })
+  }
+
+  triggerPdfDownload(pdf.output('blob'), 'Golf-Sol-Ireland-Business-Cards-Proof.pdf')
 }

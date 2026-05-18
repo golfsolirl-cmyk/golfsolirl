@@ -252,7 +252,7 @@ function PackageAdminPage() {
         />
         <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[0.95fr_1.05fr]">
           <div>
-            <p className="text-base font-semibold uppercase tracking-[0.18em] text-gold-200 drop-shadow-[0_4px_18px_rgba(8,27,8,0.35)] md:text-lg">
+            <p className="text-base font-semibold uppercase tracking-[0.18em] text-brand-200 drop-shadow-[0_4px_18px_rgba(8,27,8,0.35)] md:text-lg">
               Protected pricing studio
             </p>
             <h1 className="mt-4 max-w-2xl font-display text-5xl font-black leading-none tracking-tight text-white md:text-7xl">
@@ -269,7 +269,7 @@ function PackageAdminPage() {
             initial={{ opacity: 0, y: 30 }}
             transition={{ duration: 0.7, ease: 'easeOut' }}
           >
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gold-300">Admin login</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-300">Admin login</p>
             <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-white">Unlock the internal package page</h2>
             <p className="mt-3 text-base leading-7 text-white/72">
               {adminStudioConfigured
@@ -283,7 +283,7 @@ function PackageAdminPage() {
                   <span className="mb-2 block text-base font-medium text-white/80">Access code</span>
                   <input
                     autoComplete="current-password"
-                    className="w-full rounded-2xl border border-white/10 bg-white/8 px-4 py-3.5 text-lg text-white outline-none transition focus:border-gold-400 focus:ring-2 focus:ring-gold-300/30"
+                    className="w-full rounded-2xl border border-white/10 bg-white/8 px-4 py-3.5 text-lg text-white outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-300/30"
                     onChange={(event) => {
                       setAdminAccessCode(event.target.value)
                       if (loginError) {
@@ -300,7 +300,7 @@ function PackageAdminPage() {
 
                 <div className="flex flex-wrap gap-3">
                   <button
-                    className="inline-flex items-center justify-center rounded-full bg-gold-400 px-6 py-3.5 text-base font-semibold text-forest-950 transition-colors hover:bg-gold-300"
+                    className="inline-flex items-center justify-center rounded-full bg-brand-400 px-6 py-3.5 text-base font-semibold text-forest-950 transition-colors hover:bg-brand-300"
                     type="submit"
                   >
                     Unlock admin page
@@ -351,7 +351,7 @@ function PackageAdminPage() {
           <div aria-hidden="true" className="absolute inset-0 bg-hero-overlay" />
           <div aria-hidden="true" className="absolute inset-0 bg-hero-bottom" />
           <div aria-hidden="true" className="absolute left-[-120px] top-[8%] h-72 w-72 rounded-full bg-fairway-500/18 blur-3xl md:h-96 md:w-96" />
-          <div aria-hidden="true" className="absolute right-[-90px] top-[-30px] h-72 w-72 rounded-full bg-gold-400/18 blur-3xl md:h-80 md:w-80" />
+          <div aria-hidden="true" className="absolute right-[-90px] top-[-30px] h-72 w-72 rounded-full bg-brand-400/18 blur-3xl md:h-80 md:w-80" />
           <AmbientGolfBall className="right-[4%] top-[16%] opacity-90 lg:right-[7%]" size="lg" tone="hero" variant="hero" />
 
           <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
@@ -360,7 +360,7 @@ function PackageAdminPage() {
               initial={{ opacity: 0, y: 30 }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
             >
-              <p className="mb-4 text-[1.05rem] font-semibold uppercase tracking-[0.12em] text-gold-200 md:text-[1.16rem]">
+              <p className="mb-4 text-[1.05rem] font-semibold uppercase tracking-[0.12em] text-brand-200 md:text-[1.16rem]">
                 Costa del Sol package pricing for Irish golf groups
               </p>
               <h1 className="max-w-3xl font-display text-5xl font-black leading-[1.02] tracking-[-0.015em] text-white md:text-7xl lg:text-[5.2rem]">
@@ -408,11 +408,11 @@ function PackageAdminPage() {
                   className="group relative overflow-hidden rounded-[2rem] border border-forest-100 bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(247,244,237,0.94))] p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                   {...revealUp}
                 >
-                  <div aria-hidden="true" className="absolute inset-x-0 top-0 h-24 bg-[radial-gradient(circle_at_top,rgba(213,198,0,0.14),transparent_72%)]" />
+                  <div aria-hidden="true" className="absolute inset-x-0 top-0 h-24 bg-[radial-gradient(circle_at_top,rgba(19, 96, 71,0.14),transparent_72%)]" />
                   <div className="relative z-10 flex h-full flex-col">
                     <div className="mb-5 flex items-start justify-between gap-4">
                       <div>
-                        <span className="inline-flex rounded-full border border-gold-200 bg-gold-50 px-3 py-1.5 text-sm font-semibold uppercase tracking-[0.12em] text-forest-950">
+                        <span className="inline-flex rounded-full border border-brand-200 bg-brand-50 px-3 py-1.5 text-sm font-semibold uppercase tracking-[0.12em] text-forest-950">
                           {option.label}
                         </span>
                         <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-forest-900">{option.name}</h2>
@@ -424,7 +424,7 @@ function PackageAdminPage() {
                     </div>
 
                     <div className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-forest-100 bg-white/85 px-3 py-1.5 text-sm text-forest-900/64">
-                      <CalendarRange className="h-3.5 w-3.5 text-gold-500" aria-hidden="true" />
+                      <CalendarRange className="h-3.5 w-3.5 text-brand-500" aria-hidden="true" />
                       <span>{option.duration}</span>
                     </div>
 
@@ -433,7 +433,7 @@ function PackageAdminPage() {
                     <div className="mt-6 space-y-3 rounded-[1.5rem] border border-forest-100 bg-white/72 p-4">
                       {option.includes.map((item) => (
                         <div key={item} className="flex items-center gap-3 text-[0.98rem] text-forest-900/74">
-                          <CheckCircle2 className="h-4 w-4 shrink-0 text-gold-500" aria-hidden="true" />
+                          <CheckCircle2 className="h-4 w-4 shrink-0 text-brand-500" aria-hidden="true" />
                           <span>{item}</span>
                         </div>
                       ))}
@@ -451,7 +451,7 @@ function PackageAdminPage() {
           </div>
         </section>
 
-        <section className="section-shell bg-[#f7f4ed] py-24" id="stays">
+        <section className="section-shell bg-[#eef2ef] py-24" id="stays">
           <div className="section-inner">
             <SectionHeader
               body="These accommodation levels are priced per person, per night, so you can quickly shape the stay side of the package before adding golf, transport, and profit."
@@ -470,7 +470,7 @@ function PackageAdminPage() {
                     className={cx(
                       'group overflow-hidden rounded-[2rem] border p-7 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl',
                       isSelected
-                        ? 'border-gold-300 bg-forest-900 text-white'
+                        ? 'border-brand-300 bg-forest-900 text-white'
                         : 'border-forest-100 bg-white text-forest-900'
                     )}
                     onClick={() => handleSelectAccommodation(option.name)}
@@ -479,12 +479,12 @@ function PackageAdminPage() {
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <p className={cx('text-sm font-semibold uppercase tracking-[0.12em]', isSelected ? 'text-gold-300' : 'text-forest-900')}>
+                        <p className={cx('text-sm font-semibold uppercase tracking-[0.12em]', isSelected ? 'text-brand-300' : 'text-forest-900')}>
                           {option.area}
                         </p>
                         <h3 className="mt-3 font-display text-3xl font-bold tracking-tight">{option.name}</h3>
                       </div>
-                      <BedDouble className={cx('h-8 w-8', isSelected ? 'text-gold-300' : 'text-gold-500')} aria-hidden="true" />
+                      <BedDouble className={cx('h-8 w-8', isSelected ? 'text-brand-300' : 'text-brand-500')} aria-hidden="true" />
                     </div>
 
                     <div className="mt-6 rounded-[1.5rem] border border-current/10 bg-current/5 p-4">
@@ -525,7 +525,7 @@ function PackageAdminPage() {
             />
 
             <div className="grid gap-8 xl:grid-cols-[1.05fr_0.95fr]">
-              <m.div className="rounded-[2rem] border border-forest-100 bg-[#f7f4ed] p-6 shadow-sm md:p-7" {...revealUp}>
+              <m.div className="rounded-[2rem] border border-forest-100 bg-[#eef2ef] p-6 shadow-sm md:p-7" {...revealUp}>
                 <div className="mb-6 flex flex-wrap gap-3">
                   {planningPoints.map((item) => (
                     <span key={item} className="rounded-full border border-white/80 bg-white px-3 py-1.5 text-sm text-forest-900/68 shadow-sm">
@@ -631,7 +631,7 @@ function PackageAdminPage() {
               <m.div className="rounded-[2rem] border border-white/10 bg-forest-950 p-6 text-white shadow-soft md:p-7" {...revealUp}>
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gold-300">Live quote view</p>
+                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-300">Live quote view</p>
                     <h3 className="mt-3 font-display text-4xl font-bold tracking-tight">Simple, detailed, margin-safe</h3>
                   </div>
                   <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-base text-white/76">
@@ -658,7 +658,7 @@ function PackageAdminPage() {
                   <BreakdownRow label="Profit per person" value={formatEuro(profitPerPerson)} />
                 </div>
 
-                <div className="mt-6 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(213,198,0,0.18),rgba(253,186,116,0.1),rgba(80,163,45,0.12))] p-[1px]">
+                <div className="mt-6 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(19, 96, 71,0.18),rgba(253,186,116,0.1),rgba(80,163,45,0.12))] p-[1px]">
                   <div className="rounded-[1.7rem] bg-forest-950/96 p-5">
                     <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/45">Recommended sell price</p>
                     <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
@@ -686,8 +686,8 @@ function PackageAdminPage() {
 
         <section className="section-shell bg-forest-900 py-24" id="enquire">
           <div className="absolute top-0" id="plan-trip" />
-          <div aria-hidden="true" className="absolute left-[-80px] top-[10%] h-72 w-72 rounded-full bg-gold-300/12 blur-3xl" />
-          <div aria-hidden="true" className="absolute bottom-[-60px] right-[-30px] h-72 w-72 rounded-full bg-gold-400/12 blur-3xl" />
+          <div aria-hidden="true" className="absolute left-[-80px] top-[10%] h-72 w-72 rounded-full bg-brand-300/12 blur-3xl" />
+          <div aria-hidden="true" className="absolute bottom-[-60px] right-[-30px] h-72 w-72 rounded-full bg-brand-400/12 blur-3xl" />
 
           <div className="section-inner">
             <div className="grid gap-10 lg:grid-cols-[1fr_0.92fr] lg:items-center">
@@ -714,7 +714,7 @@ function PackageAdminPage() {
                 className="rounded-[2rem] border border-white/10 bg-white/6 p-6 text-white backdrop-blur-sm"
                 {...revealUp}
               >
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gold-300">What this page already solves</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-300">What this page already solves</p>
                 <div className="mt-5 space-y-4">
                   {[
                     'Gives you a clean starting price per person',
@@ -723,7 +723,7 @@ function PackageAdminPage() {
                     'Keeps the package looking premium instead of cheap or patchy'
                   ].map((item) => (
                     <div key={item} className="flex items-start gap-3 text-base text-white/80">
-                      <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-gold-300" aria-hidden="true" />
+                      <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-brand-300" aria-hidden="true" />
                       <span>{item}</span>
                     </div>
                   ))}
@@ -754,7 +754,7 @@ function RouteMapShowcase() {
       transition={{ delay: 0.18, duration: 0.85, ease: 'easeOut' }}
     >
       <div className="relative overflow-hidden rounded-[2.4rem] border border-white/10 bg-[linear-gradient(160deg,rgba(255,255,255,0.14),rgba(255,255,255,0.04))] p-5 shadow-soft backdrop-blur-md md:p-7">
-        <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(80,163,45,0.22),transparent_24%),radial-gradient(circle_at_82%_12%,rgba(213,198,0,0.22),transparent_22%),radial-gradient(circle_at_70%_70%,rgba(253,186,116,0.16),transparent_26%)]" />
+        <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(80,163,45,0.22),transparent_24%),radial-gradient(circle_at_82%_12%,rgba(19, 96, 71,0.22),transparent_22%),radial-gradient(circle_at_70%_70%,rgba(253,186,116,0.16),transparent_26%)]" />
         <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(140deg,rgba(255,255,255,0.06),transparent_32%,transparent_68%,rgba(255,255,255,0.04))]" />
 
         <div className="relative z-10 grid gap-6 md:grid-cols-[0.9fr_1.2fr]">
@@ -793,7 +793,7 @@ function RouteMapShowcase() {
                 <linearGradient id="package-route-line" x1="60" x2="500" y1="120" y2="280">
                   <stop offset="0%" stopColor="rgba(80,163,45,0.95)" />
                   <stop offset="52%" stopColor="rgba(253,186,116,0.95)" />
-                  <stop offset="100%" stopColor="rgba(213,198,0,0.95)" />
+                  <stop offset="100%" stopColor="rgba(19, 96, 71,0.95)" />
                 </linearGradient>
               </defs>
               <path
@@ -828,19 +828,19 @@ function RouteMapShowcase() {
               <div className="absolute inset-[35%] rounded-full border border-slate-300/22" />
             </m.div>
 
-            <div className="absolute left-[8%] top-[9%] rounded-[1.4rem] border border-gold-300/26 bg-forest-950/76 px-4 py-3 text-white backdrop-blur-sm">
-              <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">Departing from Ireland</p>
+            <div className="absolute left-[8%] top-[9%] rounded-[1.4rem] border border-brand-300/26 bg-forest-950/76 px-4 py-3 text-white backdrop-blur-sm">
+              <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-300">Departing from Ireland</p>
               <p className="mt-2 text-base font-semibold">Smaller golf groups</p>
             </div>
 
-            <div className="absolute bottom-[11%] right-[8%] rounded-[1.5rem] border border-[#D5C600]/26 bg-forest-950/62 px-4 py-4 text-white backdrop-blur-sm">
+            <div className="absolute bottom-[11%] right-[8%] rounded-[1.5rem] border border-[#136047]/26 bg-forest-950/62 px-4 py-4 text-white backdrop-blur-sm">
               <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#f7a24f]">Costa del Sol arrival</p>
               <p className="mt-2 text-base font-semibold">Hotel, golf, driver, quote</p>
               <p className="mt-1 text-sm text-white/60">All costed before you sell it</p>
             </div>
 
             <div className="absolute right-[12%] top-[12%] rounded-[1.25rem] border border-white/10 bg-white/8 px-4 py-3 text-white backdrop-blur-sm">
-              <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-gold-300">
+              <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-brand-300">
                 <BadgeEuro className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>Profit protected</span>
               </div>
@@ -856,7 +856,7 @@ function RouteMapShowcase() {
 function HeroStat({ value, label }: { readonly value: string; readonly label: string }) {
   return (
     <div className="min-w-[110px] rounded-[1.6rem] border border-white/10 bg-white/6 px-4 py-4 backdrop-blur-sm">
-      <p className="font-display text-[2rem] font-bold text-gold-300">{value}</p>
+      <p className="font-display text-[2rem] font-bold text-brand-300">{value}</p>
       <p className="mt-1 text-sm leading-relaxed text-white/62">{label}</p>
     </div>
   )
@@ -898,10 +898,10 @@ function PricingInput({
           <p className="text-base font-semibold text-forest-900">{label}</p>
           <p className="mt-1 text-sm leading-relaxed text-forest-900/56">{description}</p>
         </div>
-        {prefix ? <span className="rounded-full bg-gold-50 px-2.5 py-1 text-sm font-semibold uppercase text-forest-950">{prefix}</span> : null}
+        {prefix ? <span className="rounded-full bg-brand-50 px-2.5 py-1 text-sm font-semibold uppercase text-forest-950">{prefix}</span> : null}
       </div>
       <input
-        className="mt-4 w-full rounded-2xl border border-forest-100 bg-offwhite px-4 py-3 text-base font-semibold text-forest-900 outline-none transition focus:border-gold-400 focus:ring-2 focus:ring-gold-200"
+        className="mt-4 w-full rounded-2xl border border-forest-100 bg-offwhite px-4 py-3 text-base font-semibold text-forest-900 outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-200"
         max={max}
         min={min}
         onChange={handleChange}
@@ -949,7 +949,7 @@ function BreakdownRow({
   return (
     <div className={cx('flex items-center justify-between gap-4 border-b border-white/8 pb-3 text-base', strong && 'pt-2')}>
       <span className={cx(strong ? 'font-semibold text-white' : 'text-white/68')}>{label}</span>
-      <span className={cx('text-right', strong ? 'font-semibold text-gold-300' : 'text-white')}>{value}</span>
+      <span className={cx('text-right', strong ? 'font-semibold text-brand-300' : 'text-white')}>{value}</span>
     </div>
   )
 }
@@ -1059,15 +1059,15 @@ export function CookieBanner({
       initial={{ opacity: 0, y: 18 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
     >
-      <div aria-hidden="true" className="absolute inset-0 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(255,255,255,0.06),rgba(213,198,0,0.06),rgba(80,163,45,0.06))]" />
+      <div aria-hidden="true" className="absolute inset-0 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(255,255,255,0.06),rgba(19, 96, 71,0.06),rgba(80,163,45,0.06))]" />
       <div className="relative z-10">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-gold-300">Cookie notice</p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-brand-300">Cookie notice</p>
         <p className="mt-2 text-sm leading-relaxed text-white">
           We use cookies to improve the browsing experience, understand site traffic, and keep the journey smooth.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
           <button
-            className="rounded-full bg-[#D5C600] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#c84f01]"
+            className="rounded-full bg-[#136047] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#c84f01]"
             onClick={onAccept}
             type="button"
           >

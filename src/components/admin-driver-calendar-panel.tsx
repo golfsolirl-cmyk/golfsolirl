@@ -444,7 +444,7 @@ export function AdminDriverCalendarPanel() {
   return (
     <div className="space-y-6 print:block">
       <div className="rounded-[2rem] border border-forest-100 bg-offwhite/40 p-5 shadow-soft print:hidden">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">Transport enquiry page</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Transport enquiry page</p>
         <p className="mt-2 max-w-2xl text-sm text-forest-700">
           When you are very busy, hide the collection date and time field on the public transport form. Customers still choose trip
           timing and travel dates; collection is confirmed by phone or message instead.
@@ -465,7 +465,7 @@ export function AdminDriverCalendarPanel() {
           ) : null}
         </div>
         {hideCollectionError ? (
-          <p className="mt-3 text-sm text-amber-900" role="alert">
+          <p className="mt-3 text-sm text-brand-900" role="alert">
             {hideCollectionError}
           </p>
         ) : null}
@@ -503,7 +503,7 @@ export function AdminDriverCalendarPanel() {
       </p>
 
       {loadError ? (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50/90 px-4 py-3 text-sm text-amber-950" role="alert">
+        <div className="rounded-2xl border border-chrome-200 bg-chrome-50/90 px-4 py-3 text-sm text-brand-950" role="alert">
           {loadError}
         </div>
       ) : null}
@@ -530,7 +530,7 @@ export function AdminDriverCalendarPanel() {
                   sel
                     ? 'border-fairway-500 bg-fairway-50 text-forest-950'
                     : has
-                      ? 'border-gold-300 bg-gold-50/80 text-forest-900 hover:border-fairway-400'
+                      ? 'border-brand-300 bg-brand-50/80 text-forest-900 hover:border-fairway-400'
                       : 'border-forest-100 bg-offwhite/60 text-forest-700 hover:border-fairway-300'
                 }`}
                 key={cell.iso}
@@ -542,7 +542,7 @@ export function AdminDriverCalendarPanel() {
                 type="button"
               >
                 <span className="block font-semibold">{cell.n}</span>
-                {has ? <span className="mt-0.5 block text-[10px] font-medium uppercase tracking-wide text-gold-700">Booked</span> : null}
+                {has ? <span className="mt-0.5 block text-[10px] font-medium uppercase tracking-wide text-brand-700">Booked</span> : null}
                 {trAgg && trAgg.count > 0 ? (
                   <span className="mt-0.5 block text-[9px] font-semibold leading-tight text-fairway-900">
                     {trAgg.count} run{trAgg.count === 1 ? '' : 's'}
@@ -556,7 +556,7 @@ export function AdminDriverCalendarPanel() {
 
         <div className="mt-6 border-t border-forest-100 pt-6 print:mt-4 print:border-t-0 print:pt-2">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between print:block">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600 print:text-sm">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600 print:text-sm">
               {selectedIso
                 ? `Bookings — ${new Date(`${selectedIso}T12:00:00`).toLocaleDateString(undefined, {
                     weekday: 'long',
@@ -632,7 +632,7 @@ export function AdminDriverCalendarPanel() {
       </div>
 
       <div className="rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft print:hidden">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">Add booking or block a day</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Add booking or block a day</p>
         <p className="mt-2 max-w-2xl text-sm text-forest-600">
           One row on a date is enough: public enquiry forms load that date as <strong className="font-medium text-forest-800">fully booked</strong> and show a notice before submit. Customer fields can stay empty for a capacity-only block — or use{' '}
           <strong className="font-medium text-forest-800">Block transfers on website</strong> above after selecting a day.

@@ -7,9 +7,7 @@ export type BrandLogoPictureProps = Omit<ImgHTMLAttributes<HTMLImageElement>, 's
 }
 
 /**
- * Header + footer logo: **SVG first** (`golfsol-crest-brand.svg`), **WebP** as next `<source>`
- * and final `<img>` fallback. (SVG wraps WebP inside; browsers that mishandle SVG-in-`<picture>`
- * still get raster WebP.)
+ * Header + footer logo: crest (`g-sol-logo.webp` / `.png`).
  */
 export function BrandLogoPicture({
   alt,
@@ -20,9 +18,16 @@ export function BrandLogoPicture({
 }: BrandLogoPictureProps) {
   return (
     <picture>
-      <source srcSet={GOLFSOL_BRAND_LOGO.svg} type="image/svg+xml" />
       <source srcSet={GOLFSOL_BRAND_LOGO.webp} type="image/webp" />
-      <img src={GOLFSOL_BRAND_LOGO.webp} alt={alt} width={width} height={height} className={cx(className)} {...imgProps} />
+      <source srcSet={GOLFSOL_BRAND_LOGO.png} type="image/png" />
+      <img
+        src={GOLFSOL_BRAND_LOGO.webp}
+        alt={alt}
+        width={width}
+        height={height}
+        className={cx(className)}
+        {...imgProps}
+      />
     </picture>
   )
 }

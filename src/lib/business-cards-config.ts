@@ -1,18 +1,34 @@
+import { GOLFSOL_BRAND_LOGO } from './brand-logo-assets'
+
 /**
  * Golf Sol Ireland — business card catalogue (Martin Kelly).
  * Edit URLs here; contact lines mirror `contactInfo` in golf-experience/data/copy.ts.
  */
-export const businessCardPerson = {
+/** Shared fields for React-built press cards */
+export type BusinessCardPersonBlurb = {
+  readonly name: string
+  readonly roleTitle: string
+  readonly premiumDescriptor: string
+  readonly corridorLine: string
+}
+
+export const businessCardPerson: BusinessCardPersonBlurb = {
   name: 'Martin Kelly',
-  /** Company line used across legacy card layouts */
-  tagline: 'Golf Sol Ireland',
   /** Executive title — premium / duplex backs */
   roleTitle: 'Director · Golf Travel & Concierge',
   /** Short positioning line for luxury fronts */
   premiumDescriptor: 'Premium golf travel · Costa del Sol',
   /** Corridor / markets line */
   corridorLine: 'Dublin · Málaga'
-} as const
+}
+
+/** Second staff set — same company contact lines on card backs */
+export const businessCardPersonGreg: BusinessCardPersonBlurb = {
+  name: 'Greg McDonald',
+  roleTitle: 'Operations',
+  premiumDescriptor: 'Premium golf travel · Costa del Sol',
+  corridorLine: 'Dublin · Málaga'
+}
 
 export const businessCardContact = {
   email: 'info@golfsolirl.com',
@@ -33,8 +49,8 @@ export const businessCardSocial = {
 } as const
 
 export const businessCardAssets = {
-  /** Crest SVG with Ireland / Spain flags, used across site chrome and cards. */
-  crestWidePng: '/golfsol-crest.svg',
-  crestSvg: '/golfsol-crest.svg',
-  siteLogoSvg: '/golfsol-crest.svg'
+  /** Crest PNG for print / masks; raster matches brand crest art. */
+  crestWidePng: GOLFSOL_BRAND_LOGO.png,
+  crestSvg: GOLFSOL_BRAND_LOGO.svg,
+  siteLogoSvg: GOLFSOL_BRAND_LOGO.svg
 } as const

@@ -55,7 +55,7 @@ export function TermsEmailRequest() {
           <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-gs-green text-white shadow-[0_14px_28px_rgba(6,59,42,0.2)]">
             <ShieldCheck className="h-5 w-5" aria-hidden="true" />
           </div>
-          <p className="mt-5 font-ge text-[0.82rem] font-extrabold uppercase tracking-[0.18em] text-gs-gold">
+          <p className="mt-5 font-ge text-[0.82rem] font-extrabold uppercase tracking-[0.18em] text-brand-700">
             Email terms copy
           </p>
           <h2 className="mt-3 font-ge text-[2rem] font-extrabold leading-tight text-gs-green sm:text-[2.45rem]">
@@ -67,19 +67,19 @@ export function TermsEmailRequest() {
         </div>
 
         <form
-          className="rounded-[2rem] border border-gs-dark/10 bg-gs-dark p-5 shadow-[0_24px_60px_rgba(1,16,12,0.24)] sm:p-7"
+          className="ge-on-dark rounded-[2rem] border border-gs-dark/10 bg-gs-dark p-5 shadow-[0_24px_60px_rgba(1,16,12,0.24)] sm:p-7"
           onSubmit={handleSubmit}
           noValidate
         >
           <label className="block">
-            <span className="mb-2 block font-ge text-[0.82rem] font-extrabold uppercase tracking-[0.16em] text-gs-gold">
+            <span className="mb-2 block font-ge text-[0.82rem] font-extrabold uppercase tracking-[0.16em] text-[#fbe8b5]">
               Email address
             </span>
             <span className="relative block">
-              <Mail className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-white/45" aria-hidden="true" />
+              <Mail className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-white/70" aria-hidden="true" />
               <input
                 autoComplete="email"
-                className="h-14 w-full rounded-2xl border border-white/15 bg-white/10 pl-12 pr-4 font-ge text-base text-white outline-none transition placeholder:text-white/35 focus:border-gs-gold focus:ring-2 focus:ring-gs-gold/25"
+                className="h-14 w-full rounded-2xl border border-white/15 bg-white/10 pl-12 pr-4 font-ge text-base text-white outline-none transition placeholder:text-white/60 focus:border-brand-700 focus:ring-2 focus:ring-brand-700/25"
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder="you@example.com"
                 required
@@ -89,7 +89,7 @@ export function TermsEmailRequest() {
             </span>
           </label>
 
-          <GeButton className="mt-4 w-full" disabled={status === 'submitting'} type="submit" variant="gs-gold" size="lg">
+          <GeButton className="mt-4 w-full" disabled={status === 'submitting'} type="submit" variant="gs-green" size="lg">
             {status === 'submitting' ? 'Sending terms...' : 'Email me the terms'}
           </GeButton>
 
@@ -98,7 +98,7 @@ export function TermsEmailRequest() {
               ref={messageRef}
               className={`mt-4 rounded-2xl border px-4 py-3 font-ge text-sm leading-6 ${
                 status === 'success'
-                  ? 'border-gs-gold/40 bg-gs-gold/10 text-white'
+                  ? 'border-brand-700/40 bg-brand-700/10 text-white'
                   : 'border-red-300/50 bg-red-500/10 text-red-100'
               }`}
               role={status === 'error' ? 'alert' : 'status'}

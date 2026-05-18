@@ -7,7 +7,7 @@ import { MALAGA_AIRPORT_REF, type PortalTransferStop, type PortalTransferStopKin
 const inputClass =
   'w-full rounded-2xl border-2 border-orange-400 bg-white px-4 py-3 text-sm text-forest-900 outline-none transition-[border-color,box-shadow] focus:border-orange-500 focus:ring-2 focus:ring-orange-300/70'
 
-const labelClass = 'mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-gold-600'
+const labelClass = 'mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-brand-600'
 
 export const transferStopDisplayLabel = (stop: PortalTransferStop): string => {
   if (stop.kind === 'malaga_airport') {
@@ -109,7 +109,7 @@ export function PortalTransferRouteBuilder({
     <div className="rounded-2xl border border-fairway-200/90 bg-white p-5 shadow-md md:p-6">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gold-600">Transfer route</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Transfer route</p>
           <h3 className="font-display mt-1 text-lg font-semibold text-forest-950">Airport, hotels &amp; courses</h3>
           <p className="mt-2 text-xs text-forest-600">
             Pickup is Málaga Airport or a corridor hotel. Add up to eight stops total (pickup + drops). We use this with your
@@ -241,7 +241,7 @@ export function PortalTransferRouteBuilder({
       </div>
 
       <div className="mt-5 rounded-xl border border-forest-200/80 bg-white px-4 py-3 text-sm text-forest-800">
-        <p className="text-xs font-semibold uppercase tracking-wide text-gold-700">Route preview</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-brand-700">Route preview</p>
         <p className="mt-2 font-medium leading-relaxed text-forest-950">{summary}</p>
       </div>
     </div>

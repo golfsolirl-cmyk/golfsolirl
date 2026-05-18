@@ -41,7 +41,7 @@ type TransferDocTheme = {
 const THEME: TransferDocTheme = {
   ink: [22, 59, 42],
   muted: [75, 95, 85],
-  gold: [217, 154, 0],
+  gold: [250, 232, 46],
   payLink: [0, 102, 204]
 }
 

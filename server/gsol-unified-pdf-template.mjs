@@ -411,28 +411,40 @@ export const drawUnifiedGoldRule = (page, y) => {
 
 /**
  * @param {import('pdf-lib').PDFPage} page
- * @param {number} bottomY — lowest line baseline (keep >= 52 for margin)
+ * @param {number} bottomY — lowest line baseline (keep >= 56 for safe page-bottom margin)
+ *
+ * Pre-wraps each line against contentW and stacks the wrapped lines with a fixed step,
+ * so pdf-lib's internal auto-wrap can never overlap a sibling line or bleed past the page edge.
  */
 export const drawUnifiedDocumentFooter = (page, bottomY, ctx, extraLines = []) => {
   const { pageWidth, margin } = UNIFIED_PDF_LAYOUT
   const contentW = pageWidth - margin * 2
-  const lines = [
+  const fontSize = 8.5
+  const lineStep = 12
+  const inputLines = [
     'Golf Sol Ireland · Irish-owned Costa del Sol golf travel',
     `Company registration no. ${gsolCompanyLegal.companyRegistrationNumber} (Ireland)`,
     ...extraLines
   ]
-  const lineStep = 12
-  let y = bottomY + (lines.length - 1) * lineStep
-  page.drawRectangle({ x: margin, y: bottomY - 10, width: contentW, height: 0.65, color: pdfEmailTheme.sand })
-  for (const line of lines) {
-    page.drawText(sanitizeStandardFontText(line), {
+  const wrapped = inputLines.flatMap((line) =>
+    wrapPlainLinesWithFont(ctx.font, sanitizeStandardFontText(line), fontSize, contentW)
+  )
+  const safeBottomY = Math.max(bottomY, 56)
+  let y = safeBottomY + (wrapped.length - 1) * lineStep
+  page.drawRectangle({
+    x: margin,
+    y: y + fontSize + 6,
+    width: contentW,
+    height: 0.65,
+    color: pdfEmailTheme.sand
+  })
+  for (const line of wrapped) {
+    page.drawText(line, {
       x: margin,
       y,
       font: ctx.font,
-      size: 8.5,
-      color: pdfEmailTheme.muted,
-      maxWidth: contentW,
-      lineHeight: 12
+      size: fontSize,
+      color: pdfEmailTheme.muted
     })
     y -= lineStep
   }

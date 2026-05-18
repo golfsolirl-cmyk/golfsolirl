@@ -16,7 +16,7 @@ export function GeTopBar() {
           <GeDualPhoneTopBarDesktop />
           <span aria-hidden="true" className="text-white/40">|</span>
           <a
-            className="flex min-h-[36px] items-center gap-2 transition-colors hover:text-gs-gold"
+            className="flex min-h-[36px] items-center gap-2 transition-colors hover:text-brand-700"
             href={`mailto:${contactInfo.email}`}
           >
             <Mail className="h-3.5 w-3.5" aria-hidden="true" />

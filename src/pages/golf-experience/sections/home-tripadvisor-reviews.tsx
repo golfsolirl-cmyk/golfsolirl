@@ -21,7 +21,7 @@ function StarRow({ count = 5 }: { readonly count?: number }) {
           key={i}
           className={
             i < n
-              ? 'h-4 w-4 fill-gs-gold text-gs-gold sm:h-[1.05rem] sm:w-[1.05rem]'
+              ? 'h-4 w-4 fill-brand-600 text-brand-700 sm:h-[1.05rem] sm:w-[1.05rem]'
               : 'h-4 w-4 fill-transparent text-ge-gray200 sm:h-[1.05rem] sm:w-[1.05rem]'
           }
           strokeWidth={0}
@@ -74,7 +74,7 @@ export function GeHomeTripadvisorReviews() {
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gs-gold/50 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-700/50 to-transparent"
       />
       <div
         aria-hidden="true"
@@ -82,7 +82,7 @@ export function GeHomeTripadvisorReviews() {
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -left-16 bottom-0 h-64 w-64 rounded-full bg-gs-gold/[0.08] blur-[80px]"
+        className="pointer-events-none absolute -left-16 bottom-0 h-64 w-64 rounded-full bg-brand-700/[0.08] blur-[80px]"
       />
 
       <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
@@ -114,16 +114,16 @@ export function GeHomeTripadvisorReviews() {
           {guestReviews.map((review, index) => (
             <m.article
               key={review.id}
-              className="group relative flex flex-col rounded-[1.65rem] border border-gs-gold/35 bg-gradient-to-b from-white to-gs-gold/[0.06] p-6 shadow-[0_18px_45px_rgba(6,59,42,0.07)] ring-1 ring-gs-dark/[0.04] transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-0.5 hover:border-gs-gold/60 hover:shadow-[0_24px_55px_rgba(6,59,42,0.1)] sm:p-7"
+              className="group relative flex flex-col rounded-[1.65rem] border border-brand-700/35 bg-gradient-to-b from-white to-brand-700/[0.06] p-6 shadow-[0_18px_45px_rgba(6,59,42,0.07)] ring-1 ring-gs-dark/[0.04] transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-0.5 hover:border-brand-700/60 hover:shadow-[0_24px_55px_rgba(6,59,42,0.1)] sm:p-7"
               {...fadeUp}
               transition={{ ...fadeUp.transition, delay: 0.05 * (index + 1) }}
             >
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-gs-gold/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-brand-700/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
               />
               <div className="flex items-start justify-between gap-3">
-                <Quote className="h-8 w-8 shrink-0 text-gs-gold/90" aria-hidden strokeWidth={1.75} />
+                <Quote className="h-8 w-8 shrink-0 text-brand-700/90" aria-hidden strokeWidth={1.75} />
                 <span className="rounded-full bg-gs-dark/90 px-2 py-0.5 font-ge text-[0.6rem] font-extrabold uppercase tracking-[0.14em] text-white">
                   Guest story
                 </span>
@@ -145,16 +145,16 @@ export function GeHomeTripadvisorReviews() {
           {tripadvisorSampleReviews.map((review, index) => (
             <m.article
               key={review.name}
-              className="group relative flex flex-col rounded-[1.65rem] border border-ge-gray100 bg-gradient-to-b from-white to-ge-gray50/40 p-6 shadow-[0_18px_45px_rgba(6,59,42,0.07)] ring-1 ring-gs-dark/[0.04] transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-0.5 hover:border-gs-gold/35 hover:shadow-[0_24px_55px_rgba(6,59,42,0.1)] sm:p-7"
+              className="group relative flex flex-col rounded-[1.65rem] border border-ge-gray100 bg-gradient-to-b from-white to-ge-gray50/40 p-6 shadow-[0_18px_45px_rgba(6,59,42,0.07)] ring-1 ring-gs-dark/[0.04] transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-0.5 hover:border-brand-700/35 hover:shadow-[0_24px_55px_rgba(6,59,42,0.1)] sm:p-7"
               {...fadeUp}
               transition={{ ...fadeUp.transition, delay: 0.05 * (index + 1) }}
             >
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-gs-gold/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-brand-700/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
               />
               <div className="flex items-start justify-between gap-3">
-                <Quote className="h-8 w-8 shrink-0 text-gs-gold/90" aria-hidden strokeWidth={1.75} />
+                <Quote className="h-8 w-8 shrink-0 text-brand-700/90" aria-hidden strokeWidth={1.75} />
                 <img
                   src="/images/tripadvisor-lockup.svg"
                   alt=""
@@ -175,7 +175,7 @@ export function GeHomeTripadvisorReviews() {
               <div className="mt-auto border-t border-ge-gray100/90 pt-5">
                 <p className="font-ge text-sm font-extrabold text-gs-dark">{review.name}</p>
                 <p className="mt-1 font-ge text-xs font-semibold uppercase tracking-[0.12em] text-ge-gray500">{review.context}</p>
-                <p className="mt-2 inline-flex rounded-full border border-gs-gold/25 bg-gs-gold/10 px-2.5 py-0.5 font-ge text-[0.62rem] font-bold uppercase tracking-[0.14em] text-gs-dark/80">
+                <p className="mt-2 inline-flex rounded-full border border-brand-700/25 bg-brand-700/10 px-2.5 py-0.5 font-ge text-[0.62rem] font-bold uppercase tracking-[0.14em] text-gs-dark/80">
                   {review.tripType}
                 </p>
               </div>
@@ -192,7 +192,7 @@ export function GeHomeTripadvisorReviews() {
             href={ctaHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-[48px] items-center justify-center rounded-full border-2 border-gs-green/25 bg-gs-dark px-6 py-3 font-ge text-sm font-extrabold uppercase tracking-[0.12em] text-white shadow-[0_14px_36px_rgba(6,59,42,0.18)] transition-colors hover:border-gs-gold hover:bg-gs-green"
+            className="inline-flex min-h-[48px] items-center justify-center rounded-full border-2 border-gs-green/25 bg-gs-dark px-6 py-3 font-ge text-sm font-extrabold uppercase tracking-[0.12em] text-white shadow-[0_14px_36px_rgba(6,59,42,0.18)] transition-colors hover:border-brand-700 hover:bg-gs-green"
           >
             {ctaLabel}
           </a>

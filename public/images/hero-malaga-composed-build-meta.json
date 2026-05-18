@@ -1,0 +1,16 @@
+{
+  "desktop": {
+    "width": 1774,
+    "height": 887
+  },
+  "mobile": {
+    "width": 1080,
+    "height": 2040
+  },
+  "mobileCrop": {
+    "sourceWidth": 1774,
+    "sourceHeight": 887,
+    "cropLeft": 652,
+    "cropWidth": 469
+  }
+}

@@ -43,10 +43,10 @@ export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
     // Footer brand lockup — crest only. The artwork already contains
     // 'GOLFSOL IRELAND' so the separate wordmark + tagline have been
     // removed per design feedback.
-    const LogoCmp = tone === 'on-dark' ? FooterBrandLogoPicture : BrandLogoPicture
+    void tone
     return (
       <div className={cx('flex flex-col items-start', className)}>
-        <LogoCmp
+        <FooterBrandLogoPicture
           alt="GolfSol Ireland"
           width={GOLFSOL_BRAND_LOGO_INTRINSIC.width}
           height={GOLFSOL_BRAND_LOGO_INTRINSIC.height}
@@ -85,7 +85,7 @@ export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
           fetchPriority="high"
           // Layout box stays compact; crest scales from top and shifts down so it overlaps
           // the navbar bottom edge (see `ge-navbar` overflow-visible + home link `lg:self-end`).
-          className="relative z-10 block h-[130px] w-auto origin-top translate-y-1 scale-[1.45] select-none object-contain drop-shadow-[0_10px_22px_rgba(0,0,0,0.35)] sm:h-[144px] sm:translate-y-1.5 sm:scale-[1.42] md:h-[162px] md:translate-y-2 md:scale-[1.34] lg:h-[148px] lg:translate-y-2.5 lg:scale-[1.16] xl:h-[158px] xl:translate-y-3"
+          className="relative z-10 block h-[150px] w-auto origin-top translate-y-1 scale-[1.5] select-none object-contain drop-shadow-[0_3px_10px_rgba(0,0,0,0.18),0_14px_34px_rgba(0,0,0,0.28),0_28px_56px_rgba(0,0,0,0.14)] sm:h-[166px] sm:translate-y-1.5 sm:scale-[1.46] md:h-[184px] md:translate-y-2 md:scale-[1.4] lg:h-[172px] lg:translate-y-2.5 lg:scale-[1.32] xl:h-[186px] xl:translate-y-3 xl:scale-[1.28]"
         />
         {/* One-shot gold shimmer sweep on mount */}
         <m.div
@@ -100,25 +100,13 @@ export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
             className="absolute inset-y-0 w-[55%] -skew-x-[20deg]"
             style={{
               background:
-                'linear-gradient(90deg, transparent 0%, rgba(235,228,134,0.0) 25%, rgba(235,228,134,0.85) 50%, rgba(235,228,134,0.0) 75%, transparent 100%)'
+                'linear-gradient(90deg, transparent 0%, rgba(217,190,122,0.0) 25%, rgba(217,190,122,0.85) 50%, rgba(217,190,122,0.0) 75%, transparent 100%)'
             }}
             initial={{ x: '-120%' }}
             animate={{ x: '220%' }}
             transition={{ duration: 1.2, ease: 'easeInOut', delay: 0.7 }}
           />
         </m.div>
-        {/* Continuous soft radial glow halo */}
-        <m.div
-          aria-hidden="true"
-          className="pointer-events-none absolute -inset-4 -z-0"
-          style={{
-            background:
-              'radial-gradient(ellipse at 50% 55%, rgba(213,198,0,0.45) 0%, rgba(213,198,0,0.15) 40%, rgba(213,198,0,0) 70%)',
-            filter: 'blur(12px)'
-          }}
-          animate={{ opacity: [0.35, 0.8, 0.35], scale: [0.94, 1.04, 0.94] }}
-          transition={{ duration: 3.6, ease: 'easeInOut', repeat: Infinity, delay: 1.4 }}
-        />
       </m.div>
     </div>
   )

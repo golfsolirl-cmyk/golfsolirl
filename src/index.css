@@ -8,6 +8,133 @@
   :root {
     --readable-min-font-size: 1rem;
     --readable-min-line-height: 1.5;
+
+    /* ========= BRAND CORE (crest greens) ========= */
+    --brand-950: #04140c;
+    --brand-900: #062016;
+    --brand-800: #0b4d3b;
+    --brand-700: #136047;
+    --brand-600: #1e7558;
+    --brand-500: #2e8b67;
+
+    /* Chrome / silver-green surfaces (replaces cream) */
+    --chrome-50: #f4f7f5;
+    --chrome-100: #eef2ef;
+    --chrome-200: #e3ebe6;
+    --chrome-300: #d9d9d9;
+    --chrome-400: #b8b8b8;
+
+    --silver-100: #f2f2f2;
+    --silver-200: #e8ece9;
+    --silver-300: #d9d9d9;
+    --silver-400: #b8b8b8;
+    --silver-500: #8d8d8d;
+
+    /* Flag palette — assets / tiny accents only, not UI chrome */
+    --flag-irish-orange: #ff8a1c;
+    --flag-spanish-red: #c1272d;
+    --flag-spanish-yellow: #0b4d3b;
+
+    /* ========= APP STRUCTURE ========= */
+    --bg-main: var(--chrome-100);
+    --bg-section: #ffffff;
+    --bg-section-alt: var(--chrome-200);
+    --bg-card: rgba(255, 255, 255, 0.96);
+    --bg-footer: linear-gradient(180deg, #062016 0%, #04140c 100%);
+    --bg-hero-overlay: linear-gradient(135deg, rgba(4, 20, 12, 0.92), rgba(11, 77, 59, 0.88));
+
+    /** Header navbar — locked (unchanged). */
+    --header-bg: #f7f4ec;
+
+    /* ========= TEXT ========= */
+    --text-primary: #08120d;
+    --text-secondary: #425047;
+    --text-muted: #66726b;
+    --text-light: #f8f7f2;
+    --text-on-dark: #ffffff;
+    --text-on-light: var(--brand-900);
+    --heading-color: #062016;
+    --heading-accent: #0b4d3b;
+
+    /* ========= BORDERS ========= */
+    --border-light: rgba(11, 77, 59, 0.08);
+    --border-default: rgba(11, 77, 59, 0.15);
+    --border-heavy: rgba(11, 77, 59, 0.22);
+    --border-chrome: rgba(184, 184, 184, 0.45);
+
+    /* ========= BUTTONS ========= */
+    --btn-primary-bg: linear-gradient(135deg, #0b4d3b, #136047);
+    --btn-primary-text: #ffffff;
+    --btn-primary-hover: linear-gradient(135deg, #136047, #1e7558);
+    --btn-secondary-bg: #ffffff;
+    --btn-secondary-border: #0b4d3b;
+    --btn-secondary-text: #0b4d3b;
+    --btn-secondary-hover: var(--chrome-100);
+    --btn-gold-bg: var(--btn-primary-bg);
+    --btn-gold-text: #ffffff;
+    --shadow-btn-primary: 0 10px 30px rgba(11, 77, 59, 0.28);
+    --shadow-btn-primary-hover: 0 14px 38px rgba(11, 77, 59, 0.34);
+
+    /* ========= LINKS ========= */
+    --link: #0b4d3b;
+    --link-hover: #1e7558;
+    --link-active: #062016;
+    --link-on-dark: #f2f2f2;
+    --link-on-dark-hover: var(--silver-300);
+
+    /* ========= CARDS ========= */
+    --card-bg: rgba(255, 255, 255, 0.96);
+    --card-shadow: 0 10px 30px rgba(6, 32, 22, 0.1);
+    --card-hover-shadow: 0 18px 45px rgba(6, 32, 22, 0.16);
+
+    /* ========= INPUTS ========= */
+    --input-bg: #ffffff;
+    --input-border: rgba(11, 77, 59, 0.14);
+    --input-focus: #0b4d3b;
+
+    /* ========= BADGES ========= */
+    --success: #0b8a56;
+    --warning: var(--brand-600);
+    --danger: var(--flag-spanish-red);
+
+    /* ========= FOOTER ========= */
+    --footer-bg: #04140c;
+    --footer-text: #d8e1d8;
+    --footer-link: #ffffff;
+    --footer-link-hover: var(--silver-300);
+
+    /* ========= RADIUS ========= */
+    --radius-sm: 12px;
+    --radius-md: 18px;
+    --radius-lg: 26px;
+    --radius-xl: 40px;
+
+    /* ========= SHADOWS ========= */
+    --shadow-soft: 0 8px 25px rgba(6, 32, 22, 0.06);
+    --shadow-premium: 0 20px 60px rgba(6, 32, 22, 0.14);
+
+    /* Legacy aliases */
+    --gsol-forest: var(--brand-800);
+    --gsol-forest-deep: var(--brand-900);
+    --gsol-fairway: var(--brand-600);
+    --gsol-leaf: var(--brand-500);
+    --gsol-mustard: var(--brand-700);
+    --gsol-cream: var(--bg-main);
+    --gsol-white: var(--bg-section);
+    --gsol-charcoal: var(--text-primary);
+    --gsol-navy: var(--text-secondary);
+    --gsol-muted: var(--text-muted);
+    --gsol-border: var(--border-default);
+    --gsol-shadow: rgba(6, 32, 22, 0.14);
+    --cream-50: var(--chrome-50);
+    --cream-100: var(--chrome-100);
+    --cream-200: var(--chrome-200);
+    --green-deep: var(--brand-900);
+    --green-primary: var(--brand-800);
+    --green-fairway: var(--brand-600);
+    --green-light: var(--brand-500);
+    --text-main: var(--text-primary);
+    --border-soft: var(--border-default);
   }
 
   html {
@@ -16,9 +143,42 @@
   }
 
   body {
-    @apply bg-offwhite font-body text-forest-900 antialiased;
+    @apply font-body antialiased;
+    color: var(--text-primary);
+    background-color: var(--bg-main);
     line-height: 1.7;
     text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: var(--heading-color);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  p {
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  small {
+    color: #66726b;
+  }
+
+  a:not([class]) {
+    color: var(--link);
+    transition: color 0.2s ease;
+  }
+
+  a:not([class]):hover {
+    color: var(--link-hover);
+  }
+
+  a:not([class]):active {
+    color: var(--link-active);
   }
 
   * {
@@ -26,8 +186,8 @@
   }
 
   ::selection {
-    background: rgba(220, 88, 1, 0.28);
-    color: #163a13;
+    background: rgba(30, 117, 88, 0.28);
+    color: var(--brand-900);
   }
 
   body.readable-type-page :is(p, li, dt, dd, label, input, textarea, select, a, button, th, td, small):is(
@@ -53,25 +213,25 @@
   }
 }
 
-/* Leaflet map tiles + divIcon markers (CourseHotelMapPicker) */
 .leaflet-container {
   font-family: inherit;
 }
+
 .gsol-leaflet-dot {
   background: transparent !important;
   border: none !important;
 }
 
 .leaflet-tooltip.gsol-course-tooltip {
-  border: 1px solid rgba(6, 59, 42, 0.18);
-  border-radius: 10px;
-  box-shadow: 0 10px 28px rgba(6, 59, 42, 0.18);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--card-shadow);
   font-family: inherit;
   font-weight: 700;
   font-size: 0.78rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #063b2a;
+  color: var(--brand-900);
   padding: 6px 10px;
 }
 
@@ -84,32 +244,114 @@
     @apply relative z-10 mx-auto max-w-7xl;
   }
 
+  .hero {
+    background: var(--bg-hero-overlay);
+    color: var(--text-light);
+  }
+
+  .btn-primary {
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    border: none;
+    font-weight: 700;
+    box-shadow: 0 10px 30px rgba(11, 77, 59, 0.25);
+    transition:
+      background 0.25s ease,
+      box-shadow 0.25s ease,
+      transform 0.2s ease;
+  }
+
+  .btn-primary:hover {
+    background: var(--btn-primary-hover);
+    box-shadow: 0 14px 38px rgba(11, 77, 59, 0.32);
+  }
+
+  .btn-premium {
+    background: var(--btn-primary-bg);
+    color: #ffffff;
+    font-weight: 800;
+    box-shadow: var(--shadow-btn-primary);
+    transition:
+      background 0.25s ease,
+      box-shadow 0.25s ease,
+      transform 0.2s ease;
+  }
+
+  .btn-premium:hover {
+    background: var(--btn-primary-hover);
+    box-shadow: var(--shadow-btn-primary-hover);
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--card-shadow);
+    border-radius: var(--radius-md);
+    transition:
+      box-shadow 0.3s ease,
+      border-color 0.25s ease;
+  }
+
+  .card:hover {
+    box-shadow: var(--card-hover-shadow);
+    border-color: var(--border-default);
+  }
+
+  footer.bg-gs-dark,
+  .ge-page > footer,
+  footer.border-t.bg-forest-950 {
+    background: var(--bg-footer) !important;
+    color: var(--footer-text);
+  }
+
+  footer.bg-gs-dark a:hover,
+  .ge-page > footer a:hover {
+    color: var(--footer-link-hover);
+  }
+
   .app-surface {
-    @apply rounded-[1.9rem] border border-white/70 bg-white/88 shadow-[0_22px_55px_rgba(20,46,21,0.08)] backdrop-blur-xl;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--card-shadow);
+  }
+
+  .app-surface:hover {
+    box-shadow: var(--card-hover-shadow);
   }
 
   .app-surface-strong {
-    @apply rounded-[2rem] border border-forest-100/90 bg-white shadow-[0_24px_60px_rgba(18,42,19,0.12)];
+    background: var(--bg-section);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-premium);
   }
 
-  /* Scoped styles for the Golf Experience literal-clone homepage.
-     IMPORTANT: keep selector specificity low so Tailwind utilities
-     (text-white, text-ge-teal, etc.) always win for color. */
   .ge-page {
     font-family: theme('fontFamily.ge');
-    color: theme('colors.gs.dark');
-    background: theme('colors.gs.bg');
+    color: var(--text-primary);
+    background: linear-gradient(180deg, var(--chrome-50) 0%, var(--bg-section-alt) 38%, var(--bg-main) 100%);
     line-height: 1.68;
   }
-  /* Slow Ken-Burns pan on the two hero plates */
+
   @keyframes heroPanLeft {
-    from { transform: scale(1.1) translate(0, 0); }
-    to   { transform: scale(1.12) translate(-2%, -1%); }
+    from {
+      transform: scale(1.1) translate(0, 0);
+    }
+    to {
+      transform: scale(1.12) translate(-2%, -1%);
+    }
   }
+
   @keyframes heroPanRight {
-    from { transform: scale(1.1) translate(0, 0); }
-    to   { transform: scale(1.12) translate(2%, -1%); }
+    from {
+      transform: scale(1.1) translate(0, 0);
+    }
+    to {
+      transform: scale(1.12) translate(2%, -1%);
+    }
   }
+
   .ge-page h1,
   .ge-page h2,
   .ge-page h3,
@@ -118,7 +360,9 @@
   .ge-page h6 {
     font-family: theme('fontFamily.ge');
     line-height: 1.2;
+    color: var(--heading-color);
   }
+
   .ge-page button {
     font-family: theme('fontFamily.ge');
   }
@@ -127,11 +371,89 @@
   .ge-page li,
   .ge-page dt,
   .ge-page dd,
-  .ge-page label,
+  .ge-page label {
+    font-size: 1.01rem;
+    color: var(--text-secondary);
+  }
+
   .ge-page input,
   .ge-page textarea,
   .ge-page select {
     font-size: 1.01rem;
+    color: var(--text-primary);
+    background-color: var(--input-bg);
+    border-color: var(--input-border);
+  }
+
+  .ge-page input:focus,
+  .ge-page textarea:focus,
+  .ge-page select:focus {
+    border-color: var(--input-focus);
+    outline-color: var(--brand-500);
+    box-shadow: 0 0 0 2px rgba(11, 77, 59, 0.12);
+  }
+
+  .gsol-cta-primary,
+  .btn-primary {
+    background: var(--btn-primary-bg);
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: var(--shadow-btn-primary), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    transition:
+      background 0.25s ease,
+      box-shadow 0.25s ease,
+      border-color 0.2s ease;
+  }
+
+  .gsol-cta-primary:hover,
+  .btn-primary:hover {
+    background: var(--btn-primary-hover);
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: var(--shadow-btn-primary-hover), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  }
+
+  .gsol-cta-secondary {
+    background: var(--btn-secondary-bg);
+    color: var(--btn-secondary-text);
+    border: 1px solid var(--btn-secondary-border);
+    box-shadow: var(--shadow-soft);
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .gsol-cta-secondary:hover {
+    background: var(--btn-secondary-hover);
+    border-color: var(--brand-700);
+    color: var(--brand-900);
+  }
+
+  .gsol-cta-gold,
+  .btn-premium {
+    background: var(--btn-primary-bg);
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: var(--shadow-btn-primary), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  }
+
+  .gsol-cta-gold:hover,
+  .btn-premium:hover {
+    background: var(--btn-primary-hover);
+    color: #ffffff !important;
+    box-shadow: var(--shadow-btn-primary-hover), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  }
+
+  /* Green buttons always white label */
+  [class*='bg-brand-'],
+  [class*='bg-gs-green'],
+  [class*='bg-gs-primary'],
+  [class*='bg-fairway-'],
+  [class*='bg-forest-7'],
+  [class*='bg-forest-8'],
+  [class*='bg-forest-9'] {
+    --tw-text-opacity: 1;
   }
 }
 
@@ -156,7 +478,6 @@
   }
 }
 
-/* Leaflet: branded transfer map pins (avoid default white tile behind HTML marker) */
 .leaflet-div-icon.gsol-transfer-map-marker {
   border: none !important;
   background: transparent !important;

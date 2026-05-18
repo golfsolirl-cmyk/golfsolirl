@@ -21,7 +21,7 @@ export function AdminOperationsSectionShell(props: {
   return (
     <section
       className={cx(
-        'scroll-mt-28 overflow-hidden rounded-[2rem] border-2 border-gs-gold/40 bg-gradient-to-br from-white via-white to-[#f0faf4] shadow-[0_22px_56px_rgba(11,73,52,0.08)] ring-1 ring-forest-900/[0.06]',
+        'scroll-mt-28 overflow-hidden rounded-[2rem] border-2 border-brand-700/40 bg-gradient-to-br from-white via-white to-[#f0faf4] shadow-[0_22px_56px_rgba(11,73,52,0.08)] ring-1 ring-forest-900/[0.06]',
         props.className
       )}
       id={props.id}
@@ -31,7 +31,7 @@ export function AdminOperationsSectionShell(props: {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0 flex-1">
               {props.kicker ? (
-                <p className="font-ge text-xs font-extrabold uppercase tracking-[0.18em] text-gold-600 sm:text-sm">{props.kicker}</p>
+                <p className="font-ge text-xs font-extrabold uppercase tracking-[0.18em] text-brand-600 sm:text-sm">{props.kicker}</p>
               ) : null}
               {props.title ? (
                 <h2 className="font-display mt-2 text-2xl font-semibold tracking-tight text-forest-950 sm:text-3xl">{props.title}</h2>

@@ -30,7 +30,7 @@ export function GeContentPromiseBand({ eyebrow, title, body, bullets }: GeConten
     >
       <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16">
         <m.div {...fadeUp}>
-          <p className="font-ge text-[0.98rem] font-bold uppercase tracking-[0.16em] text-ge-orange sm:text-[0.9rem]">{eyebrow}</p>
+          <p className="font-ge text-[0.98rem] font-bold uppercase tracking-[0.16em] text-brand-700 sm:text-[0.9rem]">{eyebrow}</p>
           <h2 className="mt-3 font-ge text-[2.12rem] font-extrabold leading-[1.06] tracking-[0.005em] text-gs-green sm:text-[2.4rem] lg:text-[2.6rem]">{title}</h2>
           <p className="mt-5 font-ge text-[1.06rem] leading-8 text-ge-gray500 sm:text-[1.08rem] sm:leading-8">{body}</p>
 
@@ -60,7 +60,7 @@ export function GeContentPromiseBand({ eyebrow, title, body, bullets }: GeConten
             >
               <span
                 aria-hidden
-                className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-gs-gold via-gs-gold-light to-gs-gold"
+                className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-brand-800 via-brand-600 to-brand-700"
               />
               <p className="font-ge text-[2.05rem] font-extrabold leading-none tracking-[-0.01em] text-gs-green sm:text-[2.4rem]">{stat.value}</p>
               <p className="mt-2 font-ge text-[0.95rem] font-bold uppercase tracking-[0.12em] text-ge-gray500 sm:text-[0.82rem]">{stat.label}</p>

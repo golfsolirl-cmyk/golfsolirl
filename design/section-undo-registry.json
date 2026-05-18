@@ -1,0 +1,207 @@
+{
+  "version": 1,
+  "instructions": "Restore a section: npm run section:undo -- <PASSWORD>",
+  "sections": [
+    {
+      "id": "home-design-package",
+      "label": "Concierge-built trip design (#design-package)",
+      "password": "GSOL-UNDO-DPKG-7291",
+      "backupSource": "git-head",
+      "files": [
+        "src/pages/golf-experience/sections/design-your-package.tsx",
+        "src/pages/golf-experience/data/copy.ts"
+      ],
+      "notes": "Restores pre–Concierge-built trip design copy and component. Theme tweak: revert ge-page-token-overrides.css kicker svg to #f2f2f2 if needed."
+    },
+    {
+      "id": "home-airport-transfers",
+      "label": "Arrive in Málaga. Let us do the rest. (#home-airport-transfers)",
+      "password": "GSOL-UNDO-AGP-4856",
+      "backupSource": "working-tree",
+      "files": ["src/pages/golf-experience/sections/home-airport-transfers-cta.tsx"]
+    },
+    {
+      "id": "home-courses-spain",
+      "label": "Costa del Sol Golf Courses (#golf-courses-spain)",
+      "password": "GSOL-UNDO-CRS-3814",
+      "backupSource": "working-tree",
+      "files": [
+        "src/pages/golf-experience/sections/courses-spain.tsx",
+        "src/pages/golf-experience/data/copy.ts"
+      ]
+    },
+    {
+      "id": "home-extras-strip",
+      "label": "The full Costa del Sol package (#extras)",
+      "password": "GSOL-UNDO-EXT-5172",
+      "backupSource": "working-tree",
+      "files": [
+        "src/pages/golf-experience/sections/extras-strip.tsx",
+        "src/pages/golf-experience/data/copy.ts"
+      ]
+    },
+    {
+      "id": "home-fleet-highlight",
+      "label": "Premium Mercedes fleet + insurance banner (home)",
+      "password": "GSOL-UNDO-FLT-9264",
+      "backupSource": "working-tree",
+      "files": [
+        "src/pages/golf-experience/sections/home-fleet-highlight.tsx",
+        "src/pages/golf-experience/components/ge-transfers-insurance-banner.tsx"
+      ]
+    },
+    {
+      "id": "home-icons-seal-logo",
+      "label": "Extras icons + Irish-owned seal + sticky logo glass",
+      "password": "GSOL-UNDO-ICN-6420",
+      "backupSource": "working-tree",
+      "files": [
+        "src/pages/golf-experience/sections/extras-strip.tsx",
+        "src/pages/golf-experience/components/irish-owned-seal.tsx",
+        "src/pages/golf-experience/components/brand-lockup.tsx"
+      ]
+    },
+    {
+      "id": "home-whatsapp-footer-cards",
+      "label": "WhatsApp FAB green + footer contrast + course-card titles",
+      "password": "GSOL-UNDO-FCT-9038",
+      "backupSource": "working-tree",
+      "files": [
+        "src/pages/golf-experience/components/whatsapp-fab.tsx",
+        "src/pages/golf-experience/sections/ge-footer.tsx",
+        "src/theme/ge-page-token-overrides.css"
+      ]
+    },
+    {
+      "id": "mobile-nav-glint-bezel",
+      "label": "Mobile nav phone + burger bezel — yellow→green gradient",
+      "password": "GSOL-UNDO-NAV-2715",
+      "backupSource": "working-tree",
+      "files": [
+        "src/pages/golf-experience/components/ge-mobile-glint-icon.tsx"
+      ]
+    },
+    {
+      "id": "home-facts-icons",
+      "label": "Why book with us — pillar icon styling",
+      "password": "GSOL-UNDO-WBY-5841",
+      "backupSource": "working-tree",
+      "files": [
+        "src/pages/golf-experience/sections/facts.tsx"
+      ]
+    },
+    {
+      "id": "home-about-block",
+      "label": "About GolfSol Ireland — remove glass, premium polish",
+      "password": "GSOL-UNDO-ABT-6053",
+      "backupSource": "working-tree",
+      "files": [
+        "src/pages/golf-experience/sections/about-block.tsx",
+        "src/pages/golf-experience/data/copy.ts"
+      ]
+    },
+    {
+      "id": "home-enquiry",
+      "label": "Get a quote / Send the trip shape (#enquire)",
+      "password": "GSOL-UNDO-ENQ-7195",
+      "backupSource": "working-tree",
+      "files": [
+        "src/pages/golf-experience/sections/home-enquiry.tsx"
+      ]
+    },
+    {
+      "id": "home-accommodation",
+      "label": "Costa del Sol stays — intro + hotel grid + card titles",
+      "password": "GSOL-UNDO-ACC-4862",
+      "backupSource": "working-tree",
+      "files": [
+        "src/pages/golf-experience/sections/accommodation-intro.tsx",
+        "src/pages/golf-experience/sections/accommodation-spain.tsx",
+        "src/pages/golf-experience/components/hotel-card.tsx",
+        "src/pages/golf-experience/data/copy.ts",
+        "src/theme/ge-page-token-overrides.css"
+      ]
+    },
+    {
+      "id": "home-facts-cta",
+      "label": "Why book with us — closing CTA panel (Let us design your perfect Costa del Sol golf trip)",
+      "password": "GSOL-UNDO-FCTA-3197",
+      "backupSource": "working-tree",
+      "files": [
+        "src/pages/golf-experience/sections/facts.tsx",
+        "src/pages/golf-experience/data/copy.ts",
+        "src/theme/ge-page-token-overrides.css"
+      ]
+    },
+    {
+      "id": "page-login",
+      "label": "Login page — premium hero re-skin (sign-in / admin / driver)",
+      "password": "GSOL-UNDO-LOGIN-5824",
+      "backupSource": "working-tree",
+      "files": [
+        "src/pages/login-page.tsx",
+        "src/theme/ge-page-token-overrides.css"
+      ]
+    },
+    {
+      "id": "page-logged-out",
+      "label": "Logged-out page — premium hero re-skin",
+      "password": "GSOL-UNDO-LGOUT-3617",
+      "backupSource": "working-tree",
+      "files": [
+        "src/pages/logged-out-page.tsx"
+      ]
+    },
+    {
+      "id": "page-transport-service",
+      "label": "Transport service page — premium polish (hero, promise, route, fleet)",
+      "password": "GSOL-UNDO-TRSP-7340",
+      "backupSource": "working-tree",
+      "files": [
+        "src/pages/golf-experience/sections/transport-hero.tsx",
+        "src/pages/golf-experience/sections/transport-promise.tsx",
+        "src/pages/golf-experience/sections/transport-route-story.tsx",
+        "src/pages/golf-experience/sections/transport-fleet.tsx",
+        "src/theme/ge-page-token-overrides.css"
+      ]
+    },
+    {
+      "id": "section-payments-ireland",
+      "label": "Payments handled in Ireland — fix dark-on-dark + premium polish",
+      "password": "GSOL-UNDO-PAYIE-9152",
+      "backupSource": "working-tree",
+      "files": [
+        "src/pages/golf-experience/sections/payments-ireland.tsx",
+        "src/theme/ge-page-token-overrides.css"
+      ]
+    },
+    {
+      "id": "section-transport-hero-and-enquire",
+      "label": "Transport page — new fleet hero image + enquire block matches home enquiry",
+      "password": "GSOL-UNDO-TRPHE-4081",
+      "backupSource": "working-tree",
+      "files": [
+        "src/pages/golf-experience/sections/transport-hero.tsx",
+        "src/pages/golf-experience/sections/transport-enquire-block.tsx"
+      ]
+    },
+    {
+      "id": "global-page-identity-bar",
+      "label": "Page identity bar — replace gold band + glass pill with engraved brass nameplate (site-wide)",
+      "password": "GSOL-UNDO-PGID-7058",
+      "backupSource": "working-tree",
+      "files": [
+        "src/components/page-identity-bar.tsx"
+      ]
+    },
+    {
+      "id": "section-transport-fleet-solid-premium",
+      "label": "Transport fleet — solid premium section, new fleet image, stronger image caption",
+      "password": "GSOL-UNDO-TRFLT-8462",
+      "backupSource": "working-tree",
+      "files": [
+        "src/pages/golf-experience/sections/transport-fleet.tsx"
+      ]
+    }
+  ]
+}

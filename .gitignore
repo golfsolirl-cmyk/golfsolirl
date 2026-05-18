@@ -11,3 +11,9 @@ Thumbs.db
 
 # Local snapshot of upstream repo (do not version)
 _import_golfsolirl/
+
+# Section-by-section UI undo backups (see design/section-undo-registry.json)
+.undo-backups/
+
+# Windows accidental redirect artifact
+/nul

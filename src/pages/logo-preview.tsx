@@ -1,20 +1,21 @@
 import { m  } from 'framer-motion'
 import { ArrowLeft, Sparkles } from 'lucide-react'
 import { PageIdentityBar } from '../components/page-identity-bar'
+import { GOLFSOL_BRAND_LOGO } from '../lib/brand-logo-assets'
 import { cx } from '../lib/utils'
 
-const logoIcon = '/golfsol-crest.svg'
+const logoIcon = GOLFSOL_BRAND_LOGO.svg
 
 const wordmarkToneMap = {
   forest: {
     golfSol: 'text-neutral-950',
-    ireland: 'text-[#D5C600]',
+    ireland: 'text-[#136047]',
     tagline: 'text-neutral-700',
     shamrockDark: false
   },
   light: {
     golfSol: 'text-white',
-    ireland: 'text-gold-300',
+    ireland: 'text-brand-300',
     tagline: 'text-white/70',
     shamrockDark: true
   },
@@ -38,7 +39,7 @@ const wordmarkToneMap = {
   },
   ink: {
     golfSol: 'text-slate-950',
-    ireland: 'text-amber-600',
+    ireland: 'text-brand-600',
     tagline: 'text-slate-500',
     shamrockDark: false
   },
@@ -59,9 +60,9 @@ const wordmarkToneMap = {
 export function LogoPreviewPage() {
   return (
     <div className="min-h-screen overflow-hidden bg-[#051006] text-white">
-      <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(80,163,45,0.2),_transparent_30%),radial-gradient(circle_at_85%_18%,_rgba(213,198,0,0.18),_transparent_24%),linear-gradient(180deg,_#09200b_0%,_#051006_52%,_#030803_100%)]" />
+      <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(80,163,45,0.2),_transparent_30%),radial-gradient(circle_at_85%_18%,_rgba(19, 96, 71,0.18),_transparent_24%),linear-gradient(180deg,_#09200b_0%,_#051006_52%,_#030803_100%)]" />
       <div aria-hidden="true" className="absolute left-[-8rem] top-24 h-72 w-72 rounded-full bg-fairway-500/15 blur-3xl" />
-      <div aria-hidden="true" className="absolute bottom-[-6rem] right-[-4rem] h-80 w-80 rounded-full bg-gold-400/10 blur-3xl" />
+      <div aria-hidden="true" className="absolute bottom-[-6rem] right-[-4rem] h-80 w-80 rounded-full bg-brand-400/10 blur-3xl" />
       <AnimatedBlobGolfBall />
       <div className="relative z-20">
         <PageIdentityBar
@@ -76,7 +77,7 @@ export function LogoPreviewPage() {
         <header className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
           <a
             aria-label="Return to the main GolfSol Ireland landing page"
-            className="inline-flex items-center gap-3 self-start rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-gold-300/60 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#051006]"
+            className="inline-flex items-center gap-3 self-start rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-300/60 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#051006]"
             href="/"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
@@ -92,7 +93,7 @@ export function LogoPreviewPage() {
         <main className="pt-10 md:pt-14">
           <section className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
             <div>
-              <p className="text-sm uppercase tracking-[0.34em] text-gold-300/85">Logo Preview Lab</p>
+              <p className="text-sm uppercase tracking-[0.34em] text-brand-300/85">Logo Preview Lab</p>
               <h1 className="mt-4 max-w-4xl font-display text-5xl font-black leading-none text-white md:text-7xl">
                 {logoStudies.length} fresh logo samples built from your current GolfSol Ireland identity
               </h1>
@@ -137,7 +138,7 @@ function AnimatedBlobGolfBall() {
             x: [0, 18, -12, 0],
             y: [0, -14, 10, 0]
           }}
-          className="absolute right-[-5rem] top-[-2rem] h-72 w-72 rounded-full bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.28),rgba(255,255,255,0.06)_34%,rgba(80,163,45,0.34)_58%,rgba(213,198,0,0.28)_82%,transparent)] blur-3xl md:h-96 md:w-96"
+          className="absolute right-[-5rem] top-[-2rem] h-72 w-72 rounded-full bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.28),rgba(255,255,255,0.06)_34%,rgba(80,163,45,0.34)_58%,rgba(19, 96, 71,0.28)_82%,transparent)] blur-3xl md:h-96 md:w-96"
           transition={{ duration: 14, ease: 'easeInOut', repeat: Infinity }}
         />
         <m.div
@@ -147,7 +148,7 @@ function AnimatedBlobGolfBall() {
             x: [0, -20, 10, 0],
             y: [0, 18, -10, 0]
           }}
-          className="absolute right-12 top-12 h-56 w-56 rounded-[42%_58%_60%_40%/40%_44%_56%_60%] bg-[linear-gradient(140deg,rgba(255,255,255,0.12),rgba(110,191,71,0.28),rgba(213,198,0,0.2))] blur-[70px] md:h-72 md:w-72"
+          className="absolute right-12 top-12 h-56 w-56 rounded-[42%_58%_60%_40%/40%_44%_56%_60%] bg-[linear-gradient(140deg,rgba(255,255,255,0.12),rgba(110,191,71,0.28),rgba(19, 96, 71,0.2))] blur-[70px] md:h-72 md:w-72"
           transition={{ duration: 12, ease: 'easeInOut', repeat: Infinity }}
         />
         <m.div
@@ -305,7 +306,7 @@ function ArtworkOrnament({ ornament }: ArtworkOrnamentProps) {
     return (
       <>
         <div aria-hidden="true" className="absolute -left-10 top-10 h-24 w-52 rotate-[-14deg] rounded-full bg-white/18 blur-xl" />
-        <div aria-hidden="true" className="absolute -right-10 bottom-8 h-24 w-56 rotate-[16deg] rounded-full bg-gold-300/16 blur-xl" />
+        <div aria-hidden="true" className="absolute -right-10 bottom-8 h-24 w-56 rotate-[16deg] rounded-full bg-brand-300/16 blur-xl" />
       </>
     )
   }
@@ -322,7 +323,7 @@ function ArtworkOrnament({ ornament }: ArtworkOrnamentProps) {
   return (
     <>
       <div aria-hidden="true" className="absolute left-[-2rem] top-[-1.5rem] h-24 w-24 rounded-full bg-white/15 blur-2xl" />
-      <div aria-hidden="true" className="absolute bottom-[-1rem] right-[-1rem] h-28 w-28 rounded-full bg-gold-300/18 blur-2xl" />
+      <div aria-hidden="true" className="absolute bottom-[-1rem] right-[-1rem] h-28 w-28 rounded-full bg-brand-300/18 blur-2xl" />
     </>
   )
 }
@@ -567,7 +568,7 @@ const logoStudies: readonly LogoStudy[] = [
     tone: 'gold',
     ornament: 'halos',
     surfaceClassName:
-      'border-amber-200/20 bg-[linear-gradient(160deg,_#141414_0%,_#23211b_45%,_#41351b_100%)]',
+      'border-chrome-200/20 bg-[linear-gradient(160deg,_#141414_0%,_#23211b_45%,_#41351b_100%)]',
     iconShellClassName: 'h-36 w-36 rounded-full border-white/12 bg-white/5'
   },
   {
@@ -735,7 +736,7 @@ const logoStudies: readonly LogoStudy[] = [
     ornament: 'grid',
     shamrockVariant: 'diamond',
     surfaceClassName:
-      'border-amber-100/15 bg-[linear-gradient(145deg,_#12110e_0%,_#292319_46%,_#4f3e1f_100%)]',
+      'border-chrome-100/15 bg-[linear-gradient(145deg,_#12110e_0%,_#292319_46%,_#4f3e1f_100%)]',
     iconShellClassName: 'h-36 w-36 rounded-full border-white/15 bg-white/6'
   },
   {
@@ -819,7 +820,7 @@ const logoStudies: readonly LogoStudy[] = [
     ornament: 'ribbon',
     shamrockVariant: 'petal',
     surfaceClassName:
-      'border-amber-100/15 bg-[linear-gradient(145deg,_#15120d_0%,_#2b2418_46%,_#52401f_100%)]',
+      'border-chrome-100/15 bg-[linear-gradient(145deg,_#15120d_0%,_#2b2418_46%,_#52401f_100%)]',
     iconShellClassName: 'h-40 w-40 rounded-full border-white/16 bg-white/8'
   }
 ] as const

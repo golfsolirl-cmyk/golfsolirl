@@ -67,7 +67,7 @@ export function PortalTransferPlanEditor({ value, onChange, disabled }: PortalTr
   }
 
   return (
-    <div className="space-y-8 rounded-2xl border border-[#E9D9B6] bg-[#FFFBF7] p-5 shadow-inner sm:p-6">
+    <div className="space-y-8 rounded-2xl border border-[#d9d9d9] bg-[#FFFBF7] p-5 shadow-inner sm:p-6">
       <div>
         <p className="font-display text-base font-semibold text-gs-dark">Golf course transfers (Costa del Sol)</p>
         <p className="mt-1 text-sm text-forest-600">
@@ -129,7 +129,7 @@ export function PortalTransferPlanEditor({ value, onChange, disabled }: PortalTr
               </div>
               <div className="mt-3 flex justify-end">
                 <button
-                  className="font-ge text-xs font-semibold uppercase tracking-[0.12em] text-forest-500 underline-offset-2 hover:text-ge-orange hover:underline disabled:opacity-40"
+                  className="font-ge text-xs font-semibold uppercase tracking-[0.12em] text-forest-500 underline-offset-2 hover:text-brand-700 hover:underline disabled:opacity-40"
                   disabled={disabled}
                   type="button"
                   onClick={() => removeGolf(index)}
@@ -150,7 +150,7 @@ export function PortalTransferPlanEditor({ value, onChange, disabled }: PortalTr
         </div>
       </div>
 
-      <div className="border-t border-[#E9D9B6] pt-8">
+      <div className="border-t border-[#d9d9d9] pt-8">
         <p className="font-display text-base font-semibold text-gs-dark">Hotel &amp; resort transfers</p>
         <p className="mt-1 text-sm text-forest-600">
           Choose your base hotel from our Costa del Sol shortlist (from course vicinities). Add notes for split stays or
@@ -212,7 +212,7 @@ export function PortalTransferPlanEditor({ value, onChange, disabled }: PortalTr
               </div>
               <div className="mt-3 flex justify-end">
                 <button
-                  className="font-ge text-xs font-semibold uppercase tracking-[0.12em] text-forest-500 underline-offset-2 hover:text-ge-orange hover:underline disabled:opacity-40"
+                  className="font-ge text-xs font-semibold uppercase tracking-[0.12em] text-forest-500 underline-offset-2 hover:text-brand-700 hover:underline disabled:opacity-40"
                   disabled={disabled}
                   type="button"
                   onClick={() => removeHotel(index)}

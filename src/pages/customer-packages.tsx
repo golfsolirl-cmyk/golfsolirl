@@ -631,7 +631,7 @@ function CustomerPackagePage() {
           <div aria-hidden="true" className="absolute inset-0 bg-hero-overlay" />
           <div aria-hidden="true" className="absolute inset-0 bg-hero-bottom" />
           <div aria-hidden="true" className="absolute left-[-120px] top-[8%] h-72 w-72 rounded-full bg-fairway-500/18 blur-3xl md:h-96 md:w-96" />
-          <div aria-hidden="true" className="absolute right-[-90px] top-[-30px] h-72 w-72 rounded-full bg-gold-400/18 blur-3xl md:h-80 md:w-80" />
+          <div aria-hidden="true" className="absolute right-[-90px] top-[-30px] h-72 w-72 rounded-full bg-brand-400/18 blur-3xl md:h-80 md:w-80" />
           <AmbientGolfBall className="right-[4%] top-[16%] opacity-90 lg:right-[7%]" size="lg" tone="hero" variant="hero" />
 
           <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[1.02fr_0.98fr]">
@@ -640,7 +640,7 @@ function CustomerPackagePage() {
               initial={{ opacity: 0, y: 30 }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
             >
-              <p className="mb-4 text-base font-semibold uppercase tracking-[0.18em] text-gold-200 drop-shadow-[0_4px_18px_rgba(8,27,8,0.35)] md:text-lg">
+              <p className="mb-4 text-base font-semibold uppercase tracking-[0.18em] text-brand-200 drop-shadow-[0_4px_18px_rgba(8,27,8,0.35)] md:text-lg">
                 Costa del Sol golf packages for Irish travellers
               </p>
               <h1 className="max-w-3xl font-display text-5xl font-black leading-tight tracking-tight text-white md:text-7xl lg:text-[5rem]">
@@ -692,7 +692,7 @@ function CustomerPackagePage() {
                     className={cx(
                       'group relative overflow-hidden rounded-[2rem] border p-7 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl',
                       isSelected
-                        ? 'border-gold-300 bg-forest-900 text-white'
+                        ? 'border-brand-300 bg-forest-900 text-white'
                         : 'border-forest-100 bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(247,244,237,0.94))] text-forest-900'
                     )}
                     onClick={() => setSelectedPackageName(item.name)}
@@ -705,15 +705,15 @@ function CustomerPackagePage() {
                           className={cx(
                             'inline-flex rounded-full border px-3 py-1.5 text-sm font-semibold uppercase tracking-[0.12em]',
                             isSelected
-                              ? 'border-gold-300/30 bg-gold-400/15 text-gold-300'
-                              : 'border-gold-200 bg-gold-50 text-forest-950'
+                              ? 'border-brand-300/30 bg-brand-400/15 text-brand-300'
+                              : 'border-brand-200 bg-brand-50 text-forest-950'
                           )}
                         >
                           {item.badge}
                         </span>
                         <h2 className="mt-4 font-display text-3xl font-bold tracking-tight">{item.name}</h2>
                       </div>
-                      <Sparkles className={cx('h-7 w-7', isSelected ? 'text-gold-300' : 'text-gold-500')} aria-hidden="true" />
+                      <Sparkles className={cx('h-7 w-7', isSelected ? 'text-brand-300' : 'text-brand-500')} aria-hidden="true" />
                     </div>
 
                     <p className={cx('mt-5 text-base leading-relaxed', isSelected ? 'text-white/74' : 'text-forest-900/68')}>{item.summary}</p>
@@ -721,7 +721,7 @@ function CustomerPackagePage() {
                     <div className={cx('mt-6 space-y-3 rounded-[1.5rem] border p-4', isSelected ? 'border-white/10 bg-white/6' : 'border-forest-100 bg-white/72')}>
                       {item.included.map((entry) => (
                         <div key={entry} className={cx('flex items-center gap-3 text-[0.98rem]', isSelected ? 'text-white/82' : 'text-forest-900/72')}>
-                          <CheckCircle2 className={cx('h-4 w-4 shrink-0', isSelected ? 'text-gold-300' : 'text-gold-500')} aria-hidden="true" />
+                          <CheckCircle2 className={cx('h-4 w-4 shrink-0', isSelected ? 'text-brand-300' : 'text-brand-500')} aria-hidden="true" />
                           <span>{entry}</span>
                         </div>
                       ))}
@@ -733,7 +733,7 @@ function CustomerPackagePage() {
           </div>
         </section>
 
-        <section className="section-shell bg-[#f7f4ed] py-24" id="stays">
+        <section className="section-shell bg-[#eef2ef] py-24" id="stays">
           <div className="section-inner">
             <SectionHeader
               body="Accommodation is priced per person, per night. Choose the stay level that fits the trip and the calculator will update instantly."
@@ -751,7 +751,7 @@ function CustomerPackagePage() {
                     aria-label={`Choose ${item.name} stay option`}
                     className={cx(
                       'rounded-[2rem] border p-7 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl',
-                      isSelected ? 'border-gold-300 bg-forest-900 text-white' : 'border-forest-100 bg-white text-forest-900'
+                      isSelected ? 'border-brand-300 bg-forest-900 text-white' : 'border-forest-100 bg-white text-forest-900'
                     )}
                     onClick={() => setSelectedStayName(item.name)}
                     type="button"
@@ -759,12 +759,12 @@ function CustomerPackagePage() {
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <p className={cx('text-sm font-semibold uppercase tracking-[0.12em]', isSelected ? 'text-gold-300' : 'text-forest-900')}>
+                        <p className={cx('text-sm font-semibold uppercase tracking-[0.12em]', isSelected ? 'text-brand-300' : 'text-forest-900')}>
                           {item.area}
                         </p>
                         <h3 className="mt-3 font-display text-3xl font-bold tracking-tight">{item.name}</h3>
                       </div>
-                      <BedDouble className={cx('h-8 w-8', isSelected ? 'text-gold-300' : 'text-gold-500')} aria-hidden="true" />
+                      <BedDouble className={cx('h-8 w-8', isSelected ? 'text-brand-300' : 'text-brand-500')} aria-hidden="true" />
                     </div>
 
                     <div className="mt-6 rounded-[1.5rem] border border-current/10 bg-current/5 p-4">
@@ -804,7 +804,7 @@ function CustomerPackagePage() {
             ) : null}
 
             <div className="grid gap-8 xl:grid-cols-[1.05fr_0.95fr]">
-              <m.div className="rounded-[2rem] border border-forest-100 bg-[#f7f4ed] p-6 shadow-sm md:p-7" {...revealUp}>
+              <m.div className="rounded-[2rem] border border-forest-100 bg-[#eef2ef] p-6 shadow-sm md:p-7" {...revealUp}>
                 <div className="rounded-[1.6rem] border border-white/80 bg-white p-5 shadow-sm">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-forest-900 text-white">
@@ -826,8 +826,8 @@ function CustomerPackagePage() {
                           className={cx(
                             'rounded-2xl border px-3 py-3 text-base font-semibold transition-all',
                             isActive
-                              ? 'border-gold-400 bg-forest-900 text-white'
-                              : 'border-forest-100 bg-offwhite text-forest-900 hover:border-gold-300 hover:bg-white'
+                              ? 'border-brand-400 bg-forest-900 text-white'
+                              : 'border-forest-100 bg-offwhite text-forest-900 hover:border-brand-300 hover:bg-white'
                           )}
                           onClick={() => setGroupSize(value)}
                           type="button"
@@ -893,7 +893,7 @@ function CustomerPackagePage() {
                           className={cx(
                             'flex w-full items-start justify-between gap-4 rounded-[1.4rem] border p-4 text-left transition-all',
                             isSelected
-                              ? 'border-gold-300 bg-forest-900 text-white'
+                              ? 'border-brand-300 bg-forest-900 text-white'
                               : 'border-forest-100 bg-offwhite text-forest-900 hover:bg-white'
                           )}
                           onClick={() => setSelectedTransferName(item.name)}
@@ -903,7 +903,7 @@ function CustomerPackagePage() {
                             <p className="text-base font-semibold">{item.name}</p>
                             <p className={cx('mt-1 text-sm leading-relaxed', isSelected ? 'text-white/68' : 'text-forest-900/56')}>{item.summary}</p>
                           </div>
-                          <Bus className={cx('mt-0.5 h-5 w-5 shrink-0', isSelected ? 'text-gold-300' : 'text-gold-500')} aria-hidden="true" />
+                          <Bus className={cx('mt-0.5 h-5 w-5 shrink-0', isSelected ? 'text-brand-300' : 'text-brand-500')} aria-hidden="true" />
                         </button>
                       )
                     })}
@@ -914,7 +914,7 @@ function CustomerPackagePage() {
               <m.div className="rounded-[2rem] border border-white/10 bg-forest-950 p-6 text-white shadow-soft md:p-7" {...revealUp}>
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">Your live estimate</p>
+                    <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-300">Your live estimate</p>
                     <h3 className="mt-3 font-display text-4xl font-bold tracking-tight">Built from a customer point of view</h3>
                   </div>
                   <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-base text-white/76">
@@ -952,7 +952,7 @@ function CustomerPackagePage() {
                   <BreakdownRow label="Estimated total per person" strong value={formatEuro(pricingSummary.estimatedPerPerson)} />
                 </div>
 
-                <div className="mt-6 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(213,198,0,0.18),rgba(253,186,116,0.1),rgba(80,163,45,0.12))] p-[1px]">
+                <div className="mt-6 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(19, 96, 71,0.18),rgba(253,186,116,0.1),rgba(80,163,45,0.12))] p-[1px]">
                   <div className="rounded-[1.7rem] bg-forest-950/96 p-5">
                     <p className="text-sm font-semibold uppercase tracking-[0.14em] text-white/72">Estimated group total</p>
                     <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
@@ -977,7 +977,7 @@ function CustomerPackagePage() {
                 </p>
                 {courseHotelPick.selectedCourse || courseHotelPick.selectedHotel ? (
                   <p className="mt-4 rounded-[1.25rem] border border-white/10 bg-white/5 px-4 py-3 text-sm leading-7 text-white/78">
-                    <span className="font-semibold text-gold-200">Course & hotel:</span> Shown on the proposal PDF / print view and saved with your package when you sign in and use{' '}
+                    <span className="font-semibold text-brand-200">Course & hotel:</span> Shown on the proposal PDF / print view and saved with your package when you sign in and use{' '}
                     <span className="font-medium text-white">Save to my account</span>. After saving, they appear in your dashboard trip details and stay attached when you reopen this build in
                     the calculator.
                   </p>
@@ -1009,7 +1009,7 @@ function CustomerPackagePage() {
                   </p>
                 ) : null}
                 {saveBuildOk ? (
-                  <p className="mt-3 text-base font-medium text-gold-200" role="status">
+                  <p className="mt-3 text-base font-medium text-brand-200" role="status">
                     Saved. You can review it anytime under your dashboard.
                   </p>
                 ) : null}
@@ -1020,7 +1020,7 @@ function CustomerPackagePage() {
 
         <section className="section-shell bg-forest-900 py-24" id="enquire">
           <div aria-hidden="true" className="absolute left-[-80px] top-[10%] h-72 w-72 rounded-full bg-fairway-500/12 blur-3xl" />
-          <div aria-hidden="true" className="absolute bottom-[-60px] right-[-30px] h-72 w-72 rounded-full bg-gold-400/12 blur-3xl" />
+          <div aria-hidden="true" className="absolute bottom-[-60px] right-[-30px] h-72 w-72 rounded-full bg-brand-400/12 blur-3xl" />
 
           <div className="section-inner">
             <div className="grid gap-10 lg:grid-cols-[1fr_0.92fr] lg:items-center">
@@ -1048,9 +1048,9 @@ function CustomerPackagePage() {
 
               <m.div className="rounded-[2rem] border border-white/10 bg-white/6 p-6 text-white backdrop-blur-sm" {...revealUp}>
                 {enquiryStatus === 'success' ? (
-                  <div ref={enquiryConfirmationRef} className="rounded-[1.5rem] border border-gold-300/40 bg-gold-300/10 p-5 text-center">
-                    <CheckCircle2 className="mx-auto h-8 w-8 text-gold-300" aria-hidden="true" />
-                    <p className="mt-4 text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">Package enquiry sent</p>
+                  <div ref={enquiryConfirmationRef} className="rounded-[1.5rem] border border-brand-300/40 bg-brand-300/10 p-5 text-center">
+                    <CheckCircle2 className="mx-auto h-8 w-8 text-brand-300" aria-hidden="true" />
+                    <p className="mt-4 text-sm font-semibold uppercase tracking-[0.14em] text-brand-300">Package enquiry sent</p>
                     <p className="mt-3 text-base leading-7 text-white/78">
                       Check your inbox for the branded GolfSol confirmation and PDF. We will reply with the next step.
                     </p>
@@ -1058,7 +1058,7 @@ function CustomerPackagePage() {
                 ) : (
                   <form className="space-y-4" onSubmit={handlePackageEnquirySubmit} noValidate>
                     <div>
-                      <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">Send package request</p>
+                      <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-300">Send package request</p>
                       <p className="mt-2 text-base leading-7 text-white/72">
                         This sends your selected package shape through the same branded email and PDF workflow as the main enquiry forms.
                       </p>
@@ -1068,7 +1068,7 @@ function CustomerPackagePage() {
                       <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Full name</span>
                       <input
                         autoComplete="name"
-                        className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3.5 text-base text-white outline-none transition placeholder:text-white/35 focus:border-gold-300 focus:ring-2 focus:ring-gold-300/25"
+                        className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3.5 text-base text-white outline-none transition placeholder:text-white/35 focus:border-brand-300 focus:ring-2 focus:ring-brand-300/25"
                         onChange={(event) => setEnquiryName(event.target.value)}
                         placeholder="Your name"
                         required
@@ -1079,7 +1079,7 @@ function CustomerPackagePage() {
                       <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Email</span>
                       <input
                         autoComplete="email"
-                        className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3.5 text-base text-white outline-none transition placeholder:text-white/35 focus:border-gold-300 focus:ring-2 focus:ring-gold-300/25"
+                        className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3.5 text-base text-white outline-none transition placeholder:text-white/35 focus:border-brand-300 focus:ring-2 focus:ring-brand-300/25"
                         onChange={(event) => setEnquiryEmail(event.target.value)}
                         placeholder="you@example.com"
                         required
@@ -1091,7 +1091,7 @@ function CustomerPackagePage() {
                       <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Phone / WhatsApp</span>
                       <input
                         autoComplete="tel"
-                        className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3.5 text-base text-white outline-none transition placeholder:text-white/35 focus:border-gold-300 focus:ring-2 focus:ring-gold-300/25"
+                        className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3.5 text-base text-white outline-none transition placeholder:text-white/35 focus:border-brand-300 focus:ring-2 focus:ring-brand-300/25"
                         onChange={(event) => setEnquiryPhone(event.target.value)}
                         placeholder="+353 87 000 0000"
                         required
@@ -1102,7 +1102,7 @@ function CustomerPackagePage() {
                     <label className="block">
                       <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Best time to call</span>
                       <input
-                        className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3.5 text-base text-white outline-none transition placeholder:text-white/35 focus:border-gold-300 focus:ring-2 focus:ring-gold-300/25"
+                        className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3.5 text-base text-white outline-none transition placeholder:text-white/35 focus:border-brand-300 focus:ring-2 focus:ring-brand-300/25"
                         onChange={(event) => setEnquiryBestTime(event.target.value)}
                         placeholder="Any time"
                         value={enquiryBestTime}
@@ -1110,10 +1110,10 @@ function CustomerPackagePage() {
                     </label>
 
                     {enquiryStatus === 'error' && enquiryError ? (
-                      <div className="rounded-xl border border-gold-300/40 bg-gold-300/10 px-3 py-2.5 text-sm leading-6 text-white" role="alert">
+                      <div className="rounded-xl border border-brand-300/40 bg-brand-300/10 px-3 py-2.5 text-sm leading-6 text-white" role="alert">
                         <p>{enquiryError}</p>
                         {enquiryErrorCode === ENQUIRY_CONFLICT_EXISTING_PHONE ? (
-                          <p className="mt-2 font-semibold text-gold-100">
+                          <p className="mt-2 font-semibold text-brand-100">
                             <a className="underline underline-offset-2" href="/dashboard/login">
                               Sign in to your trip desk
                             </a>
@@ -1153,7 +1153,7 @@ function CustomerRouteMapShowcase() {
       transition={{ delay: 0.18, duration: 0.85, ease: 'easeOut' }}
     >
       <div className="relative overflow-hidden rounded-[2.4rem] border border-white/10 bg-[linear-gradient(160deg,rgba(255,255,255,0.14),rgba(255,255,255,0.04))] p-5 shadow-soft backdrop-blur-md md:p-7">
-        <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(80,163,45,0.22),transparent_24%),radial-gradient(circle_at_82%_12%,rgba(213,198,0,0.22),transparent_22%),radial-gradient(circle_at_70%_70%,rgba(253,186,116,0.16),transparent_26%)]" />
+        <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(80,163,45,0.22),transparent_24%),radial-gradient(circle_at_82%_12%,rgba(19, 96, 71,0.22),transparent_22%),radial-gradient(circle_at_70%_70%,rgba(253,186,116,0.16),transparent_26%)]" />
         <div className="relative z-10 grid gap-6 md:grid-cols-[0.9fr_1.2fr]">
           <div className="space-y-3">
             {routeStops.map((item, index) => (
@@ -1181,7 +1181,7 @@ function CustomerRouteMapShowcase() {
                 <linearGradient id="customer-package-route-line" x1="60" x2="500" y1="120" y2="280">
                   <stop offset="0%" stopColor="rgba(80,163,45,0.95)" />
                   <stop offset="52%" stopColor="rgba(253,186,116,0.95)" />
-                  <stop offset="100%" stopColor="rgba(213,198,0,0.95)" />
+                  <stop offset="100%" stopColor="rgba(19, 96, 71,0.95)" />
                 </linearGradient>
               </defs>
               <path
@@ -1216,12 +1216,12 @@ function CustomerRouteMapShowcase() {
               <div className="absolute inset-[35%] rounded-full border border-slate-300/22" />
             </m.div>
 
-            <div className="absolute left-[8%] top-[9%] rounded-[1.4rem] border border-gold-300/26 bg-forest-950/76 px-4 py-3 text-white backdrop-blur-sm">
-              <p className="text-sm font-semibold uppercase tracking-[0.14em] text-gold-300">Choose your group</p>
+            <div className="absolute left-[8%] top-[9%] rounded-[1.4rem] border border-brand-300/26 bg-forest-950/76 px-4 py-3 text-white backdrop-blur-sm">
+              <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-300">Choose your group</p>
               <p className="mt-2 text-base font-semibold">1 to 8 golfers</p>
             </div>
 
-            <div className="absolute bottom-[11%] right-[8%] rounded-[1.5rem] border border-[#D5C600]/26 bg-forest-950/62 px-4 py-4 text-white backdrop-blur-sm">
+            <div className="absolute bottom-[11%] right-[8%] rounded-[1.5rem] border border-[#136047]/26 bg-forest-950/62 px-4 py-4 text-white backdrop-blur-sm">
               <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#f7a24f]">Live package view</p>
               <p className="mt-2 text-base font-semibold">Stay, golf, transfers</p>
               <p className="mt-1 text-sm text-white/60">A clearer way to price the trip</p>
@@ -1268,8 +1268,8 @@ function SelectorCard({
               className={cx(
                 'rounded-full border px-4 py-2.5 text-base font-semibold transition-all',
                 isActive
-                  ? 'border-gold-400 bg-forest-900 text-white'
-                  : 'border-forest-100 bg-offwhite text-forest-900 hover:border-gold-300 hover:bg-white'
+                  ? 'border-brand-400 bg-forest-900 text-white'
+                  : 'border-forest-100 bg-offwhite text-forest-900 hover:border-brand-300 hover:bg-white'
               )}
               onClick={() => onSelect(option)}
               type="button"
@@ -1304,7 +1304,7 @@ function BreakdownRow({
   return (
     <div className={cx('flex items-center justify-between gap-4 border-b border-white/8 pb-3 text-base', strong && 'pt-2')}>
       <span className={cx(strong ? 'font-semibold text-white' : 'text-white/68')}>{label}</span>
-      <span className={cx('text-right', strong ? 'font-semibold text-gold-300' : 'text-white')}>{value}</span>
+      <span className={cx('text-right', strong ? 'font-semibold text-brand-300' : 'text-white')}>{value}</span>
     </div>
   )
 }

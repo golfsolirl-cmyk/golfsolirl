@@ -1,66 +1,76 @@
-import { m  } from 'framer-motion'
+import { m, type Variants } from 'framer-motion'
 import { Euro, Lock, MapPin, ShieldCheck } from 'lucide-react'
 
 /**
- * Trust band that sits between the hero and the "Design Your Trip" step
- * cards. Bridges the dark hero into the green design section while
- * communicating the single most important reassurance for Irish golfers:
- * "Your money never leaves Ireland". Visually shares the gold/green
- * palette with the crest + hero so it feels native to the page.
+ * Trust band — "All payments handled in Ireland."
  *
- * Built with:
- *  - Solid gs-dark backdrop with a soft top→bottom green→dark green vignette
- *  - Gold hairline rules top + bottom (echoes the hero's ribbon edges)
- *  - Irish flag chip (green / white / orange) as the pre-headline accent
- *  - Shield icon + bright gold headline anchored centre-left
- *  - Four trust pills: Irish IBAN · EUR pricing · SEPA · 256-bit SSL
- *  - Subtle animated reveals on scroll
+ * Premium pattern (matches homepage extras-strip / transport-route):
+ *  - Cream-warm outer band with chrome hairlines and a soft Irish-green halo
+ *  - Dark forest "Irish payments" panel inside, with:
+ *      • Gold kicker pill ("Irish-owned · paid in Ireland") — tricolour + cream-gold text
+ *      • Two-tone uppercase headline (white + gold-gradient text-clip on "in Ireland.")
+ *      • Gold shield icon (was forest-on-forest = invisible)
+ *      • Aside "What this means" panel with gold-cream kicker
+ *  - Four trust pills on the cream surface — gold-rim forest icon tiles with white icons,
+ *    chrome rings, hover lift, soft halos
+ *  - Stagger reveals on scroll for the panel + each pill
+ *
+ * Fixes the dark-on-dark legibility issues that were making every
+ * accent inside the dark panel disappear.
  */
 
-const fadeUp = {
-  initial: { opacity: 0, y: 14 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, amount: 0.3 },
-  transition: { duration: 0.5, ease: 'easeOut' }
-} as const
+const panelStagger: Variants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.07, delayChildren: 0.05 }
+  }
+}
+
+const panelItem: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.55, ease: [0.22, 0.61, 0.36, 1] }
+  }
+}
+
+const pillStagger: Variants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.06, delayChildren: 0.18 }
+  }
+}
+
+const pillItem: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.45, ease: [0.22, 0.61, 0.36, 1] }
+  }
+}
 
 const trustPills: ReadonlyArray<{
   readonly icon: typeof ShieldCheck
   readonly title: string
   readonly subtitle: string
 }> = [
-  {
-    icon: MapPin,
-    title: 'Irish IBAN',
-    subtitle: 'AIB / BOI account'
-  },
-  {
-    icon: Euro,
-    title: 'Priced in EUR',
-    subtitle: 'No FX surprises'
-  },
-  {
-    icon: ShieldCheck,
-    title: 'SEPA Protected',
-    subtitle: 'Standard EU bank transfer'
-  },
-  {
-    icon: Lock,
-    title: '256-bit SSL',
-    subtitle: 'Encrypted card payments'
-  }
+  { icon: MapPin, title: 'Irish IBAN', subtitle: 'AIB / BOI account' },
+  { icon: Euro, title: 'Priced in EUR', subtitle: 'No FX surprises' },
+  { icon: ShieldCheck, title: 'SEPA Protected', subtitle: 'Standard EU bank transfer' },
+  { icon: Lock, title: '256-bit SSL', subtitle: 'Encrypted card payments' }
 ]
 
 /**
- * Minimal tricolour pill — green, white, orange vertical bars inside a
- * rounded capsule. Pure CSS, no SVG fetch, scales with the parent font-size.
+ * Minimal vertical Irish tricolour — green / white / orange capsule.
  */
 function IrishTricolour({ className }: { readonly className?: string }) {
   return (
     <span
       aria-hidden="true"
       className={
-        'inline-flex h-4 w-6 overflow-hidden rounded-[3px] shadow-[0_1px_4px_rgba(0,0,0,0.4)] ring-1 ring-white/30 ' +
+        'inline-flex h-4 w-6 overflow-hidden rounded-[3px] shadow-[0_1px_4px_rgba(0,0,0,0.4)] ring-1 ring-white/35 ' +
         (className ?? '')
       }
     >
@@ -76,30 +86,15 @@ export function GePaymentsIreland() {
     <section
       id="payments-ireland"
       aria-labelledby="payments-ireland-title"
-      className="relative isolate overflow-hidden bg-[#f5f1e6] text-gs-dark"
+      className="payments-ireland relative isolate overflow-hidden bg-[#faf6ee] text-gs-dark"
     >
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            'radial-gradient(ellipse at 18% 0%, rgba(213,198,0,0.26) 0%, rgba(213,198,0,0) 42%), radial-gradient(ellipse at 82% 20%, rgba(6,59,42,0.08) 0%, rgba(6,59,42,0) 38%), linear-gradient(180deg, rgba(255,255,255,0.75) 0%, rgba(245,241,230,0.96) 55%, rgba(238,230,212,0.94) 100%)'
-        }}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-[0.05]"
-        style={{
-          backgroundImage:
-            'repeating-linear-gradient(45deg, transparent 0px, transparent 14px, #D5C600 14px, #D5C600 15px)'
-        }}
-      />
+      {/* Top + bottom chrome-gold hairline rules */}
       <div
         aria-hidden="true"
         className="absolute inset-x-0 top-0 h-[3px]"
         style={{
           background:
-            'linear-gradient(90deg, transparent 0%, #D5C600 25%, #EBE486 50%, #D5C600 75%, transparent 100%)'
+            'linear-gradient(90deg, transparent 0%, #136047 22%, #d9be7a 50%, #136047 78%, transparent 100%)'
         }}
       />
       <div
@@ -107,98 +102,216 @@ export function GePaymentsIreland() {
         className="absolute inset-x-0 bottom-0 h-[3px]"
         style={{
           background:
-            'linear-gradient(90deg, transparent 0%, #D5C600 25%, #EBE486 50%, #D5C600 75%, transparent 100%)'
+            'linear-gradient(90deg, transparent 0%, #136047 22%, #d9be7a 50%, #136047 78%, transparent 100%)'
         }}
       />
 
-      <div className="relative z-10 mx-auto flex max-w-[1180px] flex-col gap-8 px-5 py-12 sm:px-8 sm:py-14 md:gap-10 md:py-16">
+      <div className="relative z-10 mx-auto flex max-w-[1180px] flex-col gap-9 px-5 py-14 sm:px-8 sm:py-16 md:gap-11 md:py-20">
+        {/* —— Dark forest payments panel —— */}
         <m.div
-          className="relative overflow-hidden rounded-[2rem] border border-white/80 bg-gs-dark px-6 py-8 text-white shadow-[0_26px_70px_rgba(6,59,42,0.22)] sm:px-8 sm:py-10"
-          {...fadeUp}
+          className="ge-on-dark relative overflow-hidden rounded-[2rem] border border-[#d9be7a]/35 px-6 py-9 text-white shadow-[0_28px_70px_rgba(6,59,42,0.28),0_0_36px_rgba(217,190,122,0.12)] ring-1 ring-white/8 sm:px-9 sm:py-11"
+          variants={panelStagger}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.25 }}
+          style={{
+            background:
+              'radial-gradient(circle at 14% 8%, rgba(19,96,71,0.40), transparent 36%), radial-gradient(circle at 88% 92%, rgba(217,190,122,0.16), transparent 38%), linear-gradient(135deg, #0d3a2a 0%, #0a2d20 50%, #08231a 100%)'
+          }}
         >
+          {/* Top + bottom inner gold hairlines */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(213,198,0,0.28),_transparent_24%),radial-gradient(circle_at_bottom_right,_rgba(255,255,255,0.08),_transparent_28%),linear-gradient(135deg,_rgba(6,59,42,0.96),_rgba(8,44,33,0.93)_48%,_rgba(10,30,22,0.96)_100%)]"
+            className="pointer-events-none absolute inset-x-[8%] top-0 h-px bg-gradient-to-r from-transparent via-[#f4dfa6]/65 to-transparent"
           />
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-[8%] top-0 h-px bg-gradient-to-r from-transparent via-gs-gold/90 to-transparent"
+            className="pointer-events-none absolute inset-x-[8%] bottom-0 h-px bg-gradient-to-r from-transparent via-[#f4dfa6]/35 to-transparent"
           />
-          <div className="relative flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between md:gap-8">
+          {/* Soft halos */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(217,190,122,0.18),transparent_70%)] blur-3xl"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-20 -bottom-20 h-80 w-80 rounded-full bg-[radial-gradient(circle_at_center,rgba(11,107,69,0.34),transparent_72%)] blur-3xl"
+          />
+
+          <div className="relative flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between md:gap-10">
             <div className="max-w-3xl">
-              <span className="inline-flex items-center gap-2 rounded-full border border-gs-gold/45 bg-white/6 px-3 py-1.5 backdrop-blur-sm">
+              {/* Gold kicker pill — tricolour + cream-gold text (was forest-on-forest = invisible) */}
+              <m.span
+                variants={panelItem}
+                className="ge-on-dark-kicker inline-flex items-center gap-2 rounded-full border border-[#f4dfa6]/55 bg-white/[0.08] px-3.5 py-1.5 backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_0_22px_rgba(217,190,122,0.18)]"
+                data-keep-color
+                style={{ color: '#fbe8b5' }}
+              >
                 <IrishTricolour />
-                <span className="font-ge text-xs font-extrabold uppercase tracking-[0.2em] text-gs-gold sm:text-[0.78rem]">
+                <span
+                  className="font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.22em] sm:text-[0.74rem]"
+                  data-keep-color
+                  style={{ color: '#fbe8b5' }}
+                >
                   Irish-owned · paid in Ireland
                 </span>
-              </span>
+              </m.span>
 
-              <h2
+              {/* Accent bar */}
+              <m.span
+                aria-hidden="true"
+                variants={panelItem}
+                className="mt-5 block h-[3px] w-20 rounded-full bg-gradient-to-r from-transparent via-[#f4dfa6] to-transparent"
+              />
+
+              <m.h2
                 id="payments-ireland-title"
-                className="mt-4 flex items-center gap-3 font-ge text-[1.7rem] font-extrabold leading-tight text-white sm:text-[1.95rem] md:text-[2.2rem]"
-              >
-                <ShieldCheck
-                  className="h-7 w-7 shrink-0 text-gs-gold drop-shadow-[0_4px_10px_rgba(213,198,0,0.5)] sm:h-8 sm:w-8"
-                  aria-hidden="true"
-                  strokeWidth={2.4}
-                />
-                <span>
-                  All payments handled <span className="text-gs-gold">in Ireland.</span>
-                </span>
-              </h2>
-
-              <p className="mt-3 max-w-2xl font-ge text-base leading-7 text-white/86 sm:text-[1rem]">
-                Your money goes straight into our Irish bank account — no card details ever leave the country. Priced in EUR,
-                settled by SEPA, invoiced from Ireland. The way an Irish golf trip should be.
-              </p>
-            </div>
-
-            <div className="w-full max-w-[18rem] rounded-[1.6rem] border border-white/12 bg-white/[0.08] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.14)] backdrop-blur-sm">
-              <p className="font-ge text-[0.72rem] font-bold uppercase tracking-[0.2em] text-gs-gold/88">What this means</p>
-              <p className="mt-2 font-ge text-[1rem] leading-7 text-white/84">
-                Clear euro pricing, Irish banking, and one accountable team instead of fragmented supplier payments.
-              </p>
-            </div>
-          </div>
-        </m.div>
-
-        <m.div
-          className="grid gap-6 lg:grid-cols-[0.78fr_0.22fr] lg:items-start"
-          initial={{ opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.55, ease: 'easeOut', delay: 0.1 }}
-        >
-          <ul className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 md:gap-3.5">
-            {trustPills.map(({ icon: Icon, title, subtitle }, idx) => (
-              <m.li
-                key={title}
-                className="group relative flex items-center gap-3 overflow-hidden rounded-[1.35rem] border border-[#e3d6b7] bg-white/88 px-4 py-3.5 shadow-[0_16px_40px_rgba(69,53,24,0.09)] backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-gs-gold/60 hover:shadow-[0_20px_45px_rgba(69,53,24,0.14)]"
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.4, ease: 'easeOut', delay: 0.18 + idx * 0.06 }}
+                variants={panelItem}
+                className="mt-5 flex items-center gap-3 font-ge text-[1.7rem] font-extrabold uppercase leading-[1.08] tracking-[0.01em] drop-shadow-[0_3px_18px_rgba(0,0,0,0.55)] sm:text-[2rem] md:text-[2.25rem]"
+                style={{ color: '#ffffff' }}
               >
                 <span
                   aria-hidden="true"
-                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-gs-gold to-[#D5C600] text-gs-dark shadow-[0_6px_14px_rgba(213,198,0,0.25)]"
+                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[#f4dfa6]/55 bg-gradient-to-br from-[#1a7a59] via-[#136047] to-[#0c3527] shadow-[0_10px_22px_rgba(6,59,42,0.45),0_0_18px_rgba(217,190,122,0.22)] ring-1 ring-white/15 sm:h-12 sm:w-12"
                 >
-                  <Icon className="h-5 w-5" strokeWidth={2.4} />
+                  <ShieldCheck
+                    className="h-5 w-5 sm:h-[1.45rem] sm:w-[1.45rem]"
+                    aria-hidden="true"
+                    strokeWidth={2.4}
+                    style={{ color: '#fbe8b5' }}
+                  />
                 </span>
+                <span>
+                  <span style={{ color: '#ffffff' }}>All payments handled </span>
+                  <span
+                    className="bg-clip-text"
+                    style={{
+                      backgroundImage:
+                        'linear-gradient(135deg, #fff5cf 0%, #f4dfa6 45%, #d9be7a 100%)',
+                      color: 'transparent',
+                      WebkitTextFillColor: 'transparent'
+                    }}
+                  >
+                    in Ireland.
+                  </span>
+                </span>
+              </m.h2>
+
+              <m.p
+                variants={panelItem}
+                className="mt-5 max-w-2xl font-ge text-[1.02rem] leading-[1.72] sm:text-[1.06rem]"
+                style={{ color: 'rgba(255,255,255,0.92)' }}
+              >
+                Your money goes straight into our Irish bank account &mdash; no
+                card details ever leave the country. Priced in EUR, settled by
+                SEPA, invoiced from Ireland. The way an Irish golf trip should
+                be.
+              </m.p>
+            </div>
+
+            {/* Aside — "What this means" — gold kicker + crisp body */}
+            <m.div
+              variants={panelItem}
+              className="w-full max-w-[18rem] rounded-[1.6rem] border border-[#f4dfa6]/35 bg-white/[0.06] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.22)] ring-1 ring-white/10 backdrop-blur-sm"
+            >
+              <p
+                className="ge-on-dark-kicker font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.22em]"
+                data-keep-color
+                style={{ color: '#fbe8b5' }}
+              >
+                What this means
+              </p>
+              <span
+                aria-hidden="true"
+                className="mt-3 block h-px w-10 bg-gradient-to-r from-[#f4dfa6]/80 to-transparent"
+              />
+              <p
+                className="mt-3 font-ge text-[0.98rem] leading-[1.7]"
+                style={{ color: 'rgba(255,255,255,0.94)' }}
+              >
+                Clear euro pricing, Irish banking, and one accountable team
+                instead of fragmented supplier payments.
+              </p>
+            </m.div>
+          </div>
+        </m.div>
+
+        {/* —— Trust pills + protected-flow card —— */}
+        <m.div
+          className="grid gap-6 lg:grid-cols-[0.78fr_0.22fr] lg:items-start"
+          variants={pillStagger}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.25 }}
+        >
+          <ul className="grid w-full grid-cols-1 gap-3.5 sm:grid-cols-2 md:gap-4">
+            {trustPills.map(({ icon: Icon, title, subtitle }) => (
+              <m.li
+                key={title}
+                variants={pillItem}
+                className="group relative flex items-center gap-3.5 overflow-hidden rounded-[1.4rem] border border-gs-green/15 bg-white px-4 py-4 shadow-[0_14px_32px_rgba(6,32,22,0.08)] ring-1 ring-chrome-300/70 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#d9be7a]/55 hover:shadow-[0_20px_44px_rgba(6,32,22,0.14),0_0_22px_rgba(217,190,122,0.18)]"
+              >
+                {/* Top hairline */}
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-brand-700/45 to-transparent"
+                />
+                {/* Soft halo */}
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -right-8 -bottom-8 h-24 w-24 rounded-full bg-brand-700/[0.06] blur-3xl"
+                />
+
+                {/* Icon tile — was charcoal-on-green (invisible) → now white-on-forest with gold rim */}
+                <span
+                  aria-hidden="true"
+                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#d9be7a]/55 bg-gradient-to-br from-[#1a7a59] via-[#136047] to-[#0c3527] shadow-[0_8px_18px_rgba(6,59,42,0.32),0_0_14px_rgba(217,190,122,0.22)] ring-1 ring-white/15"
+                >
+                  <Icon className="h-5 w-5 text-white" strokeWidth={2.4} aria-hidden />
+                </span>
+
                 <div className="min-w-0 leading-tight">
-                  <p className="font-ge text-base font-extrabold text-gs-dark sm:text-[0.95rem]">{title}</p>
-                  <p className="mt-0.5 font-ge text-sm text-ge-gray500 sm:text-[0.78rem]">{subtitle}</p>
+                  <p className="font-ge text-[0.98rem] font-extrabold uppercase tracking-[0.04em] text-gs-dark">
+                    {title}
+                  </p>
+                  <p className="mt-1 font-ge text-[0.82rem] text-ge-gray500">
+                    {subtitle}
+                  </p>
                 </div>
+
+                {/* Bottom gold accent grows on hover */}
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-x-0 bottom-0 h-[2px] origin-left scale-x-0 transition-transform duration-500 group-hover:scale-x-100"
+                  style={{
+                    background:
+                      'linear-gradient(90deg, transparent 0%, rgba(217,190,122,0.55) 18%, #136047 38%, #f4dfa6 50%, #136047 62%, rgba(217,190,122,0.55) 82%, transparent 100%)'
+                  }}
+                />
               </m.li>
             ))}
           </ul>
 
-          <div className="rounded-[1.5rem] border border-[#e3d6b7] bg-white/78 p-5 shadow-[0_16px_40px_rgba(69,53,24,0.08)]">
-            <p className="font-ge text-[0.72rem] font-bold uppercase tracking-[0.2em] text-ge-gray500">Protected flow</p>
-            <p className="mt-3 font-ge text-[1rem] leading-7 text-gs-dark">
-              We keep the financial side calm and legible so organisers can focus on dates, golf, and the group.
+          <m.div
+            variants={pillItem}
+            className="relative overflow-hidden rounded-[1.5rem] border border-gs-green/15 bg-white p-6 shadow-[0_14px_32px_rgba(6,32,22,0.08)] ring-1 ring-chrome-300/70"
+          >
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-brand-700/45 to-transparent"
+            />
+            <p className="font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.22em] text-gs-green">
+              Protected flow
             </p>
-          </div>
+            <span
+              aria-hidden="true"
+              className="mt-3 block h-px w-10 bg-gradient-to-r from-brand-700/55 to-transparent"
+            />
+            <p className="mt-3 font-ge text-[0.98rem] leading-[1.7] text-gs-dark/86">
+              We keep the financial side calm and legible so organisers can
+              focus on dates, golf, and the group.
+            </p>
+          </m.div>
         </m.div>
       </div>
     </section>

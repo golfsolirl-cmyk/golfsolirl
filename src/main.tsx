@@ -4,6 +4,7 @@ import { pathnameNeedsImmediateSupabaseHydration } from './lib/auth-bootstrap-pa
 import { MotionRoot } from './providers/motion-root'
 import { isGeContentPagePath } from './pages/golf-experience/data/content-pages'
 import './index.css'
+import './theme/ge-page-token-overrides.css'
 
 /** Supabase implicit magic links often land on Site URL (/) with tokens in #hash — route to callback so we strip secrets and run one completion flow. */
 if (typeof window !== 'undefined') {
@@ -64,12 +65,21 @@ const ProposalPdfSamplePage = lazy(() =>
 const UnifiedPdfSamplePage = lazy(() =>
   import('./pages/unified-pdf-sample-page').then((m) => ({ default: m.UnifiedPdfSamplePage }))
 )
+const HomepageBrandedPdfSamplePage = lazy(() =>
+  import('./pages/homepage-branded-pdf-sample-page').then((m) => ({ default: m.HomepageBrandedPdfSamplePage }))
+)
 const DriverDashboardPage = lazy(() =>
   import('./pages/driver-dashboard-page').then((m) => ({ default: m.DriverDashboardPage }))
 )
 const RateTripPage = lazy(() => import('./pages/rate-trip-page').then((m) => ({ default: m.RateTripPage })))
 const BusinessCardsPage = lazy(() =>
   import('./pages/business-cards-page').then((m) => ({ default: m.BusinessCardsPage }))
+)
+const CinematicHomePage = lazy(() =>
+  import('./pages/cinematic-home/cinematic-home-page').then((m) => ({ default: m.CinematicHomePage }))
+)
+const BrandIdentityMockupPage = lazy(() =>
+  import('./pages/brand-mockup/brand-identity-mockup-page').then((m) => ({ default: m.BrandIdentityMockupPage }))
 )
 
 type PageComponent = LazyExoticComponent<ComponentType>
@@ -91,6 +101,7 @@ function syncReadableTypePageClass(path: string) {
     '/enquiry-record',
     '/proposal-pdf-sample',
     '/unified-pdf-sample',
+    '/homepage-client-pdf-sample',
     '/documents/terms',
     '/documents/welcome'
   ])
@@ -204,8 +215,24 @@ function resolvePage(): PageComponent {
     return UnifiedPdfSamplePage
   }
 
+  if (normalizedPath === '/homepage-client-pdf-sample') {
+    return HomepageBrandedPdfSamplePage
+  }
+
   if (normalizedPath === '/business-cards') {
     return BusinessCardsPage
+  }
+
+  if (normalizedPath === '/brand-mockup') {
+    return BrandIdentityMockupPage
+  }
+
+  if (
+    normalizedPath === '/cinematic-home' ||
+    normalizedPath === '/homepage-v2' ||
+    normalizedPath === '/preview'
+  ) {
+    return CinematicHomePage
   }
 
   return GolfExperienceHome

@@ -2,19 +2,19 @@ import { m  } from 'framer-motion'
 import type { ComponentProps, ReactNode } from 'react'
 import { cx } from '../../../lib/utils'
 
-/** Outer gold jewel bezel — compact so it lines up cleanly with the crest row. */
+/** Outer yellow→green jewel bezel — matches the airport-transfer brand gradient. */
 const chromeOuter =
   'group relative inline-flex h-[3.25rem] w-[3.25rem] shrink-0 rounded-full p-[2px] sm:h-[3.375rem] sm:w-[3.375rem] ' +
-  'bg-gradient-to-br from-[#fffef8] via-[#ffe066] to-[#b8890d] ' +
-  'shadow-[0_4px_16px_rgba(213,198,0,0.38),0_0_0_1px_rgba(255,236,160,0.75),inset_0_1px_0_rgba(255,255,255,0.88)] ' +
-  'transition-[transform,box-shadow,filter] duration-200 hover:shadow-[0_6px_22px_rgba(213,198,0,0.5),0_0_0_1px_rgba(255,240,190,0.9)] hover:brightness-[1.02] active:scale-[0.97] ' +
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gs-gold focus-visible:ring-offset-2 focus-visible:ring-offset-white'
+  'bg-gradient-to-br from-[#fff3a0] via-[#9fd957] to-[#136047] ' +
+  'shadow-[0_4px_16px_rgba(19,96,71,0.4),0_0_0_1px_rgba(159,217,87,0.55),inset_0_1px_0_rgba(255,255,255,0.85)] ' +
+  'transition-[transform,box-shadow,filter] duration-200 hover:shadow-[0_6px_22px_rgba(19,96,71,0.55),0_0_0_1px_rgba(255,243,160,0.85)] hover:brightness-[1.04] active:scale-[0.97] ' +
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#136047] focus-visible:ring-offset-2 focus-visible:ring-offset-white'
 
-/** Inner pearl face + inset gold hairline. */
+/** Inner pearl face + inset green hairline. */
 const chromeInner =
   'relative flex h-full w-full items-center justify-center overflow-hidden rounded-full ' +
-  'bg-gradient-to-b from-white via-[#fafef9] to-[#e8f4ec] ' +
-  'ring-1 ring-inset ring-gs-gold/55 shadow-[inset_0_1px_0_rgba(255,255,255,0.95)]'
+  'bg-gradient-to-b from-white via-[#f4faec] to-[#e1f1d6] ' +
+  'ring-1 ring-inset ring-[#136047]/55 shadow-[inset_0_1px_0_rgba(255,255,255,0.95)]'
 
 function GlintShimmerLayers() {
   return (
@@ -35,7 +35,7 @@ function GlintShimmerLayers() {
         className="pointer-events-none absolute inset-0 rounded-full"
         style={{
           background:
-            'radial-gradient(ellipse 80% 60% at 28% 22%, rgba(255,255,255,0.9) 0%, transparent 50%), radial-gradient(ellipse 70% 55% at 78% 88%, rgba(213,198,0,0.45) 0%, transparent 52%)',
+            'radial-gradient(ellipse 80% 60% at 28% 22%, rgba(255,255,255,0.9) 0%, transparent 50%), radial-gradient(ellipse 70% 55% at 78% 88%, rgba(19,96,71,0.5) 0%, transparent 52%)',
           mixBlendMode: 'overlay'
         }}
         animate={{ opacity: [0.2, 0.55, 0.2] }}
@@ -43,7 +43,7 @@ function GlintShimmerLayers() {
       />
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-[4px] rounded-full border border-gs-gold/25 opacity-80"
+        className="pointer-events-none absolute inset-[4px] rounded-full border border-[#136047]/30 opacity-85"
       />
     </>
   )

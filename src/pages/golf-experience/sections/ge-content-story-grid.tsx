@@ -38,7 +38,7 @@ export function GeContentStoryGrid({ eyebrow, title, lead, cards }: GeContentSto
       className="relative"
     >
       <m.div className="mx-auto max-w-3xl text-center" {...fadeUp}>
-        <p className="font-ge text-[0.95rem] font-bold uppercase tracking-[0.18em] text-gs-gold sm:text-[1rem]">{eyebrow}</p>
+        <p className="font-ge text-[0.95rem] font-bold uppercase tracking-[0.18em] text-[#fbe8b5] sm:text-[1rem]">{eyebrow}</p>
         <h2 className="mt-3 font-ge text-[2.12rem] font-extrabold leading-[1.06] tracking-[0.01em] text-white sm:text-[2.45rem] lg:text-[2.7rem]">{title}</h2>
         <p className="mx-auto mt-4 max-w-2xl font-ge text-[1.06rem] leading-8 text-white/85 sm:text-[1.12rem]">{lead}</p>
       </m.div>
@@ -49,7 +49,7 @@ export function GeContentStoryGrid({ eyebrow, title, lead, cards }: GeContentSto
         {cards.map((card, i) => (
           <m.article
             key={card.section.title}
-            className="group relative flex flex-col overflow-hidden rounded-2xl bg-gs-dark/40 ring-1 ring-white/10 shadow-[0_22px_60px_rgba(0,0,0,0.45)] transition-all duration-500 hover:-translate-y-1 hover:ring-gs-gold/40"
+            className="group relative flex flex-col overflow-hidden rounded-2xl bg-gs-dark/40 ring-1 ring-white/10 shadow-[0_22px_60px_rgba(0,0,0,0.45)] transition-all duration-500 hover:-translate-y-1 hover:ring-brand-700/40"
             {...fadeUp}
             transition={{ ...fadeUp.transition, delay: i * 0.08 }}
           >
@@ -72,11 +72,11 @@ export function GeContentStoryGrid({ eyebrow, title, lead, cards }: GeContentSto
                 className="pointer-events-none absolute inset-x-0 bottom-0 h-[3px]"
                 style={{
                   background:
-                    'linear-gradient(90deg, transparent 0%, #738421 15%, #D5C600 35%, #EBE486 50%, #D5C600 65%, #738421 85%, transparent 100%)'
+                    'linear-gradient(90deg, transparent 0%, #738421 15%, #136047 35%, #d9be7a 50%, #136047 65%, #738421 85%, transparent 100%)'
                 }}
               />
-              <span className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-gs-dark/60 px-3 py-1.5 font-ge text-[0.82rem] font-extrabold uppercase tracking-[0.16em] text-gs-gold backdrop-blur-md sm:text-[0.86rem]">
-                <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-gs-gold" />
+              <span className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-gs-dark/60 px-3 py-1.5 font-ge text-[0.82rem] font-extrabold uppercase tracking-[0.16em] text-[#fbe8b5] backdrop-blur-md sm:text-[0.86rem]">
+                <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[#fbe8b5]" />
                 {card.badge}
               </span>
             </div>
@@ -85,7 +85,7 @@ export function GeContentStoryGrid({ eyebrow, title, lead, cards }: GeContentSto
               <h3 className="font-ge text-[1.48rem] font-extrabold leading-tight text-white sm:text-[1.58rem]">{card.section.title}</h3>
               <p className="mt-3 flex-1 font-ge text-[1.04rem] leading-8 text-white/85 sm:text-[1.08rem]">{card.section.body}</p>
               {card.section.bullets?.[0] ? (
-                <p className="mt-5 inline-flex items-center gap-2 border-t border-white/15 pt-4 font-ge text-[0.92rem] font-bold uppercase tracking-[0.12em] text-gs-gold sm:text-[0.86rem]">
+                <p className="mt-5 inline-flex items-center gap-2 border-t border-white/15 pt-4 font-ge text-[0.92rem] font-bold uppercase tracking-[0.12em] text-[#fbe8b5] sm:text-[0.86rem]">
                   <ArrowRight className="h-3.5 w-3.5" aria-hidden />
                   {card.section.bullets[0]}
                 </p>

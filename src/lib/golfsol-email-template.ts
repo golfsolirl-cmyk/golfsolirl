@@ -4,20 +4,20 @@ export const golfSolEmailPreviewText =
   'A premium GolfSol Ireland itinerary snapshot with transfers, tee times, accommodation and next steps.'
 
 const brand = {
-  green: '#063B2A',
-  greenSoft: '#0F513C',
-  gold: '#D5C600',
-  goldDeep: '#A59D13',
-  cream: '#F7F0E2',
-  sand: '#E9D9B6',
-  ink: '#16231D',
-  muted: '#66736D',
+  green: '#0B4D3B',
+  greenSoft: '#1e7558',
+  gold: '#D4A843',
+  goldDeep: '#B8922E',
+  cream: '#eef2ef',
+  sand: '#d9d9d9',
+  ink: '#08120d',
+  muted: '#5F6B63',
   white: '#FFFFFF'
 } as const
 
 const assets = {
-  logo: '/golfsol-crest.svg',
-  fleetLineup: '/images/gsol-airport-transfer-desk-hero.png',
+  logo: '/images/g-sol-logo.png',
+  fleetLineup: '/images/88054e80-6dd1-483f-8557-cdc45caa2442.png',
   arrivals: '/images/transport-moment-arrivals.jpg',
   resort: '/images/transport-moment-resort.jpg',
   coastalDrive: '/images/transport-hero-coastal-drive.jpg'
@@ -116,7 +116,7 @@ export function getGolfSolBrandedEmailHtml() {
                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                           <tr>
                             <td class="mobile-stack" style="width:62%; vertical-align:top;">
-                              <div style="display:inline-block; border:1px solid rgba(213,198,0,0.55); border-radius:999px; padding:8px 12px; font-family:Arial, Helvetica, sans-serif; color:${brand.gold}; font-size:11px; line-height:14px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase;">
+                              <div style="display:inline-block; border:1px solid rgba(19, 96, 71,0.55); border-radius:999px; padding:8px 12px; font-family:Arial, Helvetica, sans-serif; color:${brand.gold}; font-size:11px; line-height:14px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase;">
                                 Trip plan ready
                               </div>
                               <h1 class="hero-title" style="margin:18px 0 0 0; font-family:Georgia, 'Times New Roman', serif; color:${brand.white}; font-size:43px; line-height:48px; font-weight:700; letter-spacing:-1.2px;">
@@ -127,7 +127,7 @@ export function getGolfSolBrandedEmailHtml() {
                               </p>
                             </td>
                             <td class="mobile-stack" style="width:38%; vertical-align:top; padding-left:22px;">
-                              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0B4935; border:1px solid rgba(213,198,0,0.32); border-radius:22px;">
+                              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0B4D3B; border:1px solid rgba(19, 96, 71,0.32); border-radius:22px;">
                                 <tr>
                                   <td style="padding:18px;">
                                     <p style="margin:0; font-family:Arial, Helvetica, sans-serif; color:${brand.gold}; font-size:11px; line-height:14px; font-weight:800; letter-spacing:1.6px; text-transform:uppercase;">Now boarding</p>

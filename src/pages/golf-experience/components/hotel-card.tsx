@@ -42,21 +42,22 @@ export function GeHotelCard({ hotel }: HotelCardProps) {
           decoding="async"
           className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-110"
         />
+        {/* Stronger bottom scrim so the white hotel name pops on every photo */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gs-dark/75 via-gs-dark/10 to-transparent"
+          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#04130c]/92 via-[#04130c]/35 to-transparent"
         />
         {/* Top row: flex keeps stars + area chip from colliding on narrow 4-up grids */}
         <div className="pointer-events-none absolute left-2 right-2 top-2 z-10 flex flex-wrap items-start justify-between gap-2 sm:left-3 sm:right-3 sm:top-3">
           <div className="flex flex-wrap items-start gap-2">
-            <span className="inline-flex shrink-0 items-center gap-0.5 rounded-full border border-gs-gold/60 bg-gs-dark/90 px-2 py-0.5 shadow-[0_8px_18px_rgba(0,0,0,0.45)] backdrop-blur-sm sm:px-2.5 sm:py-1">
+            <span className="inline-flex shrink-0 items-center gap-0.5 rounded-full border border-[#d9be7a]/55 bg-gs-dark/90 px-2 py-0.5 shadow-[0_8px_18px_rgba(0,0,0,0.45)] backdrop-blur-sm sm:px-2.5 sm:py-1">
               {Array.from({ length: hotel.stars }).map((_, idx) => (
                 <Star
                   key={idx}
                   className="h-3 w-3 sm:h-3.5 sm:w-3.5"
                   aria-hidden="true"
-                  fill="#D5C600"
-                  stroke="#D5C600"
+                  fill="#f4dfa6"
+                  stroke="#d9be7a"
                   strokeWidth={1.5}
                 />
               ))}
@@ -72,8 +73,12 @@ export function GeHotelCard({ hotel }: HotelCardProps) {
             <span className="truncate">{hotel.area}</span>
           </span>
         </div>
-        {/* Hotel name — line clamp so long names never grow up under the chips */}
-        <h3 className="absolute bottom-2 left-3 right-3 line-clamp-2 font-ge text-base font-extrabold leading-snug text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.65)] sm:bottom-3 sm:left-4 sm:right-4 sm:text-[1.15rem]">
+        {/* Hotel name — pure white, strong shadow, sits above the gradient scrim.
+            Inline color used as a defensive override against global theme rules. */}
+        <h3
+          style={{ color: '#ffffff' }}
+          className="absolute bottom-2 left-3 right-3 line-clamp-2 font-ge text-[1.02rem] font-extrabold leading-snug text-white tracking-[0.01em] drop-shadow-[0_3px_12px_rgba(0,0,0,0.85)] sm:bottom-3 sm:left-4 sm:right-4 sm:text-[1.18rem]"
+        >
           {hotel.name}
         </h3>
       </div>
@@ -86,7 +91,7 @@ export function GeHotelCard({ hotel }: HotelCardProps) {
           <span className="font-ge text-xs font-bold uppercase tracking-[0.08em] text-gs-green sm:text-[0.72rem]">
             {hotel.nearestCourse}
           </span>
-          <span className="inline-flex items-center gap-1 font-ge text-sm font-bold uppercase tracking-[0.1em] text-ge-orange transition-colors group-hover:text-gs-dark sm:text-[0.78rem]">
+          <span className="inline-flex items-center gap-1 font-ge text-sm font-bold uppercase tracking-[0.1em] text-brand-700 transition-colors group-hover:text-gs-dark sm:text-[0.78rem]">
             Get Quote
             <ArrowRight
               className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1"
@@ -99,7 +104,7 @@ export function GeHotelCard({ hotel }: HotelCardProps) {
       {/* Bottom gold accent bar that grows on hover */}
       <span
         aria-hidden="true"
-        className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-gradient-to-r from-gs-gold via-[#D5C600] to-ge-orange transition-transform duration-500 group-hover:scale-x-100"
+        className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-gradient-to-r from-brand-800 via-[#136047] to-brand-700 transition-transform duration-500 group-hover:scale-x-100"
       />
     </m.a>
   )

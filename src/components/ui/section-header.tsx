@@ -51,7 +51,7 @@ export function AnimatedStepKicker({
         className={cx(
           'mb-3 text-[1rem] font-semibold uppercase tracking-[0.14em] md:text-[1.08rem]',
           dark
-            ? 'text-gold-200 drop-shadow-[0_2px_16px_rgba(8,27,8,0.65)]'
+            ? 'text-brand-200 drop-shadow-[0_2px_16px_rgba(8,27,8,0.65)]'
             : 'text-forest-800',
           className
         )}
@@ -84,7 +84,7 @@ export function AnimatedStepKicker({
           aria-hidden="true"
           className={cx(
             'font-display text-[1.3rem] font-black leading-none md:text-[1.68rem]',
-            dark ? 'text-gold-300' : 'text-gold-500'
+            dark ? 'text-brand-300' : 'text-brand-500'
           )}
         >
           —

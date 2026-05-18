@@ -8,89 +8,127 @@ export default {
     extend: {
       colors: {
         forest: {
-          950: '#0a2008',
-          900: '#163a13',
-          800: '#1a4516',
-          700: '#1f571a',
-          600: '#2a7020',
-          500: '#3a8d2e',
-          100: '#d9efd3',
-          50: '#f0f7ee'
+          950: 'var(--brand-950)',
+          900: 'var(--brand-900)',
+          800: 'var(--brand-800)',
+          700: 'var(--brand-700)',
+          600: 'var(--brand-600)',
+          500: 'var(--brand-500)',
+          100: 'var(--chrome-200)',
+          50: 'var(--chrome-50)'
         },
         fairway: {
-          700: '#316619',
-          600: '#3d8120',
-          500: '#50a32d',
-          400: '#6ebf47',
-          200: '#c3e9a8',
-          100: '#e3f5d3',
-          50: '#f5fbf0'
+          700: 'var(--brand-700)',
+          600: 'var(--brand-600)',
+          500: 'var(--brand-500)',
+          400: 'var(--brand-500)',
+          200: 'var(--chrome-200)',
+          100: 'var(--chrome-100)',
+          50: 'var(--chrome-50)'
         },
+        /** Legacy gold scale → crest greens (no mustard UI). */
         gold: {
-          600: '#8A7F0B',
-          500: '#D5C600',
-          400: '#D5C600',
-          300: '#EBE486',
-          50: '#FAF9E6'
+          950: 'var(--brand-950)',
+          600: 'var(--brand-700)',
+          500: 'var(--brand-700)',
+          400: 'var(--brand-600)',
+          300: 'var(--brand-500)',
+          200: 'var(--chrome-300)',
+          100: 'var(--chrome-200)',
+          50: 'var(--chrome-50)'
         },
         amber: {
-          50: '#FAF9E6',
-          100: '#F3F0B8',
-          200: '#EBE486',
-          300: '#DDD13E',
-          400: '#D5C600',
-          500: '#BDB00A',
-          600: '#A59D13',
-          700: '#738421',
-          800: '#4F651D',
-          900: '#3E522D',
-          950: '#233C12'
+          50: 'var(--chrome-50)',
+          100: 'var(--chrome-100)',
+          200: 'var(--chrome-200)',
+          300: 'var(--chrome-300)',
+          400: 'var(--brand-600)',
+          500: 'var(--brand-700)',
+          600: 'var(--brand-700)',
+          700: 'var(--brand-800)',
+          800: 'var(--brand-900)',
+          900: 'var(--brand-950)',
+          950: 'var(--brand-950)'
         },
         yellow: {
-          50: '#FAF9E6',
-          100: '#F3F0B8',
-          200: '#EBE486',
-          300: '#DDD13E',
-          400: '#D5C600',
-          500: '#BDB00A',
-          600: '#A59D13',
-          700: '#738421',
-          800: '#4F651D',
-          900: '#3E522D',
-          950: '#233C12'
+          50: 'var(--chrome-50)',
+          100: 'var(--chrome-100)',
+          200: 'var(--chrome-200)',
+          300: 'var(--chrome-300)',
+          400: 'var(--brand-600)',
+          500: 'var(--brand-700)',
+          600: 'var(--brand-700)',
+          700: 'var(--brand-800)',
+          800: 'var(--brand-900)',
+          900: 'var(--brand-950)',
+          950: 'var(--brand-950)'
+        },
+        chrome: {
+          50: 'var(--chrome-50)',
+          100: 'var(--chrome-100)',
+          200: 'var(--chrome-200)',
+          300: 'var(--chrome-300)',
+          400: 'var(--chrome-400)'
+        },
+        sand: {
+          DEFAULT: 'var(--chrome-300)',
+          50: 'var(--chrome-100)',
+          100: 'var(--chrome-200)'
         },
         sky: {
-          muted: '#e8f4fb',
-          section: '#cce8f4',
-          light: '#dbeafe'
+          muted: 'var(--chrome-100)',
+          section: 'var(--chrome-100)',
+          light: 'var(--chrome-50)'
         },
-        cream: '#f2f5ef',
-        offwhite: '#f7f9f5',
-        // GolfSol Ireland sport-energy palette (used on the clone home `/`)
+        /** Locked header background — do not change. */
+        cream: 'var(--header-bg)',
+        offwhite: 'var(--bg-main)',
+        brand: {
+          forest: 'var(--brand-800)',
+          'forest-deep': 'var(--brand-900)',
+          fairway: 'var(--brand-600)',
+          leaf: 'var(--brand-500)',
+          mustard: 'var(--brand-700)',
+          cream: 'var(--chrome-50)',
+          'cream-soft': 'var(--chrome-100)',
+          white: 'var(--bg-section)',
+          charcoal: 'var(--text-primary)',
+          navy: 'var(--text-secondary)',
+          muted: 'var(--text-muted)',
+          sand: 'var(--chrome-300)'
+        },
         gs: {
-          green: '#0B6B45',          // Primary Green — fresher, stronger
-          dark: '#063B2A',            // Dark Green — text & deep surfaces
-          electric: '#1ED760',        // Electric Green Accent — energy pop
-          gold: '#D5C600',            // Gold — bright, sporty
-          'gold-light': '#EBE486',    // Gold Highlight
-          bg: '#F4F7F5'               // Light turf background
+          green: 'var(--brand-600)',
+          dark: 'var(--brand-900)',
+          primary: 'var(--brand-800)',
+          electric: 'var(--brand-500)',
+          gold: 'var(--brand-700)',
+          'gold-light': 'var(--brand-600)',
+          bg: 'var(--bg-main)'
         },
         ge: {
-          teal: '#007C69',
-          'teal-dark': '#005a4d',
-          'teal-light': '#29c4a9',
-          blue: '#2692E0',
-          'blue-light': '#7EBEC5',
-          orange: '#ff5b2d',
-          'orange-hover': '#e94a1f',
-          purple: '#61115D',
-          ink: '#2d3940',
-          gray700: '#3e3e3e',
-          gray500: '#4e4e4e',
-          gray300: '#bfbfbf',
-          gray200: '#e2e2e2',
-          gray100: '#efefef',
-          gray50: '#f3f3f3'
+          teal: 'var(--brand-800)',
+          'teal-dark': 'var(--brand-900)',
+          'teal-light': 'var(--brand-500)',
+          blue: 'var(--brand-600)',
+          'blue-light': 'var(--brand-500)',
+          orange: 'var(--brand-700)',
+          'orange-hover': 'var(--brand-600)',
+          purple: 'var(--brand-900)',
+          ink: 'var(--text-primary)',
+          gray700: 'var(--text-secondary)',
+          gray500: 'var(--text-muted)',
+          gray300: 'var(--border-default)',
+          gray200: 'var(--border-light)',
+          gray100: 'var(--chrome-100)',
+          gray50: 'var(--bg-main)'
+        },
+        silver: {
+          100: 'var(--silver-100)',
+          200: 'var(--silver-200)',
+          300: 'var(--silver-300)',
+          400: 'var(--silver-400)',
+          500: 'var(--silver-500)'
         }
       },
       fontFamily: {
@@ -101,22 +139,31 @@ export default {
         script: ['"Rubik"', 'system-ui', 'sans-serif'],
         'brand-script': ['"Dancing Script"', 'cursive'],
         'brand-serif': ['"Rubik"', 'system-ui', 'sans-serif'],
+        'ge-display': ['"Cormorant Garamond"', 'Georgia', 'serif'],
         ge: ['"Open Sans"', 'system-ui', 'sans-serif']
       },
+      borderRadius: {
+        'gs-sm': 'var(--radius-sm)',
+        'gs-md': 'var(--radius-md)',
+        'gs-lg': 'var(--radius-lg)',
+        'gs-xl': 'var(--radius-xl)'
+      },
       boxShadow: {
-        glow: '0 24px 80px rgba(213, 198, 0, 0.18)',
-        soft: '0 18px 60px rgba(22, 58, 19, 0.12)',
-        'gs-gold': '0 8px 22px rgba(213,198,0,0.42)',
-        'gs-gold-hover': '0 10px 28px rgba(213,198,0,0.62)',
-        'gs-green': '0 8px 22px rgba(11,107,69,0.32)'
+        glow: 'var(--shadow-premium)',
+        soft: 'var(--shadow-soft)',
+        'gs-gold': 'var(--shadow-btn-primary)',
+        'gs-gold-hover': 'var(--shadow-btn-primary-hover)',
+        'gs-green': 'var(--shadow-btn-primary)',
+        'brand-card': 'var(--card-shadow)'
       },
       backgroundImage: {
-        'hero-overlay':
-          'linear-gradient(90deg, rgba(10,32,8,0.92) 0%, rgba(10,32,8,0.72) 42%, rgba(10,32,8,0.28) 100%)',
+        'hero-overlay': 'var(--bg-hero-overlay)',
         'hero-bottom':
-          'linear-gradient(180deg, rgba(10,32,8,0.04) 0%, rgba(10,32,8,0.76) 100%)',
-        'gs-gold': 'linear-gradient(135deg, #D5C600 0%, #EBE486 100%)',
-        'gs-energy': 'linear-gradient(90deg, #0B6B45 0%, #1ED760 100%)'
+          'linear-gradient(180deg, rgba(4, 20, 12, 0.04) 0%, rgba(4, 20, 12, 0.76) 100%)',
+        'gs-gold': 'var(--btn-primary-bg)',
+        'gs-energy': 'linear-gradient(90deg, var(--brand-800) 0%, var(--brand-600) 100%)',
+        'gs-cta': 'var(--btn-primary-bg)',
+        'gs-cta-hover': 'var(--btn-primary-hover)'
       },
       keyframes: {
         float: {
@@ -126,12 +173,21 @@ export default {
         shimmer: {
           '0%, 100%': { opacity: '0.75' },
           '50%': { opacity: '1' }
+        },
+        'gsol-hero-drift': {
+          from: { transform: 'scale(1.02) translate3d(0,0,0)' },
+          to: { transform: 'scale(1.07) translate3d(-18px,-8px,0)' }
+        },
+        'gsol-badge-orbit': {
+          to: { transform: 'rotate(360deg)' }
         }
       },
       animation: {
         float: 'float 4s ease-in-out infinite',
         'float-slow': 'float 5.5s ease-in-out infinite',
-        shimmer: 'shimmer 3s ease-in-out infinite'
+        shimmer: 'shimmer 3s ease-in-out infinite',
+        'gsol-hero-drift': 'gsol-hero-drift 14s ease-in-out infinite alternate',
+        'gsol-badge-orbit': 'gsol-badge-orbit 18s linear infinite'
       }
     }
   },

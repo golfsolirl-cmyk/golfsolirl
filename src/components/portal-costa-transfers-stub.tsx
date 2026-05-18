@@ -25,12 +25,12 @@ export function PortalCostaTransfersStub({ variant = 'client' }: { readonly vari
               : 'Pick-up anywhere on the Costa del Sol to any destination on the coast — live driver tracking, job updates, and trip ratings are rolling out here next.'}
           </p>
         </div>
-        <GeButton className="shrink-0" href="/contact" size="md" variant="gs-gold">
+        <GeButton className="shrink-0" href="/contact" size="md" variant="gs-green">
           {isAdmin ? 'Contact ops' : 'Get a transfer quote'}
         </GeButton>
       </div>
       {lab ? (
-        <p className="mt-6 font-mono text-xs text-amber-800">Transfer lab enabled (VITE_ENABLE_TRANSFER_LAB=1)</p>
+        <p className="mt-6 font-mono text-xs text-brand-800">Transfer lab enabled (VITE_ENABLE_TRANSFER_LAB=1)</p>
       ) : (
         <p className="mt-6 font-ge text-xs font-semibold text-ge-gray500">Booking tools unlock after your next deploy.</p>
       )}
