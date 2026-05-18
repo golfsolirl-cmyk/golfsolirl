@@ -22,6 +22,7 @@ export interface GeHotel {
   readonly href: string
 }
 
+/** Card art — hosted brand photography in `public/images/` (CSP-safe on production). */
 export const hotelsSpain: readonly GeHotel[] = [
   {
     name: 'Hotel Angela',
@@ -29,8 +30,7 @@ export const hotelsSpain: readonly GeHotel[] = [
     stars: 4,
     tagline: 'Beachfront 4★ on Paseo Marítimo · adults-friendly buzz',
     nearestCourse: '15 min · Mijas Golf',
-    image:
-      'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/ge-premium-resort-hotel-hero.png',
     href: '/contact'
   },
   {
@@ -39,8 +39,7 @@ export const hotelsSpain: readonly GeHotel[] = [
     stars: 4,
     tagline: 'Adults-only seafront retreat with rooftop pool',
     nearestCourse: '15 min · Mijas Golf',
-    image:
-      'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/ge-premium-family-golf-vacation.png',
     href: '/contact'
   },
   {
@@ -49,8 +48,7 @@ export const hotelsSpain: readonly GeHotel[] = [
     stars: 4,
     tagline: 'Modern 4★ steps from the marina and Sohail castle',
     nearestCourse: '12 min · Santana Golf',
-    image:
-      'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/hero-image.png',
     href: '/contact'
   },
   {
@@ -59,8 +57,7 @@ export const hotelsSpain: readonly GeHotel[] = [
     stars: 4,
     tagline: 'All-inclusive favourite right on La Carihuela beach',
     nearestCourse: '8 min · Parador Málaga Golf',
-    image:
-      'https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/hero-from-plane-to-fairway-premium.png',
     href: '/contact'
   },
   {
@@ -69,8 +66,7 @@ export const hotelsSpain: readonly GeHotel[] = [
     stars: 4,
     tagline: 'Iconic palm-fringed pool deck · group rates that work',
     nearestCourse: '10 min · Parador Málaga Golf',
-    image:
-      'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/transport-moment-resort.jpg',
     href: '/contact'
   },
   {
@@ -79,8 +75,7 @@ export const hotelsSpain: readonly GeHotel[] = [
     stars: 3,
     tagline: 'Apartment-style stays for societies and big groups',
     nearestCourse: '10 min · Parador Málaga Golf',
-    image:
-      'https://images.unsplash.com/photo-1568084680786-a84f91d1153c?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/hero-image-p.png',
     href: '/contact'
   },
   {
@@ -89,8 +84,7 @@ export const hotelsSpain: readonly GeHotel[] = [
     stars: 4,
     tagline: 'Boutique adults-only on the seafront promenade',
     nearestCourse: '8 min · Parador Málaga Golf',
-    image:
-      'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/ge-premium-editorial-travel-news.png',
     href: '/contact'
   },
   {
@@ -101,8 +95,7 @@ export const hotelsSpain: readonly GeHotel[] = [
     highlight: true,
     tagline: 'Seafront 4* hotel-apartments with spacious suites for golf groups',
     nearestCourse: '20 min · Torrequebrada Golf',
-    image:
-      'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/hero-costa-del-sol-transfer-banner.png',
     href: 'https://www.sunsetbeachclub.com/en'
   }
 ] as const satisfies readonly GeHotel[]

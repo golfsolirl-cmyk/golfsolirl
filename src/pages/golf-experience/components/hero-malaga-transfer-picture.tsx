@@ -1,7 +1,7 @@
 /**
  * Responsive Malaga / transfer hero raster.
- * — `default`: full `srcSet` brand master (`hero-malaga-transfers.*`) for {@link GeHero}.
- * — `transport`: single transport-variant PNG (`hero-transport-variant.png`).
+ * — `default`: `hero-malaga-transfer-*` assets from `npm run build:hero-malaga-transfer`.
+ * — `transport`: fleet lineup plate (`88054e80-…`).
  */
 interface GeHeroMalagaTransferPictureProps {
   readonly alt: string
@@ -16,11 +16,10 @@ export function GeHeroMalagaTransferPicture({
   variant = 'default'
 }: GeHeroMalagaTransferPictureProps) {
   if (variant === 'transport') {
-    /** Same flow as default hero: natural height on mobile, aspect frame + cover on md+. */
     return (
       <picture className="block md:absolute md:inset-0 md:h-full md:w-full">
         <img
-          src="/images/hero-transport-variant.png"
+          src="/images/88054e80-6dd1-483f-8557-cdc45caa2442.png"
           alt={alt}
           className="block h-auto w-full max-w-full select-none object-cover object-[center_36%] md:h-full md:w-full md:object-cover md:object-[center_40%]"
           fetchPriority="high"
@@ -37,27 +36,22 @@ export function GeHeroMalagaTransferPicture({
       <source
         media="(max-width: 767px)"
         type="image/webp"
-        srcSet="/images/hero-malaga-transfers-mobile-720.webp 720w, /images/hero-malaga-transfers-mobile.webp 1080w"
+        srcSet="/images/hero-malaga-transfer-mobile.webp"
+        sizes="100vw"
+      />
+      <source
+        media="(min-width: 768px)"
+        type="image/webp"
+        srcSet="/images/hero-malaga-transfer-desktop.webp"
         sizes="100vw"
       />
       <source
         media="(max-width: 767px)"
-        type="image/jpeg"
-        srcSet="/images/hero-malaga-transfers-mobile-720.jpg 720w, /images/hero-malaga-transfers-mobile.jpg 1080w"
-        sizes="100vw"
-      />
-      <source
-        type="image/webp"
-        srcSet="/images/hero-malaga-transfers-1600.webp 1600w, /images/hero-malaga-transfers.webp 2200w"
-        sizes="100vw"
-      />
-      <source
-        type="image/jpeg"
-        srcSet="/images/hero-malaga-transfers-1600.jpg 1600w, /images/hero-malaga-transfers.jpg 2200w"
+        srcSet="/images/hero-malaga-transfer-mobile.png"
         sizes="100vw"
       />
       <img
-        src="/images/hero-malaga-transfers.jpg"
+        src="/images/hero-malaga-transfer-desktop.png"
         alt={alt}
         className={heroImgClass}
         fetchPriority="high"

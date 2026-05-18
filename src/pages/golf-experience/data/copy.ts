@@ -81,8 +81,7 @@ export const designYourPackage = {
     title: 'Pick your Costa del Sol base.',
     body:
       'Fuengirola, Torremolinos, Marbella or Sotogrande — every Sol resort town is within a short, golf-bag-friendly Mercedes transfer of the best courses in southern Spain.',
-    image:
-      'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/ge-premium-golf-fairway-coastal.png',
     link: '/#golf-courses-spain'
   },
   step2: {
@@ -90,8 +89,7 @@ export const designYourPackage = {
     title: 'Pick your Costa del Sol tee times.',
     body:
       'Over seventy 18-hole courses sit between Málaga and Sotogrande — the highest density of golf anywhere in Europe. We hold preferential green-fee rates and live tee-sheet access on all of them, so we slot your group into the right course at the right time of day.',
-    image:
-      'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/twilight-golf-hero.jpg',
     link: '/#golf-courses-spain'
   },
   step3: {
@@ -99,8 +97,7 @@ export const designYourPackage = {
     title: 'Pick the hotel Irish groups already love.',
     body:
       'We work directly with the Costa del Sol hotels Irish societies return to year after year — Hotel Angela, Yaramar, Ilunion Fuengirola, Riu, Don Pablo, Sol Timor and Ocean House. Better rates, friendlier cancellation terms, no surprises.',
-    image:
-      'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/ge-premium-resort-hotel-hero.png',
     link: '/#accommodation-spain'
   },
   step4: {
@@ -108,8 +105,7 @@ export const designYourPackage = {
     title: 'Leave the rest to us.',
     body:
       'We design the itinerary, book the tees, lock in golf-bag-friendly Mercedes transfers and meet you at AGP arrivals — every detail from arrivals hall to final putt.',
-    image:
-      'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80',
+    image: '/images/transport-moment-arrivals.jpg',
     link: '/#enquire'
   }
 } as const
