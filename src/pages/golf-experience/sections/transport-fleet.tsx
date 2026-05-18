@@ -122,7 +122,7 @@ export function TransportFleet() {
             className="pointer-events-none absolute inset-x-12 top-0 z-[2] h-px bg-gradient-to-r from-transparent via-[#f4dfa6]/55 to-transparent"
           />
           <img
-            src="/images/88054e80-6dd1-483f-8557-cdc45caa2442.png"
+            src="/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png"
             alt="GolfSol Ireland Mercedes V-Class, E-Class and Sprinter parked on a Costa del Sol forecourt beside a manicured fairway with the Sierra Blanca mountains behind."
             className="block aspect-[16/10] h-full w-full object-cover object-[center_54%] sm:aspect-[16/9]"
             loading="lazy"

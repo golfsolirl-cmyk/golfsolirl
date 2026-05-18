@@ -33,16 +33,12 @@ export type TransferReceiptPdfTransfer = {
 
 const THEME = {
   green: rgb(6 / 255, 59 / 255, 42 / 255),
-  greenSoft: rgb(15 / 255, 81 / 255, 60 / 255),
-  gold: rgb(212 / 255, 168 / 255, 67 / 255),
-  goldDeep: rgb(184 / 255, 146 / 255, 46 / 255),
-  cream: rgb(238 / 255, 242 / 255, 239 / 255),
-  sand: rgb(217 / 255, 217 / 255, 217 / 255),
+  greenLight: rgb(15 / 255, 81 / 255, 60 / 255),
   ink: rgb(22 / 255, 35 / 255, 29 / 255),
   muted: rgb(102 / 255, 115 / 255, 109 / 255),
   white: rgb(1, 1, 1),
-  paleGreen: rgb(246 / 255, 251 / 255, 248 / 255),
-  paleGold: rgb(255 / 255, 251 / 255, 235 / 255),
+  rule: rgb(200 / 255, 210 / 255, 205 / 255),
+  stripe: rgb(247 / 255, 250 / 255, 248 / 255),
   payLink: rgb(0, 102 / 255, 204 / 255)
 }
 
@@ -50,7 +46,6 @@ const PAGE_W = 595.28
 const PAGE_H = 841.89
 const MARGIN = 48
 const CONTENT_W = PAGE_W - MARGIN * 2
-const HEADER_H = 84
 
 function sanitize(text: string): string {
   return text
@@ -98,43 +93,48 @@ async function renderTransferPdf(opts: {
 
   const page = doc.addPage([PAGE_W, PAGE_H])
 
-  page.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: THEME.cream })
+  // White page fill
+  page.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: THEME.white })
 
-  // Green header bar (full width, top)
-  page.drawRectangle({ x: 0, y: PAGE_H - HEADER_H, width: PAGE_W, height: HEADER_H, color: THEME.green })
-  // Gold accent line at header bottom edge
-  page.drawRectangle({ x: 0, y: PAGE_H - HEADER_H, width: PAGE_W, height: 3, color: THEME.gold })
+  // Green top rule
+  page.drawRectangle({ x: 0, y: PAGE_H - 3, width: PAGE_W, height: 3, color: THEME.green })
 
-  // Header text
-  page.drawText(sanitize(opts.bannerTitle), {
-    x: MARGIN + 8, y: PAGE_H - 34, font: fontBold, size: 18, color: THEME.white
+  const topY = PAGE_H - 24
+
+  // v5 header: "FROM PLANE TO FAIRWAY" + company info
+  page.drawText('FROM PLANE TO FAIRWAY', { x: MARGIN, y: topY, font: fontBold, size: 9, color: THEME.green })
+  page.drawText(sanitize('GolfSol Ireland - Irish-owned Costa del Sol Golf Travel'), {
+    x: MARGIN, y: topY - 16, font, size: 8, color: THEME.muted
   })
-  page.drawText(sanitize(`Issued ${new Date().toLocaleString('en-IE', { dateStyle: 'long', timeStyle: 'short' })}`), {
-    x: MARGIN + 8, y: PAGE_H - 56, font, size: 9.5, color: rgb(220 / 255, 232 / 255, 226 / 255)
+  page.drawText(sanitize('www.golfsolirl.com - info@golfsolirl.com'), {
+    x: MARGIN, y: topY - 28, font, size: 8, color: THEME.muted
+  })
+  page.drawText(sanitize('Registered in Ireland - Company No. 814210'), {
+    x: MARGIN, y: topY - 40, font, size: 8, color: THEME.muted
   })
 
-  // Logo (homepage crest) — right side of header
+  // Logo crest (top-right)
   const logoBytes = await loadLogoPng()
   if (logoBytes) {
     try {
       const logoImage = await doc.embedPng(logoBytes)
-      const lh = 62
+      const lh = 60
       const lw = (logoImage.width / logoImage.height) * lh
-      page.drawImage(logoImage, {
-        x: PAGE_W - MARGIN - lw,
-        y: PAGE_H - HEADER_H + (HEADER_H - lh) / 2,
-        width: lw,
-        height: lh
-      })
-    } catch {
-      /* logo optional */
-    }
+      page.drawImage(logoImage, { x: PAGE_W - MARGIN - lw, y: topY - lh + 10, width: lw, height: lh })
+    } catch { /* logo optional */ }
   }
 
-  let y = PAGE_H - HEADER_H - 28
+  // Rule below header
+  const ruleY = topY - 52
+  page.drawRectangle({ x: MARGIN, y: ruleY, width: CONTENT_W, height: 0.75, color: THEME.rule })
+
+  // Document title
+  page.drawText(sanitize(opts.bannerTitle), { x: MARGIN, y: ruleY - 22, font: fontBold, size: 16, color: THEME.green })
+
+  let y = ruleY - 48
 
   // Bill to
-  page.drawText('Bill to', { x: MARGIN, y, font: fontBold, size: 11, color: THEME.greenSoft })
+  page.drawText('Bill to', { x: MARGIN, y, font: fontBold, size: 11, color: THEME.greenLight })
   y -= 16
   page.drawText(sanitize(opts.customerName.trim() || 'Guest'), { x: MARGIN, y, font, size: 10.5, color: THEME.ink })
   y -= 14
@@ -149,19 +149,19 @@ async function renderTransferPdf(opts: {
     y -= 10
   }
 
-  // Gold rule separator
-  page.drawRectangle({ x: MARGIN, y: y - 1, width: CONTENT_W * 0.22, height: 2.5, color: THEME.gold })
-  page.drawRectangle({ x: MARGIN + CONTENT_W * 0.22 + 6, y: y - 0.5, width: CONTENT_W * 0.78 - 6, height: 0.55, color: THEME.sand })
+  // Green rule separator
+  page.drawRectangle({ x: MARGIN, y: y - 1, width: CONTENT_W * 0.3, height: 2, color: THEME.green })
+  page.drawRectangle({ x: MARGIN + CONTENT_W * 0.3 + 6, y: y - 0.5, width: CONTENT_W * 0.7 - 6, height: 0.5, color: THEME.rule })
   y -= 24
 
   // Transfer details card
   const cardH = 110
-  page.drawRectangle({ x: MARGIN, y: y - cardH, width: CONTENT_W, height: cardH, color: THEME.white, borderColor: THEME.sand, borderWidth: 0.75 })
+  page.drawRectangle({ x: MARGIN, y: y - cardH, width: CONTENT_W, height: cardH, color: THEME.white, borderColor: THEME.rule, borderWidth: 0.75 })
   const cardTop = y
   y -= 18
-  page.drawText('TRANSFER DETAILS', { x: MARGIN + 14, y, font: fontBold, size: 8, color: THEME.greenSoft })
+  page.drawText('TRANSFER DETAILS', { x: MARGIN + 14, y, font: fontBold, size: 8, color: THEME.greenLight })
   y -= 16
-  page.drawText(sanitize(`${transfer.pickup_label}  \u2192  ${transfer.dropoff_label}`), { x: MARGIN + 14, y, font: fontBold, size: 11, color: THEME.ink })
+  page.drawText(sanitize(`${transfer.pickup_label}  ->  ${transfer.dropoff_label}`), { x: MARGIN + 14, y, font: fontBold, size: 11, color: THEME.ink })
   y -= 16
   const when = transfer.scheduled_at
     ? new Date(transfer.scheduled_at).toLocaleString('en-IE', { dateStyle: 'medium', timeStyle: 'short' })
@@ -181,10 +181,10 @@ async function renderTransferPdf(opts: {
 
   // VAT summary card
   const vatCardH = 108
-  page.drawRectangle({ x: MARGIN, y: y - vatCardH, width: CONTENT_W, height: vatCardH, color: THEME.paleGreen, borderColor: THEME.sand, borderWidth: 0.5 })
+  page.drawRectangle({ x: MARGIN, y: y - vatCardH, width: CONTENT_W, height: vatCardH, color: THEME.stripe, borderColor: THEME.rule, borderWidth: 0.5 })
   const vatTop = y
   y -= 18
-  page.drawText('VAT SUMMARY (IRISH VAT)', { x: MARGIN + 14, y, font: fontBold, size: 8, color: THEME.greenSoft })
+  page.drawText('VAT SUMMARY (IRISH VAT)', { x: MARGIN + 14, y, font: fontBold, size: 8, color: THEME.greenLight })
   y -= 16
 
   const treatmentLabel = treatment === 'services'
@@ -198,17 +198,17 @@ async function renderTransferPdf(opts: {
   y -= 14
   page.drawText(sanitize(`VAT @ ${pctLabel(rate)}: ${formatEur(quote.vatAmountEur)}`), { x: MARGIN + 14, y, font, size: 10.5, color: THEME.ink })
   y -= 16
-  page.drawText(sanitize(`Total (incl. VAT): ${formatEur(quote.grossTotalEur)}`), { x: MARGIN + 14, y, font: fontBold, size: 12, color: THEME.gold })
+  page.drawText(sanitize(`Total (incl. VAT): ${formatEur(quote.grossTotalEur)}`), { x: MARGIN + 14, y, font: fontBold, size: 12, color: THEME.green })
 
   y = vatTop - vatCardH - 22
 
   // Pay section
   if (opts.paySection) {
     const payCardH = 82
-    page.drawRectangle({ x: MARGIN, y: y - payCardH, width: CONTENT_W, height: payCardH, color: THEME.paleGold, borderColor: THEME.sand, borderWidth: 0.5 })
+    page.drawRectangle({ x: MARGIN, y: y - payCardH, width: CONTENT_W, height: payCardH, color: THEME.stripe, borderColor: THEME.rule, borderWidth: 0.5 })
     const py = y
     y -= 18
-    page.drawText('PAY ONLINE (SECURE CARD PAYMENT)', { x: MARGIN + 14, y, font: fontBold, size: 8, color: THEME.greenSoft })
+    page.drawText('PAY ONLINE (SECURE CARD PAYMENT)', { x: MARGIN + 14, y, font: fontBold, size: 8, color: THEME.greenLight })
     y -= 16
     page.drawText(sanitize('Sign in to your client dashboard and use Pay now next to this transfer.'), { x: MARGIN + 14, y, font, size: 9.5, color: THEME.ink })
     y -= 14
@@ -218,17 +218,15 @@ async function renderTransferPdf(opts: {
     y = py - payCardH - 18
   }
 
-  // Footer
-  page.drawRectangle({ x: MARGIN, y: 52, width: CONTENT_W, height: 0.65, color: THEME.sand })
-  const footerLines = [
-    'Golf Sol Ireland - Irish-owned Costa del Sol golf travel',
-    opts.footerNote
-  ]
-  let fy = 44
-  for (const line of footerLines) {
-    page.drawText(sanitize(line), { x: MARGIN, y: fy, font, size: 8, color: THEME.muted, maxWidth: CONTENT_W * 0.85 })
-    fy -= 12
-  }
+  // v5 footer
+  page.drawRectangle({ x: MARGIN, y: 48, width: CONTENT_W, height: 0.5, color: THEME.rule })
+  page.drawText('-- 1 of 1 --', { x: PAGE_W / 2 - 22, y: 34, font, size: 9, color: THEME.muted })
+  page.drawText(sanitize('GolfSol Ireland - Irish-owned Costa del Sol Golf Travel'), {
+    x: MARGIN, y: 22, font, size: 7.5, color: THEME.muted
+  })
+  page.drawText(sanitize(opts.footerNote), {
+    x: MARGIN, y: 12, font, size: 7.5, color: THEME.muted, maxWidth: CONTENT_W * 0.85
+  })
 
   return doc.save()
 }

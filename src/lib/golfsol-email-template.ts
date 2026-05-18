@@ -24,7 +24,7 @@ const emailNestedWashCard = `${emailAmbientOuterLayers}border:1px solid rgba(19,
 
 const assets = {
   logo: '/images/g-sol-logo.png',
-  fleetLineup: '/images/88054e80-6dd1-483f-8557-cdc45caa2442.png',
+  fleetLineup: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
   arrivals: '/images/transport-moment-arrivals.jpg',
   resort: '/images/transport-moment-resort.jpg',
   coastalDrive: '/images/transport-hero-coastal-drive.jpg'

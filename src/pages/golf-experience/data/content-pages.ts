@@ -55,7 +55,7 @@ function getFooterArticleHeroImage(path: string) {
     path.includes('balance') ||
     path.includes('enquiry')
   ) {
-    return '/images/88054e80-6dd1-483f-8557-cdc45caa2442.png'
+    return '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png'
   }
   return '/images/ge-premium-golf-fairway-coastal.png'
 }
@@ -132,7 +132,7 @@ const contactPage: GeContentPageData = {
   title: 'Get your golf holiday quote quickly',
   subtitle:
     'Tell us the basics and we come back with clear options. No pressure, no long forms, no wasted time.',
-  heroImage: '/images/88054e80-6dd1-483f-8557-cdc45caa2442.png',
+  heroImage: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
   heroAlt: 'GolfSol Ireland transport fleet and premium Costa del Sol travel service.',
   highlights: trustHighlights,
   sections: [
@@ -161,7 +161,7 @@ const termsPage: GeContentPageData = {
   title: 'Terms and conditions for GolfSol Ireland bookings',
   subtitle:
     'Clear booking terms for deposits, supplier changes, golf course issues, accommodation problems, cancellations and liability before your group commits.',
-  heroImage: '/images/88054e80-6dd1-483f-8557-cdc45caa2442.png',
+  heroImage: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
   heroAlt: 'GolfSol Ireland Mercedes fleet on the Costa del Sol — terms and conditions.',
   highlights: trustHighlights,
   sections: [
@@ -257,7 +257,7 @@ const teeTimeOnlyPage: GeContentPageData = {
   title: 'Tee-time bookings only, if your hotel is already sorted',
   subtitle:
     'Need golf only? We can shortlist and secure the right rounds without repackaging your whole trip. Fast, clear, and suited to Irish groups.',
-  heroImage: '/images/88054e80-6dd1-483f-8557-cdc45caa2442.png',
+  heroImage: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
   heroAlt: 'GolfSol Ireland Mercedes fleet on the Costa del Sol — tee-time booking service.',
   highlights: trustHighlights,
   sections: [
@@ -298,7 +298,7 @@ const twilightGolfPage: GeContentPageData = {
   title: 'Twilight golf on the Costa del Sol — golden-hour rounds, smarter pacing',
   subtitle:
     'Late-afternoon tee times pair softer green fees with forgiving light and an easier run to dinner in Marbella, Fuengirola or Puerto Banús. We shortlist courses that run twilight sheets well for Irish groups.',
-  heroImage: '/images/88054e80-6dd1-483f-8557-cdc45caa2442.png',
+  heroImage: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
   heroAlt:
     'GolfSol Ireland Mercedes fleet on the Costa del Sol — twilight golf service.',
   highlights: trustHighlights,
@@ -367,7 +367,7 @@ const bookingPage: GeContentPageData = {
   title: 'Booking flow that stays clear at every step',
   subtitle:
     'We keep bookings simple: clear options, clear pricing, clear next actions, and one Irish team handling the details.',
-  heroImage: '/images/88054e80-6dd1-483f-8557-cdc45caa2442.png',
+  heroImage: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
   heroAlt: 'GolfSol Ireland Mercedes fleet on the Costa del Sol — booking service.',
   highlights: trustHighlights,
   sections: [

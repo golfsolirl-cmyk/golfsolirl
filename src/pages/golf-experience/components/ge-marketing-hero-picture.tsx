@@ -18,28 +18,33 @@ interface GeMarketingHeroPictureProps {
 }
 
 /**
- * Responsive homepage hero — desktop full banner, mobile crop from `afeeead4-…png`.
+ * Responsive homepage hero.
+ * — Desktop / tablet (≥768px): banner with the "MALAGA → COSTA DEL SOL GOLF
+ *   TRANSFERS" headline baked into the artwork (top of the image must remain
+ *   visible — never cropped from the top).
+ * — Mobile (<768px): fleet lineup that shows the three black Mercedes vehicles
+ *   with the GolfSol crest and the "FROM PLANE TO FAIRWAY" circle text visible
+ *   on each car.
  */
 export function GeMarketingHeroPicture({ className, imgClassName }: GeMarketingHeroPictureProps) {
-  const desktopWebp = marketingHeroAsset(BRAND_MARKETING_HERO_DESKTOP.webp)
   const desktopPng = marketingHeroAsset(BRAND_MARKETING_HERO_DESKTOP.png)
-  const mobileWebp = marketingHeroAsset(BRAND_MARKETING_HERO_MOBILE.webp)
   const mobilePng = marketingHeroAsset(BRAND_MARKETING_HERO_MOBILE.png)
 
   return (
     <picture className={cx('block w-full', className)}>
-      <source media="(min-width: 768px)" srcSet={desktopWebp} type="image/webp" />
       <source media="(min-width: 768px)" srcSet={desktopPng} type="image/png" />
-      <source srcSet={mobileWebp} type="image/webp" />
       <img
         src={mobilePng}
         alt={BRAND_MARKETING_HERO_COMPOSITE_ALT}
         decoding="async"
         fetchPriority="high"
-        width={750}
-        height={1345}
+        width={1024}
+        height={576}
         sizes="100vw"
-        className={cx('block h-auto w-full max-w-full', imgClassName)}
+        className={cx(
+          'block h-auto w-full max-w-full select-none object-cover object-top',
+          imgClassName
+        )}
       />
     </picture>
   )

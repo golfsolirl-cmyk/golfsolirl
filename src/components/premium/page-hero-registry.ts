@@ -33,8 +33,8 @@ export interface PageHeroSource {
 export const PAGE_HERO_REGISTRY = {
   /** Sign-in (client / admin / driver share the same magic-link UI). */
   login: {
-    desktop: '/images/88054e80-6dd1-483f-8557-cdc45caa2442.png',
-    mobile: '/images/88054e80-6dd1-483f-8557-cdc45caa2442.png',
+    desktop: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
+    mobile: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
     alt: 'Golf Sol Ireland premium fleet — sign in for your trip desk, quotes, and account.',
     badge: 'Account access',
     tintHue: 'warm'

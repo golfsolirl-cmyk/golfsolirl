@@ -12,7 +12,7 @@ export const brandedPdfAssetPaths = {
   /** Homepage navbar crest (portrait, 1020×1468) — same artwork shown in the live header. */
   homepageCrest: path.join(publicImagesDirectory, 'g-sol-logo.png'),
   /** Airport-desk style fleet plate (PNG); replace file in `public/images` to refresh all PDFs/emails. */
-  fleetLineup: path.join(publicImagesDirectory, '88054e80-6dd1-483f-8557-cdc45caa2442.png')
+  fleetLineup: path.join(publicImagesDirectory, 'fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png')
 }
 
 /** PDF palette aligned with enquiry / proposal PDFs and transactional email shell. */

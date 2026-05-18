@@ -135,7 +135,7 @@ export function GeHero({
             />
           </>
         ) : (
-          <GeMarketingHeroPicture className="relative -mt-3 block w-full sm:-mt-5 md:-mt-6" />
+          <GeMarketingHeroPicture className="relative block w-full" />
         )}
 
         {isPortal && (portalTitle || portalKicker || portalSubtitle || portalTimestamp) ? (

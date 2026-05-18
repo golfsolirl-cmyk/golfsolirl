@@ -2,7 +2,7 @@
 import { businessCardContact, businessCardPerson, businessCardPersonGreg } from '../../../lib/business-cards-config'
 
 const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`
-const CARD_HERO_IMG = `${base}images/88054e80-6dd1-483f-8557-cdc45caa2442.png`
+const CARD_HERO_IMG = `${base}images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png`
 
 export function BusinessCardsHero() {
   return (

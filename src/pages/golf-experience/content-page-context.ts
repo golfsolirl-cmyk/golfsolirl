@@ -137,7 +137,7 @@ export function getContentPageHeroMedia(path: string, page: GeContentPageData): 
       }
     case 'booking':
       return {
-        image: '/images/88054e80-6dd1-483f-8557-cdc45caa2442.png',
+        image: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
         alt: 'GolfSol Ireland Mercedes fleet on the Costa del Sol — booking service.',
         stripeLabel
       }
@@ -194,7 +194,7 @@ export function getContentStorySectionMedia(
       alt: 'Luxury Costa del Sol resort entrance with golf luggage and transfer vehicle.'
     },
     {
-      image: '/images/88054e80-6dd1-483f-8557-cdc45caa2442.png',
+      image: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
       alt: 'GolfSol Ireland Mercedes fleet on the Costa del Sol.'
     },
     {

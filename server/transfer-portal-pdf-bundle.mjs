@@ -3,7 +3,8 @@
  */
 import { readFileSync } from 'node:fs'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
-import { brandedPdfAssetPaths, heroDescriptionColor, pdfEmailTheme } from './pdf-email-brand.mjs'
+import { brandedPdfAssetPaths, pdfEmailTheme } from './pdf-email-brand.mjs'
+import { gsolCompanyLegal } from './email-constants.mjs'
 import { sanitizeStandardFontText } from '../shared/pdf-winansi-sanitize.mjs'
 import { getGsolSiteUrl } from './site-url.mjs'
 import { balanceAmountEur, normalizedDepositPercent } from './transfer-payment-amounts.mjs'
@@ -57,47 +58,65 @@ const humanizeFieldKey = (key) =>
     .replace(/_/g, ' ')
     .replace(/\b\w/g, (c) => c.toUpperCase())
 
-const HEADER_H = 84
-const BODY_START_Y = H - HEADER_H - 28
+const V5_GREEN = rgb(6 / 255, 59 / 255, 42 / 255)
+const V5_MUTED = rgb(102 / 255, 115 / 255, 109 / 255)
+const V5_RULE = rgb(200 / 255, 210 / 255, 205 / 255)
+const V5_WHITE = rgb(1, 1, 1)
 
 const drawHeaderBand = async (doc, page, title, fontBold, font) => {
-  const t = pdfEmailTheme
+  page.drawRectangle({ x: 0, y: 0, width: W, height: H, color: V5_WHITE })
+  page.drawRectangle({ x: 0, y: H - 3, width: W, height: 3, color: V5_GREEN })
 
-  page.drawRectangle({ x: 0, y: 0, width: W, height: H, color: t.cream })
-  page.drawRectangle({ x: 0, y: H - HEADER_H, width: W, height: HEADER_H, color: t.green })
-  page.drawRectangle({ x: 0, y: H - HEADER_H, width: W, height: 3, color: t.gold })
-
-  page.drawText(sanitizeStandardFontText(title), { x: m + 8, y: H - 34, size: 18, font: fontBold, color: t.white })
-  page.drawText(sanitizeStandardFontText(`Issued ${new Date().toLocaleString('en-IE', { dateStyle: 'long', timeStyle: 'short' })}`), {
-    x: m + 8, y: H - 56, size: 9.5, font, color: heroDescriptionColor
+  const topY = H - 24
+  page.drawText('FROM PLANE TO FAIRWAY', { x: m, y: topY, font: fontBold, size: 9, color: V5_GREEN })
+  page.drawText(sanitizeStandardFontText('GolfSol Ireland - Irish-owned Costa del Sol Golf Travel'), {
+    x: m, y: topY - 16, font, size: 8, color: V5_MUTED
+  })
+  page.drawText(sanitizeStandardFontText('www.golfsolirl.com - info@golfsolirl.com'), {
+    x: m, y: topY - 28, font, size: 8, color: V5_MUTED
+  })
+  page.drawText(sanitizeStandardFontText(`Registered in Ireland - Company No. ${gsolCompanyLegal.companyRegistrationNumber}`), {
+    x: m, y: topY - 40, font, size: 8, color: V5_MUTED
   })
 
   try {
     const logoBytes = readFileSync(brandedPdfAssetPaths.homepageCrest)
     const logo = await doc.embedPng(logoBytes)
-    const lh = 62
+    const lh = 60
     const lw = (logo.width / logo.height) * lh
-    page.drawImage(logo, { x: W - m - lw, y: H - HEADER_H + (HEADER_H - lh) / 2, width: lw, height: lh })
-  } catch {
-    /* logo optional */
-  }
+    page.drawImage(logo, { x: W - m - lw, y: topY - lh + 10, width: lw, height: lh })
+  } catch { /* logo optional */ }
+
+  const ruleY = topY - 52
+  page.drawRectangle({ x: m, y: ruleY, width: W - m * 2, height: 0.75, color: V5_RULE })
+
+  page.drawText(sanitizeStandardFontText(title), { x: m, y: ruleY - 22, font: fontBold, size: 16, color: V5_GREEN })
 }
 
-const drawFooterLine = (page, font, text) => {
+const BODY_START_Y = H - 120
+
+const drawFooterLine = (page, font, text, pageInfo = null) => {
   const contentW = W - m * 2
-  page.drawRectangle({ x: m, y: 52, width: contentW, height: 0.65, color: pdfEmailTheme.sand })
-  const lines = wrapLines(text, font, 8.5, contentW * 0.85)
-  let fy = 44
+  page.drawRectangle({ x: m, y: 48, width: contentW, height: 0.5, color: V5_RULE })
+
+  if (pageInfo) {
+    const pt = `-- ${pageInfo.current} of ${pageInfo.total} --`
+    const pw = font.widthOfTextAtSize(pt, 9)
+    page.drawText(pt, { x: (W - pw) / 2, y: 34, font, size: 9, color: V5_MUTED })
+  }
+
+  const lines = wrapLines(text, font, 7.5, contentW * 0.85)
+  let fy = 22
   for (const ln of lines) {
-    page.drawText(sanitizeStandardFontText(ln), { x: m, y: fy, size: 8.5, font, color: pdfEmailTheme.muted })
-    fy -= 12
+    page.drawText(sanitizeStandardFontText(ln), { x: m, y: fy, size: 7.5, font, color: V5_MUTED })
+    fy -= 10
   }
 }
 
 const drawGoldRule = (page, y) => {
   const contentW = W - m * 2
-  page.drawRectangle({ x: m, y: y - 1, width: contentW * 0.22, height: 2.5, color: pdfEmailTheme.gold })
-  page.drawRectangle({ x: m + contentW * 0.22 + 6, y: y - 0.5, width: contentW * 0.78 - 6, height: 0.55, color: pdfEmailTheme.sand })
+  page.drawRectangle({ x: m, y: y - 1, width: contentW * 0.3, height: 2, color: V5_GREEN })
+  page.drawRectangle({ x: m + contentW * 0.3 + 6, y: y - 0.5, width: contentW * 0.7 - 6, height: 0.5, color: V5_RULE })
   return y - 20
 }
 

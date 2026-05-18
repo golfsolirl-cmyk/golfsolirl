@@ -41,7 +41,7 @@ export const homeAirportTransfersCopy = {
   body:
     'Meet and greet at AGP, live flight tracking, golf-bag-ready Mercedes, and a straight run to your hotel — no taxi queue, no guesswork.',
   fleetImageBadge: 'Golf-bag friendly Mercedes fleet',
-  fleetImageSrc: '/images/88054e80-6dd1-483f-8557-cdc45caa2442.png',
+  fleetImageSrc: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
   fleetImageAlt:
     'Premium Mercedes transfer vehicles on the Costa del Sol — golf-bag friendly fleet for Irish groups.',
   fleetCardLabel: 'Mercedes fleet',
