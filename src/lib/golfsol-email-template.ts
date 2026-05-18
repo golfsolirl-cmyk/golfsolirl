@@ -15,6 +15,9 @@ const brand = {
   white: '#FFFFFF'
 } as const
 
+/** Homepage `#design-package` outer wash — keep in sync with `EMAIL_AMBIENT_*` in `server/branded-email-shell.mjs`. */
+const emailAmbientOuterLayers = `background-color:${brand.cream};background-image:radial-gradient(circle at 8% 0%, rgba(19,96,71,0.22), transparent 30%), radial-gradient(circle at 92% 12%, rgba(217,190,122,0.14), transparent 24%), linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(246,240,226,0.98) 38%, rgba(235,227,207,0.97) 100%);background-repeat:no-repeat;background-size:100% 100%;`
+
 const assets = {
   logo: '/images/g-sol-logo.png',
   fleetLineup: '/images/88054e80-6dd1-483f-8557-cdc45caa2442.png',
@@ -61,7 +64,7 @@ export function getGolfSolBrandedEmailHtml() {
       table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
       img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
       table { border-collapse: collapse !important; }
-      body { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+      body { margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: ${brand.cream} !important; background-image: radial-gradient(circle at 8% 0%, rgba(19,96,71,0.22), transparent 30%), radial-gradient(circle at 92% 12%, rgba(217,190,122,0.14), transparent 24%), linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(246,240,226,0.98) 38%, rgba(235,227,207,0.97) 100%) !important; background-repeat: no-repeat !important; background-size: 100% 100% !important; }
       a { text-decoration: none; }
       .preheader { display: none !important; visibility: hidden; opacity: 0; color: transparent; height: 0; width: 0; overflow: hidden; mso-hide: all; }
 
@@ -76,10 +79,10 @@ export function getGolfSolBrandedEmailHtml() {
       }
     </style>
   </head>
-  <body style="margin:0; padding:0; background:${brand.cream};">
+  <body style="margin:0; padding:0; ${emailAmbientOuterLayers}">
     <div class="preheader">${preview}&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;</div>
-    <center role="article" aria-roledescription="email" lang="en" style="width:100%; background:${brand.cream};">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${brand.cream};">
+    <center role="article" aria-roledescription="email" lang="en" style="width:100%; ${emailAmbientOuterLayers}">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="${emailAmbientOuterLayers}">
         <tr>
           <td align="center" style="padding:32px 12px;">
             <table role="presentation" class="email-shell" width="640" cellpadding="0" cellspacing="0" style="width:640px; max-width:640px;">

@@ -114,8 +114,20 @@ export const escapeHtml = (value) =>
 
 export const assetUrl = (path) => `${getGsolSiteUrl()}${path}`
 
+/**
+ * Homepage `#design-package` ambient layer — forest/gold radial accents over a white→cream vertical wash.
+ * Solid `#eef2ef` fallback for Outlook (bgcolor) and clients that strip `background-image`.
+ */
+export const EMAIL_AMBIENT_BG_COLOR = '#eef2ef'
+export const EMAIL_AMBIENT_BG_IMAGE =
+  'radial-gradient(circle at 8% 0%, rgba(19,96,71,0.22), transparent 30%), radial-gradient(circle at 92% 12%, rgba(217,190,122,0.14), transparent 24%), linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(246,240,226,0.98) 38%, rgba(235,227,207,0.97) 100%)'
+
+/** Inline styles for body / full-width wrappers behind the 640px shell. */
+export const emailAmbientOuterLayers = () =>
+  `background-color:${EMAIL_AMBIENT_BG_COLOR};background-image:${EMAIL_AMBIENT_BG_IMAGE};background-repeat:no-repeat;background-size:100% 100%;`
+
 export const watermarkStyles = {
-  shellTd: () => `padding:56px 20px 60px 20px;background-color:${gs.bg};`,
+  shellTd: () => `padding:56px 20px 60px 20px;${emailAmbientOuterLayers()}`,
   heroInner: () => `padding:56px 46px 52px 46px;background-color:${gs.dark};`,
   submissionTd: () => `padding:44px 44px 48px 44px;background-color:#FFFFFF;`
 }
@@ -452,7 +464,7 @@ export const buildBrandedEmailHeadAndOpen = (documentTitle) => `<!doctype html>
       img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
       .shell-wm-wrap { position: relative !important; display: block !important; width: 100% !important; }
       table { border-collapse: collapse !important; }
-      body { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+      body { margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: ${EMAIL_AMBIENT_BG_COLOR} !important; background-image: ${EMAIL_AMBIENT_BG_IMAGE} !important; background-repeat: no-repeat !important; background-size: 100% 100% !important; }
       .ReadMsgBody { width: 100% !important; }
       .ExternalClass { width: 100% !important; }
       #MessageViewBody, #MessageWebViewDiv { width: 100% !important; }
@@ -474,9 +486,9 @@ export const buildBrandedEmailHeadAndOpen = (documentTitle) => `<!doctype html>
 ${emailResponsiveCss}
     </style>
   </head>
-  <body style="margin:0; padding:0; background:${gs.bg}; font-family:${emailFonts.sans};">
+  <body style="margin:0; padding:0; ${emailAmbientOuterLayers()} font-family:${emailFonts.sans};">
     <!--[if mso | IE]>
-    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;"><tr><td bgcolor="#F4F7F5" style="background-color:${gs.bg};padding:0;border-collapse:collapse;">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;"><tr><td bgcolor="${EMAIL_AMBIENT_BG_COLOR}" style="background-color:${EMAIL_AMBIENT_BG_COLOR};padding:0;border-collapse:collapse;">
     <![endif]-->`
 
 /** Preheader through logo/header row only — hero follows separately. */
@@ -484,10 +496,10 @@ export const buildBrandedPreheaderThroughHeaderRow = (preview) => {
   const zwnj = '&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;'
   return `
     <div class="preheader">${escapeHtml(preview)}${zwnj}</div>
-    <center role="article" aria-roledescription="email" lang="en" style="width:100%;max-width:100%;background:${gs.bg};">
-      <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:${gs.bg};">
+    <center role="article" aria-roledescription="email" lang="en" style="width:100%;max-width:100%;${emailAmbientOuterLayers()}">
+      <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="${emailAmbientOuterLayers()}">
         <tr>
-          <td align="center" bgcolor="#F4F7F5" class="shell-wm email-outer-shell" style="${watermarkStyles.shellTd()}"><div class="shell-wm-wrap" style="position:relative;display:block;width:100%;margin:0;padding:0;">
+          <td align="center" bgcolor="${EMAIL_AMBIENT_BG_COLOR}" class="shell-wm email-outer-shell" style="${watermarkStyles.shellTd()}"><div class="shell-wm-wrap" style="position:relative;display:block;width:100%;margin:0;padding:0;">
             <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="max-width:100%;position:relative;z-index:1;">
               <tr>
                 <td align="center" style="padding:0;">

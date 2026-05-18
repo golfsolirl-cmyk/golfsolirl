@@ -4,6 +4,9 @@ import {
   buildBrandedFooterHtml,
   buildBrandedQuoteCtaHtml,
   buildBrandedTrustBandHtml,
+  EMAIL_AMBIENT_BG_COLOR,
+  EMAIL_AMBIENT_BG_IMAGE,
+  emailAmbientOuterLayers,
   emailResponsiveCss,
   cardShadow,
   cardShadowLift,
@@ -100,7 +103,7 @@ export function buildBrandedEnquiryEmailHtml(payload, variant = 'customer') {
       img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
       .shell-wm-wrap { position: relative !important; display: block !important; width: 100% !important; }
       table { border-collapse: collapse !important; }
-      body { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+      body { margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: ${EMAIL_AMBIENT_BG_COLOR} !important; background-image: ${EMAIL_AMBIENT_BG_IMAGE} !important; background-repeat: no-repeat !important; background-size: 100% 100% !important; }
       .ReadMsgBody { width: 100% !important; }
       .ExternalClass { width: 100% !important; }
       #MessageViewBody, #MessageWebViewDiv { width: 100% !important; }
@@ -122,15 +125,15 @@ export function buildBrandedEnquiryEmailHtml(payload, variant = 'customer') {
 ${emailResponsiveCss}
     </style>
   </head>
-  <body style="margin:0; padding:0; background:${gs.bg}; font-family:${emailFonts.sans};">
+  <body style="margin:0; padding:0; ${emailAmbientOuterLayers()} font-family:${emailFonts.sans};">
     <!--[if mso | IE]>
-    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;"><tr><td bgcolor="#F4F7F5" style="background-color:${gs.bg};padding:0;border-collapse:collapse;">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;"><tr><td bgcolor="${EMAIL_AMBIENT_BG_COLOR}" style="background-color:${EMAIL_AMBIENT_BG_COLOR};padding:0;border-collapse:collapse;">
     <![endif]-->
     <div class="preheader">${escapeHtml(preview)}&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;</div>
-    <center role="article" aria-roledescription="email" lang="en" style="width:100%;max-width:100%;background:${gs.bg};">
-      <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:${gs.bg};">
+    <center role="article" aria-roledescription="email" lang="en" style="width:100%;max-width:100%;${emailAmbientOuterLayers()}">
+      <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="${emailAmbientOuterLayers()}">
         <tr>
-          <td align="center" bgcolor="#F4F7F5" class="shell-wm email-outer-shell" style="${watermarkStyles.shellTd()}"><div class="shell-wm-wrap" style="position:relative;display:block;width:100%;margin:0;padding:0;">
+          <td align="center" bgcolor="${EMAIL_AMBIENT_BG_COLOR}" class="shell-wm email-outer-shell" style="${watermarkStyles.shellTd()}"><div class="shell-wm-wrap" style="position:relative;display:block;width:100%;margin:0;padding:0;">
             <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="max-width:100%;position:relative;z-index:1;">
               <tr>
                 <td align="center" style="padding:0;">
