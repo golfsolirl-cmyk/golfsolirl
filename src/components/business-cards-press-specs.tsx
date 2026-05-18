@@ -39,14 +39,27 @@ function CardBrandLogo({
   const isPdf = mode === 'pdf'
   const src = assetUrl(GOLFSOL_BRAND_LOGO.webp)
   /**
-   * Portrait crest is oversized vs landscape; layered drop-shadows lift it off cream and forest.
+   * PDF: tight bounds in print pixels (cq units match fixed figure size).
+   * Preview: add **min** height/width so logos stay legible on phones when `cqh`/`cqw` are missing
+   * or resolve tiny (older WebKit / narrow containers).
    */
-  const sizes = {
+  const sizesPdf = {
     portraitFront: 'h-auto max-h-[min(56cqh,11rem)] w-auto max-w-[min(98cqw,17rem)]',
     portraitBack: 'h-auto max-h-[min(52cqh,10.5rem)] w-auto max-w-[min(96cqw,16rem)]',
     landscapeFront: 'h-auto max-h-[min(32cqh,5.5rem)] w-auto max-w-[min(48cqw,12rem)]',
     landscapeBack: 'h-auto max-h-[min(34cqh,6.25rem)] w-auto max-w-[min(48cqw,13rem)]'
   } as const
+  const sizesPreview = {
+    portraitFront:
+      'h-auto w-auto max-h-[46%] min-h-[5.75rem] max-w-[92%] min-w-[9.5rem] sm:max-h-[min(56cqh,11rem)] sm:min-h-0 sm:min-w-0 sm:max-w-[min(98cqw,17rem)]',
+    portraitBack:
+      'h-auto w-auto max-h-[42%] min-h-[5.25rem] max-w-[90%] min-w-[9rem] sm:max-h-[min(52cqh,10.5rem)] sm:min-h-0 sm:min-w-0 sm:max-w-[min(96cqw,16rem)]',
+    landscapeFront:
+      'h-auto w-auto max-h-[32%] min-h-[3.5rem] max-w-[80%] min-w-[7.5rem] sm:max-h-[min(32cqh,5.5rem)] sm:min-h-0 sm:min-w-0 sm:max-w-[min(48cqw,12rem)]',
+    landscapeBack:
+      'h-auto w-auto max-h-[34%] min-h-[3.75rem] max-w-[82%] min-w-[8rem] sm:max-h-[min(34cqh,6.25rem)] sm:min-h-0 sm:min-w-0 sm:max-w-[min(48cqw,13rem)]'
+  } as const
+  const sizes = isPdf ? sizesPdf : sizesPreview
 
   const filter =
     placement === 'portraitFront'
@@ -139,7 +152,9 @@ function PressPortraitFront({
         </div>
 
         <div
-          className="relative flex min-h-0 flex-1 flex-col items-center overflow-hidden px-4 pb-3 pt-1 sm:px-6"
+          className={`relative flex min-h-0 flex-1 flex-col items-center px-4 pb-3 pt-1 sm:px-6 ${
+            isPdf ? 'overflow-hidden' : 'overflow-x-clip overflow-y-visible'
+          }`}
           style={{ paddingLeft: inset(mode), paddingRight: inset(mode), paddingBottom: inset(mode) }}
         >
           <div className="flex max-h-[48%] min-h-0 w-full shrink-0 flex-col items-center justify-center py-0">
@@ -149,15 +164,29 @@ function PressPortraitFront({
           <h2 className="shrink-0 text-center font-ge text-[clamp(1rem,3.5vw,1.42rem)] font-black uppercase leading-[1.1] tracking-[-0.02em] text-[#03150f]">
             {person.name}
           </h2>
-          <p className="mt-1 shrink-0 text-center font-ge text-[0.5rem] font-bold uppercase leading-relaxed tracking-[0.14em] text-[#0a4d34]">
+          <p
+            className={`mt-1 shrink-0 text-center font-ge font-bold uppercase leading-relaxed tracking-[0.14em] text-[#0a4d34] ${
+              isPdf ? 'text-[0.5rem]' : 'text-[clamp(9px,2.7vw,0.5rem)] sm:text-[0.5rem]'
+            }`}
+          >
             {person.roleTitle}
           </p>
-          <p className="mt-0.5 shrink-0 text-center font-ge text-[0.44rem] font-semibold leading-snug text-[#1a2a24]">
+          <p
+            className={`mt-0.5 shrink-0 text-center font-ge font-semibold leading-snug text-[#1a2a24] ${
+              isPdf ? 'text-[0.44rem]' : 'text-[clamp(8.5px,2.5vw,0.44rem)] sm:text-[0.44rem]'
+            }`}
+          >
             {person.premiumDescriptor}
           </p>
           <div className="mt-auto flex shrink-0 items-center justify-center gap-2 pt-2">
             <span className="h-px w-7 bg-[#b8941f]" aria-hidden />
-            <p className="font-ge text-[0.54rem] font-black uppercase tracking-[0.24em] text-[#0a3024]">{person.corridorLine}</p>
+            <p
+              className={`font-ge font-black uppercase tracking-[0.24em] text-[#0a3024] ${
+                isPdf ? 'text-[0.54rem]' : 'text-[clamp(9.5px,2.8vw,0.54rem)] sm:text-[0.54rem]'
+              }`}
+            >
+              {person.corridorLine}
+            </p>
             <span className="h-px w-7 bg-[#b8941f]" aria-hidden />
           </div>
         </div>
@@ -275,22 +304,46 @@ function PressLandscapeFront({
         </div>
 
         <div
-          className="relative flex min-h-0 min-w-0 flex-1 flex-col items-center justify-center overflow-hidden"
+          className={`relative flex min-h-0 min-w-0 flex-1 flex-col items-center justify-center ${
+            isPdf ? 'overflow-hidden' : 'overflow-x-clip overflow-y-visible'
+          }`}
           style={{ padding: inset(mode) }}
         >
           <div className="flex min-h-0 w-full shrink items-center justify-center">
             <CardBrandLogo mode={mode} placement="landscapeFront" />
           </div>
-          <p className="mt-0.5 shrink-0 text-center font-ge text-[0.38rem] font-black uppercase tracking-[0.24em] text-[#0a4d34]">Golf Sol Ireland</p>
+          <p
+            className={`mt-0.5 shrink-0 text-center font-ge font-black uppercase tracking-[0.24em] text-[#0a4d34] ${
+              isPdf ? 'text-[0.38rem]' : 'text-[clamp(9px,2.8vw,0.42rem)] sm:text-[0.38rem]'
+            }`}
+          >
+            Golf Sol Ireland
+          </p>
           <div className="mx-auto mt-1 h-[2px] w-8 shrink-0 rounded-full bg-[#b8941f]" aria-hidden />
           <h2 className="mt-1 shrink-0 text-center font-ge text-[clamp(0.78rem,2vw,1.1rem)] font-black uppercase leading-[1.05] tracking-[-0.01em] text-[#03150f]">
             {person.name}
           </h2>
-          <p className="mt-0.5 shrink-0 text-center font-ge text-[0.38rem] font-bold uppercase leading-normal tracking-[0.1em] text-[#0f241c]">
+          <p
+            className={`mt-0.5 shrink-0 text-center font-ge font-bold uppercase leading-normal tracking-[0.1em] text-[#0f241c] ${
+              isPdf ? 'text-[0.38rem]' : 'text-[clamp(8.5px,2.6vw,0.4rem)] sm:text-[0.38rem]'
+            }`}
+          >
             {person.roleTitle}
           </p>
-          <p className="shrink-0 text-center font-ge text-[0.32rem] font-semibold leading-snug text-[#1e3229]">{person.premiumDescriptor}</p>
-          <p className="mt-0.5 shrink-0 text-center font-ge text-[0.3rem] font-black uppercase tracking-[0.16em] text-[#0a3024]">{person.corridorLine}</p>
+          <p
+            className={`shrink-0 text-center font-ge font-semibold leading-snug text-[#1e3229] ${
+              isPdf ? 'text-[0.32rem]' : 'text-[clamp(8px,2.4vw,0.36rem)] sm:text-[0.32rem]'
+            }`}
+          >
+            {person.premiumDescriptor}
+          </p>
+          <p
+            className={`mt-0.5 shrink-0 text-center font-ge font-black uppercase tracking-[0.16em] text-[#0a3024] ${
+              isPdf ? 'text-[0.3rem]' : 'text-[clamp(7.5px,2.2vw,0.34rem)] sm:text-[0.3rem]'
+            }`}
+          >
+            {person.corridorLine}
+          </p>
         </div>
       </m.div>
       <figcaption className="sr-only">Landscape front — {person.name}</figcaption>
@@ -318,7 +371,9 @@ function PressLandscapeBack({
   return (
     <PrintCardFigure mode={mode} orientation="landscape" outerClass="bg-[#f4f1ea]">
       <m.div
-        className="absolute inset-0 flex min-h-0 flex-col overflow-hidden bg-[#f4f1ea]"
+        className={`absolute inset-0 flex min-h-0 flex-col bg-[#f4f1ea] ${
+          isPdf ? 'overflow-hidden' : 'overflow-x-clip overflow-y-visible'
+        }`}
         initial={reduce || isPdf ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.45, delay: 0.04 }}
@@ -328,7 +383,13 @@ function PressLandscapeBack({
 
         <div className="relative z-[1] flex shrink-0 flex-col items-center border-b border-[#08120d]/18 pb-1 pt-0.5">
           <CardBrandLogo mode={mode} placement="landscapeBack" />
-          <p className="mt-0.5 font-ge text-[0.42rem] font-black uppercase tracking-[0.2em] text-[#03150f]">{person.name}</p>
+          <p
+            className={`mt-0.5 font-ge font-black uppercase tracking-[0.2em] text-[#03150f] ${
+              isPdf ? 'text-[0.42rem]' : 'text-[clamp(9.5px,2.9vw,0.46rem)] sm:text-[0.42rem]'
+            }`}
+          >
+            {person.name}
+          </p>
         </div>
 
         <div className="relative z-[1] mt-1 grid min-h-0 flex-1 grid-cols-2 gap-x-2 gap-y-0.5">
@@ -343,8 +404,18 @@ function PressLandscapeBack({
             >
               <row.Icon className="mt-0.5 size-2.5 shrink-0 text-[#0b4d3b]" strokeWidth={2.25} aria-hidden />
               <span className="min-w-0">
-                <span className="block font-ge text-[0.28rem] font-black uppercase tracking-[0.12em] text-[#3d5249]">{row.label}</span>
-                <span className="block break-all font-ge text-[0.38rem] font-bold leading-snug text-[#021208] underline-offset-2 group-hover:underline">
+                <span
+                  className={`block font-ge font-black uppercase tracking-[0.12em] text-[#3d5249] ${
+                    isPdf ? 'text-[0.28rem]' : 'text-[clamp(7.5px,2.2vw,0.31rem)] sm:text-[0.28rem]'
+                  }`}
+                >
+                  {row.label}
+                </span>
+                <span
+                  className={`block break-all font-ge font-bold leading-snug text-[#021208] underline-offset-2 group-hover:underline ${
+                    isPdf ? 'text-[0.38rem]' : 'text-[clamp(8.5px,2.5vw,0.42rem)] sm:text-[0.38rem]'
+                  }`}
+                >
                   {row.value}
                 </span>
               </span>
@@ -352,7 +423,11 @@ function PressLandscapeBack({
           ))}
         </div>
 
-        <p className="relative z-[1] shrink-0 pt-1 text-center font-ge text-[0.34rem] font-black uppercase tracking-[0.18em] text-[#2d453c]">
+        <p
+          className={`relative z-[1] shrink-0 pt-1 text-center font-ge font-black uppercase tracking-[0.18em] text-[#2d453c] ${
+            isPdf ? 'text-[0.34rem]' : 'text-[clamp(8px,2.3vw,0.36rem)] sm:text-[0.34rem]'
+          }`}
+        >
           Private fleet · Málaga AGP · Golf bags welcome
         </p>
       </m.div>
@@ -439,7 +514,12 @@ function DarkPortraitFront({
           <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-[#08120d]/40 via-transparent to-[#08120d]" />
         </div>
 
-        <div className="relative flex min-h-0 flex-1 flex-col items-center overflow-hidden" style={{ paddingLeft: inset(mode), paddingRight: inset(mode), paddingBottom: inset(mode) }}>
+        <div
+          className={`relative flex min-h-0 flex-1 flex-col items-center ${
+            isPdf ? 'overflow-hidden' : 'overflow-x-clip overflow-y-visible'
+          }`}
+          style={{ paddingLeft: inset(mode), paddingRight: inset(mode), paddingBottom: inset(mode) }}
+        >
           <div className="flex min-h-0 w-full shrink items-center justify-center py-0.5">
             <CardBrandLogo mode={mode} placement="portraitFront" />
           </div>
@@ -540,7 +620,12 @@ function DarkLandscapeFront({
           <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-[#08120d]/20 via-transparent to-[#08120d]" />
         </div>
 
-        <div className="relative flex min-h-0 min-w-0 flex-1 flex-col items-center justify-center overflow-hidden" style={{ padding: inset(mode) }}>
+        <div
+          className={`relative flex min-h-0 min-w-0 flex-1 flex-col items-center justify-center ${
+            isPdf ? 'overflow-hidden' : 'overflow-x-clip overflow-y-visible'
+          }`}
+          style={{ padding: inset(mode) }}
+        >
           <div className="flex min-h-0 w-full shrink items-center justify-center">
             <CardBrandLogo mode={mode} placement="landscapeFront" />
           </div>
@@ -548,11 +633,30 @@ function DarkLandscapeFront({
           <h2 className="mt-1 shrink-0 text-center font-ge text-[clamp(0.82rem,2vw,1.1rem)] font-black uppercase leading-[1.05] tracking-[0.02em]" style={{ color: '#ffffff' }}>
             {person.name}
           </h2>
-          <p className="mt-0.5 shrink-0 text-center font-ge text-[0.38rem] font-bold uppercase leading-normal tracking-[0.1em]" style={{ color: '#d9be7a' }}>
+          <p
+            className={`mt-0.5 shrink-0 text-center font-ge font-bold uppercase leading-normal tracking-[0.1em] ${
+              isPdf ? 'text-[0.38rem]' : 'text-[clamp(8.5px,2.6vw,0.4rem)] sm:text-[0.38rem]'
+            }`}
+            style={{ color: '#d9be7a' }}
+          >
             {person.roleTitle}
           </p>
-          <p className="shrink-0 text-center font-ge text-[0.32rem] font-semibold leading-snug" style={{ color: 'rgba(255,255,255,0.65)' }}>{person.premiumDescriptor}</p>
-          <p className="mt-0.5 shrink-0 text-center font-ge text-[0.3rem] font-black uppercase tracking-[0.16em]" style={{ color: 'rgba(255,255,255,0.55)' }}>{person.corridorLine}</p>
+          <p
+            className={`shrink-0 text-center font-ge font-semibold leading-snug ${
+              isPdf ? 'text-[0.32rem]' : 'text-[clamp(8px,2.4vw,0.36rem)] sm:text-[0.32rem]'
+            }`}
+            style={{ color: 'rgba(255,255,255,0.65)' }}
+          >
+            {person.premiumDescriptor}
+          </p>
+          <p
+            className={`mt-0.5 shrink-0 text-center font-ge font-black uppercase tracking-[0.16em] ${
+              isPdf ? 'text-[0.3rem]' : 'text-[clamp(7.5px,2.2vw,0.34rem)] sm:text-[0.3rem]'
+            }`}
+            style={{ color: 'rgba(255,255,255,0.55)' }}
+          >
+            {person.corridorLine}
+          </p>
         </div>
       </m.div>
       <figcaption className="sr-only">Dark landscape front — {person.name}</figcaption>
@@ -580,7 +684,9 @@ function DarkLandscapeBack({
   return (
     <PrintCardFigure mode={mode} orientation="landscape" outerClass="bg-[#08120d]">
       <m.div
-        className="absolute inset-0 flex min-h-0 flex-col overflow-hidden bg-[#08120d]"
+        className={`absolute inset-0 flex min-h-0 flex-col bg-[#08120d] ${
+          isPdf ? 'overflow-hidden' : 'overflow-x-clip overflow-y-visible'
+        }`}
         initial={reduce || isPdf ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.45, delay: 0.04 }}
@@ -590,7 +696,14 @@ function DarkLandscapeBack({
 
         <div className="relative z-[1] flex shrink-0 flex-col items-center border-b border-[#d9be7a]/25 pb-1 pt-0.5">
           <CardBrandLogo mode={mode} placement="landscapeBack" />
-          <p className="mt-0.5 font-ge text-[0.42rem] font-black uppercase tracking-[0.2em]" style={{ color: '#ffffff' }}>{person.name}</p>
+          <p
+            className={`mt-0.5 font-ge font-black uppercase tracking-[0.2em] ${
+              isPdf ? 'text-[0.42rem]' : 'text-[clamp(9.5px,2.9vw,0.46rem)] sm:text-[0.42rem]'
+            }`}
+            style={{ color: '#ffffff' }}
+          >
+            {person.name}
+          </p>
         </div>
 
         <div className="relative z-[1] mt-1 grid min-h-0 flex-1 grid-cols-2 gap-x-2 gap-y-0.5">
@@ -605,8 +718,20 @@ function DarkLandscapeBack({
             >
               <row.Icon className="mt-0.5 size-2.5 shrink-0" style={{ color: '#d9be7a' }} strokeWidth={2.25} aria-hidden />
               <span className="min-w-0">
-                <span className="block font-ge text-[0.28rem] font-black uppercase tracking-[0.12em]" style={{ color: 'rgba(217,190,122,0.75)' }}>{row.label}</span>
-                <span className="block break-all font-ge text-[0.38rem] font-bold leading-snug underline-offset-2 group-hover:underline" style={{ color: 'rgba(255,255,255,0.92)' }}>
+                <span
+                  className={`block font-ge font-black uppercase tracking-[0.12em] ${
+                    isPdf ? 'text-[0.28rem]' : 'text-[clamp(7.5px,2.2vw,0.31rem)] sm:text-[0.28rem]'
+                  }`}
+                  style={{ color: 'rgba(217,190,122,0.75)' }}
+                >
+                  {row.label}
+                </span>
+                <span
+                  className={`block break-all font-ge font-bold leading-snug underline-offset-2 group-hover:underline ${
+                    isPdf ? 'text-[0.38rem]' : 'text-[clamp(8.5px,2.5vw,0.42rem)] sm:text-[0.38rem]'
+                  }`}
+                  style={{ color: 'rgba(255,255,255,0.92)' }}
+                >
                   {row.value}
                 </span>
               </span>
@@ -614,7 +739,12 @@ function DarkLandscapeBack({
           ))}
         </div>
 
-        <p className="relative z-[1] shrink-0 pt-0.5 text-center font-ge text-[0.32rem] font-black uppercase tracking-[0.18em]" style={{ color: 'rgba(217,190,122,0.6)' }}>
+        <p
+          className={`relative z-[1] shrink-0 pt-0.5 text-center font-ge font-black uppercase tracking-[0.18em] ${
+            isPdf ? 'text-[0.32rem]' : 'text-[clamp(8px,2.3vw,0.36rem)] sm:text-[0.32rem]'
+          }`}
+          style={{ color: 'rgba(217,190,122,0.6)' }}
+        >
           Private fleet · Málaga AGP · Golf bags welcome
         </p>
 

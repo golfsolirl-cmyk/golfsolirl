@@ -413,7 +413,11 @@ export function LoginPage() {
                   </p>
                 </div>
               ) : null}
-              {formError ? <p className="font-ge text-base font-semibold text-brand-700">{formError}</p> : null}
+              {formError ? (
+                <p className="font-ge text-base font-semibold text-red-800" role="alert">
+                  {formError}
+                </p>
+              ) : null}
               <GeButton className="w-full" disabled={isSending} size="md" type="submit" variant="gs-green">
                 {isSending ? (
                   'Sending link…'

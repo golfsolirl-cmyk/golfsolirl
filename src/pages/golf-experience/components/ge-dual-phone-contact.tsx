@@ -125,7 +125,7 @@ export function GeDualPhoneFooterLines() {
   return (
     <>
       <li className="flex items-start gap-2">
-        <Phone className="mt-1 h-4 w-4 shrink-0 text-brand-700/85" aria-hidden="true" />
+        <Phone className="mt-1 h-4 w-4 shrink-0 text-emerald-200/90" aria-hidden="true" />
         <span className="min-w-0 font-ge text-[1.05rem] leading-7 text-white/95 sm:text-[0.98rem]">
           <span className="block text-[0.68rem] font-bold uppercase tracking-[0.12em] text-white/60">
             {contactInfo.phoneIrishLineLabel}
@@ -136,7 +136,7 @@ export function GeDualPhoneFooterLines() {
         </span>
       </li>
       <li className="flex items-start gap-2">
-        <Phone className="mt-1 h-4 w-4 shrink-0 text-brand-700/85" aria-hidden="true" />
+        <Phone className="mt-1 h-4 w-4 shrink-0 text-emerald-200/90" aria-hidden="true" />
         <span className="min-w-0 font-ge text-[1.05rem] leading-7 text-white/95 sm:text-[0.98rem]">
           <span className="block text-[0.68rem] font-bold uppercase tracking-[0.12em] text-white/60">
             {contactInfo.phoneSpanishLineLabel}

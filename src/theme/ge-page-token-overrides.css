@@ -509,6 +509,7 @@
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
-.page-nameplate [data-keep-color] {
-  color: inherit !important;
-}
+/* Do not add `.page-nameplate [data-keep-color] { color: inherit }` here: it runs
+   after the rules above and forces plaque copy to inherit `.ge-page`’s dark
+   body colour onto the dark forest plaque (unreadable). Eyebrow/label use the
+   two explicit selectors above. */

@@ -33,11 +33,9 @@ export interface PageHeroSource {
 export const PAGE_HERO_REGISTRY = {
   /** Sign-in (client / admin / driver share the same magic-link UI). */
   login: {
-    desktop: '/images/hero-malaga-composed-desktop.webp',
-    mobile: '/images/hero-malaga-composed-mobile.webp',
-    desktopWebp: '/images/hero-malaga-composed-desktop.webp',
-    mobileWebp: '/images/hero-malaga-composed-mobile.webp',
-    alt: 'Mercedes V-Class waiting at Málaga AGP — same crew greets every Irish group.',
+    desktop: '/images/88054e80-6dd1-483f-8557-cdc45caa2442.png',
+    mobile: '/images/88054e80-6dd1-483f-8557-cdc45caa2442.png',
+    alt: 'Golf Sol Ireland premium fleet — sign in for your trip desk, quotes, and account.',
     badge: 'Account access',
     tintHue: 'warm'
   } satisfies PageHeroSource,

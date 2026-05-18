@@ -6,7 +6,10 @@ import {
   buildBrandedTrustBandHtml,
   EMAIL_AMBIENT_BG_COLOR,
   EMAIL_AMBIENT_BG_IMAGE,
+  emailAccentTextOnDark,
+  emailAccentBorderOnDarkMuted,
   emailAmbientOuterLayers,
+  emailAmbientRuleTdStyle,
   emailResponsiveCss,
   cardShadow,
   cardShadowLift,
@@ -18,6 +21,8 @@ import {
   EMAIL_LOGO_HERO_W,
   escapeHtml,
   gs,
+  phoneIrelandDisplay,
+  phoneIrelandHref,
   watermarkStyles
 } from './branded-email-shell.mjs'
 import { getGsolSiteUrl } from './site-url.mjs'
@@ -32,7 +37,7 @@ const fieldRowsStacked = (rows) =>
       const rowBg = index % 2 === 0 ? gs.rowA : gs.rowB
       const borderB = index < rows.length - 1 ? `1px solid rgba(6,59,42,0.08)` : 'none'
       const cellPad = isEnquiryId
-        ? `border-left:4px solid ${gs.gold};padding:22px 26px 22px 22px`
+        ? `border-left:4px solid ${emailAccentTextOnDark};padding:22px 26px 22px 22px`
         : 'padding:22px 26px'
       return `
                             <tr>
@@ -159,7 +164,7 @@ ${emailResponsiveCss}
                 <td style="border-radius:42px; overflow:hidden; background:${gs.dark}; box-shadow:${cardShadowLift}; border:1px solid rgba(255,255,255,0.16);">
                   <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0">
                     <tr>
-                      <td style="height:4px;line-height:4px;font-size:0;mso-line-height-rule:exactly;background-color:${gs.gold};">&nbsp;</td>
+                      <td style="${emailAmbientRuleTdStyle()}">&nbsp;</td>
                     </tr>
                     <tr>
                       <td class="mobile-pad mobile-pad-hero" bgcolor="${gs.dark}" style="${watermarkStyles.heroInner()}">
@@ -212,15 +217,15 @@ ${emailResponsiveCss}
 
               <tr>
                 <td style="padding:40px 0 0 0;">
-                  <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:${gs.dark}; border-radius:36px; overflow:hidden; box-shadow:${cardShadowLift}; border:1px solid rgba(217,194,122,0.18);">
+                  <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:${gs.dark}; border-radius:36px; overflow:hidden; box-shadow:${cardShadowLift}; border:1px solid ${emailAccentBorderOnDarkMuted};">
                     <tr>
                       <td style="padding:0;line-height:0;font-size:0;">
                         <img src="${assetUrl(assets.fleetLineup)}" width="640" height="359" alt="GolfSol Ireland Mercedes fleet lineup for Costa del Sol golf transfers." style="display:block; width:100%; max-width:640px; height:auto; border:0;">
                       </td>
                     </tr>
                     <tr>
-                      <td class="mobile-pad" style="padding:28px 36px 32px 36px; background:${gs.dark}; border-top:1px solid rgba(245,196,81,0.25);">
-                        <p style="margin:0;font-family:${emailFonts.sans};color:${gs.gold};font-size:11px;font-weight:800;letter-spacing:0.24em;text-transform:uppercase;">Fleet</p>
+                      <td class="mobile-pad" style="padding:28px 36px 32px 36px; background:${gs.dark}; border-top:1px solid ${emailAccentBorderOnDarkMuted};">
+                        <p style="margin:0;font-family:${emailFonts.sans};color:${emailAccentTextOnDark};font-size:11px;font-weight:800;letter-spacing:0.24em;text-transform:uppercase;">Fleet</p>
                         <p style="margin:12px 0 0 0;font-family:${emailFonts.sans};color:${gs.white};font-size:26px;line-height:1.2;font-weight:800;letter-spacing:-0.025em;">Mercedes E-Class, V-Class &amp; Sprinter — sized to your group and bags.</p>
                       </td>
                     </tr>
@@ -266,7 +271,7 @@ ${emailResponsiveCss}
                               </table>
                             </td>
                             <td class="email-tile-cell mobile-stack" style="width:33.33%; padding:0 4px; vertical-align:top;">
-                              <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:${gs.card}; border:1px solid rgba(245,196,81,0.45); border-radius:22px; overflow:hidden; box-shadow:0 16px 40px rgba(245,196,81,0.12);">
+                              <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:${gs.card}; border:1px solid ${emailAccentBorderOnDarkMuted}; border-radius:22px; overflow:hidden; box-shadow:0 16px 40px rgba(11,77,59,0.07);">
                                 <tr><td style="line-height:0;font-size:0;"><img src="${assetUrl(assets.resort)}" width="190" height="107" alt="GolfSol transfer van arriving at a Costa del Sol golf resort." style="display:block; width:100%; height:auto; border:0;"></td></tr>
                                 <tr><td style="padding:18px 16px 20px 16px;"><p style="margin:0; font-family:${emailFonts.sans}; color:${gs.text}; font-size:15px; line-height:1.25; font-weight:800; letter-spacing:-0.02em;">Resort drop-off</p><p style="margin:8px 0 0 0; font-family:${emailFonts.sans}; color:${gs.muted}; font-size:13px; line-height:1.55; font-weight:500;">Straight to hotel, villa or course.</p></td></tr>
                               </table>

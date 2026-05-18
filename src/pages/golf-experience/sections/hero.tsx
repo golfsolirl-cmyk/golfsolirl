@@ -145,7 +145,7 @@ export function GeHero({
                 <div className="min-w-0">
                   {portalKicker ? (
                     <m.p
-                      className="inline-flex rounded-full border border-brand-700/50 bg-gradient-to-r from-white/[0.14] to-white/[0.06] px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-[0.22em] text-brand-700 shadow-[0_0_24px_rgba(19, 96, 71,0.15)] backdrop-blur-md sm:text-sm"
+                      className="inline-flex rounded-full border border-white/25 bg-gradient-to-r from-white/[0.14] to-white/[0.06] px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-[0.22em] text-emerald-50 shadow-[0_0_24px_rgba(0,0,0,0.35)] backdrop-blur-md sm:text-sm"
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}

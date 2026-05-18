@@ -24,7 +24,7 @@ export const gs = {
   rowA: '#f0f7ee',
   rowB: '#FFFFFF',
   tierBg: '#f4f7f5',
-  tierBorder: '#E8D4A8'
+  tierBorder: '#c5cfc9',
 }
 
 /** Top bar lockup — larger for clearer brand recognition in inbox previews. */
@@ -94,10 +94,6 @@ export const phoneIrelandDisplay = '+353 87 446 4766'
 export const ctaGold =
   `display:inline-block;border-radius:16px;background-color:#0b4d3b;background-image:linear-gradient(135deg,#0b4d3b 0%,#136047 100%);color:#FFFFFF;font-family:${emailFonts.sans};font-size:15px;line-height:1.45;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:20px 38px;box-shadow:0 8px 22px rgba(11,77,59,0.32);text-decoration:none;text-align:center;`
 
-/** Mustard CTA on dark bands — dark green text per brand contrast rules. */
-export const ctaMustard =
-  `display:inline-block;border-radius:16px;background-color:${gs.gold};background-image:linear-gradient(135deg,#E8C96A 0%,#D4A843 55%,#B8922E 100%);color:${gs.dark};font-family:${emailFonts.sans};font-size:15px;line-height:1.45;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:20px 42px;box-shadow:0 10px 28px rgba(212,168,67,0.35);text-decoration:none;text-align:center;`
-
 export const ctaGreen =
   `display:inline-block;border-radius:16px;background:#0B6B45;color:#FFFFFF;font-family:${emailFonts.sans};font-size:15px;line-height:1.45;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:20px 38px;box-shadow:0 8px 22px rgba(11,107,69,0.32);text-decoration:none;text-align:center;`
 
@@ -125,6 +121,25 @@ export const EMAIL_AMBIENT_BG_IMAGE =
 /** Inline styles for body / full-width wrappers behind the 640px shell. */
 export const emailAmbientOuterLayers = () =>
   `background-color:${EMAIL_AMBIENT_BG_COLOR};background-image:${EMAIL_AMBIENT_BG_IMAGE};background-repeat:no-repeat;background-size:100% 100%;`
+
+/** Same layered wash — accent bars, highlighted tiles, CTAs (homepage `#design-package` parity). */
+export const emailAmbientGradientFillStyle = emailAmbientOuterLayers
+
+/** Cream-tone labels & links on forest bands (replaces yellow/gold type). */
+export const emailAccentTextOnDark = '#ebe3cf'
+
+export const emailAccentBorderOnDark = 'rgba(235,227,207,0.45)'
+export const emailAccentBorderOnDarkMuted = 'rgba(235,227,207,0.28)'
+
+export const emailAmbientRuleTdStyle = () =>
+  `height:4px;line-height:4px;font-size:0;mso-line-height-rule:exactly;${emailAmbientGradientFillStyle()}`
+
+/** Primary CTA on dark bands — ambient gradient + forest text (flat mustard retired). */
+export const ctaAmbient =
+  `display:inline-block;border-radius:16px;${emailAmbientGradientFillStyle()}color:${gs.dark};font-family:${emailFonts.sans};font-size:15px;line-height:1.45;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:20px 42px;border:1px solid rgba(19,96,71,0.22);box-shadow:0 10px 26px rgba(11,77,59,0.14);text-decoration:none;text-align:center;`
+
+/** Back-compat — identical to `ctaAmbient`. */
+export const ctaMustard = ctaAmbient
 
 export const watermarkStyles = {
   shellTd: () => `padding:56px 20px 60px 20px;${emailAmbientOuterLayers()}`,
@@ -163,16 +178,16 @@ const heroMetaBlock = (heroMetaHtml) => {
 export const buildBrandedTrustBandHtml = () => `
               <tr>
                 <td style="padding:40px 0 0 0;">
-                  <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:${gs.dark};border-radius:36px;overflow:hidden;box-shadow:${cardShadowLift};border:1px solid rgba(212,168,67,0.28);">
+                  <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:${gs.dark};border-radius:36px;overflow:hidden;box-shadow:${cardShadowLift};border:1px solid ${emailAccentBorderOnDarkMuted};">
                     <tr>
-                      <td style="height:4px;line-height:4px;font-size:0;mso-line-height-rule:exactly;background-color:${gs.gold};">&nbsp;</td>
+                      <td style="${emailAmbientRuleTdStyle()}">&nbsp;</td>
                     </tr>
                     <tr>
                       <td class="mobile-pad" style="padding:40px 34px 42px 34px;">
                         <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0">
                           <tr>
                             <td align="center" style="padding:0 0 22px 0;">
-                              <span class="email-pill" style="display:inline-block;border:1px solid rgba(212,168,67,0.55);border-radius:999px;padding:11px 24px;font-family:${emailFonts.sans};color:${gs.goldLight};font-size:12px;line-height:1.5;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;background:rgba(6,59,42,0.65);">Fully insured transfers</span>
+                              <span class="email-pill" style="display:inline-block;border:1px solid ${emailAccentBorderOnDark};border-radius:999px;padding:11px 24px;font-family:${emailFonts.sans};color:${emailAccentTextOnDark};font-size:12px;line-height:1.5;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;background:rgba(6,59,42,0.65);">Fully insured transfers</span>
                             </td>
                           </tr>
                           <tr>
@@ -189,27 +204,27 @@ export const buildBrandedTrustBandHtml = () => `
                         <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 26px 0;">
                           <tr class="email-tile-row">
                             <td class="email-tile-cell mobile-stack" style="width:33.33%;padding:0 6px 0 0;vertical-align:top;">
-                              <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:rgba(255,255,255,0.06);border-radius:18px;border:1px solid rgba(212,168,67,0.22);">
+                              <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:rgba(255,255,255,0.06);border-radius:18px;border:1px solid ${emailAccentBorderOnDarkMuted};">
                                 <tr><td style="padding:18px 16px 20px 16px;text-align:center;">
-                                  <p style="margin:0;font-family:${emailFonts.sans};font-size:22px;line-height:1.25;color:${gs.gold};font-weight:800;">&#10003;</p>
+                                  <p style="margin:0;font-family:${emailFonts.sans};font-size:22px;line-height:1.25;color:${emailAccentTextOnDark};font-weight:800;">&#10003;</p>
                                   <p class="email-trust-chip-title" style="margin:12px 0 0 0;font-family:${emailFonts.sans};color:${gs.white};font-size:15px;line-height:1.38;font-weight:800;letter-spacing:-0.01em;">Professional chauffeurs</p>
                                   <p class="email-trust-chip-sub" style="margin:8px 0 0 0;font-family:${emailFonts.sans};color:rgba(255,255,255,0.72);font-size:14px;line-height:1.58;font-weight:500;">Named drivers, flight-tracked pickups</p>
                                 </td></tr>
                               </table>
                             </td>
                             <td class="email-tile-cell mobile-stack" style="width:33.33%;padding:0 3px;vertical-align:top;">
-                              <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:rgba(212,168,67,0.12);border-radius:18px;border:1px solid rgba(212,168,67,0.45);">
+                              <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:${gs.green};background-image:linear-gradient(155deg,#10734d 0%,#0B6B45 52%,#084f37 100%);border-radius:18px;border:1px solid rgba(255,255,255,0.28);">
                                 <tr><td style="padding:18px 16px 20px 16px;text-align:center;">
-                                  <p style="margin:0;font-family:${emailFonts.sans};font-size:22px;line-height:1.25;color:${gs.gold};font-weight:800;">&#10003;</p>
+                                  <p style="margin:0;font-family:${emailFonts.sans};font-size:22px;line-height:1.25;color:${emailAccentTextOnDark};font-weight:800;">&#10003;</p>
                                   <p class="email-trust-chip-title" style="margin:12px 0 0 0;font-family:${emailFonts.sans};color:${gs.white};font-size:15px;line-height:1.38;font-weight:800;letter-spacing:-0.01em;">Full insurance</p>
                                   <p class="email-trust-chip-sub" style="margin:8px 0 0 0;font-family:${emailFonts.sans};color:rgba(255,255,255,0.78);font-size:14px;line-height:1.58;font-weight:500;">Passenger cover for every leg</p>
                                 </td></tr>
                               </table>
                             </td>
                             <td class="email-tile-cell mobile-stack" style="width:33.33%;padding:0 0 0 6px;vertical-align:top;">
-                              <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:rgba(255,255,255,0.06);border-radius:18px;border:1px solid rgba(212,168,67,0.22);">
+                              <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:rgba(255,255,255,0.06);border-radius:18px;border:1px solid ${emailAccentBorderOnDarkMuted};">
                                 <tr><td style="padding:18px 16px 20px 16px;text-align:center;">
-                                  <p style="margin:0;font-family:${emailFonts.sans};font-size:22px;line-height:1.25;color:${gs.gold};font-weight:800;">&#10003;</p>
+                                  <p style="margin:0;font-family:${emailFonts.sans};font-size:22px;line-height:1.25;color:${emailAccentTextOnDark};font-weight:800;">&#10003;</p>
                                   <p class="email-trust-chip-title" style="margin:12px 0 0 0;font-family:${emailFonts.sans};color:${gs.white};font-size:15px;line-height:1.38;font-weight:800;letter-spacing:-0.01em;">AGP meet &amp; greet</p>
                                   <p class="email-trust-chip-sub" style="margin:8px 0 0 0;font-family:${emailFonts.sans};color:rgba(255,255,255,0.72);font-size:14px;line-height:1.58;font-weight:500;">Golf-bag friendly Mercedes fleet</p>
                                 </td></tr>
@@ -230,29 +245,29 @@ export const buildBrandedQuoteCtaHtml = () => {
   return `
               <tr>
                 <td style="padding:40px 0 0 0;">
-                  <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:${gs.dark};border-radius:36px;overflow:hidden;box-shadow:${cardShadowLift};border:1px solid rgba(212,168,67,0.24);">
+                  <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:${gs.dark};border-radius:36px;overflow:hidden;box-shadow:${cardShadowLift};border:1px solid ${emailAccentBorderOnDarkMuted};">
                     <tr>
                       <td style="height:4px;line-height:4px;font-size:0;mso-line-height-rule:exactly;background-color:${gs.green};">&nbsp;</td>
                     </tr>
                     <tr>
                       <td class="mobile-pad mobile-center" style="padding:42px 36px 40px 36px;">
-                        <span class="email-pill" style="display:inline-block;border:1px solid rgba(212,168,67,0.5);border-radius:999px;padding:10px 22px;font-family:${emailFonts.sans};color:${gs.gold};font-size:12px;line-height:1.5;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;background:rgba(11,107,69,0.35);">Next step</span>
+                        <span class="email-pill" style="display:inline-block;border:1px solid ${emailAccentBorderOnDark};border-radius:999px;padding:10px 22px;font-family:${emailFonts.sans};color:${emailAccentTextOnDark};font-size:12px;line-height:1.5;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;background:rgba(11,107,69,0.35);">Next step</span>
                         <h2 class="email-section-h2" style="margin:18px 0 0 0;font-family:${emailFonts.sans};color:${gs.white};font-size:34px;line-height:1.14;font-weight:800;letter-spacing:-0.03em;">Fine-tune your quote in one reply</h2>
                         <p class="email-lead" style="margin:16px auto 0 auto;max-width:520px;font-family:${emailFonts.sans};color:rgba(245,240,230,0.9);font-size:18px;line-height:1.72;font-weight:500;">We shape the itinerary around your group — not a fixed package. Send any of the below and we will update your quote.</p>
                         <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style="margin:28px auto 32px auto;max-width:440px;">
                           <tr>
                             <td style="padding:8px 0;font-family:${emailFonts.sans};font-size:17px;line-height:1.62;color:rgba(255,255,255,0.92);font-weight:500;text-align:left;">
-                              <span style="color:${gs.gold};font-weight:800;margin-right:10px;">&#10003;</span> Travel dates or flexibility
+                              <span style="color:${emailAccentTextOnDark};font-weight:800;margin-right:10px;">&#10003;</span> Travel dates or flexibility
                             </td>
                           </tr>
                           <tr>
                             <td style="padding:8px 0;font-family:${emailFonts.sans};font-size:17px;line-height:1.62;color:rgba(255,255,255,0.92);font-weight:500;text-align:left;">
-                              <span style="color:${gs.gold};font-weight:800;margin-right:10px;">&#10003;</span> Group size or rooming
+                              <span style="color:${emailAccentTextOnDark};font-weight:800;margin-right:10px;">&#10003;</span> Group size or rooming
                             </td>
                           </tr>
                           <tr>
                             <td style="padding:8px 0;font-family:${emailFonts.sans};font-size:17px;line-height:1.62;color:rgba(255,255,255,0.92);font-weight:500;text-align:left;">
-                              <span style="color:${gs.gold};font-weight:800;margin-right:10px;">&#10003;</span> Must-play courses or resort area
+                              <span style="color:${emailAccentTextOnDark};font-weight:800;margin-right:10px;">&#10003;</span> Must-play courses or resort area
                             </td>
                           </tr>
                         </table>
@@ -261,8 +276,8 @@ export const buildBrandedQuoteCtaHtml = () => {
                         </a>
                         <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="margin:28px auto 0 auto;max-width:520px;">
                           <tr>
-                            <td align="center" style="padding:16px 18px;background:rgba(255,255,255,0.06);border-radius:16px;border:1px solid rgba(212,168,67,0.2);">
-                              <p style="margin:0;font-family:${emailFonts.sans};font-size:12px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:${gs.gold};">Prefer to call?</p>
+                            <td align="center" style="padding:16px 18px;background:rgba(255,255,255,0.06);border-radius:16px;border:1px solid ${emailAccentBorderOnDarkMuted};">
+                              <p style="margin:0;font-family:${emailFonts.sans};font-size:12px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:${emailAccentTextOnDark};">Prefer to call?</p>
                               <p style="margin:12px 0 0 0;font-family:${emailFonts.sans};font-size:17px;line-height:1.62;font-weight:600;">
                                 <a href="${phoneIrelandHref}" style="color:${gs.white};font-weight:800;text-decoration:none;">${escapeHtml(phoneIrelandDisplay)}</a>
                                 <span style="color:rgba(255,255,255,0.4);padding:0 8px;">·</span>
@@ -290,15 +305,15 @@ export const buildBrandedMarketingTailHtml = () => {
   return `
               <tr>
                 <td style="padding:40px 0 0 0;">
-                  <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:${gs.dark}; border-radius:36px; overflow:hidden; box-shadow:${cardShadowLift}; border:1px solid rgba(217,194,122,0.18);">
+                  <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:${gs.dark}; border-radius:36px; overflow:hidden; box-shadow:${cardShadowLift}; border:1px solid ${emailAccentBorderOnDarkMuted};">
                     <tr>
                       <td style="padding:0;line-height:0;font-size:0;">
                         <img src="${assetUrl(assets.fleetLineup)}" width="640" height="359" alt="GolfSol Ireland Mercedes fleet lineup for Costa del Sol golf transfers." style="display:block; width:100%; max-width:640px; height:auto; border:0;">
                       </td>
                     </tr>
                     <tr>
-                      <td class="mobile-pad" style="padding:28px 36px 32px 36px; background:${gs.dark}; border-top:1px solid rgba(245,196,81,0.25);">
-                        <p style="margin:0;font-family:${emailFonts.sans};color:${gs.gold};font-size:12px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;">Fleet</p>
+                      <td class="mobile-pad" style="padding:28px 36px 32px 36px; background:${gs.dark}; border-top:1px solid ${emailAccentBorderOnDarkMuted};">
+                        <p style="margin:0;font-family:${emailFonts.sans};color:${emailAccentTextOnDark};font-size:12px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;">Fleet</p>
                         <p style="margin:14px 0 0 0;font-family:${emailFonts.sans};color:${gs.white};font-size:28px;line-height:1.22;font-weight:800;letter-spacing:-0.025em;">Mercedes E-Class, V-Class &amp; Sprinter — sized to your group and bags.</p>
                       </td>
                     </tr>
@@ -322,7 +337,7 @@ export const buildBrandedMarketingTailHtml = () => {
                               </table>
                             </td>
                             <td class="email-tile-cell mobile-stack" style="width:33.33%; padding:0 4px; vertical-align:top;">
-                              <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:${gs.card}; border:1px solid rgba(245,196,81,0.45); border-radius:22px; overflow:hidden; box-shadow:0 16px 40px rgba(245,196,81,0.12);">
+                              <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:${gs.card}; border:1px solid ${emailAccentBorderOnDarkMuted}; border-radius:22px; overflow:hidden; box-shadow:0 16px 40px rgba(11,77,59,0.07);">
                                 <tr><td style="line-height:0;font-size:0;"><img src="${assetUrl(assets.resort)}" width="190" height="107" alt="GolfSol transfer van arriving at a Costa del Sol golf resort." style="display:block; width:100%; height:auto; border:0;"></td></tr>
                                 <tr><td style="padding:18px 16px 20px 16px;"><p style="margin:0; font-family:${emailFonts.sans}; color:${gs.text}; font-size:15px; line-height:1.25; font-weight:800; letter-spacing:-0.02em;">Resort drop-off</p><p style="margin:8px 0 0 0; font-family:${emailFonts.sans}; color:${gs.muted}; font-size:13px; line-height:1.55; font-weight:500;">Straight to hotel, villa or course.</p></td></tr>
                               </table>
@@ -360,9 +375,9 @@ export const buildBrandedFooterHtml = (opts = {}) => {
   return `
               <tr>
                 <td style="padding:44px 12px 8px 12px;">
-                  <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;margin:0 auto;background:${gs.dark};border-radius:32px;overflow:hidden;box-shadow:${cardShadowLift};border:1px solid rgba(212,168,67,0.22);">
+                  <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;margin:0 auto;background:${gs.dark};border-radius:32px;overflow:hidden;box-shadow:${cardShadowLift};border:1px solid ${emailAccentBorderOnDarkMuted};">
                     <tr>
-                      <td style="height:4px;line-height:4px;max-height:4px;font-size:0;mso-line-height-rule:exactly;background-color:${gs.gold};">&nbsp;</td>
+                      <td style="height:4px;line-height:4px;max-height:4px;font-size:0;mso-line-height-rule:exactly;${emailAmbientGradientFillStyle()}">&nbsp;</td>
                     </tr>
                     <tr>
                       <td class="mobile-pad" style="padding:38px 30px 34px 30px;">
@@ -373,34 +388,34 @@ export const buildBrandedFooterHtml = (opts = {}) => {
                             </td>
                           </tr>
                         </table>
-                        <p style="margin:0 auto;max-width:460px;text-align:center;font-family:${emailFonts.sans};font-size:12px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:${gs.gold};">Irish-owned · Costa del Sol</p>
+                        <p style="margin:0 auto;max-width:460px;text-align:center;font-family:${emailFonts.sans};font-size:12px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:${emailAccentTextOnDark};">Irish-owned · Costa del Sol</p>
                         <p style="margin:14px auto 0 auto;max-width:460px;text-align:center;font-family:${emailFonts.sans};font-size:20px;line-height:1.38;font-weight:800;letter-spacing:-0.02em;color:${gs.white};">Golf travel, planned in one place</p>
                         <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style="margin:20px auto 0 auto;">
                           <tr>
                             <td style="padding:0 5px;">
-                              <span style="display:inline-block;padding:9px 16px;border-radius:999px;background:rgba(255,255,255,0.07);border:1px solid rgba(212,168,67,0.28);font-family:${emailFonts.sans};font-size:12px;line-height:1.45;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:${gs.goldLight};">Transfers</span>
+                              <span style="display:inline-block;padding:9px 16px;border-radius:999px;background:rgba(255,255,255,0.07);border:1px solid ${emailAccentBorderOnDarkMuted};font-family:${emailFonts.sans};font-size:12px;line-height:1.45;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:${emailAccentTextOnDark};">Transfers</span>
                             </td>
                             <td style="padding:0 5px;">
-                              <span style="display:inline-block;padding:9px 16px;border-radius:999px;background:rgba(255,255,255,0.07);border:1px solid rgba(212,168,67,0.28);font-family:${emailFonts.sans};font-size:12px;line-height:1.45;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:${gs.goldLight};">Golf</span>
+                              <span style="display:inline-block;padding:9px 16px;border-radius:999px;background:rgba(255,255,255,0.07);border:1px solid ${emailAccentBorderOnDarkMuted};font-family:${emailFonts.sans};font-size:12px;line-height:1.45;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:${emailAccentTextOnDark};">Golf</span>
                             </td>
                             <td style="padding:0 5px;">
-                              <span style="display:inline-block;padding:9px 16px;border-radius:999px;background:rgba(255,255,255,0.07);border:1px solid rgba(212,168,67,0.28);font-family:${emailFonts.sans};font-size:12px;line-height:1.45;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:${gs.goldLight};">Hotels</span>
+                              <span style="display:inline-block;padding:9px 16px;border-radius:999px;background:rgba(255,255,255,0.07);border:1px solid ${emailAccentBorderOnDarkMuted};font-family:${emailFonts.sans};font-size:12px;line-height:1.45;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:${emailAccentTextOnDark};">Hotels</span>
                             </td>
                           </tr>
                         </table>
                         <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="margin:26px 0 0 0;">
                           <tr>
                             <td align="center" class="email-footer-contact mobile-stack" style="width:50%;padding:0 6px 0 0;vertical-align:top;">
-                              <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:rgba(7,28,22,0.5);border-radius:14px;border:1px solid rgba(212,168,67,0.28);">
+                              <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:rgba(7,28,22,0.5);border-radius:14px;border:1px solid ${emailAccentBorderOnDarkMuted};">
                                 <tr><td align="center" style="padding:14px 16px;">
-                                  <a href="mailto:${escapeHtml(gsolEmailBrand.email)}" style="font-family:${emailFonts.sans};font-size:16px;line-height:1.5;color:${gs.gold};font-weight:800;text-decoration:none;word-break:break-word;">${escapeHtml(gsolEmailBrand.email)}</a>
+                                  <a href="mailto:${escapeHtml(gsolEmailBrand.email)}" style="font-family:${emailFonts.sans};font-size:16px;line-height:1.5;color:${emailAccentTextOnDark};font-weight:800;text-decoration:none;word-break:break-word;">${escapeHtml(gsolEmailBrand.email)}</a>
                                 </td></tr>
                               </table>
                             </td>
                             <td align="center" class="email-footer-contact mobile-stack" style="width:50%;padding:0 0 0 6px;vertical-align:top;">
-                              <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:rgba(7,28,22,0.5);border-radius:14px;border:1px solid rgba(212,168,67,0.28);">
+                              <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:rgba(7,28,22,0.5);border-radius:14px;border:1px solid ${emailAccentBorderOnDarkMuted};">
                                 <tr><td align="center" style="padding:14px 16px;">
-                                  <a href="${escapeHtml(siteUrl + '/')}" target="_blank" rel="noopener noreferrer" style="font-family:${emailFonts.sans};font-size:14px;color:${gs.gold};font-weight:800;text-decoration:none;">${escapeHtml(websiteLabel)}</a>
+                                  <a href="${escapeHtml(siteUrl + '/')}" target="_blank" rel="noopener noreferrer" style="font-family:${emailFonts.sans};font-size:14px;color:${emailAccentTextOnDark};font-weight:800;text-decoration:none;">${escapeHtml(websiteLabel)}</a>
                                 </td></tr>
                               </table>
                             </td>
@@ -548,7 +563,7 @@ export const buildBrandedTransactionalEmailHtml = ({
                 <td style="border-radius:42px; overflow:hidden; background:${gs.dark}; box-shadow:${cardShadowLift}; border:1px solid rgba(255,255,255,0.16);">
                   <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0">
                     <tr>
-                      <td style="height:4px;line-height:4px;font-size:0;mso-line-height-rule:exactly;background-color:${gs.gold};">&nbsp;</td>
+                      <td style="${emailAmbientRuleTdStyle()}">&nbsp;</td>
                     </tr>
                     <tr>
                       <td class="mobile-pad mobile-pad-hero" bgcolor="${gs.dark}" style="${watermarkStyles.heroInner()}">

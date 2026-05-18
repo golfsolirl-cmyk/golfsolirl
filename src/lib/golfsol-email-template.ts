@@ -6,8 +6,6 @@ export const golfSolEmailPreviewText =
 const brand = {
   green: '#0B4D3B',
   greenSoft: '#1e7558',
-  gold: '#D4A843',
-  goldDeep: '#B8922E',
   cream: '#eef2ef',
   sand: '#d9d9d9',
   ink: '#08120d',
@@ -17,6 +15,12 @@ const brand = {
 
 /** Homepage `#design-package` outer wash — keep in sync with `EMAIL_AMBIENT_*` in `server/branded-email-shell.mjs`. */
 const emailAmbientOuterLayers = `background-color:${brand.cream};background-image:radial-gradient(circle at 8% 0%, rgba(19,96,71,0.22), transparent 30%), radial-gradient(circle at 92% 12%, rgba(217,190,122,0.14), transparent 24%), linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(246,240,226,0.98) 38%, rgba(235,227,207,0.97) 100%);background-repeat:no-repeat;background-size:100% 100%;`
+
+/** Cream-tone type on forest hero bands (replaces yellow/gold). */
+const emailAccentOnDark = '#ebe3cf'
+
+/** Nested cards / bands — same ambient stack + subtle forest hairline. */
+const emailNestedWashCard = `${emailAmbientOuterLayers}border:1px solid rgba(19,96,71,0.14);border-radius:18px;`
 
 const assets = {
   logo: '/images/g-sol-logo.png',
@@ -111,7 +115,7 @@ export function getGolfSolBrandedEmailHtml() {
                             <td class="mobile-center" align="left" style="vertical-align:middle;">
                               <img src="${assets.logo}" width="220" height="107" alt="GolfSol Ireland" style="display:block; width:220px; max-width:76%; height:auto; margin:0; border:0;">
                             </td>
-                            <td class="mobile-center" align="right" style="vertical-align:middle; font-family:Arial, Helvetica, sans-serif; color:${brand.gold}; font-size:11px; line-height:15px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase;">
+                            <td class="mobile-center" align="right" style="vertical-align:middle; font-family:Arial, Helvetica, sans-serif; color:${emailAccentOnDark}; font-size:11px; line-height:15px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase;">
                               Premium golf travel
                             </td>
                           </tr>
@@ -119,7 +123,7 @@ export function getGolfSolBrandedEmailHtml() {
                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                           <tr>
                             <td class="mobile-stack" style="width:62%; vertical-align:top;">
-                              <div style="display:inline-block; border:1px solid rgba(19, 96, 71,0.55); border-radius:999px; padding:8px 12px; font-family:Arial, Helvetica, sans-serif; color:${brand.gold}; font-size:11px; line-height:14px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase;">
+                              <div style="display:inline-block; border:1px solid rgba(19, 96, 71,0.55); border-radius:999px; padding:8px 12px; font-family:Arial, Helvetica, sans-serif; color:${emailAccentOnDark}; font-size:11px; line-height:14px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase;">
                                 Trip plan ready
                               </div>
                               <h1 class="hero-title" style="margin:18px 0 0 0; font-family:Georgia, 'Times New Roman', serif; color:${brand.white}; font-size:43px; line-height:48px; font-weight:700; letter-spacing:-1.2px;">
@@ -133,7 +137,7 @@ export function getGolfSolBrandedEmailHtml() {
                               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0B4D3B; border:1px solid rgba(19, 96, 71,0.32); border-radius:22px;">
                                 <tr>
                                   <td style="padding:18px;">
-                                    <p style="margin:0; font-family:Arial, Helvetica, sans-serif; color:${brand.gold}; font-size:11px; line-height:14px; font-weight:800; letter-spacing:1.6px; text-transform:uppercase;">Now boarding</p>
+                                    <p style="margin:0; font-family:Arial, Helvetica, sans-serif; color:${emailAccentOnDark}; font-size:11px; line-height:14px; font-weight:800; letter-spacing:1.6px; text-transform:uppercase;">Now boarding</p>
                                     <p style="margin:10px 0 0 0; font-family:Arial, Helvetica, sans-serif; color:${brand.white}; font-size:24px; line-height:28px; font-weight:800;">Malaga Airport</p>
                                     <p style="margin:8px 0 0 0; font-family:Arial, Helvetica, sans-serif; color:#CFE0D8; font-size:13px; line-height:20px;">Meet & greet transfer with golf-bag room reserved.</p>
                                   </td>
@@ -145,7 +149,7 @@ export function getGolfSolBrandedEmailHtml() {
                       </td>
                     </tr>
                     <tr>
-                      <td style="height:5px; line-height:5px; background:${brand.gold}; font-size:0;">&nbsp;</td>
+                      <td style="height:5px;line-height:5px;${emailAmbientOuterLayers}font-size:0;">&nbsp;</td>
                     </tr>
                   </table>
                 </td>
@@ -160,11 +164,11 @@ export function getGolfSolBrandedEmailHtml() {
                       </td>
                     </tr>
                     <tr>
-                      <td class="mobile-pad" style="padding:18px 24px 22px 24px; background:#FFF9EA;">
+                      <td class="mobile-pad" style="padding:18px 24px 22px 24px;${emailAmbientOuterLayers}">
                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                           <tr>
                             <td class="mobile-stack" style="vertical-align:top;">
-                              <p style="margin:0; font-family:Arial, Helvetica, sans-serif; color:${brand.goldDeep}; font-size:11px; line-height:15px; font-weight:900; letter-spacing:1.7px; text-transform:uppercase;">Golf-bag friendly Mercedes fleet</p>
+                              <p style="margin:0; font-family:Arial, Helvetica, sans-serif; color:${brand.green}; font-size:11px; line-height:15px; font-weight:900; letter-spacing:1.7px; text-transform:uppercase;">Golf-bag friendly Mercedes fleet</p>
                               <p style="margin:8px 0 0 0; font-family:Georgia, 'Times New Roman', serif; color:${brand.ink}; font-size:24px; line-height:30px; font-weight:700;">E-Class, V-Class and Sprinter options matched to your group.</p>
                             </td>
                             <td class="mobile-stack" align="right" style="vertical-align:top; padding-left:18px;">
@@ -189,8 +193,8 @@ export function getGolfSolBrandedEmailHtml() {
                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                           <tr>
                             <td class="mobile-stack" style="width:50%; padding:0 8px 12px 0;">
-                              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FFF9EA; border:1px solid #F0DFB7; border-radius:18px;">
-                                <tr><td style="padding:18px;"><p style="margin:0; font-family:Arial, Helvetica, sans-serif; color:${brand.goldDeep}; font-size:11px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase;">Transfer</p><p style="margin:8px 0 0 0; font-family:Arial, Helvetica, sans-serif; color:${brand.ink}; font-size:17px; line-height:23px; font-weight:800;">Private AGP pickup</p><p style="margin:6px 0 0 0; font-family:Arial, Helvetica, sans-serif; color:${brand.muted}; font-size:13px; line-height:20px;">Driver tracked to your flight, with vehicle matched to bag count.</p></td></tr>
+                              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="${emailNestedWashCard}">
+                                <tr><td style="padding:18px;"><p style="margin:0; font-family:Arial, Helvetica, sans-serif; color:${brand.green}; font-size:11px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase;">Transfer</p><p style="margin:8px 0 0 0; font-family:Arial, Helvetica, sans-serif; color:${brand.ink}; font-size:17px; line-height:23px; font-weight:800;">Private AGP pickup</p><p style="margin:6px 0 0 0; font-family:Arial, Helvetica, sans-serif; color:${brand.muted}; font-size:13px; line-height:20px;">Driver tracked to your flight, with vehicle matched to bag count.</p></td></tr>
                               </table>
                             </td>
                             <td class="mobile-stack" style="width:50%; padding:0 0 12px 8px;">
@@ -206,8 +210,8 @@ export function getGolfSolBrandedEmailHtml() {
                               </table>
                             </td>
                             <td class="mobile-stack" style="width:50%; padding:0 0 0 8px;">
-                              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FFF9EA; border:1px solid #F0DFB7; border-radius:18px;">
-                                <tr><td style="padding:18px;"><p style="margin:0; font-family:Arial, Helvetica, sans-serif; color:${brand.goldDeep}; font-size:11px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase;">Support</p><p style="margin:8px 0 0 0; font-family:Arial, Helvetica, sans-serif; color:${brand.ink}; font-size:17px; line-height:23px; font-weight:800;">Irish phone line</p><p style="margin:6px 0 0 0; font-family:Arial, Helvetica, sans-serif; color:${brand.muted}; font-size:13px; line-height:20px;">WhatsApp-friendly follow-up from a real person.</p></td></tr>
+                              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="${emailNestedWashCard}">
+                                <tr><td style="padding:18px;"><p style="margin:0; font-family:Arial, Helvetica, sans-serif; color:${brand.green}; font-size:11px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase;">Support</p><p style="margin:8px 0 0 0; font-family:Arial, Helvetica, sans-serif; color:${brand.ink}; font-size:17px; line-height:23px; font-weight:800;">Irish phone line</p><p style="margin:6px 0 0 0; font-family:Arial, Helvetica, sans-serif; color:${brand.muted}; font-size:13px; line-height:20px;">WhatsApp-friendly follow-up from a real person.</p></td></tr>
                               </table>
                             </td>
                           </tr>
@@ -235,7 +239,7 @@ export function getGolfSolBrandedEmailHtml() {
                               </table>
                             </td>
                             <td class="mobile-stack" style="width:33.33%; padding:0 3.5px; vertical-align:top;">
-                              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FFF9EA; border:1px solid #F0DFB7; border-radius:18px; overflow:hidden;">
+                              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="${emailAmbientOuterLayers}border:1px solid rgba(19,96,71,0.14);border-radius:18px;overflow:hidden;">
                                 <tr><td><img src="${assets.resort}" width="190" height="107" alt="GolfSol transfer van arriving at a Costa del Sol golf resort." style="display:block; width:100%; height:auto; border:0;"></td></tr>
                                 <tr><td style="padding:13px;"><p style="margin:0; font-family:Arial, Helvetica, sans-serif; color:${brand.ink}; font-size:14px; line-height:19px; font-weight:800;">Resort drop-off</p><p style="margin:5px 0 0 0; font-family:Arial, Helvetica, sans-serif; color:${brand.muted}; font-size:12px; line-height:18px;">Straight to hotel, villa or course.</p></td></tr>
                               </table>
@@ -259,13 +263,13 @@ export function getGolfSolBrandedEmailHtml() {
                   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${brand.green}; border-radius:26px;">
                     <tr>
                       <td class="mobile-pad mobile-center" style="padding:28px 34px;">
-                        <p style="margin:0; font-family:Arial, Helvetica, sans-serif; color:${brand.gold}; font-size:12px; line-height:16px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase;">Next step</p>
+                        <p style="margin:0; font-family:Arial, Helvetica, sans-serif; color:${emailAccentOnDark}; font-size:12px; line-height:16px; font-weight:800; letter-spacing:1.8px; text-transform:uppercase;">Next step</p>
                         <h2 style="margin:9px 0 0 0; font-family:Georgia, 'Times New Roman', serif; color:${brand.white}; font-size:28px; line-height:34px;">Tell us what to tune.</h2>
                         <p style="margin:10px 0 22px 0; font-family:Arial, Helvetica, sans-serif; color:#DCE8E2; font-size:15px; line-height:24px;">Reply with your preferred dates, group size and any must-play courses. We will shape the quote around the group rather than forcing you into a fixed package.</p>
-                        <a class="cta-button" href="https://golfsolirl.com/#quote" style="display:inline-block; border-radius:999px; background:${brand.gold}; color:${brand.ink}; font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:18px; font-weight:900; letter-spacing:1.4px; text-transform:uppercase; padding:16px 24px;">
+                        <a class="cta-button" href="https://golfsolirl.com/#quote" style="display:inline-block;border-radius:999px;${emailAmbientOuterLayers}color:${brand.ink};border:1px solid rgba(19,96,71,0.22);font-family:Arial, Helvetica, sans-serif;font-size:14px;line-height:18px;font-weight:900;letter-spacing:1.4px;text-transform:uppercase;padding:16px 24px;text-decoration:none;">
                           Get my quote refined
                         </a>
-                        <p style="margin:18px 0 0 0; font-family:Arial, Helvetica, sans-serif; color:#CFE0D8; font-size:14px; line-height:22px;">Prefer to call? <a href="tel:+353874464766" style="color:${brand.gold}; font-weight:800;">+353 87 446 4766</a> (Ireland / WhatsApp) · <a href="tel:+34641815366" style="color:${brand.gold}; font-weight:800;">+34 641 81 53 66</a> (Spain)</p>
+                        <p style="margin:18px 0 0 0; font-family:Arial, Helvetica, sans-serif; color:#CFE0D8; font-size:14px; line-height:22px;">Prefer to call? <a href="tel:+353874464766" style="color:${emailAccentOnDark}; font-weight:800;">+353 87 446 4766</a> (Ireland / WhatsApp) · <a href="tel:+34641815366" style="color:${emailAccentOnDark}; font-weight:800;">+34 641 81 53 66</a> (Spain)</p>
                       </td>
                     </tr>
                   </table>

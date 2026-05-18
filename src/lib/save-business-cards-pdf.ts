@@ -53,7 +53,8 @@ export function sanitizePdfFilenameBase(base: string) {
 
 async function captureSlideToCanvas(el: HTMLElement): Promise<HTMLCanvasElement> {
   const { scrollX, scrollY, windowWidth, windowHeight } = html2canvasViewportPadding(el)
-  const scale = Math.max(2, Math.min((window.devicePixelRatio || 1) * 2, 3))
+  /** Slightly higher floor keeps fine type + crest edges sharp after downscale to mm-sized PDF. */
+  const scale = Math.max(2.5, Math.min((window.devicePixelRatio || 1) * 2, 3))
 
   return html2canvas(el, {
     backgroundColor: '#ffffff',

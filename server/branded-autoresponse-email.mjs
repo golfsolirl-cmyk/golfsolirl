@@ -6,7 +6,7 @@
  * Uses the unified branded shell via `buildGsolTransactionalEmail`.
  */
 import { buildGsolTransactionalEmail, finalizeGsolEmailHtml } from './email-layout.mjs'
-import { emailFonts, escapeHtml, gs, ctaGold, assetUrl, assets, phoneIrelandDisplay, phoneIrelandHref } from './branded-email-shell.mjs'
+import { emailFonts, escapeHtml, gs, ctaGold, assetUrl, assets, phoneIrelandDisplay, phoneIrelandHref, emailAccentTextOnDark, emailAccentBorderOnDarkMuted } from './branded-email-shell.mjs'
 
 /**
  * Form auto-response — sent immediately when a visitor submits any form.
@@ -45,10 +45,10 @@ export function buildFormAutoresponseEmailHtml(data) {
       ${interestHtml}
       <tr>
         <td style="padding:28px 0 0 0;">
-          <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:${gs.dark};border-radius:20px;overflow:hidden;border:1px solid rgba(217,194,122,0.18);">
+          <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:${gs.dark};border-radius:20px;overflow:hidden;border:1px solid ${emailAccentBorderOnDarkMuted};">
             <tr>
               <td style="padding:28px 30px;font-family:${emailFonts.sans};color:${gs.white};">
-                <p style="margin:0;font-size:10px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:${gs.gold};">In the meantime</p>
+                <p style="margin:0;font-size:10px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:${emailAccentTextOnDark};">In the meantime</p>
                 <p style="margin:12px 0 0 0;font-size:15px;line-height:1.65;font-weight:600;">
                   If you'd like to talk sooner, call or WhatsApp us directly:
                 </p>

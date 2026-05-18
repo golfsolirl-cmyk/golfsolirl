@@ -42,7 +42,7 @@ export function GeCourseCard({ course }: CourseCardProps) {
         />
         {/* Top row: flex + wrap stops character badge and area chip colliding on narrow columns */}
         <div className="pointer-events-none absolute left-2 right-2 top-2 z-10 flex flex-wrap items-start justify-between gap-2 sm:left-3 sm:right-3 sm:top-3">
-          <span className="inline-flex min-w-0 max-w-[min(100%,11.5rem)] items-center gap-1 rounded-full border border-brand-700/60 bg-gs-dark/90 px-3 py-1.5 font-ge text-[0.76rem] font-extrabold uppercase leading-tight tracking-[0.08em] text-brand-700 shadow-[0_8px_18px_rgba(0,0,0,0.45)] backdrop-blur-sm sm:max-w-[13rem] sm:gap-1.5 sm:px-3 sm:py-1.5 sm:text-[0.8rem] sm:tracking-[0.1em]">
+          <span className="inline-flex min-w-0 max-w-[min(100%,11.5rem)] items-center gap-1 rounded-full border border-emerald-300/45 bg-gs-dark/90 px-3 py-1.5 font-ge text-[0.76rem] font-extrabold uppercase leading-tight tracking-[0.08em] text-emerald-100 shadow-[0_8px_18px_rgba(0,0,0,0.45)] backdrop-blur-sm sm:max-w-[13rem] sm:gap-1.5 sm:px-3 sm:py-1.5 sm:text-[0.8rem] sm:tracking-[0.1em]">
             <span className="truncate">{course.badge}</span>
           </span>
           <span className="inline-flex min-w-0 max-w-[min(100%,10.5rem)] items-center gap-1 rounded-full bg-white/95 px-3 py-1.5 font-ge text-[0.76rem] font-bold uppercase leading-tight tracking-[0.08em] text-gs-green shadow-[0_4px_12px_rgba(0,0,0,0.18)] sm:max-w-[12rem] sm:text-[0.8rem] sm:tracking-[0.1em]">

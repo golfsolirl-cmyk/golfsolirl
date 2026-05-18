@@ -6,7 +6,7 @@ import { Resend } from 'resend'
 import { createEnquiryReferenceId, formatDocumentDate } from '../shared/document-templates.mjs'
 import { sanitizeStandardFontText } from '../shared/pdf-winansi-sanitize.mjs'
 import { gsolEmailBrand } from './email-constants.mjs'
-import { emailFonts, gs } from './branded-email-shell.mjs'
+import { emailFonts, gs, emailAmbientGradientFillStyle } from './branded-email-shell.mjs'
 import { buildGsolTransactionalEmail, finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
 import { buildBrandedEnquiryEmailHtml } from './branded-enquiry-email.mjs'
 import { runPostEnquiryPortalInviteJob } from './post-enquiry-portal-invite.mjs'
@@ -1011,8 +1011,8 @@ const buildTermsEmailHtml = ({ email, sentDate }) => {
         </td>
       </tr>
       <tr>
-        <td style="padding:18px 20px;border-radius:18px;background:#fff7df;border:1px solid ${gs.tierBorder};">
-          <p style="margin:0 0 8px 0;font-family:${emailFonts.sans};font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#8a6500;">Important note</p>
+        <td style="padding:18px 20px;border-radius:18px;${emailAmbientGradientFillStyle()}border:1px solid rgba(19,96,71,0.14);">
+          <p style="margin:0 0 8px 0;font-family:${emailFonts.sans};font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:${gs.green};">Important note</p>
           <p style="margin:0;font-family:${emailFonts.sans};font-size:14px;line-height:1.7;color:${gs.muted};">
             This email is a terms information copy only. Your specific trip may also include supplier-specific terms on your quote, invoice or confirmation email.
           </p>

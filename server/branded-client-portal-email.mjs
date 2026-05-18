@@ -1,4 +1,4 @@
-import { ctaGold, ctaGreen, emailFonts, gs } from './branded-email-shell.mjs'
+import { ctaGold, ctaGreen, emailFonts, gs, emailAmbientGradientFillStyle } from './branded-email-shell.mjs'
 import { buildGsolTransactionalEmail, getGsolSiteUrl } from './email-layout.mjs'
 
 const escapeHtml = (value) =>
@@ -254,7 +254,7 @@ export const buildBrandedPortalMagicLinkEmailHtml = ({ actionLink, email, reques
         </td>
       </tr>
       <tr>
-        <td style="padding:0;border-radius:18px;background:#fff9ea;border:1px solid ${gs.tierBorder};">
+        <td style="padding:0;border-radius:18px;${emailAmbientGradientFillStyle()}border:1px solid rgba(19,96,71,0.14);">
           <p style="margin:0;padding:16px 18px;font-family:${emailFonts.sans};font-size:13px;line-height:1.65;color:${gs.muted};">
             <strong style="color:${gs.text};">Security:</strong> Do not forward this email. The link expires after a short time. If you did not request access, you can ignore this message.
           </p>

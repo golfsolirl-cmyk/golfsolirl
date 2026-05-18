@@ -20,7 +20,7 @@ export function GeFooter() {
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           {footerColumns.map((column) => (
             <div key={column.title}>
-              <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-brand-700 drop-shadow-[0_0_12px_rgba(19, 96, 71,0.22)] sm:text-[0.82rem]">
+              <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-emerald-200 drop-shadow-sm sm:text-[0.82rem]">
                 {column.title}
               </p>
               <ul className="mt-4 space-y-2.5">
@@ -40,13 +40,13 @@ export function GeFooter() {
           ))}
 
           <div id="contact-us">
-            <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-brand-700 drop-shadow-[0_0_12px_rgba(19, 96, 71,0.22)] sm:text-[0.82rem]">
+            <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-emerald-200 drop-shadow-sm sm:text-[0.82rem]">
               Contact Us
             </p>
             <ul className="mt-4 space-y-3">
               <GeDualPhoneFooterLines />
               <li className="flex items-start gap-2">
-                <Mail className="mt-1 h-4 w-4 shrink-0 text-brand-700/85" aria-hidden="true" />
+                <Mail className="mt-1 h-4 w-4 shrink-0 text-emerald-200/90" aria-hidden="true" />
                 <a
                   href={`mailto:${contactInfo.email}`}
                   className="font-ge text-[1.05rem] leading-7 text-white transition-colors hover:text-[#fbe8b5] sm:text-[0.98rem]"
@@ -55,7 +55,7 @@ export function GeFooter() {
                 </a>
               </li>
             </ul>
-            <p className="mt-6 font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-brand-700 drop-shadow-[0_0_12px_rgba(19, 96, 71,0.22)] sm:text-[0.82rem]">
+            <p className="mt-6 font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-emerald-200 drop-shadow-sm sm:text-[0.82rem]">
               Follow Social
             </p>
             <div className="mt-4 flex flex-wrap gap-3">
