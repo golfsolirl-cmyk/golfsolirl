@@ -70,7 +70,7 @@ export function DashboardLayout({ title, subtitle, kicker, variant, titleAdornme
       <main id="main" className="flex flex-1 flex-col">
         <GeHero
           variant="portal"
-          portalBackdrop={variant === 'client' ? 'client' : variant === 'admin' ? 'admin' : 'classic'}
+          portalBackdrop={variant === 'driver' ? 'classic' : 'admin'}
           portalKicker={kicker}
           portalTitle={title}
           portalTimestamp={clock}
