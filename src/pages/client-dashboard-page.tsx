@@ -20,7 +20,12 @@ import { PortalClientDataCard } from '../components/portal-client-data-card'
 import { PortalTransferRequestsSection } from '../components/portal-transfer-requests-section'
 import { PortalInvoicesPanel } from '../components/portal-invoices-panel'
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
-import { buildClientDataCardSections, type ClientEnquiryRowLite } from '../lib/client-data-card'
+import {
+  buildClientDataCardSections,
+  clientEnquiryDisplayFullName,
+  clientGreetingFirstName,
+  type ClientEnquiryRowLite
+} from '../lib/client-data-card'
 import { LuxuryButton } from '../components/ui/button'
 import { COURSES } from '../data/coastal-golf-data'
 import { fetchPackageBuildsClientList } from '../lib/fetch-package-builds'
@@ -119,6 +124,42 @@ const resolveClientDisplayFullName = (session: Session, profile: Profile | null)
     const v = meta[key]
     if (typeof v === 'string' && v.trim()) {
       return v.trim()
+    }
+  }
+
+  return ''
+}
+
+/** Name for hero greeting — profile, then any visible enquiry (website forms), then auth metadata. */
+const resolveClientGreetingFullName = (
+  session: Session,
+  profile: Profile | null,
+  enquiries: readonly ClientEnquiryRowLite[]
+): string => {
+  const fromProfile = profile?.full_name?.trim()
+  if (fromProfile) {
+    return fromProfile
+  }
+
+  for (const row of enquiries) {
+    const fromEnquiry = clientEnquiryDisplayFullName(row)
+    if (fromEnquiry) {
+      return fromEnquiry
+    }
+  }
+
+  const meta = session.user.user_metadata as Record<string, unknown> | undefined
+  if (meta) {
+    const given = typeof meta.given_name === 'string' ? meta.given_name.trim() : ''
+    const family = typeof meta.family_name === 'string' ? meta.family_name.trim() : ''
+    if (given || family) {
+      return [given, family].filter(Boolean).join(' ')
+    }
+    for (const key of ['full_name', 'name', 'display_name'] as const) {
+      const v = meta[key]
+      if (typeof v === 'string' && v.trim()) {
+        return v.trim()
+      }
     }
   }
 
@@ -794,7 +835,8 @@ export function ClientDashboardPage() {
 
     const displayName = resolveClientDisplayFullName(session, profile).trim()
     const displayPhone = resolveClientPhone(session, profile).trim()
-    if (displayName && displayPhone) {
+    const enquiryName = resolveClientGreetingFullName(session, profile, enquiries).trim()
+    if ((displayName || enquiryName) && displayPhone) {
       return
     }
 
@@ -822,7 +864,16 @@ export function ClientDashboardPage() {
     return () => {
       cancelled = true
     }
-  }, [isLoading, session?.user?.id, profile?.full_name, profile?.phone, profile?.portal_contact_completed_at, refreshProfile])
+  }, [
+    isLoading,
+    session?.user?.id,
+    session?.access_token,
+    profile?.full_name,
+    profile?.phone,
+    profile?.portal_contact_completed_at,
+    enquiries,
+    refreshProfile
+  ])
 
   useEffect(() => {
     if (!session || !profile) {
@@ -1421,13 +1472,20 @@ export function ClientDashboardPage() {
   const accountRef = profile?.account_reference_id?.trim() ?? ''
   const accountEmailForUi = (session.user.email ?? '').trim()
   /** Identity hero “Signed in as …”: email until one-time contact saves a name; then saved full name (contact section edits update this too). */
+  let enquiryDisplayNameForGreeting = ''
+  for (const row of enquiries) {
+    const name = clientEnquiryDisplayFullName(row)
+    if (name) {
+      enquiryDisplayNameForGreeting = name
+      break
+    }
+  }
+
   const signedInAsLine =
     profile?.portal_contact_completed_at && profile?.full_name?.trim()
       ? profile.full_name.trim()
       : profile?.full_name?.trim() ||
-        (!profile?.portal_enquiry_autofill_disabled
-          ? enquiryRowForSignedInEmail?.full_name?.trim()
-          : '') ||
+        enquiryDisplayNameForGreeting ||
         accountEmailForUi ||
         '—'
   const contactOnboardingDone = Boolean(profile?.portal_contact_completed_at)
@@ -1436,13 +1494,8 @@ export function ClientDashboardPage() {
   const needsManualContactForm = !contactOnboardingDone && !hasImportedContactDetails
   const needsConfirmImportedContact = !contactOnboardingDone && hasImportedContactDetails
 
-  const greetingFirst =
-    profile?.full_name?.trim().split(/\s+/).filter(Boolean)[0] ??
-    (!profile?.portal_enquiry_autofill_disabled
-      ? enquiryRowForSignedInEmail?.full_name?.trim().split(/\s+/).filter(Boolean)[0]
-      : undefined) ??
-    clientDisplayFullName.split(/\s+/).filter(Boolean)[0] ??
-    ''
+  const greetingFullName = resolveClientGreetingFullName(session, profile, enquiries)
+  const greetingFirst = clientGreetingFirstName(greetingFullName)
   const dashboardTitle = greetingFirst ? `Hello, ${greetingFirst}` : 'Your dashboard'
   const showProposalsPortal =
     profile?.portal_proposals_enabled === true ||
@@ -1596,7 +1649,7 @@ export function ClientDashboardPage() {
             accountNumber={accountRefForUi.trim() ? accountRefForUi : null}
             className={dashboardPaymentBanner ? '!mb-0' : undefined}
             emphasizeTransferBookingId={stripePaidTransferBookingId}
-            firstName={greetingFirst || 'there'}
+            firstName={greetingFirst}
             signedInAs={signedInAsLine}
             onDownloadTransferQuotePdf={handleTransferQuotePdf}
             onDownloadTransferPaidInvoicePdf={handleTransferPaidInvoicePdf}

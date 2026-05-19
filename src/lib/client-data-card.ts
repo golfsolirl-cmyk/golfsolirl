@@ -76,7 +76,7 @@ const transfersSection = (rows: readonly ClientTransferBookingLite[]): ClientDat
 const isWebsiteEnquiryFormKey = (key: string): key is WebsiteEnquiryFormKey =>
   (Object.values(WEBSITE_ENQUIRY_FORM) as string[]).includes(key)
 
-const parseFormPayload = (
+export const parseClientEnquiryFormPayload = (
   raw: unknown
 ): { form: string | null; fields: Record<string, string> } => {
   if (!raw || typeof raw !== 'object') {
@@ -95,6 +95,28 @@ const parseFormPayload = (
   }
   return { form, fields }
 }
+
+/** Display name from enquiry row — column first, then common form field labels. */
+export const clientEnquiryDisplayFullName = (row: ClientEnquiryRowLite): string => {
+  const fromColumn = row.full_name?.trim()
+  if (fromColumn) {
+    return fromColumn
+  }
+  const { fields } = parseClientEnquiryFormPayload(row.form_payload)
+  for (const key of ['Name', 'Full name', 'fullName', 'full_name', 'name', 'Your name']) {
+    const v = fields[key]?.trim()
+    if (v) {
+      return v
+    }
+  }
+  return ''
+}
+
+/** First given name token for “Hello, …” */
+export const clientGreetingFirstName = (fullName: string): string =>
+  fullName.trim().split(/\s+/).filter(Boolean)[0] ?? ''
+
+const parseFormPayload = parseClientEnquiryFormPayload
 
 const nonEmpty = (s: string) => s.trim().length > 0
 
