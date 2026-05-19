@@ -69,16 +69,47 @@ export const clientTransferOperationalStatusLabel = (t: {
   return String(t.status ?? '').replace(/_/g, ' ')
 }
 
+export type TransferPaymentBadgeStatus = 'unpaid' | 'deposit_paid' | 'paid_in_full'
+
+/** @deprecated Use `resolveTransferPaymentBadgeStatus` */
 export type ClientTransferPaymentBadgeKind = 'deposit_paid' | 'paid_in_full'
+
+export const resolveTransferPaymentBadgeStatus = (t: {
+  readonly payment_status?: string | null
+}): TransferPaymentBadgeStatus => {
+  const pay = String(t.payment_status ?? 'unpaid').toLowerCase()
+  if (pay === 'paid') {
+    return 'paid_in_full'
+  }
+  if (pay === 'deposit') {
+    return 'deposit_paid'
+  }
+  return 'unpaid'
+}
+
+/** Short label for badges in client + admin dashboards (e.g. "20% deposit paid", "Paid in full"). */
+export const transferPaymentBadgeLabel = (t: {
+  readonly payment_status?: string | null
+  readonly deposit_percent?: number | null
+}): string => {
+  const status = resolveTransferPaymentBadgeStatus(t)
+  if (status === 'paid_in_full') {
+    return 'Paid in full'
+  }
+  if (status === 'deposit_paid') {
+    return `${normalizedDepositPercent(t.deposit_percent)}% deposit paid`
+  }
+  return 'Awaiting payment'
+}
 
 export const clientTransferPaymentBadgeKind = (t: {
   readonly payment_status?: string | null
 }): ClientTransferPaymentBadgeKind | null => {
-  const pay = String(t.payment_status ?? 'unpaid').toLowerCase()
-  if (pay === 'deposit') {
+  const status = resolveTransferPaymentBadgeStatus(t)
+  if (status === 'deposit_paid') {
     return 'deposit_paid'
   }
-  if (pay === 'paid') {
+  if (status === 'paid_in_full') {
     return 'paid_in_full'
   }
   return null

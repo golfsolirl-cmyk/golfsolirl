@@ -234,8 +234,8 @@ function PortalNavActions({
 
   const btnSm =
     layout === 'desktop'
-      ? '!min-h-0 !border-2 !border-gs-green/35 !bg-gs-green/8 !px-4 !py-2 !text-[0.68rem] !normal-case !tracking-[0.06em] !text-gs-green hover:!bg-gs-green/14'
-      : '!min-h-0 !w-full !justify-center !border-2 !border-gs-green/35 !bg-gs-green/8 !py-2.5 !text-[0.78rem] !normal-case !tracking-[0.06em] !text-gs-green hover:!bg-gs-green/14'
+      ? 'ge-portal-dash-btn !min-h-0 !border-2 !border-gs-green/35 !bg-gs-green/8 !px-4 !py-2 !text-[0.68rem] !normal-case !tracking-[0.06em] !text-black hover:!bg-gs-green/14'
+      : 'ge-portal-dash-btn !min-h-0 !w-full !justify-center !border-2 !border-gs-green/35 !bg-gs-green/8 !py-2.5 !text-[0.78rem] !normal-case !tracking-[0.06em] !text-black hover:!bg-gs-green/14'
 
   const btnOutline =
     layout === 'desktop'

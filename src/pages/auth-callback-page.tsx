@@ -1,3 +1,4 @@
+import type { Session } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
 import { PageIdentityBar } from '../components/page-identity-bar'
 import { GeFooter } from '../pages/golf-experience/sections/ge-footer'
@@ -37,6 +38,18 @@ const resolvePostLoginPath = (search: URLSearchParams): string => {
   return '/dashboard'
 }
 
+/** Copy enquiry name/phone onto the profile before the dashboard renders (magic-link after form submit). */
+const syncPortalProfileAfterLogin = async (session: Session) => {
+  try {
+    await fetch('/api/sync-portal-profile', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${session.access_token}` }
+    })
+  } catch {
+    /* offline or API unavailable */
+  }
+}
+
 export function AuthCallbackPage() {
   const [message, setMessage] = useState('Completing sign-in…')
 
@@ -67,6 +80,11 @@ export function AuthCallbackPage() {
       }
     }
 
+    const redirectAfterSession = async (session: Session, path: string) => {
+      await syncPortalProfileAfterLogin(session)
+      replaceIfActive(path)
+    }
+
     const finish = async () => {
       const readSession = async () => (await supabase.auth.getSession()).data.session
 
@@ -76,7 +94,7 @@ export function AuthCallbackPage() {
       }
 
       if (session) {
-        replaceIfActive(postLoginPath)
+        await redirectAfterSession(session, postLoginPath)
         return
       }
 
@@ -91,7 +109,7 @@ export function AuthCallbackPage() {
         }
         session = await readSession()
         if (session) {
-          replaceIfActive(postLoginPath)
+          await redirectAfterSession(session, postLoginPath)
           return
         }
       }
@@ -111,7 +129,7 @@ export function AuthCallbackPage() {
         }
         session = await readSession()
         if (session) {
-          replaceIfActive(postLoginPath)
+          await redirectAfterSession(session, postLoginPath)
           return
         }
       }
@@ -133,7 +151,7 @@ export function AuthCallbackPage() {
         window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
         session = await readSession()
         if (session) {
-          replaceIfActive(postLoginPath)
+          await redirectAfterSession(session, postLoginPath)
           return
         }
       }
@@ -145,7 +163,7 @@ export function AuthCallbackPage() {
       }
       session = await readSession()
       if (session) {
-        replaceIfActive(postLoginPath)
+        await redirectAfterSession(session, postLoginPath)
         return
       }
 

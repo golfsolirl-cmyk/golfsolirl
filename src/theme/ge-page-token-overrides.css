@@ -243,6 +243,12 @@
   color: var(--brand-700) !important;
 }
 
+/* Portal header: Admin / Client dashboard switcher — black label on light pill */
+.ge-page header .ge-portal-dash-btn.gsol-cta-secondary,
+.ge-page header .ge-portal-dash-btn.gsol-cta-secondary:hover {
+  color: #0a0a0a !important;
+}
+
 /* —— Accent gradients (crest green, not gold) —— */
 .ge-page [class*='via-brand-700'],
 .ge-page [class*='from-brand-800'],

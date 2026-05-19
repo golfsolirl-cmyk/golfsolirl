@@ -1,30 +1,37 @@
 import { Menu } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
-import { AdminSidebar, ADMIN_SIDEBAR_ITEMS, type AdminPortalSectionId } from './admin-sidebar'
+import { ClientSidebar, CLIENT_SIDEBAR_ITEMS, type ClientPortalSectionId } from './client-sidebar'
 import { cx } from '../lib/utils'
 
-export type { AdminPortalSectionId }
+export type { ClientPortalSectionId }
 
-type AdminPortalShellProps = {
-  readonly activeSection: AdminPortalSectionId
-  readonly onSectionChange: (id: AdminPortalSectionId) => void
+type ClientPortalShellProps = {
+  readonly activeSection: ClientPortalSectionId
+  readonly onSectionChange: (id: ClientPortalSectionId) => void
+  readonly unreadMessages?: boolean
   readonly children: ReactNode
 }
 
-export function AdminPortalShell({ activeSection, onSectionChange, children }: AdminPortalShellProps) {
+export function ClientPortalShell({
+  activeSection,
+  onSectionChange,
+  unreadMessages = false,
+  children
+}: ClientPortalShellProps) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
-  const activeLabel = ADMIN_SIDEBAR_ITEMS.find((i) => i.id === activeSection)?.label ?? 'Section'
+  const activeLabel = CLIENT_SIDEBAR_ITEMS.find((i) => i.id === activeSection)?.label ?? 'Section'
 
   return (
-    <div className="flex min-h-[min(70vh,900px)] gap-5 lg:gap-10">
-      <AdminSidebar
+    <div className="flex min-h-[min(70vh,900px)] gap-0">
+      <ClientSidebar
         activeSection={activeSection}
         mobileOpen={mobileNavOpen}
         onMobileClose={() => setMobileNavOpen(false)}
         onSectionChange={onSectionChange}
+        unreadMessages={unreadMessages}
       />
 
-      <div className="min-w-0 flex-1 lg:pl-1">
+      <div className="min-w-0 flex-1">
         <div className="sticky top-0 z-30 mb-4 flex items-center gap-3 border-b border-forest-100/80 bg-white/95 px-1 py-3 backdrop-blur-sm lg:hidden">
           <button
             aria-expanded={mobileNavOpen}
@@ -46,13 +53,13 @@ export function AdminPortalShell({ activeSection, onSectionChange, children }: A
   )
 }
 
-export function AdminPortalSection({
+export function ClientPortalSection({
   section,
   activeSection,
   children
 }: {
-  readonly section: AdminPortalSectionId
-  readonly activeSection: AdminPortalSectionId
+  readonly section: ClientPortalSectionId
+  readonly activeSection: ClientPortalSectionId
   readonly children: ReactNode
 }) {
   if (activeSection !== section) {
@@ -60,4 +67,3 @@ export function AdminPortalSection({
   }
   return <div className="space-y-8 md:space-y-10">{children}</div>
 }
-

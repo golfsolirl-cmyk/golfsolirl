@@ -10,6 +10,7 @@ import {
 } from '../components/admin-account-transfers-hub'
 import { AdminDriverCalendarPanel } from '../components/admin-driver-calendar-panel'
 import { AdminTransferPipeline } from '../components/admin-transfer-pipeline'
+import { TransferPaymentStatusBadge } from '../components/transfer-payment-status-badge'
 import { PortalClientDataCard } from '../components/portal-client-data-card'
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
 import { buildClientDataCardSections, type AccountDeskDisplay } from '../lib/client-data-card'
@@ -3588,13 +3589,14 @@ export function AdminDashboardPage() {
         >
           <PortalClientDataCard sections={adminDataCardSections} />
 
-          <div className="rounded-[1.35rem] border border-chrome-200/90 bg-gradient-to-br from-brand-50/95 via-white to-fairway-50/35 px-5 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] ring-1 ring-amber-900/[0.07] sm:px-6 sm:py-5">
+          <div className="ge-on-dark rounded-[1.35rem] border border-brand-700/40 bg-gradient-to-br from-[#0f3d24] via-[#143d28] to-[#0a2416] px-5 py-4 shadow-[0_12px_32px_rgba(11,73,52,0.2)] ring-1 ring-white/10 sm:px-6 sm:py-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
-              <span className="inline-flex w-fit shrink-0 rounded-lg bg-forest-950 px-2.5 py-1.5 font-ge text-[0.58rem] font-extrabold uppercase tracking-[0.18em] text-white">
+              <span className="inline-flex w-fit shrink-0 rounded-lg border border-white/15 bg-white/10 px-2.5 py-1.5 font-ge text-[0.58rem] font-extrabold uppercase tracking-[0.18em] text-white">
                 Stripe &amp; receipts
               </span>
-              <p className="min-w-0 flex-1 text-sm leading-relaxed text-forest-700">
-                Same receipts and card totals guests see after checkout. Open <strong className="font-semibold text-forest-900">Desk &amp; inbox</strong> in the left menu when you need this block.
+              <p className="min-w-0 flex-1 text-sm leading-relaxed text-white/95">
+                Same receipts and card totals guests see after checkout. Open{' '}
+                <strong className="font-semibold text-white">Desk &amp; inbox</strong> in the left menu when you need this block.
               </p>
             </div>
           </div>
@@ -5903,12 +5905,17 @@ export function AdminDashboardPage() {
                                 className="rounded-xl border border-forest-100 bg-offwhite/80 px-3 py-3 sm:px-4"
                                 key={b.id}
                               >
-                                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                                <div className="flex flex-wrap items-center gap-2">
                                   <span className="font-medium text-forest-800">
                                     {b.pickup_label} → {b.dropoff_label}
                                   </span>
+                                  <TransferPaymentStatusBadge
+                                    deposit_percent={b.deposit_percent}
+                                    payment_status={b.payment_status}
+                                    size="sm"
+                                  />
                                   <span className="text-forest-600">
-                                    · {b.status.replace(/_/g, ' ')}
+                                    {b.status.replace(/_/g, ' ')}
                                     {b.scheduled_at
                                       ? ` · ${formatAdminDateTime(b.scheduled_at)}`
                                       : ' · Pick-up time not set (ASAP)'}
@@ -5919,17 +5926,6 @@ export function AdminDashboardPage() {
                                   {(b.client_email ?? '').trim() || '—'}
                                 </p>
                                 <div className="mt-2 flex flex-wrap items-center gap-2">
-                                  <span
-                                    className={`rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide ${
-                                      paySt === 'paid'
-                                        ? 'bg-fairway-100 text-fairway-900'
-                                        : paySt === 'deposit'
-                                          ? 'bg-chrome-100 text-brand-950'
-                                          : 'bg-offwhite text-forest-600'
-                                    }`}
-                                  >
-                                    {paySt === 'paid' ? 'Paid in full' : paySt === 'deposit' ? `${pct}% deposit` : 'Unpaid'}
-                                  </span>
                                   {b.balance_remind_at && paySt === 'deposit' ? (
                                     <span className="text-xs text-forest-600">
                                       Balance reminder due {formatAdminDateTime(b.balance_remind_at)}
@@ -5947,17 +5943,6 @@ export function AdminDashboardPage() {
                                     ) : (
                                       <span className="text-forest-600"> · VAT tourism 13.5%</span>
                                     )}
-                                    {paySt === 'paid' ? (
-                                      <span className="ml-2 inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-forest-950 ring-1 ring-emerald-400/35">
-                                        Paid · confirmed
-                                      </span>
-                                    ) : null}
-                                  </p>
-                                ) : paySt === 'paid' ? (
-                                  <p className="mt-2">
-                                    <span className="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-forest-950 ring-1 ring-emerald-400/35">
-                                      Paid · card confirmed
-                                    </span>
                                   </p>
                                 ) : null}
                                 {stripePaymentDashboardUrl(b.stripe_payment_intent_id) ||

@@ -12,6 +12,7 @@ import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { PORTAL_INTEREST_LABELS, type PortalInterestCategory } from '../lib/portal-interest-tickets'
 import { useAuth } from '../providers/auth-provider'
 import { LuxuryButton } from './ui/button'
+import { TransferPaymentStatusBadge } from './transfer-payment-status-badge'
 import { cx } from '../lib/utils'
 
 type VatTreatmentChoice = 'tourism' | 'services'
@@ -663,9 +664,12 @@ export function AdminAccountTransfersHub(props: {
       <div className="rounded-2xl border border-forest-200/90 bg-white/95 p-4 shadow-inner sm:p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="font-semibold text-forest-900">
-              {b.pickup_label} → {b.dropoff_label}
-            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="font-semibold text-forest-900">
+                {b.pickup_label} → {b.dropoff_label}
+              </p>
+              <TransferPaymentStatusBadge deposit_percent={b.deposit_percent} payment_status={b.payment_status} size="sm" />
+            </div>
             <p className="mt-1 text-xs text-forest-600">
               {src} · {b.status.replace(/_/g, ' ')}
               {b.scheduled_at ? ` · ${formatAdminDateTime(b.scheduled_at)}` : ' · Pick-up time TBC'}
@@ -793,26 +797,16 @@ export function AdminAccountTransfersHub(props: {
         ) : null}
 
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <span
-            className={`rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide ${
-              paySt === 'paid'
-                ? 'bg-fairway-100 text-fairway-900'
-                : paySt === 'deposit'
-                  ? 'bg-chrome-100 text-brand-950'
-                  : 'bg-offwhite text-forest-600'
-            }`}
-          >
-            {paySt === 'paid' ? 'Paid in full' : paySt === 'deposit' ? `${pct}% deposit` : 'Unpaid'}
-          </span>
+          <TransferPaymentStatusBadge deposit_percent={b.deposit_percent} payment_status={b.payment_status} />
           {typeof b.admin_price_eur === 'number' && Number.isFinite(b.admin_price_eur) ? (
             <span className="text-xs font-semibold text-fairway-800">
               {formatEur(b.admin_price_eur)} quoted · VAT{' '}
               {b.admin_price_vat_treatment === 'services' ? 'services 23%' : 'tourism 13.5%'}
             </span>
           ) : null}
-          {paySt === 'paid' ? (
+          {(paySt === 'paid' || paySt === 'deposit') && hasStripeCharge ? (
             <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-forest-950 ring-1 ring-emerald-400/35">
-              Card paid · Stripe
+              Stripe confirmed
             </span>
           ) : null}
           {refundSt === 'partial' ? (

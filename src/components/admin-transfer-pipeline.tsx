@@ -3,6 +3,7 @@ import { stripeCheckoutSessionDashboardUrl, stripePaymentDashboardUrl } from '..
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { GeButton } from '../pages/golf-experience/components/ge-button'
 import { LuxuryButton } from './ui/button'
+import { TransferPaymentStatusBadge } from './transfer-payment-status-badge'
 
 type RouteWaypoint = { label?: string | null; lat?: number | null; lng?: number | null }
 
@@ -27,6 +28,7 @@ type TransferBookingRow = {
   admin_price_eur?: number | null
   admin_price_vat_treatment?: string | null
   payment_status?: string | null
+  deposit_percent?: number | null
   stripe_payment_intent_id?: string | null
   stripe_checkout_session_id?: string | null
 }
@@ -345,6 +347,11 @@ export function AdminTransferPipeline() {
                   <span className="rounded-full bg-forest-900/90 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-white">
                     {bookingHeadline(b)}
                   </span>
+                  <TransferPaymentStatusBadge
+                    deposit_percent={b.deposit_percent}
+                    payment_status={b.payment_status}
+                    size="sm"
+                  />
                 </div>
               </div>
               <p className="mt-2 text-sm text-forest-800">
@@ -380,11 +387,11 @@ export function AdminTransferPipeline() {
                       <span className="text-forest-600"> · VAT tourism 13.5%</span>
                     )}
                   </p>
-                  {(b.payment_status ?? 'unpaid').toLowerCase() === 'paid' ? (
-                    <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-forest-950 ring-1 ring-emerald-400/35">
-                      Paid · card confirmed
-                    </span>
-                  ) : null}
+                  <TransferPaymentStatusBadge
+                    deposit_percent={b.deposit_percent}
+                    payment_status={b.payment_status}
+                    size="sm"
+                  />
                 </div>
               ) : null}
               {stripePaymentDashboardUrl(b.stripe_payment_intent_id) ||

@@ -9,6 +9,7 @@ import {
   normalizedDepositPercent,
   transferPaymentFullUpfront
 } from '../lib/transfer-payment-breakdown'
+import { TransferPaymentStatusBadge } from './transfer-payment-status-badge'
 
 const formatEur = (n: number) =>
   new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n)
@@ -36,7 +37,6 @@ export function PortalTransferServiceCard(props: { readonly transfer: PortalTran
       ? new Date(t.createdAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
       : '—'
   const pay = (t.paymentStatus ?? 'unpaid').toLowerCase()
-  const payLabel = pay === 'paid' ? 'Paid in full' : pay === 'deposit' ? 'Deposit paid' : 'Unpaid'
   const when = t.scheduledAt
     ? new Date(t.scheduledAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
     : 'ASAP / next available driver'
@@ -79,9 +79,12 @@ export function PortalTransferServiceCard(props: { readonly transfer: PortalTran
           {src} · {t.status.replace(/_/g, ' ')} · {when}
         </p>
         <div className="mt-4 space-y-3 border-t border-white/10 pt-4">
-          <span className="inline-flex rounded-full bg-white/12 px-3 py-1 font-ge text-[0.68rem] font-bold uppercase tracking-wide text-brand-100">
-            {payLabel}
-          </span>
+          <TransferPaymentStatusBadge
+            deposit_percent={t.depositPercent}
+            payment_status={t.paymentStatus}
+            size="sm"
+            tone="onDark"
+          />
           {gross !== null ? (
             <div>
               <p className="font-ge text-[0.62rem] font-bold uppercase tracking-[0.18em] text-emerald-200/90">

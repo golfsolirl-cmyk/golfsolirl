@@ -225,12 +225,12 @@ export function LoginPage() {
       ? 'sign-in.'
       : 'back to your trip.'
   const heroLead = isAdminLoginPath
-    ? 'Operator dashboard · Magic link · Server-gated'
+    ? 'Operator dashboard · Magic link'
     : isDriverLoginPage
       ? 'Live jobs · Same magic link · Driver desk'
       : 'Saved trips · Quotes · Account access'
   const heroBody = isAdminLoginPath
-    ? 'Magic link to the operator dashboard. Your profile must have the admin role in Supabase — the operator code only gates this page when your team sets it on the server.'
+    ? "Enter your operator code and email — we'll send a secure sign-in link to your inbox."
     : isDriverLoginPage
       ? 'Same secure magic link as the client portal and admin — after sign-in, admins use the Irish Driver preview desk; linked drivers see live jobs.'
       : "We'll email you a secure magic link — the same GolfSol Ireland experience as the rest of the site. No password to remember."
@@ -320,11 +320,12 @@ export function LoginPage() {
 
       <main className="relative z-[1] mx-auto w-full max-w-2xl flex-1 px-5 pb-20 pt-12 sm:px-8 md:pb-28">
         <PremiumCard tone="light">
-          {/* Top brand stripe carried over from the original card */}
-          <div
-            aria-hidden="true"
-            className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-brand-800 via-gs-green to-gs-electric"
-          />
+          {!isAdminLoginPath ? (
+            <div
+              aria-hidden="true"
+              className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-brand-800 via-gs-green to-gs-electric"
+            />
+          ) : null}
 
           {portalCtxBanner ? (
             <div className="mb-6 rounded-2xl border border-gs-green/40 bg-ge-gray50 px-4 py-3 font-ge text-sm leading-relaxed text-gs-dark">
@@ -369,25 +370,6 @@ export function LoginPage() {
             </div>
           ) : (
             <form className="space-y-6" noValidate onSubmit={handleSubmit}>
-              <div>
-                <label
-                  className="mb-2 block font-ge text-sm font-bold uppercase tracking-[0.14em] text-gs-dark"
-                  htmlFor="login-email"
-                >
-                  Email
-                </label>
-                <input
-                  autoComplete="email"
-                  className="w-full rounded-xl border-2 border-ge-gray200 bg-white px-4 py-3.5 font-ge text-base text-gs-dark placeholder:text-ge-gray400 outline-none transition-[border-color,box-shadow] focus:border-gs-green focus:ring-2 focus:ring-gs-green/25"
-                  id="login-email"
-                  name="email"
-                  onChange={(event) => setEmail(event.target.value)}
-                  placeholder="you@example.com"
-                  required
-                  type="email"
-                  value={email}
-                />
-              </div>
               {isAdminLoginPath ? (
                 <div>
                   <label
@@ -398,24 +380,38 @@ export function LoginPage() {
                   </label>
                   <input
                     autoComplete="off"
-                    className="w-full rounded-xl border-2 border-ge-gray200 bg-white px-4 py-3.5 font-ge text-base text-gs-dark placeholder:text-ge-gray400 outline-none transition-[border-color,box-shadow] focus:border-gs-green focus:ring-2 focus:ring-gs-green/25"
+                    className="w-full rounded-xl border-2 border-ge-gray200 bg-white px-4 py-3.5 font-ge text-base text-gs-dark outline-none transition-[border-color,box-shadow] focus:border-forest-600 focus:ring-2 focus:ring-forest-600/20"
                     id="login-operator-code"
                     name="operatorCode"
                     onChange={(event) => setOperatorCode(event.target.value)}
-                    placeholder="Required if ADMIN_OPERATOR_PASSCODE is set on the server"
                     type="password"
                     value={operatorCode}
                   />
-                  <p className="mt-2 font-ge text-xs leading-relaxed text-ge-gray600">
-                    Set <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.65rem]">ADMIN_OPERATOR_PASSCODE</code> in
-                    server env (quoted in <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.65rem]">.env</code> or Vercel
-                    if it contains <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.65rem]">#</code> or{' '}
-                    <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.65rem]">$</code>) — then restart dev. Must match
-                    exactly. Same email as the client portal is fine; access still depends on{' '}
-                    <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.65rem]">profiles.role</code>.
-                  </p>
                 </div>
               ) : null}
+              <div>
+                <label
+                  className="mb-2 block font-ge text-sm font-bold uppercase tracking-[0.14em] text-gs-dark"
+                  htmlFor="login-email"
+                >
+                  Email
+                </label>
+                <input
+                  autoComplete="email"
+                  className={`w-full rounded-xl border-2 border-ge-gray200 bg-white px-4 py-3.5 font-ge text-base text-gs-dark placeholder:text-ge-gray400 outline-none transition-[border-color,box-shadow] ${
+                    isAdminLoginPath
+                      ? 'focus:border-forest-600 focus:ring-2 focus:ring-forest-600/20'
+                      : 'focus:border-gs-green focus:ring-2 focus:ring-gs-green/25'
+                  }`}
+                  id="login-email"
+                  name="email"
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder="you@example.com"
+                  required
+                  type="email"
+                  value={email}
+                />
+              </div>
               {formError ? (
                 <p className="font-ge text-base font-semibold text-red-800" role="alert">
                   {formError}

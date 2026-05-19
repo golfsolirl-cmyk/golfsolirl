@@ -25,10 +25,8 @@ import {
   portalAddOnPremiumTileClass
 } from '../lib/portal-add-on-premium-icons'
 import { humanizeFormKey, parseAnyPackageBuildRowConfig } from '../lib/package-build'
-import {
-  clientTransferOperationalStatusLabel,
-  clientTransferPaymentBadgeKind
-} from '../lib/transfer-payment-breakdown'
+import { clientTransferOperationalStatusLabel } from '../lib/transfer-payment-breakdown'
+import { TransferPaymentStatusBadge } from './transfer-payment-status-badge'
 import { cx } from '../lib/utils'
 import { GOLFSOL_BRAND_LOGO } from '../lib/brand-logo-assets'
 
@@ -39,6 +37,7 @@ export type PortalTransferRequestBooking = {
   readonly status: string
   readonly scheduled_at: string | null
   readonly payment_status?: string | null
+  readonly deposit_percent?: number | null
   readonly package_build_id?: string | null
   readonly enquiry_reference_id?: string | null
   readonly created_at?: string | null
@@ -237,27 +236,11 @@ export function PortalTransferRequestsSection(props: {
                     <p className="font-ge text-lg font-semibold leading-snug text-forest-950 sm:text-xl">
                       {b.pickup_label} → {b.dropoff_label}
                     </p>
-                    {(() => {
-                      const kind = clientTransferPaymentBadgeKind(b)
-                      if (!kind) {
-                        return null
-                      }
-                      const label = kind === 'deposit_paid' ? 'Deposit paid' : 'Paid in full'
-                      const pillClass =
-                        kind === 'deposit_paid'
-                          ? 'border-chrome-400/70 bg-chrome-50 text-brand-950'
-                          : 'border-fairway-500/50 bg-fairway-50 text-forest-950'
-                      return (
-                        <span
-                          className={cx(
-                            'inline-flex shrink-0 items-center rounded-full border px-2.5 py-0.5 font-ge text-xs font-extrabold uppercase tracking-[0.12em]',
-                            pillClass
-                          )}
-                        >
-                          {label}
-                        </span>
-                      )
-                    })()}
+                    <TransferPaymentStatusBadge
+                      deposit_percent={b.deposit_percent}
+                      hideWhenUnpaid
+                      payment_status={b.payment_status}
+                    />
                   </div>
                   <p className="mt-1 text-xs font-medium text-forest-600">
                     <span className="text-forest-800">{clientTransferOperationalStatusLabel(b)}</span>

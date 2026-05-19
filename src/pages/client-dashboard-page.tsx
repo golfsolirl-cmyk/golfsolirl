@@ -2,6 +2,11 @@ import type { Session } from '@supabase/supabase-js'
 import { ChevronDown, MessageCircle, Ticket, UserRound } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { ClientPortalIdentityHero, type ClientPortalTransferHeroRow } from '../components/client-portal-identity-hero'
+import {
+  ClientPortalShell,
+  ClientPortalSection,
+  type ClientPortalSectionId
+} from '../components/client-portal-shell'
 import { PortalTransferServiceCard, type PortalTransferServiceCardModel } from '../components/portal-transfer-service-card'
 import { PortalAccountLoadingState } from '../components/portal-account-loading-state'
 import {
@@ -177,6 +182,7 @@ export function ClientDashboardPage() {
   const [packageBuilds, setPackageBuilds] = useState<PackageBuildRow[]>([])
   const [proposalsError, setProposalsError] = useState<string | null>(null)
   const [listLoading, setListLoading] = useState(true)
+  const [activeClientSection, setActiveClientSection] = useState<ClientPortalSectionId>('home')
   const [teamMessagingOpen, setTeamMessagingOpen] = useState(false)
   const [documentAccess, setDocumentAccess] = useState<{ terms: boolean; welcome: boolean }>({
     terms: false,
@@ -1134,6 +1140,7 @@ export function ClientDashboardPage() {
   }
 
   const openTeamMessagingAndScroll = () => {
+    setActiveClientSection('messages')
     setTeamMessagingOpen(true)
     window.requestAnimationFrame(() => {
       document.getElementById('portal-interest')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
@@ -1141,6 +1148,8 @@ export function ClientDashboardPage() {
   }
 
   const openInterestModal = (category: PortalInterestCategory) => {
+    setActiveClientSection('messages')
+    setTeamMessagingOpen(true)
     setInterestModalCategory(category)
     setInterestDraftBody('')
     setInterestSubmitError(null)
@@ -1366,7 +1375,12 @@ export function ClientDashboardPage() {
   const signedInAsLine =
     profile?.portal_contact_completed_at && profile?.full_name?.trim()
       ? profile.full_name.trim()
-      : accountEmailForUi || '—'
+      : profile?.full_name?.trim() ||
+        (!profile?.portal_enquiry_autofill_disabled
+          ? enquiryRowForSignedInEmail?.full_name?.trim()
+          : '') ||
+        accountEmailForUi ||
+        '—'
   const contactOnboardingDone = Boolean(profile?.portal_contact_completed_at)
   const hasImportedContactDetails =
     Boolean(profile?.full_name?.trim()) && Boolean(profile?.phone?.trim())
@@ -1380,7 +1394,7 @@ export function ClientDashboardPage() {
       : undefined) ??
     clientDisplayFullName.split(/\s+/).filter(Boolean)[0] ??
     ''
-  const dashboardTitle = 'Your dashboard'
+  const dashboardTitle = greetingFirst ? `Hello, ${greetingFirst}` : 'Your dashboard'
   const showProposalsPortal =
     profile?.portal_proposals_enabled === true ||
     profile?.portal_pdf_library_enabled === true ||
@@ -1511,7 +1525,7 @@ export function ClientDashboardPage() {
   return (
     <DashboardLayout
       kicker="Your client area"
-      subtitle="Transfers, invoices, and interest tickets are on this page. The enquiry workspace is optional — it saves preferences in this browser until your trip is connected in our system."
+      subtitle="Use the menu on the left for your trip, payments, messages, contact details, and documents — one area at a time."
       title={dashboardTitle}
       titleAdornment={interestHeroAdornment}
       variant="client"
@@ -1520,24 +1534,28 @@ export function ClientDashboardPage() {
         <div className="fixed inset-0 z-[35] flex items-center justify-center overflow-y-auto overscroll-contain bg-white/55 backdrop-blur-md supports-[backdrop-filter]:bg-white/40">
           <PortalAccountLoadingState compact />
         </div>
-      ) : (
-        <div className="mb-12 md:mb-14">
-          <div className="mb-12 space-y-10">
-            <div className={dashboardPaymentBanner ? 'mb-10 space-y-3' : 'contents'}>
-              <ClientPortalIdentityHero
-                accountEmail={session.user.email ?? null}
-                accountNumber={accountRefForUi.trim() ? accountRefForUi : null}
-                className={dashboardPaymentBanner ? '!mb-0' : undefined}
-                emphasizeTransferBookingId={stripePaidTransferBookingId}
-                firstName={greetingFirst || 'there'}
-                signedInAs={signedInAsLine}
-                onDownloadTransferQuotePdf={handleTransferQuotePdf}
-                onDownloadTransferPaidInvoicePdf={handleTransferPaidInvoicePdf}
-                onPayTransfer={handlePayTransfer}
-                onViewTransferCard={(t) => setTransferServiceCardBookingId(t.id)}
-                transfers={transferBookingsPortal}
-              />
-              {dashboardPaymentBanner ? (
+      ) : null}
+
+      <ClientPortalShell
+        activeSection={activeClientSection}
+        onSectionChange={setActiveClientSection}
+        unreadMessages={hasUnreadInterestReplies}
+      >
+        <div className={dashboardPaymentBanner ? 'mb-8 space-y-3' : 'mb-8'}>
+          <ClientPortalIdentityHero
+            accountEmail={session.user.email ?? null}
+            accountNumber={accountRefForUi.trim() ? accountRefForUi : null}
+            className={dashboardPaymentBanner ? '!mb-0' : undefined}
+            emphasizeTransferBookingId={stripePaidTransferBookingId}
+            firstName={greetingFirst || 'there'}
+            signedInAs={signedInAsLine}
+            onDownloadTransferQuotePdf={handleTransferQuotePdf}
+            onDownloadTransferPaidInvoicePdf={handleTransferPaidInvoicePdf}
+            onPayTransfer={handlePayTransfer}
+            onViewTransferCard={(t) => setTransferServiceCardBookingId(t.id)}
+            transfers={transferBookingsPortal}
+          />
+          {dashboardPaymentBanner ? (
                 <div
                   className="flex flex-col gap-3 rounded-2xl border border-emerald-300/80 bg-fairway-50/95 px-4 py-3.5 text-forest-950 shadow-sm sm:flex-row sm:items-start sm:justify-between sm:gap-4"
                   role="status"
@@ -1578,7 +1596,10 @@ export function ClientDashboardPage() {
                   </div>
                 </div>
               ) : null}
-            </div>
+        </div>
+
+        <ClientPortalSection activeSection={activeClientSection} section="home">
+          <div className="space-y-10">
             <PortalAddToYourTripStrip onSelect={openInterestModal} variant="page" />
             {accountCardSections.length > 0 ? <PortalClientDataCard sections={accountCardSections} /> : null}
             <PortalTransferRequestsSection
@@ -1587,14 +1608,24 @@ export function ClientDashboardPage() {
               interestTickets={interestTickets}
               packageBuilds={packageBuilds}
             />
-            {tripInvoicesPanel}
           </div>
+        </ClientPortalSection>
 
-        </div>
-      )}
+        <ClientPortalSection activeSection={activeClientSection} section="payments">
+          {tripInvoicesPanel ?? (
+            <section className="rounded-2xl border border-forest-100 bg-white p-6 shadow-sm md:p-8">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Payments</p>
+              <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Invoices &amp; receipts</h2>
+              <p className="mt-2 max-w-2xl text-base text-forest-700">
+                When you pay a transfer or receive an invoice from Golf Sol Ireland, it appears here.
+              </p>
+            </section>
+          )}
+        </ClientPortalSection>
 
+        <ClientPortalSection activeSection={activeClientSection} section="trip">
       {tripDraft ? (
-        <section className="mb-12 rounded-[2rem] border border-fairway-200/90 bg-gradient-to-br from-offwhite via-white to-[#f4faf6] p-6 shadow-soft md:p-9">
+        <section className="rounded-[2rem] border border-fairway-200/90 bg-gradient-to-br from-offwhite via-white to-[#f4faf6] p-6 shadow-soft md:p-9">
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Enquiry workspace</p>
@@ -1779,9 +1810,20 @@ export function ClientDashboardPage() {
             </LuxuryButton>
           </div>
         </section>
-      ) : null}
+      ) : (
+        <section className="rounded-2xl border border-forest-100 bg-white p-6 shadow-sm md:p-8">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Trip planner</p>
+          <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Build on your enquiry</h2>
+          <p className="mt-2 max-w-2xl text-base text-forest-700">
+            Submit a quote form on the website with this login email — your enquiry workspace opens here so you can add
+            transfers, golf, and hotels.
+          </p>
+        </section>
+      )}
+        </ClientPortalSection>
 
-      <section className="relative mb-10 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
+        <ClientPortalSection activeSection={activeClientSection} section="contact">
+      <section className="relative rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Your contact details</p>
         <h2 className="font-display mt-2 text-3xl font-semibold text-forest-950 md:text-4xl">How we reach you</h2>
 
@@ -1950,8 +1992,10 @@ export function ClientDashboardPage() {
           </dl>
         )}
       </section>
+        </ClientPortalSection>
 
-      <section className="relative mb-10 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
+        <ClientPortalSection activeSection={activeClientSection} section="messages">
+      <section className="relative rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Interest tickets</p>
@@ -2046,6 +2090,7 @@ export function ClientDashboardPage() {
             </div>
           ) : null}
         </section>
+        </ClientPortalSection>
 
         {interestThreadTicketId && selectedInterestThread ? (
           <div
@@ -2226,6 +2271,7 @@ export function ClientDashboardPage() {
           </div>
         ) : null}
 
+        <ClientPortalSection activeSection={activeClientSection} section="documents">
       {!listLoading ? (
         <div className="space-y-14 md:space-y-16">
           {showProposalsPortal ? (
@@ -2293,6 +2339,8 @@ export function ClientDashboardPage() {
           )}
         </div>
       ) : null}
+        </ClientPortalSection>
+      </ClientPortalShell>
     </DashboardLayout>
   )
 }

@@ -8,6 +8,7 @@ import {
   normalizedDepositPercent,
   transferPaymentFullUpfront
 } from '../lib/transfer-payment-breakdown'
+import { TransferPaymentStatusBadge } from './transfer-payment-status-badge'
 import { cx } from '../lib/utils'
 
 const formatEurInline = (n: number) =>
@@ -145,8 +146,6 @@ export function ClientPortalIdentityHero(props: {
               {props.transfers.slice(0, 5).map((t) => {
                 const pay = (t.payment_status ?? 'unpaid').toLowerCase()
                 const isPaid = pay === 'paid'
-                const payLabel =
-                  pay === 'paid' ? 'Paid in full' : pay === 'deposit' ? 'Deposit paid' : 'Unpaid'
                 const when = t.scheduled_at
                   ? new Date(t.scheduled_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
                   : 'ASAP / next available driver'
@@ -205,9 +204,12 @@ export function ClientPortalIdentityHero(props: {
                       </div>
                     ) : null}
                     <p className="mt-2 flex flex-wrap items-center gap-2 font-ge text-sm text-fairway-50/90">
-                      <span className="rounded-full bg-white/10 px-2 py-0.5 font-bold uppercase tracking-wide text-brand-100/95">
-                        {payLabel}
-                      </span>
+                      <TransferPaymentStatusBadge
+                        deposit_percent={t.deposit_percent}
+                        payment_status={t.payment_status}
+                        size="sm"
+                        tone="onDark"
+                      />
                       {showPay && fullUpfront ? (
                         <button
                           className="inline-flex items-center gap-1 rounded-lg border border-emerald-300/50 bg-fairway-500/25 px-2 py-1 font-ge text-xs font-bold uppercase tracking-[0.1em] text-fairway-50 transition hover:bg-fairway-500/40 disabled:opacity-50"

@@ -109,7 +109,7 @@ export function AdminSidebar({ activeSection, onSectionChange, mobileOpen, onMob
 
       <aside
         className={cx(
-          'fixed inset-y-0 left-0 z-50 flex w-[min(100vw-2rem,280px)] flex-col border-r border-forest-100/90 bg-white shadow-xl transition-transform duration-300 lg:static lg:z-auto lg:w-60 lg:shrink-0 lg:translate-x-0 lg:shadow-none',
+          'fixed inset-y-0 left-0 z-50 flex w-[min(100vw-2rem,280px)] flex-col border-r border-forest-100/90 bg-white shadow-xl transition-transform duration-300 lg:static lg:z-auto lg:-ml-2 lg:mr-1 lg:w-60 lg:shrink-0 lg:translate-x-0 lg:shadow-none xl:-ml-3',
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         )}
       >

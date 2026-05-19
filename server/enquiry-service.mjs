@@ -929,6 +929,9 @@ export const handleEnquirySubmission = async (payload, env = process.env, runtim
   }
   const enquiryPdfAttachments = [pdfAttachment, termsPdfAttachment, travellerContactsPdfAttachment, packingChecklistPdfAttachment]
 
+  // Persist before emails so portal login can sync name/phone from enquiries immediately after magic link.
+  await recordEnquiryToSupabase(enquiry, enquiryId, env)
+
   await Promise.all([
     resend.emails.send({
       from: fromEmail,
@@ -946,8 +949,6 @@ export const handleEnquirySubmission = async (payload, env = process.env, runtim
       attachments: enquiryPdfAttachments
     })
   ])
-
-  await recordEnquiryToSupabase(enquiry, enquiryId, env)
   await insertWebsiteFormPackageBuildIfProfileExists(enquiry, enquiryId, env)
   await insertTransferBookingFromWebsiteEnquiry(enquiry, enquiryId, env)
 
