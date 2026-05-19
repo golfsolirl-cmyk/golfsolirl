@@ -123,6 +123,7 @@ export const insertTransferBookingFromWebsiteEnquiry = async (enquiry, enquiryId
   const fm = fieldMap(fp?.fields)
 
   const { pickup, dropoff } = pickupDropoffFromFields(fm)
+  const inboundFlight = norm(fm.get('Flight number')) || norm(fm.get('Inbound flight number'))
   const timingRaw = norm(fm.get('Collection timing')) || norm(enquiry.bestTimeToCall) || ''
 
   let scheduledAt = null
@@ -167,6 +168,7 @@ export const insertTransferBookingFromWebsiteEnquiry = async (enquiry, enquiryId
     dropoff_lng: null,
     scheduled_at: scheduledAt,
     client_timing_note: timingRaw.slice(0, 500),
+    inbound_flight_number: inboundFlight.slice(0, 32),
     next_available_driver: nextAvailableDriver,
     status: 'pending',
     enquiry_reference_id: enquiryId,

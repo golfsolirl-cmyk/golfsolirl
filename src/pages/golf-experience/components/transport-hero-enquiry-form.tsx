@@ -5,7 +5,10 @@ import { BookedDatesAvailabilityNotice } from '../../../components/booked-dates-
 import { GeButton } from './ge-button'
 import { contactInfo } from '../data/copy'
 import { transportEnquiryFormCopy } from '../data/transport-service'
+import { TransferCollectionPointField } from '../../../components/transfer-collection-point-field'
+import { TransferPlaceTypeahead } from '../../../components/transfer-place-typeahead'
 import { COURSES } from '../../../data/coastal-golf-data'
+import { isMalagaAirportCollectionPoint } from '../../../lib/malaga-airport-pickup'
 import { assertDatesNotBooked, loadBookedServiceDayIsoSet } from '../../../lib/booked-service-days'
 import { getLocalDateIso } from '../../../lib/local-date-iso'
 import { plannedTravelDatesErrorMessage, travelEndMinIso, travelStartMinIso } from '../../../lib/travel-date-bounds'
@@ -43,6 +46,7 @@ export function TransportHeroEnquiryForm() {
   const [phoneWhatsApp, setPhoneWhatsApp] = useState('')
   const [passengers, setPassengers] = useState(4)
   const [collectionPoint, setCollectionPoint] = useState('')
+  const [inboundFlightNumber, setInboundFlightNumber] = useState('')
   const [destination, setDestination] = useState('')
   const [collectionTime, setCollectionTime] = useState('')
   const [asap, setAsap] = useState(false)
@@ -160,6 +164,11 @@ export function TransportHeroEnquiryForm() {
       setStatus('error')
       return
     }
+    if (isMalagaAirportCollectionPoint(from) && !inboundFlightNumber.trim()) {
+      setErrorMessage('Add your inbound flight number for airport pickup (e.g. FR 7044).')
+      setStatus('error')
+      return
+    }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) {
       setErrorMessage(transportEnquiryFormCopy.validationEmail)
       setStatus('error')
@@ -267,7 +276,6 @@ export function TransportHeroEnquiryForm() {
         : 'ASAP — transfer'
       : `Collection: ${collectionTime.trim()}`
 
-    const looksLikeMalagaAirport = (s: string) => /m[áa]laga|agp|malaga airport|málaga airport|costa del sol airport/i.test(s)
     const courseDest = COURSES.find(
       (c) =>
         to.length >= 4 &&
@@ -276,7 +284,7 @@ export function TransportHeroEnquiryForm() {
     let dropoffType: (typeof PICKUP_DROPOFF_TYPES)[keyof typeof PICKUP_DROPOFF_TYPES] = PICKUP_DROPOFF_TYPES.freeText
     if (courseDest) {
       dropoffType = PICKUP_DROPOFF_TYPES.golfCourse
-    } else if (looksLikeMalagaAirport(to)) {
+    } else if (isMalagaAirportCollectionPoint(to)) {
       dropoffType = PICKUP_DROPOFF_TYPES.malagaAirport
     }
 
@@ -301,9 +309,12 @@ export function TransportHeroEnquiryForm() {
       ASAP: asap ? 'yes' : 'no',
       ...(hideCollectionByAdmin ? { 'Public form': 'Collection date/time hidden (admin busy mode)' } : {}),
       [ENQUIRY_STRUCTURED_FIELD_KEYS.pax]: String(passengers),
-      [ENQUIRY_STRUCTURED_FIELD_KEYS.pickupType]: looksLikeMalagaAirport(from)
+      [ENQUIRY_STRUCTURED_FIELD_KEYS.pickupType]: isMalagaAirportCollectionPoint(from)
         ? PICKUP_DROPOFF_TYPES.malagaAirport
         : PICKUP_DROPOFF_TYPES.freeText,
+      ...(isMalagaAirportCollectionPoint(from) && inboundFlightNumber.trim()
+        ? { 'Flight number': inboundFlightNumber.trim() }
+        : {}),
       [ENQUIRY_STRUCTURED_FIELD_KEYS.pickupLabel]: from,
       [ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffType]: dropoffType,
       [ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffLabel]: to,
@@ -551,31 +562,29 @@ export function TransportHeroEnquiryForm() {
                 </>
               ) : null}
 
-              <label className="block min-w-0 md:col-span-2">
-                <span className={labelClass}>{transportEnquiryFormCopy.collectionLabel}</span>
-                <input
-                  name="collectionPoint"
-                  autoComplete="street-address"
+              <div className="block min-w-0 md:col-span-2">
+                <TransferCollectionPointField
+                  flightNumber={inboundFlightNumber}
+                  hint={transportEnquiryFormCopy.collectionHint}
+                  inputClassName={inputClass}
+                  inputId="transport-collection-point"
+                  label={transportEnquiryFormCopy.collectionLabel}
+                  labelClassName={labelClass}
+                  onChangeValue={setCollectionPoint}
+                  onFlightNumberChange={setInboundFlightNumber}
+                  placeholder="Hotel, golf course, or Málaga Airport (AGP)"
                   value={collectionPoint}
-                  onChange={(e) => setCollectionPoint(e.target.value)}
-                  className={inputClass}
-                  placeholder="Where we collect you"
-                  required
                 />
-                <span className="mt-1 block font-ge text-sm leading-snug text-ge-gray400 sm:text-[0.95rem]">
-                  {transportEnquiryFormCopy.collectionHint}
-                </span>
-              </label>
+              </div>
 
               <label className="block min-w-0 md:col-span-2">
                 <span className={labelClass}>{transportEnquiryFormCopy.destinationLabel}</span>
-                <input
-                  name="destination"
+                <TransferPlaceTypeahead
+                  inputClassName={inputClass}
+                  inputId="transport-destination"
+                  onChangeValue={setDestination}
+                  placeholder="Hotel, golf course, or resort"
                   value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                  className={inputClass}
-                  placeholder="Where you’re heading"
-                  required
                 />
                 <span className="mt-1 block font-ge text-sm leading-snug text-ge-gray400 sm:text-[0.95rem]">
                   {transportEnquiryFormCopy.destinationHint}

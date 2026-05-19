@@ -1,11 +1,13 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Map as LeafletMap, Marker, Polyline } from 'leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { GeButton } from '../pages/golf-experience/components/ge-button'
 import { ClientTransferTrackMap } from './client-transfer-track-map'
-import { filterTransferPlaceOptions, type TransferPlaceOption } from '../lib/transfer-location-suggestions'
+import { isMalagaAirportCollectionPoint } from '../lib/malaga-airport-pickup'
+import type { TransferPlaceOption } from '../lib/transfer-location-suggestions'
+import { TransferPlaceTypeahead } from './transfer-place-typeahead'
 import { cx } from '../lib/utils'
 import { GOLFSOL_BRAND_LOGO } from '../lib/brand-logo-assets'
 
@@ -70,112 +72,6 @@ const toDatetimeLocalValue = (d: Date) => {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
-type PlaceTypeaheadProps = {
-  readonly inputId: string
-  readonly value: string
-  readonly onChangeValue: (v: string) => void
-  readonly onPickPlace: (p: TransferPlaceOption) => void
-  readonly placeholder?: string
-}
-
-/**
- * Type-as-you-go suggestions (no native datalist dropdown): picks place map + label together.
- */
-function PlaceTypeahead({ inputId, value, onChangeValue, onPickPlace, placeholder }: PlaceTypeaheadProps) {
-  const [open, setOpen] = useState(false)
-  const [hi, setHi] = useState(0)
-  const blurTimer = useRef<number | null>(null)
-  const suggestions = useMemo(() => filterTransferPlaceOptions(value, 14), [value])
-
-  useEffect(() => {
-    if (!open) {
-      return
-    }
-    setHi(0)
-  }, [value, open])
-
-  const cancelBlurTimer = () => {
-    if (blurTimer.current != null) {
-      window.clearTimeout(blurTimer.current)
-      blurTimer.current = null
-    }
-  }
-
-  const scheduleClose = () => {
-    cancelBlurTimer()
-    blurTimer.current = window.setTimeout(() => setOpen(false), 160)
-  }
-
-  return (
-    <div className="relative">
-      <input
-        autoComplete="off"
-        className="mt-1 w-full rounded-xl border-2 border-forest-200 px-3 py-2 text-sm text-forest-900 outline-none ring-fairway-400/30 focus:border-fairway-500 focus:ring-2"
-        id={inputId}
-        onBlur={scheduleClose}
-        onChange={(e) => {
-          const v = e.target.value
-          onChangeValue(v)
-          setOpen(v.trim().length >= 2)
-        }}
-        onFocus={() => {
-          cancelBlurTimer()
-          if (value.trim().length >= 2) {
-            setOpen(true)
-          }
-        }}
-        onKeyDown={(e) => {
-          if (!open || suggestions.length === 0) {
-            return
-          }
-          if (e.key === 'ArrowDown') {
-            e.preventDefault()
-            setHi((h) => Math.min(suggestions.length - 1, h + 1))
-          } else if (e.key === 'ArrowUp') {
-            e.preventDefault()
-            setHi((h) => Math.max(0, h - 1))
-          } else if (e.key === 'Enter') {
-            e.preventDefault()
-            onPickPlace(suggestions[hi])
-            setOpen(false)
-          } else if (e.key === 'Escape') {
-            setOpen(false)
-          }
-        }}
-        placeholder={placeholder}
-        type="text"
-        value={value}
-      />
-      {open && suggestions.length > 0 ? (
-        <ul
-          className="absolute left-0 right-0 top-full z-30 mt-1 max-h-52 overflow-auto rounded-xl border border-forest-200 bg-white py-1 shadow-lg ring-1 ring-black/5"
-          role="listbox"
-        >
-          {suggestions.map((s, i) => (
-            <li key={`${s.label}-${i}`} role="option" aria-selected={i === hi}>
-              <button
-                className={cx(
-                  'w-full px-3 py-2.5 text-left text-sm text-forest-900 transition-colors',
-                  i === hi ? 'bg-fairway-50' : 'hover:bg-offwhite/90'
-                )}
-                onMouseDown={(e) => e.preventDefault()}
-                type="button"
-                onClick={() => {
-                  cancelBlurTimer()
-                  onPickPlace(s)
-                  setOpen(false)
-                }}
-              >
-                {s.label}
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : null}
-    </div>
-  )
-}
-
 export function ClientTransferRequestPanel() {
   const supabase = getSupabaseBrowserClient()
   const mapRef = useRef<HTMLDivElement | null>(null)
@@ -190,6 +86,7 @@ export function ClientTransferRequestPanel() {
   const [pickup, setPickup] = useState<{ lat: number; lng: number } | null>(null)
   const [dropoff, setDropoff] = useState<{ lat: number; lng: number } | null>(null)
   const [pickupLabel, setPickupLabel] = useState('')
+  const [inboundFlightNumber, setInboundFlightNumber] = useState('')
   const [dropoffLabel, setDropoffLabel] = useState('')
   const [vias, setVias] = useState<ViaStop[]>([])
   const [scheduleMode, setScheduleMode] = useState<'asap' | 'scheduled'>('asap')
@@ -423,6 +320,10 @@ export function ClientTransferRequestPanel() {
       setMsg('Add a label for pickup and destination.')
       return
     }
+    if (isMalagaAirportCollectionPoint(pickupLabel) && !inboundFlightNumber.trim()) {
+      setMsg('Add your inbound flight number for airport pickup (e.g. FR 7044).')
+      return
+    }
     for (const v of vias) {
       const lt = v.label.trim()
       if (!lt) {
@@ -483,7 +384,8 @@ export function ClientTransferRequestPanel() {
         dropoff_label: dropoffLabel.trim(),
         status: 'pending',
         scheduled_at: scheduledAtIso,
-        next_available_driver: scheduleMode === 'asap'
+        next_available_driver: scheduleMode === 'asap',
+        inbound_flight_number: isMalagaAirportCollectionPoint(pickupLabel) ? inboundFlightNumber.trim().slice(0, 32) : ''
       }
       if (resolvedVias.length > 0) {
         row.route_waypoints = resolvedVias
@@ -653,26 +555,43 @@ export function ClientTransferRequestPanel() {
           <label className="block text-xs font-semibold uppercase tracking-[0.14em] text-forest-700" htmlFor={pickupInputId}>
             Pickup label
           </label>
-          <PlaceTypeahead
+          <TransferPlaceTypeahead
             inputId={pickupInputId}
             onChangeValue={(v) => {
               setPickupLabel(v)
               setPickup(null)
+              if (!isMalagaAirportCollectionPoint(v)) {
+                setInboundFlightNumber('')
+              }
             }}
             onPickPlace={(p) => {
               setPickupLabel(p.label)
               setPickup({ lat: p.lat, lng: p.lng })
               setActiveMapTarget('dropoff')
             }}
-            placeholder="Type 2+ letters, then pick a suggestion"
+            placeholder="Hotel, golf course, or Málaga Airport (AGP)"
             value={pickupLabel}
           />
+          {isMalagaAirportCollectionPoint(pickupLabel) ? (
+            <label className="mt-3 block" htmlFor="transfer-pickup-flight">
+              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Flight number</span>
+              <input
+                autoComplete="off"
+                className="mt-1 w-full rounded-xl border-2 border-forest-200 px-3 py-2 text-sm text-forest-900 outline-none ring-fairway-400/30 focus:border-fairway-500 focus:ring-2"
+                id="transfer-pickup-flight"
+                onChange={(e) => setInboundFlightNumber(e.target.value)}
+                placeholder="e.g. FR 7044"
+                type="text"
+                value={inboundFlightNumber}
+              />
+            </label>
+          ) : null}
         </div>
         <div>
           <label className="block text-xs font-semibold uppercase tracking-[0.14em] text-forest-700" htmlFor={dropoffInputId}>
             Destination label
           </label>
-          <PlaceTypeahead
+          <TransferPlaceTypeahead
             inputId={dropoffInputId}
             onChangeValue={(v) => {
               setDropoffLabel(v)
@@ -718,7 +637,7 @@ export function ClientTransferRequestPanel() {
                     Remove
                   </button>
                 </div>
-                <PlaceTypeahead
+                <TransferPlaceTypeahead
                   inputId={`via-${row.id}`}
                   onChangeValue={(v) => {
                     setVias((prev) => prev.map((r) => (r.id === row.id ? { ...r, label: v, lat: null, lng: null } : r)))

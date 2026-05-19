@@ -3,6 +3,7 @@ import { stripeCheckoutSessionDashboardUrl, stripePaymentDashboardUrl } from '..
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { GeButton } from '../pages/golf-experience/components/ge-button'
 import { LuxuryButton } from './ui/button'
+import { MARTIN_KELLY_DRIVER, isMartinKellyDriverRow } from '../lib/operations-driver'
 import { TransferPaymentStatusBadge } from './transfer-payment-status-badge'
 
 type RouteWaypoint = { label?: string | null; lat?: number | null; lng?: number | null }
@@ -142,6 +143,24 @@ export function AdminTransferPipeline() {
     void refresh()
   }, [refresh])
 
+  useEffect(() => {
+    const martin = drivers.find(isMartinKellyDriverRow)
+    if (!martin) {
+      return
+    }
+    setPickDriverByBooking((prev) => {
+      const next = { ...prev }
+      let changed = false
+      for (const b of bookings) {
+        if (b.status === 'pending' && !b.assigned_driver_id && !next[b.id]) {
+          next[b.id] = martin.id
+          changed = true
+        }
+      }
+      return changed ? next : prev
+    })
+  }, [drivers, bookings])
+
   const assignDriver = async (bookingId: string) => {
     if (!supabase) {
       return
@@ -155,7 +174,7 @@ export function AdminTransferPipeline() {
     try {
       const { error: uErr } = await supabase
         .from('transfer_bookings')
-        .update({ assigned_driver_id: driverId, status: 'allocated', updated_at: new Date().toISOString() })
+        .update({ assigned_driver_id: driverId, status: 'en_route', updated_at: new Date().toISOString() })
         .eq('id', bookingId)
       if (uErr) {
         setError(uErr.message)
@@ -309,14 +328,11 @@ export function AdminTransferPipeline() {
           <p className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.22em] text-brand-600">Step 3 · Drivers</p>
           <h2 className="font-display mt-1 text-xl font-bold tracking-tight text-forest-950 sm:text-2xl">Operations — Costa del Sol transfers</h2>
         </div>
-        <GeButton
-          href="/driver"
-          size="sm"
-          title="Open driver desk: sign in at /driver/login (admins see Irish Driver preview automatically). Real drivers: link auth to drivers.auth_user_id — see supabase/run-in-sql-editor-driver-test-account.sql."
-          variant="outline-gs-green"
-        >
-          Open driver view
-        </GeButton>
+        <p className="max-w-md text-right text-xs leading-relaxed text-forest-600">
+          Dispatch sends job details to{' '}
+          <strong className="font-semibold text-forest-800">{MARTIN_KELLY_DRIVER.email}</strong> and tells the guest{' '}
+          {MARTIN_KELLY_DRIVER.displayName} is en route.
+        </p>
       </div>
 
       {bookings.length === 0 ? (
@@ -424,16 +440,17 @@ export function AdminTransferPipeline() {
                   <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
                     <div className="flex flex-wrap items-end gap-3">
                       <label className="block text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">
-                        Assign driver
+                        Driver
                         <select
                           className="mt-1 block w-56 rounded-xl border-2 border-forest-200 bg-white px-3 py-2 text-sm text-forest-900"
-                          value={pickDriverByBooking[b.id] ?? ''}
+                          value={pickDriverByBooking[b.id] ?? drivers.find(isMartinKellyDriverRow)?.id ?? ''}
                           onChange={(e) => setPickDriverByBooking((m) => ({ ...m, [b.id]: e.target.value }))}
                         >
                           <option value="">Select…</option>
                           {drivers.map((d) => (
                             <option key={d.id} value={d.id}>
                               {d.display_name}
+                              {isMartinKellyDriverRow(d) ? ' (default)' : ''}
                             </option>
                           ))}
                         </select>
@@ -444,7 +461,7 @@ export function AdminTransferPipeline() {
                         type="button"
                         variant="primary"
                       >
-                        {assigningId === b.id ? 'Saving…' : 'Assign'}
+                        {assigningId === b.id ? 'Dispatching…' : `Dispatch ${MARTIN_KELLY_DRIVER.displayName}`}
                       </LuxuryButton>
                     </div>
                     <LuxuryButton

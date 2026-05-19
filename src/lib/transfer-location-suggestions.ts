@@ -76,14 +76,15 @@ export const filterTransferPlaceOptions = (query: string, limit = 10): readonly 
     return []
   }
   const opts = getTransferPlaceOptions()
-  const out: TransferPlaceOption[] = []
+  const starts: TransferPlaceOption[] = []
+  const includes: TransferPlaceOption[] = []
   for (const o of opts) {
-    if (normalizeKey(o.label).includes(q)) {
-      out.push(o)
-      if (out.length >= limit) {
-        break
-      }
+    const nk = normalizeKey(o.label)
+    if (nk.startsWith(q)) {
+      starts.push(o)
+    } else if (nk.includes(q)) {
+      includes.push(o)
     }
   }
-  return out
+  return [...starts, ...includes].slice(0, limit)
 }

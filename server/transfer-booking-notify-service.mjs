@@ -131,25 +131,30 @@ export const handleTransferBookingNotify = async (env, meta = {}) => {
   let heroLead = ''
   let bodyHtml = ''
 
+  const flightLine = (() => {
+    const fn = String(booking.inbound_flight_number ?? '').trim()
+    return fn ? `<br />Flight: <strong>${esc(fn)}</strong>` : ''
+  })()
+
   if (event === 'allocated') {
     const { data: dRow } = await admin
       .from('drivers')
       .select('display_name, phone')
       .eq('id', booking.assigned_driver_id)
       .maybeSingle()
-    const dn = dRow?.display_name ? esc(dRow.display_name) : 'your driver'
+    const dn = dRow?.display_name ? esc(dRow.display_name) : 'Martin Kelly'
     const driverPhoneRaw = typeof dRow?.phone === 'string' ? dRow.phone.trim() : ''
     const irishOpsTel = esc(gsolEmailBrand.phoneTel)
     const irishOpsDisplay = esc(gsolEmailBrand.phoneDisplay)
     const callDriverHtml = driverPhoneRaw
-      ? `<strong>${esc(driverPhoneRaw)}</strong> — call or WhatsApp your assigned driver for pickup coordination.`
-      : `Driver direct line: we’ll show it here once linked to your driver. Until then, call our Irish operations team on <strong>${irishOpsDisplay}</strong> (<a href="tel:${irishOpsTel}" style="color:${gs.green};font-weight:700;text-decoration:none;">tap to call</a>).`
-    subject = 'Your Golf Sol transfer — driver allocated'
-    heroTitle = 'Driver allocated'
-    heroLead = `We’ve assigned ${dn} to your Costa del Sol transfer. They’ll confirm in the driver app; you’ll get another email when they’re on the way to you. Need someone urgently? Use the Irish number below — or your driver’s direct line when shown.`
+      ? `<strong>${esc(driverPhoneRaw)}</strong> — call or WhatsApp ${dn} for pickup coordination.`
+      : `Call our Irish operations team on <strong>${irishOpsDisplay}</strong> (<a href="tel:${irishOpsTel}" style="color:${gs.green};font-weight:700;text-decoration:none;">tap to call</a>).`
+    subject = 'Your Golf Sol transfer — driver on the way'
+    heroTitle = 'Driver dispatched'
+    heroLead = `${dn} has been dispatched and is en route to your pickup. He will meet you at the collection point below.`
     const viaClient = viaLabelsHtml(booking)
     const whenLine = esc(formatTransferWhen(booking))
-    bodyHtml = `<p style="margin:0 0 12px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.7;color:${gs.text};">Pickup: <strong>${esc(booking.pickup_label)}</strong><br />Destination: <strong>${esc(booking.dropoff_label)}</strong>${viaClient ? `<br />Via: <strong>${viaClient}</strong>` : ''}<br />When: <strong>${whenLine}</strong></p><p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.7;color:${gs.text};">${callDriverHtml}</p><p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.65;color:${gs.text};"><strong>Irish operations (24/7 coordination):</strong> ${irishOpsDisplay} · <a href="tel:${irishOpsTel}" style="color:${gs.green};font-weight:800;text-decoration:none;">${irishOpsTel}</a></p>`
+    bodyHtml = `<p style="margin:0 0 12px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.7;color:${gs.text};">Pickup: <strong>${esc(booking.pickup_label)}</strong>${flightLine}<br />Destination: <strong>${esc(booking.dropoff_label)}</strong>${viaClient ? `<br />Via: <strong>${viaClient}</strong>` : ''}<br />When: <strong>${whenLine}</strong></p><p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.7;color:${gs.text};">${callDriverHtml}</p><p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.65;color:${gs.text};"><strong>Irish operations (24/7 coordination):</strong> ${irishOpsDisplay} · <a href="tel:${irishOpsTel}" style="color:${gs.green};font-weight:800;text-decoration:none;">${irishOpsTel}</a></p>`
   } else if (event === 'driver_accepted') {
     subject = 'Your driver is preparing'
     heroTitle = 'Driver accepted'
@@ -210,17 +215,17 @@ export const handleTransferBookingNotify = async (env, meta = {}) => {
       const guestDriver = driverGuestSummary(booking)
       const dhtmlRaw = buildGsolTransactionalEmail({
         documentTitle: 'New transfer job',
-        preheader: 'Open the driver desk to accept.',
-        heroKicker: 'Driver desk',
-        heroTitle: 'New job allocated',
+        preheader: 'Guest pickup details — Golf Sol Ireland.',
+        heroKicker: 'Operations',
+        heroTitle: 'Transfer job — dispatch',
         heroLead: `Pickup: ${esc(booking.pickup_label)} → ${esc(booking.dropoff_label)} · ${guestDriver} · ${whenDriver}.`,
-        heroMetaHtml: `<a href="${site}/driver" style="color:#ffe7a3;font-weight:700;">Open driver dashboard</a>`,
-        bodyHtml: `<p style="margin:0 0 10px 0;font-family:${emailFonts.sans};font-size:14px;line-height:1.7;color:${gs.text};"><strong>Guest contact</strong> (no email): ${guestDriver}</p>${viaDriver ? `<p style="margin:0 0 10px 0;font-family:${emailFonts.sans};font-size:14px;line-height:1.7;color:${gs.text};"><strong>Via:</strong> ${viaDriver}</p>` : ''}<p style="margin:0;font-family:${emailFonts.sans};font-size:14px;line-height:1.7;color:${gs.text};">Accept the job in your driver view to notify the guest automatically.</p>`
+        heroMetaHtml: '',
+        bodyHtml: `<p style="margin:0 0 10px 0;font-family:${emailFonts.sans};font-size:14px;line-height:1.7;color:${gs.text};"><strong>Guest contact:</strong> ${guestDriver}</p><p style="margin:0 0 10px 0;font-family:${emailFonts.sans};font-size:14px;line-height:1.7;color:${gs.text};"><strong>Pickup:</strong> ${esc(booking.pickup_label)}${flightLine}<br /><strong>Drop-off:</strong> ${esc(booking.dropoff_label)}<br /><strong>When:</strong> ${whenDriver}</p>${viaDriver ? `<p style="margin:0 0 10px 0;font-family:${emailFonts.sans};font-size:14px;line-height:1.7;color:${gs.text};"><strong>Via:</strong> ${viaDriver}</p>` : ''}<p style="margin:0;font-family:${emailFonts.sans};font-size:14px;line-height:1.7;color:${gs.text};">Client email: <strong>${esc(clientTo)}</strong></p>`
       })
       await resend.emails.send({
         from,
         to: de,
-        subject: 'Golf Sol — new transfer allocated to you',
+        subject: 'Golf Sol — transfer dispatch (pickup details)',
         html: finalizeGsolEmailHtml(dhtmlRaw)
       })
     }
