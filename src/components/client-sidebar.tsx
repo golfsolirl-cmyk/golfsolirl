@@ -15,7 +15,7 @@ export type ClientSidebarItem = {
 export const CLIENT_SIDEBAR_ITEMS: readonly ClientSidebarItem[] = [
   { id: 'home', label: 'Your trip', description: 'Account, transfers, add-ons', icon: LayoutDashboard },
   { id: 'trip', label: 'Trip planner', description: 'Build on your enquiry', icon: MapPin },
-  { id: 'payments', label: 'Payments', description: 'Invoices & receipts', icon: CreditCard },
+  { id: 'payments', label: 'Payments', description: 'Pay transfers & invoices', icon: CreditCard },
   { id: 'messages', label: 'Messages', description: 'Tickets & team replies', icon: MessageCircle },
   { id: 'contact', label: 'Contact', description: 'Name, phone, account ref', icon: UserRound },
   { id: 'documents', label: 'Documents', description: 'Proposals & PDFs', icon: FileText }

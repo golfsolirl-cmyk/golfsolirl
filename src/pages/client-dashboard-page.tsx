@@ -2,6 +2,7 @@ import type { Session } from '@supabase/supabase-js'
 import { ChevronDown, MessageCircle, Ticket, UserRound } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { ClientPortalIdentityHero, type ClientPortalTransferHeroRow } from '../components/client-portal-identity-hero'
+import { ClientPortalPaymentsDue } from '../components/client-portal-payments-due'
 import {
   ClientPortalShell,
   ClientPortalSection,
@@ -1700,6 +1701,21 @@ export function ClientDashboardPage() {
               ) : null}
         </div>
 
+        <ClientPortalPaymentsDue
+          anchorId="client-pay-now"
+          className="mb-10"
+          onGoToPaymentsTab={() => {
+            setActiveClientSection('payments')
+            window.requestAnimationFrame(() => {
+              document.getElementById('client-pay-now')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            })
+          }}
+          onPayTransfer={handlePayTransfer}
+          supabase={getSupabaseBrowserClient()}
+          transfers={transferBookingsPortal}
+          userId={session.user.id}
+        />
+
         <ClientPortalSection activeSection={activeClientSection} section="home">
           <div className="space-y-10">
             <PortalAddToYourTripStrip onSelect={openInterestModal} variant="page" />
@@ -1714,15 +1730,23 @@ export function ClientDashboardPage() {
         </ClientPortalSection>
 
         <ClientPortalSection activeSection={activeClientSection} section="payments">
-          {tripInvoicesPanel ?? (
-            <section className="rounded-2xl border border-forest-100 bg-white p-6 shadow-sm md:p-8">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Payments</p>
-              <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Invoices &amp; receipts</h2>
-              <p className="mt-2 max-w-2xl text-base text-forest-700">
-                When you pay a transfer or receive an invoice from Golf Sol Ireland, it appears here.
-              </p>
-            </section>
-          )}
+          <div className="space-y-10">
+            <ClientPortalPaymentsDue
+              onPayTransfer={handlePayTransfer}
+              supabase={portalSupabase}
+              transfers={transferBookingsPortal}
+              userId={session.user.id}
+            />
+            {tripInvoicesPanel ?? (
+              <section className="rounded-2xl border border-forest-100 bg-white p-6 shadow-sm md:p-8">
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Payments</p>
+                <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Invoices &amp; receipts</h2>
+                <p className="mt-2 max-w-2xl text-base text-forest-700">
+                  Trip invoices from Golf Sol Ireland appear here once sent. Transfer card payments are in the section above.
+                </p>
+              </section>
+            )}
+          </div>
         </ClientPortalSection>
 
         <ClientPortalSection activeSection={activeClientSection} section="trip">

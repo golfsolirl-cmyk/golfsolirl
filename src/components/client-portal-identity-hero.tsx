@@ -78,12 +78,12 @@ export function ClientPortalIdentityHero(props: {
   return (
     <div
       className={cx(
-        'ge-on-dark mb-10 overflow-hidden rounded-[2rem] border-2 border-brand-700/45 bg-gradient-to-br from-[#0f3d24] via-[#143d28] to-[#0a2416] p-6 text-white shadow-[0_24px_60px_rgba(11,73,52,0.35)] ring-1 ring-white/10 sm:p-8',
+        'ge-on-dark mb-10 overflow-visible rounded-[2rem] border-2 border-brand-700/45 bg-gradient-to-br from-[#0f3d24] via-[#143d28] to-[#0a2416] p-6 text-white shadow-[0_24px_60px_rgba(11,73,52,0.35)] ring-1 ring-white/10 sm:p-8',
         props.className
       )}
     >
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-        <div className="min-w-0 flex-1 space-y-5">
+      <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
+        <div className="min-w-0 flex-1 space-y-5 xl:max-w-2xl">
           <div>
             <p className="font-ge text-xs font-extrabold uppercase tracking-[0.22em] text-emerald-200/90 sm:text-sm">Your account</p>
             <h2 className="font-display mt-2 text-4xl font-bold tracking-tight text-white sm:text-5xl">
@@ -96,19 +96,19 @@ export function ClientPortalIdentityHero(props: {
           </div>
 
           {emailDisplay || ref ? (
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2" data-keep-color>
               {emailDisplay ? (
-                <div className="rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-3.5 backdrop-blur-sm">
+                <div className="min-w-0 rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-4 backdrop-blur-sm">
                   <p className="font-ge text-xs font-extrabold uppercase tracking-[0.18em] text-emerald-200/85 sm:text-sm">Account email</p>
-                  <p className="mt-1.5 break-all font-ge text-base font-semibold leading-snug text-white">{emailDisplay}</p>
+                  <p className="mt-2 break-all font-ge text-sm font-semibold leading-relaxed text-white sm:text-base">{emailDisplay}</p>
                 </div>
               ) : null}
               {ref ? (
-                <div className="rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-3.5 backdrop-blur-sm">
+                <div className="min-w-0 rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-4 backdrop-blur-sm">
                   <p className="font-ge text-xs font-extrabold uppercase tracking-[0.18em] text-emerald-200/85 sm:text-sm">
                     Account number
                   </p>
-                  <p className="mt-1.5 font-mono text-xl font-bold tracking-wide text-brand-100 sm:text-2xl">{ref}</p>
+                  <p className="mt-2 break-all font-mono text-lg font-bold leading-relaxed tracking-wide text-brand-100 sm:text-xl">{ref}</p>
                   <button
                     className="mt-3 inline-flex items-center gap-2 rounded-xl border border-chrome-300/50 bg-chrome-400/15 px-3 py-2 font-ge text-xs font-bold uppercase tracking-[0.12em] text-brand-100 transition hover:bg-chrome-400/25 sm:text-sm"
                     onClick={() => void copyRef()}
@@ -139,7 +139,7 @@ export function ClientPortalIdentityHero(props: {
         </div>
 
         {props.transfers.length > 0 ? (
-          <div className="w-full shrink-0 rounded-2xl border border-white/12 bg-black/20 p-5 lg:max-w-md">
+          <div className="w-full min-w-0 shrink-0 rounded-2xl border border-white/12 bg-black/20 p-5 xl:w-auto xl:max-w-lg xl:flex-1">
             <p className="font-ge text-xs font-extrabold uppercase tracking-[0.14em] text-emerald-200/85 sm:text-sm">Your transfers</p>
             <p className="mt-1 font-ge text-sm text-emerald-100/75 sm:text-base">Live status from our operations desk.</p>
             <ul className="mt-4 space-y-3">

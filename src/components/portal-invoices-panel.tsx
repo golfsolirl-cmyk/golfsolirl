@@ -144,7 +144,15 @@ export function PortalInvoicesPanel(props: {
   }
 
   if (rows.length === 0) {
-    return null
+    return (
+      <section className="rounded-2xl border border-dashed border-forest-200 bg-offwhite px-6 py-8 text-center shadow-sm md:px-10">
+        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Trip invoices</p>
+        <p className="mt-2 text-base text-forest-700">
+          No priced trip invoice yet. When our team sends one, it will appear here with a <strong className="font-medium">Pay now</strong>{' '}
+          button. Transfer payments stay in the green <strong className="font-medium">Pay for your trip</strong> section above.
+        </p>
+      </section>
+    )
   }
 
   return (
