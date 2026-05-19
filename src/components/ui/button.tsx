@@ -4,7 +4,7 @@ import { cx } from '../../lib/utils'
 
 interface SharedButtonProps {
   readonly children: ReactNode
-  readonly variant?: 'primary' | 'secondary' | 'outline' | 'white'
+  readonly variant?: 'primary' | 'secondary' | 'outline' | 'outlineOnLight' | 'white'
   readonly showArrow?: boolean
   readonly className?: string
 }
@@ -26,6 +26,8 @@ const variantClasses = {
   primary: 'gsol-cta-primary hover:-translate-y-0.5',
   secondary: 'gsol-cta-secondary hover:-translate-y-0.5',
   outline: 'border border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 hover:border-brand-400/50',
+  outlineOnLight:
+    'gsol-cta-outline-on-light border-2 border-forest-300/90 bg-white text-forest-900 shadow-sm hover:border-fairway-500 hover:bg-offwhite hover:text-forest-950',
   white: 'gsol-cta-secondary hover:-translate-y-0.5'
 } as const
 

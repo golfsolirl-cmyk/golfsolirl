@@ -114,7 +114,7 @@ export function ClientPortalPaymentsDue(props: {
           </p>
         </div>
         {props.onGoToPaymentsTab ? (
-          <LuxuryButton className="shrink-0 !px-5 !py-2.5 !text-xs" onClick={props.onGoToPaymentsTab} type="button" variant="outline">
+          <LuxuryButton className="shrink-0 !px-5 !py-2.5 !text-xs" onClick={props.onGoToPaymentsTab} type="button" variant="outlineOnLight">
             All payments
           </LuxuryButton>
         ) : null}

@@ -124,6 +124,18 @@
   color: var(--brand-900) !important;
 }
 
+.ge-page .gsol-cta-outline-on-light {
+  background: #ffffff !important;
+  color: var(--btn-secondary-text) !important;
+  border-color: var(--btn-secondary-border) !important;
+}
+
+.ge-page .gsol-cta-outline-on-light:hover {
+  background: var(--btn-secondary-hover) !important;
+  color: var(--brand-900) !important;
+  border-color: var(--brand-700) !important;
+}
+
 .ge-page .gsol-cta-gold,
 .ge-page .btn-premium {
   background: var(--btn-primary-bg) !important;
@@ -312,9 +324,27 @@
 .ge-page .ge-on-dark span:not([data-keep-color]),
 .ge-page .ge-on-dark label:not([data-keep-color]),
 .ge-page .ge-on-dark strong:not([data-keep-color]),
-.ge-page .ge-on-dark a:not([data-keep-color]),
-.ge-page .ge-on-dark button:not([data-keep-color]) {
+.ge-page .ge-on-dark a:not([data-keep-color]):not(.gsol-cta-secondary):not(.gsol-cta-outline-on-light),
+.ge-page .ge-on-dark button:not([data-keep-color]):not(.gsol-cta-secondary):not(.gsol-cta-outline-on-light) {
   color: #ffffff !important;
+}
+
+/* Light pill / outline CTAs stay dark on forest panels (client messages, payment banner, etc.) */
+.ge-page .ge-on-dark button.gsol-cta-secondary,
+.ge-page .ge-on-dark a.gsol-cta-secondary,
+.ge-page .ge-on-dark button.gsol-cta-outline-on-light,
+.ge-page .ge-on-dark a.gsol-cta-outline-on-light {
+  color: var(--btn-secondary-text) !important;
+  background: var(--btn-secondary-bg) !important;
+  border-color: var(--btn-secondary-border) !important;
+}
+
+.ge-page .ge-on-dark button.gsol-cta-secondary:hover,
+.ge-page .ge-on-dark a.gsol-cta-secondary:hover,
+.ge-page .ge-on-dark button.gsol-cta-outline-on-light:hover,
+.ge-page .ge-on-dark a.gsol-cta-outline-on-light:hover {
+  color: var(--brand-900) !important;
+  background: var(--btn-secondary-hover) !important;
 }
 
 .ge-page .ge-on-dark [data-keep-color] p,
@@ -643,4 +673,47 @@
     [class*='to-white'] *
   ) {
   color: rgba(236, 253, 245, 0.92) !important;
+}
+
+/* Dashboard light cards: secondary / outline-on-light must not inherit forced white button text */
+.ge-page:is([data-dashboard-variant='client'], [data-dashboard-variant='admin'], [data-dashboard-variant='driver'])
+  :is(
+    [class*='bg-white'],
+    [class*='bg-offwhite'],
+    [class*='bg-fairway-50'],
+    [class*='from-fairway-50'],
+    [class*='via-white'],
+    [class*='to-offwhite']
+  )
+  :is(button.gsol-cta-secondary, a.gsol-cta-secondary, button.gsol-cta-outline-on-light, a.gsol-cta-outline-on-light) {
+  color: var(--btn-secondary-text) !important;
+  background: var(--btn-secondary-bg) !important;
+  border-color: var(--btn-secondary-border) !important;
+}
+
+.ge-page:is([data-dashboard-variant='client'], [data-dashboard-variant='admin'], [data-dashboard-variant='driver'])
+  :is(
+    [class*='bg-white'],
+    [class*='bg-offwhite'],
+    [class*='bg-fairway-50'],
+    [class*='from-fairway-50'],
+    [class*='via-white'],
+    [class*='to-offwhite']
+  )
+  :is(button.gsol-cta-outline-on-light, a.gsol-cta-outline-on-light) {
+  background: #ffffff !important;
+}
+
+.ge-page:is([data-dashboard-variant='client'], [data-dashboard-variant='admin'], [data-dashboard-variant='driver'])
+  :is(
+    [class*='bg-white'],
+    [class*='bg-offwhite'],
+    [class*='bg-fairway-50'],
+    [class*='from-fairway-50'],
+    [class*='via-white'],
+    [class*='to-offwhite']
+  )
+  :is(button.gsol-cta-secondary:hover, a.gsol-cta-secondary:hover, button.gsol-cta-outline-on-light:hover, a.gsol-cta-outline-on-light:hover) {
+  color: var(--brand-900) !important;
+  background: var(--btn-secondary-hover) !important;
 }

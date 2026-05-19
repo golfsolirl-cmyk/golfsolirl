@@ -1763,7 +1763,7 @@ export function ClientDashboardPage() {
                 the full enquiry from your original form email.
               </p>
             </div>
-            <LuxuryButton className="shrink-0" onClick={handleClearTripWorkspace} type="button" variant="outline">
+            <LuxuryButton className="shrink-0" onClick={handleClearTripWorkspace} type="button" variant="outlineOnLight">
               Clear workspace
             </LuxuryButton>
           </div>
@@ -1858,7 +1858,7 @@ export function ClientDashboardPage() {
                     ))}
                   </select>
                   <p className="mt-2 text-xs text-forest-500">Hold Ctrl / ⌘ to select several. Corridor map: </p>
-                  <LuxuryButton className="mt-2" href="/golf-map" variant="outline">
+                  <LuxuryButton className="mt-2" href="/golf-map" variant="outlineOnLight">
                     Open interactive map
                   </LuxuryButton>
                 </div>
@@ -1896,7 +1896,7 @@ export function ClientDashboardPage() {
                     Build your route: Málaga Airport or a corridor hotel as pick-up, then add up to eight stops including
                     airports, hotels, and courses.
                   </p>
-                  <LuxuryButton className="mt-4" onClick={() => setTransferBuilderOpen(true)} type="button" variant="outline">
+                  <LuxuryButton className="mt-4" onClick={() => setTransferBuilderOpen(true)} type="button" variant="outlineOnLight">
                     Open transfer planner
                   </LuxuryButton>
                 </div>
@@ -2314,7 +2314,7 @@ export function ClientDashboardPage() {
                     >
                       {interestFollowUpBusy ? 'Sending…' : 'Send message'}
                     </LuxuryButton>
-                    <LuxuryButton disabled={interestFollowUpBusy} onClick={closeInterestThread} type="button" variant="outline">
+                    <LuxuryButton disabled={interestFollowUpBusy} onClick={closeInterestThread} type="button" variant="outlineOnLight">
                       Done
                     </LuxuryButton>
                   </div>
@@ -2389,7 +2389,7 @@ export function ClientDashboardPage() {
                 <LuxuryButton disabled={interestSubmitBusy} onClick={() => void submitInterestTicket()} type="button" variant="primary">
                   {interestSubmitBusy ? 'Sending…' : 'Send to Golf Sol Ireland'}
                 </LuxuryButton>
-                <LuxuryButton disabled={interestSubmitBusy} onClick={closeInterestModal} type="button" variant="outline">
+                <LuxuryButton disabled={interestSubmitBusy} onClick={closeInterestModal} type="button" variant="outlineOnLight">
                   Cancel
                 </LuxuryButton>
               </div>
