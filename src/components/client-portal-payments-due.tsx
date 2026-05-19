@@ -1,4 +1,4 @@
-import { CreditCard } from 'lucide-react'
+import { CreditCard, FileText } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import {
@@ -38,6 +38,7 @@ export function ClientPortalPaymentsDue(props: {
     phase: 'deposit' | 'balance' | 'full'
   ) => void | Promise<void>
   readonly onGoToPaymentsTab?: () => void
+  readonly onViewInvoice?: (invoiceId: string) => void
   readonly className?: string
   /** Set on the primary instance only (scroll target from menu / hero). */
   readonly anchorId?: string
@@ -67,6 +68,25 @@ export function ClientPortalPaymentsDue(props: {
     void loadInvoices()
   }, [loadInvoices])
 
+  useEffect(() => {
+    if (!props.supabase || !props.userId) {
+      return undefined
+    }
+    const channel = props.supabase
+      .channel(`client-portal-invoices-${props.userId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'portal_invoices', filter: `profile_id=eq.${props.userId}` },
+        () => {
+          void loadInvoices()
+        }
+      )
+      .subscribe()
+    return () => {
+      void props.supabase?.removeChannel(channel)
+    }
+  }, [props.supabase, props.userId, loadInvoices])
+
   const unpaidTransfers = useMemo(
     () =>
       props.transfers.filter((t) => {
@@ -85,14 +105,24 @@ export function ClientPortalPaymentsDue(props: {
   )
 
   const unpaidInvoices = useMemo(
-    () => invoices.filter((row) => row.status !== 'paid' && row.stripe_checkout_url),
+    () =>
+      invoices.filter(
+        (row) => row.status.toLowerCase() !== 'paid' && row.stripe_checkout_url
+      ),
+    [invoices]
+  )
+
+  const paidInvoices = useMemo(
+    () => invoices.filter((row) => row.status.toLowerCase() === 'paid'),
     [invoices]
   )
 
   const awaitingQuoteCount = unpaidTransfers.length - pricedUnpaidTransfers.length
   const hasPayActions = pricedUnpaidTransfers.length > 0 || unpaidInvoices.length > 0
+  const showSection =
+    hasPayActions || paidInvoices.length > 0 || awaitingQuoteCount > 0 || props.transfers.length > 0 || invoices.length > 0
 
-  if (!hasPayActions && awaitingQuoteCount === 0 && props.transfers.length === 0 && invoices.length === 0) {
+  if (!showSection) {
     return null
   }
 
@@ -261,6 +291,44 @@ export function ClientPortalPaymentsDue(props: {
                   <CreditCard className="mr-2 h-4 w-4" aria-hidden />
                   Pay invoice
                 </LuxuryButton>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
+      {paidInvoices.length > 0 ? (
+        <ul
+          className={cx(
+            'space-y-3',
+            pricedUnpaidTransfers.length > 0 || unpaidInvoices.length > 0 ? 'mt-4' : 'mt-6'
+          )}
+          aria-label="Paid trip invoices"
+        >
+          {paidInvoices.map((row) => (
+            <li className="rounded-2xl border border-emerald-200/90 bg-emerald-50/40 px-4 py-4 shadow-sm sm:px-5" key={row.id}>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <p className="font-ge text-lg font-semibold text-forest-950">Trip invoice {row.invoice_number}</p>
+                  <p className="mt-1 text-sm text-forest-600">
+                    Ref <span className="font-mono">{row.enquiry_reference_id}</span> ·{' '}
+                    <span className="font-semibold text-emerald-900">{formatEurFromCents(row.amount_cents)}</span>
+                    <span className="ml-2 rounded-full bg-emerald-200/80 px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-emerald-950">
+                      Paid
+                    </span>
+                  </p>
+                </div>
+                {props.onViewInvoice ? (
+                  <LuxuryButton
+                    className="shrink-0 !px-6 !py-2.5"
+                    onClick={() => props.onViewInvoice?.(row.id)}
+                    type="button"
+                    variant="outlineOnLight"
+                  >
+                    <FileText className="mr-2 h-4 w-4" aria-hidden />
+                    View invoice
+                  </LuxuryButton>
+                ) : null}
               </div>
             </li>
           ))}

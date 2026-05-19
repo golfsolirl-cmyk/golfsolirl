@@ -256,6 +256,7 @@ export function ClientDashboardPage() {
   const [stripePaidTransferBookingId, setStripePaidTransferBookingId] = useState<string | null>(null)
   const [transferServiceCardBookingId, setTransferServiceCardBookingId] = useState<string | null>(null)
   const [invoicePanelRefresh, setInvoicePanelRefresh] = useState(0)
+  const [invoiceHighlightId, setInvoiceHighlightId] = useState<string | null>(null)
   const [transferPortalDocuments, setTransferPortalDocuments] = useState<TransferPortalDocumentRow[]>([])
   const listDataInflightRef = useRef(0)
 
@@ -496,6 +497,7 @@ export function ClientDashboardPage() {
     void loadData()
     void refreshProfile()
     void refreshInterestTickets()
+    setInvoicePanelRefresh((n) => n + 1)
   }, [loadData, refreshProfile, refreshInterestTickets])
 
   useEffect(() => {
@@ -519,6 +521,7 @@ export function ClientDashboardPage() {
         refetchPortal
       )
       .on('postgres_changes', { event: '*', schema: 'public', table: 'package_builds', filter: `owner_id=eq.${uid}` }, refetchPortal)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'portal_invoices', filter: `profile_id=eq.${uid}` }, refetchPortal)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'proposals', filter: `owner_id=eq.${uid}` }, refetchPortal)
       .on(
         'postgres_changes',
@@ -647,18 +650,23 @@ export function ClientDashboardPage() {
     const run = async () => {
       const spWait = new URLSearchParams(window.location.search)
       if (
-        spWait.get('transfer_paid') === '1' &&
         spWait.get('checkout_session_id')?.trim() &&
+        (spWait.get('transfer_paid') === '1' || spWait.get('invoice_paid') === '1') &&
         (isLoading || !session?.access_token)
       ) {
         return
       }
 
       const sp0 = new URLSearchParams(window.location.search)
+      const invoicePaidFlag = sp0.get('invoice_paid') === '1'
       const transferPaidFlag = sp0.get('transfer_paid') === '1'
       const checkoutSessionId = sp0.get('checkout_session_id')?.trim()
 
-      if (transferPaidFlag && checkoutSessionId && transferCheckoutSyncAttempted.current !== checkoutSessionId) {
+      if (
+        checkoutSessionId &&
+        transferCheckoutSyncAttempted.current !== checkoutSessionId &&
+        (invoicePaidFlag || transferPaidFlag)
+      ) {
         let accessToken = session?.access_token ?? ''
         if (!accessToken) {
           const supabaseAuth = getSupabaseBrowserClient()
@@ -666,70 +674,88 @@ export function ClientDashboardPage() {
           accessToken = sess?.data.session?.access_token ?? ''
         }
         if (accessToken) {
-        transferCheckoutSyncAttempted.current = checkoutSessionId
-        let syncOk = false
-        let syncMessage: string | null = null
+          transferCheckoutSyncAttempted.current = checkoutSessionId
+          let syncOk = false
+          let syncMessage: string | null = null
 
-        for (let attempt = 0; attempt < 6 && !cancelled; attempt++) {
-          if (attempt > 0) {
-            await new Promise((r) => window.setTimeout(r, 700 + attempt * 500))
-          }
-          try {
-            const res = await fetch('/api/transfer-checkout-sync', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${accessToken}`
-              },
-              body: JSON.stringify({ checkoutSessionId })
-            })
-            const data = (await res.json().catch(() => ({}))) as {
-              ok?: boolean
-              updated?: boolean
-              message?: string
-              bookingId?: string
+          for (let attempt = 0; attempt < 6 && !cancelled; attempt++) {
+            if (attempt > 0) {
+              await new Promise((r) => window.setTimeout(r, 700 + attempt * 500))
             }
-            if (!res.ok) {
-              syncMessage = data.message ?? res.statusText
-              if (res.status === 401) {
-                transferCheckoutSyncAttempted.current = null
+            try {
+              const res = await fetch('/api/transfer-checkout-sync', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${accessToken}`
+                },
+                body: JSON.stringify({ checkoutSessionId })
+              })
+              const data = (await res.json().catch(() => ({}))) as {
+                ok?: boolean
+                updated?: boolean
+                message?: string
+                bookingId?: string
+                invoiceId?: string
+                kind?: string
+              }
+              if (!res.ok) {
+                syncMessage = data.message ?? res.statusText
+                if (res.status === 401) {
+                  transferCheckoutSyncAttempted.current = null
+                  break
+                }
+                continue
+              }
+              if (data.ok === false) {
+                syncMessage = data.message ?? 'Payment is still processing with Stripe.'
+                continue
+              }
+              await loadData()
+              setInvoicePanelRefresh((n) => n + 1)
+              syncOk = Boolean(data.updated)
+
+              if (!syncOk && data.kind === 'portal_invoice' && typeof data.invoiceId === 'string') {
+                const sbCheck = getSupabaseBrowserClient()
+                const { data: invRow } = await (sbCheck
+                  ?.from('portal_invoices')
+                  .select('status')
+                  .eq('id', data.invoiceId)
+                  .maybeSingle() ?? Promise.resolve({ data: null }))
+                syncOk = String(invRow?.status ?? '').toLowerCase() === 'paid'
+              }
+
+              const bidCheck =
+                sp0.get('transfer_booking_id')?.trim() || (typeof data.bookingId === 'string' ? data.bookingId.trim() : '')
+              if (!syncOk && bidCheck) {
+                const sbCheck = getSupabaseBrowserClient()
+                const { data: tbRow } = await (sbCheck
+                  ?.from('transfer_bookings')
+                  .select('payment_status')
+                  .eq('id', bidCheck)
+                  .maybeSingle() ?? Promise.resolve({ data: null }))
+                const st = String(tbRow?.payment_status ?? 'unpaid').toLowerCase()
+                syncOk = st === 'deposit' || st === 'paid'
+              }
+
+              if (syncOk) {
+                if (data.kind === 'portal_invoice' && typeof data.invoiceId === 'string') {
+                  setInvoiceHighlightId(data.invoiceId)
+                }
+                syncMessage = null
                 break
               }
-              continue
+              syncMessage =
+                'Payment received — syncing your dashboard. If the badge still says Due, refresh in a few seconds.'
+            } catch {
+              syncMessage = 'Could not confirm payment with the server. Refresh the page or contact Golf Sol Ireland.'
             }
-            if (data.ok === false) {
-              syncMessage = data.message ?? 'Payment is still processing with Stripe.'
-              continue
-            }
-            await loadData()
-            syncOk = Boolean(data.updated)
-            const bidCheck =
-              sp0.get('transfer_booking_id')?.trim() || (typeof data.bookingId === 'string' ? data.bookingId.trim() : '')
-            if (!syncOk && bidCheck) {
-              const sbCheck = getSupabaseBrowserClient()
-              const { data: tbRow } = await (sbCheck
-                ?.from('transfer_bookings')
-                .select('payment_status')
-                .eq('id', bidCheck)
-                .maybeSingle() ?? Promise.resolve({ data: null }))
-              const st = String(tbRow?.payment_status ?? 'unpaid').toLowerCase()
-              syncOk = st === 'deposit' || st === 'paid'
-            }
-            if (syncOk) {
-              syncMessage = null
-              break
-            }
-            syncMessage =
-              'Payment received — syncing your dashboard. If the badge still says Awaiting payment, refresh in a few seconds.'
-          } catch {
-            syncMessage = 'Could not confirm payment with the server. Refresh the page or contact Golf Sol Ireland.'
           }
-        }
 
-        if (!cancelled && syncMessage && !syncOk) {
-          setInvoiceUrlBanner(syncMessage)
-          transferCheckoutSyncAttempted.current = null
-        }
+          if (!cancelled && syncMessage && !syncOk) {
+            setInvoiceUrlBanner(syncMessage)
+            transferCheckoutSyncAttempted.current = null
+          }
         }
       }
 
@@ -743,8 +769,9 @@ export function ClientDashboardPage() {
       let stripUrl = false
       if (sp.get('invoice_paid') === '1') {
         stripUrl = true
-        parts.push('Payment received — thank you. Your invoice card should show Paid within a few seconds.')
+        parts.push('Payment received — thank you. Your trip invoice should show Paid shortly.')
         sp.delete('invoice_paid')
+        sp.delete('checkout_session_id')
         setInvoicePanelRefresh((n) => n + 1)
         stripeSuccessPoll = true
         void loadData()
@@ -1462,6 +1489,7 @@ export function ClientDashboardPage() {
     portalSupabase && session.user.id ? (
       <PortalInvoicesPanel
         accountReferenceLabel={accountRefForUi.trim() ? accountRefForUi : null}
+        highlightInvoiceId={invoiceHighlightId}
         refreshTrigger={invoicePanelRefresh}
         supabase={portalSupabase}
         userId={session.user.id}
@@ -1711,6 +1739,14 @@ export function ClientDashboardPage() {
             })
           }}
           onPayTransfer={handlePayTransfer}
+          onViewInvoice={(invoiceId) => {
+            setActiveClientSection('payments')
+            setInvoiceHighlightId(invoiceId)
+            setInvoicePanelRefresh((n) => n + 1)
+            window.requestAnimationFrame(() => {
+              document.getElementById('client-trip-invoices')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            })
+          }}
           supabase={getSupabaseBrowserClient()}
           transfers={transferBookingsPortal}
           userId={session.user.id}
@@ -1733,6 +1769,13 @@ export function ClientDashboardPage() {
           <div className="space-y-10">
             <ClientPortalPaymentsDue
               onPayTransfer={handlePayTransfer}
+              onViewInvoice={(invoiceId) => {
+                setInvoiceHighlightId(invoiceId)
+                setInvoicePanelRefresh((n) => n + 1)
+                window.requestAnimationFrame(() => {
+                  document.getElementById('client-trip-invoices')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                })
+              }}
               supabase={portalSupabase}
               transfers={transferBookingsPortal}
               userId={session.user.id}

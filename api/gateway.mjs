@@ -10,6 +10,7 @@ import { handleSyncPortalProfile } from '../server/sync-portal-profile-service.m
 import { handlePortalContactSetup } from '../server/portal-contact-setup-service.mjs'
 import { handleSendClientPortalEmail } from '../server/client-portal-email-service.mjs'
 import { handleSendWebsiteQuoteEmail } from '../server/website-quote-email.mjs'
+import { handleSyncWebsiteQuotePortalPayment } from '../server/sync-website-quote-portal-payment.mjs'
 import { createProposalFilename, createProposalPdf } from '../server/proposal-service.mjs'
 import { buildHomepageBrandedClientPdfBytes } from '../server/homepage-branded-client-pdf.mjs'
 import { handleSendClientDocument } from '../server/send-client-document-service.mjs'
@@ -300,6 +301,19 @@ export default async function handler(req, res) {
         const payload = raw ? JSON.parse(raw) : {}
         const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
         const result = await handleSendWebsiteQuoteEmail(payload, process.env, { authHeader })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'sync-website-quote-payment': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const result = await handleSyncWebsiteQuotePortalPayment(payload, process.env, { authHeader })
         jsonEnd(res, 200, result)
         return
       }

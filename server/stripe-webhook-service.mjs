@@ -27,7 +27,7 @@ import { publishTransferPortalPaymentReceipt } from './transfer-portal-publish-p
 
  */
 
-const markPortalInvoicePaid = async (supabase, invoiceId, paymentIntent, paidAt) => {
+export const markPortalInvoicePaid = async (supabase, invoiceId, paymentIntent, paidAt) => {
 
   const { error, data } = await supabase
 

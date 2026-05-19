@@ -7,6 +7,7 @@ import { handleSyncPortalProfile } from './server/sync-portal-profile-service.mj
 import { handlePortalContactSetup } from './server/portal-contact-setup-service.mjs'
 import { handleSendClientPortalEmail } from './server/client-portal-email-service.mjs'
 import { handleSendWebsiteQuoteEmail } from './server/website-quote-email.mjs'
+import { handleSyncWebsiteQuotePortalPayment } from './server/sync-website-quote-portal-payment.mjs'
 import { createProposalFilename, createProposalPdf } from './server/proposal-service.mjs'
 import { handleSendClientDocument } from './server/send-client-document-service.mjs'
 import {
@@ -427,6 +428,7 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
 
     workspaceEmailApi('/api/send-client-portal-email', handleSendClientPortalEmail)
     workspaceEmailApi('/api/send-website-quote-email', handleSendWebsiteQuoteEmail)
+    workspaceEmailApi('/api/sync-website-quote-payment', handleSyncWebsiteQuotePortalPayment)
 
     server.middlewares.use('/api/admin-portal-client', async (request, response) => {
       if (request.method !== 'POST') {

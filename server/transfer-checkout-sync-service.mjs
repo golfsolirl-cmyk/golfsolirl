@@ -1,7 +1,7 @@
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 import { clientOwnsTransferBooking } from './transfer-checkout-service.mjs'
-import { markTransferBookingPaid } from './stripe-webhook-service.mjs'
+import { markPortalInvoicePaid, markTransferBookingPaid } from './stripe-webhook-service.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
   const e = new Error(message)
@@ -77,19 +77,57 @@ export const handleTransferCheckoutSync = async (body, env = process.env, meta =
 
   const sessionMeta = /** @type {Record<string, string | undefined>} */ (session.metadata ?? {})
 
+  const cref =
+    typeof session.client_reference_id === 'string' ? session.client_reference_id.trim() : ''
+
+  const portalInvoiceId =
+    typeof sessionMeta.portal_invoice_id === 'string' && sessionMeta.portal_invoice_id.trim()
+      ? sessionMeta.portal_invoice_id.trim()
+      : cref
+
+  if (portalInvoiceId) {
+    const { data: invoice, error: invErr } = await admin
+      .from('portal_invoices')
+      .select('id, profile_id, status')
+      .eq('id', portalInvoiceId)
+      .maybeSingle()
+
+    if (invErr) {
+      throwStatus(invErr.message, 500)
+    }
+
+    if (invoice?.id) {
+      if (String(invoice.profile_id) !== user.id) {
+        throwStatus('You do not have access to this invoice.', 403)
+      }
+
+      const alreadyPaid = String(invoice.status ?? '').toLowerCase() === 'paid'
+      let updated = alreadyPaid
+      if (!alreadyPaid) {
+        const paymentIntent =
+          typeof session.payment_intent === 'string'
+            ? session.payment_intent
+            : session.payment_intent && typeof session.payment_intent === 'object'
+              ? session.payment_intent.id
+              : null
+        updated = await markPortalInvoicePaid(admin, String(invoice.id), paymentIntent, new Date().toISOString())
+      }
+
+      return { ok: true, updated, invoiceId: invoice.id, kind: 'portal_invoice' }
+    }
+  }
+
   let bookingId =
     typeof sessionMeta.transfer_booking_id === 'string' && sessionMeta.transfer_booking_id.trim()
       ? sessionMeta.transfer_booking_id.trim()
       : ''
 
-  const cref =
-    typeof session.client_reference_id === 'string' ? session.client_reference_id.trim() : ''
   if (!bookingId && cref) {
     bookingId = cref
   }
 
   if (!bookingId) {
-    throwStatus('This Checkout session is not linked to a transfer booking.', 400)
+    throwStatus('This Checkout session is not linked to a trip payment.', 400)
   }
 
   const { data: booking, error: bErr } = await admin
@@ -121,5 +159,5 @@ export const handleTransferCheckoutSync = async (body, env = process.env, meta =
 
   const updated = await markTransferBookingPaid(admin, bookingId, session, paymentIntent, paymentKind)
 
-  return { ok: true, updated, bookingId }
+  return { ok: true, updated, bookingId, kind: 'transfer' }
 }

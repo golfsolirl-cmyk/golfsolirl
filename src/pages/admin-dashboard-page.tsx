@@ -74,6 +74,7 @@ import {
 } from '../lib/enquiry-form-registry'
 import { stripeCheckoutSessionDashboardUrl, stripePaymentDashboardUrl } from '../lib/stripe-dashboard-url'
 import { isEnquiryAdminViewed, rememberEnquiryViewedLocally } from '../lib/admin-enquiry-viewed'
+import { syncWebsiteQuotePaymentNote } from '../lib/sync-website-quote-payment-note'
 import { cx } from '../lib/utils'
 import {
   isMissingPortalInterestTicketsError,
@@ -1802,8 +1803,10 @@ export function AdminDashboardPage() {
 
     setPackageBuilds((prev) => prev.map((b) => (b.id === detailRow.id ? { ...b, config: nextConfig } : b)))
 
-    let emailNote = ''
     const token = session.access_token
+    const payNote = await syncWebsiteQuotePaymentNote(detailRow.id, token)
+
+    let emailNote = ''
     if (token) {
       try {
         const res = await fetch('/api/send-website-quote-email', {
@@ -1828,7 +1831,7 @@ export function AdminDashboardPage() {
     }
 
     setWebsiteQuoteMessage(
-      `Saved — the client dashboard shows this quote, itinerary iframe, and PDF download.${emailNote}`
+      `Saved — the client dashboard shows this quote, itinerary iframe, and PDF download.${payNote}${emailNote}`
     )
     setWebsiteQuoteBusy(false)
   }
@@ -1873,8 +1876,10 @@ export function AdminDashboardPage() {
 
     setPackageBuilds((prev) => prev.map((b) => (b.id === row.id ? { ...b, config: nextConfig } : b)))
 
-    let emailNote = ''
     const token = session.access_token
+    const payNote = await syncWebsiteQuotePaymentNote(row.id, token)
+
+    let emailNote = ''
     if (token) {
       try {
         const res = await fetch('/api/send-website-quote-email', {
@@ -1898,7 +1903,7 @@ export function AdminDashboardPage() {
       emailNote = ' Sign in again to trigger the branded PDF email automatically.'
     }
 
-    setWorkspacePkgQuoteMessage(`Quote saved to the linked package.${emailNote}`)
+    setWorkspacePkgQuoteMessage(`Quote saved to the linked package.${payNote}${emailNote}`)
     setWorkspacePkgQuoteBusy(false)
   }
 

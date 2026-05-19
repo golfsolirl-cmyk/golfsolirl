@@ -130,7 +130,7 @@ export const handlePortalInvoiceSend = async (body, env = process.env, meta = {}
 
   const invoiceRowId = inserted.id
   const origin = getSiteOrigin(env)
-  const successUrl = `${origin}/dashboard?invoice_paid=1`
+  const successUrl = `${origin}/dashboard?invoice_paid=1&checkout_session_id={CHECKOUT_SESSION_ID}`
   const cancelUrl = `${origin}/dashboard?invoice_cancel=1`
 
   const stripe = new Stripe(stripeKey)

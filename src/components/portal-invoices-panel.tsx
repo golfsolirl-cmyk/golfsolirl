@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { buildEnquiryItinerarySection, type ClientEnquiryRowLite } from '../lib/client-data-card'
+import { formatDateTimeDdMmYy } from '../lib/date-format-ie'
 import { LuxuryButton } from './ui/button'
 import { cx } from '../lib/utils'
 
@@ -49,6 +50,8 @@ export function PortalInvoicesPanel(props: {
   readonly userId: string
   readonly accountReferenceLabel: string | null
   readonly refreshTrigger: number
+  /** Scroll target + select this invoice after payment or “View invoice”. */
+  readonly highlightInvoiceId?: string | null
 }) {
   const [rows, setRows] = useState<PortalInvoiceRow[]>([])
   const [loading, setLoading] = useState(true)
@@ -97,6 +100,28 @@ export function PortalInvoicesPanel(props: {
   useEffect(() => {
     void load()
   }, [load, props.refreshTrigger])
+
+  useEffect(() => {
+    if (props.highlightInvoiceId && rows.some((r) => r.id === props.highlightInvoiceId)) {
+      setSelectedId(props.highlightInvoiceId)
+    }
+  }, [props.highlightInvoiceId, rows])
+
+  useEffect(() => {
+    const channel = props.supabase
+      .channel(`portal-invoices-panel-${props.userId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'portal_invoices', filter: `profile_id=eq.${props.userId}` },
+        () => {
+          void load()
+        }
+      )
+      .subscribe()
+    return () => {
+      void props.supabase.removeChannel(channel)
+    }
+  }, [props.supabase, props.userId, load])
 
   useEffect(() => {
     const onVis = () => {
@@ -156,7 +181,10 @@ export function PortalInvoicesPanel(props: {
   }
 
   return (
-    <section className="rounded-[2rem] border border-fairway-200/80 bg-gradient-to-br from-white via-offwhite/40 to-fairway-50/30 p-6 shadow-soft md:p-8">
+    <section
+      className="scroll-mt-28 rounded-[2rem] border border-fairway-200/80 bg-gradient-to-br from-white via-offwhite/40 to-fairway-50/30 p-6 shadow-soft md:p-8"
+      id="client-trip-invoices"
+    >
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-600 sm:text-base">Trip invoices</p>
@@ -183,7 +211,7 @@ export function PortalInvoicesPanel(props: {
           >
             {row.invoice_number}
             <span className="ml-2 font-mono normal-case tracking-normal text-xs opacity-90 sm:text-sm">
-              {row.status === 'paid' ? '· Paid' : '· Due'}
+              {row.status.toLowerCase() === 'paid' ? '· Paid' : '· Due'}
             </span>
           </button>
         ))}
@@ -234,9 +262,9 @@ export function PortalInvoicesPanel(props: {
             </p>
             <p className="mt-4 font-display text-3xl font-bold text-brand-300">{formatEurFromCents(selected.amount_cents)}</p>
             <p className="mt-1 text-sm uppercase tracking-[0.14em] text-white/55">
-              {selected.status === 'paid' ? 'Paid — thank you' : 'Payment due'}
+              {selected.status.toLowerCase() === 'paid' ? 'Paid — thank you' : 'Payment due'}
             </p>
-            {selected.status !== 'paid' && selected.stripe_checkout_url ? (
+            {selected.status.toLowerCase() !== 'paid' && selected.stripe_checkout_url ? (
               <LuxuryButton
                 className="!mt-6 !w-full sm:!w-auto"
                 href={selected.stripe_checkout_url}
@@ -246,10 +274,13 @@ export function PortalInvoicesPanel(props: {
               >
                 Pay now
               </LuxuryButton>
-            ) : selected.status !== 'paid' ? (
+            ) : selected.status.toLowerCase() !== 'paid' ? (
               <p className="mt-4 text-base text-brand-200/90 md:text-lg">Checkout link is not ready — refresh the page or contact Golf Sol.</p>
             ) : (
-              <p className="mt-4 text-base text-emerald-200/90 md:text-lg">This invoice is marked paid. Keep the PDF from your email for records.</p>
+              <p className="mt-4 text-base text-emerald-200/90 md:text-lg">
+                Paid
+                {selected.paid_at ? ` on ${formatDateTimeDdMmYy(selected.paid_at)}` : ''}. Keep the PDF from your email for records.
+              </p>
             )}
             <p className="mt-6 text-xs leading-relaxed text-white/45 sm:text-sm">
               A matching PDF was attached to your email. Card totals are inclusive of the amount we quoted for this trip row.
