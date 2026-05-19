@@ -73,6 +73,7 @@ import {
   WEBSITE_ENQUIRY_FORM
 } from '../lib/enquiry-form-registry'
 import { stripeCheckoutSessionDashboardUrl, stripePaymentDashboardUrl } from '../lib/stripe-dashboard-url'
+import { isEnquiryAdminViewed, rememberEnquiryViewedLocally } from '../lib/admin-enquiry-viewed'
 import { cx } from '../lib/utils'
 import {
   isMissingPortalInterestTicketsError,
@@ -95,6 +96,8 @@ interface EnquiryRow {
   form_payload?: unknown
   /** Set after join with profiles on submitter email — dashboard account number */
   client_portal_account_ref?: string | null
+  /** When an admin opened submission detail (shared across admins). */
+  admin_viewed_at?: string | null
 }
 
 type AdminInterestTicketRow = PortalInterestTicketRow & {
@@ -595,6 +598,8 @@ export function AdminDashboardPage() {
   const [workspaceEmailBusy, setWorkspaceEmailBusy] = useState<'idle' | 'client' | 'hotel'>('idle')
   const [workspaceEmailMessage, setWorkspaceEmailMessage] = useState<string | null>(null)
   const [workspaceCostaMapBookings, setWorkspaceCostaMapBookings] = useState<CostaMapBookingPreviewRow[]>([])
+  /** Bumped on window focus so desk transfer rows refetch after client Stripe payment. */
+  const [workspaceTransferPollTick, setWorkspaceTransferPollTick] = useState(0)
   const [workspaceTransferPayBusyId, setWorkspaceTransferPayBusyId] = useState<string | null>(null)
   const [workspaceTransferPayMsg, setWorkspaceTransferPayMsg] = useState<string | null>(null)
   const [workspaceTransferReminderBusy, setWorkspaceTransferReminderBusy] = useState(false)
@@ -831,23 +836,59 @@ export function AdminDashboardPage() {
     }
   }, [session?.user?.id, profile?.id, profile?.role])
 
-  const filteredEnquiries = useMemo(() => {
-    const q = enquirySearchQuery.trim().toLowerCase()
-    if (!q) {
-      return enquiries
-    }
+  const filterEnquiriesByQuery = useCallback(
+    (list: EnquiryRow[]) => {
+      const q = enquirySearchQuery.trim().toLowerCase()
+      if (!q) {
+        return list
+      }
+      return list.filter((row) => {
+        const hay =
+          `${row.reference_id} ${row.full_name} ${row.email} ${row.interest ?? ''} ${row.phone_whatsapp ?? ''} ${row.client_portal_account_ref ?? ''}`.toLowerCase()
+        return hay.includes(q)
+      })
+    },
+    [enquirySearchQuery]
+  )
 
-    return enquiries.filter((row) => {
-      const hay =
-        `${row.reference_id} ${row.full_name} ${row.email} ${row.interest ?? ''} ${row.phone_whatsapp ?? ''} ${row.client_portal_account_ref ?? ''}`.toLowerCase()
-      return hay.includes(q)
-    })
-  }, [enquiries, enquirySearchQuery])
+  const unviewedEnquiries = useMemo(
+    () => filterEnquiriesByQuery(enquiries.filter((row) => !isEnquiryAdminViewed(row))),
+    [enquiries, filterEnquiriesByQuery]
+  )
+
+  const viewedEnquiries = useMemo(
+    () => filterEnquiriesByQuery(enquiries.filter((row) => isEnquiryAdminViewed(row))),
+    [enquiries, filterEnquiriesByQuery]
+  )
+
+  const markEnquiryViewed = useCallback(async (row: EnquiryRow) => {
+    if (isEnquiryAdminViewed(row)) {
+      return
+    }
+    const viewedAt = new Date().toISOString()
+    rememberEnquiryViewedLocally(row.reference_id)
+    setEnquiries((prev) => prev.map((e) => (e.id === row.id ? { ...e, admin_viewed_at: viewedAt } : e)))
+    const supabase = getSupabaseBrowserClient()
+    if (!supabase) {
+      return
+    }
+    const { error } = await supabase.from('enquiries').update({ admin_viewed_at: viewedAt }).eq('id', row.id)
+    if (error?.message?.includes('admin_viewed_at')) {
+      return
+    }
+  }, [])
 
   const selectedEnquiryDetail = useMemo(
     () => enquiries.find((row) => row.reference_id === selectedEnquiryDetailRef) ?? null,
     [enquiries, selectedEnquiryDetailRef]
   )
+
+  useEffect(() => {
+    if (!selectedEnquiryDetail) {
+      return
+    }
+    void markEnquiryViewed(selectedEnquiryDetail)
+  }, [selectedEnquiryDetail, markEnquiryViewed])
 
   /** Website-form package rows mirror signed-in submissions; pricing is edited on that build, not on the enquiry card. */
   const websiteFormPackageBuildForSelectedEnquiry = useMemo(() => {
@@ -1041,7 +1082,21 @@ export function AdminDashboardPage() {
     return () => {
       cancelled = true
     }
-  }, [workspaceEnquiryRef, activeWorkspaceEnquiry?.email, session?.user?.id])
+  }, [workspaceEnquiryRef, activeWorkspaceEnquiry?.email, session?.user?.id, workspaceTransferPollTick])
+
+  useEffect(() => {
+    const bump = () => {
+      if (document.visibilityState === 'visible') {
+        setWorkspaceTransferPollTick((n) => n + 1)
+      }
+    }
+    window.addEventListener('focus', bump)
+    document.addEventListener('visibilitychange', bump)
+    return () => {
+      window.removeEventListener('focus', bump)
+      document.removeEventListener('visibilitychange', bump)
+    }
+  }, [])
 
   useEffect(() => {
     setWorkspaceTransferPayMsg(null)
@@ -3535,6 +3590,83 @@ export function AdminDashboardPage() {
   const adminHeroTitle = `Hello, ${adminGreetingFirst}`
   const [activeAdminSection, setActiveAdminSection] = useState<AdminPortalSectionId>('desk')
 
+  const renderEnquirySubmissionsTable = (rows: EnquiryRow[]) => (
+    <div className="mt-6 overflow-x-auto rounded-[2rem] border border-forest-100 bg-white shadow-soft">
+      <table className="min-w-full text-left text-sm">
+        <thead>
+          <tr className="bg-forest-950 text-xs font-semibold uppercase tracking-[0.12em] text-white">
+            <th className="whitespace-nowrap px-4 py-4 md:px-6">Ref</th>
+            <th className="whitespace-nowrap px-4 py-4 md:px-6">Name</th>
+            <th className="whitespace-nowrap px-4 py-4 md:px-6">Email</th>
+            <th className="hidden whitespace-nowrap px-4 py-4 font-mono normal-case tracking-normal md:table-cell md:px-6">
+              Portal account
+            </th>
+            <th className="hidden px-4 py-4 md:table-cell md:px-6 lg:table-cell">Interest</th>
+            <th className="whitespace-nowrap px-4 py-4 md:px-6">When</th>
+            <th className="whitespace-nowrap px-4 py-4 text-right md:px-6">Remove</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-forest-100">
+          {rows.map((row, index) => (
+            <tr className={cx('text-forest-900', index % 2 === 1 ? 'bg-offwhite/90' : 'bg-white')} key={row.id}>
+              <td className="whitespace-nowrap px-4 py-4 font-mono text-xs md:px-6">
+                <button
+                  aria-label={`Fill account lookup with ${row.reference_id} and show submission detail`}
+                  className={cx(
+                    'rounded-full px-3 py-1.5 font-mono text-xs font-semibold underline-offset-2 transition-colors hover:underline',
+                    isEnquiryAdminViewed(row)
+                      ? 'bg-forest-100 text-forest-800 hover:bg-forest-200'
+                      : 'bg-brand-50 text-brand-800 hover:bg-brand-100'
+                  )}
+                  onClick={() => {
+                    const willOpen = selectedEnquiryDetailRef !== row.reference_id
+                    setSelectedEnquiryDetailRef(willOpen ? row.reference_id : null)
+                    setAccountLookupSeedFromTable({ ref: row.reference_id, key: Date.now() })
+                    if (willOpen) {
+                      void markEnquiryViewed(row)
+                    }
+                  }}
+                  type="button"
+                >
+                  {row.reference_id}
+                </button>
+              </td>
+              <td className="whitespace-nowrap px-4 py-4 font-medium md:px-6">{row.full_name}</td>
+              <td className="px-4 py-4 md:px-6">
+                <a
+                  className="font-medium text-brand-600 underline-offset-2 transition-colors hover:text-brand-700 hover:underline"
+                  href={`mailto:${row.email}`}
+                >
+                  {row.email}
+                </a>
+              </td>
+              <td className="hidden px-4 py-4 font-mono text-xs text-forest-800 md:table-cell md:px-6">
+                {row.client_portal_account_ref?.trim() ? row.client_portal_account_ref.trim() : '—'}
+              </td>
+              <td className="hidden max-w-xs truncate px-4 py-4 text-forest-600 md:table-cell md:px-6 lg:table-cell">
+                {row.interest ?? '—'}
+              </td>
+              <td className="whitespace-nowrap px-4 py-4 text-xs text-forest-500 md:px-6">
+                {formatAdminDateTime(row.created_at)}
+              </td>
+              <td className="whitespace-nowrap px-4 py-4 text-right md:px-6">
+                <button
+                  aria-label={`Remove enquiry ${row.reference_id}`}
+                  className="inline-flex min-h-11 items-center justify-center rounded-full border border-red-200 bg-white px-4 py-2 text-xs font-semibold text-red-800 transition-colors hover:bg-red-50 disabled:opacity-50"
+                  disabled={enquiryDeletingId !== null || enquiryDeletingAll}
+                  onClick={() => void handleRemoveEnquiry(row)}
+                  type="button"
+                >
+                  {enquiryDeletingId === row.id ? 'Removing…' : 'Remove'}
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+
   if (isLoading || !session) {
     return <DashboardLoadingShell label="Loading admin dashboard…" />
   }
@@ -3579,6 +3711,14 @@ export function AdminDashboardPage() {
       ) : null}
 
       <AdminPortalShell activeSection={activeAdminSection} onSectionChange={setActiveAdminSection}>
+        {accountLookupSeedFromTable && activeAdminSection !== 'transfers' ? (
+          <div aria-hidden className="pointer-events-none fixed h-0 w-0 overflow-hidden opacity-0">
+            <AdminAccountTransfersHub
+              accountLookupSeed={accountLookupSeedFromTable}
+              onAccountLookupSeedApplied={() => setAccountLookupSeedFromTable(null)}
+            />
+          </div>
+        ) : null}
         <AdminOperationsHubHero adminFirstName={adminGreetingFirst} />
 
         <AdminPortalSection activeSection={activeAdminSection} section="desk">
@@ -3937,9 +4077,10 @@ export function AdminDashboardPage() {
               className="scroll-mt-28"
               description={
                 <>
-                  Filter by ref, name, email, or interest — click a{' '}
-                  <span className="font-medium text-forest-800">Ref</span> to fill{' '}
-                  <span className="font-medium text-forest-800">Account lookup</span> and load activity, or paste the ref manually above.
+                  <strong className="font-medium text-forest-900">New</strong> submissions stay here until you open one (click{' '}
+                  <span className="font-medium text-forest-800">Ref</span>). That loads{' '}
+                  <span className="font-medium text-forest-800">Account lookup → Customer activity</span> (open the Transfers tab to see
+                  results) and moves the row to <span className="font-medium text-forest-800">Already viewed</span> below.
                 </>
               }
               headerAside={
@@ -3967,7 +4108,7 @@ export function AdminDashboardPage() {
               }
               id="admin-hub-forms"
               kicker="Step 1 · Website forms"
-              title="Recent form submissions"
+              title={`Recent form submissions${unviewedEnquiries.length > 0 ? ` (${unviewedEnquiries.length} new)` : ''}`}
             >
               {enquiriesSectionVisible && enquiries.length > 0 ? (
                 <div className="rounded-2xl border border-forest-200/80 bg-fairway-50/40 px-4 py-4 sm:px-5">
@@ -4019,81 +4160,14 @@ export function AdminDashboardPage() {
               <div className="mt-6 rounded-[2rem] border border-dashed border-forest-200 bg-offwhite px-6 py-10 text-center text-sm text-forest-900 md:px-10">
                 No enquiries yet — submit the get-in-touch form locally to test the pipeline.
               </div>
-            ) : filteredEnquiries.length === 0 ? (
+            ) : unviewedEnquiries.length === 0 ? (
               <div className="mt-6 rounded-[2rem] border border-dashed border-forest-200 bg-offwhite px-6 py-10 text-center text-sm text-forest-900 md:px-10">
-                No enquiries match “{enquirySearchQuery.trim()}”.
+                {enquirySearchQuery.trim()
+                  ? `No new submissions match “${enquirySearchQuery.trim()}”.`
+                  : 'All caught up — no new form submissions. Previously viewed rows are listed below.'}
               </div>
             ) : (
-              <div className="mt-6 overflow-x-auto rounded-[2rem] border border-forest-100 bg-white shadow-soft">
-                <table className="min-w-full text-left text-sm">
-                  <thead>
-                    <tr className="bg-forest-950 text-xs font-semibold uppercase tracking-[0.12em] text-white">
-                      <th className="whitespace-nowrap px-4 py-4 md:px-6">Ref</th>
-                      <th className="whitespace-nowrap px-4 py-4 md:px-6">Name</th>
-                      <th className="whitespace-nowrap px-4 py-4 md:px-6">Email</th>
-                      <th className="hidden whitespace-nowrap px-4 py-4 font-mono normal-case tracking-normal md:table-cell md:px-6">
-                        Portal account
-                      </th>
-                      <th className="hidden px-4 py-4 md:table-cell md:px-6 lg:table-cell">Interest</th>
-                      <th className="whitespace-nowrap px-4 py-4 md:px-6">When</th>
-                      <th className="whitespace-nowrap px-4 py-4 text-right md:px-6">Remove</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-forest-100">
-                    {filteredEnquiries.map((row, index) => (
-                      <tr
-                        className={cx('text-forest-900', index % 2 === 1 ? 'bg-offwhite/90' : 'bg-white')}
-                        key={row.id}
-                      >
-                        <td className="whitespace-nowrap px-4 py-4 font-mono text-xs md:px-6">
-                          <button
-                            className="rounded-full bg-brand-50 px-3 py-1.5 font-mono text-xs font-semibold text-brand-800 underline-offset-2 transition-colors hover:bg-brand-100 hover:underline"
-                            aria-label={`Fill account lookup with ${row.reference_id} and show submission detail`}
-                            onClick={() => {
-                              setSelectedEnquiryDetailRef((current) =>
-                                current === row.reference_id ? null : row.reference_id
-                              )
-                              setAccountLookupSeedFromTable({ ref: row.reference_id, key: Date.now() })
-                            }}
-                            type="button"
-                          >
-                            {row.reference_id}
-                          </button>
-                        </td>
-                        <td className="whitespace-nowrap px-4 py-4 font-medium md:px-6">{row.full_name}</td>
-                        <td className="px-4 py-4 md:px-6">
-                          <a
-                            className="font-medium text-brand-600 underline-offset-2 transition-colors hover:text-brand-700 hover:underline"
-                            href={`mailto:${row.email}`}
-                          >
-                            {row.email}
-                          </a>
-                        </td>
-                        <td className="hidden px-4 py-4 font-mono text-xs text-forest-800 md:table-cell md:px-6">
-                          {row.client_portal_account_ref?.trim() ? row.client_portal_account_ref.trim() : '—'}
-                        </td>
-                        <td className="hidden max-w-xs truncate px-4 py-4 text-forest-600 md:table-cell md:px-6 lg:table-cell">
-                          {row.interest ?? '—'}
-                        </td>
-                        <td className="whitespace-nowrap px-4 py-4 text-xs text-forest-500 md:px-6">
-                          {formatAdminDateTime(row.created_at)}
-                        </td>
-                        <td className="whitespace-nowrap px-4 py-4 text-right md:px-6">
-                          <button
-                            aria-label={`Remove enquiry ${row.reference_id}`}
-                            className="inline-flex min-h-11 items-center justify-center rounded-full border border-red-200 bg-white px-4 py-2 text-xs font-semibold text-red-800 transition-colors hover:bg-red-50 disabled:opacity-50"
-                            disabled={enquiryDeletingId !== null || enquiryDeletingAll}
-                            onClick={() => void handleRemoveEnquiry(row)}
-                            type="button"
-                          >
-                            {enquiryDeletingId === row.id ? 'Removing…' : 'Remove'}
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              renderEnquirySubmissionsTable(unviewedEnquiries)
             )}
 
             {selectedEnquiryDetail ? (
@@ -4239,6 +4313,25 @@ export function AdminDashboardPage() {
               </div>
             ) : null}
             </AdminOperationsSectionShell>
+
+            {enquiriesSectionVisible && enquiries.some((row) => isEnquiryAdminViewed(row)) ? (
+              <AdminOperationsSectionShell
+                bodyClassName="space-y-6 sm:py-8"
+                className="scroll-mt-28"
+                description="Submissions you have already opened. Click Ref again to reload account lookup or reopen detail above."
+                id="admin-hub-forms-viewed"
+                kicker="Step 1 · Website forms"
+                title={`Already viewed${viewedEnquiries.length > 0 ? ` (${viewedEnquiries.length})` : ''}`}
+              >
+                {viewedEnquiries.length === 0 ? (
+                  <div className="rounded-[2rem] border border-dashed border-forest-200 bg-offwhite px-6 py-8 text-center text-sm text-forest-900">
+                    No viewed submissions match your filter.
+                  </div>
+                ) : (
+                  renderEnquirySubmissionsTable(viewedEnquiries)
+                )}
+              </AdminOperationsSectionShell>
+            ) : null}
 
           </>
         )}

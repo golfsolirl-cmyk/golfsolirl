@@ -200,10 +200,29 @@ export function AdminAccountTransfersHub(props: {
     return items.sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime())
   }, [rows, enquiryRows, packageRows, ticketRows])
 
+  const inputRefValue = useRef(inputRef)
+  inputRefValue.current = inputRef
+
+  const withQueryTimeout = async <T,>(label: string, promise: PromiseLike<T>, ms = 28_000): Promise<T> => {
+    let timer: ReturnType<typeof setTimeout> | undefined
+    try {
+      return await Promise.race([
+        Promise.resolve(promise),
+        new Promise<T>((_, reject) => {
+          timer = setTimeout(() => reject(new Error(`${label} timed out — try again or check Supabase.`)), ms)
+        })
+      ])
+    } finally {
+      if (timer) {
+        clearTimeout(timer)
+      }
+    }
+  }
+
   const loadByAccountRef = useCallback(async (overrideRaw?: string) => {
     setStatusMsg(null)
     setError(null)
-    const raw = (overrideRaw ?? inputRef).trim()
+    const raw = (overrideRaw ?? inputRefValue.current).trim()
     if (!raw || !supabase || !session?.access_token) {
       setError(!raw ? 'Paste an account or enquiry reference (e.g. GSI-…).' : 'Sign in again as admin.')
       return
@@ -216,11 +235,14 @@ export function AdminAccountTransfersHub(props: {
     try {
       const refIds = new Set<string>([raw])
 
-      const prof = await supabase
-        .from('profiles')
-        .select('id, email, full_name, account_reference_id')
-        .ilike('account_reference_id', raw)
-        .maybeSingle()
+      const prof = await withQueryTimeout(
+        'Profile lookup',
+        supabase
+          .from('profiles')
+          .select('id, email, full_name, account_reference_id')
+          .ilike('account_reference_id', raw)
+          .maybeSingle()
+      )
 
       let uid: string | null = null
       let email: string | null = null
@@ -233,7 +255,10 @@ export function AdminAccountTransfersHub(props: {
         label = `${(p.full_name ?? '').trim() || 'Client'} · ${email ?? p.id}`
       }
 
-      const enqOne = await supabase.from('enquiries').select('email, reference_id, full_name').eq('reference_id', raw).maybeSingle()
+      const enqOne = await withQueryTimeout(
+        'Enquiry lookup',
+        supabase.from('enquiries').select('email, reference_id, full_name').eq('reference_id', raw).maybeSingle()
+      )
       if (!enqOne.error && enqOne.data) {
         const e = enqOne.data as { email: string; reference_id: string; full_name: string | null }
         const em = (e.email ?? '').trim().toLowerCase()
@@ -249,7 +274,10 @@ export function AdminAccountTransfersHub(props: {
       }
 
       if (email && !uid) {
-        const pr2 = await supabase.from('profiles').select('id, email, full_name').ilike('email', email).maybeSingle()
+        const pr2 = await withQueryTimeout(
+          'Profile by email',
+          supabase.from('profiles').select('id, email, full_name').ilike('email', email).maybeSingle()
+        )
         if (!pr2.error && pr2.data) {
           uid = (pr2.data as { id: string }).id
           const fn = (pr2.data as { full_name?: string | null }).full_name
@@ -258,7 +286,10 @@ export function AdminAccountTransfersHub(props: {
       }
 
       if (email) {
-        const enqAll = await supabase.from('enquiries').select('reference_id').ilike('email', email)
+        const enqAll = await withQueryTimeout(
+          'Enquiries by email',
+          supabase.from('enquiries').select('reference_id').ilike('email', email)
+        )
         if (!enqAll.error && enqAll.data) {
           for (const r of enqAll.data as { reference_id: string }[]) {
             if (r.reference_id?.trim()) {
@@ -318,7 +349,7 @@ export function AdminAccountTransfersHub(props: {
             .limit(40)
         : Promise.resolve({ data: [], error: null as null })
 
-      const [tb, enqRes, pkgRes, tktRes] = await Promise.all([
+      const transferSelect = () =>
         supabase
           .from('transfer_bookings')
           .select(
@@ -326,11 +357,12 @@ export function AdminAccountTransfersHub(props: {
           )
           .or(orParts.join(','))
           .order('created_at', { ascending: false })
-          .limit(120),
-        enquirySelect,
-        packageSelect,
-        ticketSelect
-      ])
+          .limit(120)
+
+      const [tb, enqRes, pkgRes, tktRes] = await withQueryTimeout(
+        'Customer activity',
+        Promise.all([transferSelect(), enquirySelect, packageSelect, ticketSelect])
+      )
 
       if (tb.error) {
         setRows([])
@@ -391,10 +423,17 @@ export function AdminAccountTransfersHub(props: {
       }
       setPriceDraft(nextDraft)
       setVatDraft(nextVat)
+    } catch (e) {
+      setRows([])
+      setEnquiryRows([])
+      setPackageRows([])
+      setTicketRows([])
+      setLookupSession(null)
+      setError(e instanceof Error ? e.message : 'Lookup failed.')
     } finally {
       setLoading(false)
     }
-  }, [inputRef, isAdmin, session?.access_token, supabase])
+  }, [isAdmin, session?.access_token, supabase])
 
   const onSeedAppliedRef = useRef(props.onAccountLookupSeedApplied)
   onSeedAppliedRef.current = props.onAccountLookupSeedApplied

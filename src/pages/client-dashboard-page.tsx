@@ -616,29 +616,78 @@ export function ClientDashboardPage() {
       const transferPaidFlag = sp0.get('transfer_paid') === '1'
       const checkoutSessionId = sp0.get('checkout_session_id')?.trim()
 
-      if (
-        transferPaidFlag &&
-        checkoutSessionId &&
-        session?.access_token &&
-        transferCheckoutSyncAttempted.current !== checkoutSessionId
-      ) {
+      if (transferPaidFlag && checkoutSessionId && transferCheckoutSyncAttempted.current !== checkoutSessionId) {
+        let accessToken = session?.access_token ?? ''
+        if (!accessToken) {
+          const supabaseAuth = getSupabaseBrowserClient()
+          const sess = await supabaseAuth?.auth.getSession()
+          accessToken = sess?.data.session?.access_token ?? ''
+        }
+        if (accessToken) {
         transferCheckoutSyncAttempted.current = checkoutSessionId
-        try {
-          const res = await fetch('/api/transfer-checkout-sync', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${session.access_token}`
-            },
-            body: JSON.stringify({ checkoutSessionId })
-          })
-          if (!cancelled && res.ok) {
-            await loadData()
-          } else if (!res.ok) {
-            transferCheckoutSyncAttempted.current = null
+        let syncOk = false
+        let syncMessage: string | null = null
+
+        for (let attempt = 0; attempt < 6 && !cancelled; attempt++) {
+          if (attempt > 0) {
+            await new Promise((r) => window.setTimeout(r, 700 + attempt * 500))
           }
-        } catch {
+          try {
+            const res = await fetch('/api/transfer-checkout-sync', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`
+              },
+              body: JSON.stringify({ checkoutSessionId })
+            })
+            const data = (await res.json().catch(() => ({}))) as {
+              ok?: boolean
+              updated?: boolean
+              message?: string
+              bookingId?: string
+            }
+            if (!res.ok) {
+              syncMessage = data.message ?? res.statusText
+              if (res.status === 401) {
+                transferCheckoutSyncAttempted.current = null
+                break
+              }
+              continue
+            }
+            if (data.ok === false) {
+              syncMessage = data.message ?? 'Payment is still processing with Stripe.'
+              continue
+            }
+            await loadData()
+            syncOk = Boolean(data.updated)
+            const bidCheck =
+              sp0.get('transfer_booking_id')?.trim() || (typeof data.bookingId === 'string' ? data.bookingId.trim() : '')
+            if (!syncOk && bidCheck) {
+              const sbCheck = getSupabaseBrowserClient()
+              const { data: tbRow } = await (sbCheck
+                ?.from('transfer_bookings')
+                .select('payment_status')
+                .eq('id', bidCheck)
+                .maybeSingle() ?? Promise.resolve({ data: null }))
+              const st = String(tbRow?.payment_status ?? 'unpaid').toLowerCase()
+              syncOk = st === 'deposit' || st === 'paid'
+            }
+            if (syncOk) {
+              syncMessage = null
+              break
+            }
+            syncMessage =
+              'Payment received — syncing your dashboard. If the badge still says Awaiting payment, refresh in a few seconds.'
+          } catch {
+            syncMessage = 'Could not confirm payment with the server. Refresh the page or contact Golf Sol Ireland.'
+          }
+        }
+
+        if (!cancelled && syncMessage && !syncOk) {
+          setInvoiceUrlBanner(syncMessage)
           transferCheckoutSyncAttempted.current = null
+        }
         }
       }
 

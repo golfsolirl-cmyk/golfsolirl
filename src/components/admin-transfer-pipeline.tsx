@@ -144,6 +144,20 @@ export function AdminTransferPipeline() {
   }, [refresh])
 
   useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') {
+        void refresh()
+      }
+    }
+    window.addEventListener('focus', onVisible)
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      window.removeEventListener('focus', onVisible)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+  }, [refresh])
+
+  useEffect(() => {
     const martin = drivers.find(isMartinKellyDriverRow)
     if (!martin) {
       return

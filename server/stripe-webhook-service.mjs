@@ -8,6 +8,7 @@ import {
   isTransferFullUpfront,
   normalizedDepositPercent
 } from './transfer-payment-amounts.mjs'
+import { notifyClientPortalTransferPayment } from './portal-transfer-payment-notify.mjs'
 import { publishTransferPortalPaymentReceipt } from './transfer-portal-publish-payment-pdf.mjs'
 
 
@@ -168,6 +169,7 @@ export const markTransferBookingPaid = async (supabase, bookingId, session, paym
     } catch (e) {
       console.error('[stripe-webhook] portal deposit receipt pdf', e)
     }
+    await notifyClientPortalTransferPayment(supabase, bookingId)
     return true
   }
 
@@ -235,6 +237,7 @@ export const markTransferBookingPaid = async (supabase, bookingId, session, paym
     console.error('[stripe-webhook] portal payment confirmation pdf', e)
   }
 
+  await notifyClientPortalTransferPayment(supabase, bookingId)
   return true
 }
 
