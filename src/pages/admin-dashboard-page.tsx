@@ -2,6 +2,7 @@ import { UserRound } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { PortalInterestCategoryGlyph } from '../components/portal-interest-category-glyph'
 import { AdminOperationsHubHero } from '../components/admin-operations-hub-hero'
+import { AdminPortalShell, AdminPortalSection, type AdminPortalSectionId } from '../components/admin-portal-shell'
 import { AdminOperationsSectionShell } from '../components/admin-operations-section-shell'
 import {
   AdminAccountTransfersHub,
@@ -3531,6 +3532,7 @@ export function AdminDashboardPage() {
   /** Operations hero uses a fixed desk identity (not the Supabase profile row). */
   const adminGreetingFirst = 'Greg'
   const adminHeroTitle = `Hello, ${adminGreetingFirst}`
+  const [activeAdminSection, setActiveAdminSection] = useState<AdminPortalSectionId>('desk')
 
   if (isLoading || !session) {
     return <DashboardLoadingShell label="Loading admin dashboard…" />
@@ -3565,7 +3567,7 @@ export function AdminDashboardPage() {
   return (
     <DashboardLayout
       kicker="Operations"
-      subtitle="Forms, packages, payments, and drivers — one desk. Use the green jump buttons below if you are not sure where to look."
+      subtitle="Forms, packages, payments, and drivers — one desk. Use the left menu to open each area."
       title={adminHeroTitle}
       variant="admin"
     >
@@ -3575,9 +3577,10 @@ export function AdminDashboardPage() {
         </div>
       ) : null}
 
-      <AdminOperationsHubHero adminFirstName={adminGreetingFirst} />
+      <AdminPortalShell activeSection={activeAdminSection} onSectionChange={setActiveAdminSection}>
+        <AdminOperationsHubHero adminFirstName={adminGreetingFirst} />
 
-      <div className="mb-10 md:mb-12 scroll-mt-28 space-y-6 md:space-y-8">
+        <AdminPortalSection activeSection={activeAdminSection} section="desk">
         <AdminOperationsSectionShell
           bodyClassName="space-y-8 sm:space-y-10 sm:py-8"
           hideHeader
@@ -3591,9 +3594,7 @@ export function AdminDashboardPage() {
                 Stripe &amp; receipts
               </span>
               <p className="min-w-0 flex-1 text-sm leading-relaxed text-forest-700">
-                Same receipts and card totals guests see after checkout. Need a dashboard link in a hurry? Use the hero{' '}
-                <strong className="font-semibold text-forest-900">Jump to</strong> row and tap{' '}
-                <strong className="font-semibold text-forest-900">Desk &amp; inbox</strong> (this block).
+                Same receipts and card totals guests see after checkout. Open <strong className="font-semibold text-forest-900">Desk &amp; inbox</strong> in the left menu when you need this block.
               </p>
             </div>
           </div>
@@ -3901,12 +3902,22 @@ export function AdminDashboardPage() {
             </form>
           </section>
         </AdminOperationsSectionShell>
+        </AdminPortalSection>
 
+        <AdminPortalSection activeSection={activeAdminSection} section="transfers">
         <AdminAccountTransfersHub
           accountLookupSeed={accountLookupSeedFromTable}
           onAccountLookupSeedApplied={() => setAccountLookupSeedFromTable(null)}
         />
 
+        {listLoading ? null : (
+            <div className="scroll-mt-28" id="admin-transfer-pipeline">
+              <AdminTransferPipeline />
+            </div>
+        )}
+        </AdminPortalSection>
+
+        <AdminPortalSection activeSection={activeAdminSection} section="forms">
         {listLoading ? (
           <AdminOperationsSectionShell
             className="scroll-mt-28"
@@ -4227,11 +4238,12 @@ export function AdminDashboardPage() {
             ) : null}
             </AdminOperationsSectionShell>
 
-            <div className="scroll-mt-28" id="admin-transfer-pipeline">
-              <AdminTransferPipeline />
-            </div>
+          </>
+        )}
+        </AdminPortalSection>
 
-          <div className="space-y-14 md:space-y-16">
+        <div className="space-y-14 md:space-y-16">
+        <AdminPortalSection activeSection={activeAdminSection} section="proposals">
           {SHOW_ADMIN_WORKSPACE_UI ? (
             <>
           <section className="mb-8 rounded-[2rem] border border-fairway-300/70 bg-gradient-to-br from-fairway-50/95 to-white px-6 py-5 shadow-sm md:mb-10 md:px-8">
@@ -6560,7 +6572,9 @@ export function AdminDashboardPage() {
           </section>
             </>
           ) : null}
+        </AdminPortalSection>
 
+        <AdminPortalSection activeSection={activeAdminSection} section="emails">
           <section>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">CRM — client PDFs</p>
             <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Terms and thank-you documents</h2>
@@ -6610,7 +6624,9 @@ export function AdminDashboardPage() {
               ) : null}
             </div>
           </section>
+        </AdminPortalSection>
 
+        <AdminPortalSection activeSection={activeAdminSection} section="portal">
           <section>
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Manual clients</p>
             <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Add or remove portal logins</h2>
@@ -6843,7 +6859,9 @@ export function AdminDashboardPage() {
               ) : null}
             </div>
           </section>
+        </AdminPortalSection>
 
+        <AdminPortalSection activeSection={activeAdminSection} section="drivers">
           <section className="mb-14 md:mb-16">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Driver calendar</p>
             <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Booked days &amp; printable runs</h2>
@@ -6857,7 +6875,9 @@ export function AdminDashboardPage() {
               <AdminDriverCalendarPanel />
             </div>
           </section>
+        </AdminPortalSection>
 
+        <AdminPortalSection activeSection={activeAdminSection} section="emails">
           <section className="mb-14 md:mb-16">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Studio → client email</p>
             <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Branded send + PDFs</h2>
@@ -6950,7 +6970,9 @@ export function AdminDashboardPage() {
               ) : null}
             </form>
           </section>
+        </AdminPortalSection>
 
+        <AdminPortalSection activeSection={activeAdminSection} section="packages">
           <section className="scroll-mt-28" id="admin-hub-packages">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Client package builds</p>
             <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">All saved &amp; published packages</h2>
@@ -7085,7 +7107,9 @@ export function AdminDashboardPage() {
               </div>
             )}
           </section>
+        </AdminPortalSection>
 
+        <AdminPortalSection activeSection={activeAdminSection} section="proposals">
           <section>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Proposals</p>
             <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">CRM records</h2>
@@ -7131,11 +7155,8 @@ export function AdminDashboardPage() {
               </ul>
             )}
           </section>
+        </AdminPortalSection>
         </div>
-        </>
-      )}
-
-      </div>
 
       {detailRow ? (
         <div className="fixed inset-0 z-[90] flex items-end justify-center p-4 sm:items-center sm:p-6">
@@ -7466,6 +7487,7 @@ export function AdminDashboardPage() {
         </div>
       ) : null}
 
+      <AdminPortalSection activeSection={activeAdminSection} section="portal">
       <div className="mt-20 space-y-12 border-t border-forest-200 pt-14">
         <section
           aria-label="Clear client portal and copy signed login links"
@@ -7662,6 +7684,8 @@ export function AdminDashboardPage() {
           </div>
         </section>
       </div>
+      </AdminPortalSection>
+      </AdminPortalShell>
     </DashboardLayout>
   )
 }

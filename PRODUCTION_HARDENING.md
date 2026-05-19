@@ -45,7 +45,7 @@ Otherwise shorten to `max-age=…; includeSubDomains` without `preload`.
 | `SUPABASE_SERVICE_ROLE_KEY` | Yes | **Never** |
 | `RESEND_API_KEY` | Yes | **Never** |
 | `STRIPE_SECRET_KEY`, webhook secret | Yes | **Never** |
-| `CRON_SECRET`, `ADMIN_OPERATOR_PASSCODE` | Yes | **Never** |
+| `CRON_SECRET`, `ADMIN_OPERATOR_PASSCODE` | Yes | **Never** — quote in `.env`/Vercel if the value contains `#` or `$`; restart dev after local changes |
 | `VITE_SUPABASE_ANON_KEY` | Build env | Yes (public anon key) |
 
 ---

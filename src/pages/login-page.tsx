@@ -408,8 +408,11 @@ export function LoginPage() {
                   />
                   <p className="mt-2 font-ge text-xs leading-relaxed text-ge-gray600">
                     Set <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.65rem]">ADMIN_OPERATOR_PASSCODE</code> in
-                    Vercel env to require this before a magic link is sent from this page. Same email as the client portal is fine;
-                    access still depends on <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.65rem]">profiles.role</code>.
+                    server env (quoted in <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.65rem]">.env</code> or Vercel
+                    if it contains <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.65rem]">#</code> or{' '}
+                    <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.65rem]">$</code>) — then restart dev. Must match
+                    exactly. Same email as the client portal is fine; access still depends on{' '}
+                    <code className="rounded bg-ge-gray50 px-1 font-mono text-[0.65rem]">profiles.role</code>.
                   </p>
                 </div>
               ) : null}
