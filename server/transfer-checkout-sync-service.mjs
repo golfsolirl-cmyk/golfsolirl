@@ -110,7 +110,7 @@ export const handleTransferCheckoutSync = async (body, env = process.env, meta =
             : session.payment_intent && typeof session.payment_intent === 'object'
               ? session.payment_intent.id
               : null
-        updated = await markPortalInvoicePaid(admin, String(invoice.id), paymentIntent, new Date().toISOString())
+        updated = await markPortalInvoicePaid(admin, String(invoice.id), paymentIntent, new Date().toISOString(), session)
       }
 
       return { ok: true, updated, invoiceId: invoice.id, kind: 'portal_invoice' }

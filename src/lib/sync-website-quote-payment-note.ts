@@ -32,6 +32,9 @@ export const syncWebsiteQuotePaymentNote = async (
     if (data.reason === 'already_paid') {
       return ' Transfer is already marked paid — no new payment buttons.'
     }
+    if (data.reason === 'deposit_on_file' || data.reason === 'payment_locked') {
+      return ` ${data.message ?? 'Transfer already has payment activity — existing payment buttons were left unchanged.'}`
+    }
     if (data.reason === 'no_stripe') {
       return ' STRIPE_SECRET_KEY is missing — quote saved but no Stripe checkout link.'
     }

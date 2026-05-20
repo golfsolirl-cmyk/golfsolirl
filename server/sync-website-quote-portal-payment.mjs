@@ -76,7 +76,7 @@ const upsertPortalInvoiceCheckout = async (admin, env, ctx) => {
     .select('id, status, invoice_number')
     .eq('enquiry_id', ctx.enquiryId)
     .eq('profile_id', ctx.profileId)
-    .neq('status', 'paid')
+    .eq('status', 'sent')
     .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle()
@@ -169,6 +169,88 @@ const upsertPortalInvoiceCheckout = async (admin, env, ctx) => {
 }
 
 /**
+ * If quote sync switches a package from the invoice rail to the transfer-payment rail,
+ * hide the old invoice checkout so the client cannot see two ways to pay the same trip.
+ *
+ * @param {import('@supabase/supabase-js').SupabaseClient} admin
+ * @param {import('node:process').ProcessEnv} env
+ * @param {{ profileId: string, enquiryRef: string }} ctx
+ */
+const cancelStalePortalInvoicesForTransfer = async (admin, env, ctx) => {
+  if (!ctx.profileId || !ctx.enquiryRef) {
+    return { cancelled: 0 }
+  }
+
+  const { data: enquiry, error: enqErr } = await admin
+    .from('enquiries')
+    .select('id')
+    .eq('reference_id', ctx.enquiryRef)
+    .maybeSingle()
+
+  if (enqErr || !enquiry?.id) {
+    if (enqErr) {
+      console.warn('[sync-website-quote-payment] stale invoice enquiry lookup', enqErr.message)
+    }
+    return { cancelled: 0 }
+  }
+
+  const { data: invoices, error: invErr } = await admin
+    .from('portal_invoices')
+    .select('id, stripe_checkout_session_id')
+    .eq('profile_id', ctx.profileId)
+    .eq('enquiry_id', enquiry.id)
+    .eq('status', 'sent')
+
+  if (invErr) {
+    console.warn('[sync-website-quote-payment] stale invoice lookup', invErr.message)
+    return { cancelled: 0 }
+  }
+
+  const rows = invoices ?? []
+  if (rows.length === 0) {
+    return { cancelled: 0 }
+  }
+
+  const stripeKey = env.STRIPE_SECRET_KEY?.trim()
+  if (stripeKey) {
+    const stripe = new Stripe(stripeKey)
+    for (const row of rows) {
+      const sessionId = String(row.stripe_checkout_session_id ?? '').trim()
+      if (!sessionId) {
+        continue
+      }
+      try {
+        await stripe.checkout.sessions.expire(sessionId)
+      } catch (e) {
+        console.warn(
+          '[sync-website-quote-payment] stale invoice checkout expire',
+          sessionId,
+          e instanceof Error ? e.message : String(e)
+        )
+      }
+    }
+  }
+
+  const ids = rows.map((row) => row.id).filter(Boolean)
+  const { error: cancelErr } = await admin
+    .from('portal_invoices')
+    .update({
+      status: 'cancelled',
+      stripe_checkout_url: null,
+      stripe_checkout_session_id: null
+    })
+    .in('id', ids)
+    .eq('status', 'sent')
+
+  if (cancelErr) {
+    console.warn('[sync-website-quote-payment] stale invoice cancel', cancelErr.message)
+    return { cancelled: 0 }
+  }
+
+  return { cancelled: ids.length }
+}
+
+/**
  * @param {unknown} body
  * @param {import('node:process').ProcessEnv} env
  * @param {{ authHeader?: string }} meta
@@ -244,7 +326,31 @@ export const handleSyncWebsiteQuotePortalPayment = async (body, env = process.en
 
   const payStatus = String(transferRow?.payment_status ?? 'unpaid').toLowerCase()
 
-  if (transferRow?.id && payStatus !== 'paid') {
+  if (transferRow?.id && payStatus === 'deposit') {
+    return {
+      ok: true,
+      mode: 'skipped',
+      reason: 'deposit_on_file',
+      bookingId: transferRow.id,
+      message: 'Transfer deposit is already on file — existing transfer price is locked to prevent an incorrect balance charge.'
+    }
+  }
+
+  if (transferRow?.id && payStatus === 'paid') {
+    return { ok: true, mode: 'skipped', reason: 'already_paid', bookingId: transferRow.id }
+  }
+
+  if (transferRow?.id && payStatus !== 'unpaid') {
+    return {
+      ok: true,
+      mode: 'skipped',
+      reason: 'payment_locked',
+      bookingId: transferRow.id,
+      message: 'Transfer is not awaiting a fresh quote, so the client payment link was not changed.'
+    }
+  }
+
+  if (transferRow?.id) {
     const patch = {
       admin_price_eur: gross,
       admin_price_vat_treatment: vatTreatment,
@@ -260,6 +366,11 @@ export const handleSyncWebsiteQuotePortalPayment = async (body, env = process.en
       throwStatus(tErr.message, 500)
     }
 
+    const staleInvoices = await cancelStalePortalInvoicesForTransfer(admin, env, {
+      profileId: ownerId,
+      enquiryRef
+    })
+
     let pdfPortal = null
     try {
       pdfPortal = await publishTransferAdminPricePortalPdfs(admin, env, String(transferRow.id))
@@ -273,12 +384,9 @@ export const handleSyncWebsiteQuotePortalPayment = async (body, env = process.en
       mode: 'transfer',
       bookingId: transferRow.id,
       adminPriceEur: gross,
+      staleInvoices,
       pdfPortal
     }
-  }
-
-  if (transferRow?.id && payStatus === 'paid') {
-    return { ok: true, mode: 'skipped', reason: 'already_paid', bookingId: transferRow.id }
   }
 
   if (!enquiryRef) {

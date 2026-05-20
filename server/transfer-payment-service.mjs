@@ -207,6 +207,24 @@ export const handleTransferPaymentAdmin = async (body, env = process.env, meta =
       }
     }
     const now = new Date().toISOString()
+    const { data: existing, error: existingErr } = await admin
+      .from('transfer_bookings')
+      .select('id, payment_status')
+      .eq('id', bookingId)
+      .maybeSingle()
+    if (existingErr) {
+      throwStatus(existingErr.message, 500)
+    }
+    if (!existing?.id) {
+      throwStatus('Booking not found.', 404)
+    }
+    const existingStatus = String(existing.payment_status ?? 'unpaid').toLowerCase()
+    if (existingStatus === 'deposit' || existingStatus === 'paid') {
+      throwStatus(
+        'This transfer already has a deposit or payment on file. Keep the quoted price locked, or refund/reissue before changing it.',
+        409
+      )
+    }
     const { error: pErr } = await admin
       .from('transfer_bookings')
       .update({

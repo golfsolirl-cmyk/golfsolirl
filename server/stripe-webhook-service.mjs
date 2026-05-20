@@ -14,55 +14,97 @@ import { publishTransferPortalPaymentReceipt } from './transfer-portal-publish-p
 
 
 /**
-
- * @param {import('@supabase/supabase-js').SupabaseClient} supabase
-
- * @param {string} invoiceId
-
- * @param {string | null} paymentIntent
-
- * @param {string} paidAt
-
- * @returns {Promise<boolean>}
-
+ * @param {Record<string, unknown> | null | undefined} invoice
+ * @param {import('stripe').Stripe.Checkout.Session | null | undefined} session
  */
+export const validatePortalInvoiceCheckoutSession = (invoice, session) => {
+  if (!invoice) {
+    return { ok: false, reason: 'missing_invoice' }
+  }
 
-export const markPortalInvoicePaid = async (supabase, invoiceId, paymentIntent, paidAt) => {
+  const status = String(invoice.status ?? 'sent').toLowerCase()
+  if (status === 'paid') {
+    return { ok: true, reason: 'already_paid' }
+  }
+  if (status !== 'sent') {
+    return { ok: false, reason: `invoice_${status || 'not_sent'}` }
+  }
 
-  const { error, data } = await supabase
+  if (!session) {
+    return { ok: true }
+  }
 
+  const expectedSessionId =
+    typeof invoice.stripe_checkout_session_id === 'string' ? invoice.stripe_checkout_session_id.trim() : ''
+  const actualSessionId = typeof session.id === 'string' ? session.id.trim() : ''
+  if (expectedSessionId && actualSessionId && expectedSessionId !== actualSessionId) {
+    return { ok: false, reason: 'stale_checkout_session' }
+  }
+
+  const expectedAmount = Number(invoice.amount_cents)
+  const actualAmount = Number(session.amount_total)
+  if (Number.isFinite(expectedAmount) && Number.isFinite(actualAmount) && expectedAmount !== actualAmount) {
+    return { ok: false, reason: 'amount_mismatch' }
+  }
+
+  const expectedCurrency = String(invoice.currency ?? '').trim().toLowerCase()
+  const actualCurrency = String(session.currency ?? '').trim().toLowerCase()
+  if (expectedCurrency && actualCurrency && expectedCurrency !== actualCurrency) {
+    return { ok: false, reason: 'currency_mismatch' }
+  }
+
+  return { ok: true }
+}
+
+/**
+ * @param {import('@supabase/supabase-js').SupabaseClient} supabase
+ * @param {string} invoiceId
+ * @param {string | null} paymentIntent
+ * @param {string} paidAt
+ * @param {import('stripe').Stripe.Checkout.Session | null | undefined} session
+ * @returns {Promise<boolean>}
+ */
+export const markPortalInvoicePaid = async (supabase, invoiceId, paymentIntent, paidAt, session = null) => {
+  const { data: invoice, error: loadErr } = await supabase
     .from('portal_invoices')
-
-    .update({
-
-      status: 'paid',
-
-      paid_at: paidAt,
-
-      stripe_payment_intent_id: paymentIntent
-
-    })
-
+    .select('id, status, amount_cents, currency, stripe_checkout_session_id')
     .eq('id', invoiceId)
-
-    .select('id')
-
     .maybeSingle()
 
+  if (loadErr) {
+    const err = new Error(loadErr.message)
+    err.statusCode = 500
+    throw err
+  }
 
+  const validation = validatePortalInvoiceCheckoutSession(invoice, session)
+  if (!validation.ok) {
+    console.warn('[stripe-webhook] portal invoice checkout rejected', invoiceId, validation.reason)
+    return false
+  }
+  if (validation.reason === 'already_paid') {
+    return true
+  }
+
+  const { error, data } = await supabase
+    .from('portal_invoices')
+    .update({
+      status: 'paid',
+      paid_at: paidAt,
+      stripe_payment_intent_id: paymentIntent
+    })
+    .eq('id', invoiceId)
+    .eq('status', 'sent')
+    .select('id')
+    .maybeSingle()
 
   if (error) {
-
     const err = new Error(error.message)
-
     err.statusCode = 500
-
     throw err
-
   }
 
   return Boolean(data?.id)
-
 }
 
 
@@ -383,7 +425,7 @@ export const handleStripeWebhook = async (rawBody, signatureHeader, env = proces
 
     if (metaPortal) {
 
-      await markPortalInvoicePaid(supabase, metaPortal, paymentIntent, paidAt)
+      await markPortalInvoicePaid(supabase, metaPortal, paymentIntent, paidAt, session)
 
     } else if (metaTransfer) {
 
@@ -391,7 +433,7 @@ export const handleStripeWebhook = async (rawBody, signatureHeader, env = proces
 
     } else if (cref) {
 
-      const invOk = await markPortalInvoicePaid(supabase, cref, paymentIntent, paidAt)
+      const invOk = await markPortalInvoicePaid(supabase, cref, paymentIntent, paidAt, session)
 
       if (!invOk) {
 
