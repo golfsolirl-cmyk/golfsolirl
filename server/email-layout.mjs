@@ -46,7 +46,7 @@ const transparentPixelDataUri =
 export const adaptTransactionalEmailHtmlForBrowserPreview = (html, requestOrigin) => {
   const base = (requestOrigin || getGsolSiteUrl()).replace(/\/+$/, '')
   const productionSite = getGsolSiteUrl().replace(/\/+$/, '')
-  const logoSrc = `${base}/images/g-sol-logo.png`
+  const logoSrc = `${base}/images/g-sol-logo.webp`
 
   let out = String(html ?? '')
 

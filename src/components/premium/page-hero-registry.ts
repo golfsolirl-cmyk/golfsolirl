@@ -33,8 +33,10 @@ export interface PageHeroSource {
 export const PAGE_HERO_REGISTRY = {
   /** Sign-in (client / admin / driver share the same magic-link UI). */
   login: {
-    desktop: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
-    mobile: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
+    desktop: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f-desktop.webp',
+    mobile: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f-mobile.webp',
+    desktopWebp: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f-desktop.webp',
+    mobileWebp: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f-mobile.webp',
     alt: 'Golf Sol Ireland premium fleet — sign in for your trip desk, quotes, and account.',
     badge: 'Account access',
     tintHue: 'warm'
@@ -42,8 +44,8 @@ export const PAGE_HERO_REGISTRY = {
 
   /** Logged-out / session-end. */
   loggedOut: {
-    desktop: '/images/hero-fleet-golf-golden-hour.png',
-    mobile: '/images/hero-malaga-fleet-mobile-portrait.png',
+    desktop: '/images/hero-fleet-golf-golden-hour.webp',
+    mobile: '/images/hero-malaga-fleet-mobile-portrait.webp',
     alt: 'Costa del Sol fairway at golden hour — see you on the next round.',
     badge: 'Session closed',
     tintHue: 'gold'
@@ -52,7 +54,7 @@ export const PAGE_HERO_REGISTRY = {
   /** Public packages browser. */
   packages: {
     desktop: '/images/hero-from-plane-to-fairway-premium.webp',
-    mobile: '/images/hero-from-plane-to-fairway.png',
+    mobile: '/images/hero-from-plane-to-fairway.webp',
     desktopWebp: '/images/hero-from-plane-to-fairway-premium.webp',
     alt: 'Plane to fairway — Costa del Sol stay-and-play packages built for Irish societies.',
     badge: 'Stay & play',
@@ -83,7 +85,7 @@ export const PAGE_HERO_REGISTRY = {
 
   /** Continue-trip — arrival snapshot path. */
   continueTrip: {
-    desktop: '/images/hero-costa-del-sol-transfer-banner.png',
+    desktop: '/images/hero-costa-del-sol-transfer-banner.webp',
     mobile: '/images/hero-malaga-transfer-mobile.webp',
     mobileWebp: '/images/hero-malaga-transfer-mobile.webp',
     alt: 'Costa del Sol transfer banner — your Mercedes is being lined up.',
@@ -104,8 +106,8 @@ export const PAGE_HERO_REGISTRY = {
 
   /** Long-form content pages (terms, privacy, about, articles). */
   content: {
-    desktop: '/images/hero-image.png',
-    mobile: '/images/hero-image.png',
+    desktop: '/images/hero-image.webp',
+    mobile: '/images/hero-image.webp',
     alt: 'Costa del Sol corridor — supporting context for our long-form pages.',
     badge: 'Editorial',
     tintHue: 'warm'

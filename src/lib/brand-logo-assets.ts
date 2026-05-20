@@ -1,7 +1,7 @@
 /** Canonical crest — `public/images/g-sol-logo.webp` (PNG/SVG siblings for fallback & masks). */
 export const GOLFSOL_BRAND_LOGO = {
   webp: '/images/g-sol-logo.webp',
-  png: '/images/g-sol-logo.png',
+  png: '/images/g-sol-logo.webp',
   svg: '/images/g-sol-logo.svg',
 } as const
 

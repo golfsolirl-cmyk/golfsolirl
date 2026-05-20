@@ -27,14 +27,14 @@ interface GeMarketingHeroPictureProps {
  *   on each car.
  */
 export function GeMarketingHeroPicture({ className, imgClassName }: GeMarketingHeroPictureProps) {
-  const desktopPng = marketingHeroAsset(BRAND_MARKETING_HERO_DESKTOP.png)
-  const mobilePng = marketingHeroAsset(BRAND_MARKETING_HERO_MOBILE.png)
+  const desktopWebp = marketingHeroAsset(BRAND_MARKETING_HERO_DESKTOP.webp)
+  const mobileWebp = marketingHeroAsset(BRAND_MARKETING_HERO_MOBILE.webp)
 
   return (
     <picture className={cx('block w-full', className)}>
-      <source media="(min-width: 768px)" srcSet={desktopPng} type="image/png" />
+      <source media="(min-width: 768px)" srcSet={desktopWebp} type="image/webp" />
       <img
-        src={mobilePng}
+        src={mobileWebp}
         alt={BRAND_MARKETING_HERO_COMPOSITE_ALT}
         decoding="async"
         fetchPriority="high"

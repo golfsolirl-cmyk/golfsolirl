@@ -59,7 +59,7 @@ function sanitize(text: string): string {
 
 async function loadLogoPng(): Promise<Uint8Array | null> {
   try {
-    const res = await fetch('/images/g-sol-logo.png')
+    const res = await fetch('/images/g-sol-logo.webp')
     if (!res.ok) return null
     return new Uint8Array(await res.arrayBuffer())
   } catch {

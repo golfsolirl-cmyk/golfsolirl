@@ -19,7 +19,7 @@ export function GeHeroMalagaTransferPicture({
     return (
       <picture className="block md:absolute md:inset-0 md:h-full md:w-full">
         <img
-          src="/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png"
+          src="/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp"
           alt={alt}
           className="block h-auto w-full max-w-full select-none object-cover object-[center_36%] md:h-full md:w-full md:object-cover md:object-[center_40%]"
           fetchPriority="high"
@@ -47,11 +47,11 @@ export function GeHeroMalagaTransferPicture({
       />
       <source
         media="(max-width: 767px)"
-        srcSet="/images/hero-malaga-transfer-mobile.png"
+        srcSet="/images/hero-malaga-transfer-mobile-tablet.webp"
         sizes="100vw"
       />
       <img
-        src="/images/hero-malaga-transfer-desktop.png"
+        src="/images/hero-malaga-transfer-desktop-tablet.webp"
         alt={alt}
         className={heroImgClass}
         fetchPriority="high"

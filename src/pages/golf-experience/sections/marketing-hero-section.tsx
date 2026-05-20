@@ -8,7 +8,7 @@ import { Check, ChevronDown } from 'lucide-react'
 import { cx } from '../../../lib/utils'
 import { contactInfo } from '../data/copy'
 
-const GOLFSOL_HERO_SRC = '/images/himage.png'
+const GOLFSOL_HERO_SRC = '/images/himage.webp'
 
 /** Subtle matte grain — avoids flat vector feel without heavy overlays. */
 const NOISE_BG =

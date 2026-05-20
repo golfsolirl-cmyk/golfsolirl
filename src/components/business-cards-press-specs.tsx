@@ -10,7 +10,7 @@ import { GOLFSOL_BRAND_LOGO, GOLFSOL_BRAND_LOGO_INTRINSIC } from '../lib/brand-l
 import type { BusinessCardPersonBlurb } from '../lib/business-cards-config'
 import { businessCardContact, businessCardPerson, businessCardPersonGreg } from '../lib/business-cards-config'
 
-const CARD_PHOTO_SRC = '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png'
+const CARD_PHOTO_SRC = '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp'
 
 /** Comfortable inset — keeps type and crest inside trim without clipping the logo */
 const INSET_SCREEN = 'clamp(12px,3vmin,22px)'

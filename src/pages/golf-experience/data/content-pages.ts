@@ -39,13 +39,13 @@ function getFooterArticleHighlights(content: FooterArticleContent) {
 
 function getFooterArticleHeroImage(path: string) {
   if (path.includes('airport') || path.includes('transfer') || path.includes('routing')) {
-    return '/images/transport-hero-coastal-drive.jpg'
+    return '/images/transport-hero-coastal-drive.webp'
   }
   if (path.includes('hotel') || path.includes('accommodation')) {
-    return '/images/ge-premium-resort-hotel-hero.png'
+    return '/images/ge-premium-resort-hotel-hero.webp'
   }
   if (path.includes('course')) {
-    return '/images/ge-premium-golf-fairway-coastal.png'
+    return '/images/ge-premium-golf-fairway-coastal.webp'
   }
   if (
     path.includes('package') ||
@@ -55,9 +55,9 @@ function getFooterArticleHeroImage(path: string) {
     path.includes('balance') ||
     path.includes('enquiry')
   ) {
-    return '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png'
+    return '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp'
   }
-  return '/images/ge-premium-golf-fairway-coastal.png'
+  return '/images/ge-premium-golf-fairway-coastal.webp'
 }
 
 function getFooterArticleHeroAlt(path: string, content: FooterArticleContent) {
@@ -132,7 +132,7 @@ const contactPage: GeContentPageData = {
   title: 'Get your golf holiday quote quickly',
   subtitle:
     'Tell us the basics and we come back with clear options. No pressure, no long forms, no wasted time.',
-  heroImage: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
+  heroImage: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
   heroAlt: 'GolfSol Ireland transport fleet and premium Costa del Sol travel service.',
   highlights: trustHighlights,
   sections: [
@@ -161,7 +161,7 @@ const termsPage: GeContentPageData = {
   title: 'Terms and conditions for GolfSol Ireland bookings',
   subtitle:
     'Clear booking terms for deposits, supplier changes, golf course issues, accommodation problems, cancellations and liability before your group commits.',
-  heroImage: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
+  heroImage: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
   heroAlt: 'GolfSol Ireland Mercedes fleet on the Costa del Sol — terms and conditions.',
   highlights: trustHighlights,
   sections: [
@@ -228,7 +228,7 @@ const privacyPage: GeContentPageData = {
   title: 'Privacy policy summary in plain language',
   subtitle:
     'We use your enquiry details to plan and communicate about your trip. We keep this practical, transparent, and respectful.',
-  heroImage: '/images/about-golfsol-hero.jpg',
+  heroImage: '/images/about-golfsol-hero.webp',
   heroAlt: 'Secure and trusted handling of customer enquiry information.',
   highlights: trustHighlights,
   sections: [
@@ -257,7 +257,7 @@ const teeTimeOnlyPage: GeContentPageData = {
   title: 'Tee-time bookings only, if your hotel is already sorted',
   subtitle:
     'Need golf only? We can shortlist and secure the right rounds without repackaging your whole trip. Fast, clear, and suited to Irish groups.',
-  heroImage: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
+  heroImage: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
   heroAlt: 'GolfSol Ireland Mercedes fleet on the Costa del Sol — tee-time booking service.',
   highlights: trustHighlights,
   sections: [
@@ -298,7 +298,7 @@ const twilightGolfPage: GeContentPageData = {
   title: 'Twilight golf on the Costa del Sol — golden-hour rounds, smarter pacing',
   subtitle:
     'Late-afternoon tee times pair softer green fees with forgiving light and an easier run to dinner in Marbella, Fuengirola or Puerto Banús. We shortlist courses that run twilight sheets well for Irish groups.',
-  heroImage: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
+  heroImage: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
   heroAlt:
     'GolfSol Ireland Mercedes fleet on the Costa del Sol — twilight golf service.',
   highlights: trustHighlights,
@@ -338,7 +338,7 @@ const aboutPage: GeContentPageData = {
   title: 'Irish-owned Costa del Sol golf specialists',
   subtitle:
     'We focus on one thing: helping Irish golfers book cleaner, calmer, better-planned golf holidays on the Costa del Sol.',
-  heroImage: '/images/about-golfsol-hero.jpg',
+  heroImage: '/images/about-golfsol-hero.webp',
   heroAlt: 'GolfSol Ireland team style and premium Costa del Sol golf setting.',
   highlights: trustHighlights,
   sections: [
@@ -367,7 +367,7 @@ const bookingPage: GeContentPageData = {
   title: 'Booking flow that stays clear at every step',
   subtitle:
     'We keep bookings simple: clear options, clear pricing, clear next actions, and one Irish team handling the details.',
-  heroImage: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
+  heroImage: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
   heroAlt: 'GolfSol Ireland Mercedes fleet on the Costa del Sol — booking service.',
   highlights: trustHighlights,
   sections: [
@@ -396,7 +396,7 @@ const transportOverviewPage: GeContentPageData = {
   title: 'Reliable golf transport from AGP to your final round',
   subtitle:
     'Airport runs, hotel shuttles, and golf-day transfers handled by one coordinated team that understands group golf travel.',
-  heroImage: '/images/transport-hero-coastal-drive.jpg',
+  heroImage: '/images/transport-hero-coastal-drive.webp',
   heroAlt: 'Mercedes transfer vehicle on Costa del Sol motorway route.',
   highlights: trustHighlights,
   sections: [
@@ -425,7 +425,7 @@ const coursesPage: GeContentPageData = {
   title: 'Costa del Sol course options, narrowed to what matters',
   subtitle:
     'No endless scrolling. We help you choose courses that match your group, base, and trip rhythm so every round has purpose.',
-  heroImage: '/images/about-golfsol-hero.jpg',
+  heroImage: '/images/about-golfsol-hero.webp',
   heroAlt: 'Wide Costa del Sol golf course with mountain and sea backdrop.',
   highlights: trustHighlights,
   sections: [
@@ -454,7 +454,7 @@ const accommodationPage: GeContentPageData = {
   title: 'Costa del Sol accommodation matched to your golf trip',
   subtitle:
     'We help you choose the right base fast, with clear trade-offs between location, budget, and group style.',
-  heroImage: '/images/transport-moment-resort.jpg',
+  heroImage: '/images/transport-moment-resort.webp',
   heroAlt: 'Costa del Sol hotel and resort accommodation for golfers.',
   highlights: trustHighlights,
   sections: [
@@ -483,7 +483,7 @@ const testimonialsPage: GeContentPageData = {
   title: 'Why Irish golfers trust GolfSol Ireland',
   subtitle:
     'Groups choose us because we keep the trip clear, calm, and joined up from enquiry through travel week.',
-  heroImage: '/images/about-golfsol-hero.jpg',
+  heroImage: '/images/about-golfsol-hero.webp',
   heroAlt: 'Irish golf group enjoying Costa del Sol fairways and sunshine.',
   highlights: trustHighlights,
   sections: [
@@ -512,7 +512,7 @@ const faqPage: GeContentPageData = {
   title: 'Frequently asked questions, answered clearly',
   subtitle:
     'The key answers most Irish groups need before committing: payments, timing, transfers, and how the booking process actually works.',
-  heroImage: '/images/transport-moment-arrivals.jpg',
+  heroImage: '/images/transport-moment-arrivals.webp',
   heroAlt: 'Airport arrivals and transfer coordination for frequently asked travel questions.',
   highlights: trustHighlights,
   sections: [
@@ -541,7 +541,7 @@ const newsPage: GeContentPageData = {
   title: 'Sol Insider news for Irish golf travellers',
   subtitle:
     'Quick, useful updates: course notes, seasonal windows, and practical travel guidance that helps you decide faster.',
-  heroImage: '/images/about-golfsol-hero.jpg',
+  heroImage: '/images/about-golfsol-hero.webp',
   heroAlt: 'Costa del Sol golf travel updates and seasonal conditions.',
   highlights: trustHighlights,
   sections: [
@@ -570,7 +570,7 @@ const newsletterPage: GeContentPageData = {
   title: 'Join our newsletter for useful golf travel updates',
   subtitle:
     'Get concise updates when they are relevant: no constant emails, just practical insights for Irish golfers planning the Sol.',
-  heroImage: '/images/about-golfsol-hero.jpg',
+  heroImage: '/images/about-golfsol-hero.webp',
   heroAlt: 'Costa del Sol golf travel newsletter and planning updates.',
   highlights: trustHighlights,
   sections: [

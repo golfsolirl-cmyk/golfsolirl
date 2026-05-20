@@ -24,7 +24,7 @@ export const coursesSpain: readonly GeCourse[] = [
     badge: 'Tournament-tough',
     description:
       'Routinely ranked Europe’s number-one course and host of the 1997 Ryder Cup. A bucket-list round and a story you’ll dine out on for years.',
-    image: '/images/ge-premium-golf-fairway-coastal.png',
+    image: '/images/ge-premium-golf-fairway-coastal.webp',
     href: '/contact'
   },
   {
@@ -33,7 +33,7 @@ export const coursesSpain: readonly GeCourse[] = [
     badge: '2023 Solheim Cup',
     description:
       'Cabell Robinson masterpiece of width, elevation and pure Bermuda greens. Hosted the 2023 Solheim Cup and three Volvo World Match Plays.',
-    image: '/images/twilight-golf-hero.jpg',
+    image: '/images/twilight-golf-hero.webp',
     href: '/contact'
   },
   {
@@ -42,7 +42,7 @@ export const coursesSpain: readonly GeCourse[] = [
     badge: 'Resort luxury',
     description:
       'A Cabell Robinson layout draped over rolling Andalusian hills with sea and mountain views from almost every tee. Pristine conditioning year-round.',
-    image: '/images/hero-fleet-golf-golden-hour.png',
+    image: '/images/hero-fleet-golf-golden-hour.webp',
     href: '/contact'
   },
   {
@@ -51,7 +51,7 @@ export const coursesSpain: readonly GeCourse[] = [
     badge: 'Trent Jones classic',
     description:
       'The original Robert Trent Jones Sr. design that put the Costa del Sol on the golfing map back in 1964. Tree-lined, classical, demanding.',
-    image: '/images/ge-premium-golf-group-testimonial.png',
+    image: '/images/ge-premium-golf-group-testimonial.webp',
     href: '/contact'
   },
   {
@@ -60,7 +60,7 @@ export const coursesSpain: readonly GeCourse[] = [
     badge: 'Group favourite',
     description:
       'Stunning orange-tree lined fairways in the heart of Nueva Andalucía’s “Golf Valley”. A long-time favourite with Irish societies — fair and fun.',
-    image: '/images/hero-malaga-fleet-golden-hour.png',
+    image: '/images/hero-malaga-fleet-golden-hour.webp',
     href: '/contact'
   },
   {
@@ -69,7 +69,7 @@ export const coursesSpain: readonly GeCourse[] = [
     badge: 'Manuel Piñero design',
     description:
       'Three loops of nine wandering through the foothills above Puerto Banús — flexible itineraries, dramatic mountain backdrops, top-tier conditioning.',
-    image: '/images/ge-premium-golf-club-rental-hero.png',
+    image: '/images/ge-premium-golf-club-rental-hero.webp',
     href: '/contact'
   }
 ] as const

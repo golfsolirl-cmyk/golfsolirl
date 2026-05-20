@@ -40,7 +40,7 @@ export const transportRouteStory = [
     body:
       'Your driver tracks the flight, parks meters from the door, and is standing in arrivals before the bags hit the carousel. You walk straight to the vehicle — golf travel covers loaded for you.',
     bullet: 'Flight monitored · Meet-and-greet · Sub-15 min curb',
-    image: '/images/transport-moment-arrivals.jpg',
+    image: '/images/transport-moment-arrivals.webp',
     alt:
       'Smartly-dressed chauffeur waiting in Málaga AGP arrivals hall beside a luggage trolley loaded with golf bags and suitcases.'
   },
@@ -50,7 +50,7 @@ export const transportRouteStory = [
     body:
       'Straight to your base on the Sol — Marbella, Estepona, Sotogrande or anywhere in between. Bag drop with the bellhop, room keys, and a clear plan for every tee time across the week.',
     bullet: 'Direct route · Bag drop · Week-long itinerary in hand',
-    image: '/images/transport-moment-resort.jpg',
+    image: '/images/transport-moment-resort.webp',
     alt:
       'Black Mercedes V-Class parked at the entrance of a luxury Costa del Sol golf resort, bellhop carrying a golf bag toward the door.'
   },
@@ -60,7 +60,7 @@ export const transportRouteStory = [
     body:
       'Morning runs to Valderrama, dinners in Puerto Banús, the slow trip home from Finca Cortesín — all joined up by one driver who knows the diary as well as you do.',
     bullet: 'Course transfers · Dinner runs · One Irish coordinator',
-    image: '/images/transport-hero-coastal-drive.jpg',
+    image: '/images/transport-hero-coastal-drive.webp',
     alt:
       'Black Mercedes V-Class on the AP-7 coastal motorway above Marbella at golden hour with the Mediterranean glittering on the right.'
   }

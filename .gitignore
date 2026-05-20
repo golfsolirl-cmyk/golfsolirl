@@ -15,5 +15,9 @@ _import_golfsolirl/
 # Section-by-section UI undo backups (see design/section-undo-registry.json)
 .undo-backups/
 
+# Extracted rebuilt image packs (source zip stays outside repo)
+_image-pack-extract/
+public.zip
+
 # Windows accidental redirect artifact
 /nul

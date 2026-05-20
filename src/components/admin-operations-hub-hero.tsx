@@ -1,4 +1,4 @@
-const ADMIN_OPERATIONS_HERO_SRC = `${import.meta.env.BASE_URL}images/admin-operations-hero.png`
+const ADMIN_OPERATIONS_HERO_SRC = `${import.meta.env.BASE_URL}images/admin-operations-hero.webp`
 
 export function AdminOperationsHubHero(props: { readonly adminFirstName: string }) {
   const name = props.adminFirstName.trim()

@@ -23,11 +23,11 @@ const emailAccentOnDark = '#ebe3cf'
 const emailNestedWashCard = `${emailAmbientOuterLayers}border:1px solid rgba(19,96,71,0.14);border-radius:18px;`
 
 const assets = {
-  logo: '/images/g-sol-logo.png',
-  fleetLineup: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
-  arrivals: '/images/transport-moment-arrivals.jpg',
-  resort: '/images/transport-moment-resort.jpg',
-  coastalDrive: '/images/transport-hero-coastal-drive.jpg'
+  logo: '/images/g-sol-logo.webp',
+  fleetLineup: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
+  arrivals: '/images/transport-moment-arrivals.webp',
+  resort: '/images/transport-moment-resort.webp',
+  coastalDrive: '/images/transport-hero-coastal-drive.webp'
 } as const
 
 function escapeHtml(value: string) {

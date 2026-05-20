@@ -41,7 +41,7 @@ export const homeAirportTransfersCopy = {
   body:
     'Meet and greet at AGP, live flight tracking, golf-bag-ready Mercedes, and a straight run to your hotel — no taxi queue, no guesswork.',
   fleetImageBadge: 'Golf-bag friendly Mercedes fleet',
-  fleetImageSrc: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
+  fleetImageSrc: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
   fleetImageAlt:
     'Premium Mercedes transfer vehicles on the Costa del Sol — golf-bag friendly fleet for Irish groups.',
   fleetCardLabel: 'Mercedes fleet',
@@ -81,7 +81,7 @@ export const designYourPackage = {
     title: 'Pick your Costa del Sol base.',
     body:
       'Fuengirola, Torremolinos, Marbella or Sotogrande — every Sol resort town is within a short, golf-bag-friendly Mercedes transfer of the best courses in southern Spain.',
-    image: '/images/ge-premium-golf-fairway-coastal.png',
+    image: '/images/ge-premium-golf-fairway-coastal.webp',
     link: '/#golf-courses-spain'
   },
   step2: {
@@ -89,7 +89,7 @@ export const designYourPackage = {
     title: 'Pick your Costa del Sol tee times.',
     body:
       'Over seventy 18-hole courses sit between Málaga and Sotogrande — the highest density of golf anywhere in Europe. We hold preferential green-fee rates and live tee-sheet access on all of them, so we slot your group into the right course at the right time of day.',
-    image: '/images/twilight-golf-hero.jpg',
+    image: '/images/twilight-golf-hero.webp',
     link: '/#golf-courses-spain'
   },
   step3: {
@@ -97,7 +97,7 @@ export const designYourPackage = {
     title: 'Pick the hotel Irish groups already love.',
     body:
       'We work directly with the Costa del Sol hotels Irish societies return to year after year — Hotel Angela, Yaramar, Ilunion Fuengirola, Riu, Don Pablo, Sol Timor and Ocean House. Better rates, friendlier cancellation terms, no surprises.',
-    image: '/images/ge-premium-resort-hotel-hero.png',
+    image: '/images/ge-premium-resort-hotel-hero.webp',
     link: '/#accommodation-spain'
   },
   step4: {
@@ -105,7 +105,7 @@ export const designYourPackage = {
     title: 'Leave the rest to us.',
     body:
       'We design the itinerary, book the tees, lock in golf-bag-friendly Mercedes transfers and meet you at AGP arrivals — every detail from arrivals hall to final putt.',
-    image: '/images/transport-moment-arrivals.jpg',
+    image: '/images/transport-moment-arrivals.webp',
     link: '/#enquire'
   }
 } as const
@@ -209,7 +209,7 @@ export const aboutCopy = {
   bodyEmphasis: 'Same crew. Same standard. Every single trip.',
   cta: 'READ OUR FULL STORY',
   /** Local asset so the hero always loads (no hotlink / 403 issues). */
-  image: '/images/about-golfsol-hero.jpg'
+  image: '/images/about-golfsol-hero.webp'
 } as const
 
 export const finalCtaCopy = {

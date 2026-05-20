@@ -113,56 +113,56 @@ export function getContentPageHeroMedia(path: string, page: GeContentPageData): 
   switch (kind) {
     case 'twilight':
       return {
-        image: '/images/twilight-golf-hero.jpg',
+        image: '/images/twilight-golf-hero.webp',
         alt: 'Costa del Sol golf fairway at twilight — golden-hour light over manicured fairways toward the Mediterranean.',
         stripeLabel
       }
     case 'courses':
       return {
-        image: '/images/ge-premium-golf-fairway-coastal.png',
+        image: '/images/ge-premium-golf-fairway-coastal.webp',
         alt: 'Championship Costa del Sol fairway toward the Mediterranean — emerald grass, bunkers, and coastal haze at sunrise.',
         stripeLabel
       }
     case 'accommodation':
       return {
-        image: '/images/ge-premium-resort-hotel-hero.png',
+        image: '/images/ge-premium-resort-hotel-hero.webp',
         alt: 'Boutique resort pool terrace at dusk on the Costa del Sol — luxury stay for Irish golf groups.',
         stripeLabel
       }
     case 'transport':
       return {
-        image: '/images/transport-hero-coastal-drive.jpg',
+        image: '/images/transport-hero-coastal-drive.webp',
         alt: 'Golf Sol Ireland transfer vehicle on a Costa del Sol route.',
         stripeLabel
       }
     case 'booking':
       return {
-        image: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
+        image: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
         alt: 'GolfSol Ireland Mercedes fleet on the Costa del Sol — booking service.',
         stripeLabel
       }
     case 'testimonial':
       return {
-        image: '/images/ge-premium-golf-group-testimonial.png',
+        image: '/images/ge-premium-golf-group-testimonial.webp',
         alt: 'Irish golf society toasting a successful round on a sunny Costa del Sol terrace overlooking fairways.',
         stripeLabel
       }
     case 'news':
     case 'newsletter':
       return {
-        image: '/images/ge-premium-editorial-travel-news.png',
+        image: '/images/ge-premium-editorial-travel-news.webp',
         alt: 'Editorial flat lay — passport, tee sheet, and luxury travel notes for Costa del Sol golf trip planning.',
         stripeLabel
       }
     case 'about':
       return {
-        image: '/images/about-golfsol-hero.jpg',
+        image: '/images/about-golfsol-hero.webp',
         alt: 'Golf Sol Ireland brand and Costa del Sol destination imagery.',
         stripeLabel
       }
     case 'legal':
       return {
-        image: '/images/ge-premium-trust-legal-hero.png',
+        image: '/images/ge-premium-trust-legal-hero.webp',
         alt: 'Elegant desk with signed documents and soft light — trusted legal and privacy context for Golf Sol Ireland.',
         stripeLabel
       }
@@ -186,19 +186,19 @@ export function getContentStorySectionMedia(
   const pool = [
     { image: hero.image, alt: hero.alt },
     {
-      image: '/images/transport-moment-arrivals.jpg',
+      image: '/images/transport-moment-arrivals.webp',
       alt: 'Málaga airport arrivals hall with golf travel bags coordinated by a chauffeur.'
     },
     {
-      image: '/images/transport-moment-resort.jpg',
+      image: '/images/transport-moment-resort.webp',
       alt: 'Luxury Costa del Sol resort entrance with golf luggage and transfer vehicle.'
     },
     {
-      image: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
+      image: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
       alt: 'GolfSol Ireland Mercedes fleet on the Costa del Sol.'
     },
     {
-      image: '/images/transport-hero-coastal-drive.jpg',
+      image: '/images/transport-hero-coastal-drive.webp',
       alt: 'Coastal motorway drive at golden hour — route between golf courses and your base.'
     }
   ] as const

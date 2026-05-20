@@ -54,7 +54,7 @@ export interface GolfSolHeroProps {
   /** Second headline line (forest on cream band on large screens). */
   readonly headlineLine2?: string
   readonly subheading?: string
-  /** Default: brand fleet / fairway plate (`public/images/golfsol.png`). */
+  /** Default: brand fleet / fairway plate (`public/images/golfsol.webp`). */
   readonly fleetImageSrc?: string
   readonly fleetImageAlt?: string
   readonly bookHref?: string
@@ -78,7 +78,7 @@ export function GolfSolHero({
   headlineAccent = 'Golf Travel',
   headlineLine2 = 'From Touchdown.',
   subheading = DEFAULT_SUB,
-  fleetImageSrc = '/images/himage.png',
+  fleetImageSrc = '/images/himage.webp',
   fleetImageAlt = 'Mercedes executive cars and vans on a sunlit Costa del Sol golf course — GolfSol Ireland luxury transfer fleet.',
   bookHref = '#design-package',
   servicesHref = '/services/transport',

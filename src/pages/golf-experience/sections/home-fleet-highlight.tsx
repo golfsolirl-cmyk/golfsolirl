@@ -28,7 +28,7 @@ export function GeHomeFleetHighlight() {
             {...fadeUp}
           >
             <img
-              src="/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png"
+              src="/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp"
               alt="GolfSol Ireland Mercedes V-Class, E-Class and Sprinter lined up on a Costa del Sol fairway with La Concha mountain in the background."
               className="absolute inset-0 h-full w-full object-cover"
               loading="lazy"

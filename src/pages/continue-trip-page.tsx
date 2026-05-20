@@ -374,7 +374,7 @@ export function ContinueTripPage() {
             eyebrow="Trip planner"
             title="No flight details found yet"
             subtitle="Start from the homepage — use the Hotel already booked card under Design Your Costa del Sol Golf Trip, then submit the quick form."
-            image="/images/transport-moment-arrivals.jpg"
+            image="/images/transport-moment-arrivals.webp"
             imageAlt="Málaga airport arrivals — start your trip brief from the homepage."
             primaryCta={{ label: 'Back to homepage', href: '/' }}
             showPhoneCta={false}
@@ -427,7 +427,7 @@ export function ContinueTripPage() {
           eyebrow="Step 2 of 2"
           title="Finish your trip brief"
           subtitle="We have your arrival snapshot. Add the pieces below — including whether you want prime morning tee times, twilight rounds, or a mix — and a planner will reply with Costa del Sol course options, transfers and extras matched to your hotel."
-          image="/images/transport-hero-coastal-drive.jpg"
+          image="/images/transport-hero-coastal-drive.webp"
           imageAlt="Black Mercedes V-Class on the AP-7 coastal motorway — Golf Sol Ireland transfer planning."
           primaryCta={{ label: 'WhatsApp us', href: whatsappHref }}
           showNavbarSpacer={false}

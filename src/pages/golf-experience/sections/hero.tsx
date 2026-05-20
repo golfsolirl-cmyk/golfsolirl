@@ -11,7 +11,7 @@ import { cx } from '../../../lib/utils'
 import { GeMarketingHeroPicture } from '../components/ge-marketing-hero-picture'
 
 /** Same resolution as `AdminOperationsHubHero` — respects Vite `base`. */
-const ADMIN_PORTAL_HERO_IMG_SRC = `${import.meta.env.BASE_URL}images/admin-operations-hero.png`
+const ADMIN_PORTAL_HERO_IMG_SRC = `${import.meta.env.BASE_URL}images/admin-operations-hero.webp`
 
 export type GeHeroVariant = 'marketing' | 'portal'
 

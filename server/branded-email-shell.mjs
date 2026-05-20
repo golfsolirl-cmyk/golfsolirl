@@ -36,11 +36,11 @@ export const EMAIL_LOGO_HERO_H = 122
 export const EMAIL_LOGO_FOOTER_W = 172
 
 export const assets = {
-  logo: '/images/g-sol-logo.png',
-  fleetLineup: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
-  arrivals: '/images/transport-moment-arrivals.jpg',
-  resort: '/images/transport-moment-resort.jpg',
-  coastalDrive: '/images/transport-hero-coastal-drive.jpg'
+  logo: '/images/g-sol-logo.webp',
+  fleetLineup: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
+  arrivals: '/images/transport-moment-arrivals.webp',
+  resort: '/images/transport-moment-resort.webp',
+  coastalDrive: '/images/transport-hero-coastal-drive.webp'
 }
 
 export const emailFonts = {

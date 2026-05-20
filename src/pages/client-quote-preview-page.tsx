@@ -280,7 +280,7 @@ export function ClientQuotePreviewPage() {
                 alt="Mercedes transfer fleet on the Costa del Sol"
                 className="h-full min-h-[14rem] w-full object-cover object-center lg:absolute lg:inset-0 lg:min-h-full"
                 height={640}
-                src="/images/hero-sample-sunny-mercedes-01.png"
+                src="/images/hero-sample-sunny-mercedes-01.webp"
                 width={960}
               />
             </div>

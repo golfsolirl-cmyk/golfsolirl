@@ -85,7 +85,7 @@ export function TransportHero() {
             + locked editorial aspect on tablet+. */}
         <picture className="block md:absolute md:inset-0 md:h-full md:w-full">
           <img
-            src="/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png"
+            src="/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp"
             alt="GolfSol Ireland Mercedes fleet — V-Class, E-Class and Sprinter parked on a Costa del Sol forecourt with the Sierra Blanca mountains and a manicured fairway behind them."
             className="block h-[58vh] min-h-[380px] w-full select-none object-cover object-[50%_55%] md:absolute md:inset-0 md:h-full md:min-h-0 md:w-full md:object-[center_55%]"
             fetchPriority="high"
