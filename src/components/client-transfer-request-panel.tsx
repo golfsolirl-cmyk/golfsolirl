@@ -436,7 +436,7 @@ export function ClientTransferRequestPanel() {
 
   const statusLine = (b: BookingRow) => {
     if (b.status === 'cancelled' && typeof b.cancel_reason === 'string' && b.cancel_reason.startsWith('no_driver')) {
-      return 'No driver available — see email & portal updates'
+      return 'Declined — our team will be in touch'
     }
     return b.status.replace(/_/g, ' ')
   }

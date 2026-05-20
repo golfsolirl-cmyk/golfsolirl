@@ -37,9 +37,7 @@ as $$
   );
 $$;
 
-revoke all on function public.is_admin() from public;
-grant execute on function public.is_admin() to authenticated;
-grant execute on function public.is_admin() to anon;
+revoke all on function public.is_admin() from public, anon, authenticated;
 
 alter table public.profiles enable row level security;
 

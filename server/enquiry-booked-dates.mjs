@@ -57,7 +57,7 @@ function addRpcBookedRowsToSet(data, out) {
 
 export async function loadDriverBookedIsoDaySet(sb) {
   const out = new Set()
-  const { data, error } = await sb.rpc('get_driver_booked_service_days')
+  const { data, error } = await sb.from('driver_booked_service_days_public').select('service_day')
   if (error) {
     return { booked: out, rpcFailed: true, rpcMessage: String(error.message ?? '') }
   }
@@ -154,7 +154,7 @@ export async function assertEnquiryDriverDatesNotBlocked(sb, enquiry) {
 
   const { booked, rpcFailed, rpcMessage } = await loadDriverBookedIsoDaySet(sb)
   if (rpcFailed) {
-    console.warn('[enquiry-booked-dates] get_driver_booked_service_days failed — skipping server block check:', rpcMessage)
+    console.warn('[enquiry-booked-dates] driver_booked_service_days_public failed — skipping server block check:', rpcMessage)
     return
   }
 

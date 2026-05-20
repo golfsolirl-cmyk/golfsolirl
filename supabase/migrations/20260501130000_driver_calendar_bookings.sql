@@ -26,18 +26,4 @@ create policy "driver_calendar_bookings_admin_all"
   using (public.is_admin())
   with check (public.is_admin());
 
--- Date-only list for website forms (no customer fields).
-create or replace function public.get_driver_booked_service_days()
-returns table (service_day date)
-language sql
-stable
-security definer
-set search_path = public
-as $$
-  select distinct b.service_day
-  from public.driver_calendar_bookings b
-  order by 1;
-$$;
-
-revoke all on function public.get_driver_booked_service_days() from public;
-grant execute on function public.get_driver_booked_service_days() to anon, authenticated;
+-- Date-only list for website forms: table + sync in 20260520020000_driver_booked_service_days_public_table.sql

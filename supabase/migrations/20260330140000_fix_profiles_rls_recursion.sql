@@ -17,9 +17,7 @@ as $$
   );
 $$;
 
-revoke all on function public.is_admin() from public;
-grant execute on function public.is_admin() to authenticated;
-grant execute on function public.is_admin() to anon;
+revoke all on function public.is_admin() from public, anon, authenticated;
 
 -- profiles
 drop policy if exists "profiles_select_own" on public.profiles;

@@ -46,6 +46,7 @@ create or replace function public.parse_malaga_local_datetime_to_timestamptz(p t
 returns timestamptz
 language sql
 stable
+set search_path = public
 as $$
   select case
     when p is not null and btrim(p) ~ '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$' then

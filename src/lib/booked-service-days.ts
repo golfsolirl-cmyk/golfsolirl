@@ -55,7 +55,7 @@ export async function loadBookedServiceDayIsoSet(client: SupabaseClient | null):
     return new Set()
   }
 
-  const { data, error } = await client.rpc('get_driver_booked_service_days')
+  const { data, error } = await client.from('driver_booked_service_days_public').select('service_day')
 
   if (error || data == null) {
     return new Set()

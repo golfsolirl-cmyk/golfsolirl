@@ -988,7 +988,7 @@ export function ClientDashboardPage() {
   }, [interestThreadTicketId, session?.user?.id])
 
   useEffect(() => {
-    if (!interestThreadTicketId || interestThreadLoading) {
+    if (!interestThreadTicketId || interestThreadLoading || !session?.user?.id) {
       return
     }
 
@@ -998,21 +998,28 @@ export function ClientDashboardPage() {
       return
     }
 
+    const ownerId = session.user.id
+    const ticketId = interestThreadTicketId
+
     void (async () => {
-      const { error } = await supabase.rpc('mark_portal_interest_ticket_read', { p_ticket_id: interestThreadTicketId })
+      const nowIso = new Date().toISOString()
+      const { error } = await supabase
+        .from('portal_interest_tickets')
+        .update({ client_last_read_at: nowIso, updated_at: nowIso })
+        .eq('id', ticketId)
+        .eq('owner_id', ownerId)
       if (cancelled || error) {
         return
       }
-      const nowIso = new Date().toISOString()
       setInterestTickets((prev) =>
-        prev.map((t) => (t.id === interestThreadTicketId ? { ...t, client_last_read_at: nowIso } : t))
+        prev.map((t) => (t.id === ticketId ? { ...t, client_last_read_at: nowIso } : t))
       )
     })()
 
     return () => {
       cancelled = true
     }
-  }, [interestThreadTicketId, interestThreadLoading])
+  }, [interestThreadTicketId, interestThreadLoading, session?.user?.id])
 
   useEffect(() => {
     if (listLoading || typeof window === 'undefined') {

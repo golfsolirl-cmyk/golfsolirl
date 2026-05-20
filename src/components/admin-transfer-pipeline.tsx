@@ -246,7 +246,7 @@ export function AdminTransferPipeline() {
     }
     if (
       !window.confirm(
-        'Decline this transfer and email the client that no driver is available? They can submit a new request from their dashboard.'
+        'Decline this transfer without sending email? The booking will be cancelled and a short note appears in the client portal — email the guest yourself from Portal email studio when ready.'
       )
     ) {
       return
@@ -268,7 +268,7 @@ export function AdminTransferPipeline() {
         },
         body: JSON.stringify({ bookingId })
       })
-      const data = (await res.json().catch(() => ({}))) as { message?: string; partial?: boolean }
+      const data = (await res.json().catch(() => ({}))) as { message?: string }
       if (!res.ok) {
         setError(data.message ?? res.statusText)
         return

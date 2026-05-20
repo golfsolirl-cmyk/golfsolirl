@@ -33,9 +33,7 @@ as $$
   );
 $$;
 
-revoke all on function public.is_driver() from public;
-grant execute on function public.is_driver() to authenticated;
-grant execute on function public.is_driver() to anon;
+revoke all on function public.is_driver() from public, anon, authenticated;
 
 -- Operational drivers (linked to auth when invited).
 create table if not exists public.drivers (
