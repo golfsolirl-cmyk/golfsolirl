@@ -134,11 +134,13 @@ export const publishTransferAdminPricePortalPdfs = async (admin, env, bookingId)
     }
   }
 
+  const quoteDocumentKinds = uploads.map((u) => u.kind)
   const { error: delAllErr } = await admin
     .from('portal_client_transfer_documents')
     .delete()
     .eq('owner_id', ownerId)
     .eq('transfer_booking_id', bookingId)
+    .in('document_kind', quoteDocumentKinds)
   if (delAllErr) {
     console.error('[transfer-portal-pdfs] clear old docs', delAllErr.message)
   }
