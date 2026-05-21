@@ -216,7 +216,7 @@ export function GeDualPhoneFinalCtaRow() {
 }
 
 const airportCardClass =
-  'group inline-flex min-h-[62px] w-full items-center justify-center gap-3 rounded-full border border-[#d9d9d9] bg-[#f4f7f5] px-4 py-3 font-ge font-extrabold text-gs-dark shadow-[0_14px_28px_rgba(6,32,22,0.08)] transition-colors hover:border-brand-700/[0.5] hover:text-gs-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[64px] sm:px-5'
+  'ge-airport-call-card group inline-flex min-h-[62px] w-full items-center justify-center gap-3 rounded-full border border-[#d9d9d9] bg-[#f4f7f5] px-4 py-3 font-ge font-extrabold text-forest-950 shadow-[0_14px_28px_rgba(6,32,22,0.08)] transition-colors hover:border-brand-700/[0.5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[64px] sm:px-5'
 
 /** Home airport transfers: stacked Irish + Spanish call cards. */
 export function GeDualPhoneAirportTransferCalls({ onDark = false }: { readonly onDark?: boolean }) {
@@ -235,13 +235,16 @@ export function GeDualPhoneAirportTransferCalls({ onDark = false }: { readonly o
         href={`tel:${contactInfo.phoneTel}`}
         aria-label={`Call Irish support on ${contactInfo.phoneDisplay}`}
         className={airportCardClass}
+        data-keep-color
       >
-        <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gs-green text-white shadow-[0_10px_22px_rgba(6,59,42,0.18)] transition-transform duration-300 group-hover:scale-105 sm:h-12 sm:w-12">
-          <Phone className="h-5 w-5" aria-hidden />
+        <span className="ge-airport-call-icon inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-forest-900 text-white shadow-[0_10px_22px_rgba(6,59,42,0.18)] transition-transform duration-300 group-hover:scale-105 sm:h-12 sm:w-12">
+          <Phone className="h-5 w-5 text-white" strokeWidth={2} aria-hidden />
         </span>
-        <span className="min-w-0 text-left">
-          <span className="block text-[0.62rem] uppercase tracking-[0.16em] text-gs-dark/55 sm:text-[0.68rem]">Call Irish support</span>
-          <span className="mt-0.5 block text-[1.08rem] tracking-[0.01em] text-gs-dark sm:text-[1.18rem]">
+        <span className="ge-airport-call-copy min-w-0 text-left">
+          <span className="block text-[0.62rem] font-bold uppercase tracking-[0.16em] text-forest-900 sm:text-[0.68rem]">
+            Call Irish support
+          </span>
+          <span className="mt-0.5 block text-[1.08rem] font-extrabold tracking-[0.01em] text-forest-900 sm:text-[1.18rem]">
             {contactInfo.phoneDisplay}
           </span>
         </span>
@@ -250,13 +253,16 @@ export function GeDualPhoneAirportTransferCalls({ onDark = false }: { readonly o
         href={`tel:${contactInfo.spanishPhoneTel}`}
         aria-label={`Call Spanish line on ${contactInfo.spanishPhoneDisplay}`}
         className={airportCardClass}
+        data-keep-color
       >
-        <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-gs-green/40 bg-white text-gs-green shadow-sm transition-transform duration-300 group-hover:scale-105 sm:h-12 sm:w-12">
-          <Phone className="h-5 w-5" aria-hidden />
+        <span className="ge-airport-call-icon inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-forest-900 text-white shadow-[0_10px_22px_rgba(6,59,42,0.18)] transition-transform duration-300 group-hover:scale-105 sm:h-12 sm:w-12">
+          <Phone className="h-5 w-5 text-white" strokeWidth={2} aria-hidden />
         </span>
-        <span className="min-w-0 text-left">
-          <span className="block text-[0.62rem] uppercase tracking-[0.16em] text-gs-dark/55 sm:text-[0.68rem]">Call Spanish line</span>
-          <span className="mt-0.5 block text-[1.08rem] tracking-[0.01em] text-gs-dark sm:text-[1.18rem]">
+        <span className="ge-airport-call-copy min-w-0 text-left">
+          <span className="block text-[0.62rem] font-bold uppercase tracking-[0.16em] text-forest-900 sm:text-[0.68rem]">
+            Call Spanish line
+          </span>
+          <span className="mt-0.5 block text-[1.08rem] font-extrabold tracking-[0.01em] text-forest-900 sm:text-[1.18rem]">
             {contactInfo.spanishPhoneDisplay}
           </span>
         </span>

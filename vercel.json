@@ -63,6 +63,7 @@
     { "source": "/api/transfer-checkout", "destination": "/api/gateway?r=transfer-checkout" },
     { "source": "/api/transfer-checkout-sync", "destination": "/api/gateway?r=transfer-checkout-sync" },
     { "source": "/api/trip-review-submit", "destination": "/api/gateway?r=trip-review-submit" },
+    { "source": "/api/website-testimonial", "destination": "/api/gateway?r=website-testimonial" },
     { "source": "/api/portal-invoice-send", "destination": "/api/gateway?r=portal-invoice-send" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]

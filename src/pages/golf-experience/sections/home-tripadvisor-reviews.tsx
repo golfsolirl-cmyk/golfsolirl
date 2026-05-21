@@ -1,6 +1,7 @@
-import { m  } from 'framer-motion'
-import { useEffect, useState } from 'react'
-import { Quote, Star } from 'lucide-react'
+import { m, useReducedMotion } from 'framer-motion'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { TripadvisorReviewCard } from '../../../components/home/tripadvisor-review-card'
 import { getSupabaseBrowserClient } from '../../../lib/supabase-client'
 import { GeSection } from '../components/ge-section'
 import { tripadvisorReviewsSectionCopy, tripadvisorSampleReviews } from '../data/tripadvisor-sample-reviews'
@@ -12,23 +13,13 @@ const fadeUp = {
   transition: { duration: 0.52, ease: 'easeOut' }
 } as const
 
-function StarRow({ count = 5 }: { readonly count?: number }) {
-  const n = Math.min(5, Math.max(0, Math.round(count)))
-  return (
-    <div className="flex gap-0.5" aria-hidden>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <Star
-          key={i}
-          className={
-            i < n
-              ? 'h-4 w-4 fill-brand-600 text-brand-700 sm:h-[1.05rem] sm:w-[1.05rem]'
-              : 'h-4 w-4 fill-transparent text-ge-gray200 sm:h-[1.05rem] sm:w-[1.05rem]'
-          }
-          strokeWidth={0}
-        />
-      ))}
-    </div>
-  )
+type WebsiteTestimonialRow = {
+  id: string
+  author_name: string
+  trip_type: string
+  travel_month: string | null
+  quote_text: string
+  rating: number
 }
 
 type PublishedGuestReview = {
@@ -38,9 +29,45 @@ type PublishedGuestReview = {
   display_name: string | null
 }
 
+type ReviewCarouselItem = {
+  id: string
+  quote: string
+  name: string
+  context: string
+  tripType?: string
+  rating: number
+  variant: 'live' | 'sample' | 'transfer'
+  badge?: string
+}
+
+function buildContext(tripType: string, travelMonth: string | null) {
+  const parts = [tripType]
+  if (travelMonth?.trim()) {
+    parts.push(travelMonth.trim())
+  }
+  return parts.join(' · ')
+}
+
 export function GeHomeTripadvisorReviews() {
+  const reduceMotion = useReducedMotion()
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [websiteTestimonials, setWebsiteTestimonials] = useState<WebsiteTestimonialRow[]>([])
+  const [transferReviews, setTransferReviews] = useState<PublishedGuestReview[]>([])
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(false)
+
+  const liveCount = websiteTestimonials.length + transferReviews.length
+  const hasLive = liveCount > 0
+
   const { eyebrow, title, lead, disclaimer, ctaLabel, ctaHref, ctaNote } = tripadvisorReviewsSectionCopy
-  const [guestReviews, setGuestReviews] = useState<PublishedGuestReview[]>([])
+
+  const sectionLead = hasLive
+    ? 'Real feedback from Irish groups who travelled with Golf Sol — fresh stories from our testimonials page and transfer reviews.'
+    : lead
+
+  const sectionDisclaimer = hasLive
+    ? `${liveCount} live review${liveCount === 1 ? '' : 's'} on your homepage · sample cards hidden while guest stories are showing`
+    : disclaimer
 
   useEffect(() => {
     const sb = getSupabaseBrowserClient()
@@ -49,21 +76,143 @@ export function GeHomeTripadvisorReviews() {
     }
     let cancelled = false
     void (async () => {
-      const { data, error } = await sb
-        .from('trip_reviews')
-        .select('id, rating, comment, display_name')
-        .not('published_at', 'is', null)
-        .order('published_at', { ascending: false })
-        .limit(9)
-      if (cancelled || error || !data) {
+      const [testimonialRes, transferRes] = await Promise.all([
+        sb
+          .from('website_testimonials')
+          .select('id, author_name, trip_type, travel_month, quote_text, rating')
+          .is('hidden_at', null)
+          .not('published_at', 'is', null)
+          .order('published_at', { ascending: false })
+          .limit(24),
+        sb
+          .from('trip_reviews')
+          .select('id, rating, comment, display_name')
+          .not('published_at', 'is', null)
+          .order('published_at', { ascending: false })
+          .limit(12)
+      ])
+      if (cancelled) {
         return
       }
-      setGuestReviews(data as PublishedGuestReview[])
+      if (!testimonialRes.error && testimonialRes.data) {
+        setWebsiteTestimonials(testimonialRes.data as WebsiteTestimonialRow[])
+      }
+      if (!transferRes.error && transferRes.data) {
+        setTransferReviews(transferRes.data as PublishedGuestReview[])
+      }
     })()
     return () => {
       cancelled = true
     }
   }, [])
+
+  const carouselItems: ReviewCarouselItem[] = hasLive
+    ? [
+        ...websiteTestimonials.map((row) => ({
+          id: `wt-${row.id}`,
+          quote: row.quote_text,
+          name: row.author_name,
+          context: buildContext(row.trip_type, row.travel_month),
+          tripType: row.trip_type,
+          rating: row.rating,
+          variant: 'live' as const,
+          badge: 'Guest story'
+        })),
+        ...transferReviews.map((row) => ({
+          id: `tr-${row.id}`,
+          quote: row.comment || 'Great service.',
+          name: row.display_name ?? 'Golf Sol guest',
+          context: 'Verified transfer review',
+          rating: row.rating,
+          variant: 'transfer' as const,
+          badge: 'Transfer review'
+        }))
+      ]
+    : tripadvisorSampleReviews.map((review, index) => ({
+        id: `sample-${index}`,
+        quote: review.quote,
+        name: review.name,
+        context: review.context,
+        tripType: review.tripType,
+        rating: 5,
+        variant: 'sample' as const
+      }))
+
+  const updateScrollHints = useCallback(() => {
+    const el = scrollRef.current
+    if (!el) {
+      setCanScrollLeft(false)
+      setCanScrollRight(false)
+      return
+    }
+    const maxScroll = el.scrollWidth - el.clientWidth
+    setCanScrollLeft(el.scrollLeft > 8)
+    setCanScrollRight(el.scrollLeft < maxScroll - 8)
+  }, [])
+
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) {
+      return
+    }
+    updateScrollHints()
+    el.addEventListener('scroll', updateScrollHints, { passive: true })
+    const ro = new ResizeObserver(updateScrollHints)
+    ro.observe(el)
+    return () => {
+      el.removeEventListener('scroll', updateScrollHints)
+      ro.disconnect()
+    }
+  }, [carouselItems.length, updateScrollHints])
+
+  useEffect(() => {
+    if (reduceMotion || carouselItems.length < 4) {
+      return
+    }
+    const el = scrollRef.current
+    if (!el || el.scrollWidth <= el.clientWidth + 16) {
+      return
+    }
+    let paused = false
+    const onEnter = () => {
+      paused = true
+    }
+    const onLeave = () => {
+      paused = false
+    }
+    el.addEventListener('mouseenter', onEnter)
+    el.addEventListener('mouseleave', onLeave)
+    el.addEventListener('focusin', onEnter)
+    el.addEventListener('focusout', onLeave)
+
+    const tick = window.setInterval(() => {
+      if (paused) {
+        return
+      }
+      const maxScroll = el.scrollWidth - el.clientWidth
+      if (maxScroll <= 0) {
+        return
+      }
+      const next = el.scrollLeft >= maxScroll - 4 ? 0 : el.scrollLeft + 280
+      el.scrollTo({ left: next, behavior: 'smooth' })
+    }, 5200)
+
+    return () => {
+      window.clearInterval(tick)
+      el.removeEventListener('mouseenter', onEnter)
+      el.removeEventListener('mouseleave', onLeave)
+      el.removeEventListener('focusin', onEnter)
+      el.removeEventListener('focusout', onLeave)
+    }
+  }, [carouselItems.length, reduceMotion])
+
+  const scrollByPage = (direction: -1 | 1) => {
+    const el = scrollRef.current
+    if (!el) {
+      return
+    }
+    el.scrollBy({ left: direction * Math.min(340, el.clientWidth * 0.85), behavior: 'smooth' })
+  }
 
   return (
     <GeSection
@@ -92,7 +241,9 @@ export function GeHomeTripadvisorReviews() {
             <h2 className="mt-3 font-ge text-[1.85rem] font-extrabold leading-[1.08] tracking-[-0.02em] text-gs-dark sm:text-[2.15rem] lg:text-[2.35rem]">
               {title}
             </h2>
-            <p className="mt-4 font-ge text-[0.98rem] leading-relaxed text-ge-gray500 sm:text-[1.05rem] sm:leading-8">{lead}</p>
+            <p className="mt-4 font-ge text-[0.98rem] leading-relaxed text-ge-gray500 sm:text-[1.05rem] sm:leading-8">
+              {sectionLead}
+            </p>
           </div>
           <div className="flex shrink-0 flex-col items-start gap-3 sm:items-end lg:items-end">
             <img
@@ -105,82 +256,65 @@ export function GeHomeTripadvisorReviews() {
               decoding="async"
             />
             <p className="max-w-xs text-left font-ge text-[0.68rem] font-semibold uppercase leading-snug tracking-[0.14em] text-ge-gray500 sm:text-right">
-              {disclaimer}
+              {sectionDisclaimer}
             </p>
           </div>
         </m.div>
 
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-          {guestReviews.map((review, index) => (
-            <m.article
-              key={review.id}
-              className="group relative flex flex-col rounded-[1.65rem] border border-brand-700/35 bg-gradient-to-b from-white to-brand-700/[0.06] p-6 shadow-[0_18px_45px_rgba(6,59,42,0.07)] ring-1 ring-gs-dark/[0.04] transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-0.5 hover:border-brand-700/60 hover:shadow-[0_24px_55px_rgba(6,59,42,0.1)] sm:p-7"
-              {...fadeUp}
-              transition={{ ...fadeUp.transition, delay: 0.05 * (index + 1) }}
-            >
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-brand-700/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        <div className="relative mt-12">
+          {carouselItems.length > 1 ? (
+            <div className="mb-4 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                aria-label="Scroll reviews left"
+                disabled={!canScrollLeft}
+                onClick={() => scrollByPage(-1)}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-ge-gray200 bg-white text-gs-dark shadow-sm transition enabled:hover:border-brand-700/40 enabled:hover:bg-brand-700/5 disabled:opacity-35"
+              >
+                <ChevronLeft className="h-5 w-5" aria-hidden />
+              </button>
+              <button
+                type="button"
+                aria-label="Scroll reviews right"
+                disabled={!canScrollRight}
+                onClick={() => scrollByPage(1)}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-ge-gray200 bg-white text-gs-dark shadow-sm transition enabled:hover:border-brand-700/40 enabled:hover:bg-brand-700/5 disabled:opacity-35"
+              >
+                <ChevronRight className="h-5 w-5" aria-hidden />
+              </button>
+            </div>
+          ) : null}
+
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 left-0 z-[2] w-8 bg-gradient-to-r from-white to-transparent sm:w-12"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 right-0 z-[2] w-8 bg-gradient-to-l from-white to-transparent sm:w-12"
+          />
+
+          <div
+            ref={scrollRef}
+            className="flex gap-5 overflow-x-auto pb-2 scroll-smooth snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            role="region"
+            aria-label="Traveller reviews carousel"
+            tabIndex={0}
+          >
+            {carouselItems.map((review, index) => (
+              <TripadvisorReviewCard
+                key={review.id}
+                quote={review.quote}
+                name={review.name}
+                context={review.context}
+                tripType={review.tripType}
+                rating={review.rating}
+                badge={review.badge}
+                variant={review.variant}
+                delayIndex={index}
               />
-              <div className="flex items-start justify-between gap-3">
-                <Quote className="h-8 w-8 shrink-0 text-brand-700/90" aria-hidden strokeWidth={1.75} />
-                <span className="rounded-full bg-gs-dark/90 px-2 py-0.5 font-ge text-[0.6rem] font-extrabold uppercase tracking-[0.14em] text-white">
-                  Guest story
-                </span>
-              </div>
-              <div className="mt-4">
-                <StarRow count={review.rating} />
-                <p className="mt-4 font-ge text-[1.02rem] font-medium leading-7 text-gs-dark/92 sm:text-[1.05rem] sm:leading-[1.65rem]">
-                  “{review.comment || 'Great service.'}”
-                </p>
-              </div>
-              <div className="mt-auto border-t border-ge-gray100/90 pt-5">
-                <p className="font-ge text-sm font-extrabold text-gs-dark">{review.display_name ?? 'Golf Sol guest'}</p>
-                <p className="mt-1 font-ge text-xs font-semibold uppercase tracking-[0.12em] text-ge-gray500">
-                  Verified transfer review
-                </p>
-              </div>
-            </m.article>
-          ))}
-          {tripadvisorSampleReviews.map((review, index) => (
-            <m.article
-              key={review.name}
-              className="group relative flex flex-col rounded-[1.65rem] border border-ge-gray100 bg-gradient-to-b from-white to-ge-gray50/40 p-6 shadow-[0_18px_45px_rgba(6,59,42,0.07)] ring-1 ring-gs-dark/[0.04] transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-0.5 hover:border-brand-700/35 hover:shadow-[0_24px_55px_rgba(6,59,42,0.1)] sm:p-7"
-              {...fadeUp}
-              transition={{ ...fadeUp.transition, delay: 0.05 * (index + 1) }}
-            >
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-brand-700/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-              />
-              <div className="flex items-start justify-between gap-3">
-                <Quote className="h-8 w-8 shrink-0 text-brand-700/90" aria-hidden strokeWidth={1.75} />
-                <img
-                  src="/images/tripadvisor-lockup.svg"
-                  alt=""
-                  width={120}
-                  height={24}
-                  className="h-5 w-auto opacity-60 transition-opacity group-hover:opacity-90"
-                  loading="lazy"
-                  decoding="async"
-                  aria-hidden
-                />
-              </div>
-              <div className="mt-4">
-                <StarRow count={5} />
-                <p className="mt-4 font-ge text-[1.02rem] font-medium leading-7 text-gs-dark/92 sm:text-[1.05rem] sm:leading-[1.65rem]">
-                  “{review.quote}”
-                </p>
-              </div>
-              <div className="mt-auto border-t border-ge-gray100/90 pt-5">
-                <p className="font-ge text-sm font-extrabold text-gs-dark">{review.name}</p>
-                <p className="mt-1 font-ge text-xs font-semibold uppercase tracking-[0.12em] text-ge-gray500">{review.context}</p>
-                <p className="mt-2 inline-flex rounded-full border border-brand-700/25 bg-brand-700/10 px-2.5 py-0.5 font-ge text-[0.62rem] font-bold uppercase tracking-[0.14em] text-gs-dark/80">
-                  {review.tripType}
-                </p>
-              </div>
-            </m.article>
-          ))}
+            ))}
+          </div>
         </div>
 
         <m.div
@@ -189,14 +323,18 @@ export function GeHomeTripadvisorReviews() {
           transition={{ ...fadeUp.transition, delay: 0.2 }}
         >
           <a
-            href={ctaHref}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={hasLive ? '/testimonials' : ctaHref}
+            target={hasLive ? undefined : '_blank'}
+            rel={hasLive ? undefined : 'noopener noreferrer'}
             className="inline-flex min-h-[48px] items-center justify-center rounded-full border-2 border-gs-green/25 bg-gs-dark px-6 py-3 font-ge text-sm font-extrabold uppercase tracking-[0.12em] text-white shadow-[0_14px_36px_rgba(6,59,42,0.18)] transition-colors hover:border-brand-700 hover:bg-gs-green"
           >
-            {ctaLabel}
+            {hasLive ? 'Share your trip story' : ctaLabel}
           </a>
-          <p className="max-w-md font-ge text-[0.72rem] leading-relaxed text-ge-gray500">{ctaNote}</p>
+          <p className="max-w-md font-ge text-[0.72rem] leading-relaxed text-ge-gray500">
+            {hasLive
+              ? 'Travelled with us? Submit a review on our testimonials page — we approve it before it appears here.'
+              : ctaNote}
+          </p>
         </m.div>
       </div>
     </GeSection>

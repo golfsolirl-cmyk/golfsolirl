@@ -6,6 +6,7 @@ import {
   Mail,
   Package,
   PenLine,
+  Star,
   Users,
   type LucideIcon
 } from 'lucide-react'
@@ -16,6 +17,7 @@ import { cx } from '../lib/utils'
 export type AdminPortalSectionId =
   | 'desk'
   | 'forms'
+  | 'testimonials'
   | 'transfers'
   | 'packages'
   | 'proposals'
@@ -33,6 +35,7 @@ export type AdminSidebarItem = {
 export const ADMIN_SIDEBAR_ITEMS: readonly AdminSidebarItem[] = [
   { id: 'desk', label: 'Desk & inbox', description: 'Tickets, Stripe, publish lines', icon: Inbox },
   { id: 'forms', label: 'Website forms', description: 'Enquiry submissions', icon: FileText },
+  { id: 'testimonials', label: 'Testimonials', description: 'Homepage guest reviews', icon: Star },
   { id: 'transfers', label: 'Transfer pipeline', description: 'Account lookup & drivers', icon: Car },
   { id: 'packages', label: 'Packages', description: 'Client package builds', icon: Package },
   { id: 'proposals', label: 'Proposals & workspace', description: 'PDF builders & CRM records', icon: PenLine },

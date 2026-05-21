@@ -11,6 +11,7 @@ import {
 } from '../components/admin-account-transfers-hub'
 import { AdminDriverCalendarPanel } from '../components/admin-driver-calendar-panel'
 import { AdminTransferPipeline } from '../components/admin-transfer-pipeline'
+import { AdminTestimonialsPanel } from '../components/admin-testimonials-panel'
 import { TransferPaymentStatusBadge } from '../components/transfer-payment-status-badge'
 import { PortalClientDataCard } from '../components/portal-client-data-card'
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
@@ -4359,6 +4360,16 @@ export function AdminDashboardPage() {
 
           </>
         )}
+        </AdminPortalSection>
+
+        <AdminPortalSection activeSection={activeAdminSection} section="testimonials">
+          <AdminOperationsSectionShell
+            kicker="Homepage · Guest reviews"
+            title="Testimonials from the website form"
+            description="Approve submissions before they appear on the homepage. Hide or delete anything you do not want public."
+          >
+            <AdminTestimonialsPanel sessionToken={session?.access_token ?? null} />
+          </AdminOperationsSectionShell>
         </AdminPortalSection>
 
         <div className="space-y-14 md:space-y-16">

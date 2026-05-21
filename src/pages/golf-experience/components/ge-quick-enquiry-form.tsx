@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
-import { Send } from 'lucide-react'
+import { Send, Star } from 'lucide-react'
 import { BookedDatesAvailabilityNotice } from '../../../components/booked-dates-availability-notice'
 import { GeButton } from './ge-button'
 import { contactInfo } from '../data/copy'
@@ -16,6 +16,7 @@ import { getLocalDateIso } from '../../../lib/local-date-iso'
 import { plannedTravelDatesErrorMessage, travelEndMinIso, travelStartMinIso } from '../../../lib/travel-date-bounds'
 import { getSupabaseBrowserClient } from '../../../lib/supabase-client'
 import { ENQUIRY_CONFLICT_EXISTING_PHONE, postWebsiteEnquiry } from '../../../lib/post-enquiry-client'
+import { postWebsiteTestimonial } from '../../../lib/post-website-testimonial'
 
 interface GeQuickEnquiryFormProps {
   readonly title: string
@@ -59,7 +60,9 @@ export function GeQuickEnquiryForm({
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [errorCode, setErrorCode] = useState<string | null>(null)
   const [bookedDays, setBookedDays] = useState<Set<string>>(() => new Set())
+  const [testimonialRating, setTestimonialRating] = useState(5)
   const confirmationRef = useRef<HTMLDivElement>(null)
+  const isTestimonialForm = formConfig.submissionKind === 'testimonial'
 
   useEffect(() => {
     let cancelled = false
@@ -247,6 +250,38 @@ export function GeQuickEnquiryForm({
     setStatus('submitting')
     setErrorCode(null)
     try {
+      if (isTestimonialForm) {
+        const quoteText = fieldValues.notes?.trim() ?? ''
+        if (quoteText.length < 20) {
+          setErrorMessage('Please write at least a few sentences for your review (20 characters minimum).')
+          setStatus('error')
+          return
+        }
+        const result = await postWebsiteTestimonial({
+          fullName: name,
+          email: mail,
+          phoneWhatsApp: phone,
+          tripType: fieldValues.tripType?.trim() ?? '',
+          travelMonth: fieldValues.travelMonth?.trim(),
+          quoteText,
+          rating: testimonialRating,
+          sourcePage: typeof window !== 'undefined' ? window.location.pathname : routeLabel
+        })
+        if (!result.ok) {
+          setStatus('error')
+          setErrorMessage(result.message)
+          return
+        }
+        setStatus('success')
+        setErrorCode(null)
+        setFullName('')
+        setEmail('')
+        setPhoneWhatsApp('')
+        setTestimonialRating(5)
+        setFieldValues(initialFieldValues)
+        return
+      }
+
       const interestLines = [
         interestPreset,
         `Page: ${routeLabel}`,
@@ -343,7 +378,9 @@ export function GeQuickEnquiryForm({
       </h2>
       <p className="mt-3 font-ge text-[1.06rem] leading-8 text-ge-gray500 sm:text-[1.1rem]">{lead}</p>
       <p className="mt-3 text-[1rem] font-medium leading-7 text-gs-dark/72 sm:text-[1.02rem]">
-        We reply from Ireland by email, phone, or WhatsApp with a clear next step.
+        {isTestimonialForm
+          ? 'Write it like a Tripadvisor review — we approve it before it appears on our homepage.'
+          : 'We reply from Ireland by email, phone, or WhatsApp with a clear next step.'}
       </p>
 
       {status === 'success' ? (
@@ -354,9 +391,15 @@ export function GeQuickEnquiryForm({
           <p className="mt-2 font-ge text-[1.04rem] leading-8 text-gs-dark sm:text-[1.08rem]">
             {formConfig.successBody}
           </p>
-          <GeButton href={`mailto:${contactInfo.email}`} variant="outline-gs-green" size="sm" className="mt-4">
-            Email us directly
-          </GeButton>
+          {isTestimonialForm ? (
+            <GeButton href="/" variant="outline-gs-green" size="sm" className="mt-4">
+              Back to homepage
+            </GeButton>
+          ) : (
+            <GeButton href={`mailto:${contactInfo.email}`} variant="outline-gs-green" size="sm" className="mt-4">
+              Email us directly
+            </GeButton>
+          )}
         </div>
       ) : (
         <>
@@ -401,6 +444,40 @@ export function GeQuickEnquiryForm({
               placeholder={contactInfo.phoneFieldPlaceholder}
             />
           </label>
+
+          {isTestimonialForm ? (
+            <div className="block">
+              <span className={labelClass}>Overall rating</span>
+              <div className="flex flex-wrap gap-2" role="group" aria-label="Overall rating">
+                {[1, 2, 3, 4, 5].map((value) => (
+                  <button
+                    key={value}
+                    type="button"
+                    aria-label={`${value} star${value === 1 ? '' : 's'}`}
+                    aria-pressed={testimonialRating === value}
+                    onClick={() => setTestimonialRating(value)}
+                    className={[
+                      'inline-flex h-11 min-w-[44px] items-center justify-center gap-1 rounded-xl border px-3 font-ge text-sm font-bold transition',
+                      testimonialRating === value
+                        ? 'border-brand-700 bg-brand-700/10 text-gs-dark'
+                        : 'border-ge-gray200 bg-white text-ge-gray500 hover:border-brand-700/40'
+                    ].join(' ')}
+                  >
+                    <Star
+                      className={
+                        value <= testimonialRating
+                          ? 'h-4 w-4 fill-brand-600 text-brand-700'
+                          : 'h-4 w-4 text-ge-gray300'
+                      }
+                      strokeWidth={0}
+                      aria-hidden
+                    />
+                    {value}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
 
           {formConfig.fields.map((field) => {
             const value = fieldValues[field.id] ?? ''

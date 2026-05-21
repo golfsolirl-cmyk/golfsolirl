@@ -24,6 +24,8 @@ export interface ContentFormConfig {
   readonly successTitle: string
   readonly successBody: string
   readonly fields: readonly ContentFormField[]
+  /** When set, form posts to website testimonial API (live homepage) instead of enquiry. */
+  readonly submissionKind?: 'enquiry' | 'testimonial'
 }
 
 export interface ContentSmartAction {
@@ -507,9 +509,11 @@ export function getContentPageFormConfig(path: string, page: GeContentPageData):
     case 'testimonial':
       return {
         badge: 'Trip feedback',
-        submitLabel: 'Send feedback',
-        successTitle: 'Feedback received',
-        successBody: 'Thanks — we appreciate the insight and will review it shortly.',
+        submitLabel: 'Submit my review',
+        submissionKind: 'testimonial',
+        successTitle: 'Thank you — review received',
+        successBody:
+          'We will read your story shortly. Once approved, it appears on our homepage for other Irish golfers planning their Costa del Sol trip.',
         fields: [
           {
             id: 'tripType',
@@ -526,11 +530,12 @@ export function getContentPageFormConfig(path: string, page: GeContentPageData):
           { id: 'travelMonth', label: 'Travel month (optional)', placeholder: 'e.g. March 2026' },
           {
             id: 'notes',
-            label: 'Testimonial details',
+            label: 'Your review',
             type: 'textarea',
-            placeholder: 'Share the highlights from your trip and what worked best.',
+            placeholder:
+              'What stood out on your trip? Tee times, hotel, transfers, Irish support — write it like a Tripadvisor review other golfers would trust.',
             required: true,
-            rows: 5
+            rows: 6
           }
         ]
       }
