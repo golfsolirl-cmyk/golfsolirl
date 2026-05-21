@@ -30,6 +30,7 @@ import {
 import { handleTransferBalanceReminderSweep, handleTransferPaymentAdmin } from '../server/transfer-payment-service.mjs'
 import { handleTransferRefund } from '../server/transfer-refund-service.mjs'
 import { handleRegeneratePortalPdfs } from '../server/transfer-portal-regenerate-pdfs.mjs'
+import { guardHomepageClientPdfRequest, guardProposalPdfRequest } from '../server/pdf-route-guards.mjs'
 import { handleTripReviewSubmit } from '../server/trip-review-submit-service.mjs'
 import { handlePortalInvoiceSend } from '../server/portal-invoice-send-service.mjs'
 import { handlePortalLinkIssue, handlePortalLinkVerify } from '../server/portal-link-context-service.mjs'
@@ -113,7 +114,8 @@ export default async function handler(req, res) {
           /* non-Vercel */
         }
         const result = await handleEnquirySubmission(payload, process.env, {
-          waitUntil: waitUntilFn ?? undefined
+          waitUntil: waitUntilFn ?? undefined,
+          clientIp: getClientIp(req)
         })
         jsonEnd(res, 200, result)
         return
@@ -221,6 +223,7 @@ export default async function handler(req, res) {
           jsonEnd(res, 405, { message: 'Method not allowed' })
           return
         }
+        await guardProposalPdfRequest(req, process.env, getClientIp)
         const rawBody = await readIncomingMessageBodyUtf8(req)
         const payload = rawBody ? JSON.parse(rawBody) : {}
         const { pdfBytes, proposal } = await createProposalPdf(payload)
@@ -238,6 +241,7 @@ export default async function handler(req, res) {
           jsonEnd(res, 405, { message: 'Method not allowed' })
           return
         }
+        await guardHomepageClientPdfRequest(req, process.env, getClientIp)
         const rawBody = await readIncomingMessageBodyUtf8(req)
         const payload = rawBody ? JSON.parse(rawBody) : {}
         const pdfBytes = await buildHomepageBrandedClientPdfBytes(payload)

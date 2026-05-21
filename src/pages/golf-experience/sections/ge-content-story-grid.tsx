@@ -49,7 +49,7 @@ export function GeContentStoryGrid({ eyebrow, title, lead, cards }: GeContentSto
         {cards.map((card, i) => (
           <m.article
             key={card.section.title}
-            className="group relative flex flex-col overflow-hidden rounded-2xl bg-gs-dark/40 ring-1 ring-white/10 shadow-[0_22px_60px_rgba(0,0,0,0.45)] transition-all duration-500 hover:-translate-y-1 hover:ring-brand-700/40"
+            className="group relative flex flex-col overflow-hidden rounded-2xl bg-gs-dark/40 ring-1 ring-white/10 shadow-[0_22px_60px_rgba(0,0,0,0.45)] transition-all duration-500 hover:-translate-y-1 hover:ring-brand-700/40 ge-on-dark"
             {...fadeUp}
             transition={{ ...fadeUp.transition, delay: i * 0.08 }}
           >

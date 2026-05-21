@@ -4,6 +4,8 @@ import { GeButton } from '../components/ge-button'
 import { GeSection } from '../components/ge-section'
 import { aboutCopy } from '../data/copy'
 import { GOLFSOL_BRAND_LOGO } from '../../../lib/brand-logo-assets'
+import { useHomepageTestLogo } from '../../../providers/homepagetest-variant'
+import { cx } from '../../../lib/utils'
 
 const fadeUp = {
   initial: { opacity: 0, y: 18 },
@@ -50,6 +52,11 @@ function AboutTitle() {
 }
 
 export function GeAboutBlock() {
+  const testLogo = useHomepageTestLogo()
+  const logoSrc = testLogo?.png ?? GOLFSOL_BRAND_LOGO.webp
+  const logoW = testLogo?.width ?? 1020
+  const logoH = testLogo?.height ?? 1468
+
   return (
     <GeSection
       background="soft"
@@ -117,13 +124,18 @@ export function GeAboutBlock() {
                     className="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-[#d9be7a]/75 to-transparent"
                   />
                   <img
-                    src={GOLFSOL_BRAND_LOGO.webp}
+                    src={logoSrc}
                     alt="GolfSol Ireland"
-                    width={1020}
-                    height={1468}
+                    width={logoW}
+                    height={logoH}
                     loading="lazy"
                     decoding="async"
-                    className="block h-auto w-[min(46vw,180px)] max-w-full select-none object-contain drop-shadow-[0_8px_22px_rgba(6,32,22,0.22)] sm:w-[min(34vw,220px)]"
+                    className={cx(
+                      'block h-auto max-w-full select-none object-contain drop-shadow-[0_8px_22px_rgba(6,32,22,0.22)]',
+                      testLogo
+                        ? 'w-[min(46vw,200px)] sm:w-[min(34vw,240px)]'
+                        : 'w-[min(46vw,180px)] sm:w-[min(34vw,220px)]'
+                    )}
                   />
                 </m.div>
 

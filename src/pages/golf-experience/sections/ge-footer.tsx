@@ -1,6 +1,7 @@
 import { ChevronRight, Mail } from 'lucide-react'
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaXTwitter } from 'react-icons/fa6'
-import { GeBrandLockup } from '../components/brand-lockup'
+import { BrandLogoPicture } from '../../../components/brand-logo-picture'
+import { GOLFSOL_BRAND_LOGO_INTRINSIC } from '../../../lib/brand-logo-assets'
 import { GeButton } from '../components/ge-button'
 import { GeDualPhoneFooterLines } from '../components/ge-dual-phone-contact'
 import { aboutFooterCopy, contactInfo } from '../data/copy'
@@ -77,7 +78,15 @@ export function GeFooter() {
 
         <div className="mt-12 grid gap-10 border-t border-white/10 pt-10 lg:grid-cols-[0.4fr_0.6fr] lg:items-center">
           <div>
-            <GeBrandLockup tone="on-dark" mode="footer" />
+            <BrandLogoPicture
+              alt="GolfSol Ireland"
+              width={GOLFSOL_BRAND_LOGO_INTRINSIC.width}
+              height={GOLFSOL_BRAND_LOGO_INTRINSIC.height}
+              loading="lazy"
+              decoding="async"
+              ignoreTestVariant
+              className="h-auto w-full max-w-[320px] select-none object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.45)] sm:max-w-[360px] md:max-w-[400px]"
+            />
             <p className="mt-6 font-ge text-[1.05rem] leading-8 text-white sm:text-[0.98rem]">{aboutFooterCopy}</p>
           </div>
           <div className="flex flex-col items-start gap-4 lg:items-end">

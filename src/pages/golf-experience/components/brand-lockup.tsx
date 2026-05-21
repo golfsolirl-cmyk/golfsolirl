@@ -1,6 +1,7 @@
 import { m  } from 'framer-motion'
 import { BrandLogoPicture, FooterBrandLogoPicture } from '../../../components/brand-logo-picture'
 import { GOLFSOL_BRAND_LOGO_INTRINSIC } from '../../../lib/brand-logo-assets'
+import { useHomepageTestLogo } from '../../../providers/homepagetest-variant'
 import { cx } from '../../../lib/utils'
 
 interface BrandLockupProps {
@@ -23,17 +24,25 @@ interface BrandLockupProps {
  * mode-specific sizing + entrance animations.
  */
 export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
+  const testLogo = useHomepageTestLogo()
+  const intrinsic = testLogo ?? GOLFSOL_BRAND_LOGO_INTRINSIC
+
   if (mode === 'overlay') {
     void tone
     return (
       <div className={cx('flex flex-col items-start', className)}>
         <BrandLogoPicture
           alt="GolfSol Ireland — Irish-owned Costa del Sol golf travel"
-          width={GOLFSOL_BRAND_LOGO_INTRINSIC.width}
-          height={GOLFSOL_BRAND_LOGO_INTRINSIC.height}
+          width={intrinsic.width}
+          height={intrinsic.height}
           decoding="async"
           fetchPriority="high"
-          className="h-auto w-full max-w-[280px] select-none object-contain drop-shadow-[0_10px_24px_rgba(0,0,0,0.55)] sm:max-w-[320px] md:max-w-[360px] lg:max-w-[400px]"
+          className={cx(
+            'h-auto w-full select-none object-contain drop-shadow-[0_10px_24px_rgba(0,0,0,0.55)]',
+            testLogo
+              ? 'max-w-[240px] sm:max-w-[280px] md:max-w-[300px] lg:max-w-[320px]'
+              : 'max-w-[280px] sm:max-w-[320px] md:max-w-[360px] lg:max-w-[400px]'
+          )}
         />
       </div>
     )
@@ -48,11 +57,16 @@ export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
       <div className={cx('flex flex-col items-start', className)}>
         <FooterBrandLogoPicture
           alt="GolfSol Ireland"
-          width={GOLFSOL_BRAND_LOGO_INTRINSIC.width}
-          height={GOLFSOL_BRAND_LOGO_INTRINSIC.height}
+          width={intrinsic.width}
+          height={intrinsic.height}
           loading="lazy"
           decoding="async"
-          className="h-auto w-full max-w-[320px] select-none object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.45)] sm:max-w-[360px] md:max-w-[400px]"
+          className={cx(
+            'h-auto w-full select-none object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.45)]',
+            testLogo
+              ? 'max-w-[280px] sm:max-w-[300px] md:max-w-[320px]'
+              : 'max-w-[320px] sm:max-w-[360px] md:max-w-[400px]'
+          )}
         />
       </div>
     )
@@ -79,13 +93,18 @@ export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
       >
         <BrandLogoPicture
           alt="GolfSol Ireland"
-          width={GOLFSOL_BRAND_LOGO_INTRINSIC.width}
-          height={GOLFSOL_BRAND_LOGO_INTRINSIC.height}
+          width={intrinsic.width}
+          height={intrinsic.height}
           decoding="async"
           fetchPriority="high"
           // Layout box stays compact; crest scales from top and shifts down so it overlaps
           // the navbar bottom edge (see `ge-navbar` overflow-visible + home link `lg:self-end`).
-          className="relative z-10 block h-[150px] w-auto origin-top translate-y-1 scale-[1.5] select-none object-contain drop-shadow-[0_3px_10px_rgba(0,0,0,0.18),0_14px_34px_rgba(0,0,0,0.28),0_28px_56px_rgba(0,0,0,0.14)] sm:h-[166px] sm:translate-y-1.5 sm:scale-[1.46] md:h-[184px] md:translate-y-2 md:scale-[1.4] lg:h-[172px] lg:translate-y-2.5 lg:scale-[1.32] xl:h-[186px] xl:translate-y-3 xl:scale-[1.28]"
+          className={cx(
+            'relative z-10 block w-auto origin-top select-none object-contain drop-shadow-[0_3px_10px_rgba(0,0,0,0.18),0_14px_34px_rgba(0,0,0,0.28),0_28px_56px_rgba(0,0,0,0.14)]',
+            testLogo
+              ? 'h-[132px] translate-y-1 scale-[1.22] sm:h-[142px] sm:translate-y-1.5 sm:scale-[1.2] md:h-[152px] md:translate-y-2 md:scale-[1.16] lg:h-[148px] lg:translate-y-2 lg:scale-[1.12] xl:h-[158px] xl:translate-y-2.5 xl:scale-[1.1]'
+              : 'h-[150px] translate-y-1 scale-[1.5] sm:h-[166px] sm:translate-y-1.5 sm:scale-[1.46] md:h-[184px] md:translate-y-2 md:scale-[1.4] lg:h-[172px] lg:translate-y-2.5 lg:scale-[1.32] xl:h-[186px] xl:translate-y-3 xl:scale-[1.28]'
+          )}
         />
         {/* One-shot gold shimmer sweep on mount */}
         <m.div

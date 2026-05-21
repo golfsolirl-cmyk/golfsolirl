@@ -13,6 +13,7 @@ import { runPostEnquiryPortalInviteJob } from './post-enquiry-portal-invite.mjs'
 import { insertTransferBookingFromWebsiteEnquiry } from './insert-transfer-booking-from-enquiry.mjs'
 import { assertEnquiryDriverDatesNotBlocked } from './enquiry-booked-dates.mjs'
 import { ensureEmailAccountAnchor, isAuthEmailBlocked } from './email-address-registry.mjs'
+import { assertApiRateLimit, parsePositiveInt } from './api-rate-limit.mjs'
 import { computePhoneUniquenessKey } from './phone-e164.mjs'
 /** Real imports (not `export { … } from './…'` only): handlers call these by name in module scope. */
 import {
@@ -673,9 +674,14 @@ const buildOwnerHtml = (payload) => buildBrandedEnquiryEmailHtml(payload, 'admin
 const DUPLICATE_PHONE_ENQUIRY_MESSAGE =
   'This phone number already has a trip request with Golf Sol Ireland. Please sign in to your dashboard to continue instead of submitting a new form.'
 
+const dedupeFailsClosed = (env) =>
+  env.ENQUIRY_PHONE_DEDUPE_FAIL_CLOSED === '1' ||
+  env.ENQUIRY_PHONE_DEDUPE_FAIL_CLOSED === 'true' ||
+  env.NODE_ENV === 'production'
+
 /**
  * Block repeat website enquiries for the same normalized mobile (see `phone_e164` migration).
- * Fails open if Supabase is missing or columns are not migrated yet.
+ * Fails open in non-production when Supabase columns are missing; fails closed on lookup errors in production.
  * @param {import('@supabase/supabase-js').SupabaseClient} sb
  * @param {string} phoneWhatsApp
  * @param {NodeJS.ProcessEnv} env
@@ -689,6 +695,8 @@ const assertNoDuplicatePhoneForWebsiteEnquiry = async (sb, phoneWhatsApp, env) =
     return
   }
 
+  const failClosed = dedupeFailsClosed(env)
+
   const { data: enqRows, error: enqErr } = await sb.from('enquiries').select('id').eq('phone_e164', phoneKey).limit(1)
   if (enqErr) {
     const msg = String(enqErr.message ?? '')
@@ -697,6 +705,11 @@ const assertNoDuplicatePhoneForWebsiteEnquiry = async (sb, phoneWhatsApp, env) =
       return
     }
     console.warn('[enquiry-service] phone dedupe enquiry lookup failed:', msg)
+    if (failClosed) {
+      const err = new Error('We could not verify your phone number right now. Please try again in a few minutes.')
+      err.statusCode = 503
+      throw err
+    }
     return
   }
   if (enqRows?.length) {
@@ -714,6 +727,11 @@ const assertNoDuplicatePhoneForWebsiteEnquiry = async (sb, phoneWhatsApp, env) =
       return
     }
     console.warn('[enquiry-service] phone dedupe profile lookup failed:', msg)
+    if (failClosed) {
+      const err = new Error('We could not verify your phone number right now. Please try again in a few minutes.')
+      err.statusCode = 503
+      throw err
+    }
     return
   }
   if (profRows?.length) {
@@ -875,6 +893,12 @@ const insertWebsiteFormPackageBuildIfProfileExists = async (enquiry, enquiryId, 
 }
 
 export const handleEnquirySubmission = async (payload, env = process.env, runtime = {}) => {
+  assertApiRateLimit('enquiry', runtime.clientIp ?? 'unknown', env, {
+    max: parsePositiveInt(env.ENQUIRY_RATE_LIMIT_PER_WINDOW, 6),
+    windowMs: parsePositiveInt(env.ENQUIRY_RATE_WINDOW_MS, 900_000),
+    message: 'Too many enquiry submissions from this connection. Please wait a few minutes and try again.'
+  })
+
   const enquiry = validateEnquiryPayload(payload)
   const enquiryId = createEnquiryReferenceId()
   const enquiryDate = formatDocumentDate()

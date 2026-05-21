@@ -31,6 +31,7 @@ import { handlePortalInvoiceSend } from './server/portal-invoice-send-service.mj
 import { handleStripeWebhook } from './server/stripe-webhook-service.mjs'
 import { readIncomingMessageBodyBuffer } from './server/vercel-read-body.mjs'
 import { handlePortalLinkIssue, handlePortalLinkVerify } from './server/portal-link-context-service.mjs'
+import { guardHomepageClientPdfRequest, guardProposalPdfRequest } from './server/pdf-route-guards.mjs'
 
 const readRequestBody = (request: NodeJS.ReadableStream) =>
   new Promise<string>((resolve, reject) => {
@@ -76,7 +77,7 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
             ...process.env,
             ...serverEnv
           },
-          {}
+          { clientIp: getClientIp(request) }
         )
 
         response.statusCode = 200
@@ -275,6 +276,7 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
       }
 
       try {
+        await guardProposalPdfRequest(request, { ...process.env, ...serverEnv }, getClientIp)
         const rawBody = await readRequestBody(request)
         const payload = rawBody ? JSON.parse(rawBody) : {}
         const { pdfBytes, proposal } = await createProposalPdf(payload)
@@ -306,6 +308,7 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
       }
 
       try {
+        await guardHomepageClientPdfRequest(request, { ...process.env, ...serverEnv }, getClientIp)
         const rawBody = await readRequestBody(request)
         const payload = rawBody ? JSON.parse(rawBody) : {}
         const { buildHomepageBrandedClientPdfBytes } = await import('./server/homepage-branded-client-pdf.mjs')
@@ -931,7 +934,11 @@ export default defineConfig(({ mode }) => {
             if (id.includes('jspdf')) return 'jspdf'
             if (id.includes('pdf-lib')) return 'vendor-pdf-lib'
             if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) return 'vendor-react'
-            if (id.includes('@supabase')) return 'vendor-supabase'
+            if (id.includes('lucide-react')) return 'vendor-lucide'
+            if (id.includes('date-fns')) return 'vendor-date-fns'
+            if (id.includes('gsap')) return 'vendor-gsap'
+            if (id.includes('lenis')) return 'vendor-lenis'
+            if (id.includes('react-icons')) return 'vendor-react-icons'
           }
         },
         checks: {

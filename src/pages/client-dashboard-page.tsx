@@ -1,6 +1,7 @@
 import type { Session } from '@supabase/supabase-js'
 import { ChevronDown, MessageCircle, Ticket, UserRound } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
+import { FocusTrapDialog } from '../components/focus-trap-dialog'
 import { ClientPortalIdentityHero, type ClientPortalTransferHeroRow } from '../components/client-portal-identity-hero'
 import { ClientPortalPaymentsDue } from '../components/client-portal-payments-due'
 import {
@@ -1090,9 +1091,17 @@ export function ClientDashboardPage() {
       throw new Error('This proposal has no saved PDF data. Ask Golf Sol Ireland to re-send from the admin proposal tool.')
     }
 
+    const accessToken = session?.access_token
+    if (!accessToken) {
+      throw new Error('Sign in again to download this proposal PDF.')
+    }
+
     const res = await fetch('/api/proposal-pdf', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
+      },
       body: JSON.stringify(row.payload)
     })
 
@@ -1114,7 +1123,7 @@ export function ClientDashboardPage() {
     }
 
     return res.blob()
-  }, [])
+  }, [session?.access_token])
 
   const persistTripDraft = (next: TripWorkspaceDraft) => {
     const shaped = ensureTripWorkspaceDraftShape(next)
@@ -2269,11 +2278,11 @@ export function ClientDashboardPage() {
         </ClientPortalSection>
 
         {interestThreadTicketId && selectedInterestThread ? (
-          <div
-            aria-labelledby="interest-thread-title"
-            aria-modal="true"
+          <FocusTrapDialog
+            active
             className="fixed inset-0 z-[60] flex items-center justify-center bg-forest-950/55 p-4"
-            role="dialog"
+            labelledBy="interest-thread-title"
+            onClose={closeInterestThread}
           >
             <div className="relative max-h-[min(90vh,640px)] w-full max-w-lg overflow-y-auto rounded-[1.5rem] border border-forest-200 bg-white p-6 shadow-xl md:p-8">
               <button
@@ -2371,16 +2380,15 @@ export function ClientDashboardPage() {
                 </>
               )}
             </div>
-          </div>
+          </FocusTrapDialog>
         ) : null}
 
         {transferServiceCardModel ? (
-          <div
-            aria-labelledby="transfer-service-card-title"
-            aria-modal="true"
+          <FocusTrapDialog
+            active
             className="fixed inset-0 z-50 flex items-center justify-center bg-forest-950/55 p-4"
-            onClick={() => setTransferServiceCardBookingId(null)}
-            role="dialog"
+            labelledBy="transfer-service-card-title"
+            onClose={() => setTransferServiceCardBookingId(null)}
           >
             <div
               className="relative max-h-[min(92vh,720px)] w-full max-w-lg overflow-y-auto rounded-[1.5rem] border border-forest-200 bg-white p-6 shadow-xl md:p-8"
@@ -2398,15 +2406,15 @@ export function ClientDashboardPage() {
               </h2>
               <PortalTransferServiceCard transfer={transferServiceCardModel} />
             </div>
-          </div>
+          </FocusTrapDialog>
         ) : null}
 
         {interestModalCategory ? (
-          <div
-            aria-labelledby="interest-ticket-title"
-            aria-modal="true"
+          <FocusTrapDialog
+            active
             className="fixed inset-0 z-50 flex items-center justify-center bg-forest-950/55 p-4"
-            role="dialog"
+            labelledBy="interest-ticket-title"
+            onClose={closeInterestModal}
           >
             <div className="relative max-h-[min(90vh,640px)] w-full max-w-lg overflow-y-auto rounded-[1.5rem] border border-forest-200 bg-white p-6 shadow-xl md:p-8">
               <button
@@ -2444,7 +2452,7 @@ export function ClientDashboardPage() {
                 </LuxuryButton>
               </div>
             </div>
-          </div>
+          </FocusTrapDialog>
         ) : null}
 
         <ClientPortalSection activeSection={activeClientSection} section="documents">

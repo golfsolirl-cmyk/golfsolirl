@@ -1,5 +1,6 @@
-import { useEffect, useMemo } from 'react'
+import { lazy, Suspense, useMemo } from 'react'
 import { CheckCircle2, ChevronRight } from 'lucide-react'
+import { usePageMeta } from '../../lib/use-page-meta'
 import { GeFooter } from './sections/ge-footer'
 import { GeNavbar } from './sections/ge-navbar'
 import { GePaymentsIreland } from './sections/payments-ireland'
@@ -15,11 +16,12 @@ import { getContentPageFormConfig, getContentPageHeroMedia, getContentStorySecti
 import { GeTransfersInsuranceBanner } from './components/ge-transfers-insurance-banner'
 import { WhatsappFab } from './components/whatsapp-fab'
 import { GeSection } from './components/ge-section'
-import {
-  GeCoursesInteractiveCorridor,
-  GOLF_COURSES_MAP_SECTION_ID,
-  shouldShowInteractiveCourseMap
-} from './components/ge-courses-interactive-corridor'
+import { GOLF_COURSES_MAP_SECTION_ID, shouldShowInteractiveCourseMap } from './components/ge-courses-interactive-corridor'
+
+const GeCoursesInteractiveCorridor = lazy(async () => {
+  const mod = await import('./components/ge-courses-interactive-corridor')
+  return { default: mod.GeCoursesInteractiveCorridor }
+})
 
 function normalisePath() {
   const path = window.location.pathname.replace(/\/+$/, '')
@@ -41,10 +43,20 @@ export function GeContentPage() {
     })
   }, [page, path])
 
-  useEffect(() => {
-    if (!page) return
-    document.title = page.metaTitle
-  }, [page])
+
+  usePageMeta(
+    page
+      ? {
+          title: page.metaTitle,
+          description: page.subtitle,
+          canonicalPath: path
+        }
+      : {
+          title: 'Page not found',
+          description: 'This Golf Sol Ireland page could not be found.',
+          noIndex: true
+        }
+  )
 
   if (!page) {
     return (
@@ -114,7 +126,18 @@ export function GeContentPage() {
           nextSectionId={showCourseCorridorMap ? `#${GOLF_COURSES_MAP_SECTION_ID}` : '#ge-content-promise'}
         />
 
-        {showCourseCorridorMap ? <GeCoursesInteractiveCorridor path={path} routeLabel={routeLabel} /> : null}
+        {showCourseCorridorMap ? (
+          <Suspense
+            fallback={
+              <div
+                aria-hidden
+                className="mx-auto h-[min(52vh,520px)] max-w-[1180px] animate-pulse rounded-[2rem] bg-forest-100/40 px-5 sm:px-8"
+              />
+            }
+          >
+            <GeCoursesInteractiveCorridor path={path} routeLabel={routeLabel} />
+          </Suspense>
+        ) : null}
 
         <GeContentPromiseBand
           eyebrow="The promise"

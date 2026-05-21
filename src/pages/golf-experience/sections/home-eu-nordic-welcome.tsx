@@ -1,6 +1,6 @@
 /**
- * Subtle home-only strip: EU + Scandinavian flags and a short line for
- * visitors from those markets planning golf on the Costa del Sol.
+ * Home-only strip: EU + Scandinavian flags and a short line for visitors
+ * from those markets planning golf on the Costa del Sol.
  */
 function FlagEu({ className }: { className?: string }) {
   const stars = Array.from({ length: 12 }, (_, i) => {
@@ -51,51 +51,79 @@ function FlagSweden({ className }: { className?: string }) {
 }
 
 const flagClass =
-  'h-[26px] w-auto shrink-0 rounded-[3px] shadow-[0_0_0_1px_rgba(0,0,0,0.08)] sm:h-[30px] sm:rounded-[4px]'
+  'h-[22px] w-auto shrink-0 rounded-[3px] shadow-[0_2px_8px_rgba(0,0,0,0.28)] ring-1 ring-white/25 sm:h-[26px] sm:rounded-[4px]'
 
 export function GeHomeEuNordicWelcome() {
   return (
     <section
-      className="border-b border-[#e8e4dc] bg-[#f4f7f5] text-gs-dark"
+      className="ge-on-dark relative isolate overflow-hidden border-y border-[#d9be7a]/30 bg-[#0a2d20] text-white"
       aria-labelledby="home-eu-nordic-welcome-heading"
     >
-      <div className="mx-auto flex max-w-[1180px] flex-col items-center justify-center gap-2.5 px-4 py-3 sm:flex-row sm:gap-5 sm:px-8 sm:py-3.5">
-        <h2 id="home-eu-nordic-welcome-heading" className="sr-only">
-          Golf transfers for visitors from the European Union and Scandinavia
-        </h2>
-        <div
-          className="flex items-center gap-2 sm:gap-2.5"
-          role="group"
-          aria-label="European Union, Denmark, Norway, Sweden"
-        >
-          <span title="European Union" className="inline-flex leading-none">
-            <FlagEu className={flagClass} />
-          </span>
-          <span className="select-none font-ge text-[11px] font-bold text-ge-gray300" aria-hidden>
-            +
-          </span>
-          <span title="Denmark" className="inline-flex leading-none">
-            <FlagDenmark className={flagClass} />
-          </span>
-          <span title="Norway" className="inline-flex leading-none">
-            <FlagNorway className={flagClass} />
-          </span>
-          <span title="Sweden" className="inline-flex leading-none">
-            <FlagSweden className={flagClass} />
-          </span>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#d9be7a]/55 to-transparent"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_120%_at_12%_50%,rgba(19,96,71,0.22),transparent_55%),radial-gradient(ellipse_70%_100%_at_88%_50%,rgba(217,190,122,0.08),transparent_50%)]"
+      />
+
+      <div className="relative mx-auto max-w-[1180px] px-4 py-4 sm:px-8 sm:py-5">
+        <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-6 lg:gap-8">
+          <h2 id="home-eu-nordic-welcome-heading" className="sr-only">
+            Golf transfers for visitors from the European Union and Scandinavia
+          </h2>
+
+          <div
+            className="inline-flex shrink-0 items-center gap-2.5 rounded-full border border-white/15 bg-white/[0.06] px-4 py-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_8px_24px_rgba(0,0,0,0.2)] backdrop-blur-sm sm:gap-3 sm:px-5 sm:py-3"
+            role="group"
+            aria-label="European Union, Denmark, Norway, Sweden"
+          >
+            <span className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.18em] text-[#f4dfa6] sm:text-[0.68rem]">
+              EU
+            </span>
+            <span title="European Union" className="inline-flex leading-none">
+              <FlagEu className={flagClass} />
+            </span>
+            <span className="select-none font-ge text-xs font-bold text-white/40" aria-hidden>
+              +
+            </span>
+            <span className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.18em] text-[#f4dfa6] sm:text-[0.68rem]">
+              Nordics
+            </span>
+            <span title="Denmark" className="inline-flex leading-none">
+              <FlagDenmark className={flagClass} />
+            </span>
+            <span title="Norway" className="inline-flex leading-none">
+              <FlagNorway className={flagClass} />
+            </span>
+            <span title="Sweden" className="inline-flex leading-none">
+              <FlagSweden className={flagClass} />
+            </span>
+          </div>
+
+          <div className="hidden h-10 w-px shrink-0 bg-gradient-to-b from-transparent via-[#d9be7a]/45 to-transparent sm:block" aria-hidden />
+
+          <p className="max-w-2xl text-center font-ge text-[0.875rem] leading-relaxed text-white/92 sm:text-left sm:text-[0.9375rem] sm:leading-7">
+            <span className="font-extrabold text-white">
+              Flying in from the EU or Scandinavia for golf on the Sol?
+            </span>{' '}
+            <span className="text-white/85">
+              Same{' '}
+              <span className="font-semibold text-[#f4dfa6]">Malaga meet-and-greet</span>
+              {' '}and{' '}
+              <span className="font-semibold text-[#f4dfa6]">Mercedes transfers</span>
+              {' '}
+              — planned in plain English, around your tee times and resort.
+            </span>
+          </p>
         </div>
-        <p className="max-w-xl text-center font-display text-[0.8125rem] font-medium leading-relaxed tracking-[-0.012em] text-forest-800 antialiased sm:max-w-2xl sm:text-left sm:text-sm sm:leading-7 sm:tracking-tight">
-          <span className="font-semibold text-forest-950">Flying in from the EU or Scandinavia for golf on the Sol?</span>{' '}
-          <span className="text-forest-700/95">
-            Same{' '}
-            <span className="font-semibold text-gs-green">Malaga meet-and-greet</span>
-            {' '}and{' '}
-            <span className="font-semibold text-gs-green">Mercedes transfers</span>
-            {' '}
-            — planned in plain English, around your tee times and resort.
-          </span>
-        </p>
       </div>
+
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#d9be7a]/35 to-transparent"
+      />
     </section>
   )
 }

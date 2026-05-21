@@ -1,6 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
-import { randomBytes } from 'node:crypto'
 import { ctaGold, emailFonts, gs } from './branded-email-shell.mjs'
 import { gsolEmailBrand } from './email-constants.mjs'
 import { buildGsolTransactionalEmail, finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
@@ -171,8 +170,12 @@ export const handleTransferBookingNotify = async (env, meta = {}) => {
     heroLead = 'Your driver has marked pickup complete. Enjoy the run.'
     bodyHtml = ''
   } else if (event === 'completed') {
-    const reviewToken = randomBytes(24).toString('hex')
-    await admin.from('transfer_bookings').update({ review_token_hash: reviewToken }).eq('id', bookingId)
+    const { generateReviewToken, hashReviewToken } = await import('./review-token-crypto.mjs')
+    const reviewToken = generateReviewToken()
+    await admin
+      .from('transfer_bookings')
+      .update({ review_token_hash: hashReviewToken(reviewToken, env) })
+      .eq('id', bookingId)
     const reviewUrl = `${site}/rate-trip?bid=${encodeURIComponent(bookingId)}&t=${encodeURIComponent(reviewToken)}`
     subject = 'How was your transfer?'
     heroTitle = 'Trip complete'

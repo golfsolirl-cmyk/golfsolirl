@@ -1,5 +1,5 @@
 import { m, useReducedMotion, type Variants } from 'framer-motion'
-import { ArrowRight, Clock3, MapPin, PlaneLanding, ShieldCheck } from 'lucide-react'
+import { ArrowRight, Clock3, Headset, MapPin, PlaneLanding, ShieldCheck } from 'lucide-react'
 import { GeDualPhoneAirportTransferCalls } from '../components/ge-dual-phone-contact'
 import { homeAirportTransferSignals, homeAirportTransfersCopy } from '../data/copy'
 
@@ -169,43 +169,48 @@ export function HomeAirportTransfersCta() {
               {...fadeUp}
               transition={{ ...fadeUp.transition, delay: 0.1 }}
             >
-              <div className="relative flex h-full flex-col overflow-hidden rounded-[1.65rem] border border-chrome-300 bg-white/95 p-4 shadow-[0_28px_68px_rgba(6,32,22,0.12)] backdrop-blur-sm sm:rounded-[1.85rem] sm:p-5">
+              <div className="ge-on-dark relative flex h-full flex-col overflow-hidden rounded-[1.65rem] border border-[#d9be7a]/35 bg-[linear-gradient(165deg,#0d3a2a_0%,#0a2d20_55%,#08231a_100%)] p-4 shadow-[0_28px_68px_rgba(6,32,22,0.28)] ring-1 ring-white/10 sm:rounded-[1.85rem] sm:p-5">
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute inset-x-6 top-[4.85rem] h-px bg-gradient-to-r from-transparent via-brand-700/75 to-transparent"
+                  className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,transparent_0%,#d9be7a_35%,#136047_65%,transparent_100%)]"
+                />
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-x-6 top-[4.85rem] h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"
                 />
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="font-ge text-[0.68rem] font-bold uppercase tracking-[0.2em] text-gs-green">
+                    <p className="font-ge text-[0.68rem] font-bold uppercase tracking-[0.2em] text-[#f4dfa6]">
                       {copy.boardingEyebrow}
                     </p>
-                    <p className="mt-2 font-ge text-[1.28rem] font-extrabold leading-tight text-gs-dark sm:text-[1.5rem]">
+                    <p className="mt-2 font-ge text-[1.28rem] font-extrabold leading-tight text-white sm:text-[1.5rem]">
                       {copy.boardingTitle}
                     </p>
                   </div>
-                  <div className="rounded-full border border-brand-700/35 bg-brand-700/12 px-3 py-1.5 font-ge text-[0.66rem] font-extrabold uppercase tracking-[0.16em] text-brand-700">
+                  <div className="rounded-full border border-[#f4dfa6]/45 bg-white/[0.08] px-3 py-1.5 font-ge text-[0.66rem] font-extrabold uppercase tracking-[0.16em] text-[#fbe8b5]">
                     {copy.boardingLive}
                   </div>
                 </div>
 
-                <dl className="mt-5 grid grid-cols-[auto,1fr] gap-x-3 gap-y-3 text-gs-dark/90">
-                  <dt className="font-ge text-[0.66rem] font-bold uppercase tracking-[0.14em] text-gs-dark/55 sm:tracking-[0.18em]">
+                <dl className="mt-5 grid grid-cols-[auto,1fr] gap-x-3 gap-y-3">
+                  <dt className="font-ge text-[0.66rem] font-bold uppercase tracking-[0.14em] text-white/60 sm:tracking-[0.18em]">
                     {copy.boardingRouteLabel}
                   </dt>
-                  <dd className="font-ge text-[0.84rem] font-semibold text-gs-dark sm:text-[0.92rem]">
+                  <dd className="font-ge text-[0.84rem] font-semibold text-white sm:text-[0.92rem]">
                     {copy.boardingRouteValue}
                   </dd>
-                  <dt className="font-ge text-[0.66rem] font-bold uppercase tracking-[0.14em] text-gs-dark/55 sm:tracking-[0.18em]">
+                  <dt className="font-ge text-[0.66rem] font-bold uppercase tracking-[0.14em] text-white/60 sm:tracking-[0.18em]">
                     {copy.boardingStatusLabel}
                   </dt>
-                  <dd className="inline-flex items-center gap-2 font-ge text-[0.84rem] font-semibold text-gs-dark sm:text-[0.92rem]">
-                    <Clock3 className="h-4 w-4 shrink-0 text-brand-700" aria-hidden />
+                  <dd className="inline-flex items-center gap-2 font-ge text-[0.84rem] font-semibold text-white sm:text-[0.92rem]">
+                    <Clock3 className="h-4 w-4 shrink-0 text-white" aria-hidden />
                     {copy.boardingStatusValue}
                   </dd>
-                  <dt className="font-ge text-[0.66rem] font-bold uppercase tracking-[0.14em] text-gs-dark/55 sm:tracking-[0.18em]">
+                  <dt className="font-ge text-[0.66rem] font-bold uppercase tracking-[0.14em] text-white/60 sm:tracking-[0.18em]">
                     {copy.boardingDeskLabel}
                   </dt>
-                  <dd className="font-ge text-[0.84rem] font-semibold text-gs-dark sm:text-[0.92rem]">
+                  <dd className="inline-flex items-center gap-2 font-ge text-[0.84rem] font-semibold text-white sm:text-[0.92rem]">
+                    <Headset className="h-4 w-4 shrink-0 text-white" aria-hidden />
                     {copy.boardingDeskValue}
                   </dd>
                 </dl>
@@ -213,7 +218,7 @@ export function HomeAirportTransfersCta() {
                 <div className="mt-6">
                   <m.a
                     href="/services/transport"
-                    className="group relative inline-flex min-h-[58px] w-full items-center justify-center gap-3 overflow-hidden rounded-full border border-[#d9be7a]/25 bg-[linear-gradient(135deg,#d9be7a_0%,#136047_40%,#0f4f3c_100%)] px-5 py-3.5 text-center font-ge text-[0.9rem] font-extrabold uppercase tracking-[0.14em] text-gs-dark shadow-[0_20px_44px_rgba(19,96,71,0.28)] transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-[0_24px_52px_rgba(19,96,71,0.36)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 sm:min-h-[60px] sm:text-[0.96rem]"
+                    className="group relative inline-flex min-h-[58px] w-full items-center justify-center gap-3 overflow-hidden rounded-full border border-white/20 bg-[linear-gradient(135deg,#136047_0%,#0f4f3c_55%,#0a2d20_100%)] px-5 py-3.5 text-center font-ge text-[0.9rem] font-extrabold uppercase tracking-[0.14em] text-white shadow-[0_20px_44px_rgba(0,0,0,0.35)] transition-transform duration-300 hover:-translate-y-0.5 hover:border-[#d9be7a]/40 hover:shadow-[0_24px_52px_rgba(0,0,0,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f4dfa6] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a2d20] sm:min-h-[60px] sm:text-[0.96rem]"
                     animate={
                       reduceMotion
                         ? undefined
@@ -236,14 +241,14 @@ export function HomeAirportTransfersCta() {
                       }
                     />
                     <span className="relative inline-flex items-center gap-3">
-                      <PlaneLanding className="h-5 w-5 shrink-0" aria-hidden />
+                      <PlaneLanding className="h-5 w-5 shrink-0 text-white" aria-hidden />
                       {copy.ctaLabel}
-                      <ArrowRight className="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
+                      <ArrowRight className="h-4 w-4 shrink-0 text-white transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
                     </span>
                   </m.a>
                 </div>
 
-                <GeDualPhoneAirportTransferCalls />
+                <GeDualPhoneAirportTransferCalls onDark />
               </div>
             </m.div>
 

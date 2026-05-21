@@ -1,5 +1,6 @@
 import ReactDOM from 'react-dom/client'
 import { lazy, Suspense, type LazyExoticComponent, type ComponentType } from 'react'
+import { AppErrorBoundary } from './components/app-error-boundary'
 import { pathnameNeedsImmediateSupabaseHydration } from './lib/auth-bootstrap-path'
 import { MotionRoot } from './providers/motion-root'
 import { isGeContentPagePath } from './pages/golf-experience/data/content-pages'
@@ -78,9 +79,16 @@ const BusinessCardsPage = lazy(() =>
 const CinematicHomePage = lazy(() =>
   import('./pages/cinematic-home/cinematic-home-page').then((m) => ({ default: m.CinematicHomePage }))
 )
+const GolfExperienceHomeTest = lazy(() =>
+  import('./pages/golf-experience/golf-experience-home-test').then((m) => ({
+    default: m.GolfExperienceHomeTest,
+  }))
+)
 const BrandIdentityMockupPage = lazy(() =>
   import('./pages/brand-mockup/brand-identity-mockup-page').then((m) => ({ default: m.BrandIdentityMockupPage }))
 )
+
+const NotFoundPage = lazy(() => import('./pages/not-found-page').then((m) => ({ default: m.NotFoundPage })))
 
 type PageComponent = LazyExoticComponent<ComponentType>
 
@@ -112,6 +120,10 @@ function syncReadableTypePageClass(path: string) {
 function resolvePage(): PageComponent {
   const normalizedPath = window.location.pathname === '/' ? '/' : window.location.pathname.replace(/\/+$/, '')
   syncReadableTypePageClass(normalizedPath)
+
+  if (normalizedPath === '/homepagetest') {
+    return GolfExperienceHomeTest
+  }
 
   if (normalizedPath === '/') {
     return GolfExperienceHome
@@ -235,7 +247,7 @@ function resolvePage(): PageComponent {
     return CinematicHomePage
   }
 
-  return GolfExperienceHome
+  return NotFoundPage
 }
 
 const ActivePage = resolvePage()
@@ -252,13 +264,27 @@ const AuthProviderShell = lazy(() =>
 )
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <Suspense fallback={null}>
-    <AuthProviderShell>
-      <Suspense fallback={null}>
-        <MotionRoot>
-          <ActivePage />
-        </MotionRoot>
-      </Suspense>
-    </AuthProviderShell>
-  </Suspense>
+  <AppErrorBoundary>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-offwhite font-ge text-sm text-forest-700">
+          Loading…
+        </div>
+      }
+    >
+      <AuthProviderShell>
+        <Suspense
+          fallback={
+            <div className="flex min-h-screen items-center justify-center bg-offwhite font-ge text-sm text-forest-700">
+              Loading…
+            </div>
+          }
+        >
+          <MotionRoot>
+            <ActivePage />
+          </MotionRoot>
+        </Suspense>
+      </AuthProviderShell>
+    </Suspense>
+  </AppErrorBoundary>
 )

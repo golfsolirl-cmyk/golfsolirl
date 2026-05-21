@@ -465,6 +465,31 @@
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.65);
 }
 
+/* —— Content page story grid (/golf-courses, etc.) — dark editorial cards —— */
+.ge-page #ge-content-journey article h3,
+.ge-page #ge-content-journey article h3 * {
+  color: #ffffff !important;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.65);
+}
+
+.ge-page #ge-content-journey article p:not([class*='bg-white'] *) {
+  color: rgba(255, 255, 255, 0.88) !important;
+}
+
+.ge-page #ge-content-journey article [class*='border-t'] p,
+.ge-page #ge-content-journey article [class*='text-\\[\\#fbe8b5\\]'] {
+  color: #fbe8b5 !important;
+}
+
+/* —— Interactive course map — legend/controls stay inside card (below fixed nav z-40) —— */
+.ge-page #golf-sol-course-corridor .leaflet-control-container {
+  z-index: 25;
+}
+
+.ge-page #golf-sol-course-corridor .leaflet-pane {
+  z-index: 1;
+}
+
 /* —— Hotel cards — same fix: their h3 title sits on a dark photo scrim and
    was being forced dark by the global `.ge-page h3 { color: var(--heading-color) }`
    rule. Force pure white + readable shadow. The card body (white surface) is

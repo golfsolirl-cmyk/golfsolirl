@@ -474,13 +474,13 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
         </div>
 
         <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(260px,320px)] lg:items-stretch">
-          <div className="relative min-h-[min(72vh,520px)] overflow-hidden rounded-[1.85rem] border-2 border-chrome-200/90 bg-white shadow-[0_24px_70px_rgba(115,132,33,0.15)] ring-1 ring-gs-green/10">
+          <div className="relative isolate min-h-[min(72vh,520px)] overflow-hidden rounded-[1.85rem] border-2 border-chrome-200/90 bg-white shadow-[0_24px_70px_rgba(115,132,33,0.15)] ring-1 ring-gs-green/10">
             <div
               aria-hidden
               className="pointer-events-none absolute inset-0 z-[5] rounded-[inherit] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),inset_0_-20px_50px_rgba(255,214,140,0.12)]"
             />
             <div ref={mapRef} className="relative z-[1] h-full min-h-[min(72vh,520px)] w-full bg-[#eef6f1]" role="application" aria-label="Interactive map of Costa del Sol golf courses" />
-            <div className="pointer-events-none absolute bottom-4 left-4 z-[400] flex max-w-[min(100%,260px)] flex-col gap-1.5 rounded-xl border-2 border-chrome-200/90 bg-[#fffdf8] px-3 py-2.5 text-[0.7rem] font-medium text-gs-dark shadow-md sm:text-[0.72rem]">
+            <div className="pointer-events-none absolute bottom-4 left-4 z-[30] flex max-w-[min(100%,260px)] flex-col gap-1.5 rounded-xl border-2 border-chrome-200/90 bg-[#fffdf8] px-3 py-2.5 text-[0.7rem] font-medium text-gs-dark shadow-md sm:text-[0.72rem]">
               <span className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.14em] text-gs-green">Legend</span>
               <span className="flex items-center gap-2 text-ge-gray600">
                 <span className="h-2.5 w-2.5 rounded-full bg-gradient-to-br from-gs-green to-fairway-600" aria-hidden /> Value

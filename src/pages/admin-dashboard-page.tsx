@@ -1,6 +1,7 @@
 import { UserRound } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { PortalInterestCategoryGlyph } from '../components/portal-interest-category-glyph'
+import { FocusTrapDialog } from '../components/focus-trap-dialog'
 import { AdminOperationsHubHero } from '../components/admin-operations-hub-hero'
 import { AdminPortalShell, AdminPortalSection, type AdminPortalSectionId } from '../components/admin-portal-shell'
 import { AdminOperationsSectionShell } from '../components/admin-operations-section-shell'
@@ -2940,10 +2941,19 @@ export function AdminDashboardPage() {
     setManualProposalMessage(null)
     revokeManualProposalPdfObjectUrl()
 
+    if (!session?.access_token) {
+      setManualProposalMessage('Sign in again to preview proposal PDFs.')
+      setManualProposalPdfLoading(false)
+      return
+    }
+
     try {
       const res = await fetch('/api/proposal-pdf', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
         body: JSON.stringify(buildManualProposalPayload({ forPreview: true }))
       })
 
@@ -3539,6 +3549,12 @@ export function AdminDashboardPage() {
     setWorkspacePdfLoading(true)
     revokeWorkspacePdfObjectUrl()
 
+    if (!session?.access_token) {
+      setWorkspacePdfError('Sign in again to preview proposal PDFs.')
+      setWorkspacePdfLoading(false)
+      return
+    }
+
     try {
       const payload = buildAdminWorkspaceProposalPdfPayload(row, workspaceDraft, {
         manualGroupTotalEur: resolveWorkspaceManualTotal(),
@@ -3547,7 +3563,10 @@ export function AdminDashboardPage() {
       })
       const res = await fetch('/api/proposal-pdf', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
         body: JSON.stringify(payload)
       })
 
@@ -7249,12 +7268,11 @@ export function AdminDashboardPage() {
             onClick={handleCloseBuildDetail}
             type="button"
           />
-          <div
-            aria-labelledby="admin-build-detail-title"
-            aria-modal="true"
+          <FocusTrapDialog
+            active
             className="relative z-10 flex max-h-[min(90vh,920px)] w-full max-w-2xl flex-col overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
+            labelledBy="admin-build-detail-title"
+            onClose={handleCloseBuildDetail}
           >
             <div className="border-b border-forest-100 bg-offwhite px-6 py-5 md:px-8">
               <h2 className="font-display text-xl font-semibold text-forest-950 md:text-2xl" id="admin-build-detail-title">
@@ -7566,7 +7584,7 @@ export function AdminDashboardPage() {
                 ) : null}
               </div>
             </form>
-          </div>
+          </FocusTrapDialog>
         </div>
       ) : null}
 

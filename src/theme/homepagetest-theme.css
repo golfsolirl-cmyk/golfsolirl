@@ -1,0 +1,119 @@
+/**
+ * Forest + shamrock + gold palette — scoped to `/homepagetest` only.
+ * Variables inherit to all descendants; production `/` is unchanged.
+ */
+.homepagetest-page {
+  --forest-950: #03140d;
+  --forest-900: #062315;
+  --forest-800: #0b3a24;
+  --forest-700: #0f4d35;
+  --shamrock-500: #58a832;
+  --gold-500: #d6aa3b;
+  --gold-300: #f2d77b;
+  --cream-100: #f7f1df;
+  --cream-200: #e8dcc0;
+  --silver-200: #d9ded8;
+  --charcoal: #11140f;
+
+  --brand-950: var(--forest-950);
+  --brand-900: var(--forest-900);
+  --brand-800: var(--forest-800);
+  --brand-700: var(--forest-700);
+  --brand-600: var(--shamrock-500);
+  --brand-500: #6fbf4a;
+
+  --chrome-50: var(--cream-100);
+  --chrome-100: var(--cream-200);
+  --chrome-200: var(--silver-200);
+  --chrome-300: #c8cfc9;
+  --chrome-400: #a8b0aa;
+
+  --silver-100: var(--cream-100);
+  --silver-200: var(--silver-200);
+  --silver-300: #c5ccc6;
+  --silver-400: #9aa39c;
+  --silver-500: #6f7872;
+
+  --bg-main: var(--cream-200);
+  --bg-section: #ffffff;
+  --bg-section-alt: var(--cream-100);
+  --bg-card: rgba(255, 255, 255, 0.97);
+  --bg-footer: linear-gradient(180deg, var(--forest-900) 0%, var(--forest-950) 100%);
+  --bg-hero-overlay: linear-gradient(
+    135deg,
+    rgba(3, 20, 13, 0.92),
+    rgba(11, 58, 36, 0.88)
+  );
+
+  --header-bg: var(--cream-100);
+
+  --text-primary: var(--charcoal);
+  --text-secondary: #3d4a42;
+  --text-muted: #5c6b62;
+  --text-light: var(--cream-100);
+  --text-on-dark: #ffffff;
+  --text-on-light: var(--forest-900);
+  --heading-color: var(--forest-900);
+  --heading-accent: var(--forest-800);
+
+  --border-light: rgba(11, 58, 36, 0.1);
+  --border-default: rgba(11, 58, 36, 0.16);
+  --border-heavy: rgba(11, 58, 36, 0.24);
+  --border-chrome: rgba(217, 222, 216, 0.65);
+
+  --btn-primary-bg: linear-gradient(135deg, var(--forest-800), var(--forest-700));
+  --btn-primary-text: #ffffff;
+  --btn-primary-hover: linear-gradient(135deg, var(--forest-700), var(--shamrock-500));
+  --btn-secondary-bg: #ffffff;
+  --btn-secondary-border: var(--forest-800);
+  --btn-secondary-text: var(--forest-800);
+  --btn-secondary-hover: var(--cream-100);
+  --btn-gold-bg: linear-gradient(135deg, var(--gold-500), var(--gold-300));
+  --btn-gold-text: var(--forest-950);
+  --shadow-btn-primary: 0 10px 30px rgba(3, 20, 13, 0.28);
+  --shadow-btn-primary-hover: 0 14px 38px rgba(3, 20, 13, 0.34);
+
+  --link: var(--forest-800);
+  --link-hover: var(--shamrock-500);
+  --link-active: var(--forest-900);
+  --link-on-dark: var(--cream-100);
+  --link-on-dark-hover: var(--gold-300);
+
+  --card-bg: rgba(255, 255, 255, 0.97);
+  --card-shadow: 0 10px 30px rgba(3, 20, 13, 0.1);
+  --card-hover-shadow: 0 18px 45px rgba(3, 20, 13, 0.16);
+
+  --input-bg: #ffffff;
+  --input-border: rgba(11, 58, 36, 0.14);
+  --input-focus: var(--forest-800);
+
+  --success: var(--shamrock-500);
+  --warning: var(--gold-500);
+  --danger: #b42318;
+
+  --footer-text: var(--cream-100);
+  --footer-link: var(--gold-300);
+  --footer-link-hover: #ffffff;
+
+  --gsol-mustard: var(--gold-500);
+  --gsol-gold: var(--gold-300);
+}
+
+.homepagetest-page.ge-page {
+  background: linear-gradient(
+    180deg,
+    var(--cream-100) 0%,
+    var(--cream-200) 42%,
+    var(--cream-200) 100%
+  );
+  color: var(--text-primary);
+}
+
+.homepagetest-page .text-brand-700,
+.homepagetest-page .text-gs-green {
+  color: var(--forest-800) !important;
+}
+
+.homepagetest-page .bg-gs-green {
+  background-color: color-mix(in srgb, var(--shamrock-500) 18%, transparent) !important;
+}

@@ -219,10 +219,16 @@ const airportCardClass =
   'group inline-flex min-h-[62px] w-full items-center justify-center gap-3 rounded-full border border-[#d9d9d9] bg-[#f4f7f5] px-4 py-3 font-ge font-extrabold text-gs-dark shadow-[0_14px_28px_rgba(6,32,22,0.08)] transition-colors hover:border-brand-700/[0.5] hover:text-gs-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-h-[64px] sm:px-5'
 
 /** Home airport transfers: stacked Irish + Spanish call cards. */
-export function GeDualPhoneAirportTransferCalls() {
+export function GeDualPhoneAirportTransferCalls({ onDark = false }: { readonly onDark?: boolean }) {
   return (
     <div className="mt-4 flex flex-col items-stretch gap-3">
-      <p className="font-ge text-[0.74rem] font-semibold uppercase tracking-[0.08em] text-gs-dark/[0.68] sm:text-[0.82rem] sm:tracking-[0.16em]">
+      <p
+        className={
+          onDark
+            ? 'font-ge text-[0.74rem] font-semibold uppercase tracking-[0.08em] text-white/65 sm:text-[0.82rem] sm:tracking-[0.16em]'
+            : 'font-ge text-[0.74rem] font-semibold uppercase tracking-[0.08em] text-gs-dark/[0.68] sm:text-[0.82rem] sm:tracking-[0.16em]'
+        }
+      >
         Meet & greet · Resort drop-off · Golf bag friendly
       </p>
       <a

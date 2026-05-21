@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /dashboard/
+Disallow: /driver
+Disallow: /driver/
+Disallow: /auth/
+Disallow: /login
+Disallow: /logged-out
+Disallow: /packages-admin
+Disallow: /package-admin
+Disallow: /email-template-preview
+Disallow: /logo-preview
+Disallow: /logo-capture
+Disallow: /brand-mockup
+Disallow: /homepagetest
+Disallow: /cinematic-home
+Disallow: /homepage-v2
+Disallow: /preview
+
+Sitemap: https://golfsolirl.com/sitemap.xml

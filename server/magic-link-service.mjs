@@ -21,32 +21,23 @@ const operatorPasscodeMatches = (provided, expected) => {
   }
 }
 
-const rateBucket = new Map()
+import { assertApiRateLimit, parsePositiveInt } from './api-rate-limit.mjs'
 
-const parsePositiveInt = (value, fallback) => {
-  const n = Number(value)
-  return Number.isFinite(n) && n > 0 ? Math.floor(n) : fallback
-}
-
-const assertMagicLinkRateLimit = (clientIp, env) => {
+const assertMagicLinkRateLimit = (clientIp, email, env) => {
   const max = parsePositiveInt(env.MAGIC_LINK_RATE_LIMIT_PER_WINDOW, 8)
-  const windowMs = parsePositiveInt(env.MAGIC_LINK_RATE_WINDOW_MS, 900000)
-  const now = Date.now()
-  const key = clientIp || 'unknown'
-  const bucket = rateBucket.get(key)
+  const windowMs = parsePositiveInt(env.MAGIC_LINK_RATE_WINDOW_MS, 900_000)
 
-  if (!bucket || bucket.resetAt < now) {
-    rateBucket.set(key, { n: 1, resetAt: now + windowMs })
-    return
-  }
+  assertApiRateLimit('magic-link-ip', clientIp || 'unknown', env, {
+    max,
+    windowMs,
+    message: 'Too many sign-in attempts. Please wait a few minutes and try again.'
+  })
 
-  if (bucket.n >= max) {
-    const error = new Error('Too many sign-in attempts. Please wait a few minutes and try again.')
-    error.statusCode = 429
-    throw error
-  }
-
-  bucket.n += 1
+  assertApiRateLimit('magic-link-email', email, env, {
+    max: Math.min(max, 4),
+    windowMs,
+    message: 'Too many sign-in attempts for this email. Please wait a few minutes and try again.'
+  })
 }
 
 /**
@@ -149,7 +140,7 @@ export const handleMagicLinkRequest = async (payload, env = process.env, meta = 
     throw error
   }
 
-  assertMagicLinkRateLimit(meta.clientIp ?? 'unknown', env)
+  assertMagicLinkRateLimit(meta.clientIp ?? 'unknown', email, env)
 
   const admin = createClient(supabaseUrl, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false }

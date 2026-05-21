@@ -32,20 +32,28 @@ export const handleRegeneratePortalPdfs = async (payload, env, { authHeader }) =
   let failed = 0
   const errors = []
 
-  for (const bookingId of bookingIds) {
-    try {
-      const result = await publishTransferAdminPricePortalPdfs(admin, env, bookingId)
-      if (result.ok) {
-        success++
-      } else {
+  const concurrency = Math.min(5, bookingIds.length)
+  let cursor = 0
+
+  const worker = async () => {
+    while (cursor < bookingIds.length) {
+      const bookingId = bookingIds[cursor++]
+      try {
+        const result = await publishTransferAdminPricePortalPdfs(admin, env, bookingId)
+        if (result.ok) {
+          success++
+        } else {
+          failed++
+          errors.push({ bookingId, reason: result.reason })
+        }
+      } catch (e) {
         failed++
-        errors.push({ bookingId, reason: result.reason })
+        errors.push({ bookingId, reason: e.message })
       }
-    } catch (e) {
-      failed++
-      errors.push({ bookingId, reason: e.message })
     }
   }
+
+  await Promise.all(Array.from({ length: concurrency }, () => worker()))
 
   return { ok: true, regenerated: success, failed, errors: errors.slice(0, 10) }
 }

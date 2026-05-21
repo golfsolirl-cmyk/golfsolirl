@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { verifyReviewToken } from './review-token-crypto.mjs'
 
 const throwStatus = (message, code = 400) => {
   const e = new Error(message)
@@ -39,7 +40,7 @@ export const handleTripReviewSubmit = async (env, meta = {}) => {
   if (booking.status !== 'completed') {
     throwStatus('Reviews are only available after drop-off is complete.', 400)
   }
-  if (!booking.review_token_hash || booking.review_token_hash !== token) {
+  if (!verifyReviewToken(token, booking.review_token_hash, env)) {
     throwStatus('Invalid or expired review link.', 403)
   }
 

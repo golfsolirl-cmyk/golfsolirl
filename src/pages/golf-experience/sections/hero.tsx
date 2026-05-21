@@ -135,7 +135,15 @@ export function GeHero({
             />
           </>
         ) : (
-          <GeMarketingHeroPicture className="relative block w-full" />
+          <>
+            <h1
+              id="ge-hero-title"
+              className="sr-only"
+            >
+              Premium Costa del Sol golf holidays for Irish travellers
+            </h1>
+            <GeMarketingHeroPicture className="relative block w-full" />
+          </>
         )}
 
         {isPortal && (portalTitle || portalKicker || portalSubtitle || portalTimestamp) ? (
