@@ -17,6 +17,8 @@ import { plannedTravelDatesErrorMessage, travelEndMinIso, travelStartMinIso } fr
 import { getSupabaseBrowserClient } from '../../../lib/supabase-client'
 import { ENQUIRY_CONFLICT_EXISTING_PHONE, postWebsiteEnquiry } from '../../../lib/post-enquiry-client'
 import { postWebsiteTestimonial } from '../../../lib/post-website-testimonial'
+import { TERMS_ACCEPTANCE_ERROR, termsAcceptanceFormFields } from '../../../lib/terms-acceptance'
+import { GeTermsAcceptanceField } from './ge-terms-acceptance-field'
 
 interface GeQuickEnquiryFormProps {
   readonly title: string
@@ -61,6 +63,7 @@ export function GeQuickEnquiryForm({
   const [errorCode, setErrorCode] = useState<string | null>(null)
   const [bookedDays, setBookedDays] = useState<Set<string>>(() => new Set())
   const [testimonialRating, setTestimonialRating] = useState(5)
+  const [termsAccepted, setTermsAccepted] = useState(false)
   const confirmationRef = useRef<HTMLDivElement>(null)
   const isTestimonialForm = formConfig.submissionKind === 'testimonial'
 
@@ -82,6 +85,7 @@ export function GeQuickEnquiryForm({
     setStatus('idle')
     setErrorMessage(null)
     setErrorCode(null)
+    setTermsAccepted(false)
   }, [initialFieldValues])
 
   useEffect(() => {
@@ -247,6 +251,12 @@ export function GeQuickEnquiryForm({
       return
     }
 
+    if (!isTestimonialForm && !termsAccepted) {
+      setErrorMessage(TERMS_ACCEPTANCE_ERROR)
+      setStatus('error')
+      return
+    }
+
     setStatus('submitting')
     setErrorCode(null)
     try {
@@ -334,7 +344,7 @@ export function GeQuickEnquiryForm({
         bestTimeToCall: 'Any time',
         formPayload: {
           form: WEBSITE_ENQUIRY_FORM.contentQuickEnquiry,
-          fields: formFields
+          fields: { ...formFields, ...termsAcceptanceFormFields() }
         }
       })
 
@@ -351,6 +361,7 @@ export function GeQuickEnquiryForm({
       setEmail('')
       setPhoneWhatsApp('')
       setFieldValues(initialFieldValues)
+      setTermsAccepted(false)
     } catch (error) {
       setStatus('error')
       setErrorCode(null)
@@ -574,6 +585,14 @@ export function GeQuickEnquiryForm({
                 </p>
               ) : null}
             </div>
+          ) : null}
+
+          {!isTestimonialForm ? (
+            <GeTermsAcceptanceField
+              checked={termsAccepted}
+              onChange={setTermsAccepted}
+              id={`terms-${routeLabel.replace(/\W+/g, '-').toLowerCase()}`}
+            />
           ) : null}
 
           <GeButton className="w-full" type="submit" variant="gs-green" size="lg" disabled={status === 'submitting'}>

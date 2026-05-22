@@ -4,7 +4,9 @@ import { ChevronDown, Hotel, MapPin, PlaneLanding, Sparkles, X } from 'lucide-re
 import { cx } from '../../../lib/utils'
 import { WEBSITE_ENQUIRY_FORM } from '../../../lib/enquiry-form-registry'
 import { ENQUIRY_CONFLICT_EXISTING_PHONE, postWebsiteEnquiry } from '../../../lib/post-enquiry-client'
+import { TERMS_ACCEPTANCE_ERROR, termsAcceptanceFormFields } from '../../../lib/terms-acceptance'
 import { alreadyBookedHotelCopy } from '../data/copy'
+import { GeTermsAcceptanceField } from './ge-terms-acceptance-field'
 
 type TravelMode = 'flight' | 'arrived'
 
@@ -21,6 +23,7 @@ export function GeAlreadyBookedFlightPanel() {
   const [collectionTime, setCollectionTime] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [termsAccepted, setTermsAccepted] = useState(false)
   const firstFieldRef = useRef<HTMLInputElement>(null)
   const flightFieldRef = useRef<HTMLInputElement>(null)
   const collectionFieldRef = useRef<HTMLInputElement>(null)
@@ -436,6 +439,12 @@ export function GeAlreadyBookedFlightPanel() {
                       {error}
                     </p>
                   ) : null}
+
+                  <GeTermsAcceptanceField
+                    checked={termsAccepted}
+                    onChange={setTermsAccepted}
+                    id="terms-already-booked"
+                  />
 
                   <button
                     type="submit"

@@ -18,8 +18,10 @@ import {
 } from '../../../lib/enquiry-form-registry'
 import { getSupabaseBrowserClient } from '../../../lib/supabase-client'
 import { ENQUIRY_CONFLICT_EXISTING_PHONE, postWebsiteEnquiry } from '../../../lib/post-enquiry-client'
+import { TERMS_ACCEPTANCE_ERROR, termsAcceptanceFormFields } from '../../../lib/terms-acceptance'
 import { BookedDatesAvailabilityNotice } from '../../../components/booked-dates-availability-notice'
 import { GeButton } from './ge-button'
+import { GeTermsAcceptanceField } from './ge-terms-acceptance-field'
 import { cx } from '../../../lib/utils'
 
 export const GOLF_COURSES_MAP_SECTION_ID = 'golf-sol-course-corridor'
@@ -124,6 +126,7 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [errorCode, setErrorCode] = useState<string | null>(null)
+  const [termsAccepted, setTermsAccepted] = useState(false)
   const [bookedDays, setBookedDays] = useState<Set<string>>(() => new Set())
 
   const selectedCourse = useMemo(
@@ -349,6 +352,12 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
       return
     }
 
+    if (!termsAccepted) {
+      setErrorMessage(TERMS_ACCEPTANCE_ERROR)
+      setStatus('error')
+      return
+    }
+
     const datesSummary =
       tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp
         ? `Trip timing: Already at Málaga (AGP)${df || dt ? ` (${[df, dt].filter(Boolean).join(' → ')})` : ''}`
@@ -399,7 +408,8 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
             [ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffId]: selectedCourse.id,
             [ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffLabel]: selectedCourse.name,
             ...(sizePax?.[1] ? { [ENQUIRY_STRUCTURED_FIELD_KEYS.pax]: sizePax[1] } : {}),
-            ...(note ? { Notes: note } : {})
+            ...(note ? { Notes: note } : {}),
+            ...termsAcceptanceFormFields()
           }
         }
       })
@@ -715,6 +725,13 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
                       </a>
                       .
                     </p>
+                    <GeTermsAcceptanceField
+                      checked={termsAccepted}
+                      onChange={setTermsAccepted}
+                      id="terms-course-map"
+                      className="sm:col-span-2"
+                    />
+
                     <GeButton type="submit" variant="gs-green" size="lg" disabled={status === 'submitting'} className="w-full min-w-[200px] sm:w-auto">
                       <Send className="h-4 w-4" aria-hidden />
                       {status === 'submitting' ? 'Sending…' : 'Send course brief'}

@@ -1,5 +1,5 @@
 /**
- * Home-only strip: EU + Scandinavian flags and a short line for visitors
+ * Home-only strip: Europe + Scandinavian flags and a short line for visitors
  * from those markets planning golf on the Costa del Sol.
  */
 function FlagEu({ className }: { className?: string }) {
@@ -77,12 +77,12 @@ export function GeHomeEuNordicWelcome() {
           <div
             className="inline-flex shrink-0 items-center gap-2.5 rounded-full border border-white/15 bg-white/[0.06] px-4 py-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_8px_24px_rgba(0,0,0,0.2)] backdrop-blur-sm sm:gap-3 sm:px-5 sm:py-3"
             role="group"
-            aria-label="European Union, Denmark, Norway, Sweden"
+            aria-label="Europe, Denmark, Norway, Sweden"
           >
             <span className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.18em] text-[#f4dfa6] sm:text-[0.68rem]">
-              EU
+              Europe
             </span>
-            <span title="European Union" className="inline-flex leading-none">
+            <span title="Europe" className="inline-flex leading-none">
               <FlagEu className={flagClass} />
             </span>
             <span className="select-none font-ge text-xs font-bold text-white/40" aria-hidden>
@@ -106,15 +106,12 @@ export function GeHomeEuNordicWelcome() {
 
           <p className="max-w-2xl text-center font-ge text-[0.875rem] leading-relaxed text-white/92 sm:text-left sm:text-[0.9375rem] sm:leading-7">
             <span className="font-extrabold text-white">
-              Flying in from the EU or Scandinavia for golf on the Sol?
+              Flying in from Europe or Scandinavia for golf on the Sol?
             </span>{' '}
             <span className="text-white/85">
-              Same{' '}
-              <span className="font-semibold text-[#f4dfa6]">Malaga meet-and-greet</span>
-              {' '}and{' '}
-              <span className="font-semibold text-[#f4dfa6]">Mercedes transfers</span>
-              {' '}
-              — planned in plain English, around your tee times and resort.
+              We offer{' '}
+              <span className="font-semibold text-[#f4dfa6]">Málaga meet-and-greet and airport transfers</span>, all
+              planned around your resort and tee times.
             </span>
           </p>
         </div>

@@ -292,7 +292,7 @@ export const extrasCopy = {
   teeTimesStripTitle: 'Tee times & courses',
   teeTimesStripBody:
     'Society rounds, four-balls and shortlists across the Sol — paced to your transfers and hotel base.',
-  teeTimesStripBadge: 'Irish groups · Plain English',
+  teeTimesStripBadge: 'Irish groups · Costa del Sol',
   /** Second tile — transfers capacity (extras strip). */
   transfersCapacityTitle: 'Transfers',
   transfersCapacityBody:

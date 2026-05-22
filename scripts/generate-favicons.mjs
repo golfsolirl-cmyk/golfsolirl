@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Generate favicons + web manifest from `public/images/g-sol-logo.png`.
+ * Generate favicons + web manifest from `public/images/gsirl.png` (synced from crest source).
  * Trims empty alpha, fills the square (no stretch), supersamples small sizes for clarity.
  *
  *   node scripts/generate-favicons.mjs
@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url'
 import sharp from 'sharp'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
-const src = join(root, 'public/images/g-sol-logo.png')
+const src = join(root, 'public/images/gsirl.png')
 const outDir = join(root, 'public')
 
 /** Browser UI chrome — keep in sync with index.html theme-color meta tags. */

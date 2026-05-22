@@ -62,7 +62,7 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
           'relative mx-auto w-full max-w-[1340px] overflow-visible px-3 transition-all duration-300 sm:px-5',
           'max-lg:grid max-lg:grid-cols-[auto_minmax(0,1fr)_auto] max-lg:items-center max-lg:gap-x-2 max-lg:gap-y-0',
           'lg:flex lg:items-center lg:justify-between lg:gap-4',
-          isOverlay ? 'py-4' : 'py-2 max-lg:py-2.5 lg:py-1'
+          isOverlay ? 'py-4' : 'py-1.5 max-lg:py-2 lg:py-1'
         )}
       >
         <div className="flex shrink-0 items-center justify-self-start lg:hidden">

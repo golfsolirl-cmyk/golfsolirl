@@ -3,20 +3,25 @@ import { GOLFSOL_BRAND_LOGO, GOLFSOL_BRAND_LOGO_INTRINSIC } from '../lib/brand-l
 import { useHomepageTestLogo } from '../providers/homepagetest-variant'
 import { cx } from '../lib/utils'
 
-export type BrandLogoPictureProps = Omit<ImgHTMLAttributes<HTMLImageElement>, 'src'> & {
+const LOGO_SRCSET_WIDTH = `${GOLFSOL_BRAND_LOGO_INTRINSIC.width}w`
+
+export type BrandLogoPictureProps = Omit<ImgHTMLAttributes<HTMLImageElement>, 'src' | 'srcSet' | 'sizes'> & {
   readonly alt: string
-  /** Footer + legal surfaces always use production `g-sol-logo.png`. */
+  /** Footer + legal surfaces always use production crest (`gsirl.png`). */
   readonly ignoreTestVariant?: boolean
+  /** Hint for responsive pick (retina-safe). */
+  readonly sizes?: string
 }
 
 /**
- * Header + footer logo: crest (`g-sol-logo.png`).
+ * Header + footer logo — Golf Sol Ireland shield crest (WebP + PNG, full-resolution srcset).
  */
 export function BrandLogoPicture({
   alt,
   width: widthProp,
   height: heightProp,
   className,
+  sizes: sizesProp,
   ignoreTestVariant = false,
   ...imgProps
 }: BrandLogoPictureProps) {
@@ -25,16 +30,25 @@ export function BrandLogoPicture({
   const logo = useTestLogo ? testLogo : GOLFSOL_BRAND_LOGO
   const width = widthProp ?? (useTestLogo ? testLogo.width : GOLFSOL_BRAND_LOGO_INTRINSIC.width)
   const height = heightProp ?? (useTestLogo ? testLogo.height : GOLFSOL_BRAND_LOGO_INTRINSIC.height)
+  const srcSet = `${logo.png} ${LOGO_SRCSET_WIDTH}`
+  const sizes = sizesProp ?? `${Math.round(Math.min(Number(width), 360) * 2)}px`
 
   return (
-    <img
-      src={useTestLogo ? logo.png : GOLFSOL_BRAND_LOGO.png}
-      alt={alt}
-      width={width}
-      height={height}
-      className={cx(className)}
-      {...imgProps}
-    />
+    <picture className="inline-flex max-w-full leading-none">
+      {!useTestLogo ? (
+        <source srcSet={`${GOLFSOL_BRAND_LOGO.webp} ${LOGO_SRCSET_WIDTH}`} sizes={sizes} type="image/webp" />
+      ) : null}
+      <img
+        src={logo.png}
+        srcSet={srcSet}
+        sizes={sizes}
+        alt={alt}
+        width={width}
+        height={height}
+        className={cx(className)}
+        {...imgProps}
+      />
+    </picture>
   )
 }
 
@@ -60,8 +74,7 @@ function crestAlphaMaskStyle(png: string): CSSProperties {
 
 /**
  * Footer-only: opaque `#fff` clipped to crest alpha (PNG) so semi-transparent ball/flag
- * pixels composite on solid white, not the dark footer. Slight scaled duplicate plugs
- * anti-aliased edge holes. Foreground: SVG → WebP `<picture>` (`BrandLogoPicture`).
+ * pixels composite on solid white, not the dark footer. Foreground uses WebP + PNG srcset.
  */
 export function FooterBrandLogoPicture({ className, ...props }: BrandLogoPictureProps) {
   const testLogo = useHomepageTestLogo()
@@ -71,15 +84,14 @@ export function FooterBrandLogoPicture({ className, ...props }: BrandLogoPicture
   return (
     <div className="relative inline-flex w-fit max-w-full justify-center [isolation:isolate]">
       <div className="relative w-max max-w-full">
-        {/* Slight bleed under anti-aliased edges */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 z-0 scale-[1.028] bg-white"
           style={crestAlphaMaskPng}
         />
         <div aria-hidden className="pointer-events-none absolute inset-0 z-0 bg-white" style={crestAlphaMaskPng} />
-        <div className="relative z-10 [&>picture]:block [&>picture]:leading-none [&_img]:relative [&_img]:mix-blend-normal">
-          <BrandLogoPicture {...props} className={cx(className)} />
+        <div className="relative z-10 [&>picture]:block [&>picture]:max-w-full [&>picture]:leading-none [&_img]:relative [&_img]:max-w-full [&_img]:mix-blend-normal">
+          <BrandLogoPicture {...props} className={cx(className)} ignoreTestVariant />
         </div>
       </div>
     </div>

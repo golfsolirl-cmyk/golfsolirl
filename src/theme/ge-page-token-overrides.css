@@ -758,3 +758,74 @@
   color: var(--brand-900) !important;
   background: var(--btn-secondary-hover) !important;
 }
+
+/* —— Homepage premium hero — trust badges must stay visible (forest on white). —— */
+.ge-page .premium-golf-hero-trust-item,
+.ge-page .premium-golf-hero-trust-item .premium-golf-hero-trust-label,
+.ge-page .premium-golf-hero-copy .premium-golf-hero-trust li,
+.ge-page .premium-golf-hero-copy .premium-golf-hero-trust li span[data-keep-color] {
+  color: #0b4d3b !important;
+}
+
+.ge-page .premium-golf-hero-trust-item {
+  background: linear-gradient(180deg, #ffffff 0%, #f5f1e8 100%) !important;
+  border-color: rgba(11, 77, 59, 0.18) !important;
+}
+
+.ge-page .premium-golf-hero-trust-band h2 {
+  color: #062016 !important;
+}
+
+.ge-page .premium-golf-hero-copy-panel h1,
+.ge-page .premium-golf-hero-copy-panel h1 span,
+.ge-page .premium-golf-hero-copy-panel p[data-keep-color] {
+  color: #062016 !important;
+  text-shadow: none !important;
+}
+
+.ge-page .premium-golf-hero-copy-panel p.premium-golf-hero-lead {
+  color: #0b4d3b !important;
+}
+
+.ge-page .premium-golf-hero-copy,
+.ge-page .premium-golf-hero-copy-panel {
+  overflow: visible !important;
+  max-width: 100% !important;
+}
+
+.ge-page .premium-golf-hero-copy-panel {
+  background-color: #faf8f3 !important;
+}
+
+.ge-page .premium-golf-hero-copy-panel .premium-golf-hero-lead {
+  overflow: visible !important;
+  text-overflow: unset !important;
+  -webkit-line-clamp: unset !important;
+}
+
+/* Hero form scroll cue — white “Quick quote form below” (and label) before hover on all pages. */
+.hero-form-scroll-cue__shell .hero-form-scroll-cue__label,
+.hero-form-scroll-cue__shell .hero-form-scroll-cue__sublabel {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.hero-form-scroll-cue__shell:hover .hero-form-scroll-cue__label {
+  color: #062016 !important;
+  -webkit-text-fill-color: #062016 !important;
+}
+
+.hero-form-scroll-cue__shell:hover .hero-form-scroll-cue__sublabel {
+  color: rgba(11, 77, 59, 0.85) !important;
+  -webkit-text-fill-color: rgba(11, 77, 59, 0.85) !important;
+}
+
+.hero-form-scroll-cue__shell .hero-form-scroll-cue__aside {
+  color: rgba(255, 255, 255, 0.92) !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.hero-form-scroll-cue__shell:hover .hero-form-scroll-cue__aside {
+  color: #b89a5a !important;
+  -webkit-text-fill-color: #b89a5a !important;
+}

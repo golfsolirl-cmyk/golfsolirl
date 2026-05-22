@@ -52,7 +52,7 @@ const missingConfigMessage =
 
 const currentFilePath = fileURLToPath(import.meta.url)
 const currentDirectory = path.dirname(currentFilePath)
-const brandLockupAssetPath = path.resolve(currentDirectory, '../src/gsol-brand-lockup-exact.png')
+const brandLockupAssetPath = path.resolve(currentDirectory, '../public/images/gsirl.png')
 let brandLockupPngBufferPromise
 
 const escapeHtml = (value) =>

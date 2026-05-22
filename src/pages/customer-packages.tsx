@@ -9,6 +9,7 @@ import {
   Sparkles,
   Users
 } from 'lucide-react'
+import { HeroFormScrollCue } from '../components/home/hero-form-scroll-cue'
 import { Navbar } from '../components/home/navbar'
 import { PageIdentityBar } from '../components/page-identity-bar'
 import { LuxuryButton } from '../components/ui/button'
@@ -27,6 +28,8 @@ import { footerSocialLinks, heroBackgroundImage } from '../data/site-content'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { WEBSITE_ENQUIRY_FORM } from '../lib/enquiry-form-registry'
 import { ENQUIRY_CONFLICT_EXISTING_PHONE, postWebsiteEnquiry } from '../lib/post-enquiry-client'
+import { TERMS_ACCEPTANCE_ERROR, termsAcceptanceFormFields } from '../lib/terms-acceptance'
+import { GeTermsAcceptanceField } from './golf-experience/components/ge-terms-acceptance-field'
 import { buildPackageConfig, defaultLabelForBuild } from '../lib/package-build'
 import { cx } from '../lib/utils'
 import { useAuth } from '../providers/auth-provider'
@@ -219,6 +222,7 @@ function CustomerPackagePage() {
   const [enquiryStatus, setEnquiryStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [enquiryError, setEnquiryError] = useState<string | null>(null)
   const [enquiryErrorCode, setEnquiryErrorCode] = useState<string | null>(null)
+  const [termsAccepted, setTermsAccepted] = useState(false)
   const footerRef = useRef<HTMLElement | null>(null)
   const enquiryConfirmationRef = useRef<HTMLDivElement>(null)
   const whatsAppHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
@@ -433,6 +437,12 @@ function CustomerPackagePage() {
         return
       }
 
+      if (!termsAccepted) {
+        setEnquiryStatus('error')
+        setEnquiryError(TERMS_ACCEPTANCE_ERROR)
+        return
+      }
+
       setEnquiryStatus('submitting')
       setEnquiryErrorCode(null)
       try {
@@ -444,7 +454,7 @@ function CustomerPackagePage() {
           bestTimeToCall: enquiryBestTime.trim() || 'Any time',
           formPayload: {
             form: WEBSITE_ENQUIRY_FORM.packageBuilder,
-            fields: packageEnquiryFormFields
+            fields: { ...packageEnquiryFormFields, ...termsAcceptanceFormFields() }
           }
         })
 
@@ -467,7 +477,7 @@ function CustomerPackagePage() {
         setEnquiryError(error instanceof Error ? error.message : 'Could not send your package enquiry right now.')
       }
     },
-    [enquiryBestTime, enquiryEmail, enquiryName, enquiryPhone, packageEnquiryFormFields, packageEnquirySummary]
+    [enquiryBestTime, enquiryEmail, enquiryName, enquiryPhone, packageEnquiryFormFields, packageEnquirySummary, termsAccepted]
   )
 
   const handleSavePackageToAccount = useCallback(async () => {
@@ -671,6 +681,17 @@ function CustomerPackagePage() {
 
             <CustomerRouteMapShowcase />
           </div>
+
+          <HeroFormScrollCue
+            href="#calculator"
+            placement="overlay"
+            className="bottom-6 left-1/2 z-20 hidden max-w-[min(100%,17rem)] md:block md:bottom-[10%] lg:bottom-12"
+          />
+          <HeroFormScrollCue
+            href="#calculator"
+            placement="inline"
+            className="relative z-20 mx-auto mt-8 max-w-[min(100%,18.5rem)] md:hidden"
+          />
         </section>
 
         <section className="section-shell bg-white pb-24" id="packages">
@@ -1121,6 +1142,13 @@ function CustomerPackagePage() {
                         ) : null}
                       </div>
                     ) : null}
+
+                    <GeTermsAcceptanceField
+                      checked={termsAccepted}
+                      onChange={setTermsAccepted}
+                      id="terms-package-builder"
+                      tone="dark"
+                    />
 
                     <LuxuryButton className="w-full" disabled={enquiryStatus === 'submitting'} type="submit">
                       {enquiryStatus === 'submitting' ? 'Sending package...' : 'Send branded enquiry'}

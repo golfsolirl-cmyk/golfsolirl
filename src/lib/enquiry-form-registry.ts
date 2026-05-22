@@ -45,7 +45,11 @@ export const ENQUIRY_STRUCTURED_FIELD_KEYS = {
   travelDateFrom: '_travelDateFrom',
   travelDateTo: '_travelDateTo',
   /** `yes` when client is already at Málaga (AGP); `no` for planned trips with dates. */
-  alreadyAtMalagaAgp: '_alreadyAtMalagaAgp'
+  alreadyAtMalagaAgp: '_alreadyAtMalagaAgp',
+  /** `yes` when the client ticked terms acceptance on a website form. */
+  termsAccepted: '_termsAccepted',
+  /** ISO timestamp when terms were accepted at submit. */
+  termsAcceptedAt: '_termsAcceptedAt'
 } as const
 
 /** Stored in `fields` / structured payload for select `tripArrivalMode`. */

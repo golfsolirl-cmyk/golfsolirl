@@ -6,7 +6,9 @@ const formTargetSelectors = [
   '#transport-enquiry',
   '#ge-content-enquire',
   '#ge-enquiry-form',
-  '#enquire'
+  '#calculator',
+  '#enquire',
+  '#plan-trip'
 ] as const
 
 export function getPageFormTarget() {

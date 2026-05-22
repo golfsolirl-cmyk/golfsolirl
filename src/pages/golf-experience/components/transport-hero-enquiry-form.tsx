@@ -20,6 +20,8 @@ import {
 } from '../../../lib/enquiry-form-registry'
 import { getSupabaseBrowserClient } from '../../../lib/supabase-client'
 import { ENQUIRY_CONFLICT_EXISTING_PHONE, postWebsiteEnquiry } from '../../../lib/post-enquiry-client'
+import { TERMS_ACCEPTANCE_ERROR, termsAcceptanceFormFields } from '../../../lib/terms-acceptance'
+import { GeTermsAcceptanceField } from './ge-terms-acceptance-field'
 import { MAX_ENQUIRY_PEOPLE } from '../data/form-people-options'
 
 const labelClass =
@@ -58,6 +60,7 @@ export function TransportHeroEnquiryForm() {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [errorCode, setErrorCode] = useState<string | null>(null)
+  const [termsAccepted, setTermsAccepted] = useState(false)
   const confirmationRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -250,6 +253,12 @@ export function TransportHeroEnquiryForm() {
       return
     }
 
+    if (!termsAccepted) {
+      setErrorMessage(TERMS_ACCEPTANCE_ERROR)
+      setStatus('error')
+      return
+    }
+
     const timing = relaxCollection
       ? hideCollectionByAdmin
         ? 'Collection time — to be confirmed with GolfSol (busy period)'
@@ -332,7 +341,7 @@ export function TransportHeroEnquiryForm() {
         bestTimeToCall,
         formPayload: {
           form: WEBSITE_ENQUIRY_FORM.transportServicePage,
-          fields: formFields
+          fields: { ...formFields, ...termsAcceptanceFormFields() }
         }
       })
       if (!result.ok) {
@@ -343,6 +352,7 @@ export function TransportHeroEnquiryForm() {
       }
       setStatus('success')
       setErrorCode(null)
+      setTermsAccepted(false)
     } catch (e) {
       setStatus('error')
       setErrorCode(null)
@@ -661,6 +671,12 @@ export function TransportHeroEnquiryForm() {
                 ) : null}
               </div>
             ) : null}
+
+            <GeTermsAcceptanceField
+              checked={termsAccepted}
+              onChange={setTermsAccepted}
+              id="terms-transport-hero"
+            />
 
             <GeButton type="submit" variant="gs-green" size="md" className="w-full" disabled={status === 'submitting'}>
               <Send className="h-4 w-4" aria-hidden />

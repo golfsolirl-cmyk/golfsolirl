@@ -1,5 +1,5 @@
 import { lazy, Suspense, useMemo } from 'react'
-import { CheckCircle2, ChevronRight } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 import { usePageMeta } from '../../lib/use-page-meta'
 import { GeFooter } from './sections/ge-footer'
 import { GeNavbar } from './sections/ge-navbar'
@@ -8,11 +8,12 @@ import { GeFinalCta } from './sections/final-cta'
 import { GeContentEnquireBlock } from './sections/ge-content-enquire-block'
 import { GeContentPromiseBand } from './sections/ge-content-promise-band'
 import { GeContentStoryGrid, type GeContentStoryCard } from './sections/ge-content-story-grid'
-import { GeServiceStyleHero } from './sections/ge-service-style-hero'
+import { PremiumPageHero } from '../../components/home/premium-page-hero'
+import { buildContentPageHeroConfig } from '../../lib/content-page-hero-config'
 import { TermsEmailRequest } from './sections/terms-email-request'
-import { PageIdentityBar } from '../../components/page-identity-bar'
+import { TermsSolicitorNotice } from './sections/terms-solicitor-notice'
 import { getGeContentPage } from './data/content-pages'
-import { getContentPageFormConfig, getContentPageHeroMedia, getContentStorySectionMedia } from './content-page-context'
+import { formatContentPageRouteLabel, getContentPageFormConfig, getContentStorySectionMedia } from './content-page-context'
 import { GeTransfersInsuranceBanner } from './components/ge-transfers-insurance-banner'
 import { WhatsappFab } from './components/whatsapp-fab'
 import { GeSection } from './components/ge-section'
@@ -32,7 +33,6 @@ export function GeContentPage() {
   const path = useMemo(() => normalisePath(), [])
   const page = useMemo(() => getGeContentPage(path), [path])
   const formConfig = useMemo(() => (page ? getContentPageFormConfig(path, page) : null), [page, path])
-  const heroMedia = useMemo(() => (page ? getContentPageHeroMedia(path, page) : null), [page, path])
 
   const storyCards: readonly GeContentStoryCard[] = useMemo(() => {
     if (!page) return []
@@ -77,16 +77,11 @@ export function GeContentPage() {
 
   const extraSections = page.sections.length > 3 ? page.sections.slice(3) : []
   const promiseBody = page.sections[0]?.body ?? page.subtitle
-  const heroImage = heroMedia?.image ?? page.heroImage
-  const heroAlt = heroMedia?.alt ?? page.heroAlt
-  const routeLabel = heroMedia?.stripeLabel ?? page.eyebrow
   const isTermsPage = path.includes('terms')
   const showCourseCorridorMap = shouldShowInteractiveCourseMap(path)
-
-  const mobileHighlights = page.highlights.slice(0, 3).map((label) => ({
-    icon: CheckCircle2,
-    label
-  }))
+  const formTarget = showCourseCorridorMap ? `#${GOLF_COURSES_MAP_SECTION_ID}` : '#ge-content-enquire'
+  const heroConfig = buildContentPageHeroConfig(path, page, formTarget)
+  const routeLabel = formatContentPageRouteLabel(path)
 
   return (
     <div className="ge-page min-h-screen overflow-x-hidden bg-white">
@@ -97,33 +92,31 @@ export function GeContentPage() {
         Skip to content
       </a>
       <GeNavbar />
-      <PageIdentityBar
-        compact
-        description={page.subtitle}
-        eyebrow={page.eyebrow}
-        label={routeLabel}
-        offsetHeader
-        tone="ge"
-      />
 
       <main id="main">
-        <GeServiceStyleHero
+        <PremiumPageHero
           srTitle={page.title}
-          eyebrow={page.eyebrow}
-          title={page.title}
-          subtitle={page.subtitle}
-          image={heroImage}
-          imageAlt={heroAlt}
-          primaryCta={
+          images={heroConfig.images}
+          kicker={heroConfig.kicker}
+          titleLine1={heroConfig.titleLine1}
+          titleLine2={heroConfig.titleLine2}
+          lead={heroConfig.lead}
+          trustBadges={heroConfig.trustBadges}
+          trustSectionTitle={heroConfig.trustSectionTitle}
+          floatingBadges={heroConfig.floatingBadges}
+          formScrollTarget={heroConfig.formScrollTarget}
+          formScrollLabel={heroConfig.formScrollLabel}
+          formScrollSublabel={heroConfig.formScrollSublabel}
+          primaryCta={{
+            label: showCourseCorridorMap ? 'Explore the course map' : heroConfig.primaryCtaLabel,
+            href: formTarget,
+            variant: 'gs-gold'
+          }}
+          secondaryCta={
             showCourseCorridorMap
-              ? { label: 'Explore the course map', href: `#${GOLF_COURSES_MAP_SECTION_ID}` }
-              : { label: 'Start your enquiry', href: '#ge-content-enquire' }
+              ? { label: 'Start your enquiry', href: '#ge-content-enquire', variant: 'outline-gs-green' }
+              : undefined
           }
-          showNavbarSpacer={false}
-          mobileHighlights={mobileHighlights}
-          imageFit={isTermsPage ? 'contain' : 'cover'}
-          visualTone={showCourseCorridorMap ? 'solstice' : 'cinematic'}
-          nextSectionId={showCourseCorridorMap ? `#${GOLF_COURSES_MAP_SECTION_ID}` : '#ge-content-promise'}
         />
 
         {showCourseCorridorMap ? (
@@ -187,7 +180,12 @@ export function GeContentPage() {
           </GeSection>
         ) : null}
 
-        {isTermsPage ? <TermsEmailRequest /> : null}
+        {isTermsPage ? (
+          <>
+            <TermsSolicitorNotice />
+            <TermsEmailRequest />
+          </>
+        ) : null}
 
         {formConfig ? (
           <GeContentEnquireBlock

@@ -27,16 +27,17 @@ export const gs = {
   tierBorder: '#c5cfc9',
 }
 
-/** Top bar lockup — larger for clearer brand recognition in inbox previews. */
-export const EMAIL_LOGO_HEADER_W = 156
-export const EMAIL_LOGO_HEADER_H = 75
+/** Top bar lockup — shield crest (`gsirl.png`). */
+export const EMAIL_LOGO_HEADER_W = 120
+export const EMAIL_LOGO_HEADER_H = 120
 /** Hero band centred lockup (transactional + enquiry). */
-export const EMAIL_LOGO_HERO_W = 252
-export const EMAIL_LOGO_HERO_H = 122
-export const EMAIL_LOGO_FOOTER_W = 172
+export const EMAIL_LOGO_HERO_W = 200
+export const EMAIL_LOGO_HERO_H = 200
+export const EMAIL_LOGO_FOOTER_W = 140
+export const EMAIL_LOGO_FOOTER_H = 140
 
 export const assets = {
-  logo: '/images/g-sol-logo.webp',
+  logo: '/images/gsirl.webp',
   fleetLineup: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
   arrivals: '/images/transport-moment-arrivals.webp',
   resort: '/images/transport-moment-resort.webp',
@@ -384,7 +385,7 @@ export const buildBrandedFooterHtml = (opts = {}) => {
                         <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0">
                           <tr>
                             <td align="center" style="padding:0 0 18px 0;">
-                              <img class="email-footer-logo" src="${assetUrl(assets.logo)}" width="${EMAIL_LOGO_FOOTER_W}" height="83" alt="GolfSol Ireland" style="display:block;margin:0 auto;width:${EMAIL_LOGO_FOOTER_W}px;max-width:56%;height:auto;border:0;">
+                              <img class="email-footer-logo" src="${assetUrl(assets.logo)}" width="${EMAIL_LOGO_FOOTER_W}" height="${EMAIL_LOGO_FOOTER_H}" alt="GolfSol Ireland" style="display:block;margin:0 auto;width:${EMAIL_LOGO_FOOTER_W}px;max-width:56%;height:auto;border:0;">
                             </td>
                           </tr>
                         </table>

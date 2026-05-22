@@ -33,7 +33,7 @@ export function BusinessCardsHero() {
               Cards for the people guests actually meet.
             </h1>
             <p className="mt-5 max-w-xl font-ge text-base font-medium leading-relaxed sm:text-lg" style={{ color: 'rgba(255,255,255,0.92)' }}>
-              Portrait and landscape faces in Classic and Dark Edition styles — high-contrast type and a large <span className="whitespace-nowrap">golfsol-crest-brand.webp</span> crest, tuned so nothing clips at export. Sixteen layouts below: Martin Kelly and Greg McDonald share one number set and web presence.
+              Portrait and landscape faces in Classic and Dark Edition styles — high-contrast type and a large <span className="whitespace-nowrap">gsirl.webp</span> crest, tuned so nothing clips at export. Sixteen layouts below: Martin Kelly and Greg McDonald share one number set and web presence.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">

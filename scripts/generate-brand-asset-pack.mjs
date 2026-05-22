@@ -13,7 +13,7 @@ import sharp from 'sharp'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const HERO = join(root, 'public/images/88054e80-6dd1-483f-8557-cdc45caa2442.png')
-const CREST = join(root, 'public/golfsol-crest-brand.png')
+const CREST = join(root, 'public/images/newbf9f08a4-8fac-496b-8181-6f6b680d19c3.png')
 const OUT = join(root, 'public/downloads/golfsol-ireland-asset-pack')
 const ZIP = join(root, 'public/downloads/golfsol-ireland-asset-pack.zip')
 

@@ -1,5 +1,5 @@
 import { BrandLogoPicture } from '../brand-logo-picture'
-import { GOLFSOL_BRAND_LOGO_INTRINSIC } from '../../lib/brand-logo-assets'
+import { GOLFSOL_BRAND_LOGO_HEADER_SIZES, GOLFSOL_BRAND_LOGO_INTRINSIC } from '../../lib/brand-logo-assets'
 import { cx } from '../../lib/utils'
 
 interface LogoProps {
@@ -52,11 +52,12 @@ export function Logo({ className, size = 'default', tone = 'light' }: LogoProps)
         alt="GolfSol Ireland"
         width={GOLFSOL_BRAND_LOGO_INTRINSIC.width}
         height={GOLFSOL_BRAND_LOGO_INTRINSIC.height}
+        sizes={GOLFSOL_BRAND_LOGO_HEADER_SIZES}
         className={cx(
           'shrink-0 select-none object-contain',
           isLarge
-            ? 'h-auto w-[18rem] sm:w-[21rem] md:w-[24rem]'
-            : 'h-auto w-[13rem] sm:w-[15rem] md:w-[17rem]'
+            ? 'h-auto w-[14.5rem] sm:w-[16rem] md:w-[18rem]'
+            : 'h-auto w-[11rem] sm:w-[12rem] md:w-[13rem]'
         )}
         decoding="async"
       />

@@ -102,7 +102,7 @@ export function BusinessCardsCatalog() {
           <p className="mt-4 font-ge text-base font-medium leading-8 text-[#4e4e4e] sm:text-lg">
             Martin Kelly and Greg McDonald each have portrait and landscape fronts and backs. Layout, colours, and{' '}
             <span className="whitespace-nowrap">golfsol.png</span> photography match across the set; crest on cards uses{' '}
-            <span className="whitespace-nowrap">golfsol-crest-brand.webp</span> at a large, bounded size. Phone, email, and web are identical on every back.
+            <span className="whitespace-nowrap">gsirl.webp</span> at a large, bounded size. Phone, email, and web are identical on every back.
           </p>
           <p className="mt-3 font-ge text-sm font-semibold text-[#08120d]">
             Contact on cards:{' '}

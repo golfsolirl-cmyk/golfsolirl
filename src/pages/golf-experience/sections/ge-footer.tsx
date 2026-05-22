@@ -1,7 +1,7 @@
 import { ChevronRight, Mail } from 'lucide-react'
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaXTwitter } from 'react-icons/fa6'
-import { BrandLogoPicture } from '../../../components/brand-logo-picture'
-import { GOLFSOL_BRAND_LOGO_INTRINSIC } from '../../../lib/brand-logo-assets'
+import { FooterBrandLogoPicture } from '../../../components/brand-logo-picture'
+import { GOLFSOL_BRAND_LOGO_FOOTER_SIZES, GOLFSOL_BRAND_LOGO_INTRINSIC } from '../../../lib/brand-logo-assets'
 import { GeButton } from '../components/ge-button'
 import { GeDualPhoneFooterLines } from '../components/ge-dual-phone-contact'
 import { aboutFooterCopy, contactInfo } from '../data/copy'
@@ -78,14 +78,14 @@ export function GeFooter() {
 
         <div className="mt-12 grid gap-10 border-t border-white/10 pt-10 lg:grid-cols-[0.4fr_0.6fr] lg:items-center">
           <div>
-            <BrandLogoPicture
+            <FooterBrandLogoPicture
               alt="GolfSol Ireland"
               width={GOLFSOL_BRAND_LOGO_INTRINSIC.width}
               height={GOLFSOL_BRAND_LOGO_INTRINSIC.height}
+              sizes={GOLFSOL_BRAND_LOGO_FOOTER_SIZES}
               loading="lazy"
               decoding="async"
-              ignoreTestVariant
-              className="h-auto w-full max-w-[320px] select-none object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.45)] sm:max-w-[360px] md:max-w-[400px]"
+              className="h-auto w-full max-w-[min(100%,20rem)] select-none object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.45)] sm:max-w-[21rem] md:max-w-[22.5rem]"
             />
             <p className="mt-6 font-ge text-[1.05rem] leading-8 text-white sm:text-[0.98rem]">{aboutFooterCopy}</p>
           </div>

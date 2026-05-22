@@ -1,6 +1,6 @@
 /**
  * Print-ready business cards — unified “Aurora” family: cotton stock, forest accents,
- * `golfsol.png` photo plate. Crest uses **`golfsol-crest-brand.webp`** — portrait fronts/backs use a larger mark, layered shadow, no glass frame on the back.
+ * `golfsol.png` photo plate. Crest uses **`gsirl.webp`** — portrait fronts/backs use a larger mark, layered shadow, no glass frame on the back.
  */
 import { m, useReducedMotion } from 'framer-motion'
 import type { ReactNode } from 'react'
@@ -466,7 +466,7 @@ function specsForPerson(person: BusinessCardPersonBlurb, ids: readonly [string, 
     {
       id: idLf,
       title: `Landscape front — ${short}`,
-      subtitle: 'Wide layout: golfsol.png column + cream slab, large golfsol-crest-brand.webp crest bounded to the short edge.',
+      subtitle: 'Wide layout: golfsol.png column + cream slab, large gsirl.webp crest bounded to the short edge.',
       orientation: 'landscape',
       side: 'front',
       imageSrc: CARD_PHOTO_SRC,

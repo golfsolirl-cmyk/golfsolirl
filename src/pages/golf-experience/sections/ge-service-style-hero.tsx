@@ -1,9 +1,9 @@
 import { m  } from 'framer-motion'
 import type { LucideIcon } from 'lucide-react'
-import { ArrowRight, CheckCircle2, ChevronDown } from 'lucide-react'
+import { ArrowRight, CheckCircle2 } from 'lucide-react'
+import { HeroFormScrollCue } from '../../../components/home/hero-form-scroll-cue'
 import { GeButton } from '../components/ge-button'
 import { GeDualPhoneHeroButtons } from '../components/ge-dual-phone-contact'
-import { handleScrollToFormTarget } from '../../../lib/scroll-to-form-target'
 
 const fadeUp = {
   initial: { opacity: 0, y: 18 },
@@ -360,20 +360,12 @@ export function GeServiceStyleHero({
             </div>
           </div>
 
-          <m.a
+          <HeroFormScrollCue
             href={nextSectionId}
-            onClick={(event) => handleScrollToFormTarget(event, nextSectionId)}
-            aria-label="Scroll to the next section"
-            className={
-              sunny
-                ? 'absolute bottom-4 right-4 z-20 inline-flex h-11 w-11 items-center justify-center rounded-full border-2 border-brand-700/60 bg-white text-gs-green shadow-md transition-colors hover:border-gs-green hover:bg-chrome-50 md:bottom-6 md:left-1/2 md:right-auto md:h-12 md:w-12 md:-translate-x-1/2'
-                : 'absolute bottom-4 right-4 z-20 inline-flex h-11 w-11 items-center justify-center rounded-full border-2 border-white/85 bg-gs-dark/55 text-white backdrop-blur-md transition-colors hover:border-[#f4dfa6] hover:bg-gs-dark/75 hover:text-[#fbe8b5] md:bottom-6 md:left-1/2 md:right-auto md:h-12 md:w-12 md:-translate-x-1/2'
-            }
-            animate={{ y: [0, 6, 0] }}
-            transition={{ duration: 2, ease: 'easeInOut', repeat: Infinity }}
-          >
-            <ChevronDown className="h-5 w-5" />
-          </m.a>
+            label="Your enquiry starts here"
+            sublabel="Scroll to the form below"
+            className={sunny ? 'md:bottom-8' : 'md:bottom-8'}
+          />
         </div>
       </div>
     </section>

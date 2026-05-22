@@ -1,6 +1,6 @@
 import { m  } from 'framer-motion'
-import { BrandLogoPicture, FooterBrandLogoPicture } from '../../../components/brand-logo-picture'
-import { GOLFSOL_BRAND_LOGO_INTRINSIC } from '../../../lib/brand-logo-assets'
+import { BrandLogoPicture } from '../../../components/brand-logo-picture'
+import { GOLFSOL_BRAND_LOGO_HEADER_SIZES, GOLFSOL_BRAND_LOGO_INTRINSIC } from '../../../lib/brand-logo-assets'
 import { useHomepageTestLogo } from '../../../providers/homepagetest-variant'
 import { cx } from '../../../lib/utils'
 
@@ -40,8 +40,8 @@ export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
           className={cx(
             'h-auto w-full select-none object-contain drop-shadow-[0_10px_24px_rgba(0,0,0,0.55)]',
             testLogo
-              ? 'max-w-[240px] sm:max-w-[280px] md:max-w-[300px] lg:max-w-[320px]'
-              : 'max-w-[280px] sm:max-w-[320px] md:max-w-[360px] lg:max-w-[400px]'
+              ? 'max-w-[200px] sm:max-w-[220px] md:max-w-[240px] lg:max-w-[260px]'
+              : 'max-w-[220px] sm:max-w-[260px] md:max-w-[280px] lg:max-w-[300px]'
           )}
         />
       </div>
@@ -55,7 +55,7 @@ export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
     void tone
     return (
       <div className={cx('flex flex-col items-start', className)}>
-        <FooterBrandLogoPicture
+        <BrandLogoPicture
           alt="GolfSol Ireland"
           width={intrinsic.width}
           height={intrinsic.height}
@@ -64,8 +64,8 @@ export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
           className={cx(
             'h-auto w-full select-none object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.45)]',
             testLogo
-              ? 'max-w-[280px] sm:max-w-[300px] md:max-w-[320px]'
-              : 'max-w-[320px] sm:max-w-[360px] md:max-w-[400px]'
+              ? 'max-w-[220px] sm:max-w-[240px] md:max-w-[260px]'
+              : 'max-w-[240px] sm:max-w-[280px] md:max-w-[300px]'
           )}
         />
       </div>
@@ -95,15 +95,15 @@ export function GeBrandLockup({ tone, mode, className }: BrandLockupProps) {
           alt="GolfSol Ireland"
           width={intrinsic.width}
           height={intrinsic.height}
+          sizes={GOLFSOL_BRAND_LOGO_HEADER_SIZES}
           decoding="async"
           fetchPriority="high"
-          // Layout box stays compact; crest scales from top and shifts down so it overlaps
-          // the navbar bottom edge (see `ge-navbar` overflow-visible + home link `lg:self-end`).
+          // Native height (no CSS scale) keeps the crest sharp on retina; translate overlaps hero below navbar.
           className={cx(
             'relative z-10 block w-auto origin-top select-none object-contain drop-shadow-[0_3px_10px_rgba(0,0,0,0.18),0_14px_34px_rgba(0,0,0,0.28),0_28px_56px_rgba(0,0,0,0.14)]',
             testLogo
-              ? 'h-[132px] translate-y-1 scale-[1.22] sm:h-[142px] sm:translate-y-1.5 sm:scale-[1.2] md:h-[152px] md:translate-y-2 md:scale-[1.16] lg:h-[148px] lg:translate-y-2 lg:scale-[1.12] xl:h-[158px] xl:translate-y-2.5 xl:scale-[1.1]'
-              : 'h-[150px] translate-y-1 scale-[1.5] sm:h-[166px] sm:translate-y-1.5 sm:scale-[1.46] md:h-[184px] md:translate-y-2 md:scale-[1.4] lg:h-[172px] lg:translate-y-2.5 lg:scale-[1.32] xl:h-[186px] xl:translate-y-3 xl:scale-[1.28]'
+              ? 'h-[100px] translate-y-0.5 sm:h-[104px] sm:translate-y-1 md:h-[108px] md:translate-y-1.5 lg:h-[104px] lg:translate-y-2 xl:h-[110px] xl:translate-y-2.5'
+              : 'h-[112px] translate-y-0.5 sm:h-[118px] sm:translate-y-1 md:h-[124px] md:translate-y-1.5 lg:h-[118px] lg:translate-y-2 xl:h-[124px] xl:translate-y-2.5'
           )}
         />
         {/* One-shot gold shimmer sweep on mount */}

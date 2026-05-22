@@ -2,6 +2,12 @@
 export const BRAND_FLEET_HERO_IMAGE_SRC = '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp'
 /** Generated editorial plate — black Mercedes fleet (V-Class, sedan, Sprinter) on Costa del Sol fairway, golden hour. */
 export const BRAND_MARKETING_HERO_FLEET_ON_FAIRWAY_SRC = '/images/hero-fleet-golf-golden-hour.webp'
+export const BRAND_MARKETING_HERO_FLEET_ON_FAIRWAY_DESKTOP_SRC =
+  '/images/hero-fleet-golf-golden-hour-desktop.webp'
+export const BRAND_MARKETING_HERO_FLEET_ON_FAIRWAY_TABLET_SRC =
+  '/images/hero-fleet-golf-golden-hour-tablet.webp'
+export const BRAND_MARKETING_HERO_FLEET_ON_FAIRWAY_MOBILE_SRC =
+  '/images/hero-fleet-golf-golden-hour-mobile.webp'
 export const BRAND_MARKETING_HERO_FLEET_ON_FAIRWAY_ALT =
   'Mercedes-Benz V-Class, executive saloon and van at a sunlit Costa del Sol golf course — GolfSol Ireland private golf transfers from Málaga Airport.'
 

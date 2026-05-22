@@ -2,12 +2,12 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { ArrowLeft, CheckCircle2, Send } from 'lucide-react'
 import { GOLF_SOL_TRIP_FLIGHT_PREFILL_KEY } from './golf-experience/components/already-booked-flight-panel'
 import { BookedDatesAvailabilityNotice } from '../components/booked-dates-availability-notice'
-import { PageIdentityBar } from '../components/page-identity-bar'
 import { GeFooter } from './golf-experience/sections/ge-footer'
 import { GeNavbar } from './golf-experience/sections/ge-navbar'
 import { GePaymentsIreland } from './golf-experience/sections/payments-ireland'
 import { GeFinalCta } from './golf-experience/sections/final-cta'
-import { GeServiceStyleHero } from './golf-experience/sections/ge-service-style-hero'
+import { PremiumPageHero } from '../components/home/premium-page-hero'
+import { heroImageSetFromRegistry, NAMED_HERO_IMAGE_SETS } from '../lib/page-hero-images'
 import { WhatsappFab } from './golf-experience/components/whatsapp-fab'
 import { GeTransfersInsuranceBanner } from './golf-experience/components/ge-transfers-insurance-banner'
 import { GeSection } from './golf-experience/components/ge-section'
@@ -23,6 +23,8 @@ import {
 } from '../lib/enquiry-form-registry'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { ENQUIRY_CONFLICT_EXISTING_PHONE, postWebsiteEnquiry } from '../lib/post-enquiry-client'
+import { TERMS_ACCEPTANCE_ERROR, termsAcceptanceFormFields } from '../lib/terms-acceptance'
+import { GeTermsAcceptanceField } from './golf-experience/components/ge-terms-acceptance-field'
 
 type TravelMode = 'flight' | 'arrived'
 
@@ -114,6 +116,7 @@ export function ContinueTripPage() {
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [submitErrorCode, setSubmitErrorCode] = useState<string | null>(null)
+  const [termsAccepted, setTermsAccepted] = useState(false)
   const [bookedDays, setBookedDays] = useState<Set<string>>(() => new Set())
   const confirmationRef = useRef<HTMLDivElement>(null)
 
@@ -252,6 +255,12 @@ export function ContinueTripPage() {
       return
     }
 
+    if (!termsAccepted) {
+      setSubmitStatus('error')
+      setSubmitError(TERMS_ACCEPTANCE_ERROR)
+      return
+    }
+
     const carried = formatSnapForInterest(snap)
     const datesSummary =
       tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp
@@ -309,7 +318,7 @@ export function ContinueTripPage() {
         bestTimeToCall: bestTimeToCall.trim() || 'Any time',
         formPayload: {
           form: WEBSITE_ENQUIRY_FORM.continueTrip,
-          fields: formFields
+          fields: { ...formFields, ...termsAcceptanceFormFields() }
         }
       })
 
@@ -338,12 +347,6 @@ export function ContinueTripPage() {
     return (
       <div className="ge-page min-h-screen overflow-x-hidden bg-white">
         <GeNavbar />
-        <PageIdentityBar
-          compact
-          label="Continue your trip"
-          description="Pick up your saved arrival details and move into the next planning step."
-          offsetHeader
-        />
         <main id="main" className="flex min-h-[50vh] items-center justify-center bg-ge-gray50 px-5 py-16 font-ge text-ge-gray500">
           Loading…
         </main>
@@ -363,27 +366,19 @@ export function ContinueTripPage() {
         </a>
         <GeNavbar />
         <main id="main">
-          <PageIdentityBar
-            compact
-            label="Continue your trip"
-            description="No saved arrival details yet, so the fastest route is back through the homepage trip planner."
-            offsetHeader
-          />
-          <GeServiceStyleHero
+          <PremiumPageHero
             srTitle="Continue your trip"
-            eyebrow="Trip planner"
-            title="No flight details found yet"
-            subtitle="Start from the homepage — use the Hotel already booked card under Design Your Costa del Sol Golf Trip, then submit the quick form."
-            image="/images/transport-moment-arrivals.webp"
-            imageAlt="Málaga airport arrivals — start your trip brief from the homepage."
-            primaryCta={{ label: 'Back to homepage', href: '/' }}
-            showPhoneCta={false}
-            nextSectionId="#continue-help"
-            mobileHighlights={[
-              { label: 'Save your flight or arrival time first' },
-              { label: 'We pre-fill the next step for you' },
-              { label: 'Irish team replies fast' }
+            images={heroImageSetFromRegistry('continueTrip')}
+            kicker="Trip planner"
+            titleLine1="No flight details found yet"
+            lead="Start from the homepage — use the Hotel already booked card under Design Your Costa del Sol Golf Trip, then submit the quick form."
+            primaryCta={{ label: 'Back to homepage', href: '/', variant: 'gs-gold' }}
+            trustBadges={[
+              { icon: CheckCircle2, label: 'Save your flight or arrival time first' },
+              { icon: CheckCircle2, label: 'We pre-fill the next step for you' },
+              { icon: CheckCircle2, label: 'Irish team replies fast' }
             ]}
+            trustSectionTitle="How to continue"
           />
           <GeSection id="continue-help" background="white" innerClassName="py-14 sm:py-16">
             <div className="mx-auto max-w-lg px-5 text-center sm:px-8">
@@ -416,27 +411,22 @@ export function ContinueTripPage() {
       <GeNavbar />
 
       <main id="main">
-        <PageIdentityBar
-          compact
-          label="Continue your trip"
-          description="Your saved arrival snapshot is ready, so you can move straight into the next planning step."
-          offsetHeader
-        />
-        <GeServiceStyleHero
+        <PremiumPageHero
           srTitle="Finish your trip brief"
-          eyebrow="Step 2 of 2"
-          title="Finish your trip brief"
-          subtitle="We have your arrival snapshot. Add the pieces below — including whether you want prime morning tee times, twilight rounds, or a mix — and a planner will reply with Costa del Sol course options, transfers and extras matched to your hotel."
-          image="/images/transport-hero-coastal-drive.webp"
-          imageAlt="Black Mercedes V-Class on the AP-7 coastal motorway — Golf Sol Ireland transfer planning."
-          primaryCta={{ label: 'WhatsApp us', href: whatsappHref }}
-          showNavbarSpacer={false}
-          nextSectionId="#continue-carried"
-          mobileHighlights={[
-            { label: 'Arrival details carried forward' },
-            { label: 'One Irish coordinator end-to-end' },
-            { label: 'Clear next steps in plain English' }
+          images={NAMED_HERO_IMAGE_SETS.transportCoastal}
+          kicker="Step 2 of 2"
+          titleLine1="Finish your trip brief"
+          lead="We have your arrival snapshot. Add the pieces below — including whether you want prime morning tee times, twilight rounds, or a mix — and a planner will reply with Costa del Sol course options, transfers and extras matched to your hotel."
+          primaryCta={{ label: 'WhatsApp us', href: whatsappHref, variant: 'gs-gold' }}
+          secondaryCta={{ label: 'Jump to the form', href: '#continue-trip-form', variant: 'outline-gs-green' }}
+          trustBadges={[
+            { icon: CheckCircle2, label: 'Arrival details carried forward' },
+            { icon: CheckCircle2, label: 'One Irish coordinator end-to-end' },
+            { icon: CheckCircle2, label: 'Clear next steps in plain English' }
           ]}
+          trustSectionTitle="What happens next"
+          formScrollTarget="#continue-trip-form"
+          formScrollLabel="Complete your trip brief"
         />
 
         <div className="bg-white px-5 py-6 sm:px-8 sm:py-7">
@@ -712,6 +702,13 @@ export function ContinueTripPage() {
                         ) : null}
                       </div>
                     ) : null}
+
+                    <GeTermsAcceptanceField
+                      checked={termsAccepted}
+                      onChange={setTermsAccepted}
+                      id="terms-continue-trip"
+                      className="sm:col-span-2"
+                    />
 
                     <button
                       type="submit"

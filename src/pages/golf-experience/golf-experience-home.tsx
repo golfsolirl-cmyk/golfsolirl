@@ -1,5 +1,5 @@
 import { lazy, Suspense, useMemo } from 'react'
-import { GeHero } from './sections/hero'
+import { PremiumGolfHero } from '../../components/home/premium-golf-hero'
 import { GeNavbar } from './sections/ge-navbar'
 import { useJsonLd, usePageMeta } from '../../lib/use-page-meta'
 
@@ -40,7 +40,7 @@ export function GolfExperienceHome() {
       <GeNavbar />
 
       <main id="main">
-        <GeHero />
+        <PremiumGolfHero />
         <Suspense
           fallback={
             <div className="min-h-[50vh] w-full bg-gradient-to-b from-cream to-offwhite/80" aria-hidden="true" />

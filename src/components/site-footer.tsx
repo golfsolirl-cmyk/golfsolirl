@@ -2,10 +2,10 @@ import { ChevronRight } from 'lucide-react'
 import { FaBluesky, FaFacebookF, FaLinkedinIn, FaWhatsapp } from 'react-icons/fa6'
 import { integrationRegistry } from '../config/integrations'
 import { FooterCompanyContact } from './footer-company-contact'
-import { BrandLogoPicture } from './brand-logo-picture'
+import { FooterBrandLogoPicture } from './brand-logo-picture'
 import { AmbientGolfBall } from './ui/ambient-golf-ball'
 import { footerGroups, footerSocialLinks } from '../data/site-content'
-import { GOLFSOL_BRAND_LOGO_INTRINSIC } from '../lib/brand-logo-assets'
+import { GOLFSOL_BRAND_LOGO_FOOTER_SIZES, GOLFSOL_BRAND_LOGO_INTRINSIC } from '../lib/brand-logo-assets'
 import { useAuth } from '../providers/auth-provider'
 import type { RefObject } from 'react'
 
@@ -32,14 +32,14 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
       <AmbientGolfBall className="right-[3%] top-2 opacity-75 xl:right-[6%]" size="sm" tone="footer" />
       <div className="mx-auto flex max-w-7xl flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-md">
-          <BrandLogoPicture
+          <FooterBrandLogoPicture
             alt="Golf Sol Ireland"
             width={GOLFSOL_BRAND_LOGO_INTRINSIC.width}
             height={GOLFSOL_BRAND_LOGO_INTRINSIC.height}
+            sizes={GOLFSOL_BRAND_LOGO_FOOTER_SIZES}
             loading="lazy"
             decoding="async"
-            ignoreTestVariant
-            className="h-auto w-[14rem] select-none object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.45)] sm:w-[16rem] md:w-[18rem]"
+            className="h-auto w-[min(100%,15.5rem)] select-none object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.45)] sm:w-[17rem] md:w-[18.5rem]"
           />
           <p className="mt-4 text-[1.08rem] leading-8 text-white/76 md:text-[1.14rem]">{intro}</p>
           {showAuthFooter && !authLoading ? (

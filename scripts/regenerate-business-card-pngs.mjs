@@ -1,6 +1,6 @@
 /**
  * Rebuild published business card PNGs:
- * - composites `public/golfsol-crest-brand.png` (same asset as site header `<picture>` stack)
+ * - composites crest PNG (same asset as site header / footer — `gsirl.png` deploy copy)
  * - repaints Email + Web lines on the green contact face (correct domain)
  *
  * Source artwork stays otherwise (fleet photo, mustard marketing copy, colours).
