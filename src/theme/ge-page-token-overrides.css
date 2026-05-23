@@ -803,11 +803,31 @@
   -webkit-line-clamp: unset !important;
 }
 
-/* Hero form scroll cue — white “Quick quote form below” (and label) before hover on all pages. */
-.hero-form-scroll-cue__shell .hero-form-scroll-cue__label,
-.hero-form-scroll-cue__shell .hero-form-scroll-cue__sublabel {
+/* Hero form scroll cue: overlay = white type on dark shell; inline = dark type on light card. */
+.hero-form-scroll-cue__shell:not(.hero-form-scroll-cue__shell--inline) .hero-form-scroll-cue__label,
+.hero-form-scroll-cue__shell:not(.hero-form-scroll-cue__shell--inline) .hero-form-scroll-cue__sublabel {
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
+}
+
+.hero-form-scroll-cue__shell.hero-form-scroll-cue__shell--inline .hero-form-scroll-cue__label {
+  color: #062016 !important;
+  -webkit-text-fill-color: #062016 !important;
+}
+
+.hero-form-scroll-cue__shell.hero-form-scroll-cue__shell--inline .hero-form-scroll-cue__sublabel {
+  color: rgba(11, 77, 59, 0.9) !important;
+  -webkit-text-fill-color: rgba(11, 77, 59, 0.9) !important;
+}
+
+.hero-form-scroll-cue__shell.hero-form-scroll-cue__shell--inline:hover .hero-form-scroll-cue__label {
+  color: #062016 !important;
+  -webkit-text-fill-color: #062016 !important;
+}
+
+.hero-form-scroll-cue__shell.hero-form-scroll-cue__shell--inline:hover .hero-form-scroll-cue__sublabel {
+  color: rgba(11, 77, 59, 0.85) !important;
+  -webkit-text-fill-color: rgba(11, 77, 59, 0.85) !important;
 }
 
 .hero-form-scroll-cue__shell:hover .hero-form-scroll-cue__label {
@@ -820,12 +840,14 @@
   -webkit-text-fill-color: rgba(11, 77, 59, 0.85) !important;
 }
 
-.hero-form-scroll-cue__shell .hero-form-scroll-cue__aside {
+.hero-form-scroll-cue__shell:not(.hero-form-scroll-cue__shell--inline) .hero-form-scroll-cue__aside {
   color: rgba(255, 255, 255, 0.92) !important;
   -webkit-text-fill-color: rgba(255, 255, 255, 0.92) !important;
 }
 
-.hero-form-scroll-cue__shell:hover .hero-form-scroll-cue__aside {
+.hero-form-scroll-cue__shell:not(.hero-form-scroll-cue__shell--inline):hover .hero-form-scroll-cue__aside {
   color: #b89a5a !important;
   -webkit-text-fill-color: #b89a5a !important;
 }
+
+

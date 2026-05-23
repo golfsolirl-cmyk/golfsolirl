@@ -17,7 +17,9 @@ export type HeroFormScrollCueProps = {
 }
 
 /**
- * Scroll cue to the enquiry form — white type by default; dark type on hover (cream card).
+ * Scroll cue to the enquiry form.
+ * Overlay: white type on dark translucent shell over the hero photo.
+ * Inline: light card and dark type for rails on cream (e.g. mobile PremiumPageHero).
  */
 export function HeroFormScrollCue({
   href,
@@ -30,13 +32,20 @@ export function HeroFormScrollCue({
   const isInline = placement === 'inline'
 
   const shellClass = cx(
-    'group relative shrink-0 transition-all duration-300',
-    'rounded-2xl border-2 shadow-[0_14px_40px_rgba(6,32,22,0.18)] backdrop-blur-md',
-    'border-white/30 bg-forest-950/72',
-    'hover:border-[#d4a843]/80 hover:bg-[#faf8f3] hover:shadow-[0_18px_48px_rgba(6,32,22,0.28)]',
-    isInline
-      ? 'mx-auto flex w-full max-w-[min(100%,18.5rem)] flex-col items-center gap-2.5 px-4 py-3'
-      : 'inline-flex w-full max-w-[20rem] items-center gap-2.5 px-3.5 py-2.5 sm:max-w-[22rem] sm:gap-3 sm:px-4 sm:py-3'
+    'group relative shrink-0 transition-all duration-300 rounded-2xl border-2',
+    ...(isInline
+      ? [
+          'hero-form-scroll-cue__shell--inline',
+          'mx-auto flex w-full max-w-[min(100%,18.5rem)] flex-col items-center gap-2.5 px-4 py-3',
+          'border-forest-800/25 bg-white shadow-[0_12px_36px_rgba(6,32,22,0.1)]',
+          'hover:border-[#d4a843]/80 hover:bg-[#faf8f3] hover:shadow-[0_18px_48px_rgba(6,32,22,0.16)]'
+        ]
+      : [
+          'inline-flex w-full max-w-[20rem] items-center gap-2.5 px-3.5 py-2.5 sm:max-w-[22rem] sm:gap-3 sm:px-4 sm:py-3',
+          'shadow-[0_14px_40px_rgba(6,32,22,0.18)] backdrop-blur-md',
+          'border-white/30 bg-forest-950/72',
+          'hover:border-[#d4a843]/80 hover:bg-[#faf8f3] hover:shadow-[0_18px_48px_rgba(6,32,22,0.28)]'
+        ])
   )
 
   const labelClass = cx(
