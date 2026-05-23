@@ -195,8 +195,8 @@ export function PremiumPageHero({
             </picture>
 
             <div className="pointer-events-none absolute inset-0 z-20 flex items-start justify-start pt-5 md:pt-6 lg:pt-8">
-              <div className="pointer-events-auto ml-5 w-full max-w-[21rem] md:ml-6 md:max-w-[22rem] lg:ml-10 lg:max-w-[24rem] xl:max-w-[26rem]">
-                <div className={cx(COPY_PANEL_CLASS, 'p-5 lg:p-6')}>
+              <div className="pointer-events-auto ml-5 w-full max-w-[22.5rem] md:ml-6 md:max-w-[24rem] lg:ml-10 lg:max-w-[26.5rem] xl:max-w-[28rem]">
+                <div className={cx(COPY_PANEL_CLASS, 'p-5 md:p-5 lg:p-6')}>
                   <HeroCopyPanel
                     titleId={titleId}
                     kicker={kicker}
@@ -221,7 +221,7 @@ export function PremiumPageHero({
                 label={scrollLabel}
                 sublabel={scrollSublabel}
                 placement="overlay"
-                className="bottom-[18%] left-1/2 right-auto max-md:max-w-[min(100%,17rem)] md:bottom-[14%] lg:bottom-10"
+                className="bottom-[18%] left-1/2 right-auto max-md:max-w-[min(100%,18.5rem)] md:bottom-[14%] lg:bottom-10"
               />
             ) : null}
 
@@ -283,7 +283,7 @@ function HeroCopyPanel({
       {isMobile ? (
         <m.p
           data-keep-color
-          className="font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.2em] text-forest-800/80"
+          className="font-ge text-[0.8rem] font-extrabold uppercase leading-snug tracking-[0.16em] text-forest-800/85"
           {...fadeUp(0, reduceMotion)}
         >
           {kicker}
@@ -291,10 +291,10 @@ function HeroCopyPanel({
       ) : (
         <m.p
           data-keep-color
-          className="inline-flex w-fit max-w-full items-center gap-2 rounded-full border border-forest-800/25 bg-white px-3 py-1 font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.12em] text-[#062016] sm:px-3.5 sm:py-1.5 sm:text-[0.72rem] sm:tracking-[0.16em]"
+          className="inline-flex w-fit max-w-full items-center gap-2 rounded-full border border-forest-800/25 bg-white px-3.5 py-1.5 font-ge text-[0.7rem] font-extrabold uppercase leading-snug tracking-[0.11em] text-[#062016] sm:px-4 sm:py-1.5 sm:text-[0.8rem] sm:tracking-[0.14em]"
           {...fadeUp(0, reduceMotion)}
         >
-          <KickerIcon className="h-3 w-3 shrink-0 text-forest-800 sm:h-3.5 sm:w-3.5" aria-hidden />
+          <KickerIcon className="h-3.5 w-3.5 shrink-0 text-forest-800 sm:h-4 sm:w-4" aria-hidden />
           {kicker}
         </m.p>
       )}
@@ -305,8 +305,8 @@ function HeroCopyPanel({
         className={cx(
           'max-w-full font-ge font-extrabold tracking-[-0.02em] text-[#062016]',
           isMobile
-            ? 'text-[1.55rem] leading-[1.14] sm:text-[1.7rem]'
-            : 'text-[1.42rem] leading-[1.18] sm:text-[1.65rem] md:text-[2.35rem] md:leading-[1.1] lg:text-[2.75rem] xl:text-[3rem]'
+            ? 'text-[1.78rem] leading-[1.15] sm:text-[1.95rem] sm:leading-[1.13]'
+            : 'text-[1.55rem] leading-[1.16] sm:text-[1.78rem] sm:leading-[1.12] md:text-[2.55rem] md:leading-[1.08] lg:text-[3rem] lg:leading-[1.06] xl:text-[3.25rem]'
         )}
         {...fadeUp(0.06, reduceMotion)}
       >
@@ -325,8 +325,8 @@ function HeroCopyPanel({
         className={cx(
           'premium-golf-hero-lead max-w-full text-pretty font-ge text-[#0b4d3b]',
           isMobile
-            ? 'text-[1rem] leading-[1.7]'
-            : 'text-[0.9rem] leading-[1.65] sm:text-[1rem] sm:leading-[1.72] md:text-[1.08rem] lg:text-[1.1rem]'
+            ? 'text-[1.08rem] leading-[1.68]'
+            : 'text-[0.98rem] leading-[1.66] sm:text-[1.06rem] sm:leading-[1.7] md:text-[1.12rem] md:leading-[1.72] lg:text-[1.16rem] lg:leading-[1.74]'
         )}
         {...fadeUp(0.12, reduceMotion)}
       >
@@ -344,20 +344,20 @@ function HeroCopyPanel({
           href={primaryCta.href}
           variant={primaryCta.variant ?? 'gs-gold'}
           size={isMobile ? 'md' : 'lg'}
-          className="w-full min-w-0 sm:w-auto"
+          className="w-full min-w-0 !text-[1.06rem] !leading-snug !tracking-[0.1em] sm:w-auto sm:!text-[1.03rem] md:!text-[1.06rem] lg:!text-[1.1rem]"
         >
           {primaryCta.label}
-          <PrimaryIcon className="h-4 w-4" aria-hidden />
+          <PrimaryIcon className="h-4 w-4 shrink-0 sm:h-[1.05rem] sm:w-[1.05rem]" aria-hidden />
         </GeButton>
         {secondaryCta ? (
           <GeButton
             href={secondaryCta.href}
             variant={secondaryCta.variant ?? 'outline-gs-green'}
             size={isMobile ? 'md' : 'lg'}
-            className="w-full min-w-0 sm:w-auto"
+            className="w-full min-w-0 !text-[1.06rem] !leading-snug !tracking-[0.1em] sm:w-auto sm:!text-[1.03rem] md:!text-[1.06rem] lg:!text-[1.1rem]"
           >
             {secondaryCta.label}
-            <SecondaryIcon className="h-4 w-4" aria-hidden />
+            <SecondaryIcon className="h-4 w-4 shrink-0 sm:h-[1.05rem] sm:w-[1.05rem]" aria-hidden />
           </GeButton>
         ) : null}
       </m.div>
@@ -437,7 +437,7 @@ function HeroTrustCard({
         'premium-golf-hero-trust-item group relative overflow-hidden rounded-2xl border border-forest-800/15',
         'bg-gradient-to-b from-white to-[#f5f1e8] shadow-[0_10px_28px_rgba(6,32,22,0.09),inset_0_1px_0_rgba(255,255,255,0.95)]',
         'transition-transform duration-300 md:hover:-translate-y-0.5 md:hover:shadow-[0_14px_36px_rgba(6,32,22,0.14)]',
-        isScroll ? 'w-[9.5rem] shrink-0 snap-start p-3.5 sm:w-[10.25rem]' : 'flex min-h-[5.5rem] flex-col p-3.5 sm:min-h-[6rem] sm:p-4'
+        isScroll ? 'w-[10.25rem] shrink-0 snap-start p-3.5 sm:w-[11rem] sm:p-4' : 'flex min-h-[5.75rem] flex-col p-3.5 sm:min-h-[6.25rem] sm:p-4'
       )}
     >
       <span
@@ -457,8 +457,8 @@ function HeroTrustCard({
       <span
         data-keep-color
         className={cx(
-          'premium-golf-hero-trust-label relative mt-3 font-ge font-bold leading-[1.35] text-[#0b4d3b]',
-          isScroll ? 'text-[0.72rem]' : 'text-[0.76rem] sm:text-[0.8rem]'
+          'premium-golf-hero-trust-label relative mt-3 font-ge font-bold leading-snug text-[#0b4d3b]',
+          isScroll ? 'text-[0.8rem] leading-[1.38] sm:text-[0.84rem]' : 'text-[0.84rem] leading-[1.38] sm:text-[0.9rem]'
         )}
       >
         {label}

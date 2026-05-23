@@ -36,12 +36,12 @@ export function HeroFormScrollCue({
     ...(isInline
       ? [
           'hero-form-scroll-cue__shell--inline',
-          'mx-auto flex w-full max-w-[min(100%,18.5rem)] flex-col items-center gap-2.5 px-4 py-3',
+          'mx-auto flex w-full max-w-[min(100%,19.75rem)] flex-col items-center gap-2.5 px-4 py-3 sm:px-4 sm:py-3.5',
           'border-forest-800/25 bg-white shadow-[0_12px_36px_rgba(6,32,22,0.1)]',
           'hover:border-[#d4a843]/80 hover:bg-[#faf8f3] hover:shadow-[0_18px_48px_rgba(6,32,22,0.16)]'
         ]
       : [
-          'inline-flex w-full max-w-[20rem] items-center gap-2.5 px-3.5 py-2.5 sm:max-w-[22rem] sm:gap-3 sm:px-4 sm:py-3',
+          'inline-flex w-full max-w-[21rem] items-center gap-2.5 px-3.5 py-2.5 sm:max-w-[23rem] sm:gap-3 sm:px-4 sm:py-3',
           'shadow-[0_14px_40px_rgba(6,32,22,0.18)] backdrop-blur-md',
           'border-white/30 bg-forest-950/72',
           'hover:border-[#d4a843]/80 hover:bg-[#faf8f3] hover:shadow-[0_18px_48px_rgba(6,32,22,0.28)]'
@@ -49,19 +49,19 @@ export function HeroFormScrollCue({
   )
 
   const labelClass = cx(
-    'hero-form-scroll-cue__label block font-ge text-[0.68rem] font-extrabold uppercase leading-snug tracking-[0.12em] sm:text-[0.72rem]',
+    'hero-form-scroll-cue__label block font-ge text-[0.78rem] font-extrabold uppercase leading-snug tracking-[0.1em] sm:text-[0.84rem] sm:tracking-[0.11em]',
     isInline && 'text-center'
   )
 
   const sublabelClass = cx(
-    'hero-form-scroll-cue__sublabel mt-0.5 block font-ge text-[0.78rem] leading-snug sm:text-[0.82rem]',
+    'hero-form-scroll-cue__sublabel mt-0.5 block font-ge text-[0.88rem] leading-snug sm:text-[0.94rem]',
     isInline && 'text-center'
   )
 
   const linkClass = cx(
     isInline
       ? 'relative z-10 flex w-full justify-center px-5 py-1'
-      : 'absolute bottom-4 left-1/2 z-30 max-w-[calc(100%-1.5rem)] -translate-x-1/2 sm:bottom-5 md:max-w-[min(100%,20rem)]',
+      : 'absolute bottom-4 left-1/2 z-30 max-w-[calc(100%-1.5rem)] -translate-x-1/2 sm:bottom-5 md:max-w-[min(100%,21rem)]',
     className
   )
 
@@ -83,7 +83,7 @@ export function HeroFormScrollCue({
       {!isInline ? (
         <span aria-hidden className="hidden shrink-0 flex-col items-center gap-0.5 sm:flex">
           <span className="h-6 w-px bg-gradient-to-b from-[#d4a843]/90 to-white/40 group-hover:from-[#d4a843] group-hover:to-forest-800/30" />
-          <span className="hero-form-scroll-cue__aside font-ge text-[0.65rem] font-bold uppercase tracking-[0.2em]">
+          <span className="hero-form-scroll-cue__aside font-ge text-[0.72rem] font-bold uppercase leading-snug tracking-[0.16em] sm:text-[0.74rem]">
             Form
           </span>
         </span>
