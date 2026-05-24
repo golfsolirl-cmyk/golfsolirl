@@ -1,4 +1,4 @@
-import { m, useReducedMotion, type Variants } from 'framer-motion'
+import { m, type Variants } from 'framer-motion'
 import { ArrowRight, Clock3, Headset, MapPin, PlaneLanding, ShieldCheck } from 'lucide-react'
 import { GeDualPhoneAirportTransferCalls } from '../components/ge-dual-phone-contact'
 import { homeAirportTransferSignals, homeAirportTransfersCopy } from '../data/copy'
@@ -23,64 +23,22 @@ const headlineItem: Variants = {
 }
 
 export function HomeAirportTransfersCta() {
-  const reduceMotion = useReducedMotion()
   const copy = homeAirportTransfersCopy
 
   return (
     <section
       id="home-airport-transfers"
       aria-labelledby="home-airport-transfers-title"
-      className="relative isolate overflow-hidden bg-[#eef2ef] text-gs-dark"
+      className="relative isolate overflow-hidden border-y border-chrome-300/70 bg-white text-gs-dark"
     >
-      <m.div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            'radial-gradient(circle at 10% 0%, rgba(19,96,71,0.2), transparent 30%), radial-gradient(circle at 90% 14%, rgba(217,190,122,0.12), transparent 26%), linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(244,239,227,0.98) 42%, rgba(236,228,209,0.98) 100%)'
-        }}
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.7 }}
-      />
-      <m.div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px origin-center bg-gradient-to-r from-transparent via-brand-700/50 to-transparent"
-        initial={{ scaleX: 0 }}
-        whileInView={{ scaleX: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.65, ease: 'easeOut' }}
-      />
-
       <div className="relative mx-auto max-w-[1180px] px-4 py-10 sm:px-8 sm:py-12 lg:py-14">
         <m.div
           {...fadeUp}
-          className="relative overflow-hidden rounded-[2rem] border border-chrome-300/90 bg-[linear-gradient(165deg,rgba(255,255,255,0.98)_0%,rgba(238,242,239,0.96)_55%,rgba(232,238,234,0.94)_100%)] px-4 pb-5 pt-8 shadow-[0_36px_88px_rgba(6,32,22,0.14)] sm:px-7 sm:pb-7 sm:pt-11 lg:px-9 lg:pb-9 lg:pt-14"
+          className="relative overflow-hidden rounded-[1.75rem] border border-chrome-300 bg-white px-4 pb-5 pt-8 shadow-[0_20px_50px_rgba(6,32,22,0.08)] sm:px-7 sm:pb-7 sm:pt-11 lg:px-9 lg:pb-9 lg:pt-12"
         >
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_8%_0%,rgba(19,96,71,0.16),transparent_28%),radial-gradient(circle_at_92%_20%,rgba(6,59,42,0.06),transparent_24%)]"
-          />
-          <div
-            aria-hidden="true"
             className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,transparent_0%,#136047_22%,#d9be7a_50%,#136047_78%,transparent_100%)]"
-          />
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 left-0 w-px bg-gradient-to-b from-transparent via-brand-700/30 to-transparent"
-          />
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-brand-700/25 to-transparent"
-          />
-          <m.div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-y-6 left-[-22%] w-[38%] bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.4)_45%,transparent_100%)] blur-md"
-            animate={reduceMotion ? undefined : { x: ['0%', '320%'] }}
-            transition={
-              reduceMotion ? undefined : { duration: 5.2, ease: 'easeInOut', repeat: Infinity, repeatDelay: 1.4 }
-            }
           />
 
           <div className="relative z-10 grid gap-6 lg:grid-cols-[1.06fr_0.94fr] lg:items-start lg:gap-x-10 lg:gap-y-6">
@@ -218,29 +176,9 @@ export function HomeAirportTransfersCta() {
                 <div className="mt-6">
                   <m.a
                     href="/services/transport"
-                    className="group relative inline-flex min-h-[58px] w-full items-center justify-center gap-3 overflow-hidden rounded-full border border-white/20 bg-[linear-gradient(135deg,#136047_0%,#0f4f3c_55%,#0a2d20_100%)] px-5 py-3.5 text-center font-ge text-[0.9rem] font-extrabold uppercase tracking-[0.14em] text-white shadow-[0_20px_44px_rgba(0,0,0,0.35)] transition-transform duration-300 hover:-translate-y-0.5 hover:border-[#d9be7a]/40 hover:shadow-[0_24px_52px_rgba(0,0,0,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f4dfa6] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a2d20] sm:min-h-[60px] sm:text-[0.96rem]"
-                    animate={
-                      reduceMotion
-                        ? undefined
-                        : {
-                            boxShadow: [
-                              '0 20px 44px rgba(19,96,71,0.24)',
-                              '0 26px 56px rgba(19,96,71,0.4)',
-                              '0 20px 44px rgba(19,96,71,0.24)'
-                            ]
-                          }
-                    }
-                    transition={reduceMotion ? undefined : { duration: 2.6, ease: 'easeInOut', repeat: Infinity }}
+                    className="group relative inline-flex min-h-[58px] w-full items-center justify-center gap-3 rounded-full border border-white/20 bg-[linear-gradient(135deg,#136047_0%,#0f4f3c_55%,#0a2d20_100%)] px-5 py-3.5 text-center font-ge text-[0.9rem] font-extrabold uppercase tracking-[0.14em] text-white shadow-[0_16px_36px_rgba(0,0,0,0.28)] transition-transform duration-300 hover:-translate-y-0.5 hover:border-[#d9be7a]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f4dfa6] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a2d20] sm:min-h-[60px] sm:text-[0.96rem]"
                   >
-                    <m.span
-                      aria-hidden="true"
-                      className="pointer-events-none absolute inset-y-1 left-[-35%] w-[38%] rounded-full bg-white/28 blur-md"
-                      animate={reduceMotion ? undefined : { x: ['0%', '300%'] }}
-                      transition={
-                        reduceMotion ? undefined : { duration: 2.4, ease: 'easeInOut', repeat: Infinity, repeatDelay: 0.9 }
-                      }
-                    />
-                    <span className="relative inline-flex items-center gap-3">
+                    <span className="inline-flex items-center gap-3">
                       <PlaneLanding className="h-5 w-5 shrink-0 text-white" aria-hidden />
                       {copy.ctaLabel}
                       <ArrowRight className="h-4 w-4 shrink-0 text-white transition-transform duration-300 group-hover:translate-x-1" aria-hidden />

@@ -31,15 +31,9 @@ export function PremiumGolfHero({ className }: PremiumGolfHeroProps) {
       primaryCta={{ label: 'Plan My Golf Trip', href: '/packages', variant: 'gs-gold' }}
       secondaryCta={{ label: 'View Transfer Options', href: '/services/transport', variant: 'outline-gs-green' }}
       trustBadges={HOME_TRUST}
-      trustSectionTitle="What we handle"
+      trustSectionTitle="Transfers · Golf · Hotels"
       floatingBadges={[
-        { kicker: 'Malaga AGP', title: 'Private Transfers From Malaga Airport' },
-        {
-          kicker: 'Stay + play',
-          title: 'Tailored Golf Packages',
-          panelClass: 'border-forest-700 bg-forest-950 shadow-[0_12px_32px_rgba(6,32,22,0.4)]',
-          offsetClass: 'ml-8'
-        }
+        { kicker: 'Malaga AGP', title: 'Private airport transfers for Irish golf groups' }
       ]}
       formScrollTarget="#enquire"
       formScrollLabel="Plan your trip here"

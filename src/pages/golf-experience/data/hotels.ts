@@ -22,7 +22,7 @@ export interface GeHotel {
   readonly href: string
 }
 
-/** Card art — hosted brand photography in `public/images/` (CSP-safe on production). */
+/** Card art — Costa del Sol resort / stay photography (`public/images/hotels/`). Regenerate: `node scripts/generate-hotel-card-images.mjs` */
 export const hotelsSpain: readonly GeHotel[] = [
   {
     name: 'Hotel Angela',
@@ -30,7 +30,7 @@ export const hotelsSpain: readonly GeHotel[] = [
     stars: 4,
     tagline: 'Beachfront 4★ on Paseo Marítimo · adults-friendly buzz',
     nearestCourse: '15 min · Mijas Golf',
-    image: '/images/ge-premium-resort-hotel-hero.webp',
+    image: '/images/hotels/hotel-angela.webp',
     href: '/contact'
   },
   {
@@ -39,7 +39,7 @@ export const hotelsSpain: readonly GeHotel[] = [
     stars: 4,
     tagline: 'Adults-only seafront retreat with rooftop pool',
     nearestCourse: '15 min · Mijas Golf',
-    image: '/images/ge-premium-family-golf-vacation.webp',
+    image: '/images/hotels/hotel-yaramar.webp',
     href: '/contact'
   },
   {
@@ -48,7 +48,7 @@ export const hotelsSpain: readonly GeHotel[] = [
     stars: 4,
     tagline: 'Modern 4★ steps from the marina and Sohail castle',
     nearestCourse: '12 min · Santana Golf',
-    image: '/images/hero-image.webp',
+    image: '/images/hotels/hotel-ilunion-fuengirola.webp',
     href: '/contact'
   },
   {
@@ -57,7 +57,7 @@ export const hotelsSpain: readonly GeHotel[] = [
     stars: 4,
     tagline: 'All-inclusive favourite right on La Carihuela beach',
     nearestCourse: '8 min · Parador Málaga Golf',
-    image: '/images/hero-from-plane-to-fairway-premium.webp',
+    image: '/images/hotels/hotel-riu-costa-del-sol.webp',
     href: '/contact'
   },
   {
@@ -66,7 +66,7 @@ export const hotelsSpain: readonly GeHotel[] = [
     stars: 4,
     tagline: 'Iconic palm-fringed pool deck · group rates that work',
     nearestCourse: '10 min · Parador Málaga Golf',
-    image: '/images/transport-moment-resort.webp',
+    image: '/images/hotels/hotel-don-pablo.webp',
     href: '/contact'
   },
   {
@@ -75,7 +75,7 @@ export const hotelsSpain: readonly GeHotel[] = [
     stars: 3,
     tagline: 'Apartment-style stays for societies and big groups',
     nearestCourse: '10 min · Parador Málaga Golf',
-    image: '/images/hero-image-p.webp',
+    image: '/images/hotels/hotel-sol-timor.webp',
     href: '/contact'
   },
   {
@@ -84,7 +84,7 @@ export const hotelsSpain: readonly GeHotel[] = [
     stars: 4,
     tagline: 'Boutique adults-only on the seafront promenade',
     nearestCourse: '8 min · Parador Málaga Golf',
-    image: '/images/ge-premium-editorial-travel-news.webp',
+    image: '/images/hotels/hotel-ocean-house.webp',
     href: '/contact'
   },
   {
@@ -95,7 +95,7 @@ export const hotelsSpain: readonly GeHotel[] = [
     highlight: true,
     tagline: 'Seafront 4* hotel-apartments with spacious suites for golf groups',
     nearestCourse: '20 min · Torrequebrada Golf',
-    image: '/images/hero-costa-del-sol-transfer-banner.webp',
+    image: '/images/hotels/hotel-sunset-beach-club.webp',
     href: 'https://www.sunsetbeachclub.com/en'
   }
 ] as const satisfies readonly GeHotel[]

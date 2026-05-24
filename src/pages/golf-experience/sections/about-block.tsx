@@ -60,7 +60,7 @@ export function GeAboutBlock() {
   return (
     <GeSection
       background="soft"
-      className="relative isolate overflow-hidden pt-20 pb-24 sm:pt-24 sm:pb-28"
+      className="relative isolate overflow-hidden pt-16 pb-20 sm:pt-20 sm:pb-24"
       innerClassName="relative z-[1]"
     >
       <div
@@ -87,7 +87,7 @@ export function GeAboutBlock() {
             <div className="relative isolate aspect-[4/5] min-h-[460px] w-full sm:aspect-[5/6] sm:min-h-[520px] lg:aspect-[4/5] lg:min-h-[560px]">
               <img
                 src={aboutCopy.image}
-                alt="Sunlit golf fairways on the Costa del Sol — GolfSol Ireland's home corridor."
+                alt="Irish golfer on a sunlit Costa del Sol fairway — GolfSol Ireland's home corridor."
                 loading="lazy"
                 decoding="async"
                 className="absolute inset-0 h-full w-full object-cover"

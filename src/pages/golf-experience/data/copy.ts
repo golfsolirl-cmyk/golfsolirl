@@ -208,7 +208,7 @@ export const aboutCopy = {
   ],
   bodyEmphasis: 'Same crew. Same standard. Every single trip.',
   cta: 'READ OUR FULL STORY',
-  /** Local asset so the hero always loads (no hotlink / 403 issues). */
+  /** Local asset — sunlit Costa del Sol fairway (Irish golfer on course). */
   image: '/images/about-golfsol-hero.webp'
 } as const
 

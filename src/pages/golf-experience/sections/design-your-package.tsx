@@ -1,7 +1,7 @@
 import { m, type Variants } from 'framer-motion'
 import { ArrowRight, MapPin, Sparkles } from 'lucide-react'
 import { GeAlreadyBookedFlightPanel } from '../components/already-booked-flight-panel'
-import { TriangleDivider } from '../components/triangle-divider'
+import { GeCrestDivider } from '../components/ge-crest-divider'
 import { designYourPackage, homeTripSnapshotBand } from '../data/copy'
 
 interface StepCard {
@@ -65,39 +65,13 @@ export function GeDesignYourPackage() {
     <section
       id="design-package"
       aria-labelledby="design-package-title"
-      className="relative overflow-hidden bg-[#eef2ef] text-gs-dark"
+      className="relative overflow-hidden border-b border-chrome-300/60 bg-cream text-gs-dark"
     >
-      <TriangleDivider fill="#eef2ef" position="top" variant="layered" height={72} className="z-[1]" />
-
       <m.div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            'radial-gradient(circle at 8% 0%, rgba(19,96,71,0.22), transparent 30%), radial-gradient(circle at 92% 12%, rgba(217,190,122,0.14), transparent 24%), linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(246,240,226,0.98) 38%, rgba(235,227,207,0.97) 100%)'
-        }}
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-      />
-      <m.div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-[4.5rem] h-px origin-center bg-gradient-to-r from-transparent via-brand-700/55 to-transparent sm:top-[5.25rem]"
-        initial={{ scaleX: 0, opacity: 0 }}
-        whileInView={{ scaleX: 1, opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.7, ease: 'easeOut' }}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-32 h-56 w-[min(70rem,90vw)] -translate-x-1/2 rounded-full bg-gs-dark/[0.07] blur-3xl"
-      />
-
-      <m.div
-        className="relative mx-auto max-w-[1180px] px-5 pb-24 pt-20 sm:px-8 sm:pt-24"
+        className="relative mx-auto max-w-[1180px] px-5 pb-20 pt-14 sm:px-8 sm:pb-24 sm:pt-16"
         {...fadeUp}
       >
+        <GeCrestDivider className="mb-10 sm:mb-12" />
         <m.div
           className="design-package-hero relative overflow-hidden rounded-[2rem] border border-white/30 bg-[linear-gradient(128deg,var(--brand-800)_0%,#0f4f3c_42%,var(--brand-700)_100%)] px-6 py-10 text-center shadow-[0_32px_90px_rgba(11,77,59,0.32)] sm:px-10 sm:py-14"
           variants={heroContainerVariants}

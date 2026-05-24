@@ -56,39 +56,30 @@ const flagClass =
 export function GeHomeEuNordicWelcome() {
   return (
     <section
-      className="ge-on-dark relative isolate overflow-hidden border-y border-[#d9be7a]/30 bg-[#0a2d20] text-white"
+      className="relative border-b border-chrome-300/60 bg-cream text-gs-dark"
       aria-labelledby="home-eu-nordic-welcome-heading"
     >
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#d9be7a]/55 to-transparent"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_120%_at_12%_50%,rgba(19,96,71,0.22),transparent_55%),radial-gradient(ellipse_70%_100%_at_88%_50%,rgba(217,190,122,0.08),transparent_50%)]"
-      />
-
-      <div className="relative mx-auto max-w-[1180px] px-4 py-4 sm:px-8 sm:py-5">
-        <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-6 lg:gap-8">
+      <div className="relative mx-auto max-w-[1180px] px-4 py-3 sm:px-8 sm:py-4">
+        <div className="flex flex-col items-center gap-3 rounded-[1.25rem] border border-chrome-300/80 bg-white/90 px-4 py-3.5 shadow-[0_8px_24px_rgba(6,32,22,0.05)] sm:flex-row sm:items-center sm:gap-5 sm:px-5 sm:py-4">
           <h2 id="home-eu-nordic-welcome-heading" className="sr-only">
             Golf transfers for visitors from the European Union and Scandinavia
           </h2>
 
           <div
-            className="inline-flex shrink-0 items-center gap-2.5 rounded-full border border-white/15 bg-white/[0.06] px-4 py-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_8px_24px_rgba(0,0,0,0.2)] backdrop-blur-sm sm:gap-3 sm:px-5 sm:py-3"
+            className="inline-flex shrink-0 items-center gap-2.5 rounded-full border border-chrome-300 bg-cream/80 px-4 py-2 sm:gap-3 sm:px-4 sm:py-2.5"
             role="group"
             aria-label="Europe, Denmark, Norway, Sweden"
           >
-            <span className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.18em] text-[#f4dfa6] sm:text-[0.68rem]">
+            <span className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.18em] text-gs-green sm:text-[0.68rem]">
               Europe
             </span>
             <span title="Europe" className="inline-flex leading-none">
               <FlagEu className={flagClass} />
             </span>
-            <span className="select-none font-ge text-xs font-bold text-white/40" aria-hidden>
+            <span className="select-none font-ge text-xs font-bold text-ge-gray500" aria-hidden>
               +
             </span>
-            <span className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.18em] text-[#f4dfa6] sm:text-[0.68rem]">
+            <span className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.18em] text-gs-green sm:text-[0.68rem]">
               Nordics
             </span>
             <span title="Denmark" className="inline-flex leading-none">
@@ -102,25 +93,20 @@ export function GeHomeEuNordicWelcome() {
             </span>
           </div>
 
-          <div className="hidden h-10 w-px shrink-0 bg-gradient-to-b from-transparent via-[#d9be7a]/45 to-transparent sm:block" aria-hidden />
+          <div className="hidden h-8 w-px shrink-0 bg-chrome-300 sm:block" aria-hidden />
 
-          <p className="max-w-2xl text-center font-ge text-[0.875rem] leading-relaxed text-white/92 sm:text-left sm:text-[0.9375rem] sm:leading-7">
-            <span className="font-extrabold text-white">
+          <p className="max-w-2xl text-center font-ge text-[0.875rem] leading-relaxed text-ge-gray500 sm:text-left sm:text-[0.9rem] sm:leading-7">
+            <span className="font-extrabold text-gs-dark">
               Flying in from Europe or Scandinavia for golf on the Sol?
             </span>{' '}
-            <span className="text-white/85">
+            <span>
               We offer{' '}
-              <span className="font-semibold text-[#f4dfa6]">Málaga meet-and-greet and airport transfers</span>, all
+              <span className="font-semibold text-brand-700">Málaga meet-and-greet and airport transfers</span>, all
               planned around your resort and tee times.
             </span>
           </p>
         </div>
       </div>
-
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#d9be7a]/35 to-transparent"
-      />
     </section>
   )
 }
