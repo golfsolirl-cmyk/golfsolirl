@@ -95,45 +95,64 @@ export function AuthProviderImpl({
     setIsLoading(true)
   }, [supabase])
 
+  const mapProfileRow = useCallback((row: Record<string, unknown>): Profile => {
+    const rawRole = row.role
+    const role: Profile['role'] =
+      rawRole === 'admin' || rawRole === 'client' || rawRole === 'driver' ? rawRole : 'client'
+    return {
+      id: String(row.id),
+      email: (row.email as string | null) ?? null,
+      full_name: (row.full_name as string | null) ?? null,
+      phone: (row.phone as string | null | undefined) ?? null,
+      role,
+      account_reference_id: (row.account_reference_id as string | null | undefined) ?? null,
+      portal_proposals_enabled: Boolean(row.portal_proposals_enabled),
+      portal_pdf_library_enabled:
+        typeof row.portal_pdf_library_enabled === 'boolean'
+          ? Boolean(row.portal_pdf_library_enabled)
+          : Boolean(row.portal_proposals_enabled),
+      portal_contact_completed_at:
+        row.portal_contact_completed_at != null ? String(row.portal_contact_completed_at) : null,
+      portal_enquiry_autofill_disabled:
+        typeof row.portal_enquiry_autofill_disabled === 'boolean'
+          ? Boolean(row.portal_enquiry_autofill_disabled)
+          : false,
+      created_at: String(row.created_at),
+      updated_at: String(row.updated_at)
+    }
+  }, [])
+
   const fetchProfileRow = useCallback(
-    async (userId: string) => {
+    async (userId: string, accessToken?: string | null) => {
       if (!supabase) {
         return null
       }
 
-      const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single()
+      if (accessToken) {
+        try {
+          const response = await fetch('/api/profile-me', {
+            headers: { Authorization: `Bearer ${accessToken}` }
+          })
+          if (response.ok) {
+            const json = (await response.json()) as { profile?: Record<string, unknown> }
+            if (json.profile && String(json.profile.id) === userId) {
+              return mapProfileRow(json.profile)
+            }
+          }
+        } catch {
+          /* fall back to direct Supabase read */
+        }
+      }
+
+      const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle()
 
       if (error || !data) {
         return null
       }
 
-      const row = data as Record<string, unknown>
-      const rawRole = row.role
-      const role: Profile['role'] =
-        rawRole === 'admin' || rawRole === 'client' || rawRole === 'driver' ? rawRole : 'client'
-      return {
-        id: String(row.id),
-        email: (row.email as string | null) ?? null,
-        full_name: (row.full_name as string | null) ?? null,
-        phone: (row.phone as string | null | undefined) ?? null,
-        role,
-        account_reference_id: (row.account_reference_id as string | null | undefined) ?? null,
-        portal_proposals_enabled: Boolean(row.portal_proposals_enabled),
-        portal_pdf_library_enabled:
-          typeof row.portal_pdf_library_enabled === 'boolean'
-            ? Boolean(row.portal_pdf_library_enabled)
-            : Boolean(row.portal_proposals_enabled),
-        portal_contact_completed_at:
-          row.portal_contact_completed_at != null ? String(row.portal_contact_completed_at) : null,
-        portal_enquiry_autofill_disabled:
-          typeof row.portal_enquiry_autofill_disabled === 'boolean'
-            ? Boolean(row.portal_enquiry_autofill_disabled)
-            : false,
-        created_at: String(row.created_at),
-        updated_at: String(row.updated_at)
-      }
+      return mapProfileRow(data as Record<string, unknown>)
     },
-    [supabase]
+    [supabase, mapProfileRow]
   )
 
   const refreshProfile = useCallback(async () => {
@@ -142,9 +161,9 @@ export function AuthProviderImpl({
       return
     }
 
-    const row = await fetchProfileRow(sessionUserId)
+    const row = await fetchProfileRow(sessionUserId, session?.access_token)
     setProfile((prev) => (profilesEqual(prev, row) ? prev : row))
-  }, [sessionUserId, supabase, fetchProfileRow])
+  }, [sessionUserId, session?.access_token, supabase, fetchProfileRow])
 
   useEffect(() => {
     if (!supabase) {
@@ -164,7 +183,7 @@ export function AuthProviderImpl({
         return
       }
 
-      const row = await fetchProfileRow(nextSession.user.id)
+      const row = await fetchProfileRow(nextSession.user.id, nextSession.access_token)
       if (!cancelled) {
         setProfile((prev) => (profilesEqual(prev, row) ? prev : row))
       }

@@ -7,6 +7,7 @@ import { getFormEmailPreviewHtml } from '../server/form-email-browser-preview.mj
 import { getBrandedSampleDocumentPreviewHtml } from '../server/branded-sample-document-html.mjs'
 import { handleMagicLinkRequest } from '../server/magic-link-service.mjs'
 import { handleSyncPortalProfile } from '../server/sync-portal-profile-service.mjs'
+import { handleProfileMe } from '../server/profile-me-service.mjs'
 import { handlePortalContactSetup } from '../server/portal-contact-setup-service.mjs'
 import { handleSendClientPortalEmail } from '../server/client-portal-email-service.mjs'
 import { handleSendWebsiteQuoteEmail } from '../server/website-quote-email.mjs'
@@ -190,6 +191,17 @@ export default async function handler(req, res) {
         }
         const authHeader = req.headers.authorization ?? ''
         const result = await handleSyncPortalProfile(process.env, { authHeader })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'profile-me': {
+        if (req.method !== 'GET') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const authHeader = req.headers.authorization ?? ''
+        const result = await handleProfileMe(process.env, { authHeader })
         jsonEnd(res, 200, result)
         return
       }

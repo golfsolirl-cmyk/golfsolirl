@@ -4,6 +4,7 @@ import { stripHidethisPlugin } from './vite/strip-hidethis-plugin'
 import { handleEnquirySubmission, handleTermsEmailRequest } from './server/enquiry-service.mjs'
 import { handleMagicLinkRequest } from './server/magic-link-service.mjs'
 import { handleSyncPortalProfile } from './server/sync-portal-profile-service.mjs'
+import { handleProfileMe } from './server/profile-me-service.mjs'
 import { handlePortalContactSetup } from './server/portal-contact-setup-service.mjs'
 import { handleSendClientPortalEmail } from './server/client-portal-email-service.mjs'
 import { handleSendWebsiteQuoteEmail } from './server/website-quote-email.mjs'
@@ -195,6 +196,34 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
         response.end(JSON.stringify(result))
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Unable to sync profile right now.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/profile-me', async (request, response) => {
+      if (request.method !== 'GET') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const authHeader = request.headers.authorization ?? ''
+        const result = await handleProfileMe({ ...process.env, ...serverEnv }, { authHeader })
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unable to load profile right now.'
         const statusCode =
           error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
             ? error.statusCode
