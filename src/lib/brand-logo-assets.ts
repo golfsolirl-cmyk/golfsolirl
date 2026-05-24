@@ -1,15 +1,18 @@
 /**
  * Canonical brand lockup — shield crest (Ireland + Spain flags).
- * Site chrome + transactional emails use the source PNG directly.
- * Deployed copies `gsirl.webp` / `gsirl.png` remain for legacy webp refs and pdf-lib embeds.
+ * All web + email logo URLs use the hosted PNG on golfsolirl.com.
+ * Local `GOLFSOL_BRAND_LOGO_SOURCE` remains for same-origin / disk paths where needed.
  */
 export const GOLFSOL_BRAND_LOGO_SOURCE = '/images/newbf9f08a4-8fac-496b-8181-6f6b680d19c3.png' as const
 
+export const GOLFSOL_BRAND_LOGO_HOSTED =
+  'https://golfsolirl.com/images/newbf9f08a4-8fac-496b-8181-6f6b680d19c3.png' as const
+
 export const GOLFSOL_BRAND_LOGO = {
-  webp: '/images/gsirl.webp',
-  /** Header, footer, and marketing chrome — full-resolution source crest. */
-  png: GOLFSOL_BRAND_LOGO_SOURCE,
-  svg: GOLFSOL_BRAND_LOGO_SOURCE,
+  /** Legacy key — always the hosted crest PNG (replaces gsirl.webp). */
+  webp: GOLFSOL_BRAND_LOGO_HOSTED,
+  png: GOLFSOL_BRAND_LOGO_HOSTED,
+  svg: GOLFSOL_BRAND_LOGO_HOSTED,
 } as const
 
 /** Natural pixel size of the crest raster. */

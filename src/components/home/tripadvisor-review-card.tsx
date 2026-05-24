@@ -1,5 +1,6 @@
 import { m } from 'framer-motion'
 import { Quote, Star } from 'lucide-react'
+import { GOLFSOL_BRAND_LOGO_HOSTED } from '../../lib/brand-logo-assets'
 
 const fadeUp = {
   initial: { opacity: 0, y: 18 },
@@ -50,16 +51,19 @@ export function TripadvisorReviewCard({
 }: TripadvisorReviewCardProps) {
   const isLive = variant === 'live'
   const isTransfer = variant === 'transfer'
+  const isGuestStory = badge === 'Guest story'
 
   return (
     <m.article
       className={[
         'group relative flex h-full min-h-[280px] w-[min(100%,320px)] shrink-0 snap-center flex-col sm:w-[340px]',
-        'rounded-[1.65rem] p-6 shadow-[0_18px_45px_rgba(6,59,42,0.07)] ring-1 ring-gs-dark/[0.04] transition-[transform,box-shadow,border-color] duration-300 sm:p-7',
+        'rounded-[1.65rem] p-6 shadow-[0_18px_45px_rgba(6,59,42,0.07)] transition-[transform,box-shadow,border-color] duration-300 sm:p-7',
         'hover:-translate-y-0.5 hover:shadow-[0_24px_55px_rgba(6,59,42,0.1)]',
-        isLive || isTransfer
-          ? 'border border-brand-700/35 bg-gradient-to-b from-white to-brand-700/[0.06] hover:border-brand-700/60'
-          : 'border border-ge-gray100 bg-gradient-to-b from-white to-ge-gray50/40 hover:border-brand-700/35'
+        isGuestStory
+          ? 'border border-[#d9c98a]/50 bg-[#fdfbf6] ring-1 ring-gs-dark/[0.06] hover:border-brand-700/45'
+          : isLive || isTransfer
+            ? 'border border-brand-700/30 bg-white ring-1 ring-gs-dark/[0.04] hover:border-brand-700/55'
+            : 'border border-ge-gray100 bg-gradient-to-b from-white to-ge-gray50/40 ring-1 ring-gs-dark/[0.04] hover:border-brand-700/35'
       ].join(' ')}
       {...fadeUp}
       transition={{ ...fadeUp.transition, delay: 0.05 * (delayIndex + 1) }}
@@ -71,7 +75,13 @@ export function TripadvisorReviewCard({
       <div className="flex items-start justify-between gap-3">
         <Quote className="h-8 w-8 shrink-0 text-brand-700/90" aria-hidden strokeWidth={1.75} />
         {badge ? (
-          <span className="rounded-full bg-gs-dark/90 px-2 py-0.5 font-ge text-[0.6rem] font-extrabold uppercase tracking-[0.14em] text-white">
+          <span
+            className={
+              isGuestStory
+                ? 'rounded-full border border-[#d4a843]/45 bg-gs-dark px-2.5 py-1 font-ge text-[0.6rem] font-extrabold uppercase tracking-[0.14em] text-[#fbe8b5] shadow-sm'
+                : 'rounded-full bg-gs-dark px-2.5 py-1 font-ge text-[0.6rem] font-extrabold uppercase tracking-[0.14em] text-white'
+            }
+          >
             {badge}
           </span>
         ) : (
@@ -89,17 +99,29 @@ export function TripadvisorReviewCard({
       </div>
       <div className="mt-4">
         <StarRow count={rating} />
-        <p className="mt-4 font-ge text-[1.02rem] font-medium leading-7 text-gs-dark/92 sm:text-[1.05rem] sm:leading-[1.65rem]">
+        <p className="mt-4 font-ge text-[1.02rem] font-medium leading-7 text-gs-dark sm:text-[1.05rem] sm:leading-[1.65rem]">
           “{quote}”
         </p>
       </div>
-      <div className="mt-auto border-t border-ge-gray100/90 pt-5">
+      <div className="mt-auto border-t border-[#e8e4dc]/90 pt-5">
         <p className="font-ge text-sm font-extrabold text-gs-dark">{name}</p>
-        <p className="mt-1 font-ge text-xs font-semibold uppercase tracking-[0.12em] text-ge-gray500">{context}</p>
+        <p className="mt-1 font-ge text-xs font-semibold uppercase tracking-[0.12em] text-ge-gray600">{context}</p>
         {tripType ? (
-          <p className="mt-2 inline-flex rounded-full border border-brand-700/25 bg-brand-700/10 px-2.5 py-0.5 font-ge text-[0.62rem] font-bold uppercase tracking-[0.14em] text-gs-dark/80">
-            {tripType}
-          </p>
+          <div className="mt-3 flex items-center gap-2.5">
+            <img
+              src={GOLFSOL_BRAND_LOGO_HOSTED}
+              alt=""
+              width={36}
+              height={36}
+              className="h-9 w-9 shrink-0 object-contain"
+              loading="lazy"
+              decoding="async"
+              aria-hidden
+            />
+            <p className="inline-flex rounded-full border border-[#d4a843]/40 bg-[#f5edd6] px-2.5 py-1 font-ge text-[0.62rem] font-bold uppercase tracking-[0.14em] text-gs-dark">
+              {tripType}
+            </p>
+          </div>
         ) : null}
       </div>
     </m.article>

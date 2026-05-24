@@ -1,5 +1,5 @@
 import type { CSSProperties, ImgHTMLAttributes } from 'react'
-import { GOLFSOL_BRAND_LOGO, GOLFSOL_BRAND_LOGO_INTRINSIC } from '../lib/brand-logo-assets'
+import { GOLFSOL_BRAND_LOGO, GOLFSOL_BRAND_LOGO_INTRINSIC, GOLFSOL_BRAND_LOGO_SOURCE } from '../lib/brand-logo-assets'
 import { useHomepageTestLogo } from '../providers/homepagetest-variant'
 import { cx } from '../lib/utils'
 
@@ -71,11 +71,11 @@ function crestAlphaMaskStyle(png: string): CSSProperties {
 
 /**
  * Footer-only: opaque `#fff` clipped to crest alpha (PNG) so semi-transparent ball/flag
- * pixels composite on solid white, not the dark footer. Foreground uses WebP + PNG srcset.
+ * pixels composite on solid white, not the dark footer. Foreground uses the hosted crest PNG.
  */
 export function FooterBrandLogoPicture({ className, ...props }: BrandLogoPictureProps) {
   const testLogo = useHomepageTestLogo()
-  const maskPng = testLogo?.png ?? GOLFSOL_BRAND_LOGO.png
+  const maskPng = testLogo?.png ?? GOLFSOL_BRAND_LOGO_SOURCE
   const crestAlphaMaskPng = crestAlphaMaskStyle(maskPng)
 
   return (

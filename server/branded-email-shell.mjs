@@ -5,7 +5,7 @@
  */
 import { getGsolSiteUrl } from './site-url.mjs'
 import { gsolCompanyLegal, gsolEmailBrand } from './email-constants.mjs'
-import { GOLFSOL_BRAND_LOGO_SOURCE } from './brand-logo-assets.mjs'
+import { GOLFSOL_BRAND_LOGO_HOSTED } from './brand-logo-assets.mjs'
 
 export const gs = {
   bg: '#F4F7F5',
@@ -38,7 +38,7 @@ export const EMAIL_LOGO_FOOTER_W = 140
 export const EMAIL_LOGO_FOOTER_H = 140
 
 export const assets = {
-  logo: GOLFSOL_BRAND_LOGO_SOURCE,
+  logo: GOLFSOL_BRAND_LOGO_HOSTED,
   fleetLineup: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
   arrivals: '/images/transport-moment-arrivals.webp',
   resort: '/images/transport-moment-resort.webp',
@@ -110,7 +110,7 @@ export const escapeHtml = (value) =>
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;')
 
-export const assetUrl = (path) => `${getGsolSiteUrl()}${path}`
+export const assetUrl = (path) => (/^https?:\/\//i.test(path) ? path : `${getGsolSiteUrl()}${path}`)
 
 /**
  * Homepage `#design-package` ambient layer — forest/gold radial accents over a white→cream vertical wash.

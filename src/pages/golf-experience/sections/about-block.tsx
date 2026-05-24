@@ -3,7 +3,7 @@ import { Sparkles, ArrowRight } from 'lucide-react'
 import { GeButton } from '../components/ge-button'
 import { GeSection } from '../components/ge-section'
 import { aboutCopy } from '../data/copy'
-import { GOLFSOL_BRAND_LOGO } from '../../../lib/brand-logo-assets'
+import { GOLFSOL_BRAND_LOGO_HOSTED } from '../../../lib/brand-logo-assets'
 import { useHomepageTestLogo } from '../../../providers/homepagetest-variant'
 import { cx } from '../../../lib/utils'
 
@@ -53,7 +53,7 @@ function AboutTitle() {
 
 export function GeAboutBlock() {
   const testLogo = useHomepageTestLogo()
-  const logoSrc = testLogo?.png ?? GOLFSOL_BRAND_LOGO.webp
+  const logoSrc = testLogo?.png ?? GOLFSOL_BRAND_LOGO_HOSTED
   const logoW = testLogo?.width ?? 1020
   const logoH = testLogo?.height ?? 1468
 

@@ -5,7 +5,7 @@
 import { gsolEmailBrand } from './email-constants.mjs'
 import { buildBrandedTransactionalEmailHtml, emailFonts } from './branded-email-shell.mjs'
 import { getGsolSiteUrl } from './site-url.mjs'
-import { GOLFSOL_BRAND_LOGO_SOURCE } from './brand-logo-assets.mjs'
+import { GOLFSOL_BRAND_LOGO_HOSTED } from './brand-logo-assets.mjs'
 
 export { getGsolSiteUrl }
 
@@ -47,7 +47,7 @@ const transparentPixelDataUri =
 export const adaptTransactionalEmailHtmlForBrowserPreview = (html, requestOrigin) => {
   const base = (requestOrigin || getGsolSiteUrl()).replace(/\/+$/, '')
   const productionSite = getGsolSiteUrl().replace(/\/+$/, '')
-  const logoSrc = `${base}${GOLFSOL_BRAND_LOGO_SOURCE}`
+  const logoSrc = GOLFSOL_BRAND_LOGO_HOSTED
 
   let out = String(html ?? '')
 

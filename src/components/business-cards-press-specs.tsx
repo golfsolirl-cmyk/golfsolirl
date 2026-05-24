@@ -1,12 +1,12 @@
 /**
  * Print-ready business cards — unified “Aurora” family: cotton stock, forest accents,
- * `golfsol.png` photo plate. Crest uses **`gsirl.webp`** — portrait fronts/backs use a larger mark, layered shadow, no glass frame on the back.
+ * `golfsol.png` photo plate. Crest uses the hosted Golf Sol shield PNG.
  */
 import { m, useReducedMotion } from 'framer-motion'
 import type { ReactNode } from 'react'
 import { Globe, Mail, Phone } from 'lucide-react'
 import type { BusinessCardRenderMode, BusinessCardSpec } from '../lib/business-cards-catalog-types'
-import { GOLFSOL_BRAND_LOGO, GOLFSOL_BRAND_LOGO_INTRINSIC } from '../lib/brand-logo-assets'
+import { GOLFSOL_BRAND_LOGO_HOSTED, GOLFSOL_BRAND_LOGO_INTRINSIC } from '../lib/brand-logo-assets'
 import type { BusinessCardPersonBlurb } from '../lib/business-cards-config'
 import { businessCardContact, businessCardPerson, businessCardPersonGreg } from '../lib/business-cards-config'
 
@@ -23,6 +23,7 @@ const PW = 550
 const PH = Math.round((PW * 85) / 55)
 
 function assetUrl(publicPath: string): string {
+  if (/^https?:\/\//i.test(publicPath)) return publicPath
   const path = publicPath.startsWith('/') ? publicPath.slice(1) : publicPath
   const base = import.meta.env.BASE_URL
   const prefix = base.endsWith('/') ? base : `${base}/`
@@ -37,7 +38,7 @@ function CardBrandLogo({
   readonly placement: 'portraitFront' | 'portraitBack' | 'landscapeFront' | 'landscapeBack'
 }) {
   const isPdf = mode === 'pdf'
-  const src = assetUrl(GOLFSOL_BRAND_LOGO.webp)
+  const src = assetUrl(GOLFSOL_BRAND_LOGO_HOSTED)
   /**
    * PDF: tight bounds in print pixels (cq units match fixed figure size).
    * Preview: add **min** height/width so logos stay legible on phones when `cqh`/`cqw` are missing
@@ -466,7 +467,7 @@ function specsForPerson(person: BusinessCardPersonBlurb, ids: readonly [string, 
     {
       id: idLf,
       title: `Landscape front — ${short}`,
-      subtitle: 'Wide layout: golfsol.png column + cream slab, large gsirl.webp crest bounded to the short edge.',
+      subtitle: 'Wide layout: golfsol.png column + cream slab, large hosted crest bounded to the short edge.',
       orientation: 'landscape',
       side: 'front',
       imageSrc: CARD_PHOTO_SRC,

@@ -4,6 +4,7 @@ import {
   IRISH_VAT_REDUCED_TOURISM_RATE,
   IRISH_VAT_STANDARD_RATE
 } from './package-build'
+import { GOLFSOL_BRAND_LOGO_HOSTED } from './brand-logo-assets'
 
 export type TransferReceiptVatTreatment = 'tourism' | 'services' | null | undefined
 
@@ -59,7 +60,7 @@ function sanitize(text: string): string {
 
 async function loadLogoPng(): Promise<Uint8Array | null> {
   try {
-    const res = await fetch('/images/gsirl.webp')
+    const res = await fetch(GOLFSOL_BRAND_LOGO_HOSTED)
     if (!res.ok) return null
     return new Uint8Array(await res.arrayBuffer())
   } catch {
