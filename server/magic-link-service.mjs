@@ -4,6 +4,7 @@ import { Resend } from 'resend'
 import { buildBrandedPortalMagicLinkEmailHtml } from './branded-client-portal-email.mjs'
 import { finalizeGsolEmailHtml } from './email-layout.mjs'
 import { isAuthEmailBlocked } from './email-address-registry.mjs'
+import { resolveResendToAddress, resendSandboxRecipientHint } from './resend-delivery-email.mjs'
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
@@ -204,15 +205,23 @@ export const handleMagicLinkRequest = async (payload, env = process.env, meta = 
       ? 'Operator sign-in — Golf Sol Ireland — your secure link'
       : 'Sign in to Golf Sol Ireland — your secure link'
 
+  const deliveryEmail = resolveResendToAddress(email, env)
+
   const { error: sendError } = await resend.emails.send({
     from: fromEmail,
-    to: [email],
+    to: [deliveryEmail],
     subject,
     html
   })
 
   if (sendError) {
-    const error = new Error(sendError.message ?? 'Could not send sign-in email.')
+    const raw = sendError.message ?? 'Could not send sign-in email.'
+    const message =
+      raw.includes('only send testing emails to your own email address') ||
+      raw.includes('verify a domain at resend.com/domains')
+        ? resendSandboxRecipientHint(env)
+        : raw
+    const error = new Error(message)
     error.statusCode = 502
     throw error
   }
