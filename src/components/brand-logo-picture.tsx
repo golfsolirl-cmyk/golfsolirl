@@ -7,14 +7,14 @@ const LOGO_SRCSET_WIDTH = `${GOLFSOL_BRAND_LOGO_INTRINSIC.width}w`
 
 export type BrandLogoPictureProps = Omit<ImgHTMLAttributes<HTMLImageElement>, 'src' | 'srcSet' | 'sizes'> & {
   readonly alt: string
-  /** Footer + legal surfaces always use production crest (`gsirl.png`). */
+  /** Footer + legal surfaces always use production crest (source PNG). */
   readonly ignoreTestVariant?: boolean
   /** Hint for responsive pick (retina-safe). */
   readonly sizes?: string
 }
 
 /**
- * Header + footer logo — Golf Sol Ireland shield crest (WebP + PNG, full-resolution srcset).
+ * Header + footer logo — Golf Sol Ireland shield crest (source PNG).
  */
 export function BrandLogoPicture({
   alt,
@@ -35,9 +35,6 @@ export function BrandLogoPicture({
 
   return (
     <picture className="inline-flex max-w-full leading-none">
-      {!useTestLogo ? (
-        <source srcSet={`${GOLFSOL_BRAND_LOGO.webp} ${LOGO_SRCSET_WIDTH}`} sizes={sizes} type="image/webp" />
-      ) : null}
       <img
         src={logo.png}
         srcSet={srcSet}

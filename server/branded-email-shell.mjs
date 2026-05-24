@@ -5,6 +5,7 @@
  */
 import { getGsolSiteUrl } from './site-url.mjs'
 import { gsolCompanyLegal, gsolEmailBrand } from './email-constants.mjs'
+import { GOLFSOL_BRAND_LOGO_SOURCE } from './brand-logo-assets.mjs'
 
 export const gs = {
   bg: '#F4F7F5',
@@ -27,7 +28,7 @@ export const gs = {
   tierBorder: '#c5cfc9',
 }
 
-/** Top bar lockup — shield crest (`gsirl.webp`, transparent). */
+/** Top bar lockup — shield crest (same source PNG as site header/footer). */
 export const EMAIL_LOGO_HEADER_W = 120
 export const EMAIL_LOGO_HEADER_H = 120
 /** Hero band centred lockup (transactional + enquiry). */
@@ -37,7 +38,7 @@ export const EMAIL_LOGO_FOOTER_W = 140
 export const EMAIL_LOGO_FOOTER_H = 140
 
 export const assets = {
-  logo: '/images/gsirl.webp',
+  logo: GOLFSOL_BRAND_LOGO_SOURCE,
   fleetLineup: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
   arrivals: '/images/transport-moment-arrivals.webp',
   resort: '/images/transport-moment-resort.webp',

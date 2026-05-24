@@ -1,3 +1,5 @@
+import { GOLFSOL_BRAND_LOGO_SOURCE } from './brand-logo-assets'
+
 export const golfSolEmailSubject = 'Your Costa del Sol golf trip plan is ready'
 
 export const golfSolEmailPreviewText =
@@ -23,7 +25,7 @@ const emailAccentOnDark = '#ebe3cf'
 const emailNestedWashCard = `${emailAmbientOuterLayers}border:1px solid rgba(19,96,71,0.14);border-radius:18px;`
 
 const assets = {
-  logo: '/images/gsirl.webp',
+  logo: GOLFSOL_BRAND_LOGO_SOURCE,
   fleetLineup: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
   arrivals: '/images/transport-moment-arrivals.webp',
   resort: '/images/transport-moment-resort.webp',

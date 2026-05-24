@@ -1,6 +1,7 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { rgb } from 'pdf-lib'
+import { GOLFSOL_BRAND_LOGO_SOURCE } from './brand-logo-assets.mjs'
 
 const currentFilePath = fileURLToPath(import.meta.url)
 const currentDirectory = path.dirname(currentFilePath)
@@ -8,8 +9,8 @@ const publicImagesDirectory = path.resolve(currentDirectory, '../public/images')
 
 /** Bitmap logo + fleet hero — same assets as formal proposal PDFs and quote PDFs. */
 export const brandedPdfAssetPaths = {
-  /** Hosted logo for HTML email (`https://golfsolirl.com/images/gsirl.webp`). */
-  logoWeb: '/images/gsirl.webp',
+  /** Hosted logo for HTML email — same crest as site header/footer. */
+  logoWeb: GOLFSOL_BRAND_LOGO_SOURCE,
   /** Transparent PNG deploy copy for pdf-lib (`embedPng`). Generated from crest source via sync script. */
   logo: path.join(publicImagesDirectory, 'gsirl.png'),
   homepageCrest: path.join(publicImagesDirectory, 'gsirl.png'),
