@@ -87,7 +87,7 @@ function NavButton({
         <span className={cx('block text-sm font-semibold', active ? 'text-forest-950' : 'text-forest-900')}>
           {item.label}
         </span>
-        <span className="mt-0.5 block text-xs leading-snug text-forest-500">{item.description}</span>
+        <span className="mt-0.5 block text-xs leading-snug text-ge-gray500">{item.description}</span>
       </span>
     </button>
   )

@@ -72,7 +72,7 @@ function NavButton({
             <span className="inline-flex h-2 w-2 rounded-full bg-brand-500 ring-2 ring-white" title="New reply" />
           ) : null}
         </span>
-        <span className="mt-0.5 block text-xs leading-snug text-forest-600">{item.description}</span>
+        <span className="mt-0.5 block text-xs leading-snug text-ge-gray500">{item.description}</span>
       </span>
     </button>
   )

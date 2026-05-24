@@ -392,7 +392,7 @@ export function AdminTransferPipeline() {
                 {(b.client_display_name ?? '').trim() || '—'} · {(b.client_phone ?? '').trim() || '—'}
               </p>
               {b.enquiry_reference_id ? (
-                <p className="mt-1 text-xs text-forest-500">
+                <p className="mt-1 text-xs text-ge-gray500">
                   <span className="font-semibold text-forest-600">Enquiry ref:</span> {b.enquiry_reference_id}
                 </p>
               ) : null}
@@ -404,7 +404,7 @@ export function AdminTransferPipeline() {
                   <span className="font-semibold">Via:</span> {viaSummary(b)}
                 </p>
               ) : null}
-              <p className="mt-1 text-xs text-forest-500">
+              <p className="mt-1 text-xs text-ge-gray500">
                 <span className="font-semibold text-forest-600">Pickup timing:</span> {formatPickupWhenAdmin(b)}
               </p>
               {typeof b.admin_price_eur === 'number' && Number.isFinite(b.admin_price_eur) ? (
@@ -489,7 +489,7 @@ export function AdminTransferPipeline() {
                     </LuxuryButton>
                   </div>
                 ) : (
-                  <span className="text-xs text-forest-500">Allocation / decline controls apply only while status is pending and no driver is assigned.</span>
+                  <span className="text-xs text-ge-gray500">Allocation / decline controls apply only while status is pending and no driver is assigned.</span>
                 )}
                 <LuxuryButton
                   className="!border-red-300 !text-red-950 hover:!bg-red-50 sm:ml-auto"
@@ -517,7 +517,7 @@ export function AdminTransferPipeline() {
                 </p>
                 <p className="mt-2 text-sm text-forest-700">{r.comment || '—'}</p>
                 {r.published_at ? (
-                  <p className="mt-2 text-xs text-forest-500">Published {new Date(r.published_at).toLocaleString()}</p>
+                  <p className="mt-2 text-xs text-ge-gray500">Published {new Date(r.published_at).toLocaleString()}</p>
                 ) : (
                   <LuxuryButton className="mt-3 !text-xs" onClick={() => void publishReview(r.id)} type="button" variant="outline">
                     Publish to homepage

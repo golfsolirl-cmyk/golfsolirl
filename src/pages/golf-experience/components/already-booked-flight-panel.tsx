@@ -433,7 +433,7 @@ export function GeAlreadyBookedFlightPanel() {
 
                   {error ? (
                     <p
-                      className="rounded-lg border border-brand-700/40 bg-brand-700/15 px-3 py-2 font-ge text-sm text-white"
+                      className="rounded-lg border border-red-300/80 bg-red-50 px-3 py-2 font-ge text-sm text-red-900"
                       role="alert"
                     >
                       {error}

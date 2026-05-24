@@ -1,6 +1,7 @@
 import { m } from 'framer-motion'
 import { Quote, Star } from 'lucide-react'
 import { GOLFSOL_BRAND_LOGO_HOSTED } from '../../lib/brand-logo-assets'
+import { cx } from '../../lib/utils'
 
 const fadeUp = {
   initial: { opacity: 0, y: 18 },
@@ -16,11 +17,12 @@ export function StarRow({ count = 5 }: { readonly count?: number }) {
       {Array.from({ length: 5 }).map((_, i) => (
         <Star
           key={i}
-          className={
+          className={cx(
+            'h-4 w-4 sm:h-[1.05rem] sm:w-[1.05rem]',
             i < n
-              ? 'h-4 w-4 fill-brand-600 text-brand-700 sm:h-[1.05rem] sm:w-[1.05rem]'
-              : 'h-4 w-4 fill-transparent text-ge-gray200 sm:h-[1.05rem] sm:w-[1.05rem]'
-          }
+              ? 'fill-[#d4a843] text-[#b8922e] drop-shadow-[0_1px_6px_rgba(212,168,67,0.45)]'
+              : 'fill-transparent text-ge-gray200'
+          )}
           strokeWidth={0}
         />
       ))}
@@ -39,6 +41,66 @@ export type TripadvisorReviewCardProps = {
   readonly delayIndex?: number
 }
 
+type CardTone = 'guestStory' | 'transfer' | 'sample' | 'live'
+
+function resolveTone(variant: TripadvisorReviewCardProps['variant'], badge?: string): CardTone {
+  if (badge === 'Guest story') return 'guestStory'
+  if (variant === 'transfer') return 'transfer'
+  if (variant === 'sample') return 'sample'
+  return 'live'
+}
+
+const toneStyles: Record<
+  CardTone,
+  {
+    shell: string
+    accent: string
+    badge: string
+    quoteMark: string
+    footer: string
+    tripPill: string
+  }
+> = {
+  guestStory: {
+    shell:
+      'border-[#d9c98a]/55 bg-[#fdfbf6] shadow-[0_22px_50px_rgba(6,59,42,0.09),inset_0_1px_0_rgba(255,255,255,0.92)] hover:border-[#d4a843]/65 hover:shadow-[0_28px_60px_rgba(6,59,42,0.12),0_0_0_1px_rgba(212,168,67,0.12)]',
+    accent: 'from-[#d4a843] via-[#ebe3cf] to-[#0B6B45]/80',
+    badge:
+      'border border-[#d4a843]/50 bg-gs-dark text-[#fbe8b5] shadow-[0_8px_20px_rgba(6,59,42,0.22)]',
+    quoteMark: 'text-[#d4a843]/18',
+    footer: 'border-[#e8dcc4]/90 bg-white/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.95)]',
+    tripPill: 'border-[#d4a843]/45 bg-[#f5edd6] text-gs-dark'
+  },
+  transfer: {
+    shell:
+      'border-brand-700/35 bg-white shadow-[0_20px_48px_rgba(6,59,42,0.08),inset_0_1px_0_rgba(255,255,255,1)] hover:border-brand-700/55 hover:shadow-[0_26px_58px_rgba(6,59,42,0.11),0_0_0_1px_rgba(11,107,69,0.08)]',
+    accent: 'from-brand-700 via-[#ebe3cf]/90 to-gs-electric/70',
+    badge:
+      'border border-brand-700/30 bg-gradient-to-br from-gs-dark to-[#0a5238] text-emerald-100 shadow-[0_8px_20px_rgba(6,59,42,0.2)]',
+    quoteMark: 'text-brand-700/14',
+    footer: 'border-brand-700/12 bg-[#f8fbf9]/90',
+    tripPill: 'border-brand-700/25 bg-brand-700/8 text-gs-dark'
+  },
+  live: {
+    shell:
+      'border-brand-700/30 bg-white shadow-[0_20px_48px_rgba(6,59,42,0.08)] hover:border-brand-700/50 hover:shadow-[0_26px_56px_rgba(6,59,42,0.11)]',
+    accent: 'from-brand-700 via-[#ebe3cf] to-brand-700/60',
+    badge: 'bg-gs-dark text-white shadow-[0_6px_16px_rgba(6,59,42,0.18)]',
+    quoteMark: 'text-brand-700/12',
+    footer: 'border-ge-gray100/90 bg-white/80',
+    tripPill: 'border-brand-700/25 bg-brand-700/10 text-gs-dark'
+  },
+  sample: {
+    shell:
+      'border-ge-gray100 bg-gradient-to-br from-white via-white to-[#f4f7f5] shadow-[0_18px_44px_rgba(6,59,42,0.07)] hover:border-brand-700/35 hover:shadow-[0_24px_52px_rgba(6,59,42,0.1)]',
+    accent: 'from-ge-gray200 via-[#ebe3cf]/80 to-brand-700/40',
+    badge: 'bg-gs-dark/90 text-white',
+    quoteMark: 'text-ge-gray200/80',
+    footer: 'border-ge-gray100/90 bg-white/60',
+    tripPill: 'border-ge-gray200 bg-ge-gray50 text-ge-gray600'
+  }
+}
+
 export function TripadvisorReviewCard({
   quote,
   name,
@@ -49,42 +111,69 @@ export function TripadvisorReviewCard({
   variant = 'live',
   delayIndex = 0
 }: TripadvisorReviewCardProps) {
-  const isLive = variant === 'live'
-  const isTransfer = variant === 'transfer'
-  const isGuestStory = badge === 'Guest story'
+  const tone = resolveTone(variant, badge)
+  const styles = toneStyles[tone]
+  const showTripadvisorLockup = !badge && variant === 'sample'
 
   return (
     <m.article
-      className={[
-        'group relative flex h-full min-h-[280px] w-[min(100%,320px)] shrink-0 snap-center flex-col sm:w-[340px]',
-        'rounded-[1.65rem] p-6 shadow-[0_18px_45px_rgba(6,59,42,0.07)] transition-[transform,box-shadow,border-color] duration-300 sm:p-7',
-        'hover:-translate-y-0.5 hover:shadow-[0_24px_55px_rgba(6,59,42,0.1)]',
-        isGuestStory
-          ? 'border border-[#d9c98a]/50 bg-[#fdfbf6] ring-1 ring-gs-dark/[0.06] hover:border-brand-700/45'
-          : isLive || isTransfer
-            ? 'border border-brand-700/30 bg-white ring-1 ring-gs-dark/[0.04] hover:border-brand-700/55'
-            : 'border border-ge-gray100 bg-gradient-to-b from-white to-ge-gray50/40 ring-1 ring-gs-dark/[0.04] hover:border-brand-700/35'
-      ].join(' ')}
+      className={cx(
+        'group relative flex h-full min-h-[300px] w-[min(100%,320px)] shrink-0 snap-center flex-col overflow-hidden',
+        'rounded-[1.75rem] border p-6 transition-[transform,box-shadow,border-color] duration-300 sm:min-h-[320px] sm:w-[340px] sm:p-7',
+        'hover:-translate-y-1',
+        styles.shell
+      )}
       {...fadeUp}
       transition={{ ...fadeUp.transition, delay: 0.05 * (delayIndex + 1) }}
+      whileHover={variant !== 'sample' ? { y: -4 } : undefined}
     >
+      {/* Chrome accent spine */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-brand-700/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        className={cx(
+          'pointer-events-none absolute inset-y-5 left-0 w-[3px] rounded-r-full bg-gradient-to-b opacity-90',
+          styles.accent
+        )}
       />
-      <div className="flex items-start justify-between gap-3">
-        <Quote className="h-8 w-8 shrink-0 text-brand-700/90" aria-hidden strokeWidth={1.75} />
+
+      {/* Warm top wash — guest story only */}
+      {tone === 'guestStory' ? (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-8 -top-10 h-36 w-36 rounded-full bg-[#d4a843]/14 blur-2xl"
+        />
+      ) : null}
+
+      {/* Watermark quote */}
+      <Quote
+        aria-hidden
+        className={cx(
+          'pointer-events-none absolute -right-1 top-14 h-24 w-24 rotate-12 select-none',
+          styles.quoteMark
+        )}
+        strokeWidth={1}
+      />
+
+      {/* Top hairline on hover */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-brand-700/45 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+      />
+
+      <div className="relative z-[1] flex items-start justify-between gap-3 pl-1">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-brand-700/15 bg-white/80 shadow-[0_6px_16px_rgba(6,59,42,0.06)]">
+          <Quote className="h-5 w-5 text-brand-700" aria-hidden strokeWidth={1.75} />
+        </div>
         {badge ? (
           <span
-            className={
-              isGuestStory
-                ? 'rounded-full border border-[#d4a843]/45 bg-gs-dark px-2.5 py-1 font-ge text-[0.6rem] font-extrabold uppercase tracking-[0.14em] text-[#fbe8b5] shadow-sm'
-                : 'rounded-full bg-gs-dark px-2.5 py-1 font-ge text-[0.6rem] font-extrabold uppercase tracking-[0.14em] text-white'
-            }
+            className={cx(
+              'rounded-full px-2.5 py-1 font-ge text-[0.6rem] font-extrabold uppercase tracking-[0.14em]',
+              styles.badge
+            )}
           >
             {badge}
           </span>
-        ) : (
+        ) : showTripadvisorLockup ? (
           <img
             src="/images/tripadvisor-lockup.svg"
             alt=""
@@ -95,30 +184,50 @@ export function TripadvisorReviewCard({
             decoding="async"
             aria-hidden
           />
-        )}
+        ) : null}
       </div>
-      <div className="mt-4">
+
+      <div className="relative z-[1] mt-5 pl-1">
         <StarRow count={rating} />
         <p className="mt-4 font-ge text-[1.02rem] font-medium leading-7 text-gs-dark sm:text-[1.05rem] sm:leading-[1.65rem]">
-          “{quote}”
+          <span className="text-brand-700/70">&ldquo;</span>
+          {quote}
+          <span className="text-brand-700/70">&rdquo;</span>
         </p>
       </div>
-      <div className="mt-auto border-t border-[#e8e4dc]/90 pt-5">
-        <p className="font-ge text-sm font-extrabold text-gs-dark">{name}</p>
+
+      <div
+        className={cx(
+          'relative z-[1] mt-auto rounded-2xl border px-4 py-4 pl-5 backdrop-blur-[2px]',
+          styles.footer
+        )}
+      >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-[#d4a843]/35 to-transparent"
+        />
+        <p className="font-ge text-sm font-extrabold tracking-[-0.01em] text-gs-dark">{name}</p>
         <p className="mt-1 font-ge text-xs font-semibold uppercase tracking-[0.12em] text-ge-gray600">{context}</p>
         {tripType ? (
           <div className="mt-3 flex items-center gap-2.5">
-            <img
-              src={GOLFSOL_BRAND_LOGO_HOSTED}
-              alt=""
-              width={36}
-              height={36}
-              className="h-9 w-9 shrink-0 object-contain"
-              loading="lazy"
-              decoding="async"
-              aria-hidden
-            />
-            <p className="inline-flex rounded-full border border-[#d4a843]/40 bg-[#f5edd6] px-2.5 py-1 font-ge text-[0.62rem] font-bold uppercase tracking-[0.14em] text-gs-dark">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#d4a843]/25 bg-white shadow-[0_4px_12px_rgba(6,59,42,0.08)]">
+              <img
+                src={GOLFSOL_BRAND_LOGO_HOSTED}
+                alt=""
+                width={32}
+                height={32}
+                className="h-8 w-8 object-contain"
+                loading="lazy"
+                decoding="async"
+                aria-hidden
+              />
+            </div>
+            <p
+              className={cx(
+                'inline-flex rounded-full border px-2.5 py-1 font-ge text-[0.62rem] font-bold uppercase tracking-[0.14em]',
+                styles.tripPill
+              )}
+            >
               {tripType}
             </p>
           </div>

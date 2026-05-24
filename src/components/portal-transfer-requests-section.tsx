@@ -249,7 +249,7 @@ export function PortalTransferRequestsSection(props: {
                     {created ? (
                       <>
                         <span className="mx-1.5 text-forest-300">·</span>
-                        <span className="text-forest-500">Submitted {created}</span>
+                        <span className="text-ge-gray500">Submitted {created}</span>
                       </>
                     ) : null}
                   </p>
@@ -441,7 +441,7 @@ export function PortalTransferRequestsSection(props: {
                       </span>
                       <ChevronDown
                         className={cx(
-                          'mt-1 h-4 w-4 shrink-0 text-forest-500 transition-transform',
+                          'mt-1 h-4 w-4 shrink-0 text-ge-gray500 transition-transform',
                           threadOpen ? 'rotate-180' : ''
                         )}
                         aria-hidden
@@ -490,7 +490,7 @@ export function PortalTransferRequestsSection(props: {
                                 <p className="mt-1.5 whitespace-pre-wrap text-base font-medium leading-relaxed text-forest-900">
                                   {m.body}
                                 </p>
-                                <p className="mt-2 text-xs tabular-nums text-forest-500">
+                                <p className="mt-2 text-xs tabular-nums text-ge-gray500">
                                   {formatDateTimeDdMmYy(m.created_at)}
                                 </p>
                               </li>

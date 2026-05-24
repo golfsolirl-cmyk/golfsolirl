@@ -76,7 +76,7 @@ export function PortalAddToYourTripStrip(props: {
                 <TransferGlyph className="h-5 w-5 text-white" strokeWidth={PORTAL_ADD_ON_ICON_STROKE} aria-hidden />
               </span>
               <ArrowRight
-                className="mt-1 h-4 w-4 shrink-0 text-white/50 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-brand-200"
+                className="mt-1 h-4 w-4 shrink-0 text-white/70 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-brand-200"
                 aria-hidden
               />
             </span>
@@ -111,7 +111,7 @@ export function PortalAddToYourTripStrip(props: {
                 <GolfGlyph className="h-5 w-5 text-white" strokeWidth={PORTAL_ADD_ON_ICON_STROKE} aria-hidden />
               </span>
               <ArrowRight
-                className="mt-1 h-4 w-4 shrink-0 text-white/45 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-brand-300"
+                className="mt-1 h-4 w-4 shrink-0 text-white/70 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-brand-300"
                 aria-hidden
               />
             </span>
@@ -146,7 +146,7 @@ export function PortalAddToYourTripStrip(props: {
                 <HotelGlyph className="h-5 w-5 text-white" strokeWidth={PORTAL_ADD_ON_ICON_STROKE} aria-hidden />
               </span>
               <ArrowRight
-                className="mt-1 h-4 w-4 shrink-0 text-white/45 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-brand-100"
+                className="mt-1 h-4 w-4 shrink-0 text-white/70 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-brand-100"
                 aria-hidden
               />
             </span>

@@ -97,7 +97,7 @@ const labelClass = 'mb-1.5 block text-sm font-semibold uppercase tracking-[0.12e
 const readOnlyCalcClass =
   'w-full rounded-2xl border-2 border-forest-200/90 bg-offwhite px-4 py-3.5 text-base text-forest-900'
 
-const readOnlyCalcHintClass = 'mt-1 text-sm text-forest-500'
+const readOnlyCalcHintClass = 'mt-1 text-sm text-ge-gray500'
 
 /** Full name for portal copy: profile row first, then auth user_metadata from signup/OAuth. */
 const resolveClientDisplayFullName = (session: Session, profile: Profile | null): string => {
@@ -1916,7 +1916,7 @@ export function ClientDashboardPage() {
                       </option>
                     ))}
                   </select>
-                  <p className="mt-2 text-xs text-forest-500">Hold Ctrl / ⌘ to select several. Corridor map: </p>
+                  <p className="mt-2 text-xs text-ge-gray500">Hold Ctrl / ⌘ to select several. Corridor map: </p>
                   <LuxuryButton className="mt-2" href="/golf-map" variant="outlineOnLight">
                     Open interactive map
                   </LuxuryButton>
@@ -2106,19 +2106,19 @@ export function ClientDashboardPage() {
             </p>
             <dl className="mt-5 grid gap-4 text-sm text-forest-800 sm:grid-cols-2">
               <div>
-                <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-forest-500">Name</dt>
+                <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-ge-gray500">Name</dt>
                 <dd className="mt-1 font-medium text-forest-950">{profile?.full_name?.trim() || '—'}</dd>
               </div>
               <div>
-                <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-forest-500">Email</dt>
+                <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-ge-gray500">Email</dt>
                 <dd className="mt-1 font-medium text-forest-950">{profile?.email ?? session.user.email ?? '—'}</dd>
               </div>
               <div>
-                <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-forest-500">Phone</dt>
+                <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-ge-gray500">Phone</dt>
                 <dd className="mt-1 font-medium text-forest-950">{profile?.phone?.trim() || '—'}</dd>
               </div>
               <div className="sm:col-span-2">
-                <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-forest-500">Account number</dt>
+                <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-ge-gray500">Account number</dt>
                 <dd className="mt-1 font-mono text-base font-semibold text-forest-950">
                   {accountRef || 'Assigned when you confirm'}
                 </dd>
@@ -2153,19 +2153,19 @@ export function ClientDashboardPage() {
         ) : (
           <dl className="mt-5 grid gap-4 text-sm text-forest-800 sm:grid-cols-2">
             <div>
-              <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-forest-500">Name</dt>
+              <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-ge-gray500">Name</dt>
               <dd className="mt-1 font-medium text-forest-950">{clientDisplayFullName || '—'}</dd>
             </div>
             <div>
-              <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-forest-500">Email</dt>
+              <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-ge-gray500">Email</dt>
               <dd className="mt-1 font-medium text-forest-950">{profile?.email ?? session.user.email ?? '—'}</dd>
             </div>
             <div>
-              <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-forest-500">Phone</dt>
+              <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-ge-gray500">Phone</dt>
               <dd className="mt-1 font-medium text-forest-950">{clientDisplayPhone || '—'}</dd>
             </div>
             <div className="sm:col-span-2">
-              <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-forest-500">Account number</dt>
+              <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-ge-gray500">Account number</dt>
               <dd className="mt-1 font-mono text-base font-semibold text-forest-950">{accountRef || '— pending'}</dd>
               {!accountRef ? (
                 <p className="mt-2 max-w-xl text-xs text-forest-600">
@@ -2253,7 +2253,7 @@ export function ClientDashboardPage() {
                         <PortalInterestCategoryGlyph category={t.category} size="sm" />
                         <span className="min-w-0 flex-1">
                           <span className="font-semibold text-forest-950">{PORTAL_INTEREST_LABELS[t.category]}</span>
-                          <span className="ml-2 text-xs text-forest-500">
+                          <span className="ml-2 text-xs text-ge-gray500">
                             {t.status} ·{' '}
                             {new Date(t.created_at).toLocaleString(undefined, {
                               day: 'numeric',
@@ -2298,7 +2298,7 @@ export function ClientDashboardPage() {
                   <h3 className="font-display text-lg font-semibold text-forest-950 md:text-xl" id="interest-thread-title">
                     {PORTAL_INTEREST_LABELS[selectedInterestThread.category]}
                   </h3>
-                  <p className="mt-1 text-xs text-forest-500">
+                  <p className="mt-1 text-xs text-ge-gray500">
                     {selectedInterestThread.status} ·{' '}
                     {new Date(selectedInterestThread.created_at).toLocaleString(undefined, {
                       day: 'numeric',
@@ -2338,7 +2338,7 @@ export function ClientDashboardPage() {
                           </div>
                         ) : (
                           <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-forest-600">
-                            <UserRound aria-hidden className="h-3.5 w-3.5 shrink-0 text-forest-500" />
+                            <UserRound aria-hidden className="h-3.5 w-3.5 shrink-0 text-ge-gray500" />
                             You
                           </p>
                         )}

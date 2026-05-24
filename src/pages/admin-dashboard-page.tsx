@@ -3671,7 +3671,7 @@ export function AdminDashboardPage() {
               <td className="hidden max-w-xs truncate px-4 py-4 text-forest-600 md:table-cell md:px-6 lg:table-cell">
                 {row.interest ?? '—'}
               </td>
-              <td className="whitespace-nowrap px-4 py-4 text-xs text-forest-500 md:px-6">
+              <td className="whitespace-nowrap px-4 py-4 text-xs text-ge-gray500 md:px-6">
                 {formatAdminDateTime(row.created_at)}
               </td>
               <td className="whitespace-nowrap px-4 py-4 text-right md:px-6">
@@ -3794,7 +3794,7 @@ export function AdminDashboardPage() {
                       {openInterestTicketCount} awaiting reply
                     </span>
                   ) : interestAdminTickets.length > 0 ? (
-                    <span className="text-xs font-medium text-forest-500">All caught up</span>
+                    <span className="text-xs font-medium text-ge-gray500">All caught up</span>
                   ) : null}
                 </div>
                 {interestAdminTickets.length === 0 ? (
@@ -3829,27 +3829,27 @@ export function AdminDashboardPage() {
                               <span className="mt-1 block text-xs text-forest-600">
                                 {t.client_email ?? t.owner_id} · {t.status}
                               </span>
-                              <span className="mt-0.5 block text-xs text-forest-400">{formatDateTimeDdMmYy(t.created_at)}</span>
+                              <span className="mt-0.5 block text-xs text-ge-gray500">{formatDateTimeDdMmYy(t.created_at)}</span>
                             </div>
                           </button>
                           {selectedAdminTicketId === t.id ? (
                             <div className="mt-2 rounded-xl border border-forest-100 bg-offwhite/90 px-4 py-3 text-sm shadow-inner">
-                              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-forest-500">Client details</p>
+                              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-ge-gray500">Client details</p>
                               <dl className="mt-2 grid gap-2 text-forest-900 sm:grid-cols-2">
                                 <div>
-                                  <dt className="text-xs text-forest-500">Name</dt>
+                                  <dt className="text-xs text-ge-gray500">Name</dt>
                                   <dd className="mt-0.5 font-medium text-forest-950">{t.client_name?.trim() || '—'}</dd>
                                 </div>
                                 <div>
-                                  <dt className="text-xs text-forest-500">Email</dt>
+                                  <dt className="text-xs text-ge-gray500">Email</dt>
                                   <dd className="mt-0.5 font-medium text-forest-950 break-all">{t.client_email ?? '—'}</dd>
                                 </div>
                                 <div>
-                                  <dt className="text-xs text-forest-500">Phone</dt>
+                                  <dt className="text-xs text-ge-gray500">Phone</dt>
                                   <dd className="mt-0.5 font-medium text-forest-950">{t.client_phone?.trim() || '—'}</dd>
                                 </div>
                                 <div className="sm:col-span-2">
-                                  <dt className="text-xs text-forest-500">Account number</dt>
+                                  <dt className="text-xs text-ge-gray500">Account number</dt>
                                   <dd className="mt-0.5 font-mono text-sm font-semibold text-forest-950">
                                     {t.client_account_ref?.trim() || '—'}
                                   </dd>
@@ -3878,7 +3878,7 @@ export function AdminDashboardPage() {
                           <p className="font-display text-sm font-semibold text-forest-950 md:text-base">
                             {PORTAL_INTEREST_LABELS[selectedAdminInterestTicket.category]}
                           </p>
-                          <p className="mt-0.5 text-xs text-forest-500">
+                          <p className="mt-0.5 text-xs text-ge-gray500">
                             {selectedAdminInterestTicket.status} ·{' '}
                             {formatDateTimeDdMmYy(selectedAdminInterestTicket.created_at)}
                           </p>
@@ -3903,12 +3903,12 @@ export function AdminDashboardPage() {
                             </div>
                           ) : (
                             <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-forest-600">
-                              <UserRound aria-hidden className="h-3.5 w-3.5 shrink-0 text-forest-500" />
+                              <UserRound aria-hidden className="h-3.5 w-3.5 shrink-0 text-ge-gray500" />
                               Client
                             </p>
                           )}
                           <p className="mt-1 whitespace-pre-wrap text-forest-900">{m.body}</p>
-                          <p className="mt-1 text-xs text-forest-400">{formatDateTimeDdMmYy(m.created_at)}</p>
+                          <p className="mt-1 text-xs text-ge-gray500">{formatDateTimeDdMmYy(m.created_at)}</p>
                         </li>
                       ))}
                     </ul>
@@ -4207,7 +4207,7 @@ export function AdminDashboardPage() {
                       Form answers including trip timing (dates or already at Málaga AGP), routes, and any structured fields sent from the
                       site.
                     </p>
-                    <p className="mt-2 text-xs text-forest-500">
+                    <p className="mt-2 text-xs text-ge-gray500">
                       <strong className="font-medium text-forest-700">Full quote &amp; VAT breakdown</strong> (deposit split, calculator) lives on
                       the linked <strong className="font-medium text-forest-700">client package build</strong> when it exists. You can also send a
                       simple <strong className="font-medium text-forest-700">priced invoice + Stripe</strong> from this card (portal profile must
@@ -4305,7 +4305,7 @@ export function AdminDashboardPage() {
                   {portalInvoiceSendMessage ? (
                     <p className="mt-3 text-xs text-forest-700">{portalInvoiceSendMessage}</p>
                   ) : null}
-                  <p className="mt-3 text-[11px] leading-relaxed text-forest-500">
+                  <p className="mt-3 text-[11px] leading-relaxed text-ge-gray500">
                     Requires <code className="rounded bg-white/90 px-1">STRIPE_SECRET_KEY</code>,{' '}
                     <code className="rounded bg-white/90 px-1">STRIPE_WEBHOOK_SECRET</code>, and a Stripe webhook pointing to{' '}
                     <code className="rounded bg-white/90 px-1">/api/stripe-webhook</code> for <code className="rounded bg-white/90 px-1">checkout.session.completed</code>.
@@ -4914,12 +4914,12 @@ export function AdminDashboardPage() {
                   <strong className="font-medium text-forest-900">Proposals &amp; PDFs</strong> area on their dashboard after sign-in.
                 </p>
                 {manualPortalSnapshot.loading ? (
-                  <p className="mt-3 text-xs text-forest-500">Checking portal account for this email…</p>
+                  <p className="mt-3 text-xs text-ge-gray500">Checking portal account for this email…</p>
                 ) : manualPortalSnapshot.hasProfile ? (
                   <div className="mt-3 space-y-3">
                     <dl className="grid gap-2 text-sm text-forest-800 sm:grid-cols-2">
                       <div>
-                        <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-forest-500">Account number</dt>
+                        <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-ge-gray500">Account number</dt>
                         <dd className="mt-0.5 font-mono text-sm font-semibold text-forest-950">
                           {manualPortalSnapshot.accountRef?.trim()
                             ? manualPortalSnapshot.accountRef.trim()
@@ -4927,7 +4927,7 @@ export function AdminDashboardPage() {
                         </dd>
                       </div>
                       <div>
-                        <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-forest-500">Formal proposals on dashboard</dt>
+                        <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-ge-gray500">Formal proposals on dashboard</dt>
                         <dd className="mt-0.5">
                           {manualPortalSnapshot.proposalsEnabled ? (
                             <span className="font-medium text-fairway-800">Visible to client</span>
@@ -4937,7 +4937,7 @@ export function AdminDashboardPage() {
                         </dd>
                       </div>
                       <div>
-                        <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-forest-500">PDF library on dashboard</dt>
+                        <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-ge-gray500">PDF library on dashboard</dt>
                         <dd className="mt-0.5">
                           {manualPortalSnapshot.pdfLibraryEnabled ? (
                             <span className="font-medium text-fairway-800">Visible (when access granted)</span>
@@ -4983,7 +4983,7 @@ export function AdminDashboardPage() {
                   <strong className="font-medium text-forest-800">Save this formal proposal to their portal</strong> turned on.
                 </p>
                 {manualLinkBuildLoading ? (
-                  <p className="mt-3 text-xs text-forest-500">Loading their package builds…</p>
+                  <p className="mt-3 text-xs text-ge-gray500">Loading their package builds…</p>
                 ) : manualLinkBuildChoices.length > 0 ? (
                   <div className="mt-3 space-y-2">
                     {!manualSaveProposalToPortal ? (
@@ -5037,7 +5037,7 @@ export function AdminDashboardPage() {
                             />
                             <span>
                               <span className="font-medium">{b.label?.trim() || 'Package build'}</span>
-                              <span className="ml-2 text-xs text-forest-500">
+                              <span className="ml-2 text-xs text-ge-gray500">
                                 {formatAdminDateTime(b.created_at)}
                               </span>
                             </span>
@@ -5356,7 +5356,7 @@ export function AdminDashboardPage() {
                                         <p className="mt-1 text-xs text-brand-800">No hotel list for this id — type hotel manually in the full form.</p>
                                       )}
                                       {hotels.length > 1 ? (
-                                        <p className="mt-0.5 text-[11px] text-forest-500">
+                                        <p className="mt-0.5 text-[11px] text-ge-gray500">
                                           Also nearby: {hotels
                                             .slice(1, 4)
                                             .map((h) => h.name)
@@ -5403,7 +5403,7 @@ export function AdminDashboardPage() {
                     onChange={handleManualProposalFieldChange('proposalId')}
                     value={manualProposalForm.proposalId}
                   />
-                  <p className="mt-1 text-xs text-forest-500">
+                  <p className="mt-1 text-xs text-ge-gray500">
                     Paste a <strong className="font-medium text-forest-700">recent enquiry Ref ID</strong> to load the submission (quick view + form hints), or leave empty for
                     preview ID <span className="font-mono font-semibold">GSI-PREVIEW</span>. Email send assigns a new formal proposal ID if still empty.
                   </p>
@@ -5430,7 +5430,7 @@ export function AdminDashboardPage() {
                     placeholder="Optional, e.g. GSI-MANUAL-001"
                     value={manualProposalForm.enquiryReferenceId}
                   />
-                  <p className="mt-1 text-xs text-forest-500">
+                  <p className="mt-1 text-xs text-ge-gray500">
                     If this matches a recent submission Ref ID, customer/form details are pulled in automatically.
                   </p>
                 </div>
@@ -5936,7 +5936,7 @@ export function AdminDashboardPage() {
                             {activeWorkspaceEnquiry.interest}
                           </p>
                         ) : null}
-                        <p className="mt-2 text-xs text-forest-500">
+                        <p className="mt-2 text-xs text-ge-gray500">
                           Best time: {activeWorkspaceEnquiry.best_time_to_call ?? '—'} · Submitted{' '}
                           {formatAdminDateTime(activeWorkspaceEnquiry.created_at)}
                         </p>
@@ -5994,7 +5994,7 @@ export function AdminDashboardPage() {
                             {workspaceTransferReminderBusy ? 'Running…' : 'Send due balance reminders now'}
                           </LuxuryButton>
                         </div>
-                        <p className="mt-1 text-xs text-forest-500">
+                        <p className="mt-1 text-xs text-ge-gray500">
                           Thank-you emails send when you change payment (unless unchecked below). After a deposit, one balance reminder is
                           queued for <strong>48 hours before</strong> the scheduled pickup (see “Balance reminder due” below). Optional dev
                           override: server env{' '}
@@ -6049,7 +6049,7 @@ export function AdminDashboardPage() {
                                       : ' · Pick-up time not set (ASAP)'}
                                   </span>
                                 </div>
-                                <p className="mt-1 text-xs text-forest-500">
+                                <p className="mt-1 text-xs text-ge-gray500">
                                   {b.booking_source === 'website_enquiry' ? 'Website enquiry mirror' : 'Client dashboard'} ·{' '}
                                   {(b.client_email ?? '').trim() || '—'}
                                 </p>
@@ -7149,7 +7149,7 @@ export function AdminDashboardPage() {
                           className={cx('text-forest-900', index % 2 === 1 ? 'bg-offwhite/90' : 'bg-white')}
                           key={row.id}
                         >
-                          <td className="whitespace-nowrap px-4 py-4 text-xs text-forest-500 md:px-6">
+                          <td className="whitespace-nowrap px-4 py-4 text-xs text-ge-gray500 md:px-6">
                             {formatAdminDateTime(row.created_at)}
                           </td>
                           <td className="px-4 py-4 md:px-6">
@@ -7162,7 +7162,7 @@ export function AdminDashboardPage() {
                                 {prof.email}
                               </a>
                             ) : (
-                              <p className="mt-1 font-mono text-[11px] text-forest-400">{row.owner_id.slice(0, 8)}…</p>
+                              <p className="mt-1 font-mono text-[11px] text-ge-gray500">{row.owner_id.slice(0, 8)}…</p>
                             )}
                           </td>
                           <td className="max-w-xs px-4 py-4 md:max-w-md md:px-6">
@@ -7248,7 +7248,7 @@ export function AdminDashboardPage() {
                       <p className="font-display text-lg font-semibold text-forest-950">
                         {row.title?.trim() || row.proposal_id}
                       </p>
-                      <p className="mt-1 font-mono text-xs text-forest-500">{row.proposal_id}</p>
+                      <p className="mt-1 font-mono text-xs text-ge-gray500">{row.proposal_id}</p>
                     </div>
                     <div className="flex flex-wrap items-center gap-3">
                       <span
@@ -7259,7 +7259,7 @@ export function AdminDashboardPage() {
                       >
                         {row.status}
                       </span>
-                      <span className="text-xs font-medium text-forest-400">
+                      <span className="text-xs font-medium text-ge-gray500">
                         {formatAdminDateTime(row.created_at)}
                       </span>
                     </div>
@@ -7298,7 +7298,7 @@ export function AdminDashboardPage() {
                 return prof?.email || prof?.full_name ? (
                   <p className="mt-2 text-sm font-medium text-forest-800">
                     {prof.full_name?.trim() ? <span>{prof.full_name.trim()}</span> : null}
-                    {prof.full_name?.trim() && prof.email ? <span className="text-forest-400"> · </span> : null}
+                    {prof.full_name?.trim() && prof.email ? <span className="text-ge-gray500"> · </span> : null}
                     {prof.email ? (
                       <a className="text-brand-600 underline-offset-2 hover:text-brand-700 hover:underline" href={`mailto:${prof.email}`}>
                         {prof.email}
@@ -7306,7 +7306,7 @@ export function AdminDashboardPage() {
                     ) : null}
                   </p>
                 ) : (
-                  <p className="mt-2 font-mono text-xs text-forest-500">Owner {detailRow.owner_id}</p>
+                  <p className="mt-2 font-mono text-xs text-ge-gray500">Owner {detailRow.owner_id}</p>
                 )
               })()}
             </div>
@@ -7345,7 +7345,7 @@ export function AdminDashboardPage() {
                     <p className="mt-2 font-medium">
                       {humanizeFormKey(detailWebsite.formKey)} · enquiry {detailWebsite.enquiryReferenceId}
                     </p>
-                    <p className="mt-1 text-xs text-forest-500">
+                    <p className="mt-1 text-xs text-ge-gray500">
                       Submitted {formatAdminDateTime(detailWebsite.submittedAt)}
                     </p>
                     <dl className="mt-4 grid max-h-72 gap-3 overflow-y-auto text-xs sm:grid-cols-2">
@@ -7374,7 +7374,7 @@ export function AdminDashboardPage() {
                       transfers.
                     </p>
                     {detailWebsite.portalTransferPlan.updatedAt ? (
-                      <p className="mt-2 text-xs text-forest-500">
+                      <p className="mt-2 text-xs text-ge-gray500">
                         Updated {formatAdminDateTime(detailWebsite.portalTransferPlan.updatedAt)}
                       </p>
                     ) : null}
@@ -7388,7 +7388,7 @@ export function AdminDashboardPage() {
                               <li className="text-sm text-forest-800" key={`golf-${String(gi)}-${leg.courseId}`}>
                                 <span className="font-semibold text-forest-950">{course?.name ?? leg.courseId}</span>
                                 {course?.region ? (
-                                  <span className="text-forest-500"> · {course.region}</span>
+                                  <span className="text-ge-gray500"> · {course.region}</span>
                                 ) : null}
                                 {leg.notes.trim() ? (
                                   <span className="mt-0.5 block text-xs text-forest-600">{leg.notes.trim()}</span>
@@ -7476,7 +7476,7 @@ export function AdminDashboardPage() {
                         </li>
                       </ul>
                     ) : (
-                      <p className="mt-3 text-xs text-forest-500">Enter a total above to preview VAT split and deposit.</p>
+                      <p className="mt-3 text-xs text-ge-gray500">Enter a total above to preview VAT split and deposit.</p>
                     )}
                     <div className="mt-4 flex flex-wrap items-center gap-3">
                       <LuxuryButton
@@ -7488,7 +7488,7 @@ export function AdminDashboardPage() {
                         {websiteQuoteBusy ? 'Saving & emailing…' : 'Save quote to client portal'}
                       </LuxuryButton>
                       {detailWebsite.adminQuote ? (
-                        <span className="text-xs text-forest-500">
+                        <span className="text-xs text-ge-gray500">
                           Last saved {formatAdminDateTime(detailWebsite.adminQuote.savedAt)}
                         </span>
                       ) : null}
@@ -7776,7 +7776,7 @@ export function AdminDashboardPage() {
                   >
                     <div>
                       <p className="font-mono text-sm font-semibold text-forest-950">{row.email}</p>
-                      <p className="text-xs text-forest-500">
+                      <p className="text-xs text-ge-gray500">
                         Since {formatDateTimeDdMmYy(row.blocked_at)}
                         {row.reason ? ` · ${row.reason}` : ''}
                       </p>

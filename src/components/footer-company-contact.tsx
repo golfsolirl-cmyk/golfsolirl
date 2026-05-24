@@ -48,21 +48,21 @@ export function FooterCompanyContact() {
                 <Phone className="h-5 w-5" aria-hidden="true" />
               </div>
               <div className="min-w-0 space-y-3">
-                <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-white/50">{companyContact.phoneIrishLineLabel}</p>
+                <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-white/75">{companyContact.phoneIrishLineLabel}</p>
                 <a
                   className="block font-display text-[1.9rem] font-bold tracking-[-0.03em] text-white transition-colors hover:text-brand-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950 md:text-[2.1rem]"
                   href={`tel:${companyContact.phoneTel}`}
                 >
                   {companyContact.phoneDisplay}
                 </a>
-                <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-white/50">{companyContact.phoneSpanishLineLabel}</p>
+                <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-white/75">{companyContact.phoneSpanishLineLabel}</p>
                 <a
                   className="block font-display text-[1.65rem] font-bold tracking-[-0.03em] text-white transition-colors hover:text-brand-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950 md:text-[1.85rem]"
                   href={`tel:${companyContact.spanishPhoneTel}`}
                 >
                   {companyContact.spanishPhoneDisplay}
                 </a>
-                <p className="text-base leading-7 text-white/64">
+                <p className="text-base leading-7 text-white/80">
                   Irish mobile — same number on WhatsApp for quick trip questions. Spanish line is voice only.
                 </p>
                 <a

@@ -362,7 +362,7 @@ function ProposalTemplatePage() {
             </p>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <div>
-                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-500" htmlFor="send-client-email">
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-ge-gray500" htmlFor="send-client-email">
                   Client account email
                 </label>
                 <input
@@ -380,7 +380,7 @@ function ProposalTemplatePage() {
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-500" htmlFor="send-proposal-title">
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.12em] text-ge-gray500" htmlFor="send-proposal-title">
                   Dashboard title (optional)
                 </label>
                 <input
@@ -612,7 +612,7 @@ function BlankLine({
 }) {
   return (
     <div>
-      <p className={dark ? 'text-white/55' : 'text-forest-900/52'}>{label}</p>
+      <p className={dark ? 'text-white/80' : 'text-forest-900/70'}>{label}</p>
       <div className={dark ? 'mt-2 h-px w-full bg-white/28' : 'mt-2 h-px w-full bg-forest-900/18'} />
     </div>
   )

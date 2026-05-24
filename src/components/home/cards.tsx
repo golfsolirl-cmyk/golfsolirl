@@ -89,7 +89,7 @@ export function PackageCard({ name, description, price, duration, highlight, inc
             <p
               className={cx(
                 'text-sm font-semibold uppercase tracking-[0.1em]',
-                isFeaturedPackage ? 'text-white/62' : 'text-forest-900/54'
+                isFeaturedPackage ? 'text-white/80' : 'text-forest-900/70'
               )}
             >
               Starting from
@@ -136,7 +136,7 @@ export function PackageCard({ name, description, price, duration, highlight, inc
         </div>
 
         <div className="mt-auto flex flex-col gap-4 border-t border-current/10 pt-5 sm:flex-row sm:items-center sm:justify-between">
-          <p className={cx('text-sm font-semibold uppercase tracking-[0.1em]', isFeaturedPackage ? 'text-white/62' : 'text-forest-900/54')}>
+          <p className={cx('text-sm font-semibold uppercase tracking-[0.1em]', isFeaturedPackage ? 'text-white/80' : 'text-forest-900/70')}>
             Tailored for your group
           </p>
           <a

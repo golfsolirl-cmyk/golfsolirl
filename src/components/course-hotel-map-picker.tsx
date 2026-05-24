@@ -286,7 +286,7 @@ export function CourseHotelMapPicker({ onSelectionChange, initialCourseId, initi
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
                       <span className="rounded-full bg-offwhite px-2 py-0.5 text-[11px] text-forest-700">{hotel.rating}/5</span>
-                      <span className="text-[11px] text-forest-500">{hotel.dist}</span>
+                      <span className="text-[11px] text-ge-gray500">{hotel.dist}</span>
                       {isSelected ? (
                         <span
                           className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-fairway-700 text-[10px] text-white"
@@ -303,7 +303,7 @@ export function CourseHotelMapPicker({ onSelectionChange, initialCourseId, initi
           )}
         </div>
       ) : (
-        <p className="mt-3 rounded-lg border border-dashed border-forest-200 px-4 py-3.5 text-center text-sm text-forest-500">
+        <p className="mt-3 rounded-lg border border-dashed border-forest-200 px-4 py-3.5 text-center text-sm text-ge-gray500">
           Click a green pin to choose your golf course
         </p>
       )}

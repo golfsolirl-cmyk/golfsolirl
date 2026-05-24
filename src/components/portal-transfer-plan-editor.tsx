@@ -129,7 +129,7 @@ export function PortalTransferPlanEditor({ value, onChange, disabled }: PortalTr
               </div>
               <div className="mt-3 flex justify-end">
                 <button
-                  className="font-ge text-xs font-semibold uppercase tracking-[0.12em] text-forest-500 underline-offset-2 hover:text-brand-700 hover:underline disabled:opacity-40"
+                  className="font-ge text-xs font-semibold uppercase tracking-[0.12em] text-ge-gray500 underline-offset-2 hover:text-brand-700 hover:underline disabled:opacity-40"
                   disabled={disabled}
                   type="button"
                   onClick={() => removeGolf(index)}
@@ -212,7 +212,7 @@ export function PortalTransferPlanEditor({ value, onChange, disabled }: PortalTr
               </div>
               <div className="mt-3 flex justify-end">
                 <button
-                  className="font-ge text-xs font-semibold uppercase tracking-[0.12em] text-forest-500 underline-offset-2 hover:text-brand-700 hover:underline disabled:opacity-40"
+                  className="font-ge text-xs font-semibold uppercase tracking-[0.12em] text-ge-gray500 underline-offset-2 hover:text-brand-700 hover:underline disabled:opacity-40"
                   disabled={disabled}
                   type="button"
                   onClick={() => removeHotel(index)}
@@ -234,7 +234,7 @@ export function PortalTransferPlanEditor({ value, onChange, disabled }: PortalTr
       </div>
 
       {value.updatedAt ? (
-        <p className={cx('text-xs text-forest-500', disabled && 'opacity-60')}>
+        <p className={cx('text-xs text-ge-gray500', disabled && 'opacity-60')}>
           Last saved to your package: {new Date(value.updatedAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}
         </p>
       ) : null}

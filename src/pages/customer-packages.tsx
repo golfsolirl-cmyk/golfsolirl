@@ -922,7 +922,7 @@ function CustomerPackagePage() {
                         >
                           <div>
                             <p className="text-base font-semibold">{item.name}</p>
-                            <p className={cx('mt-1 text-sm leading-relaxed', isSelected ? 'text-white/68' : 'text-forest-900/56')}>{item.summary}</p>
+                            <p className={cx('mt-1 text-sm leading-relaxed', isSelected ? 'text-white/85' : 'text-forest-900/70')}>{item.summary}</p>
                           </div>
                           <Bus className={cx('mt-0.5 h-5 w-5 shrink-0', isSelected ? 'text-brand-300' : 'text-brand-500')} aria-hidden="true" />
                         </button>
@@ -938,7 +938,7 @@ function CustomerPackagePage() {
                     <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-300">Your live estimate</p>
                     <h3 className="mt-3 font-display text-4xl font-bold tracking-tight">Built from a customer point of view</h3>
                   </div>
-                  <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-base text-white/76">
+                  <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-base text-white/88">
                     {groupSize} golfer{groupSize > 1 ? 's' : ''}
                   </div>
                 </div>
@@ -981,7 +981,7 @@ function CustomerPackagePage() {
                         <p className="font-display text-5xl font-black leading-none text-white">{formatEuro(pricingSummary.estimatedGroupTotal)}</p>
                         <p className="mt-2 text-base text-white/72">for the full group</p>
                       </div>
-                      <div className="rounded-[1.3rem] border border-white/10 bg-white/5 px-4 py-3 text-base text-white/78">
+                      <div className="rounded-[1.3rem] border border-white/10 bg-white/5 px-4 py-3 text-base text-white/88">
                         Flights not included
                       </div>
                     </div>
@@ -993,11 +993,11 @@ function CustomerPackagePage() {
                   <MiniSummaryCard label="Remaining balance" value={formatEuro(pricingSummary.remainingBalance)} />
                 </div>
 
-                <p className="mt-5 text-base leading-8 text-white/66">
+                <p className="mt-5 text-base leading-8 text-white/85">
                   Indicative pricing only. Final package price depends on live hotel rates, golf availability, and the transfer route across your dates.
                 </p>
                 {courseHotelPick.selectedCourse || courseHotelPick.selectedHotel ? (
-                  <p className="mt-4 rounded-[1.25rem] border border-white/10 bg-white/5 px-4 py-3 text-sm leading-7 text-white/78">
+                  <p className="mt-4 rounded-[1.25rem] border border-white/10 bg-white/5 px-4 py-3 text-sm leading-7 text-white/88">
                     <span className="font-semibold text-brand-200">Course & hotel:</span> Shown on the proposal PDF / print view and saved with your package when you sign in and use{' '}
                     <span className="font-medium text-white">Save to my account</span>. After saving, they appear in your dashboard trip details and stay attached when you reopen this build in
                     the calculator.
@@ -1252,7 +1252,7 @@ function CustomerRouteMapShowcase() {
             <div className="absolute bottom-[11%] right-[8%] rounded-[1.5rem] border border-[#136047]/26 bg-forest-950/62 px-4 py-4 text-white backdrop-blur-sm">
               <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#f7a24f]">Live package view</p>
               <p className="mt-2 text-base font-semibold">Stay, golf, transfers</p>
-              <p className="mt-1 text-sm text-white/60">A clearer way to price the trip</p>
+              <p className="mt-1 text-sm text-white/80">A clearer way to price the trip</p>
             </div>
           </div>
         </div>
@@ -1331,7 +1331,7 @@ function BreakdownRow({
 }) {
   return (
     <div className={cx('flex items-center justify-between gap-4 border-b border-white/8 pb-3 text-base', strong && 'pt-2')}>
-      <span className={cx(strong ? 'font-semibold text-white' : 'text-white/68')}>{label}</span>
+      <span className={cx(strong ? 'font-semibold text-white' : 'text-white/85')}>{label}</span>
       <span className={cx('text-right', strong ? 'font-semibold text-brand-300' : 'text-white')}>{value}</span>
     </div>
   )

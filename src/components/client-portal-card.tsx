@@ -72,7 +72,7 @@ export function ClientPortalCard({
         </span>
         <ChevronDown
           aria-hidden
-          className={cx('mt-1 h-5 w-5 shrink-0 text-forest-500 transition-transform', expanded && 'rotate-180')}
+          className={cx('mt-1 h-5 w-5 shrink-0 text-ge-gray500 transition-transform', expanded && 'rotate-180')}
         />
       </button>
 

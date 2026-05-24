@@ -264,7 +264,7 @@ export function ClientQuotePreviewPage() {
                       return (
                         <li key={`${leg.courseId}-${String(i)}`}>
                           <span className="font-semibold text-gs-dark">{c?.name ?? leg.courseId}</span>
-                          {c?.region ? <span className="text-forest-500"> — {c.region}</span> : null}
+                          {c?.region ? <span className="text-ge-gray500"> — {c.region}</span> : null}
                           {leg.notes.trim() ? (
                             <span className="mt-0.5 block text-sm text-forest-600 sm:text-base">{leg.notes.trim()}</span>
                           ) : null}

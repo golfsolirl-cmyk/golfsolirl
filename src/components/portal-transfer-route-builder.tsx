@@ -129,7 +129,7 @@ export function PortalTransferRouteBuilder({
         {stops.map((stop, index) => (
           <div className="rounded-xl border border-forest-100 bg-offwhite/70 p-4" key={index}>
             <div className="mb-3 flex items-center justify-between gap-2">
-              <span className="text-xs font-bold uppercase tracking-wide text-forest-500">
+              <span className="text-xs font-bold uppercase tracking-wide text-ge-gray500">
                 {index === 0 ? 'Pickup' : `Stop ${index + 1}`}
               </span>
               {index > 0 ? (
@@ -234,7 +234,7 @@ export function PortalTransferRouteBuilder({
           type="tel"
           value={contactPhone}
         />
-        <p className="mt-2 text-xs text-forest-500">
+        <p className="mt-2 text-xs text-ge-gray500">
           Party size for this workspace: <span className="font-semibold text-forest-800">{partySize}</span> (max 8 guests —
           adjust in the list on the left).
         </p>

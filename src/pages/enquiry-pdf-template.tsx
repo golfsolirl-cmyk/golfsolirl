@@ -234,7 +234,7 @@ function BlankLine({
 }) {
   return (
     <div>
-      <p className={dark ? 'text-white/55' : 'text-forest-900/52'}>{label}</p>
+      <p className={dark ? 'text-white/80' : 'text-forest-900/70'}>{label}</p>
       <div className={dark ? 'mt-2 h-px w-full bg-white/28' : 'mt-2 h-px w-full bg-forest-900/18'} />
     </div>
   )

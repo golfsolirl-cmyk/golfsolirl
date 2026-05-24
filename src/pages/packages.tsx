@@ -258,7 +258,7 @@ function PackageAdminPage() {
             <h1 className="mt-4 max-w-2xl font-display text-5xl font-black leading-none tracking-tight text-white md:text-7xl">
               Admin package calculator for internal pricing and margin checks
             </h1>
-            <p className="mt-6 max-w-xl text-sm leading-relaxed text-white/68 md:text-base">
+            <p className="mt-6 max-w-xl text-sm leading-relaxed text-white/85 md:text-base">
               This is the internal version of the package page. Use it to price accommodation, golf, driver cost, diesel, and margin before publishing numbers to customers.
             </p>
           </div>
@@ -660,7 +660,7 @@ function PackageAdminPage() {
 
                 <div className="mt-6 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(19, 96, 71,0.18),rgba(253,186,116,0.1),rgba(80,163,45,0.12))] p-[1px]">
                   <div className="rounded-[1.7rem] bg-forest-950/96 p-5">
-                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/45">Recommended sell price</p>
+                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/75">Recommended sell price</p>
                     <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
                       <div>
                         <p className="font-display text-5xl font-black leading-none text-white">{formatEuro(pricingSummary.sellPricePerPerson)}</p>
@@ -948,7 +948,7 @@ function BreakdownRow({
 }) {
   return (
     <div className={cx('flex items-center justify-between gap-4 border-b border-white/8 pb-3 text-base', strong && 'pt-2')}>
-      <span className={cx(strong ? 'font-semibold text-white' : 'text-white/68')}>{label}</span>
+      <span className={cx(strong ? 'font-semibold text-white' : 'text-white/85')}>{label}</span>
       <span className={cx('text-right', strong ? 'font-semibold text-brand-300' : 'text-white')}>{value}</span>
     </div>
   )

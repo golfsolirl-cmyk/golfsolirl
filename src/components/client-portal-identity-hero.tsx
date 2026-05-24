@@ -247,7 +247,7 @@ export function ClientPortalIdentityHero(props: {
                             {payBusy && payBusyPhase === 'deposit' ? 'Redirecting…' : `Pay deposit ${formatEurInline(depEur!)}`}
                           </button>
                           <button
-                            className="inline-flex items-center gap-1 rounded-lg border border-white/20 bg-white/10 px-2 py-1 font-ge text-xs font-bold uppercase tracking-[0.1em] text-emerald-100/50"
+                            className="inline-flex items-center gap-1 rounded-lg border border-white/25 bg-white/10 px-2 py-1 font-ge text-xs font-bold uppercase tracking-[0.1em] text-emerald-100/80"
                             disabled
                             title="Pay the deposit first. Balance opens after your deposit is received."
                             type="button"

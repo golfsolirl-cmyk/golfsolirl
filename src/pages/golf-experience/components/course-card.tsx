@@ -62,7 +62,7 @@ export function GeCourseCard({ course }: CourseCardProps) {
         </p>
         <a
           href={course.href}
-          className="mt-5 inline-flex min-h-[44px] items-center gap-2 self-start rounded-full bg-gs-dark/5 px-4 py-2.5 font-ge text-[0.96rem] font-bold uppercase tracking-[0.12em] text-gs-green transition-all duration-300 hover:bg-brand-700 hover:text-gs-dark group-hover:bg-brand-700 group-hover:text-gs-dark sm:text-[0.92rem]"
+          className="mt-5 inline-flex min-h-[44px] items-center gap-2 self-start rounded-full bg-gs-dark/5 px-4 py-2.5 font-ge text-[0.96rem] font-bold uppercase tracking-[0.12em] text-gs-green transition-all duration-300 hover:bg-brand-700 hover:text-white group-hover:bg-brand-700 group-hover:text-white sm:text-[0.92rem]"
         >
           Get Tee-Time Quote
           <ArrowRight

@@ -446,7 +446,7 @@ export function PortalClientProposalsPdfViewer({
           {hasTransferShelf ? (
             <>
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-600">Your paper trail</p>
-              <p className="mt-1 text-sm leading-snug text-forest-500">
+              <p className="mt-1 text-sm leading-snug text-ge-gray500">
                 Snapshot of your request, VAT quote PDF, and a short terms summary when your price is saved; deposit and paid-in-full
                 card receipts appear here after successful online payment.
               </p>
@@ -469,7 +469,7 @@ export function PortalClientProposalsPdfViewer({
                         <span
                           className={cx(
                             'mt-0.5 text-sm font-normal capitalize',
-                            activeKey === k ? 'text-emerald-100/90' : 'text-forest-500'
+                            activeKey === k ? 'text-emerald-100/90' : 'text-ge-gray500'
                           )}
                         >
                           {row.document_kind.replace(/_/g, ' ')}
@@ -536,7 +536,7 @@ export function PortalClientProposalsPdfViewer({
                             ? 'ge-on-dark bg-gradient-to-r from-forest-950 to-forest-900 text-white shadow-md'
                             : hasPayload
                               ? 'text-forest-800 hover:bg-forest-50'
-                              : 'cursor-not-allowed text-forest-400'
+                              : 'cursor-not-allowed text-ge-gray500'
                         )}
                         disabled={!hasPayload}
                         onClick={() => hasPayload && pick(k)}
@@ -546,7 +546,7 @@ export function PortalClientProposalsPdfViewer({
                         <span
                           className={cx(
                             'mt-0.5 text-sm',
-                            activeKey === k ? 'text-emerald-100/90' : 'text-forest-500'
+                            activeKey === k ? 'text-emerald-100/90' : 'text-ge-gray500'
                           )}
                         >
                           {row.proposal_id}
@@ -567,7 +567,7 @@ export function PortalClientProposalsPdfViewer({
             <div className="min-w-0">
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-600">Preview</p>
               <h3 className="font-display mt-1 truncate text-xl font-semibold text-forest-950">{viewerTitle}</h3>
-              <p className="mt-1 text-sm text-forest-500">Read-only — use print or share below.</p>
+              <p className="mt-1 text-sm text-ge-gray500">Read-only — use print or share below.</p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <LuxuryButton

@@ -713,11 +713,11 @@ export function AdminAccountTransfersHub(props: {
               {src} · {b.status.replace(/_/g, ' ')}
               {b.scheduled_at ? ` · ${formatAdminDateTime(b.scheduled_at)}` : ' · Pick-up time TBC'}
             </p>
-            <p className="mt-1 text-xs text-forest-500">
+            <p className="mt-1 text-xs text-ge-gray500">
               {clientMail || '—'}
               {b.enquiry_reference_id ? ` · Enquiry ${b.enquiry_reference_id}` : ''}
             </p>
-            <p className="mt-1 font-mono text-[0.65rem] text-forest-400">{b.id}</p>
+            <p className="mt-1 font-mono text-[0.65rem] text-ge-gray500">{b.id}</p>
           </div>
           <LuxuryButton
             className="!px-3 !py-2 !text-xs shrink-0"
@@ -891,7 +891,7 @@ export function AdminAccountTransfersHub(props: {
           {b.assigned_driver_id ? (
             <span className="text-xs text-forest-600">Driver assigned</span>
           ) : (
-            <span className="text-xs text-forest-500">No driver yet</span>
+            <span className="text-xs text-ge-gray500">No driver yet</span>
           )}
         </div>
 
@@ -987,7 +987,7 @@ export function AdminAccountTransfersHub(props: {
             </label>
           </div>
         ) : refundSt === 'full' ? (
-          <p className="mt-4 text-xs text-forest-500">This transfer is fully refunded on the card; no further Stripe refunds.</p>
+          <p className="mt-4 text-xs text-ge-gray500">This transfer is fully refunded on the card; no further Stripe refunds.</p>
         ) : showRefundUnavailableHint ? (
           <div className="mt-4 rounded-2xl border border-forest-200 bg-offwhite/90 px-4 py-3 text-xs text-forest-600">
             <p className="font-semibold text-forest-800">Stripe refund unavailable</p>
@@ -1078,11 +1078,11 @@ export function AdminAccountTransfersHub(props: {
               <span className="text-xs text-forest-600">
                 Loaded{' '}
                 <time dateTime={lookupSession.loadedAtIso}>{formatAdminDateTime(lookupSession.loadedAtIso)}</time>
-                <span className="text-forest-400"> · Ireland</span>
+                <span className="text-ge-gray500"> · Ireland</span>
               </span>
             </div>
             <p className="mt-2 text-sm font-medium leading-relaxed text-forest-800">{lookupSession.summaryLine}</p>
-            <p className="mt-2 border-t border-fairway-100 pt-2 text-[0.65rem] leading-snug text-forest-500">
+            <p className="mt-2 border-t border-fairway-100 pt-2 text-[0.65rem] leading-snug text-ge-gray500">
               Events below are tied to this lookup only. Switch refs or use <strong className="font-semibold text-forest-700">Recent lookups</strong>{' '}
               to compare another customer.
             </p>
@@ -1092,7 +1092,7 @@ export function AdminAccountTransfersHub(props: {
 
       {recentLookups.length > 0 ? (
         <div className="mt-5">
-          <p className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.18em] text-forest-500">Recent lookups</p>
+          <p className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.18em] text-ge-gray500">Recent lookups</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {recentLookups.map((r) => {
               const active = lookupSession?.refQueried === r.ref
@@ -1112,7 +1112,7 @@ export function AdminAccountTransfersHub(props: {
                   type="button"
                 >
                   <span className="font-mono text-[0.72rem] font-bold text-forest-950">{r.ref}</span>
-                  <span className="text-[0.62rem] font-medium text-forest-500">{formatRelativeLoaded(r.loadedAtIso)}</span>
+                  <span className="text-[0.62rem] font-medium text-ge-gray500">{formatRelativeLoaded(r.loadedAtIso)}</span>
                 </button>
               )
             })}
@@ -1171,14 +1171,14 @@ export function AdminAccountTransfersHub(props: {
                         <div className="flex h-11 w-11 items-center justify-center rounded-full border-[3px] border-white bg-gradient-to-br from-brand-500 to-brand-700 shadow-lg shadow-amber-900/15 ring-2 ring-amber-400/40">
                           <Car className="h-5 w-5 text-white" aria-hidden />
                         </div>
-                        <span className="mt-2 font-mono text-[0.6rem] font-bold tabular-nums text-forest-400">#{step}</span>
+                        <span className="mt-2 font-mono text-[0.6rem] font-bold tabular-nums text-ge-gray500">#{step}</span>
                       </div>
                       <div className="min-w-0 flex-1 pt-0.5">
                         <div className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1">
                           <span className="rounded-lg bg-chrome-100 px-2 py-0.5 font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-brand-950 ring-1 ring-amber-300/60">
                             Transfer job
                           </span>
-                          <span className="text-[0.65rem] font-semibold tabular-nums text-forest-500">{when}</span>
+                          <span className="text-[0.65rem] font-semibold tabular-nums text-ge-gray500">{when}</span>
                         </div>
                         {renderTransferCard(b)}
                       </div>
@@ -1194,14 +1194,14 @@ export function AdminAccountTransfersHub(props: {
                         <div className="flex h-11 w-11 items-center justify-center rounded-full border-[3px] border-white bg-gradient-to-br from-sky-500 to-sky-700 shadow-lg shadow-sky-900/15 ring-2 ring-sky-400/45">
                           <Mail className="h-5 w-5 text-white" aria-hidden />
                         </div>
-                        <span className="mt-2 font-mono text-[0.6rem] font-bold tabular-nums text-forest-400">#{step}</span>
+                        <span className="mt-2 font-mono text-[0.6rem] font-bold tabular-nums text-ge-gray500">#{step}</span>
                       </div>
                       <div className="min-w-0 flex-1 pt-0.5">
                         <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1">
                           <span className="rounded-lg bg-sky-100 px-2 py-0.5 font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-sky-950 ring-1 ring-sky-300/70">
                             Website enquiry
                           </span>
-                          <span className="text-[0.65rem] font-semibold tabular-nums text-forest-500">{when}</span>
+                          <span className="text-[0.65rem] font-semibold tabular-nums text-ge-gray500">{when}</span>
                         </div>
                         <div className="rounded-2xl border-2 border-sky-200/90 bg-gradient-to-br from-sky-50/90 to-white px-4 py-4 shadow-sm sm:px-5">
                           <p className="text-sm font-semibold text-forest-900">
@@ -1227,14 +1227,14 @@ export function AdminAccountTransfersHub(props: {
                         <div className="flex h-11 w-11 items-center justify-center rounded-full border-[3px] border-white bg-gradient-to-br from-fairway-600 to-emerald-800 shadow-lg shadow-forest-950/20 ring-2 ring-fairway-400/40">
                           <Package className="h-5 w-5 text-white" aria-hidden />
                         </div>
-                        <span className="mt-2 font-mono text-[0.6rem] font-bold tabular-nums text-forest-400">#{step}</span>
+                        <span className="mt-2 font-mono text-[0.6rem] font-bold tabular-nums text-ge-gray500">#{step}</span>
                       </div>
                       <div className="min-w-0 flex-1 pt-0.5">
                         <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1">
                           <span className="rounded-lg bg-fairway-100 px-2 py-0.5 font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-fairway-950 ring-1 ring-fairway-300/70">
                             Saved package
                           </span>
-                          <span className="text-[0.65rem] font-semibold tabular-nums text-forest-500">{when}</span>
+                          <span className="text-[0.65rem] font-semibold tabular-nums text-ge-gray500">{when}</span>
                         </div>
                         <div className="rounded-2xl border-2 border-fairway-200/90 bg-gradient-to-br from-fairway-50/80 to-white px-4 py-4 shadow-sm sm:px-5">
                           <p className="text-sm font-semibold text-forest-900">{(p.label ?? '').trim() || 'Untitled package'}</p>
@@ -1256,14 +1256,14 @@ export function AdminAccountTransfersHub(props: {
                       <div className="flex h-11 w-11 items-center justify-center rounded-full border-[3px] border-white bg-gradient-to-br from-violet-500 to-violet-800 shadow-lg shadow-violet-950/25 ring-2 ring-violet-400/45">
                         <MessageSquareText className="h-5 w-5 text-white" aria-hidden />
                       </div>
-                      <span className="mt-2 font-mono text-[0.6rem] font-bold tabular-nums text-forest-400">#{step}</span>
+                      <span className="mt-2 font-mono text-[0.6rem] font-bold tabular-nums text-ge-gray500">#{step}</span>
                     </div>
                     <div className="min-w-0 flex-1 pt-0.5">
                       <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1">
                         <span className="rounded-lg bg-violet-100 px-2 py-0.5 font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-violet-950 ring-1 ring-violet-300/70">
                           Portal interest
                         </span>
-                        <span className="text-[0.65rem] font-semibold tabular-nums text-forest-500">{when}</span>
+                        <span className="text-[0.65rem] font-semibold tabular-nums text-ge-gray500">{when}</span>
                       </div>
                       <div className="rounded-2xl border-2 border-violet-200/90 bg-gradient-to-br from-violet-50/90 to-white px-4 py-4 shadow-sm sm:px-5">
                         <p className="text-sm font-semibold text-forest-900">{catLabel}</p>

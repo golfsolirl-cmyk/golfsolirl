@@ -127,7 +127,7 @@ export function GeDualPhoneFooterLines() {
       <li className="flex items-start gap-2">
         <Phone className="mt-1 h-4 w-4 shrink-0 text-emerald-200/90" aria-hidden="true" />
         <span className="min-w-0 font-ge text-[1.05rem] leading-7 text-white/95 sm:text-[0.98rem]">
-          <span className="block text-[0.68rem] font-bold uppercase tracking-[0.12em] text-white/60">
+          <span className="block text-[0.68rem] font-bold uppercase tracking-[0.12em] text-white/80">
             {contactInfo.phoneIrishLineLabel}
           </span>
           <a href={`tel:${contactInfo.phoneTel}`} className="hover:text-gs-green-light">
@@ -138,7 +138,7 @@ export function GeDualPhoneFooterLines() {
       <li className="flex items-start gap-2">
         <Phone className="mt-1 h-4 w-4 shrink-0 text-emerald-200/90" aria-hidden="true" />
         <span className="min-w-0 font-ge text-[1.05rem] leading-7 text-white/95 sm:text-[0.98rem]">
-          <span className="block text-[0.68rem] font-bold uppercase tracking-[0.12em] text-white/60">
+          <span className="block text-[0.68rem] font-bold uppercase tracking-[0.12em] text-white/80">
             {contactInfo.phoneSpanishLineLabel}
           </span>
           <a href={`tel:${contactInfo.spanishPhoneTel}`} className="hover:text-gs-green-light">
@@ -151,7 +151,7 @@ export function GeDualPhoneFooterLines() {
 }
 
 const enquiryPrimaryCallClass =
-  'inline-flex min-h-[52px] flex-1 items-center justify-center gap-2.5 rounded-xl bg-gs-green px-4 font-ge text-[0.95rem] font-bold uppercase tracking-[0.1em] text-white shadow-[0_12px_28px_rgba(6,59,42,0.25)] transition-all hover:bg-gs-electric hover:text-gs-dark sm:px-5 sm:text-[1rem] sm:tracking-[0.11em]'
+  'inline-flex min-h-[52px] flex-1 items-center justify-center gap-2.5 rounded-xl bg-gs-green px-4 font-ge text-[0.95rem] font-bold uppercase tracking-[0.1em] text-white shadow-[0_12px_28px_rgba(6,59,42,0.25)] transition-all hover:bg-gs-electric hover:text-white sm:px-5 sm:text-[1rem] sm:tracking-[0.11em]'
 
 const enquirySecondaryCallClass =
   'inline-flex min-h-[52px] flex-1 items-center justify-center gap-2.5 rounded-xl border-2 border-gs-green bg-white px-4 font-ge text-[0.95rem] font-bold uppercase tracking-[0.1em] text-gs-green transition-all hover:bg-gs-green/10 sm:px-5 sm:text-[1rem] sm:tracking-[0.11em]'

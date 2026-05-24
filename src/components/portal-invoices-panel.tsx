@@ -224,7 +224,7 @@ export function PortalInvoicesPanel(props: {
             <h3 className="font-display mt-2 text-xl font-semibold text-forest-950 sm:text-2xl">
               {itinerarySection?.title ?? `Enquiry ${selected.enquiry_reference_id}`}
             </h3>
-            {itinerarySection?.subtitle ? <p className="mt-1 text-sm text-forest-500 sm:text-base">{itinerarySection.subtitle}</p> : null}
+            {itinerarySection?.subtitle ? <p className="mt-1 text-sm text-ge-gray500 sm:text-base">{itinerarySection.subtitle}</p> : null}
             {itinerarySection && itinerarySection.rows.length > 0 ? (
               <dl className="mt-4 grid gap-3 sm:grid-cols-1">
                 {itinerarySection.rows.map((r) => (
@@ -261,7 +261,7 @@ export function PortalInvoicesPanel(props: {
               Trip reference: <span className="font-mono text-white">{selected.enquiry_reference_id}</span>
             </p>
             <p className="mt-4 font-display text-3xl font-bold text-brand-300">{formatEurFromCents(selected.amount_cents)}</p>
-            <p className="mt-1 text-sm uppercase tracking-[0.14em] text-white/55">
+            <p className="mt-1 text-sm uppercase tracking-[0.14em] text-emerald-100/90">
               {selected.status.toLowerCase() === 'paid' ? 'Paid — thank you' : 'Payment due'}
             </p>
             {selected.status.toLowerCase() !== 'paid' && selected.stripe_checkout_url ? (
@@ -282,7 +282,7 @@ export function PortalInvoicesPanel(props: {
                 {selected.paid_at ? ` on ${formatDateTimeDdMmYy(selected.paid_at)}` : ''}. Keep the PDF from your email for records.
               </p>
             )}
-            <p className="mt-6 text-xs leading-relaxed text-white/45 sm:text-sm">
+            <p className="mt-6 text-xs leading-relaxed text-white/80 sm:text-sm">
               A matching PDF was attached to your email. Card totals are inclusive of the amount we quoted for this trip row.
             </p>
           </div>

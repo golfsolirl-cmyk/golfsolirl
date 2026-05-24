@@ -193,20 +193,20 @@ export function HomeAirportTransfersCta() {
                 </div>
 
                 <dl className="mt-5 grid grid-cols-[auto,1fr] gap-x-3 gap-y-3">
-                  <dt className="font-ge text-[0.66rem] font-bold uppercase tracking-[0.14em] text-white/60 sm:tracking-[0.18em]">
+                  <dt className="font-ge text-[0.66rem] font-bold uppercase tracking-[0.14em] text-white/80 sm:tracking-[0.18em]">
                     {copy.boardingRouteLabel}
                   </dt>
                   <dd className="font-ge text-[0.84rem] font-semibold text-white sm:text-[0.92rem]">
                     {copy.boardingRouteValue}
                   </dd>
-                  <dt className="font-ge text-[0.66rem] font-bold uppercase tracking-[0.14em] text-white/60 sm:tracking-[0.18em]">
+                  <dt className="font-ge text-[0.66rem] font-bold uppercase tracking-[0.14em] text-white/80 sm:tracking-[0.18em]">
                     {copy.boardingStatusLabel}
                   </dt>
                   <dd className="inline-flex items-center gap-2 font-ge text-[0.84rem] font-semibold text-white sm:text-[0.92rem]">
                     <Clock3 className="h-4 w-4 shrink-0 text-white" aria-hidden />
                     {copy.boardingStatusValue}
                   </dd>
-                  <dt className="font-ge text-[0.66rem] font-bold uppercase tracking-[0.14em] text-white/60 sm:tracking-[0.18em]">
+                  <dt className="font-ge text-[0.66rem] font-bold uppercase tracking-[0.14em] text-white/80 sm:tracking-[0.18em]">
                     {copy.boardingDeskLabel}
                   </dt>
                   <dd className="inline-flex items-center gap-2 font-ge text-[0.84rem] font-semibold text-white sm:text-[0.92rem]">

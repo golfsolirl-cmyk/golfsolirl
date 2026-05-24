@@ -116,7 +116,7 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
 
       <FooterCompanyContact />
 
-      <div className="mx-auto mt-8 flex max-w-7xl flex-col gap-3 border-t border-white/10 pt-5 text-[1.02rem] text-white/62 md:flex-row md:items-center md:justify-between">
+      <div className="mx-auto mt-8 flex max-w-7xl flex-col gap-3 border-t border-white/10 pt-5 text-[1.02rem] text-white/80 md:flex-row md:items-center md:justify-between">
         <p>Copyright {new Date().getFullYear()} Golf Sol Ireland. All rights reserved.</p>
         <p>{copyrightNote}</p>
       </div>

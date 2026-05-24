@@ -209,7 +209,7 @@ export function GeDesignYourPackage() {
                     </p>
                     <a
                       href={step.link}
-                      className="mt-5 inline-flex min-h-[48px] items-center gap-2 self-start rounded-full border border-gs-dark/10 bg-gs-dark px-4 py-2.5 font-ge text-[0.88rem] font-bold uppercase tracking-[0.1em] text-white transition-all duration-300 hover:border-brand-700/50 hover:bg-brand-700 hover:text-gs-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-700 sm:min-h-[44px] sm:py-2 sm:text-[0.8rem]"
+                      className="mt-5 inline-flex min-h-[48px] items-center gap-2 self-start rounded-full border border-gs-dark/10 bg-gs-dark px-4 py-2.5 font-ge text-[0.88rem] font-bold uppercase tracking-[0.1em] text-white transition-all duration-300 hover:border-brand-700/50 hover:bg-brand-700 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-700 sm:min-h-[44px] sm:py-2 sm:text-[0.8rem]"
                     >
                       {designYourPackage.stepCta}
                       <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />

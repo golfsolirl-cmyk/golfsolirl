@@ -355,7 +355,7 @@ function TermsBody({ kicker, title }: { readonly kicker: string; readonly title:
         </p>
       </section>
 
-      <p className="mt-10 text-xs text-forest-500">Last updated {new Date().toLocaleDateString('en-IE', { day: 'numeric', month: 'long', year: 'numeric' })}.</p>
+      <p className="mt-10 text-xs text-ge-gray500">Last updated {new Date().toLocaleDateString('en-IE', { day: 'numeric', month: 'long', year: 'numeric' })}.</p>
     </article>
   )
 }

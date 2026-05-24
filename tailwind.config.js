@@ -14,6 +14,7 @@ export default {
           700: 'var(--brand-700)',
           600: 'var(--brand-600)',
           500: 'var(--brand-500)',
+          400: 'var(--text-muted)',
           100: 'var(--chrome-200)',
           50: 'var(--chrome-50)'
         },
@@ -117,6 +118,7 @@ export default {
           purple: 'var(--brand-900)',
           ink: 'var(--text-primary)',
           gray700: 'var(--text-secondary)',
+          gray600: 'var(--text-secondary)',
           gray500: 'var(--text-muted)',
           gray300: 'var(--border-default)',
           gray200: 'var(--border-light)',

@@ -169,7 +169,7 @@ export function AdminTestimonialsPanel({ sessionToken }: AdminTestimonialsPanelP
               {row.trip_type}
               {row.travel_month ? ` · ${row.travel_month}` : ''} · {row.source_page || '/testimonials'}
             </p>
-            <p className="mt-2 text-xs text-forest-500">
+            <p className="mt-2 text-xs text-ge-gray500">
               Submitted {formatDateTimeDdMmYy(row.created_at)}
               {row.published_at ? ` · Published ${formatDateTimeDdMmYy(row.published_at)}` : ''}
             </p>
