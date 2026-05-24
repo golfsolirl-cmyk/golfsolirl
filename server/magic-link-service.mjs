@@ -7,10 +7,22 @@ import { isAuthEmailBlocked } from './email-address-registry.mjs'
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
+/** Strip whitespace and optional wrapping quotes from `.env` / Vercel values. */
+const normalizeOperatorPasscode = (value) => {
+  let s = String(value ?? '').trim()
+  if (
+    (s.startsWith("'") && s.endsWith("'")) ||
+    (s.startsWith('"') && s.endsWith('"'))
+  ) {
+    s = s.slice(1, -1)
+  }
+  return s
+}
+
 /** When `ADMIN_OPERATOR_PASSCODE` is set, `/dashboard/admin/login` requests must include matching `operatorCode` (same string, UTF-8, length-sensitive compare). */
 const operatorPasscodeMatches = (provided, expected) => {
-  const p = Buffer.from(String(provided ?? ''), 'utf8')
-  const e = Buffer.from(String(expected ?? ''), 'utf8')
+  const p = Buffer.from(normalizeOperatorPasscode(provided), 'utf8')
+  const e = Buffer.from(normalizeOperatorPasscode(expected), 'utf8')
   if (p.length !== e.length || p.length === 0) {
     return false
   }
@@ -118,10 +130,12 @@ export const handleMagicLinkRequest = async (payload, env = process.env, meta = 
     throw error
   }
 
-  const adminPass = env.ADMIN_OPERATOR_PASSCODE?.trim()
+  const adminPass = normalizeOperatorPasscode(env.ADMIN_OPERATOR_PASSCODE)
   if (portal === 'admin' && adminPass) {
     if (!operatorPasscodeMatches(operatorCode, adminPass)) {
-      const error = new Error('Invalid operator code.')
+      const error = new Error(
+        'Invalid operator code. On golfsolirl.com this must match ADMIN_OPERATOR_PASSCODE in Vercel (Production), not only your local .env.'
+      )
       error.statusCode = 403
       throw error
     }

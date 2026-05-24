@@ -100,6 +100,11 @@ export function LoginPage() {
       return
     }
 
+    /** Wait for the profile row before role-based redirects — avoids sending admins to the client dashboard while the row is still loading. */
+    if (profile === null) {
+      return
+    }
+
     const path = normalizeLoginPath()
     const sp = new URLSearchParams(window.location.search)
     const explicitAs = sp.get('as')?.trim().toLowerCase()
@@ -110,11 +115,7 @@ export function LoginPage() {
     }
 
     if (explicitAs === 'admin') {
-      if (profile?.role === 'admin') {
-        window.location.replace('/dashboard/admin')
-      } else {
-        window.location.replace('/dashboard')
-      }
+      window.location.replace(profile.role === 'admin' ? '/dashboard/admin' : '/dashboard')
       return
     }
 
@@ -124,11 +125,7 @@ export function LoginPage() {
     }
 
     if (path === '/driver/login') {
-      if (profile?.role === 'driver' || profile?.role === 'admin') {
-        window.location.replace('/driver')
-      } else {
-        window.location.replace('/dashboard')
-      }
+      window.location.replace(profile.role === 'driver' || profile.role === 'admin' ? '/driver' : '/dashboard')
       return
     }
 
@@ -138,26 +135,22 @@ export function LoginPage() {
     }
 
     if (path === '/dashboard/login') {
-      window.location.replace('/dashboard')
+      window.location.replace(profile.role === 'admin' ? '/dashboard/admin' : '/dashboard')
       return
     }
 
     if (path === '/dashboard/admin/login') {
-      if (profile?.role === 'admin') {
-        window.location.replace('/dashboard/admin')
-      } else {
-        window.location.replace('/dashboard')
-      }
+      window.location.replace(profile.role === 'admin' ? '/dashboard/admin' : '/dashboard')
       return
     }
 
-    if (profile?.role === 'admin') {
+    if (profile.role === 'admin') {
       window.location.replace('/dashboard/admin')
       return
     }
 
     window.location.replace('/dashboard')
-  }, [isLoading, session, profile?.role, safeReturnPath])
+  }, [isLoading, session, profile, safeReturnPath])
 
   useEffect(() => {
     if (sent) {
