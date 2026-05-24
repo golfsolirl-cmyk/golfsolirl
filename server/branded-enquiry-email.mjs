@@ -148,7 +148,7 @@ ${emailResponsiveCss}
                   <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" class="email-header-row" style="border-bottom:1px solid rgba(13,61,46,0.1);padding-bottom:22px;">
                     <tr>
                       <td valign="middle" width="178" class="email-header-logo-cell mobile-stack mobile-center" style="padding:0 18px 0 0;">
-                        <img class="email-header-logo" src="${assetUrl(assets.logo)}" width="${EMAIL_LOGO_HEADER_W}" height="${EMAIL_LOGO_HEADER_H}" alt="GolfSol Ireland" style="display:block;width:${EMAIL_LOGO_HEADER_W}px;max-width:${EMAIL_LOGO_HEADER_W}px;height:auto;margin:0;border:0;">
+                        <img class="email-header-logo" src="${assetUrl(assets.logo)}" width="${EMAIL_LOGO_HEADER_W}" height="${EMAIL_LOGO_HEADER_H}" alt="GolfSol Ireland" style="display:block;width:${EMAIL_LOGO_HEADER_W}px;max-width:${EMAIL_LOGO_HEADER_W}px;height:auto;margin:0;border:0;background:transparent;">
                       </td>
                       <td valign="middle" class="email-header-tagline mobile-stack mobile-center" style="font-family:${emailFonts.sans}; color:rgba(6,59,42,0.72); font-size:11px; line-height:1.55; font-weight:800; letter-spacing:0.2em; text-transform:uppercase;">
                         Irish-owned · Costa del Sol · Golf concierge
@@ -171,7 +171,7 @@ ${emailResponsiveCss}
                         <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0">
                           <tr>
                             <td align="center" style="padding:0 0 32px 0;">
-                              <img class="email-hero-logo" src="${assetUrl(assets.logo)}" width="${EMAIL_LOGO_HERO_W}" height="${EMAIL_LOGO_HERO_H}" alt="GolfSol Ireland" style="display:block;width:${EMAIL_LOGO_HERO_W}px;max-width:86%;height:auto;margin:0 auto;border:0;">
+                              <img class="email-hero-logo" src="${assetUrl(assets.logo)}" width="${EMAIL_LOGO_HERO_W}" height="${EMAIL_LOGO_HERO_H}" alt="GolfSol Ireland" style="display:block;width:${EMAIL_LOGO_HERO_W}px;max-width:86%;height:auto;margin:0 auto;border:0;background:transparent;">
                             </td>
                           </tr>
                         </table>

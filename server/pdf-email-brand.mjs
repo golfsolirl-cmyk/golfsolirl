@@ -8,8 +8,10 @@ const publicImagesDirectory = path.resolve(currentDirectory, '../public/images')
 
 /** Bitmap logo + fleet hero — same assets as formal proposal PDFs and quote PDFs. */
 export const brandedPdfAssetPaths = {
+  /** Hosted logo for HTML email (`https://golfsolirl.com/images/gsirl.webp`). */
+  logoWeb: '/images/gsirl.webp',
+  /** Transparent PNG deploy copy for pdf-lib (`embedPng`). Generated from crest source via sync script. */
   logo: path.join(publicImagesDirectory, 'gsirl.png'),
-  /** Site header / footer / transactional crest — `public/images/gsirl.png` (Golf Sol shield). */
   homepageCrest: path.join(publicImagesDirectory, 'gsirl.png'),
   /** Airport-desk style fleet plate (PNG); replace file in `public/images` to refresh all PDFs/emails. */
   fleetLineup: path.join(publicImagesDirectory, 'fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png')

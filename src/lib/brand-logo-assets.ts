@@ -1,7 +1,7 @@
 /**
  * Canonical brand lockup — shield crest (Ireland + Spain flags).
  * Source art: `public/images/newbf9f08a4-8fac-496b-8181-6f6b680d19c3.png`
- * Deployed copies: `gsirl.png` / `gsirl.webp` (header, footer, email, PDF).
+ * Deployed copies: `gsirl.webp` (emails + site) and transparent `gsirl.png` (pdf-lib).
  */
 export const GOLFSOL_BRAND_LOGO_SOURCE = '/images/newbf9f08a4-8fac-496b-8181-6f6b680d19c3.png' as const
 
