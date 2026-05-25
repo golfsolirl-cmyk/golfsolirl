@@ -1,7 +1,6 @@
 import { m, type Variants } from 'framer-motion'
 import { ArrowRight, MapPin, Sparkles } from 'lucide-react'
 import { GeAlreadyBookedFlightPanel } from '../components/already-booked-flight-panel'
-import { GeCrestDivider } from '../components/ge-crest-divider'
 import { designYourPackage, homeTripSnapshotBand } from '../data/copy'
 
 interface StepCard {
@@ -71,7 +70,6 @@ export function GeDesignYourPackage() {
         className="relative mx-auto max-w-[1180px] px-5 pb-20 pt-14 sm:px-8 sm:pb-24 sm:pt-16"
         {...fadeUp}
       >
-        <GeCrestDivider className="mb-10 sm:mb-12" />
         <m.div
           className="design-package-hero relative overflow-hidden rounded-[2rem] border border-white/30 bg-[linear-gradient(128deg,var(--brand-800)_0%,#0f4f3c_42%,var(--brand-700)_100%)] px-6 py-10 text-center shadow-[0_32px_90px_rgba(11,77,59,0.32)] sm:px-10 sm:py-14"
           variants={heroContainerVariants}

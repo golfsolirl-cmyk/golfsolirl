@@ -1,6 +1,9 @@
 import { lazy, Suspense, useMemo } from 'react'
 import { PremiumGolfHero } from '../../components/home/premium-golf-hero'
+import { HomeCreativeCanvas } from '../../components/ui/HomeCreativeCanvas'
 import { GeNavbar } from './sections/ge-navbar'
+import { HOMEPAGE_CREATIVE_CANVAS_ENABLED } from '../../lib/homepage-luxury-background'
+import { cx } from '../../lib/utils'
 import { useJsonLd, usePageMeta } from '../../lib/use-page-meta'
 
 const HomeBelowTheFold = lazy(() => import('./home-below-the-fold'))
@@ -30,7 +33,13 @@ export function GolfExperienceHome() {
   )
 
   return (
-    <div className="ge-page min-h-screen overflow-x-hidden bg-offwhite">
+    <div
+      className={cx(
+        'ge-page min-h-screen overflow-x-hidden',
+        HOMEPAGE_CREATIVE_CANVAS_ENABLED ? 'homepage-creative-shell' : 'bg-offwhite'
+      )}
+    >
+      {HOMEPAGE_CREATIVE_CANVAS_ENABLED ? <HomeCreativeCanvas /> : null}
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-brand-700 focus:px-4 focus:py-2 focus:font-ge focus:text-sm focus:font-bold focus:uppercase focus:tracking-[0.14em] focus:text-gs-dark"
@@ -43,7 +52,15 @@ export function GolfExperienceHome() {
         <PremiumGolfHero />
         <Suspense
           fallback={
-            <div className="min-h-[50vh] w-full bg-gradient-to-b from-cream to-offwhite/80" aria-hidden="true" />
+            <div
+              className={cx(
+                'min-h-[50vh] w-full',
+                HOMEPAGE_CREATIVE_CANVAS_ENABLED
+                  ? 'bg-transparent'
+                  : 'bg-gradient-to-b from-cream to-offwhite/80'
+              )}
+              aria-hidden="true"
+            />
           }
         >
           <HomeBelowTheFold />

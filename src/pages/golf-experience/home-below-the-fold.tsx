@@ -1,3 +1,4 @@
+import { SectionShadowBridge } from '../../components/ui/SectionShadowBridge'
 import { GeAboutBlock } from './sections/about-block'
 import { GeAccommodationIntro } from './sections/accommodation-intro'
 import { GeAccommodationSpain } from './sections/accommodation-spain'
@@ -31,10 +32,16 @@ export default function HomeBelowTheFold() {
       <GeAccommodationIntro />
       <GeAccommodationSpain />
       <GeHomeFleetHighlight />
+
+      <SectionShadowBridge variant="plateau-to-dark" />
       <GeExtrasStrip />
+
       <GeFacts />
       <GeAboutBlock />
+
+      <SectionShadowBridge variant="soft-lift" />
       <GeHomeEnquiry />
+
       <GeFinalCta />
       <GeFooter />
       <WhatsappFab />

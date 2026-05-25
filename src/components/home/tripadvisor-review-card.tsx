@@ -1,6 +1,6 @@
 import { m } from 'framer-motion'
 import { Quote, Star } from 'lucide-react'
-import { GOLFSOL_BRAND_LOGO_HOSTED } from '../../lib/brand-logo-assets'
+import { brandLogoAssetUrl, GOLFSOL_BRAND_LOGO_SOURCE } from '../../lib/brand-logo-assets'
 import { cx } from '../../lib/utils'
 
 const fadeUp = {
@@ -212,7 +212,7 @@ export function TripadvisorReviewCard({
           <div className="mt-3 flex items-center gap-2.5">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#d4a843]/25 bg-white shadow-[0_4px_12px_rgba(6,59,42,0.08)]">
               <img
-                src={GOLFSOL_BRAND_LOGO_HOSTED}
+                src={brandLogoAssetUrl(GOLFSOL_BRAND_LOGO_SOURCE)}
                 alt=""
                 width={32}
                 height={32}

@@ -44,8 +44,10 @@ export const PAGE_HERO_REGISTRY = {
 
   /** Logged-out / session-end. */
   loggedOut: {
-    desktop: '/images/hero-fleet-golf-golden-hour.webp',
-    mobile: '/images/hero-malaga-fleet-mobile-portrait.webp',
+    desktop: '/images/hero-fleet-golf-golden-hour-desktop.webp',
+    mobile: '/images/hero-fleet-golf-golden-hour-mobile.webp',
+    desktopWebp: '/images/hero-fleet-golf-golden-hour-desktop.webp',
+    mobileWebp: '/images/hero-fleet-golf-golden-hour-mobile.webp',
     alt: 'Costa del Sol fairway at golden hour — see you on the next round.',
     badge: 'Session closed',
     tintHue: 'gold'

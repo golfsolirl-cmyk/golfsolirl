@@ -10,9 +10,10 @@ import { mkdir, rm, stat } from 'node:fs/promises'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import sharp from 'sharp'
+import { rebrandFleetVehicleLogos } from './rebrand-fleet-vehicle-logos.mjs'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
-const HERO = join(root, 'public/images/88054e80-6dd1-483f-8557-cdc45caa2442.png')
+const HERO = join(root, 'public/images/fleet-golden-hour-rebranded.png')
 const CREST = join(root, 'public/images/newbf9f08a4-8fac-496b-8181-6f6b680d19c3.png')
 const OUT = join(root, 'public/downloads/golfsol-ireland-asset-pack')
 const ZIP = join(root, 'public/downloads/golfsol-ireland-asset-pack.zip')
@@ -126,6 +127,7 @@ async function extractRegion(region) {
 }
 
 async function main() {
+  await rebrandFleetVehicleLogos(HERO)
   const heroMeta = await sharp(HERO).metadata()
   if (!heroMeta.width) throw new Error(`Missing hero: ${HERO}`)
 

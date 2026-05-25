@@ -1,0 +1,114 @@
+/**
+ * Depth shadows between homepage sections — no colour-gradient dividers.
+ */
+
+.section-shadow-bridge {
+  position: relative;
+  z-index: 12;
+  width: 100%;
+  pointer-events: none;
+  margin-top: -1.75rem;
+  margin-bottom: -0.25rem;
+  height: clamp(2.5rem, 6vw, 3.75rem);
+}
+
+.section-shadow-bridge__rim {
+  position: absolute;
+  top: 0.35rem;
+  left: 8%;
+  right: 8%;
+  height: 1px;
+  border-radius: 999px;
+  opacity: 0.85;
+}
+
+.section-shadow-bridge__cast {
+  position: absolute;
+  top: 0.5rem;
+  left: 0;
+  right: 0;
+  height: 0;
+}
+
+.section-shadow-bridge__cast::before,
+.section-shadow-bridge__cast::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: transparent;
+}
+
+/* Contact shadow — tight edge */
+.section-shadow-bridge__cast::before {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.42),
+    0 6px 14px -4px rgba(6, 32, 22, 0.14);
+}
+
+/* Ambient falloff */
+.section-shadow-bridge__cast::after {
+  top: 2px;
+  box-shadow: var(--shadow-bridge-ambient);
+}
+
+.section-shadow-bridge__well {
+  position: absolute;
+  bottom: 0;
+  left: 5%;
+  right: 5%;
+  height: 55%;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  opacity: 0.9;
+  box-shadow: var(--shadow-bridge-well);
+}
+
+/* Light cream → deep forest */
+.section-shadow-bridge--plateau-to-dark {
+  --shadow-bridge-ambient:
+    0 22px 48px -14px rgba(4, 20, 14, 0.42),
+    0 10px 26px -10px rgba(6, 47, 36, 0.28),
+    0 2px 6px -2px rgba(6, 32, 22, 0.18);
+  --shadow-bridge-well: inset 0 14px 28px -12px rgba(0, 0, 0, 0.35);
+}
+
+.section-shadow-bridge--plateau-to-dark .section-shadow-bridge__rim {
+  background: rgba(255, 252, 245, 0.5);
+  box-shadow: 0 0 14px 1px rgba(247, 230, 163, 0.12);
+}
+
+/* Soft editorial → bright white */
+.section-shadow-bridge--soft-lift {
+  --shadow-bridge-ambient:
+    0 18px 40px -16px rgba(6, 32, 22, 0.1),
+    0 8px 20px -10px rgba(11, 77, 59, 0.08),
+    0 2px 4px -1px rgba(6, 32, 22, 0.06);
+  --shadow-bridge-well: inset 0 10px 22px -14px rgba(6, 32, 22, 0.08);
+  margin-top: -1.25rem;
+  height: clamp(2rem, 5vw, 3rem);
+}
+
+.section-shadow-bridge--soft-lift .section-shadow-bridge__rim {
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 0 10px 1px rgba(255, 255, 255, 0.35);
+}
+
+@media (max-width: 767px) {
+  .section-shadow-bridge {
+    margin-top: -1.25rem;
+    height: clamp(2rem, 5vw, 2.75rem);
+  }
+
+  .section-shadow-bridge__rim {
+    left: 4%;
+    right: 4%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-shadow-bridge {
+    opacity: 1 !important;
+  }
+}

@@ -48,10 +48,10 @@ export function heroImageSetForContentPage(path: string, page: GeContentPageData
 /** Known multi-breakpoint sets (verified filenames under `public/images/`). */
 export const NAMED_HERO_IMAGE_SETS = {
   homepageFleet: {
-    desktop: '/images/hero-fleet-golf-golden-hour-desktop.webp',
-    tablet: '/images/hero-fleet-golf-golden-hour-tablet.webp',
-    mobile: '/images/hero-fleet-golf-golden-hour-mobile.webp',
-    alt: 'Mercedes executive cars on a sunlit Costa del Sol golf course — Golf Sol Ireland private transfers from Málaga Airport.'
+    desktop: '/images/816cf7dc-e8c0-46fe-bce3-6d0c1f7005b2-desktop.webp',
+    tablet: '/images/816cf7dc-e8c0-46fe-bce3-6d0c1f7005b2-tablet.webp',
+    mobile: '/images/816cf7dc-e8c0-46fe-bce3-6d0c1f7005b2-mobile.webp',
+    alt: 'GolfSol Ireland Mercedes fleet at a golden-hour Costa del Sol golf resort — private transfers from Málaga Airport to the fairway.'
   },
   transportCoastal: {
     desktop: '/images/transport-hero-coastal-drive-desktop.webp',
@@ -115,7 +115,7 @@ export const NAMED_HERO_IMAGE_SETS = {
   },
   fleetCover: {
     desktop: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f-desktop.webp',
-    tablet: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
+    tablet: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f-tablet.webp',
     mobile: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f-mobile.webp',
     alt: 'Golf Sol Ireland executive fleet on the Costa del Sol.'
   }

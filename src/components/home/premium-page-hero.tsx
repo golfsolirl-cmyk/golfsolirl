@@ -78,6 +78,8 @@ export type PremiumPageHeroProps = {
   readonly formScrollLabel?: string
   readonly formScrollSublabel?: string
   readonly mobileImageObjectPosition?: string
+  /** When true, skip cream fade overlays so baked-in hero footer art stays visible. */
+  readonly preserveFooterArt?: boolean
   readonly className?: string
   readonly srTitle?: string
 }
@@ -100,6 +102,7 @@ export function PremiumPageHero({
   formScrollLabel,
   formScrollSublabel,
   mobileImageObjectPosition = 'center 72%',
+  preserveFooterArt = false,
   className,
   srTitle
 }: PremiumPageHeroProps) {
@@ -137,10 +140,12 @@ export function PremiumPageHero({
               className="absolute inset-0 h-full w-full object-cover"
               style={{ objectPosition: mobileImageObjectPosition }}
             />
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-b from-transparent via-cream/40 to-cream"
-            />
+            {!preserveFooterArt ? (
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-b from-transparent via-cream/40 to-cream"
+              />
+            ) : null}
           </div>
 
           {formScrollTarget ? (
@@ -225,10 +230,12 @@ export function PremiumPageHero({
               />
             ) : null}
 
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-14 bg-gradient-to-b from-transparent to-cream/90 lg:h-16"
-            />
+            {!preserveFooterArt ? (
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-14 bg-gradient-to-b from-transparent to-cream/90 lg:h-16"
+              />
+            ) : null}
           </div>
 
           {showTrust ? (

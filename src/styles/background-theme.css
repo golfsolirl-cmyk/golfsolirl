@@ -1,0 +1,312 @@
+/**
+ * GolfSol luxury background design tokens + homepage shell overrides.
+ * Scoped to `.homepage-luxury-shell` so other routes stay untouched.
+ */
+
+:root {
+  /* Forest greens */
+  --lux-forest-deep: rgb(6, 47, 36);
+  --lux-forest-mid: rgb(11, 77, 59);
+  --lux-forest-rich: rgb(5, 30, 22);
+  --lux-forest-dark: rgb(3, 24, 18);
+
+  /* Gold chrome */
+  --lux-gold-base: rgb(199, 154, 59);
+  --lux-gold-mid: rgb(233, 207, 123);
+  --lux-gold-hi: rgb(247, 230, 163);
+
+  /* Surfaces */
+  --lux-cream: rgb(249, 246, 238);
+  --lux-sunlight: rgba(255, 220, 150, 0.18);
+
+  /* Layer 1 — site foundation */
+  --lux-bg-foundation: linear-gradient(180deg, #041913 0%, #0b4d3b 50%, #062f24 100%);
+
+  /* Opacity presets */
+  --lux-celtic-opacity: 0.045;
+  --lux-ribbon-opacity: 0.14;
+  --lux-particle-opacity: 0.07;
+  --lux-shamrock-opacity: 0.05;
+
+  /* Section veil strengths (homepage preview) */
+  --lux-section-cream-veil: 78%;
+  --lux-section-white-veil: 82%;
+  --lux-section-soft-veil: 76%;
+}
+
+/* ── Fixed ambient stack ─────────────────────────────────────────────── */
+
+.luxury-bg-root {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  contain: strict;
+  isolation: isolate;
+}
+
+.luxury-bg__foundation {
+  position: absolute;
+  inset: 0;
+  background: var(--lux-bg-foundation);
+}
+
+.luxury-bg__sunlight {
+  position: absolute;
+  inset: -8%;
+  opacity: 1;
+  filter: blur(72px);
+  will-change: transform;
+}
+
+.luxury-bg__sunlight::before {
+  content: '';
+  position: absolute;
+  top: -6%;
+  right: -10%;
+  width: min(68vw, 52rem);
+  height: min(68vw, 52rem);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 42% 38%,
+    rgba(255, 220, 150, 0.22) 0%,
+    rgba(233, 207, 123, 0.1) 34%,
+    transparent 72%
+  );
+  opacity: 0.14;
+}
+
+.luxury-bg__sunlight::after {
+  content: '';
+  position: absolute;
+  top: 38%;
+  left: -14%;
+  width: min(52vw, 38rem);
+  height: min(52vw, 38rem);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 220, 150, 0.14) 0%,
+    rgba(199, 154, 59, 0.06) 38%,
+    transparent 70%
+  );
+  opacity: 0.1;
+}
+
+.luxury-bg__celtic-texture {
+  position: absolute;
+  inset: 0;
+  opacity: var(--lux-celtic-opacity);
+  mix-blend-mode: soft-light;
+  background-image: var(--lux-celtic-pattern, none);
+  background-size: 180px 180px;
+  mask-image: linear-gradient(180deg, transparent 0%, black 8%, black 92%, transparent 100%);
+}
+
+.luxury-bg__gold-ribbons {
+  position: absolute;
+  inset: -12% -8%;
+  opacity: var(--lux-ribbon-opacity);
+}
+
+.luxury-bg__gold-ribbons svg {
+  position: absolute;
+  width: 140%;
+  height: auto;
+  left: -20%;
+}
+
+.luxury-bg__gold-ribbons svg:nth-child(1) {
+  top: 8%;
+  transform: rotate(-6deg);
+  opacity: 0.18;
+}
+
+.luxury-bg__gold-ribbons svg:nth-child(2) {
+  top: 34%;
+  transform: rotate(4deg) scaleX(-1);
+  opacity: 0.12;
+}
+
+.luxury-bg__gold-ribbons svg:nth-child(3) {
+  top: 58%;
+  transform: rotate(-3deg);
+  opacity: 0.15;
+}
+
+.luxury-bg__gold-ribbons svg:nth-child(4) {
+  top: 78%;
+  transform: rotate(5deg) scaleX(-1);
+  opacity: 0.1;
+}
+
+.luxury-bg__depth {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.luxury-bg__depth-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(88px);
+}
+
+.luxury-bg__depth-blob--forest {
+  width: min(56vw, 40rem);
+  height: min(56vw, 40rem);
+  background: radial-gradient(circle, rgba(11, 77, 59, 0.42) 0%, transparent 68%);
+  mix-blend-mode: overlay;
+  opacity: 0.55;
+}
+
+.luxury-bg__depth-blob--dark {
+  width: min(48vw, 34rem);
+  height: min(48vw, 34rem);
+  background: radial-gradient(circle, rgba(3, 24, 18, 0.65) 0%, transparent 70%);
+  mix-blend-mode: soft-light;
+  opacity: 0.45;
+}
+
+.luxury-bg__depth-blob--gold {
+  width: min(42vw, 28rem);
+  height: min(42vw, 28rem);
+  background: radial-gradient(circle, rgba(199, 154, 59, 0.28) 0%, transparent 72%);
+  mix-blend-mode: soft-light;
+  opacity: 0.35;
+}
+
+.luxury-bg__particles {
+  position: absolute;
+  inset: 0;
+  opacity: var(--lux-particle-opacity);
+  background-image:
+    radial-gradient(circle at 8% 14%, var(--lux-gold-hi) 0 0.6px, transparent 0.7px),
+    radial-gradient(circle at 22% 38%, var(--lux-gold-mid) 0 0.5px, transparent 0.6px),
+    radial-gradient(circle at 41% 22%, var(--lux-gold-hi) 0 0.55px, transparent 0.65px),
+    radial-gradient(circle at 63% 48%, var(--lux-gold-mid) 0 0.45px, transparent 0.55px),
+    radial-gradient(circle at 78% 18%, var(--lux-gold-hi) 0 0.5px, transparent 0.6px),
+    radial-gradient(circle at 91% 62%, var(--lux-gold-mid) 0 0.55px, transparent 0.65px),
+    radial-gradient(circle at 15% 72%, var(--lux-gold-hi) 0 0.45px, transparent 0.55px),
+    radial-gradient(circle at 52% 84%, var(--lux-gold-mid) 0 0.5px, transparent 0.6px),
+    radial-gradient(circle at 88% 88%, var(--lux-gold-hi) 0 0.4px, transparent 0.5px);
+  background-size:
+    220px 220px,
+    260px 260px,
+    200px 200px,
+    240px 240px,
+    280px 280px,
+    210px 210px,
+    250px 250px,
+    230px 230px,
+    270px 270px;
+}
+
+.luxury-bg__shamrocks {
+  position: absolute;
+  inset: 0;
+  opacity: var(--lux-shamrock-opacity);
+}
+
+.luxury-bg__shamrock {
+  position: absolute;
+  width: clamp(1.25rem, 2.2vw, 2rem);
+  height: clamp(1.25rem, 2.2vw, 2rem);
+  color: var(--lux-gold-mid);
+}
+
+/* ── Homepage shell — reveal luxury layers through sections ─────────── */
+
+.homepage-luxury-shell {
+  position: relative;
+  background: transparent !important;
+}
+
+.homepage-luxury-shell > main {
+  position: relative;
+  z-index: 1;
+}
+
+.homepage-luxury-shell main section.bg-cream,
+.homepage-luxury-shell main section.bg-white,
+.homepage-luxury-shell main section.bg-gs-bg,
+.homepage-luxury-shell main section.bg-\[\#f6f3ec\] {
+  background-color: color-mix(in srgb, var(--lux-cream) var(--lux-section-cream-veil), transparent) !important;
+}
+
+.homepage-luxury-shell main section.bg-white {
+  background-color: color-mix(in srgb, #ffffff var(--lux-section-white-veil), transparent) !important;
+}
+
+.homepage-luxury-shell main section.bg-gs-bg {
+  background-color: color-mix(in srgb, #f3efe6 var(--lux-section-soft-veil), transparent) !important;
+}
+
+.homepage-luxury-shell main section.bg-\[\#f6f3ec\] {
+  background-color: color-mix(in srgb, #f6f3ec var(--lux-section-cream-veil), transparent) !important;
+}
+
+/* Enquiry gradient — soften so foundation shows through edges */
+.homepage-luxury-shell main section.bg-\[linear-gradient\(180deg\,_\#FAF8F4_0\%\\,_\#FFFFFF_62\%\)\] {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, #faf8f4 84%, transparent) 0%,
+    color-mix(in srgb, #ffffff 88%, transparent) 62%
+  ) !important;
+}
+
+/* Cards, panels, navbar stay solid for readability */
+.homepage-luxury-shell .bg-white\/90,
+.homepage-luxury-shell .bg-white\/92,
+.homepage-luxury-shell .bg-white\/94,
+.homepage-luxury-shell .bg-white\/96,
+.homepage-luxury-shell article.bg-white,
+.homepage-luxury-shell .premium-golf-hero-copy-panel,
+.homepage-luxury-shell .premium-golf-hero-trust-band,
+.homepage-luxury-shell header,
+.homepage-luxury-shell nav {
+  /* preserve component-level solids */
+}
+
+.luxury-section-bridge {
+  position: relative;
+  z-index: 8;
+}
+
+/* Mobile — lighter decorative load */
+@media (max-width: 767px) {
+  :root {
+    --lux-celtic-opacity: 0.035;
+    --lux-ribbon-opacity: 0.1;
+    --lux-particle-opacity: 0.05;
+    --lux-shamrock-opacity: 0.04;
+    --lux-section-cream-veil: 84%;
+    --lux-section-white-veil: 86%;
+  }
+
+  .luxury-bg__sunlight::before {
+    opacity: 0.1;
+    filter: blur(56px);
+  }
+
+  .luxury-bg__sunlight::after {
+    opacity: 0.08;
+  }
+
+  .luxury-bg__gold-ribbons svg:nth-child(3),
+  .luxury-bg__gold-ribbons svg:nth-child(4) {
+    display: none;
+  }
+
+  .luxury-bg__shamrock:nth-child(n + 4) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .luxury-bg__sunlight,
+  .luxury-bg__gold-ribbons svg {
+    animation: none !important;
+  }
+}

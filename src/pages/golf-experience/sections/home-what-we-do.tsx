@@ -1,7 +1,6 @@
 import { m } from 'framer-motion'
 import { BedDouble, CarFront, Flag, ArrowRight } from 'lucide-react'
 import { GeButton } from '../components/ge-button'
-import { GeCrestDivider } from '../components/ge-crest-divider'
 import { GeSection } from '../components/ge-section'
 
 const services = [
@@ -36,7 +35,6 @@ const fadeUp = {
 export function GeHomeWhatWeDo() {
   return (
     <GeSection background="cream" className="pt-14 pb-16 sm:pt-16 sm:pb-20">
-      <GeCrestDivider className="mb-10 sm:mb-12" />
       <m.div className="mx-auto max-w-3xl text-center" {...fadeUp}>
         <p className="font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.22em] text-gs-green sm:text-[0.78rem]">
           Irish-owned · Costa del Sol golf specialists

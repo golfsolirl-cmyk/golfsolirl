@@ -24,6 +24,7 @@ export function PremiumGolfHero({ className }: PremiumGolfHeroProps) {
     <PremiumPageHero
       className={className}
       images={NAMED_HERO_IMAGE_SETS.homepageFleet}
+      preserveFooterArt
       kicker="Ireland · Costa del Sol"
       titleLine1="Ireland to Costa del Sol Golf Trips,"
       titleLine2="Handled Properly"
