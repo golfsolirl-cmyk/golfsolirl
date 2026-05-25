@@ -68,12 +68,23 @@ const isAllowedRedirectTo = (redirectTo, env) => {
     const site = env.SITE_URL?.trim()
     if (site) {
       const siteUrl = site.startsWith('http') ? site : `https://${site}`
-      if (u.origin === new URL(siteUrl).origin) {
+      const siteOrigin = new URL(siteUrl)
+      if (u.origin === siteOrigin.origin) {
+        return true
+      }
+      const host = siteOrigin.hostname
+      const port = siteOrigin.port ? `:${siteOrigin.port}` : ''
+      const altHost = host.startsWith('www.') ? host.slice(4) : `www.${host}`
+      if (u.origin === `${siteOrigin.protocol}//${altHost}${port}`) {
         return true
       }
     }
 
-    if (u.hostname === 'localhost' || u.hostname === '127.0.0.1') {
+    if (
+      u.hostname === 'localhost' ||
+      u.hostname === '127.0.0.1' ||
+      u.hostname === '[::1]'
+    ) {
       return true
     }
 
