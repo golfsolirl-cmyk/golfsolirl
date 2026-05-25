@@ -1,5 +1,6 @@
 import { UserRound } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
+import { isAllowedAdminLoginEmail } from '../lib/admin-login-email'
 import { PortalInterestCategoryGlyph } from '../components/portal-interest-category-glyph'
 import { FocusTrapDialog } from '../components/focus-trap-dialog'
 import { AdminOperationsHubHero } from '../components/admin-operations-hub-hero'
@@ -694,13 +695,21 @@ export function AdminDashboardPage() {
     }
 
     /** Only redirect once profile row is known; `null` means fetch failed / no row — do not send real admins to the client dashboard during a race or RLS glitch. */
-    if (profile !== null && profile.role !== 'admin') {
+    if (
+      profile !== null &&
+      (profile.role !== 'admin' || !isAllowedAdminLoginEmail(profile.email ?? session.user.email ?? ''))
+    ) {
       window.location.replace('/dashboard')
     }
   }, [isLoading, session?.user?.id, profile])
 
   useEffect(() => {
-    if (!session?.user || !profile || profile.role !== 'admin') {
+    if (
+      !session?.user ||
+      !profile ||
+      profile.role !== 'admin' ||
+      !isAllowedAdminLoginEmail(profile.email ?? session.user.email ?? '')
+    ) {
       return
     }
 
@@ -3718,7 +3727,7 @@ export function AdminDashboardPage() {
     )
   }
 
-  if (profile.role !== 'admin') {
+  if (profile.role !== 'admin' || !isAllowedAdminLoginEmail(profile.email ?? session?.user?.email ?? '')) {
     return <DashboardLoadingShell label="Opening your client dashboard…" />
   }
 

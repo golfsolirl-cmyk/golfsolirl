@@ -15,6 +15,7 @@ import { assertEnquiryDriverDatesNotBlocked } from './enquiry-booked-dates.mjs'
 import { ensureEmailAccountAnchor, isAuthEmailBlocked } from './email-address-registry.mjs'
 import { assertApiRateLimit, parsePositiveInt } from './api-rate-limit.mjs'
 import { computePhoneUniquenessKey } from './phone-e164.mjs'
+import { resolveResendToAddress, resendSandboxRecipientHint } from './resend-delivery-email.mjs'
 /** Real imports (not `export { … } from './…'` only): handlers call these by name in module scope. */
 import {
   createBrandedEnquiryPdf,
@@ -956,23 +957,39 @@ export const handleEnquirySubmission = async (payload, env = process.env, runtim
   // Persist before emails so portal login can sync name/phone from enquiries immediately after magic link.
   await recordEnquiryToSupabase(enquiry, enquiryId, env)
 
-  await Promise.all([
+  const customerTo = resolveResendToAddress(enquiry.email, env)
+  const ownerTo = resolveResendToAddress(notificationEmail, env)
+
+  const [customerResult, ownerResult] = await Promise.all([
     resend.emails.send({
       from: fromEmail,
-      to: [enquiry.email],
+      to: [customerTo],
       subject: `Your Golf Sol Ireland enquiry confirmation (${enquiryId})`,
       html: buildCustomerHtml({ ...enquiry, enquiryId, enquiryDate }),
       attachments: enquiryPdfAttachments
     }),
     resend.emails.send({
       from: fromEmail,
-      to: [notificationEmail],
+      to: [ownerTo],
       replyTo: enquiry.email,
       subject: `New Golf Sol Ireland enquiry ${enquiryId} from ${enquiry.fullName}`,
       html: buildOwnerHtml({ ...enquiry, enquiryId, enquiryDate }),
       attachments: enquiryPdfAttachments
     })
   ])
+
+  const sendError = customerResult.error ?? ownerResult.error
+  if (sendError) {
+    const raw = sendError.message ?? 'Could not send enquiry confirmation email.'
+    const message =
+      raw.includes('only send testing emails to your own email address') ||
+      raw.includes('verify a domain at resend.com/domains')
+        ? resendSandboxRecipientHint(env)
+        : raw
+    const error = new Error(message)
+    error.statusCode = 502
+    throw error
+  }
   await insertWebsiteFormPackageBuildIfProfileExists(enquiry, enquiryId, env)
   await insertTransferBookingFromWebsiteEnquiry(enquiry, enquiryId, env)
 
@@ -1080,9 +1097,10 @@ export const handleTermsEmailRequest = async (payload, env = process.env) => {
   const termsPdfBytes = await createTermsAndConditionsPdf()
   const resend = new Resend(resendApiKey)
 
-  await resend.emails.send({
+  const deliveryEmail = resolveResendToAddress(email, env)
+  const { error: sendError } = await resend.emails.send({
     from: fromEmail,
-    to: [email],
+    to: [deliveryEmail],
     subject: 'GolfSol Ireland terms and conditions',
     html: buildTermsEmailHtml({ email, sentDate }),
     attachments: [
@@ -1093,6 +1111,18 @@ export const handleTermsEmailRequest = async (payload, env = process.env) => {
       }
     ]
   })
+
+  if (sendError) {
+    const raw = sendError.message ?? 'Could not send terms email.'
+    const message =
+      raw.includes('only send testing emails to your own email address') ||
+      raw.includes('verify a domain at resend.com/domains')
+        ? resendSandboxRecipientHint(env)
+        : raw
+    const error = new Error(message)
+    error.statusCode = 502
+    throw error
+  }
 
   return {
     success: true,

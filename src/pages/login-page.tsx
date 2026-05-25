@@ -5,6 +5,7 @@ import { GeButton } from '../pages/golf-experience/components/ge-button'
 import { GeBrandLockup } from '../pages/golf-experience/components/brand-lockup'
 import { integrationRegistry } from '../config/integrations'
 import { AUTH_NEXT_STORAGE_KEY, AUTH_PORTAL_CTX_LABEL_KEY, isSafeInternalPath } from '../lib/internal-redirect'
+import { DEFAULT_ADMIN_LOGIN_EMAIL, isAllowedAdminLoginEmail } from '../lib/admin-login-email'
 import { useAuth } from '../providers/auth-provider'
 
 /**
@@ -114,8 +115,12 @@ export function LoginPage() {
       return
     }
 
+    const operatorEmail = profile.email ?? session.user.email ?? ''
+    const canAccessAdmin =
+      profile.role === 'admin' && isAllowedAdminLoginEmail(operatorEmail)
+
     if (explicitAs === 'admin') {
-      window.location.replace(profile.role === 'admin' ? '/dashboard/admin' : '/dashboard')
+      window.location.replace(canAccessAdmin ? '/dashboard/admin' : '/dashboard')
       return
     }
 
@@ -125,7 +130,7 @@ export function LoginPage() {
     }
 
     if (path === '/driver/login') {
-      window.location.replace(profile.role === 'driver' || profile.role === 'admin' ? '/driver' : '/dashboard')
+      window.location.replace(profile.role === 'driver' || canAccessAdmin ? '/driver' : '/dashboard')
       return
     }
 
@@ -135,16 +140,16 @@ export function LoginPage() {
     }
 
     if (path === '/dashboard/login') {
-      window.location.replace(profile.role === 'admin' ? '/dashboard/admin' : '/dashboard')
+      window.location.replace(canAccessAdmin ? '/dashboard/admin' : '/dashboard')
       return
     }
 
     if (path === '/dashboard/admin/login') {
-      window.location.replace(profile.role === 'admin' ? '/dashboard/admin' : '/dashboard')
+      window.location.replace(canAccessAdmin ? '/dashboard/admin' : '/dashboard')
       return
     }
 
-    if (profile.role === 'admin') {
+    if (canAccessAdmin) {
       window.location.replace('/dashboard/admin')
       return
     }
@@ -223,7 +228,7 @@ export function LoginPage() {
       ? 'Live jobs · Same magic link · Driver desk'
       : 'Saved trips · Quotes · Account access'
   const heroBody = isAdminLoginPath
-    ? "Enter your operator code and email — we'll send a secure sign-in link to your inbox."
+    ? `Enter your operator code and ${DEFAULT_ADMIN_LOGIN_EMAIL} — we'll send a secure sign-in link to that inbox.`
     : isDriverLoginPage
       ? 'Same secure magic link as the client portal and admin — after sign-in, admins use the Irish Driver preview desk; linked drivers see live jobs.'
       : "We'll email you a secure magic link — the same GolfSol Ireland experience as the rest of the site. No password to remember."
@@ -399,7 +404,7 @@ export function LoginPage() {
                   id="login-email"
                   name="email"
                   onChange={(event) => setEmail(event.target.value)}
-                  placeholder="you@example.com"
+                  placeholder={isAdminLoginPath ? DEFAULT_ADMIN_LOGIN_EMAIL : 'you@example.com'}
                   required
                   type="email"
                   value={email}

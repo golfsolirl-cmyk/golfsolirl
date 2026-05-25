@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
 import { buildBrandedPostEnquiryPortalInviteHtml } from './branded-post-enquiry-portal-invite-email.mjs'
+import { resolveResendToAddress } from './resend-delivery-email.mjs'
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -86,9 +87,10 @@ export const runPostEnquiryPortalInviteJob = async ({ enquiry, enquiryId, enquir
   const html = finalizeGsolEmailHtml(htmlRaw)
 
   const resend = new Resend(resendKey)
+  const deliveryEmail = resolveResendToAddress(emailLower, env)
   const { error: sendError } = await resend.emails.send({
     from: fromEmail,
-    to: [emailLower],
+    to: [deliveryEmail],
     subject: `Your Golf Sol trip desk is open — ${enquiryId}`,
     html
   })

@@ -1,18 +1,15 @@
 -- Run in Supabase → SQL Editor.
--- Only golfsolirl+logingolfsol@gmail.com should have admin access.
+-- Only info@golfsolirl.ie should have admin access (matches ADMIN_LOGIN_EMAIL default).
 
 update public.profiles
 set role = 'client', updated_at = now()
-where lower(trim(coalesce(email, ''))) = lower(trim('golfsolirl@gmail.com'));
+where role = 'admin';
 
 update public.profiles
-set role = 'admin', updated_at = now(), full_name = coalesce(nullif(trim(full_name), ''), 'Golf Sol Admin Login')
-where lower(trim(coalesce(email, ''))) = lower(trim('golfsolirl+logingolfsol@gmail.com'));
+set role = 'admin', updated_at = now(), full_name = coalesce(nullif(trim(full_name), ''), 'Golf Sol Admin')
+where lower(trim(coalesce(email, ''))) = lower(trim('info@golfsolirl.ie'));
 
 select email, role, updated_at
 from public.profiles
-where lower(trim(coalesce(email, ''))) in (
-  lower(trim('golfsolirl@gmail.com')),
-  lower(trim('golfsolirl+logingolfsol@gmail.com'))
-)
+where role = 'admin'
 order by email;

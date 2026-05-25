@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { isAllowedAdminLoginEmail } from './admin-login-email.mjs'
 
 /**
  * @param {string | undefined} authHeader
@@ -32,6 +33,11 @@ export const requireAdminFromBearer = async (authHeader, env) => {
 
   if (userError || !user) {
     return { ok: false, message: 'Invalid or expired session.', statusCode: 401 }
+  }
+
+  const userEmail = user.email?.trim().toLowerCase() ?? ''
+  if (!isAllowedAdminLoginEmail(userEmail, env)) {
+    return { ok: false, message: 'Only authorized operators can perform this action.', statusCode: 403 }
   }
 
   const { data: profile, error: profileErr } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()

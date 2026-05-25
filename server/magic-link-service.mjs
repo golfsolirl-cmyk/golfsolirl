@@ -5,6 +5,11 @@ import { buildBrandedPortalMagicLinkEmailHtml } from './branded-client-portal-em
 import { finalizeGsolEmailHtml } from './email-layout.mjs'
 import { isAuthEmailBlocked } from './email-address-registry.mjs'
 import { resolveResendToAddress, resendSandboxRecipientHint } from './resend-delivery-email.mjs'
+import {
+  ensureSingleAdminProfile,
+  isAllowedAdminLoginEmail,
+  resolveAdminLoginEmail
+} from './admin-login-email.mjs'
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
@@ -142,6 +147,13 @@ export const handleMagicLinkRequest = async (payload, env = process.env, meta = 
     throw error
   }
 
+  if (portal === 'admin' && !isAllowedAdminLoginEmail(email, env)) {
+    const allowed = resolveAdminLoginEmail(env)
+    const error = new Error(`Admin sign-in is restricted to ${allowed}.`)
+    error.statusCode = 403
+    throw error
+  }
+
   const adminPass = normalizeOperatorPasscode(env.ADMIN_OPERATOR_PASSCODE)
   if (portal === 'admin' && adminPass) {
     if (!operatorPasscodeMatches(operatorCode, adminPass)) {
@@ -197,6 +209,11 @@ export const handleMagicLinkRequest = async (payload, env = process.env, meta = 
     const error = new Error('Could not create sign-in link.')
     error.statusCode = 500
     throw error
+  }
+
+  if (portal === 'admin') {
+    const authUserId = data?.user?.id ?? data?.properties?.user_id
+    await ensureSingleAdminProfile(admin, email, typeof authUserId === 'string' ? authUserId : undefined)
   }
 
   const requestedAtDisplay = new Intl.DateTimeFormat('en-IE', {
