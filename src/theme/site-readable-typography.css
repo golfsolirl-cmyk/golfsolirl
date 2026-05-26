@@ -156,3 +156,38 @@ body.site-readable:not(.site-readable-off) .portal-bottom-nav .truncate {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* Homepage EU / Nordics welcome — keep compact kicker, readable body copy */
+body.site-readable:not(.site-readable-off) .home-eu-nordic-welcome__kicker {
+  font-size: 0.8125rem !important;
+  line-height: 1.35 !important;
+  letter-spacing: 0.12em !important;
+}
+
+@media (min-width: 640px) {
+  body.site-readable:not(.site-readable-off) .home-eu-nordic-welcome__kicker {
+    font-size: 0.875rem !important;
+  }
+}
+
+body.site-readable:not(.site-readable-off) .home-eu-nordic-welcome__copy {
+  font-size: 1rem !important;
+  line-height: 1.55 !important;
+}
+
+@media (min-width: 640px) {
+  body.site-readable:not(.site-readable-off) .home-eu-nordic-welcome__copy {
+    font-size: 1.0625rem !important;
+    line-height: 1.6 !important;
+  }
+}
+
+body.site-readable:not(.site-readable-off) .gsol-cookie-banner p {
+  overflow-wrap: anywhere;
+}
+
+body.site-readable:not(.site-readable-off) .gsol-cookie-banner .text-xs {
+  font-size: 0.8125rem !important;
+  line-height: 1.35 !important;
+  letter-spacing: 0.12em !important;
+}

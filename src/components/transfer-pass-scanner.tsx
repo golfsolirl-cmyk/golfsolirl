@@ -76,7 +76,7 @@ export function TransferPassScanner({ onScan, className }: TransferPassScannerPr
 
   return (
     <div className={cx('space-y-5', className)}>
-      <div className="overflow-hidden rounded-[1.75rem] border border-forest-100 bg-forest-950 shadow-soft">
+      <div className="ge-on-dark overflow-hidden rounded-[1.75rem] border border-forest-100 bg-forest-950 text-white shadow-soft">
         <div className="relative aspect-[4/3] w-full bg-black">
           {cameraOn ? (
             <video className="h-full w-full object-cover" muted playsInline ref={videoRef} />

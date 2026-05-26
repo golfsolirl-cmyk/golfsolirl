@@ -325,7 +325,7 @@ export function PortalTransferRequestsSection(props: {
                             {siblingTransfers.map((t) => (
                               <li
                                 key={t.id}
-                                className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/95 backdrop-blur-sm"
+                                className="rounded-xl border border-white/15 bg-forest-900/55 px-3 py-2 text-sm text-white/95"
                               >
                                 <span className="font-medium">{t.pickup_label}</span>
                                 <span className="text-emerald-200/80"> → </span>

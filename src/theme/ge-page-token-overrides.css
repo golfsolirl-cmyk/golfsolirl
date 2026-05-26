@@ -293,6 +293,14 @@
   color: #d9be7a !important;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .ge-page #design-package .design-package-hero,
+  .ge-page #design-package .design-package-hero * {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 /* —— Forest "extras" section — force readable white type on dark base.
    Beats the global `.ge-page h2/h3 { color: var(--heading-color) }` rule. —— */
 .ge-page #extras h1,
@@ -383,7 +391,7 @@
     [class*='#0a2416'],
     [class*='linear-gradient(180deg,#0f3d24']
   )
-  :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small):not(
+  :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small, strong):not(
     .bg-white :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
     .bg-white\/88 :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
     .bg-white\/90 :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
@@ -850,4 +858,64 @@
   -webkit-text-fill-color: #b89a5a !important;
 }
 
+/* —— Portal mobile tab bar: solid surface (no glass blur) —— */
+.portal-bottom-nav {
+  background-color: #ffffff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* —— Dashboards: forest / brand shells must not show marketing body colour —— */
+.ge-page:is([data-dashboard-variant='client'], [data-dashboard-variant='admin'], [data-dashboard-variant='driver'])
+  :is(
+    .ge-on-dark,
+    .bg-forest-950,
+    .bg-forest-900,
+    [class*='from-brand-8'],
+    [class*='from-forest-9'],
+    [class*='via-forest-9'],
+    [class*='to-brand-9'],
+    [class*='to-forest-9'],
+    [class*='#0f3d24'],
+    [class*='#0c3d2c'],
+    [class*='#0a2416']
+  )
+  :is(
+    .text-forest-600,
+    .text-forest-700,
+    .text-forest-800,
+    .text-forest-900,
+    .text-forest-950,
+    .text-gs-dark,
+    .text-ge-ink,
+    .text-ge-gray500
+  ):not(
+    [class*='bg-white'] *,
+    [class*='bg-offwhite'] *,
+    [class*='bg-fairway-50'] *,
+    [class*='from-white'] *,
+    [class*='via-white'] *,
+    [class*='to-white'] *
+  ) {
+  color: rgba(255, 255, 255, 0.94) !important;
+}
+
+.ge-page:is([data-dashboard-variant='client'], [data-dashboard-variant='admin'], [data-dashboard-variant='driver'])
+  .ge-on-dark
+  [data-keep-color] {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.ge-page:is([data-dashboard-variant='client'], [data-dashboard-variant='admin'], [data-dashboard-variant='driver'])
+  .portal-ui-root
+  :is(.ge-on-dark, .bg-forest-950, .bg-forest-900, [class*='from-brand-8'], [class*='from-forest-9'], [class*='#0f3d24'], [class*='#0c3d2c'], [class*='#0a2416'])
+  :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, strong, a, button):not(
+    [class*='bg-white'] *,
+    [class*='bg-offwhite'] *,
+    [class*='from-white'] *,
+    [class*='via-white'] *,
+    [class*='to-white'] *
+  ) {
+  color: rgba(255, 255, 255, 0.96) !important;
+}
 

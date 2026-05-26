@@ -38,7 +38,7 @@ export function ClientPortalShell({
       />
 
       <div className="min-w-0 flex-1">
-        <div className="sticky top-0 z-30 mb-4 flex items-center gap-3 border-b border-forest-100/80 bg-white/95 px-1 py-3 backdrop-blur-sm lg:hidden">
+        <div className="sticky top-0 z-30 mb-4 flex items-center gap-3 border-b border-forest-200 bg-white px-1 py-3 lg:hidden">
           <button
             aria-expanded={mobileNavOpen}
             className={cx(

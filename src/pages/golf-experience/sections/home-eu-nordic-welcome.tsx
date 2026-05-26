@@ -51,60 +51,56 @@ function FlagSweden({ className }: { className?: string }) {
 }
 
 const flagClass =
-  'h-[22px] w-auto shrink-0 rounded-[3px] shadow-[0_2px_8px_rgba(0,0,0,0.28)] ring-1 ring-white/25 sm:h-[26px] sm:rounded-[4px]'
+  'h-5 w-auto shrink-0 rounded-[3px] shadow-[0_2px_8px_rgba(0,0,0,0.22)] ring-1 ring-white/30 sm:h-6'
 
 export function GeHomeEuNordicWelcome() {
   return (
     <section
-      className="relative border-b border-chrome-300/60 bg-cream text-gs-dark"
+      className="home-eu-nordic-welcome relative border-b border-chrome-300/60 bg-cream text-gs-dark"
       aria-labelledby="home-eu-nordic-welcome-heading"
     >
       <div className="relative mx-auto max-w-[1180px] px-4 py-3 sm:px-8 sm:py-4">
-        <div className="flex flex-col items-center gap-3 rounded-[1.25rem] border border-chrome-300/80 bg-white/90 px-4 py-3.5 shadow-[0_8px_24px_rgba(6,32,22,0.05)] sm:flex-row sm:items-center sm:gap-5 sm:px-5 sm:py-4">
+        <div className="rounded-2xl border border-chrome-300/80 bg-white px-4 py-4 shadow-[0_8px_24px_rgba(6,32,22,0.05)] sm:px-6 sm:py-5">
           <h2 id="home-eu-nordic-welcome-heading" className="sr-only">
             Golf transfers for visitors from the European Union and Scandinavia
           </h2>
 
-          <div
-            className="inline-flex shrink-0 items-center gap-2.5 rounded-full border border-chrome-300 bg-cream/80 px-4 py-2 sm:gap-3 sm:px-4 sm:py-2.5"
-            role="group"
-            aria-label="Europe, Denmark, Norway, Sweden"
-          >
-            <span className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.18em] text-gs-green sm:text-[0.68rem]">
-              Europe
-            </span>
-            <span title="Europe" className="inline-flex leading-none">
-              <FlagEu className={flagClass} />
-            </span>
-            <span className="select-none font-ge text-xs font-bold text-ge-gray500" aria-hidden>
-              +
-            </span>
-            <span className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.18em] text-gs-green sm:text-[0.68rem]">
-              Nordics
-            </span>
-            <span title="Denmark" className="inline-flex leading-none">
-              <FlagDenmark className={flagClass} />
-            </span>
-            <span title="Norway" className="inline-flex leading-none">
-              <FlagNorway className={flagClass} />
-            </span>
-            <span title="Sweden" className="inline-flex leading-none">
-              <FlagSweden className={flagClass} />
-            </span>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+            <div
+              className="flex shrink-0 flex-col items-center gap-2.5 sm:items-start"
+              role="group"
+              aria-label="Europe, Denmark, Norway, Sweden"
+            >
+              <p className="home-eu-nordic-welcome__kicker font-ge text-xs font-extrabold uppercase tracking-[0.14em] text-gs-green sm:text-sm">
+                EU &amp; Nordics
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+                <span title="Europe">
+                  <FlagEu className={flagClass} />
+                </span>
+                <span title="Denmark">
+                  <FlagDenmark className={flagClass} />
+                </span>
+                <span title="Norway">
+                  <FlagNorway className={flagClass} />
+                </span>
+                <span title="Sweden">
+                  <FlagSweden className={flagClass} />
+                </span>
+              </div>
+            </div>
+
+            <p className="home-eu-nordic-welcome__copy min-w-0 flex-1 text-center text-base leading-relaxed text-forest-800 sm:border-l sm:border-chrome-300 sm:pl-6 sm:text-left">
+              <span className="block font-semibold text-forest-950">
+                Flying in from Europe or Scandinavia for golf on the Sol?
+              </span>
+              <span className="mt-1 block">
+                We offer{' '}
+                <span className="font-semibold text-brand-800">Málaga meet-and-greet and airport transfers</span>, planned
+                around your resort and tee times.
+              </span>
+            </p>
           </div>
-
-          <div className="hidden h-8 w-px shrink-0 bg-chrome-300 sm:block" aria-hidden />
-
-          <p className="max-w-2xl text-center font-ge text-[0.875rem] leading-relaxed text-ge-gray500 sm:text-left sm:text-[0.9rem] sm:leading-7">
-            <span className="font-extrabold text-gs-dark">
-              Flying in from Europe or Scandinavia for golf on the Sol?
-            </span>{' '}
-            <span>
-              We offer{' '}
-              <span className="font-semibold text-brand-700">Málaga meet-and-greet and airport transfers</span>, all
-              planned around your resort and tee times.
-            </span>
-          </p>
         </div>
       </div>
     </section>

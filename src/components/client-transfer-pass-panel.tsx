@@ -84,7 +84,7 @@ export function ClientTransferPassPanel({ guestName, transfers, onSelectUnpaid }
                 className="overflow-hidden rounded-[1.75rem] border border-forest-100 bg-white shadow-[0_20px_50px_rgba(11,73,52,0.1)]"
                 key={t.id}
               >
-                <div className="border-b border-forest-100 bg-gradient-to-r from-brand-800 to-forest-900 px-5 py-4 text-white sm:px-6">
+                <div className="ge-on-dark border-b border-forest-100 bg-gradient-to-r from-brand-800 to-forest-900 px-5 py-4 text-white sm:px-6">
                   <p className="font-ge text-sm font-bold uppercase tracking-[0.14em] text-emerald-100/90">
                     {guestName.trim() ? `${guestName.trim()}'s trip pass` : 'Your trip pass'}
                   </p>

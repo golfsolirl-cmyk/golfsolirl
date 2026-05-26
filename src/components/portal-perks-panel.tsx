@@ -37,7 +37,7 @@ const FEATURED_COURSES = COURSES.slice(0, 3)
 export function PortalPerksPanel() {
   return (
     <div className="space-y-6">
-      <div className="rounded-[1.75rem] border border-forest-100 bg-gradient-to-br from-brand-800 via-forest-900 to-brand-950 p-5 text-white shadow-soft sm:p-7">
+      <div className="ge-on-dark rounded-[1.75rem] border border-forest-100 bg-gradient-to-br from-brand-800 via-forest-900 to-brand-950 p-5 text-white shadow-soft sm:p-7">
         <p className="font-ge text-sm font-extrabold uppercase tracking-[0.18em] text-emerald-200/90">Perks & deals</p>
         <h2 className="mt-2 font-display text-2xl font-bold leading-tight sm:text-3xl">Your Costa del Sol golf rewards</h2>
         <p className="mt-3 max-w-prose text-lg leading-relaxed text-emerald-50/95">

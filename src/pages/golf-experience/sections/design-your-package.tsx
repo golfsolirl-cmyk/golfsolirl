@@ -1,5 +1,6 @@
 import { m, type Variants } from 'framer-motion'
 import { ArrowRight, MapPin, Sparkles } from 'lucide-react'
+import { useRevealInView } from '../../../lib/motion-reveal'
 import { GeAlreadyBookedFlightPanel } from '../components/already-booked-flight-panel'
 import { designYourPackage, homeTripSnapshotBand } from '../data/copy'
 
@@ -11,13 +12,6 @@ interface StepCard {
   readonly link: string
 }
 
-const fadeUp = {
-  initial: { opacity: 0, y: 18 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, amount: 0.2 },
-  transition: { duration: 0.55, ease: 'easeOut' }
-} as const
-
 const heroContainerVariants: Variants = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.09, delayChildren: 0.04 } }
@@ -28,7 +22,13 @@ const heroItemVariants: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.48, ease: 'easeOut' } }
 }
 
+const revealTransition = { duration: 0.55, ease: 'easeOut' } as const
+
 export function GeDesignYourPackage() {
+  const { ref: heroRef, revealed: heroRevealed } = useRevealInView<HTMLDivElement>({ amount: 0.04 })
+  const { ref: stepsRef, revealed: stepsRevealed } = useRevealInView<HTMLOListElement>({ amount: 0.03 })
+  const { ref: bandRef, revealed: bandRevealed } = useRevealInView<HTMLDivElement>({ amount: 0.12 })
+
   const steps: readonly StepCard[] = [
     {
       badge: designYourPackage.step1.eyebrow,
@@ -66,16 +66,13 @@ export function GeDesignYourPackage() {
       aria-labelledby="design-package-title"
       className="relative overflow-hidden border-b border-chrome-300/60 bg-cream text-gs-dark"
     >
-      <m.div
-        className="relative mx-auto max-w-[1180px] px-5 pb-20 pt-14 sm:px-8 sm:pb-24 sm:pt-16"
-        {...fadeUp}
-      >
+      <div className="relative mx-auto max-w-[1180px] px-5 pb-20 pt-14 sm:px-8 sm:pb-24 sm:pt-16">
         <m.div
+          ref={heroRef}
           className="design-package-hero relative overflow-hidden rounded-[2rem] border border-white/30 bg-[linear-gradient(128deg,var(--brand-800)_0%,#0f4f3c_42%,var(--brand-700)_100%)] px-6 py-10 text-center shadow-[0_32px_90px_rgba(11,77,59,0.32)] sm:px-10 sm:py-14"
           variants={heroContainerVariants}
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
+          animate={heroRevealed ? 'visible' : 'hidden'}
         >
           <div
             aria-hidden="true"
@@ -130,25 +127,26 @@ export function GeDesignYourPackage() {
             aria-hidden="true"
             className="pointer-events-none absolute inset-x-[8%] top-0 hidden h-px bg-gradient-to-r from-transparent via-gs-dark/15 to-transparent lg:block"
           />
-          <ol className="grid list-none gap-6 p-0 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
+          <m.ol
+            ref={stepsRef}
+            className="grid list-none gap-6 p-0 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5"
+          >
             {steps.map((step, index) => (
               <m.li
                 key={step.badge}
                 className="group relative flex"
-                {...fadeUp}
-                transition={{ ...fadeUp.transition, delay: index * 0.06 }}
+                initial={{ opacity: 0, y: 18 }}
+                animate={stepsRevealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+                transition={{ ...revealTransition, delay: index * 0.06 }}
               >
-                <article className="relative flex flex-1 flex-col overflow-hidden rounded-[1.75rem] border border-white/80 bg-white/92 text-gs-dark shadow-[0_20px_50px_rgba(6,32,22,0.12)] ring-1 ring-chrome-300/80 backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_28px_64px_rgba(6,32,22,0.18)]">
-                  <m.div
-                    className="relative aspect-[16/10] overflow-hidden"
-                    whileHover={{ scale: 1.02 }}
-                    transition={{ duration: 0.45, ease: 'easeOut' }}
-                  >
+                <article className="relative flex flex-1 flex-col overflow-hidden rounded-[1.75rem] border border-white/80 bg-white/92 text-gs-dark shadow-[0_20px_50px_rgba(6,32,22,0.12)] ring-1 ring-chrome-300/80 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_28px_64px_rgba(6,32,22,0.18)]">
+                  <div className="relative aspect-[16/10] overflow-hidden">
                     <img
                       src={step.image}
                       alt={step.title}
-                      loading="lazy"
+                      loading={index < 2 ? 'eager' : 'lazy'}
                       decoding="async"
+                      fetchPriority={index === 0 ? 'high' : undefined}
                       className="h-full w-full object-cover transition-transform duration-[1100ms] ease-out group-hover:scale-[1.06]"
                     />
                     <div
@@ -160,7 +158,7 @@ export function GeDesignYourPackage() {
                     </span>
                     <span
                       aria-hidden="true"
-                      className="absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-gs-dark/55 font-ge text-[0.82rem] font-extrabold text-white backdrop-blur-sm"
+                      className="absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-gs-dark/55 font-ge text-[0.82rem] font-extrabold text-white"
                     >
                       {index + 1}
                     </span>
@@ -168,7 +166,7 @@ export function GeDesignYourPackage() {
                       aria-hidden="true"
                       className="absolute inset-x-5 bottom-4 h-px bg-gradient-to-r from-white/0 via-brand-700/90 to-white/0"
                     />
-                  </m.div>
+                  </div>
                   <div className="flex flex-1 flex-col p-5 sm:p-[1.35rem]">
                     <p className="font-ge text-[0.68rem] font-bold uppercase tracking-[0.24em] text-gs-green">
                       {designYourPackage.stepCardEyebrow}
@@ -194,12 +192,15 @@ export function GeDesignYourPackage() {
                 </article>
               </m.li>
             ))}
-          </ol>
+          </m.ol>
         </div>
 
         <m.div
-          className="relative mx-auto mt-16 max-w-3xl overflow-hidden rounded-[1.5rem] border border-gs-dark/10 bg-white/94 px-6 py-6 text-center shadow-[0_22px_56px_rgba(6,59,42,0.1)] backdrop-blur-sm sm:px-8 sm:py-7"
-          {...fadeUp}
+          ref={bandRef}
+          className="relative mx-auto mt-16 max-w-3xl overflow-hidden rounded-[1.5rem] border border-gs-dark/10 bg-white/94 px-6 py-6 text-center shadow-[0_22px_56px_rgba(6,59,42,0.1)] sm:px-8 sm:py-7"
+          initial={{ opacity: 0, y: 18 }}
+          animate={bandRevealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+          transition={revealTransition}
         >
           <div
             aria-hidden="true"
@@ -215,7 +216,7 @@ export function GeDesignYourPackage() {
         </m.div>
 
         <GeAlreadyBookedFlightPanel />
-      </m.div>
+      </div>
     </section>
   )
 }

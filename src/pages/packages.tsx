@@ -1055,26 +1055,25 @@ export function CookieBanner({
   return (
     <m.div
       animate={{ opacity: 1, y: 0 }}
-      className="fixed bottom-4 left-3 right-3 z-[55] rounded-[1.75rem] border border-white/15 bg-forest-950/92 p-4 text-white shadow-2xl backdrop-blur-md sm:left-4 sm:right-auto sm:max-w-md"
+      className="gsol-cookie-banner fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-[55] rounded-2xl border border-forest-200 bg-white p-4 text-forest-950 shadow-[0_12px_40px_rgba(6,32,22,0.14)] sm:inset-x-auto sm:left-4 sm:max-w-md"
       initial={{ opacity: 0, y: 18 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
     >
-      <div aria-hidden="true" className="absolute inset-0 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(255,255,255,0.06),rgba(19, 96, 71,0.06),rgba(80,163,45,0.06))]" />
       <div className="relative z-10">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-brand-300">Cookie notice</p>
-        <p className="mt-2 text-sm leading-relaxed text-white">
-          We use cookies to improve the browsing experience, understand site traffic, and keep the journey smooth.
+        <p className="font-ge text-xs font-extrabold uppercase tracking-[0.14em] text-brand-700">Cookie notice</p>
+        <p className="mt-2 text-base leading-relaxed text-forest-800">
+          We use cookies to improve your experience, understand site traffic, and keep booking smooth.
         </p>
-        <div className="mt-4 flex flex-wrap gap-3">
+        <div className="mt-4 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
           <button
-            className="rounded-full bg-[#136047] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#c84f01]"
+            className="inline-flex min-h-[2.75rem] flex-1 items-center justify-center rounded-xl bg-brand-800 px-4 py-2.5 text-base font-semibold text-white transition-colors hover:bg-brand-700 sm:flex-none"
             onClick={onAccept}
             type="button"
           >
             Accept cookies
           </button>
           <button
-            className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10"
+            className="inline-flex min-h-[2.75rem] flex-1 items-center justify-center rounded-xl border-2 border-forest-200 bg-white px-4 py-2.5 text-base font-semibold text-forest-900 transition-colors hover:border-fairway-400 hover:bg-fairway-50 sm:flex-none"
             onClick={onAccept}
             type="button"
           >

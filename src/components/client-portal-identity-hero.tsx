@@ -96,15 +96,15 @@ export function ClientPortalIdentityHero(props: {
           </div>
 
           {emailDisplay || ref ? (
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2" data-keep-color>
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
               {emailDisplay ? (
-                <div className="min-w-0 rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-4 backdrop-blur-sm">
+                <div className="min-w-0 rounded-2xl border border-white/20 bg-forest-900/40 px-4 py-4">
                   <p className="font-ge text-xs font-extrabold uppercase tracking-[0.18em] text-emerald-200/85 sm:text-sm">Account email</p>
                   <p className="mt-2 break-all font-ge text-sm font-semibold leading-relaxed text-white sm:text-base">{emailDisplay}</p>
                 </div>
               ) : null}
               {ref ? (
-                <div className="min-w-0 rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-4 backdrop-blur-sm">
+                <div className="min-w-0 rounded-2xl border border-white/20 bg-forest-900/40 px-4 py-4">
                   <p className="font-ge text-xs font-extrabold uppercase tracking-[0.18em] text-emerald-200/85 sm:text-sm">
                     Account number
                   </p>

@@ -24,7 +24,7 @@ export function PortalBottomNav<T extends string>({
   return (
     <nav
       aria-label={ariaLabel}
-      className="portal-bottom-nav fixed inset-x-0 bottom-0 z-40 border-t border-forest-100/90 bg-white/97 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1 shadow-[0_-12px_40px_rgba(6,32,22,0.08)] backdrop-blur-md lg:hidden"
+      className="portal-bottom-nav fixed inset-x-0 bottom-0 z-40 border-t-2 border-forest-200 bg-white pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1 shadow-[0_-6px_24px_rgba(6,32,22,0.07)] lg:hidden"
     >
       <ul
         className={cx(
@@ -42,7 +42,7 @@ export function PortalBottomNav<T extends string>({
               <button
                 className={cx(
                   'relative flex w-full flex-col items-center gap-1 px-1 py-2.5 text-center transition',
-                  active ? 'text-brand-700' : 'text-forest-600 hover:text-forest-900'
+                  active ? 'text-brand-800' : 'text-forest-800 hover:text-forest-950'
                 )}
                 onClick={() => onChange(item.id)}
                 type="button"
@@ -56,7 +56,7 @@ export function PortalBottomNav<T extends string>({
                     <span className="absolute -right-1 -top-0.5 h-2.5 w-2.5 rounded-full bg-brand-500 ring-2 ring-white" />
                   ) : null}
                 </span>
-                <span className={cx('max-w-full truncate px-0.5 text-[0.8125rem] font-bold leading-tight', active && 'text-brand-800')}>
+                <span className={cx('max-w-full truncate px-0.5 text-[0.8125rem] font-bold leading-tight', active && 'text-brand-900')}>
                   {item.label}
                 </span>
               </button>

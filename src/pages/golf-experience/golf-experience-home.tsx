@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo } from 'react'
+import { lazy, Suspense, useEffect, useMemo } from 'react'
 import { PremiumGolfHero } from '../../components/home/premium-golf-hero'
 import { HomeCreativeCanvas } from '../../components/ui/HomeCreativeCanvas'
 import { GeNavbar } from './sections/ge-navbar'
@@ -31,6 +31,37 @@ export function GolfExperienceHome() {
       []
     )
   )
+
+  useEffect(() => {
+    const prefetch = () => {
+      void import('./home-below-the-fold')
+    }
+    if (typeof window.requestIdleCallback === 'function') {
+      const id = window.requestIdleCallback(prefetch, { timeout: 2000 })
+      return () => window.cancelIdleCallback(id)
+    }
+    const t = window.setTimeout(prefetch, 800)
+    return () => window.clearTimeout(t)
+  }, [])
+
+  useEffect(() => {
+    let done = false
+    const prefetch = () => {
+      if (done) {
+        return
+      }
+      done = true
+      void import('./home-below-the-fold')
+    }
+    window.addEventListener('scroll', prefetch, { passive: true, once: true })
+    window.addEventListener('wheel', prefetch, { passive: true, once: true })
+    window.addEventListener('touchstart', prefetch, { passive: true, once: true })
+    return () => {
+      window.removeEventListener('scroll', prefetch)
+      window.removeEventListener('wheel', prefetch)
+      window.removeEventListener('touchstart', prefetch)
+    }
+  }, [])
 
   return (
     <div
