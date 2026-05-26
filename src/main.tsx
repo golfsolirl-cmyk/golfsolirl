@@ -6,6 +6,7 @@ import { MotionRoot } from './providers/motion-root'
 import { isGeContentPagePath } from './pages/golf-experience/data/content-pages'
 import './index.css'
 import './theme/ge-page-token-overrides.css'
+import './theme/site-readable-typography.css'
 
 /** Supabase implicit magic links often land on Site URL (/) with tokens in #hash — route to callback so we strip secrets and run one completion flow. */
 if (typeof window !== 'undefined') {
@@ -92,34 +93,31 @@ const NotFoundPage = lazy(() => import('./pages/not-found-page').then((m) => ({ 
 
 type PageComponent = LazyExoticComponent<ComponentType>
 
-function syncReadableTypePageClass(path: string) {
-  const nonReadableTypePaths = new Set([
-    '/dashboard',
-    '/dashboard/admin',
-    '/driver',
-    '/dashboard/login',
-    '/dashboard/admin/login',
-    '/driver/login',
-    '/dashboard/quote',
-    '/proposal-template',
-    '/package-proposal',
-    '/proposal-template/admin',
-    '/package-proposal/admin',
-    '/enquiry-pdf-template',
-    '/enquiry-record',
-    '/proposal-pdf-sample',
-    '/unified-pdf-sample',
-    '/homepage-client-pdf-sample',
-    '/documents/terms',
-    '/documents/welcome'
-  ])
+/** Print/PDF layout routes keep exact typography (no site-wide bump or card resize). */
+const SITE_READABLE_OFF_PATHS = new Set([
+  '/proposal-template',
+  '/package-proposal',
+  '/proposal-template/admin',
+  '/package-proposal/admin',
+  '/enquiry-pdf-template',
+  '/enquiry-record',
+  '/proposal-pdf-sample',
+  '/unified-pdf-sample',
+  '/homepage-client-pdf-sample',
+  '/email-template-preview'
+])
 
-  document.body.classList.toggle('readable-type-page', !nonReadableTypePaths.has(path))
+function syncSiteReadableClass(path: string) {
+  const locked = SITE_READABLE_OFF_PATHS.has(path)
+  document.body.classList.toggle('site-readable', !locked)
+  document.body.classList.toggle('site-readable-off', locked)
+  /* legacy class — keep in sync for any remaining references */
+  document.body.classList.toggle('readable-type-page', !locked)
 }
 
 function resolvePage(): PageComponent {
   const normalizedPath = window.location.pathname === '/' ? '/' : window.location.pathname.replace(/\/+$/, '')
-  syncReadableTypePageClass(normalizedPath)
+  syncSiteReadableClass(normalizedPath)
 
   if (normalizedPath === '/homepagetest') {
     return GolfExperienceHomeTest
@@ -267,7 +265,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <AppErrorBoundary>
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-offwhite font-ge text-sm text-forest-700">
+        <div className="flex min-h-screen items-center justify-center bg-offwhite font-ge text-base text-forest-700">
           Loading…
         </div>
       }
@@ -275,7 +273,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <AuthProviderShell>
         <Suspense
           fallback={
-            <div className="flex min-h-screen items-center justify-center bg-offwhite font-ge text-sm text-forest-700">
+            <div className="flex min-h-screen items-center justify-center bg-offwhite font-ge text-base text-forest-700">
               Loading…
             </div>
           }

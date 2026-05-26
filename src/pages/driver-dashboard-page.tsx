@@ -1,20 +1,27 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Car, ScanLine } from 'lucide-react'
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
+import { PortalBottomNav } from '../components/portal-bottom-nav'
+import {
+  TransferPassVerifyBanner,
+  verifyTransferPassAgainstBookings,
+  type TransferPassRow
+} from '../components/client-transfer-pass-panel'
+import { TransferPassScanner } from '../components/transfer-pass-scanner'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { useAuth } from '../providers/auth-provider'
 import { GeButton } from '../pages/golf-experience/components/ge-button'
 import { LuxuryButton } from '../components/ui/button'
+import { TransferPaymentStatusBadge } from '../components/transfer-payment-status-badge'
 
 type RouteWaypoint = { label?: string | null }
 
-type BookingRow = {
-  id: string
+type DriverTab = 'jobs' | 'scan'
+
+type BookingRow = TransferPassRow & {
   status: string
   client_display_name?: string | null
   client_phone?: string | null
-  pickup_label: string
-  dropoff_label: string
-  scheduled_at: string | null
   route_waypoints?: RouteWaypoint[] | null
   client_timing_note?: string | null
 }
@@ -50,10 +57,10 @@ const viaLineDriver = (b: BookingRow) => {
 const DEFAULT_PREVIEW_DRIVER_ID = 'c0ffee00-0000-4000-8000-000000000001'
 
 const TRANSFER_BOOKINGS_SELECT_WITH_VIAS =
-  'id, status, client_display_name, client_phone, pickup_label, dropoff_label, scheduled_at, route_waypoints, client_timing_note'
+  'id, status, client_display_name, client_phone, pickup_label, dropoff_label, scheduled_at, route_waypoints, client_timing_note, payment_status, deposit_percent, enquiry_reference_id, admin_price_eur'
 
 const TRANSFER_BOOKINGS_SELECT_NO_VIAS =
-  'id, status, client_display_name, client_phone, pickup_label, dropoff_label, scheduled_at, client_timing_note'
+  'id, status, client_display_name, client_phone, pickup_label, dropoff_label, scheduled_at, client_timing_note, payment_status, deposit_percent, enquiry_reference_id, admin_price_eur'
 
 const isRouteWaypointsColumnError = (message: string) =>
   /route_waypoints|42703|does not exist|schema cache/i.test(message)
@@ -70,6 +77,8 @@ export function DriverDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [msg, setMsg] = useState<string | null>(null)
   const [posBusy, setPosBusy] = useState(false)
+  const [driverTab, setDriverTab] = useState<DriverTab>('jobs')
+  const [scanResult, setScanResult] = useState<ReturnType<typeof verifyTransferPassAgainstBookings> | null>(null)
 
   const previewDriverUuid = useMemo(() => resolvePreviewDriverId(), [])
   const isAdminDriverPreview = profile?.role === 'admin'
@@ -269,7 +278,10 @@ export function DriverDashboardPage() {
           <li key={b.id} className="rounded-3xl border border-forest-200/90 bg-offwhite/90 p-6 shadow-soft">
             <p className="text-xs font-mono text-forest-600">{b.id}</p>
             <p className="mt-2 text-lg font-semibold text-forest-950">Status: {b.status}</p>
-            <p className="mt-2 text-sm text-forest-800">
+            <div className="mt-2">
+              <TransferPaymentStatusBadge deposit_percent={b.deposit_percent} payment_status={b.payment_status} size="md" />
+            </div>
+            <p className="mt-3 text-base text-forest-800">
               <span className="font-semibold">Guest:</span> {(b.client_display_name ?? '').trim() || '—'} ·{' '}
               <span className="font-semibold">Phone / WhatsApp:</span> {(b.client_phone ?? '').trim() || '—'}
             </p>
@@ -352,14 +364,32 @@ export function DriverDashboardPage() {
 
   return (
     <DashboardLayout kicker="Driver" subtitle={deskSubtitle} title={heroTitle} variant="driver">
+      <div className="portal-ui-root pb-[calc(4.75rem+env(safe-area-inset-bottom))] lg:pb-0">
       {isAdminDriverPreview ? (
-        <p className="mb-4 rounded-2xl border border-chrome-200/90 bg-chrome-50/90 px-4 py-3 text-xs text-brand-950">
+        <p className="mb-4 rounded-2xl border border-chrome-200/90 bg-chrome-50/90 px-4 py-3 text-base text-brand-950">
           Admin preview — event log uses <span className="font-mono">actor_kind = admin</span>. Assign Irish Driver in Operations
           to exercise the flow.
         </p>
       ) : null}
-      {msg ? <p className="mb-6 text-sm text-forest-800">{msg}</p> : null}
-      {body}
+      {msg ? <p className="mb-6 text-base text-forest-800">{msg}</p> : null}
+      {driverTab === 'jobs' ? body : (
+        <div className="space-y-5">
+          <TransferPassVerifyBanner result={scanResult} />
+          <TransferPassScanner
+            onScan={(raw) => setScanResult(verifyTransferPassAgainstBookings(raw, bookings))}
+          />
+        </div>
+      )}
+      <PortalBottomNav
+        activeId={driverTab}
+        ariaLabel="Driver desk navigation"
+        items={[
+          { id: 'jobs', label: 'Jobs', icon: Car },
+          { id: 'scan', label: 'Scan pass', icon: ScanLine }
+        ]}
+        onChange={setDriverTab}
+      />
+      </div>
     </DashboardLayout>
   )
 }

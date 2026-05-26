@@ -1,0 +1,158 @@
+/**
+ * Site-wide readable typography — matches dashboard portal scale on every
+ * front-end page (marketing, login, forms, dashboards). Excluded on print/PDF
+ * layout routes via body.site-readable-off (see main.tsx).
+ */
+
+body.site-readable:not(.site-readable-off) {
+  font-size: 1.125rem;
+  line-height: 1.72;
+}
+
+body.site-readable:not(.site-readable-off) .ge-page {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* —— Scale up legacy micro Tailwind sizes (site-wide) —— */
+body.site-readable:not(.site-readable-off) :is(
+    .ge-page,
+    #root
+  )
+  :is(p, li, dt, dd, label, input, textarea, select, a, button, th, td, small, span):is(
+    [class*='text-xs'],
+    [class*='text-sm'],
+    [class*='text-[0.'],
+    [class*=' text-[0.'],
+    [class*='text-[10px]'],
+    [class*=' text-[10px]'],
+    [class*='text-[11px]'],
+    [class*=' text-[11px]'],
+    [class*='text-[12px]'],
+    [class*=' text-[12px]'],
+    [class*='text-[13px]'],
+    [class*=' text-[13px]'],
+    [class*='text-[14px]'],
+    [class*=' text-[14px]'],
+    [class*='text-[15px]'],
+    [class*=' text-[15px]']
+  ) {
+  font-size: var(--readable-min-font-size, 1.0625rem) !important;
+  line-height: var(--readable-min-line-height, 1.55) !important;
+}
+
+body.site-readable:not(.site-readable-off) :is(.ge-page, #root) .text-base {
+  font-size: 1.125rem !important;
+  line-height: 1.65 !important;
+}
+
+body.site-readable:not(.site-readable-off) :is(.ge-page, #root) :is(h2, h3, .font-display.text-2xl) {
+  font-size: clamp(1.625rem, 4vw, 2.125rem);
+  line-height: 1.25;
+}
+
+body.site-readable:not(.site-readable-off) :is(.ge-page, #root) h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.12;
+}
+
+/* —— Prevent text clipping; let cards grow —— */
+body.site-readable:not(.site-readable-off) :is(.ge-page, #root) main,
+body.site-readable:not(.site-readable-off) :is(.ge-page, #root) #main {
+  overflow-wrap: anywhere;
+}
+
+body.site-readable:not(.site-readable-off)
+  :is(.ge-page, #root)
+  main
+  :is(p, li, dd, dt, h1, h2, h3, h4, h5, h6, label, figcaption, blockquote):not(
+    .portal-bottom-nav *,
+    nav[aria-label] *
+  ) {
+  overflow: visible;
+  text-overflow: unset;
+  max-height: none;
+}
+
+body.site-readable:not(.site-readable-off)
+  :is(.ge-page, #root)
+  main
+  [class*='line-clamp']:not(.portal-bottom-nav *, nav[aria-label] *) {
+  display: block !important;
+  -webkit-line-clamp: unset !important;
+  line-clamp: unset !important;
+  overflow: visible !important;
+  max-height: none !important;
+}
+
+/* Content cards & panels — grow with copy (keep image/media crops) */
+body.site-readable:not(.site-readable-off)
+  :is(.ge-page, #root)
+  main
+  :is(
+    article,
+    section,
+    li,
+    [class*='rounded-2xl'],
+    [class*='rounded-3xl'],
+    [class*='rounded-[1.'],
+    [class*='rounded-[2rem]']
+  ):not(
+    .portal-bottom-nav,
+    .portal-bottom-nav *,
+    [class*='aspect-'],
+    [class*='min-h-[']:has(img),
+    [class*='h-[']:has(img)
+  ) {
+  min-height: fit-content;
+  height: auto;
+}
+
+body.site-readable:not(.site-readable-off)
+  :is(.ge-page, #root)
+  main
+  :is([class*='flex-col'][class*='rounded'], .lux-card, [data-premium-card]) {
+  max-height: none !important;
+}
+
+/* Forms — comfortable tap targets + readable inputs */
+body.site-readable:not(.site-readable-off) :is(.ge-page, #root) :is(input, textarea, select, button[type='submit']) {
+  font-size: max(1.0625rem, var(--readable-min-font-size, 1.0625rem));
+  min-height: 2.75rem;
+}
+
+body.site-readable:not(.site-readable-off) :is(.ge-page, #root) label {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Portal shell inherits same anticlip rules */
+body.site-readable:not(.site-readable-off) .portal-ui-root {
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
+body.site-readable:not(.site-readable-off) .portal-ui-root .text-xs,
+body.site-readable:not(.site-readable-off) .portal-ui-root [class*='text-[0.62rem]'],
+body.site-readable:not(.site-readable-off) .portal-ui-root [class*='text-[0.65rem]'],
+body.site-readable:not(.site-readable-off) .portal-ui-root [class*='text-[0.7rem]'] {
+  font-size: 0.9375rem !important;
+  line-height: 1.5 !important;
+}
+
+body.site-readable:not(.site-readable-off) .portal-ui-root .text-sm {
+  font-size: 1.0625rem !important;
+  line-height: 1.55 !important;
+}
+
+body.site-readable:not(.site-readable-off) .portal-ui-root .text-base {
+  font-size: 1.125rem !important;
+  line-height: 1.65 !important;
+}
+
+/* Bottom nav labels stay one line */
+body.site-readable:not(.site-readable-off) .portal-bottom-nav .truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

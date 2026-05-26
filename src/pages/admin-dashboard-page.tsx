@@ -11,6 +11,7 @@ import {
   type AdminAccountLookupSeed
 } from '../components/admin-account-transfers-hub'
 import { AdminDriverCalendarPanel } from '../components/admin-driver-calendar-panel'
+import { AdminTransferPassScanPanel } from '../components/admin-transfer-pass-scan-panel'
 import { AdminTransferPipeline } from '../components/admin-transfer-pipeline'
 import { AdminTestimonialsPanel } from '../components/admin-testimonials-panel'
 import { TransferPaymentStatusBadge } from '../components/transfer-payment-status-badge'
@@ -4091,6 +4092,10 @@ export function AdminDashboardPage() {
               <AdminTransferPipeline />
             </div>
         )}
+        </AdminPortalSection>
+
+        <AdminPortalSection activeSection={activeAdminSection} section="scan">
+          <AdminTransferPassScanPanel />
         </AdminPortalSection>
 
         <AdminPortalSection activeSection={activeAdminSection} section="forms">

@@ -78,7 +78,7 @@ export function DashboardLayout({ title, subtitle, kicker, variant, titleAdornme
           portalAdornment={titleAdornment}
         />
 
-        <div className="relative z-[1] mx-auto w-full max-w-[1180px] flex-1 px-5 pb-20 pt-10 text-[1.0625rem] leading-relaxed sm:px-8 sm:text-[1.125rem] sm:leading-[1.65] md:pb-28 md:pt-12">
+        <div className="relative z-[1] mx-auto w-full max-w-[1180px] flex-1 px-5 pb-20 pt-10 text-[1.125rem] leading-[1.72] sm:px-8 sm:text-[1.1875rem] sm:leading-[1.75] md:pb-28 md:pt-12">
           {children}
         </div>
       </main>

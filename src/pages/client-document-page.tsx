@@ -106,15 +106,15 @@ export function ClientDocumentPage() {
 
   if (authLoading || accessGate === 'loading') {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-offwhite px-6">
-        <p className="text-sm font-medium text-forest-700">Checking access…</p>
+      <div className="ge-page flex min-h-screen items-center justify-center bg-offwhite px-6">
+        <p className="text-base font-medium text-forest-700">Checking access…</p>
       </div>
     )
   }
 
   if (accessGate === 'denied') {
     return (
-      <div className="min-h-screen bg-offwhite px-6 py-16 text-forest-900">
+      <div className="ge-page min-h-screen bg-offwhite px-6 py-16 text-forest-900">
         <div className="mx-auto max-w-lg text-center">
           <h1 className="font-display text-[2.1rem] font-semibold text-forest-950 md:text-[2.35rem]">This document is not shared with your account</h1>
           <p className="mt-4 text-base leading-8 text-forest-600 md:text-[1.05rem]">
@@ -133,7 +133,7 @@ export function ClientDocumentPage() {
   }
 
   return (
-    <div className={embedPreview ? 'min-h-0 bg-[#eef2eb] pdf-page-shell' : 'min-h-screen bg-[#eef2eb] pdf-page-shell'}>
+    <div className={embedPreview ? 'ge-page min-h-0 bg-[#eef2eb] pdf-page-shell' : 'ge-page min-h-screen bg-[#eef2eb] pdf-page-shell'}>
       {embedPreview ? (
         <p className="sr-only">
           {meta.title} — preview from your Golf Sol Ireland dashboard. Use the dashboard toolbar to print or share.

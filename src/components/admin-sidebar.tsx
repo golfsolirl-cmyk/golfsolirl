@@ -6,6 +6,7 @@ import {
   Mail,
   Package,
   PenLine,
+  ScanLine,
   Star,
   Users,
   type LucideIcon
@@ -24,6 +25,7 @@ export type AdminPortalSectionId =
   | 'portal'
   | 'emails'
   | 'drivers'
+  | 'scan'
 
 export type AdminSidebarItem = {
   readonly id: AdminPortalSectionId
@@ -34,6 +36,7 @@ export type AdminSidebarItem = {
 
 export const ADMIN_SIDEBAR_ITEMS: readonly AdminSidebarItem[] = [
   { id: 'desk', label: 'Desk & inbox', description: 'Tickets, Stripe, publish lines', icon: Inbox },
+  { id: 'scan', label: 'Scan trip pass', description: 'Verify guest payment barcode', icon: ScanLine },
   { id: 'forms', label: 'Website forms', description: 'Enquiry submissions', icon: FileText },
   { id: 'testimonials', label: 'Testimonials', description: 'Homepage guest reviews', icon: Star },
   { id: 'transfers', label: 'Transfer pipeline', description: 'Account lookup & drivers', icon: Car },

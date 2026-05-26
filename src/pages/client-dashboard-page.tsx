@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, ty
 import { FocusTrapDialog } from '../components/focus-trap-dialog'
 import { ClientPortalIdentityHero, type ClientPortalTransferHeroRow } from '../components/client-portal-identity-hero'
 import { ClientPortalPaymentsDue } from '../components/client-portal-payments-due'
+import { ClientTransferPassPanel } from '../components/client-transfer-pass-panel'
+import { PortalPerksPanel } from '../components/portal-perks-panel'
 import {
   ClientPortalShell,
   ClientPortalSection,
@@ -502,6 +504,12 @@ export function ClientDashboardPage() {
   }, [loadData, refreshProfile, refreshInterestTickets])
 
   useEffect(() => {
+    const openMessages = () => setActiveClientSection('messages')
+    window.addEventListener('gsol-portal-open-messages', openMessages)
+    return () => window.removeEventListener('gsol-portal-open-messages', openMessages)
+  }, [])
+
+  useEffect(() => {
     if (isLoading || !session?.user?.id) {
       return undefined
     }
@@ -787,6 +795,7 @@ export function ClientDashboardPage() {
         if (bid) {
           setStripePaidTransferBookingId(bid)
         }
+        setActiveClientSection('pass')
         sp.delete('transfer_paid')
         sp.delete('transfer_booking_id')
         sp.delete('checkout_session_id')
@@ -1779,6 +1788,18 @@ export function ClientDashboardPage() {
               packageBuilds={packageBuilds}
             />
           </div>
+        </ClientPortalSection>
+
+        <ClientPortalSection activeSection={activeClientSection} section="pass">
+          <ClientTransferPassPanel
+            guestName={greetingFullName || greetingFirst || 'Guest'}
+            onSelectUnpaid={() => setActiveClientSection('payments')}
+            transfers={transferBookingsPortal}
+          />
+        </ClientPortalSection>
+
+        <ClientPortalSection activeSection={activeClientSection} section="perks">
+          <PortalPerksPanel />
         </ClientPortalSection>
 
         <ClientPortalSection activeSection={activeClientSection} section="payments">

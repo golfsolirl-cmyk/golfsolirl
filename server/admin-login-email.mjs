@@ -1,5 +1,5 @@
 /** Canonical operator inbox for `/dashboard/admin/login` (override with ADMIN_LOGIN_EMAIL). */
-export const DEFAULT_ADMIN_LOGIN_EMAIL = 'info@golfsolirl.ie'
+export const DEFAULT_ADMIN_LOGIN_EMAIL = 'info@golfsolirl.com'
 
 export const resolveAdminLoginEmail = (env = process.env) => {
   const raw = env.ADMIN_LOGIN_EMAIL?.trim().toLowerCase()

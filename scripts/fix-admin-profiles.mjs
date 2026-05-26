@@ -9,7 +9,7 @@ if (!url || !key) {
 
 const admin = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } })
 
-const ADMIN_EMAIL = (process.env.ADMIN_LOGIN_EMAIL || 'info@golfsolirl.ie').trim().toLowerCase()
+const ADMIN_EMAIL = (process.env.ADMIN_LOGIN_EMAIL || 'info@golfsolirl.com').trim().toLowerCase()
 const CLIENT_EMAIL = 'golfsolirl@gmail.com'
 
 const { data: usersData, error: usersErr } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 })

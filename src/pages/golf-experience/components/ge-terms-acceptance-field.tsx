@@ -1,3 +1,4 @@
+import { TERMS_AND_CONDITIONS_PATH } from '../../../lib/terms-acceptance'
 import { cx } from '../../../lib/utils'
 
 type GeTermsAcceptanceFieldProps = {
@@ -44,7 +45,7 @@ export function GeTermsAcceptanceField({
       <span>
         I agree to the{' '}
         <a
-          href="/terms"
+          href={TERMS_AND_CONDITIONS_PATH}
           target="_blank"
           rel="noopener noreferrer"
           className={cx(

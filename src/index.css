@@ -6,8 +6,8 @@
 
 @layer base {
   :root {
-    --readable-min-font-size: 1rem;
-    --readable-min-line-height: 1.5;
+    --readable-min-font-size: 1.0625rem;
+    --readable-min-line-height: 1.55;
 
     /* ========= BRAND CORE (crest greens) ========= */
     --brand-950: #04140c;
@@ -139,14 +139,14 @@
 
   html {
     scroll-behavior: smooth;
-    font-size: clamp(17px, 0.3vw + 16px, 18.8px);
+    font-size: clamp(18px, 0.4vw + 16px, 20px);
   }
 
   body {
     @apply font-body antialiased;
     color: var(--text-primary);
     background-color: var(--bg-main);
-    line-height: 1.7;
+    line-height: 1.72;
     text-rendering: optimizeLegibility;
   }
 
@@ -161,7 +161,7 @@
 
   p {
     color: var(--text-secondary);
-    line-height: 1.7;
+    line-height: 1.72;
   }
 
   small {
@@ -190,7 +190,7 @@
     color: var(--brand-900);
   }
 
-  body.readable-type-page :is(p, li, dt, dd, label, input, textarea, select, a, button, th, td, small):is(
+  body.site-readable:not(.site-readable-off) :is(p, li, dt, dd, label, input, textarea, select, a, button, th, td, small):is(
     [class*='text-xs'],
     [class*='text-sm'],
     [class*='text-[0.'],
@@ -372,7 +372,8 @@
   .ge-page dt,
   .ge-page dd,
   .ge-page label {
-    font-size: 1.01rem;
+    font-size: 1.125rem;
+    line-height: 1.72;
     color: var(--text-secondary);
   }
 
@@ -396,7 +397,8 @@
   .ge-page input,
   .ge-page textarea,
   .ge-page select {
-    font-size: 1.01rem;
+    font-size: 1.0625rem;
+    line-height: 1.55;
     color: var(--text-primary);
     background-color: var(--input-bg);
     border-color: var(--input-border);

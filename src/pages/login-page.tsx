@@ -404,7 +404,7 @@ export function LoginPage() {
                   id="login-email"
                   name="email"
                   onChange={(event) => setEmail(event.target.value)}
-                  placeholder={isAdminLoginPath ? DEFAULT_ADMIN_LOGIN_EMAIL : 'you@example.com'}
+                  placeholder={isAdminLoginPath ? 'Enter a valid email address' : 'you@example.com'}
                   required
                   type="email"
                   value={email}

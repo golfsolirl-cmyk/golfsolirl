@@ -1,9 +1,9 @@
-import { CreditCard, FileText, LayoutDashboard, MapPin, MessageCircle, UserRound, type LucideIcon } from 'lucide-react'
+import { Barcode, CreditCard, FileText, Gift, LayoutDashboard, MapPin, MessageCircle, UserRound, type LucideIcon } from 'lucide-react'
 import { BrandLogoPicture } from './brand-logo-picture'
 import { GOLFSOL_BRAND_LOGO_INTRINSIC } from '../lib/brand-logo-assets'
 import { cx } from '../lib/utils'
 
-export type ClientPortalSectionId = 'home' | 'trip' | 'payments' | 'messages' | 'contact' | 'documents'
+export type ClientPortalSectionId = 'home' | 'trip' | 'payments' | 'messages' | 'contact' | 'documents' | 'pass' | 'perks'
 
 export type ClientSidebarItem = {
   readonly id: ClientPortalSectionId
@@ -14,6 +14,8 @@ export type ClientSidebarItem = {
 
 export const CLIENT_SIDEBAR_ITEMS: readonly ClientSidebarItem[] = [
   { id: 'home', label: 'Your trip', description: 'Account, transfers, add-ons', icon: LayoutDashboard },
+  { id: 'pass', label: 'Trip pass', description: 'Barcode for your driver', icon: Barcode },
+  { id: 'perks', label: 'Perks & deals', description: 'Coupons and scan-to-win', icon: Gift },
   { id: 'trip', label: 'Trip planner', description: 'Build on your enquiry', icon: MapPin },
   { id: 'payments', label: 'Payments', description: 'Pay transfers & invoices', icon: CreditCard },
   { id: 'messages', label: 'Messages', description: 'Tickets & team replies', icon: MessageCircle },
@@ -65,14 +67,14 @@ function NavButton({
       </span>
       <span className="min-w-0 flex-1 pt-0.5">
         <span className="flex flex-wrap items-center gap-2">
-          <span className={cx('block text-sm font-semibold', active ? 'text-forest-950' : 'text-forest-900')}>
+          <span className={cx('block text-base font-semibold leading-snug', active ? 'text-forest-950' : 'text-forest-900')}>
             {item.label}
           </span>
           {badge ? (
-            <span className="inline-flex h-2 w-2 rounded-full bg-brand-500 ring-2 ring-white" title="New reply" />
+            <span className="inline-flex h-2.5 w-2.5 rounded-full bg-brand-500 ring-2 ring-white" title="New reply" />
           ) : null}
         </span>
-        <span className="mt-0.5 block text-xs leading-snug text-ge-gray500">{item.description}</span>
+        <span className="mt-0.5 block text-sm leading-snug text-ge-gray500">{item.description}</span>
       </span>
     </button>
   )
@@ -115,8 +117,8 @@ export function ClientSidebar({
             width={GOLFSOL_BRAND_LOGO_INTRINSIC.width}
           />
           <div className="min-w-0">
-            <p className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.16em] text-brand-600">Your trip desk</p>
-            <p className="truncate text-sm font-bold text-forest-950">Client portal</p>
+            <p className="font-ge text-sm font-extrabold uppercase tracking-[0.16em] text-brand-600">Your trip desk</p>
+            <p className="truncate text-base font-bold text-forest-950">Client portal</p>
           </div>
         </div>
         <nav aria-label="Client portal sections" className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">

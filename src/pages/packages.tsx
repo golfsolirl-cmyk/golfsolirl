@@ -330,7 +330,7 @@ function PackageAdminPage() {
   }
 
   return (
-    <div className="overflow-x-hidden bg-offwhite">
+    <div className="ge-page overflow-x-hidden bg-offwhite">
       <Navbar links={packagePageLinks} primaryCta="Make Enquiry" />
       <FloatingWhatsAppButton hidden={isFooterInView} href={whatsAppHref} />
       <CookieBanner hidden={hasAcceptedCookies} onAccept={handleAcceptCookies} />

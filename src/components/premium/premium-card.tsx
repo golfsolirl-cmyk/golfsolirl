@@ -40,6 +40,7 @@ export function PremiumCard({
           'p-7 sm:p-9 lg:p-10',
           className
         )}
+        data-premium-card
       >
         {!hideTopRule ? (
           <span
@@ -73,6 +74,7 @@ export function PremiumCard({
         'p-7 sm:p-9 lg:p-10',
         className
       )}
+      data-premium-card
     >
       {!hideTopRule ? (
         <span

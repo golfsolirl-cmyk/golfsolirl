@@ -620,7 +620,7 @@ function CustomerPackagePage() {
   }, [])
 
   return (
-    <div className="overflow-x-hidden bg-offwhite">
+    <div className="ge-page overflow-x-hidden bg-offwhite">
       <Navbar links={packagePageLinks} primaryCta="Make enquiry" />
       <PageIdentityBar
         compact
