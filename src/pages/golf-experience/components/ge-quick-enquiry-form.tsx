@@ -595,7 +595,7 @@ export function GeQuickEnquiryForm({
             />
           ) : null}
 
-          <GeButton className="w-full" type="submit" variant="gs-green" size="lg" disabled={status === 'submitting'}>
+          <GeButton className="w-full" type="submit" variant="gs-green" size="lg" disabled={status === 'submitting' || (!isTestimonialForm && !termsAccepted)}>
             <Send className="h-4 w-4" aria-hidden />
             {status === 'submitting' ? 'Sending...' : formConfig.submitLabel}
           </GeButton>

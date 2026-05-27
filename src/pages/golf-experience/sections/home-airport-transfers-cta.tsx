@@ -53,7 +53,7 @@ export function HomeAirportTransfersCta() {
                 variants={headlineItem}
                 className="flex w-full flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center"
               >
-                <span className="inline-flex min-h-[44px] w-fit max-w-full items-center gap-2 rounded-full border border-brand-700/40 bg-white/95 px-4 py-2.5 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.16em] text-gs-dark shadow-[0_10px_24px_rgba(6,32,22,0.08)] backdrop-blur-sm sm:tracking-[0.18em]">
+                <span className="inline-flex min-h-[44px] w-fit max-w-full items-center gap-2 rounded-full border border-brand-700/40 bg-white px-4 py-2.5 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.16em] text-gs-dark shadow-[0_10px_24px_rgba(6,32,22,0.08)] sm:tracking-[0.18em]">
                   <span
                     aria-hidden
                     className="h-2 w-2 shrink-0 rounded-full bg-gs-electric shadow-[0_0_14px_rgba(30,215,96,0.9)]"
@@ -145,7 +145,7 @@ export function HomeAirportTransfersCta() {
                       {copy.boardingTitle}
                     </p>
                   </div>
-                  <div className="rounded-full border border-[#f4dfa6]/45 bg-white/[0.08] px-3 py-1.5 font-ge text-[0.66rem] font-extrabold uppercase tracking-[0.16em] text-[#fbe8b5]">
+                  <div className="rounded-full border border-[#f4dfa6]/45 bg-forest-900 px-3 py-1.5 font-ge text-[0.66rem] font-extrabold uppercase tracking-[0.16em] text-[#fbe8b5]">
                     {copy.boardingLive}
                   </div>
                 </div>
@@ -200,7 +200,7 @@ export function HomeAirportTransfersCta() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, amount: 0.35 }}
                     transition={{ duration: 0.45, ease: 'easeOut', delay: 0.08 + index * 0.07 }}
-                    className="min-w-0 w-full rounded-[1.25rem] border border-chrome-300/90 bg-white/90 px-4 py-4 shadow-[0_18px_36px_rgba(6,32,22,0.08)] backdrop-blur-sm sm:rounded-[1.35rem] sm:px-5 sm:py-4"
+                    className="min-w-0 w-full rounded-[1.25rem] border border-chrome-300/90 bg-white px-4 py-4 shadow-[0_18px_36px_rgba(6,32,22,0.08)] sm:rounded-[1.35rem] sm:px-5 sm:py-4"
                   >
                     <div className="flex min-w-0 items-start gap-3.5">
                       <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-800 to-brand-600 text-white shadow-[0_10px_22px_rgba(19,96,71,0.22)]">

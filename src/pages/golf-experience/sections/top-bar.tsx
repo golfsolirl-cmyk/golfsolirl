@@ -36,7 +36,7 @@ export function GeTopBarMobile() {
         <GeDualPhoneTopBarMobileIcons />
         <a
           aria-label="Email GolfSol Ireland"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/15 transition-colors hover:bg-white/25"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-forest-900 transition-colors hover:bg-white/25"
           href={`mailto:${contactInfo.email}`}
         >
           <Mail className="h-4 w-4" aria-hidden="true" />

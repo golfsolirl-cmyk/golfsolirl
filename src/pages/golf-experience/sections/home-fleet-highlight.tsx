@@ -49,14 +49,15 @@ export function GeHomeFleetHighlight() {
         </div>
 
         <m.div
-          className="relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/92 p-6 shadow-[0_24px_55px_rgba(6,32,22,0.1)] ring-1 ring-[#d9d9d9] backdrop-blur-sm sm:p-8"
+          className="relative overflow-hidden rounded-[2rem] border border-white/80 bg-white p-6 shadow-[0_24px_55px_rgba(6,32,22,0.1)] ring-1 ring-[#d9d9d9] sm:p-8"
           {...fadeUp}
           transition={{ ...fadeUp.transition, delay: 0.08 }}
         >
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-[12%] top-0 h-px bg-gradient-to-r from-transparent via-brand-700/90 to-transparent"
-          />
+            className="pointer-events-none absolute inset-x-0 top-0 flex justify-center"
+          ><div className="mx-auto h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent" />
+        </div>
           <p className="relative z-[1] font-ge text-[0.78rem] font-bold uppercase tracking-[0.22em] text-gs-green sm:text-[0.82rem]">
             {transportFleetIntroCopy.eyebrow}
           </p>

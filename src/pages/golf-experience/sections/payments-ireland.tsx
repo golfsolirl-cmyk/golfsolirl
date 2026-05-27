@@ -1,4 +1,5 @@
 import { m, type Variants } from 'framer-motion'
+import { GeGoldDividerLineAbsoluteTop } from '../../../components/ge-gold-divider-line'
 import { Euro, Lock, MapPin, ShieldCheck } from 'lucide-react'
 
 /**
@@ -120,10 +121,7 @@ export function GePaymentsIreland() {
           }}
         >
           {/* Top + bottom inner gold hairlines */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-[8%] top-0 h-px bg-gradient-to-r from-transparent via-[#f4dfa6]/65 to-transparent"
-          />
+          <GeGoldDividerLineAbsoluteTop />
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-x-[8%] bottom-0 h-px bg-gradient-to-r from-transparent via-[#f4dfa6]/35 to-transparent"
@@ -143,7 +141,7 @@ export function GePaymentsIreland() {
               {/* Gold kicker pill — tricolour + cream-gold text (was forest-on-forest = invisible) */}
               <m.span
                 variants={panelItem}
-                className="ge-on-dark-kicker inline-flex items-center gap-2 rounded-full border border-[#f4dfa6]/55 bg-white/[0.08] px-3.5 py-1.5 backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_0_22px_rgba(217,190,122,0.18)]"
+                className="ge-on-dark-kicker inline-flex items-center gap-2 rounded-full border border-[#f4dfa6]/55 bg-forest-900 px-3.5 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_0_22px_rgba(217,190,122,0.18)]"
                 data-keep-color
                 style={{ color: '#fbe8b5' }}
               >
@@ -161,7 +159,7 @@ export function GePaymentsIreland() {
               <m.span
                 aria-hidden="true"
                 variants={panelItem}
-                className="mt-5 block h-[3px] w-20 rounded-full bg-gradient-to-r from-transparent via-[#f4dfa6] to-transparent"
+                className="mt-5 h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent"
               />
 
               <m.h2
@@ -212,7 +210,7 @@ export function GePaymentsIreland() {
             {/* Aside — "What this means" — gold kicker + crisp body */}
             <m.div
               variants={panelItem}
-              className="w-full max-w-[18rem] rounded-[1.6rem] border border-[#f4dfa6]/35 bg-white/[0.06] p-5 shadow-[0_18px_40px_rgba(0,0,0,0.22)] ring-1 ring-white/10 backdrop-blur-sm"
+              className="w-full max-w-[18rem] rounded-[1.6rem] border border-[#f4dfa6]/35 bg-forest-900 p-5 shadow-[0_18px_40px_rgba(0,0,0,0.22)] ring-1 ring-white/10"
             >
               <p
                 className="ge-on-dark-kicker font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.22em]"
@@ -254,8 +252,9 @@ export function GePaymentsIreland() {
                 {/* Top hairline */}
                 <span
                   aria-hidden="true"
-                  className="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-brand-700/45 to-transparent"
-                />
+                  className="pointer-events-none absolute inset-x-0 top-0 flex justify-center"
+                ><div className="mx-auto h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent" />
+        </span>
                 {/* Soft halo */}
                 <span
                   aria-hidden="true"
@@ -298,8 +297,9 @@ export function GePaymentsIreland() {
           >
             <span
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-brand-700/45 to-transparent"
-            />
+              className="pointer-events-none absolute inset-x-0 top-0 flex justify-center"
+            ><div className="mx-auto h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent" />
+        </span>
             <p className="font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.22em] text-gs-green">
               Protected flow
             </p>

@@ -73,7 +73,7 @@ export function AnimatedStepKicker({
         className={cx(
           'flex items-center gap-3 rounded-full border px-4 py-3',
           centered && 'justify-center',
-          dark ? 'border-white/10 bg-white/5 backdrop-blur-sm' : 'border-forest-100 bg-white/85 shadow-sm'
+          dark ? 'border-white/10 bg-forest-950' : 'border-forest-100 bg-white shadow-sm'
         )}
         variants={{
           hidden: { opacity: 0, y: 12 },

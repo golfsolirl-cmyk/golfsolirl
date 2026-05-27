@@ -68,7 +68,7 @@ const toneStyles: Record<
     badge:
       'border border-[#d4a843]/50 bg-gs-dark text-[#fbe8b5] shadow-[0_8px_20px_rgba(6,59,42,0.22)]',
     quoteMark: 'text-[#d4a843]/18',
-    footer: 'border-[#e8dcc4]/90 bg-white/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.95)]',
+    footer: 'border-[#e8dcc4]/90 bg-cream shadow-[inset_0_1px_0_rgba(255,255,255,0.95)]',
     tripPill: 'border-[#d4a843]/45 bg-[#f5edd6] text-gs-dark'
   },
   transfer: {
@@ -87,7 +87,7 @@ const toneStyles: Record<
     accent: 'from-brand-700 via-[#ebe3cf] to-brand-700/60',
     badge: 'bg-gs-dark text-white shadow-[0_6px_16px_rgba(6,59,42,0.18)]',
     quoteMark: 'text-brand-700/12',
-    footer: 'border-ge-gray100/90 bg-white/80',
+    footer: 'border-ge-gray100/90 bg-white',
     tripPill: 'border-brand-700/25 bg-brand-700/10 text-gs-dark'
   },
   sample: {
@@ -96,7 +96,7 @@ const toneStyles: Record<
     accent: 'from-ge-gray200 via-[#ebe3cf]/80 to-brand-700/40',
     badge: 'bg-gs-dark/90 text-white',
     quoteMark: 'text-ge-gray200/80',
-    footer: 'border-ge-gray100/90 bg-white/60',
+    footer: 'border-ge-gray100/90 bg-offwhite',
     tripPill: 'border-ge-gray200 bg-ge-gray50 text-ge-gray600'
   }
 }
@@ -157,11 +157,13 @@ export function TripadvisorReviewCard({
       {/* Top hairline on hover */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-brand-700/45 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-      />
+        className="pointer-events-none absolute inset-x-0 top-0 flex justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+      >
+        <div className="mx-auto h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent" />
+      </div>
 
       <div className="relative z-[1] flex items-start justify-between gap-3 pl-1">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-brand-700/15 bg-white/80 shadow-[0_6px_16px_rgba(6,59,42,0.06)]">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-brand-700/15 bg-white shadow-[0_6px_16px_rgba(6,59,42,0.06)]">
           <Quote className="h-5 w-5 text-brand-700" aria-hidden strokeWidth={1.75} />
         </div>
         {badge ? (
@@ -198,7 +200,7 @@ export function TripadvisorReviewCard({
 
       <div
         className={cx(
-          'relative z-[1] mt-auto rounded-2xl border px-4 py-4 pl-5 backdrop-blur-[2px]',
+          'relative z-[1] mt-auto rounded-2xl border px-4 py-4 pl-5',
           styles.footer
         )}
       >

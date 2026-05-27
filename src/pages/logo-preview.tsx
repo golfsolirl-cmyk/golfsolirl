@@ -103,7 +103,7 @@ export function LogoPreviewPage() {
               </p>
             </div>
 
-            <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-soft backdrop-blur-sm">
+            <div className="rounded-[2rem] border border-white/10 bg-forest-950 p-6 shadow-soft">
               <p className="text-xs uppercase tracking-[0.3em] text-white/45">Creative brief baked in</p>
               <div className="mt-4 grid gap-3 text-sm text-white/72">
                 <p>Based on the current script-led identity, not a brand reset.</p>
@@ -242,7 +242,7 @@ function LogoStudyCard({ index, study }: LogoStudyCardProps) {
   return (
     <m.article
       animate={{ opacity: 1, y: 0 }}
-      className="group overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 shadow-soft backdrop-blur-sm"
+      className="group overflow-hidden rounded-[2rem] border border-white/10 bg-forest-950 shadow-soft"
       initial={{ opacity: 0, y: 28 }}
       transition={{ delay: index * 0.03, duration: 0.55, ease: 'easeOut' }}
     >

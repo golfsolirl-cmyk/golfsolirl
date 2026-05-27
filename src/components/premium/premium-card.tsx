@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { GeGoldDividerLineAbsoluteTop } from '../ge-gold-divider-line'
 import { cx } from '../../lib/utils'
 
 /**
@@ -42,12 +43,7 @@ export function PremiumCard({
         )}
         data-premium-card
       >
-        {!hideTopRule ? (
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-[#f4dfa6]/65 to-transparent"
-          />
-        ) : null}
+        {!hideTopRule ? <GeGoldDividerLineAbsoluteTop /> : null}
         {!hideHalo ? (
           <>
             <div
@@ -76,12 +72,7 @@ export function PremiumCard({
       )}
       data-premium-card
     >
-      {!hideTopRule ? (
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-brand-700 to-transparent"
-        />
-      ) : null}
+      {!hideTopRule ? <GeGoldDividerLineAbsoluteTop /> : null}
       {!hideHalo ? (
         <span
           aria-hidden="true"

@@ -207,12 +207,14 @@ export function GeExtrasStrip() {
 
       <m.div
         {...fadeUp}
-        className="relative z-[1] mx-auto mt-14 flex max-w-3xl flex-col items-center gap-5 overflow-hidden rounded-[1.5rem] border border-white/12 bg-white/[0.04] px-6 py-7 text-center shadow-[0_20px_50px_rgba(0,0,0,0.3)] sm:px-9"
+        className="relative z-[1] mx-auto mt-14 flex max-w-3xl flex-col items-center gap-5 overflow-hidden rounded-[1.5rem] border border-white/12 bg-forest-950 px-6 py-7 text-center shadow-[0_20px_50px_rgba(0,0,0,0.3)] sm:px-9"
       >
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-[18%] top-0 h-px bg-gradient-to-r from-transparent via-[#d9be7a]/65 to-transparent"
-        />
+          className="pointer-events-none absolute inset-x-[18%] top-0 flex justify-center"
+        >
+          <div className="mx-auto h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent" />
+        </span>
         <p className="font-ge text-[1.12rem] font-extrabold uppercase tracking-[0.08em] text-white drop-shadow-[0_2px_14px_rgba(0,0,0,0.5)] sm:text-[1.24rem]">
           {extrasCopy.closerTitle}
         </p>

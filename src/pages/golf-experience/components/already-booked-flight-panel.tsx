@@ -84,6 +84,10 @@ export function GeAlreadyBookedFlightPanel() {
       setError('Choose when you would like to be collected.')
       return
     }
+    if (!termsAccepted) {
+      setError(TERMS_ACCEPTANCE_ERROR)
+      return
+    }
     setError(null)
     setSubmitting(true)
     try {
@@ -135,7 +139,7 @@ export function GeAlreadyBookedFlightPanel() {
         bestTimeToCall: travelMode === 'flight' ? `Landing: ${arrivalTime.trim()}` : `Collection: ${collectionTime.trim()}`,
         formPayload: {
           form: WEBSITE_ENQUIRY_FORM.homepageHotelBookedSnapshot,
-          fields: formFields
+          fields: { ...formFields, ...termsAcceptanceFormFields() }
         }
       })
       if (!result.ok) {
@@ -224,7 +228,7 @@ export function GeAlreadyBookedFlightPanel() {
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="absolute right-3 top-3 z-20 inline-flex h-10 w-10 items-center justify-center rounded-full border border-gs-dark/12 bg-white/88 text-gs-dark transition-colors hover:border-gs-green hover:bg-gs-dark hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 focus-visible:ring-offset-[#fffaf1] sm:right-4 sm:top-4"
+                className="absolute right-3 top-3 z-20 inline-flex h-10 w-10 items-center justify-center rounded-full border border-gs-dark/12 bg-white text-gs-dark transition-colors hover:border-gs-green hover:bg-gs-dark hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 focus-visible:ring-offset-[#fffaf1] sm:right-4 sm:top-4"
               >
                 <span className="sr-only">{alreadyBookedHotelCopy.closeForm}</span>
                 <X className="h-5 w-5" aria-hidden />
@@ -280,7 +284,7 @@ export function GeAlreadyBookedFlightPanel() {
                         autoComplete="name"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        className="h-11 w-full rounded-xl border border-white/20 bg-white/95 px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-brand-700/40 transition-shadow placeholder:text-ge-gray300 focus:border-brand-700 focus:ring-2"
+                        className="h-11 w-full rounded-xl border border-white/20 bg-white px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-brand-700/40 transition-shadow placeholder:text-ge-gray300 focus:border-brand-700 focus:ring-2"
                         placeholder="Pádraig Murphy"
                       />
                     </label>
@@ -294,7 +298,7 @@ export function GeAlreadyBookedFlightPanel() {
                         autoComplete="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="h-11 w-full rounded-xl border border-white/20 bg-white/95 px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-brand-700/40 transition-shadow placeholder:text-ge-gray300 focus:border-brand-700 focus:ring-2"
+                        className="h-11 w-full rounded-xl border border-white/20 bg-white px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-brand-700/40 transition-shadow placeholder:text-ge-gray300 focus:border-brand-700 focus:ring-2"
                         placeholder="you@example.com"
                       />
                     </label>
@@ -309,7 +313,7 @@ export function GeAlreadyBookedFlightPanel() {
                         inputMode="tel"
                         value={mobile}
                         onChange={(e) => setMobile(e.target.value)}
-                        className="h-11 w-full rounded-xl border border-white/20 bg-white/95 px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-brand-700/40 transition-shadow placeholder:text-ge-gray300 focus:border-brand-700 focus:ring-2"
+                        className="h-11 w-full rounded-xl border border-white/20 bg-white px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-brand-700/40 transition-shadow placeholder:text-ge-gray300 focus:border-brand-700 focus:ring-2"
                         placeholder="+353 87 000 0000"
                       />
                       <span className="mt-1.5 block max-w-xl font-ge text-[0.68rem] leading-snug text-gs-dark/68">
@@ -384,7 +388,7 @@ export function GeAlreadyBookedFlightPanel() {
                             autoComplete="off"
                             value={flightNo}
                             onChange={(e) => setFlightNo(e.target.value)}
-                            className="h-11 w-full rounded-xl border border-white/20 bg-white/95 px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-brand-700/40 transition-shadow placeholder:text-ge-gray300 focus:border-brand-700 focus:ring-2"
+                            className="h-11 w-full rounded-xl border border-white/20 bg-white px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-brand-700/40 transition-shadow placeholder:text-ge-gray300 focus:border-brand-700 focus:ring-2"
                             placeholder={alreadyBookedHotelCopy.flightPlaceholder}
                           />
                         </label>
@@ -397,7 +401,7 @@ export function GeAlreadyBookedFlightPanel() {
                             type="time"
                             value={arrivalTime}
                             onChange={(e) => setArrivalTime(e.target.value)}
-                            className="h-11 w-full min-w-0 rounded-xl border border-white/20 bg-white/95 px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-brand-700/40 transition-shadow focus:border-brand-700 focus:ring-2"
+                            className="h-11 w-full min-w-0 rounded-xl border border-white/20 bg-white px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-brand-700/40 transition-shadow focus:border-brand-700 focus:ring-2"
                           />
                         </label>
                       </m.div>
@@ -421,7 +425,7 @@ export function GeAlreadyBookedFlightPanel() {
                             type="time"
                             value={collectionTime}
                             onChange={(e) => setCollectionTime(e.target.value)}
-                            className="h-11 w-full min-w-0 rounded-xl border border-white/20 bg-white/95 px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-brand-700/40 transition-shadow focus:border-brand-700 focus:ring-2"
+                            className="h-11 w-full min-w-0 rounded-xl border border-white/20 bg-white px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-brand-700/40 transition-shadow focus:border-brand-700 focus:ring-2"
                           />
                           <span className="mt-1.5 block font-ge text-[0.68rem] leading-snug text-gs-dark/68">
                             {alreadyBookedHotelCopy.collectionTimeHint}
@@ -448,7 +452,7 @@ export function GeAlreadyBookedFlightPanel() {
 
                   <button
                     type="submit"
-                    disabled={submitting}
+                    disabled={submitting || !termsAccepted}
                     className="group relative w-full overflow-hidden rounded-full bg-gradient-to-r from-brand-800 via-[#136047] to-brand-600 py-3.5 font-ge text-sm font-extrabold uppercase tracking-[0.16em] text-white shadow-[0_10px_28px_rgba(19, 96, 71,0.35)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.99]"
                   >
                     <span className="relative z-[1]">{submitting ? 'Sending...' : alreadyBookedHotelCopy.submit}</span>

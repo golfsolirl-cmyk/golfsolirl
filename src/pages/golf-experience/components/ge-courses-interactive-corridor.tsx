@@ -732,7 +732,7 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
                       className="sm:col-span-2"
                     />
 
-                    <GeButton type="submit" variant="gs-green" size="lg" disabled={status === 'submitting'} className="w-full min-w-[200px] sm:w-auto">
+                    <GeButton type="submit" variant="gs-green" size="lg" disabled={status === 'submitting' || !termsAccepted} className="w-full min-w-[200px] sm:w-auto">
                       <Send className="h-4 w-4" aria-hidden />
                       {status === 'submitting' ? 'Sending…' : 'Send course brief'}
                     </GeButton>
@@ -747,7 +747,7 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="mt-10 rounded-2xl border border-dashed border-chrome-200/90 bg-white/80 px-6 py-8 text-center shadow-sm sm:py-10"
+              className="mt-10 rounded-2xl border border-dashed border-chrome-200/90 bg-white px-6 py-8 text-center shadow-sm sm:py-10"
             >
               <p className="font-ge text-sm font-semibold text-gs-dark sm:text-base">Select a course on the map or from the roster to generate your branded brief card.</p>
               <p className="mx-auto mt-2 max-w-lg font-ge text-xs leading-relaxed text-ge-gray500 sm:text-sm">

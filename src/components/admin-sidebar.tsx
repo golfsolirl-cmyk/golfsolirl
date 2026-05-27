@@ -107,7 +107,7 @@ export function AdminSidebar({ activeSection, onSectionChange, mobileOpen, onMob
       {mobileOpen ? (
         <button
           aria-label="Close menu"
-          className="fixed inset-0 z-40 bg-forest-950/40 backdrop-blur-[1px] lg:hidden"
+          className="fixed inset-0 z-40 bg-forest-950/40 lg:hidden"
           onClick={onMobileClose}
           type="button"
         />

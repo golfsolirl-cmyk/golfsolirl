@@ -203,6 +203,44 @@
   color: inherit;
 }
 
+/* —— Package proposal print / html2canvas PDF — beat global heading + body defaults —— */
+#proposal-pdf-export-root {
+  color: #08120d;
+}
+
+#proposal-pdf-export-root [data-proposal-dark-panel] {
+  color: #ffffff;
+}
+
+#proposal-pdf-export-root [data-proposal-dark-panel] :is(h1, h2, h3, h4, h5, h6, p, li, span, strong, dt, dd, label) {
+  color: #ffffff !important;
+}
+
+#proposal-pdf-export-root [data-proposal-dark-panel] .proposal-pdf-kicker {
+  color: #c9e8d4 !important;
+}
+
+#proposal-pdf-export-root [data-proposal-dark-panel] .proposal-pdf-muted {
+  color: #e4efe8 !important;
+}
+
+#proposal-pdf-export-root [data-proposal-dark-panel] .proposal-pdf-meta-card {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  color: #eef6f1 !important;
+}
+
+#proposal-pdf-export-root [data-proposal-dark-panel] .proposal-pdf-meta-card p {
+  color: #eef6f1 !important;
+}
+
+#proposal-pdf-export-root :is(.text-forest-900, .text-forest-800, .text-gs-dark):not([data-proposal-dark-panel] *) {
+  color: #062016 !important;
+}
+
+#proposal-pdf-export-root :is(.text-brand-500, .text-brand-600):not([data-proposal-dark-panel] *) {
+  color: #136047 !important;
+}
+
 /* Light chrome sections → forest text */
 .ge-page .bg-chrome-50,
 .ge-page .bg-chrome-100,
@@ -367,6 +405,38 @@
   color: #fbe8b5 !important;
 }
 
+.ge-page .ge-on-dark .gsol-cta-primary,
+.ge-page .ge-on-dark a.gsol-cta-primary,
+.ge-page .ge-on-dark button.gsol-cta-primary,
+.ge-page .ge-on-dark .package-dark-panel-cta {
+  color: #062016 !important;
+  background: linear-gradient(135deg, #d4a843 0%, #e8bc55 100%) !important;
+  border-color: rgba(212, 168, 67, 0.85) !important;
+}
+
+.ge-page .ge-on-dark .gsol-cta-primary:hover,
+.ge-page .ge-on-dark a.gsol-cta-primary:hover,
+.ge-page .ge-on-dark button.gsol-cta-primary:hover,
+.ge-page .ge-on-dark .package-dark-panel-cta:hover {
+  color: #04130c !important;
+  background: linear-gradient(135deg, #e8bc55 0%, #f0cc70 100%) !important;
+}
+
+.ge-page .ge-on-dark .gsol-cta-outline-on-light,
+.ge-page .ge-on-dark a.gsol-cta-outline-on-light,
+.ge-page .ge-on-dark button.gsol-cta-outline-on-light {
+  color: #ffffff !important;
+  background: transparent !important;
+  border-color: rgba(255, 255, 255, 0.42) !important;
+}
+
+.ge-page .ge-on-dark .gsol-cta-outline-on-light:hover,
+.ge-page .ge-on-dark a.gsol-cta-outline-on-light:hover,
+.ge-page .ge-on-dark button.gsol-cta-outline-on-light:hover {
+  color: #062016 !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+}
+
 /* —— Auto on-dark typography inside forest/charcoal surfaces (marketing pages).
    Beats `.ge-page h1..h4` / `.ge-page p` dark defaults when authors omit `.ge-on-dark`.
    Light nested cards (bg-white, chrome) keep forest text. —— */
@@ -380,6 +450,7 @@
     [class*='from-forest-9'],
     [class*='from-brand-8'],
     [class*='from-brand-9'],
+    [class*='from-gs-green'],
     [class*='from-[#0f3d24'],
     [class*='from-[#0c3d2c'],
     [class*='via-[#143d28'],
@@ -838,12 +909,12 @@
   -webkit-text-fill-color: rgba(11, 77, 59, 0.85) !important;
 }
 
-.hero-form-scroll-cue__shell:hover .hero-form-scroll-cue__label {
+.hero-form-scroll-cue__shell:not(.hero-form-scroll-cue__shell--inline):hover .hero-form-scroll-cue__label {
   color: #062016 !important;
   -webkit-text-fill-color: #062016 !important;
 }
 
-.hero-form-scroll-cue__shell:hover .hero-form-scroll-cue__sublabel {
+.hero-form-scroll-cue__shell:not(.hero-form-scroll-cue__shell--inline):hover .hero-form-scroll-cue__sublabel {
   color: rgba(11, 77, 59, 0.85) !important;
   -webkit-text-fill-color: rgba(11, 77, 59, 0.85) !important;
 }
@@ -861,8 +932,6 @@
 /* —— Portal mobile tab bar: solid surface (no glass blur) —— */
 .portal-bottom-nav {
   background-color: #ffffff !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
 }
 
 /* —— Dashboards: forest / brand shells must not show marketing body colour —— */

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { GeGoldDividerLineAbsoluteTop } from './ge-gold-divider-line'
 import { cx } from '../lib/utils'
 
 type PageIdentityTone = 'forest' | 'ge'
@@ -21,8 +22,7 @@ interface PageIdentityBarProps {
   readonly className?: string
 }
 
-const headerOffsetClassName =
-  'pt-[74px] sm:pt-[80px] md:pt-[88px] lg:pt-[76px] xl:pt-[82px]'
+const headerOffsetClassName = 'pt-[var(--ge-fixed-header-h)]'
 
 /**
  * Page identity nameplate — the slim "Currently viewing" marker that sits
@@ -35,7 +35,7 @@ const headerOffsetClassName =
  *   ─── ✦ ─── ┃ TRANSPORT SERVICE ┃ ─── ✦ ───
  *
  * Rules:
- *  - No backdrop-blur / glass anywhere.
+ *  - No / glass anywhere.
  *  - Forest gradient plaque with hairline gold rim and chrome ring.
  *  - Cream-gold uppercase tracked label (with subtle gradient on lg+).
  *  - Two thin chrome-gold hairlines extending out either side of the
@@ -122,10 +122,7 @@ export function PageIdentityBar({
             >
               {/* Inner gold hairline along the top edge — completes the
                   engraved feel without looking glassy. */}
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-[#f4dfa6]/55 to-transparent"
-              />
+              <GeGoldDividerLineAbsoluteTop />
               {/* Soft inner glow */}
               <span
                 aria-hidden="true"

@@ -20,6 +20,7 @@ import { AnimatedStepKicker, SectionHeader } from '../components/ui/section-head
 import { WaveDivider } from '../components/ui/wave-divider'
 import { footerSocialLinks, heroBackgroundImage } from '../data/site-content'
 import { cx } from '../lib/utils'
+import { PackageCalculatorPricingAdmin } from '../components/package-calculator-pricing-admin'
 
 const packagePageLinks = ['Packages', 'Stays', 'Pricing', 'Enquire'] as const
 
@@ -265,7 +266,7 @@ function PackageAdminPage() {
 
           <m.div
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-[2.2rem] border border-white/10 bg-[linear-gradient(160deg,rgba(255,255,255,0.12),rgba(255,255,255,0.04))] p-6 shadow-soft backdrop-blur-md md:p-8"
+            className="rounded-[2.2rem] border border-white/10 bg-forest-900 p-6 shadow-soft md:p-8"
             initial={{ opacity: 0, y: 30 }}
             transition={{ duration: 0.7, ease: 'easeOut' }}
           >
@@ -283,7 +284,7 @@ function PackageAdminPage() {
                   <span className="mb-2 block text-base font-medium text-white/80">Access code</span>
                   <input
                     autoComplete="current-password"
-                    className="w-full rounded-2xl border border-white/10 bg-white/8 px-4 py-3.5 text-lg text-white outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-300/30"
+                    className="w-full rounded-2xl border border-white/10 bg-forest-900 px-4 py-3.5 text-lg text-white outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-300/30"
                     onChange={(event) => {
                       setAdminAccessCode(event.target.value)
                       if (loginError) {
@@ -306,7 +307,7 @@ function PackageAdminPage() {
                     Unlock admin page
                   </button>
                   <a
-                    className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-3.5 text-base font-semibold text-white/82 transition-colors hover:bg-white/10"
+                    className="inline-flex items-center justify-center rounded-full border border-white/15 bg-forest-950 px-6 py-3.5 text-base font-semibold text-white/82 transition-colors hover:bg-forest-900"
                     href="/packages"
                   >
                     Go to customer packages
@@ -316,7 +317,7 @@ function PackageAdminPage() {
             ) : (
               <div className="mt-6 flex flex-wrap gap-3">
                 <a
-                  className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-3.5 text-base font-semibold text-white/82 transition-colors hover:bg-white/10"
+                  className="inline-flex items-center justify-center rounded-full border border-white/15 bg-forest-950 px-6 py-3.5 text-base font-semibold text-white/82 transition-colors hover:bg-forest-900"
                   href="/packages"
                 >
                   Go to customer packages
@@ -342,6 +343,12 @@ function PackageAdminPage() {
       />
 
       <main>
+        <section className="section-shell bg-cream py-12" id="customer-calculator-pricing">
+          <div className="section-inner mx-auto max-w-6xl">
+            <PackageCalculatorPricingAdmin />
+          </div>
+        </section>
+
         <section className="relative min-h-screen overflow-hidden bg-forest-900 px-6 pb-28 pt-24 md:pt-28" id="home">
           <div
             aria-hidden="true"
@@ -423,14 +430,14 @@ function PackageAdminPage() {
                       </div>
                     </div>
 
-                    <div className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-forest-100 bg-white/85 px-3 py-1.5 text-sm text-forest-900/64">
+                    <div className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-forest-100 bg-white px-3 py-1.5 text-sm text-forest-900/64">
                       <CalendarRange className="h-3.5 w-3.5 text-brand-500" aria-hidden="true" />
                       <span>{option.duration}</span>
                     </div>
 
                     <p className="text-base leading-relaxed text-forest-900/68">{option.summary}</p>
 
-                    <div className="mt-6 space-y-3 rounded-[1.5rem] border border-forest-100 bg-white/72 p-4">
+                    <div className="mt-6 space-y-3 rounded-[1.5rem] border border-forest-100 bg-cream p-4">
                       {option.includes.map((item) => (
                         <div key={item} className="flex items-center gap-3 text-[0.98rem] text-forest-900/74">
                           <CheckCircle2 className="h-4 w-4 shrink-0 text-brand-500" aria-hidden="true" />
@@ -502,7 +509,7 @@ function PackageAdminPage() {
                           key={perk}
                           className={cx(
                             'rounded-full border px-3 py-1.5 text-sm',
-                            isSelected ? 'border-white/12 bg-white/8 text-white' : 'border-forest-200 bg-forest-900 text-white'
+                            isSelected ? 'border-white/12 bg-forest-900 text-white' : 'border-forest-200 bg-forest-900 text-white'
                           )}
                         >
                           {perk}
@@ -634,7 +641,7 @@ function PackageAdminPage() {
                     <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-300">Live quote view</p>
                     <h3 className="mt-3 font-display text-4xl font-bold tracking-tight">Simple, detailed, margin-safe</h3>
                   </div>
-                  <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-base text-white/76">
+                  <div className="rounded-full border border-white/10 bg-forest-950 px-4 py-2.5 text-base text-white/76">
                     {selectedAccommodation.name}
                   </div>
                 </div>
@@ -646,7 +653,7 @@ function PackageAdminPage() {
                   <SummaryTile icon={CarFront} label="Transfer share pp" value={formatEuro(pricingSummary.transferPerPerson)} />
                 </div>
 
-                <div className="mt-6 space-y-3 rounded-[1.75rem] border border-white/10 bg-white/5 p-5">
+                <div className="mt-6 space-y-3 rounded-[1.75rem] border border-white/10 bg-forest-950 p-5">
                   <BreakdownRow label="Accommodation cost per person" value={formatEuro(pricingSummary.accommodationPerPerson)} />
                   <BreakdownRow label="Golf cost per person" value={formatEuro(pricingSummary.golfPerPerson)} />
                   <BreakdownRow label="Driver wages total" value={formatEuro(pricingSummary.driverTotal)} />
@@ -666,7 +673,7 @@ function PackageAdminPage() {
                         <p className="font-display text-5xl font-black leading-none text-white">{formatEuro(pricingSummary.sellPricePerPerson)}</p>
                         <p className="mt-2 text-base text-white/70">per person for the quote</p>
                       </div>
-                      <div className="rounded-[1.3rem] border border-white/10 bg-white/5 px-4 py-3 text-base text-white/76">
+                      <div className="rounded-[1.3rem] border border-white/10 bg-forest-950 px-4 py-3 text-base text-white/76">
                         Margin {pricingSummary.marginPercent.toFixed(1)}%
                       </div>
                     </div>
@@ -711,7 +718,7 @@ function PackageAdminPage() {
               </div>
 
               <m.div
-                className="rounded-[2rem] border border-white/10 bg-white/6 p-6 text-white backdrop-blur-sm"
+                className="rounded-[2rem] border border-white/10 bg-forest-900 p-6 text-white"
                 {...revealUp}
               >
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-300">What this page already solves</p>
@@ -753,7 +760,7 @@ function RouteMapShowcase() {
       initial={{ opacity: 0, y: 36 }}
       transition={{ delay: 0.18, duration: 0.85, ease: 'easeOut' }}
     >
-      <div className="relative overflow-hidden rounded-[2.4rem] border border-white/10 bg-[linear-gradient(160deg,rgba(255,255,255,0.14),rgba(255,255,255,0.04))] p-5 shadow-soft backdrop-blur-md md:p-7">
+      <div className="relative overflow-hidden rounded-[2.4rem] border border-white/10 bg-forest-900 p-5 shadow-soft md:p-7">
         <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(80,163,45,0.22),transparent_24%),radial-gradient(circle_at_82%_12%,rgba(19, 96, 71,0.22),transparent_22%),radial-gradient(circle_at_70%_70%,rgba(253,186,116,0.16),transparent_26%)]" />
         <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(140deg,rgba(255,255,255,0.06),transparent_32%,transparent_68%,rgba(255,255,255,0.04))]" />
 
@@ -763,7 +770,7 @@ function RouteMapShowcase() {
               <m.div
                 key={route.title}
                 animate={{ x: [0, 6, 0] }}
-                className="rounded-[1.6rem] border border-white/10 bg-forest-950/58 p-4 text-white shadow-lg backdrop-blur-sm"
+                className="rounded-[1.6rem] border border-white/10 bg-forest-950 p-4 text-white shadow-lg"
                 transition={{ delay: index * 0.24, duration: 4.4, ease: 'easeInOut', repeat: Infinity }}
               >
                 <div className="flex items-center gap-3">
@@ -779,7 +786,7 @@ function RouteMapShowcase() {
             ))}
           </div>
 
-          <div className="relative min-h-[24rem] overflow-hidden rounded-[2rem] border border-white/10 bg-white/5">
+          <div className="relative min-h-[24rem] overflow-hidden rounded-[2rem] border border-white/10 bg-forest-950">
             <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:44px_44px] opacity-25" />
 
             <m.div
@@ -828,18 +835,18 @@ function RouteMapShowcase() {
               <div className="absolute inset-[35%] rounded-full border border-slate-300/22" />
             </m.div>
 
-            <div className="absolute left-[8%] top-[9%] rounded-[1.4rem] border border-brand-300/26 bg-forest-950/76 px-4 py-3 text-white backdrop-blur-sm">
+            <div className="absolute left-[8%] top-[9%] rounded-[1.4rem] border border-brand-300/26 bg-forest-950 px-4 py-3 text-white">
               <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-300">Departing from Ireland</p>
               <p className="mt-2 text-base font-semibold">Smaller golf groups</p>
             </div>
 
-            <div className="absolute bottom-[11%] right-[8%] rounded-[1.5rem] border border-[#136047]/26 bg-forest-950/62 px-4 py-4 text-white backdrop-blur-sm">
+            <div className="absolute bottom-[11%] right-[8%] rounded-[1.5rem] border border-[#136047]/26 bg-forest-950 px-4 py-4 text-white">
               <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#f7a24f]">Costa del Sol arrival</p>
               <p className="mt-2 text-base font-semibold">Hotel, golf, driver, quote</p>
               <p className="mt-1 text-sm text-white/60">All costed before you sell it</p>
             </div>
 
-            <div className="absolute right-[12%] top-[12%] rounded-[1.25rem] border border-white/10 bg-white/8 px-4 py-3 text-white backdrop-blur-sm">
+            <div className="absolute right-[12%] top-[12%] rounded-[1.25rem] border border-white/10 bg-forest-900 px-4 py-3 text-white">
               <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-brand-300">
                 <BadgeEuro className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>Profit protected</span>
@@ -855,7 +862,7 @@ function RouteMapShowcase() {
 
 function HeroStat({ value, label }: { readonly value: string; readonly label: string }) {
   return (
-    <div className="min-w-[110px] rounded-[1.6rem] border border-white/10 bg-white/6 px-4 py-4 backdrop-blur-sm">
+    <div className="min-w-[110px] rounded-[1.6rem] border border-white/10 bg-forest-900 px-4 py-4">
       <p className="font-display text-[2rem] font-bold text-brand-300">{value}</p>
       <p className="mt-1 text-sm leading-relaxed text-white/62">{label}</p>
     </div>
@@ -923,7 +930,7 @@ function SummaryTile({
   readonly value: string
 }) {
   return (
-    <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
+    <div className="rounded-[1.5rem] border border-white/10 bg-forest-950 p-4">
       <div className="flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-forest-950 shadow-[0_12px_24px_rgba(0,0,0,0.18)]">
           <Icon className="h-5 w-5" aria-hidden="true" />
@@ -956,7 +963,7 @@ function BreakdownRow({
 
 function MiniSummaryCard({ label, value }: { readonly label: string; readonly value: string }) {
   return (
-    <div className="rounded-[1.3rem] border border-white/10 bg-white/5 p-4">
+    <div className="rounded-[1.3rem] border border-white/10 bg-forest-950 p-4">
       <p className="text-sm font-semibold uppercase tracking-[0.1em] text-white/74">{label}</p>
       <p className="mt-2 text-xl font-semibold text-white">{value}</p>
     </div>
@@ -985,7 +992,7 @@ export function FloatingWhatsAppButton({
       }}
       aria-label="Chat with us on WhatsApp"
       className={cx(
-        'group fixed bottom-4 right-3 z-[60] inline-flex items-center gap-2 overflow-hidden rounded-full bg-white/72 px-2.5 py-2.5 pr-2 shadow-soft backdrop-blur-md transition-all duration-300 hover:bg-white/82 sm:bottom-5 sm:right-4 sm:pr-4',
+        'group fixed bottom-4 right-3 z-[60] inline-flex items-center gap-2 overflow-hidden rounded-full bg-cream px-2.5 py-2.5 pr-2 shadow-soft transition-all duration-300 hover:bg-white sm:bottom-5 sm:right-4 sm:pr-4',
         hidden && 'pointer-events-none'
       )}
       href={href}
@@ -1001,7 +1008,7 @@ export function FloatingWhatsAppButton({
       whileHover={{ scale: 1.03, x: -2 }}
       whileTap={{ scale: 0.98 }}
     >
-      <span aria-hidden="true" className="absolute inset-0 rounded-full bg-white/18" />
+      <span aria-hidden="true" className="absolute inset-0 rounded-full bg-cream" />
       <span aria-hidden="true" className="absolute inset-0 rounded-full border border-white/25" />
       <span aria-hidden="true" className="absolute inset-[1px] rounded-full bg-[linear-gradient(135deg,rgba(255,255,255,0.48),rgba(255,255,255,0.12))]" />
       <span aria-hidden="true" className="absolute inset-[1.5px] rounded-full bg-[rgba(255,255,255,0.58)]" />
@@ -1012,7 +1019,7 @@ export function FloatingWhatsAppButton({
         className="absolute inset-[-35%] rounded-full bg-[conic-gradient(from_0deg,transparent_0deg,transparent_235deg,rgba(255,255,255,0.04)_255deg,rgba(37,211,102,0.8)_290deg,rgba(255,255,255,0.92)_320deg,rgba(18,140,74,0.7)_345deg,transparent_360deg)]"
         transition={{ duration: 5.8, ease: 'linear', repeat: Infinity }}
       />
-      <span aria-hidden="true" className="absolute inset-[2.5px] rounded-full bg-[linear-gradient(135deg,rgba(255,255,255,0.9),rgba(248,252,250,0.72))] backdrop-blur-md" />
+      <span aria-hidden="true" className="absolute inset-[2.5px] rounded-full bg-white" />
 
       <span className="relative z-10 flex h-[3.85rem] w-[3.85rem] items-center justify-center sm:h-[4.15rem] sm:w-[4.15rem]">
         <span
@@ -1026,7 +1033,7 @@ export function FloatingWhatsAppButton({
         <ShamrockIcon className="h-[3.8rem] w-[3.8rem] drop-shadow-[0_10px_18px_rgba(61,129,32,0.34)] transition-all duration-300 group-hover:scale-[1.08] group-hover:drop-shadow-[0_16px_24px_rgba(61,129,32,0.42)] sm:h-[4.1rem] sm:w-[4.1rem]" />
         <span
           aria-hidden="true"
-          className="absolute left-[17%] top-[13%] h-[28%] w-[26%] rounded-full bg-white/70 blur-[7px]"
+          className="absolute left-[17%] top-[13%] h-[28%] w-[26%] rounded-full bg-cream blur-[7px]"
         />
         <span className="absolute inset-0 flex items-center justify-center">
           <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/80 bg-white text-[#128c4a] shadow-[0_10px_24px_rgba(18,140,74,0.28)] transition-transform duration-300 group-hover:scale-110 sm:h-11 sm:w-11">

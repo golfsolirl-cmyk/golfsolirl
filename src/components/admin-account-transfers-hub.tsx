@@ -700,7 +700,7 @@ export function AdminAccountTransfersHub(props: {
           : 'Client dashboard'
     const clientMail = (b.client_email ?? '').trim()
     return (
-      <div className="rounded-2xl border border-forest-200/90 bg-white/95 p-4 shadow-inner sm:p-5">
+      <div className="rounded-2xl border border-forest-200/90 bg-white p-4 shadow-inner sm:p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
@@ -1064,7 +1064,7 @@ export function AdminAccountTransfersHub(props: {
           className="mt-6 overflow-hidden rounded-[1.35rem] border-2 border-fairway-400/45 bg-gradient-to-br from-fairway-50/95 via-white to-brand-50/35 shadow-[0_14px_44px_rgba(11,73,52,0.08)] ring-1 ring-fairway-900/[0.07]"
           role="status"
         >
-          <div className="border-b border-fairway-200/70 bg-white/55 px-4 py-3.5 sm:px-5">
+          <div className="border-b border-fairway-200/70 bg-offwhite px-4 py-3.5 sm:px-5">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
               <span className="font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.2em] text-fairway-900">
                 Timeline scope

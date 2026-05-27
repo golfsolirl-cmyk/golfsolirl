@@ -2,15 +2,11 @@ import { cx } from '../../../lib/utils'
 
 interface GeCrestDividerProps {
   readonly className?: string
-  readonly variant?: 'light' | 'dark'
 }
 
 /** Logo-inspired chrome + gold rule — ties homepage sections together. */
-export function GeCrestDivider({ className, variant = 'light' }: GeCrestDividerProps) {
-  const line =
-    variant === 'dark'
-      ? 'from-transparent via-[#d9be7a]/55 to-transparent'
-      : 'from-transparent via-brand-700/45 to-transparent'
+export function GeCrestDivider({ className }: GeCrestDividerProps) {
+  const line = 'from-transparent via-[#d9be7a]/60 to-transparent'
 
   return (
     <div

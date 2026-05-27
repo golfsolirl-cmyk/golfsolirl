@@ -54,10 +54,6 @@ export function TransportEnquireBlock() {
         aria-hidden="true"
         className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-brand-700/[0.1] blur-[90px]"
       />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-700/35 to-transparent"
-      />
 
       <div className="grid gap-10 lg:grid-cols-[1fr_1.05fr] lg:items-start lg:gap-14">
         {/* —— Left column: editorial header + CTAs + reassurances —— */}
@@ -70,7 +66,7 @@ export function TransportEnquireBlock() {
           {/* Kicker pill (was a flat eyebrow line) */}
           <m.span
             variants={heroItemVariants}
-            className="inline-flex items-center gap-2 rounded-full border border-brand-700/35 bg-white/95 px-4 py-1.5 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.24em] text-gs-green shadow-[0_8px_22px_rgba(6,59,42,0.08)] backdrop-blur-sm sm:text-[0.74rem]"
+            className="inline-flex items-center gap-2 rounded-full border border-brand-700/35 bg-white px-4 py-1.5 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.24em] text-gs-green shadow-[0_8px_22px_rgba(6,59,42,0.08)] sm:text-[0.74rem]"
           >
             <Sparkles className="h-3.5 w-3.5 shrink-0 text-brand-700" aria-hidden />
             {transportEnquireBlockCopy.eyebrow}
@@ -80,7 +76,7 @@ export function TransportEnquireBlock() {
           <m.span
             aria-hidden="true"
             variants={heroItemVariants}
-            className="mt-5 block h-[2px] w-20 origin-left rounded-full bg-gradient-to-r from-brand-800 via-brand-600 to-transparent"
+            className="mt-5 mx-auto h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent"
           />
 
           {/* Two-tone uppercase headline */}
@@ -126,8 +122,8 @@ export function TransportEnquireBlock() {
           <m.div variants={heroItemVariants} className="relative mt-9">
             <span
               aria-hidden="true"
-              className="absolute -top-px inset-x-0 h-px bg-gradient-to-r from-transparent via-brand-700/55 to-transparent"
-            />
+              className="pointer-events-none absolute inset-x-0 -top-px flex justify-center"
+            ><div className="mx-auto h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent" /></span>
             <ul className="space-y-3 pt-7">
               {transportEnquireBlockCopy.reassurances.map((line) => (
                 <li

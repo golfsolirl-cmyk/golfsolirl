@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 /**
- * Costa del Sol hotel card art — 4:3 crops from resort / stay photography only.
- * Avoids transfer fleet heroes and branded vehicle shots.
+ * Costa del Sol hotel card art — 4:3 crops from hotel-specific or resort photography.
+ * Prefer scripts/asset-pack-debug/verify-hotel-*.png when present.
  *
  * Usage: node scripts/generate-hotel-card-images.mjs
  */
+import { access } from 'node:fs/promises'
 import { mkdir } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -12,18 +13,71 @@ import sharp from 'sharp'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const outDir = join(root, 'public/images/hotels')
+const debugDir = join(root, 'scripts/asset-pack-debug')
 const CARD = { width: 1200, height: 900 }
 
 /** @type {Record<string, string>} */
-const SOURCES = {
+const FALLBACK_SOURCES = {
   resortPool: 'public/images/ge-premium-resort-hotel-hero.webp',
   familyTerrace: 'public/images/ge-premium-family-golf-vacation.webp',
-  resortEntrance: 'public/images/transport-moment-resort.webp',
-  coastalVilla: 'public/images/ge-premium-golf-fairway-coastal.webp'
+  resortEntrance: 'public/images/transport-moment-resort.webp'
 }
 
-async function writeCard(srcRel, extract, filename) {
-  let pipe = sharp(join(root, srcRel))
+/** @type {Array<{ filename: string, src?: string, extract?: { left: number, top: number, width: number, height: number } }>} */
+const HOTELS = [
+  {
+    filename: 'hotel-angela.webp',
+    src: join(debugDir, 'verify-hotel-angela.png')
+  },
+  {
+    filename: 'hotel-yaramar.webp',
+    src: join(root, FALLBACK_SOURCES.familyTerrace),
+    extract: { left: 0, top: 0, width: 920, height: 688 }
+  },
+  {
+    filename: 'hotel-ilunion-fuengirola.webp',
+    src: join(debugDir, 'verify-hotel-ilunion-fuengirola.png')
+  },
+  {
+    filename: 'hotel-riu-costa-del-sol.webp',
+    src: join(debugDir, 'verify-hotel-riu-costa-del-sol.png')
+  },
+  {
+    filename: 'hotel-don-pablo.webp',
+    src: join(root, FALLBACK_SOURCES.resortPool),
+    extract: { left: 520, top: 0, width: 856, height: 640 }
+  },
+  {
+    filename: 'hotel-sol-timor.webp',
+    src: join(debugDir, 'verify-hotel-sol-timor.png')
+  },
+  {
+    filename: 'hotel-ocean-house.webp',
+    src: join(root, FALLBACK_SOURCES.familyTerrace),
+    extract: { left: 0, top: 60, width: 780, height: 584 }
+  },
+  {
+    filename: 'hotel-sunset-beach-club.webp',
+    src: join(root, FALLBACK_SOURCES.resortPool),
+    extract: { left: 0, top: 0, width: 1200, height: 720 }
+  }
+]
+
+async function resolveSource(preferredPath, fallbackRel) {
+  try {
+    await access(preferredPath)
+    return preferredPath
+  } catch {
+    return join(root, fallbackRel)
+  }
+}
+
+async function writeCard({ filename, src, extract }) {
+  const resolved = src.startsWith(root)
+    ? await resolveSource(src, FALLBACK_SOURCES.resortPool)
+    : join(root, src)
+
+  let pipe = sharp(resolved)
   if (extract) {
     pipe = pipe.extract(extract)
   }
@@ -31,65 +85,13 @@ async function writeCard(srcRel, extract, filename) {
     .resize(CARD.width, CARD.height, { fit: 'cover', position: 'centre' })
     .webp({ quality: 88, effort: 6 })
     .toFile(join(outDir, filename))
-  console.log('Wrote', filename)
+  console.log('Wrote', filename, '←', resolved.replace(root + '\\', '').replace(root + '/', ''))
 }
 
 await mkdir(outDir, { recursive: true })
 
-// Beachfront Fuengirola — pool terrace lounge at golden hour
-await writeCard(
-  SOURCES.resortPool,
-  { left: 0, top: 80, width: 920, height: 688 },
-  'hotel-angela.webp'
-)
-
-// Adults-only seafront — rooftop terrace overlooking pool & coast
-await writeCard(
-  SOURCES.familyTerrace,
-  { left: 0, top: 0, width: 920, height: 688 },
-  'hotel-yaramar.webp'
-)
-
-// Modern marina hotel — resort entrance & arrival courtyard
-await writeCard(
-  SOURCES.resortEntrance,
-  { left: 120, top: 0, width: 1024, height: 768 },
-  'hotel-ilunion-fuengirola.webp'
-)
-
-// All-inclusive beach hotel — infinity pool reflecting sunset
-await writeCard(
-  SOURCES.resortPool,
-  { left: 280, top: 40, width: 920, height: 688 },
-  'hotel-riu-costa-del-sol.webp'
-)
-
-// Palm-fringed pool deck — architecture & palms
-await writeCard(
-  SOURCES.resortPool,
-  { left: 520, top: 0, width: 856, height: 640 },
-  'hotel-don-pablo.webp'
-)
-
-// Apartment-style groups — terrace seating with golf bags & sea view
-await writeCard(
-  SOURCES.familyTerrace,
-  { left: 420, top: 40, width: 956, height: 716 },
-  'hotel-sol-timor.webp'
-)
-
-// Boutique seafront — bougainvillea terrace & coastal fairways
-await writeCard(
-  SOURCES.familyTerrace,
-  { left: 0, top: 60, width: 780, height: 584 },
-  'hotel-ocean-house.webp'
-)
-
-// Seafront suites Benalmádena — coastal resort panorama at dusk
-await writeCard(
-  SOURCES.resortPool,
-  { left: 0, top: 0, width: 1200, height: 720 },
-  'hotel-sunset-beach-club.webp'
-)
+for (const hotel of HOTELS) {
+  await writeCard(hotel)
+}
 
 console.log('Done — hotel card images in public/images/hotels/')

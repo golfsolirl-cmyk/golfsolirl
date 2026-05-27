@@ -52,8 +52,8 @@ export function BookedDatesAvailabilityNotice({
 
   const chip =
     tone === 'forest'
-      ? 'border border-chrome-300/70 bg-white/90 text-forest-900'
-      : 'border border-gs-green/20 bg-white/95 text-gs-dark'
+      ? 'border border-chrome-300/70 bg-white text-forest-900'
+      : 'border border-gs-green/20 bg-white text-gs-dark'
 
   const clashShell =
     tone === 'forest'

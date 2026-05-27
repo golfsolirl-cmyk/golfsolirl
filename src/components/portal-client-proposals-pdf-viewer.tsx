@@ -442,7 +442,7 @@ export function PortalClientProposalsPdfViewer({
       ) : null}
 
       <div className="grid gap-0 lg:grid-cols-[minmax(220px,280px)_1fr]">
-        <aside className="border-b border-forest-100/90 bg-white/80 p-4 lg:border-b-0 lg:border-r lg:border-forest-100/90 lg:p-5">
+        <aside className="border-b border-forest-100/90 bg-white p-4 lg:border-b-0 lg:border-r lg:border-forest-100/90 lg:p-5">
           {hasTransferShelf ? (
             <>
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-600">Your paper trail</p>
@@ -562,7 +562,7 @@ export function PortalClientProposalsPdfViewer({
           ) : null}
         </aside>
 
-        <div className="flex min-h-0 flex-col bg-white/60">
+        <div className="flex min-h-0 flex-col bg-offwhite">
           <div className="flex flex-col gap-3 border-b border-forest-100/90 px-4 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between md:px-6">
             <div className="min-w-0">
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-600">Preview</p>
@@ -624,7 +624,7 @@ export function PortalClientProposalsPdfViewer({
 
           <div className="relative min-h-[min(72vh,52rem)] flex-1 p-3 md:p-5">
             {proposalLoading ? (
-              <div className="absolute inset-0 z-[2] flex flex-col items-center justify-center gap-3 bg-white/80 backdrop-blur-sm">
+              <div className="absolute inset-0 z-[2] flex flex-col items-center justify-center gap-3 bg-white">
                 <Loader2 className="h-10 w-10 animate-spin text-fairway-700" aria-hidden />
                 <p className="text-base font-medium text-forest-700">Preparing PDF…</p>
               </div>

@@ -144,7 +144,7 @@ export function GeHeroLuxuryCtas({ pageContext = 'default' }: { readonly pageCon
             />
             <span
               aria-hidden
-              className="pointer-events-none absolute -right-6 -top-10 h-32 w-32 rounded-full bg-white/15 blur-2xl transition-opacity duration-500 group-hover:opacity-100 group-hover:duration-300"
+              className="pointer-events-none absolute -right-6 -top-10 h-32 w-32 rounded-full bg-forest-900 blur-2xl transition-opacity duration-500 group-hover:opacity-100 group-hover:duration-300"
             />
             <span
               aria-hidden
@@ -181,16 +181,15 @@ export function GeHeroLuxuryCtas({ pageContext = 'default' }: { readonly pageCon
             </span>
           </m.a>
 
-          {/* Secondary — glass outline, forest hover */}
+          {/* Secondary — solid forest outline */}
           <m.a
             href="/services/transport"
             className={cx(
               'ge-luxury-cta-secondary group relative flex min-h-[88px] w-full flex-1 items-center overflow-hidden rounded-[28px] sm:min-h-[110px] sm:max-w-xl sm:flex-initial sm:min-w-[min(100%,380px)] lg:min-w-[420px]',
-              'border-2 border-[rgba(252,250,243,0.55)] bg-[rgba(6,18,14,0.45)] shadow-[0_10px_36px_rgba(0,0,0,0.42),inset_0_1px_0_rgba(255,255,255,0.12)]',
-              'backdrop-blur-xl backdrop-saturate-150',
+              'border-2 border-cream/55 bg-forest-950 shadow-[0_10px_36px_rgba(0,0,0,0.42)]',
               'transition-[border-color,box-shadow,background-color] duration-[400ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)]',
-              'hover:border-[rgba(252,250,243,0.92)] hover:bg-[rgba(11,77,59,0.88)] hover:shadow-[0_0_0_1px_rgba(214,168,62,0.25),0_18px_48px_rgba(11,77,59,0.55),0_0_32px_rgba(252,250,243,0.12)]',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(252,250,243,0.85)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#030806]'
+              'hover:border-cream/92 hover:bg-forest-800 hover:shadow-[0_0_0_1px_rgba(214,168,62,0.25),0_18px_48px_rgba(11,77,59,0.55)]',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/85 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950'
             )}
             whileHover={reduceMotion ? undefined : { y: -4, scale: 1.01 }}
             whileTap={reduceMotion ? undefined : { scale: 0.985 }}
@@ -198,7 +197,7 @@ export function GeHeroLuxuryCtas({ pageContext = 'default' }: { readonly pageCon
           >
             <span
               aria-hidden
-              className="absolute inset-0 bg-gradient-to-br from-white/[0.07] via-transparent to-transparent opacity-80"
+              className="absolute inset-0 bg-gradient-to-br from-cream/10 via-transparent to-transparent opacity-80"
             />
             <span
               aria-hidden

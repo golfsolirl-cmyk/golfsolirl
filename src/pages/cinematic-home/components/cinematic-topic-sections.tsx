@@ -61,8 +61,7 @@ const BLOCKS = [
 
 export function CinematicTopicSections() {
   return (
-    <div className="relative bg-gradient-to-b from-forest-950 via-[#0d1f12] to-forest-950">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-700/25 to-transparent" aria-hidden />
+    <div className="relative bg-gradient-to-b from-forest-950 via-[#0d1f12] to-forest-950">
       {BLOCKS.map((b, index) => (
         <CinematicSection
           key={b.title}

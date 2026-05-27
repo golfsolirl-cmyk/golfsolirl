@@ -17,7 +17,7 @@ export function CinematicFooter() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-8">
           <m.a
             href="/packages"
-            className="inline-flex min-h-[48px] items-center justify-center rounded-full border border-brand-700/50 bg-brand-700/10 px-6 text-[0.72rem] font-bold uppercase tracking-[0.16em] text-silver-200 backdrop-blur-sm"
+            className="inline-flex min-h-[48px] items-center justify-center rounded-full border border-brand-700/50 bg-brand-700/10 px-6 text-[0.72rem] font-bold uppercase tracking-[0.16em] text-silver-200"
             whileHover={{ backgroundColor: 'rgba(19, 96, 71, 0.2)' }}
             transition={{ duration: 0.25 }}
           >

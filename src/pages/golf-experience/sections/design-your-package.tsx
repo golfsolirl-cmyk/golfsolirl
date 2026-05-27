@@ -92,7 +92,7 @@ export function GeDesignYourPackage() {
           <div className="relative">
             <m.span
               variants={heroItemVariants}
-              className="design-package-hero-kicker inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/12 px-4 py-2 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.24em] shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] sm:text-[0.72rem]"
+              className="design-package-hero-kicker inline-flex items-center gap-2 rounded-full border border-white/30 bg-forest-900 px-4 py-2 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.24em] shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] sm:text-[0.72rem]"
             >
               <Sparkles className="h-3.5 w-3.5 shrink-0 text-brand-700" aria-hidden />
               {designYourPackage.kicker}
@@ -139,7 +139,7 @@ export function GeDesignYourPackage() {
                 animate={stepsRevealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
                 transition={{ ...revealTransition, delay: index * 0.06 }}
               >
-                <article className="relative flex flex-1 flex-col overflow-hidden rounded-[1.75rem] border border-white/80 bg-white/92 text-gs-dark shadow-[0_20px_50px_rgba(6,32,22,0.12)] ring-1 ring-chrome-300/80 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_28px_64px_rgba(6,32,22,0.18)]">
+                <article className="relative flex flex-1 flex-col overflow-hidden rounded-[1.75rem] border border-white/80 bg-white text-gs-dark shadow-[0_20px_50px_rgba(6,32,22,0.12)] ring-1 ring-chrome-300/80 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_28px_64px_rgba(6,32,22,0.18)]">
                   <div className="relative aspect-[16/10] overflow-hidden">
                     <img
                       src={step.image}
@@ -153,7 +153,7 @@ export function GeDesignYourPackage() {
                       aria-hidden="true"
                       className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gs-dark/75 via-gs-dark/18 to-transparent"
                     />
-                    <span className="absolute left-3 top-3 inline-flex min-h-[34px] items-center rounded-full border border-brand-700/35 bg-white/95 px-3.5 py-1.5 font-ge text-[0.74rem] font-extrabold uppercase tracking-[0.14em] text-gs-dark shadow-[0_10px_26px_rgba(12,32,24,0.16)] sm:min-h-[32px] sm:py-1 sm:text-[0.72rem]">
+                    <span className="absolute left-3 top-3 inline-flex min-h-[34px] items-center rounded-full border border-brand-700/35 bg-white px-3.5 py-1.5 font-ge text-[0.74rem] font-extrabold uppercase tracking-[0.14em] text-gs-dark shadow-[0_10px_26px_rgba(12,32,24,0.16)] sm:min-h-[32px] sm:py-1 sm:text-[0.72rem]">
                       {step.badge}
                     </span>
                     <span
@@ -204,8 +204,9 @@ export function GeDesignYourPackage() {
         >
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-[18%] top-0 h-px bg-gradient-to-r from-transparent via-brand-700/70 to-transparent"
-          />
+            className="pointer-events-none absolute inset-x-0 top-0 flex justify-center"
+          ><div className="mx-auto h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent" />
+        </div>
           <p className="inline-flex items-center justify-center gap-2 font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.22em] text-gs-green">
             <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden />
             {homeTripSnapshotBand.title}

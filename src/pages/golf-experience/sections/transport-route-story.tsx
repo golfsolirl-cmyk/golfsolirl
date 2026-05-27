@@ -1,4 +1,5 @@
 import { m, type Variants } from 'framer-motion'
+import { GeGoldDividerLineAbsoluteTop } from '../../../components/ge-gold-divider-line'
 import { ArrowRight, MapPin, Sparkles } from 'lucide-react'
 import { GeSection } from '../components/ge-section'
 import { transportRouteStory } from '../data/transport-service'
@@ -64,10 +65,7 @@ export function TransportRouteStory() {
         aria-hidden="true"
         className="pointer-events-none absolute -right-28 bottom-[-6rem] h-[28rem] w-[28rem] rounded-full bg-[radial-gradient(circle_at_center,rgba(11,107,69,0.32),transparent_72%)] blur-3xl"
       />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-[#f4dfa6]/55 to-transparent"
-      />
+      <GeGoldDividerLineAbsoluteTop />
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-16 bottom-0 h-px bg-gradient-to-r from-transparent via-[#f4dfa6]/35 to-transparent"
@@ -83,7 +81,7 @@ export function TransportRouteStory() {
       >
         <m.span
           variants={heroItem}
-          className="ge-on-dark-kicker inline-flex items-center gap-2 rounded-full border border-[#f4dfa6]/55 bg-white/[0.08] px-4 py-2 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.24em] shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_0_24px_rgba(217,190,122,0.18)] backdrop-blur-sm sm:text-[0.74rem]"
+          className="ge-on-dark-kicker inline-flex items-center gap-2 rounded-full border border-[#f4dfa6]/55 bg-forest-900 px-4 py-2 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.24em] shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_0_24px_rgba(217,190,122,0.18)] sm:text-[0.74rem]"
           data-keep-color
           style={{ color: '#fbe8b5' }}
         >
@@ -94,7 +92,7 @@ export function TransportRouteStory() {
         <m.span
           aria-hidden="true"
           variants={heroItem}
-          className="mx-auto mt-6 block h-[3px] w-24 rounded-full bg-gradient-to-r from-transparent via-[#f4dfa6] to-transparent"
+          className="mx-auto mt-6 h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent"
         />
 
         <m.h2
@@ -173,7 +171,7 @@ export function TransportRouteStory() {
               />
               {/* Gold step badge — was forest-on-dark, now gold-on-dark */}
               <span
-                className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full border border-[#f4dfa6]/55 bg-[#06150f]/80 px-3 py-1.5 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.2em] backdrop-blur-md shadow-[0_8px_18px_rgba(0,0,0,0.45)] sm:text-[0.74rem]"
+                className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full border border-[#f4dfa6]/55 bg-[#06150f]/80 px-3 py-1.5 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.2em] shadow-[0_8px_18px_rgba(0,0,0,0.45)] sm:text-[0.74rem]"
                 data-keep-color
                 style={{ color: '#fbe8b5' }}
               >
@@ -188,10 +186,7 @@ export function TransportRouteStory() {
 
             <div className="relative flex flex-1 flex-col px-6 pb-7 pt-6 sm:px-7 sm:pb-8 sm:pt-7">
               {/* Top hairline inside the card */}
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-x-7 top-0 h-px bg-gradient-to-r from-transparent via-[#f4dfa6]/45 to-transparent"
-              />
+              <GeGoldDividerLineAbsoluteTop />
 
               <h3
                 className="font-ge text-[1.32rem] font-extrabold leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.55)] sm:text-[1.5rem]"

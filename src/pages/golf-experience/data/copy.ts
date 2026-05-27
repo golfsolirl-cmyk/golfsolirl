@@ -312,4 +312,4 @@ export const extrasCopy = {
 } as const
 
 export const aboutFooterCopy =
-  'Irish-owned and based on the Costa del Sol, GolfSol Ireland is a fully bonded golf travel specialist serving Irish societies, four-balls and family groups travelling to Spain’s Sol corridor.'
+  'Irish-owned and based on the Costa del Sol, GolfSol Ireland is a fully bonded golf travel specialist, fully insured on all transfers, serving Irish societies, four-balls and groups of 8 people travelling to Spain’s Sol corridor.'

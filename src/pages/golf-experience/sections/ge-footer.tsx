@@ -1,6 +1,7 @@
 import { ChevronRight, Mail } from 'lucide-react'
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaXTwitter } from 'react-icons/fa6'
 import { FooterBrandLogoPicture } from '../../../components/brand-logo-picture'
+import { BrandPlaneToFairwayTagline } from '../../../components/brand-plane-to-fairway-tagline'
 import { GOLFSOL_BRAND_LOGO_FOOTER_SIZES, GOLFSOL_BRAND_LOGO_INTRINSIC } from '../../../lib/brand-logo-assets'
 import { GeButton } from '../components/ge-button'
 import { GeDualPhoneFooterLines } from '../components/ge-dual-phone-contact'
@@ -67,7 +68,7 @@ export function GeFooter() {
                   href={href}
                   rel="noreferrer"
                   target="_blank"
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-brand-700/45 bg-gs-dark/50 text-silver-200 shadow-[0_0_0_1px_rgba(19, 96, 71,0.2)] ring-1 ring-brand-700/35 transition-all hover:-translate-y-0.5 hover:border-brand-700 hover:bg-white/[0.06] hover:text-white hover:shadow-[0_0_0_1px_rgba(217,190,122,0.35)] hover:ring-brand-700/55"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-brand-700/45 bg-gs-dark/50 text-silver-200 shadow-[0_0_0_1px_rgba(19, 96, 71,0.2)] ring-1 ring-brand-700/35 transition-all hover:-translate-y-0.5 hover:border-brand-700 hover:bg-forest-900 hover:text-white hover:shadow-[0_0_0_1px_rgba(217,190,122,0.35)] hover:ring-brand-700/55"
                 >
                   <Icon className="h-4 w-4" />
                 </a>
@@ -87,7 +88,8 @@ export function GeFooter() {
               decoding="async"
               className="h-auto w-full max-w-[min(100%,20rem)] select-none object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.45)] sm:max-w-[21rem] md:max-w-[22.5rem]"
             />
-            <p className="mt-6 font-ge text-[1.05rem] leading-8 text-white sm:text-[0.98rem]">{aboutFooterCopy}</p>
+            <BrandPlaneToFairwayTagline tone="dark" layout="footer" className="mt-4 sm:mt-5" />
+            <p className="mt-5 font-ge text-[1.05rem] leading-8 text-white sm:mt-6 sm:text-[0.98rem]">{aboutFooterCopy}</p>
           </div>
           <div className="flex flex-col items-start gap-4 lg:items-end">
             <p className="font-ge text-[0.95rem] font-extrabold uppercase tracking-[0.18em] text-[#fbe8b5] drop-shadow-[0_0_14px_rgba(217,190,122,0.3)] sm:text-[0.86rem]">

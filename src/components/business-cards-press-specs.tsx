@@ -398,7 +398,7 @@ function PressLandscapeBack({
             <m.a
               key={`${person.name}-${row.label}`}
               href={row.href}
-              className="group flex min-h-0 min-w-0 gap-1 rounded-md border border-[#08120d]/14 bg-white/90 px-1.5 py-1 transition-colors hover:border-[#c9a227]/55 hover:bg-white"
+              className="group flex min-h-0 min-w-0 gap-1 rounded-md border border-[#08120d]/14 bg-white px-1.5 py-1 transition-colors hover:border-[#c9a227]/55 hover:bg-white"
               initial={reduce || isPdf ? false : { opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.04 + i * 0.03, duration: 0.3 }}
@@ -579,7 +579,7 @@ function DarkPortraitBack({
           <a href={`tel:${businessCardContact.phoneIe.replace(/\s/g, '')}`} className="block rounded-md border border-[#d9be7a]/40 bg-[#d9be7a]/10 px-2 py-1.5 text-center font-ge text-[0.52rem] font-black" style={{ color: '#fbe8b5' }}>
             {businessCardContact.phoneIe}
           </a>
-          <a href={`tel:${businessCardContact.phoneEs.replace(/\s/g, '')}`} className="block rounded-md border border-white/20 bg-white/5 px-2 py-1.5 text-center font-ge text-[0.48rem] font-bold" style={{ color: 'rgba(255,255,255,0.92)' }}>
+          <a href={`tel:${businessCardContact.phoneEs.replace(/\s/g, '')}`} className="block rounded-md border border-white/20 bg-forest-950 px-2 py-1.5 text-center font-ge text-[0.48rem] font-bold" style={{ color: 'rgba(255,255,255,0.92)' }}>
             {businessCardContact.phoneEs}
           </a>
           <a href={`mailto:${businessCardContact.email}`} className="block text-center font-ge text-[0.46rem] font-bold underline decoration-[#d9be7a]/50 underline-offset-[3px]" style={{ color: '#d9be7a' }}>
@@ -712,7 +712,7 @@ function DarkLandscapeBack({
             <m.a
               key={`dark-${person.name}-${row.label}`}
               href={row.href}
-              className="group flex min-h-0 min-w-0 gap-1 rounded-md border border-[#d9be7a]/20 bg-white/[0.04] px-1.5 py-1 transition-colors hover:border-[#d9be7a]/45 hover:bg-white/[0.08]"
+              className="group flex min-h-0 min-w-0 gap-1 rounded-md border border-[#d9be7a]/20 bg-forest-950 px-1.5 py-1 transition-colors hover:border-[#d9be7a]/45 hover:bg-forest-900"
               initial={reduce || isPdf ? false : { opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.04 + i * 0.03, duration: 0.3 }}

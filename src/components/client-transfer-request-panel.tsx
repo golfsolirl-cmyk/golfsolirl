@@ -607,7 +607,7 @@ export function ClientTransferRequestPanel() {
         </div>
       </div>
 
-      <div className="mt-6 rounded-2xl border border-forest-200/90 bg-white/90 px-4 py-4 shadow-inner">
+      <div className="mt-6 rounded-2xl border border-forest-200/90 bg-white px-4 py-4 shadow-inner">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Via stops (optional)</p>

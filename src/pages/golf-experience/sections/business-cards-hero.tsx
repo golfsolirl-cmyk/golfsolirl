@@ -37,7 +37,7 @@ export function BusinessCardsHero() {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <span className="rounded-full border border-white/20 bg-white/10 px-4 py-2 font-ge text-[0.68rem] font-bold uppercase tracking-[0.14em] text-white">
+              <span className="rounded-full border border-white/20 bg-forest-900 px-4 py-2 font-ge text-[0.68rem] font-bold uppercase tracking-[0.14em] text-white">
                 {businessCardPerson.name}
               </span>
               <span className="rounded-full border border-[#136047]/35 bg-[#136047]/15 px-4 py-2 font-ge text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[#fdf6bf]">
@@ -54,7 +54,7 @@ export function BusinessCardsHero() {
               </a>
               <a
                 href={`tel:${businessCardContact.phoneIe.replace(/\s/g, '')}`}
-                className="inline-flex items-center justify-center rounded-full border-2 border-white/35 px-6 py-3 font-ge text-sm font-extrabold text-white transition hover:bg-white/10"
+                className="inline-flex items-center justify-center rounded-full border-2 border-white/35 px-6 py-3 font-ge text-sm font-extrabold text-white transition hover:bg-forest-900"
               >
                 {businessCardContact.phoneIe}
               </a>

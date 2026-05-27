@@ -15,7 +15,7 @@ export function PortalAccountLoadingState({ compact = false }: PortalAccountLoad
   if (compact) {
     return (
       <div
-        className="relative mx-auto flex max-w-sm flex-col items-center rounded-2xl border border-forest-200/70 bg-white/90 px-8 py-10 shadow-soft backdrop-blur-sm"
+        className="relative mx-auto flex max-w-sm flex-col items-center rounded-2xl border border-forest-200/70 bg-white px-8 py-10 shadow-soft"
         role="status"
         aria-live="polite"
       >
@@ -139,21 +139,21 @@ export function PortalAccountLoadingState({ compact = false }: PortalAccountLoad
           <m.span
             animate={{ y: [0, -5, 0] }}
             transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay: 0 }}
-            className="flex h-11 w-11 items-center justify-center rounded-xl border border-forest-200/80 bg-white/90 shadow-sm"
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-forest-200/80 bg-white shadow-sm"
           >
             <PlaneLanding className="h-5 w-5 text-emerald-800" strokeWidth={2} aria-hidden />
           </m.span>
           <m.span
             animate={{ y: [0, -5, 0] }}
             transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay: 0.25 }}
-            className="flex h-11 w-11 items-center justify-center rounded-xl border border-forest-200/80 bg-white/90 shadow-sm"
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-forest-200/80 bg-white shadow-sm"
           >
             <Trophy className="h-5 w-5 text-brand-600" strokeWidth={2} aria-hidden />
           </m.span>
           <m.span
             animate={{ y: [0, -5, 0] }}
             transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-            className="flex h-11 w-11 items-center justify-center rounded-xl border border-forest-200/80 bg-white/90 shadow-sm"
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-forest-200/80 bg-white shadow-sm"
           >
             <Building2 className="h-5 w-5 text-fairway-700" strokeWidth={2} aria-hidden />
           </m.span>

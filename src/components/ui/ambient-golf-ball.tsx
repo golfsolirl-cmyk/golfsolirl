@@ -240,7 +240,7 @@ export function AmbientGolfBall({
               scaleY: isHero ? [0.92, 0.78, 0.9, 0.92] : [1, 0.92, 0.98, 1],
               opacity: isHero ? [0.22, 0.32, 0.24, 0.22] : [0.2, 0.25, 0.2]
             }}
-            className="absolute bottom-[-9%] left-1/2 h-[18%] w-[72%] -translate-x-1/2 rounded-full bg-black/25 blur-[18px]"
+            className="absolute bottom-[-9%] left-1/2 h-[18%] w-[72%] -translate-x-1/2 rounded-full bg-brand-charcoal/80 blur-[18px]"
             transition={{ duration: isHero ? 10 : 8, ease: 'easeInOut', repeat: Infinity }}
           />
           <m.div

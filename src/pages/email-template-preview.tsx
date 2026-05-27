@@ -92,7 +92,7 @@ export function EmailTemplatePreviewPage() {
       />
 
       <div className="relative mx-auto max-w-7xl">
-        <section className="rounded-[2rem] border border-white/14 bg-white/[0.07] p-6 shadow-[0_32px_120px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:p-8">
+        <section className="rounded-[2rem] border border-white/14 bg-white/[0.07] p-6 shadow-[0_32px_120px_rgba(0,0,0,0.35)] sm:p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-[#136047]/50 bg-[#136047]/14 px-3.5 py-1.5 font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.24em] text-[#d9be7a]">
@@ -129,7 +129,7 @@ export function EmailTemplatePreviewPage() {
                 className={
                   activeId === s.id
                     ? 'rounded-full border border-[#136047] bg-[#136047]/22 px-4 py-2.5 text-xs font-extrabold uppercase tracking-[0.14em] text-[#d9be7a] shadow-sm'
-                    : 'rounded-full border border-white/18 bg-white/[0.06] px-4 py-2.5 text-xs font-bold uppercase tracking-[0.14em] text-white/82 transition hover:border-white/32 hover:bg-white/10'
+                    : 'rounded-full border border-white/18 bg-forest-900 px-4 py-2.5 text-xs font-bold uppercase tracking-[0.14em] text-white/82 transition hover:border-white/32 hover:bg-forest-900'
                 }
               >
                 {s.label}
@@ -166,7 +166,7 @@ export function EmailTemplatePreviewPage() {
                 <Smartphone className="h-4 w-4 text-[#136047]/90" aria-hidden />
                 Mobile preview
               </span>
-              <span className="rounded-full bg-white/[0.08] px-2.5 py-1 text-white/75">375px</span>
+              <span className="rounded-full bg-forest-900 px-2.5 py-1 text-white/75">375px</span>
             </div>
             <div className="mx-auto max-w-[375px] rounded-[2rem] border-[11px] border-[#1a1a1a] bg-[#1a1a1a] shadow-[0_28px_80px_rgba(0,0,0,0.45)]">
               {iframeSrc ? (

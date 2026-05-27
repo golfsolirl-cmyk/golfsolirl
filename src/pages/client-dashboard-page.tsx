@@ -1567,11 +1567,11 @@ export function ClientDashboardPage() {
   const interestHeroAdornment =
     hasUnreadInterestReplies ? (
       <button
-        className="ge-on-dark group relative flex max-w-full cursor-pointer items-center gap-3 rounded-2xl border border-emerald-400/45 bg-gradient-to-br from-emerald-900/80 via-[#0c3d2c]/85 to-gs-green/90 px-4 py-2.5 text-left shadow-[0_0_0_1px_rgba(19, 96, 71,0.12),0_12px_40px_rgba(16,185,129,0.28)] ring-1 ring-white/10 backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:border-brand-700/50 hover:shadow-[0_0_0_1px_rgba(19, 96, 71,0.35),0_16px_48px_rgba(16,185,129,0.35)]"
+        className="ge-on-dark group relative flex max-w-full cursor-pointer items-center gap-3 rounded-2xl border border-emerald-400/45 bg-gradient-to-br from-emerald-900/80 via-[#0c3d2c]/85 to-gs-green/90 px-4 py-2.5 text-left shadow-[0_0_0_1px_rgba(19, 96, 71,0.12),0_12px_40px_rgba(16,185,129,0.28)] ring-1 ring-white/10 transition duration-300 hover:-translate-y-0.5 hover:border-brand-700/50 hover:shadow-[0_0_0_1px_rgba(19, 96, 71,0.35),0_16px_48px_rgba(16,185,129,0.35)]"
         onClick={() => openTeamMessagingAndScroll()}
         type="button"
       >
-        <span className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10">
+        <span className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-forest-900">
           <MessageCircle className="relative z-[1] h-5 w-5 text-fairway-50 drop-shadow-sm" aria-hidden />
           <span className="pointer-events-none absolute inset-0 rounded-full bg-emerald-400/25 blur-md" aria-hidden />
           <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5">
@@ -1687,7 +1687,7 @@ export function ClientDashboardPage() {
       variant="client"
     >
       {listLoading ? (
-        <div className="fixed inset-0 z-[35] flex items-center justify-center overflow-y-auto overscroll-contain bg-white/55 backdrop-blur-md supports-[backdrop-filter]:bg-white/40">
+        <div className="fixed inset-0 z-[35] flex items-center justify-center overflow-y-auto overscroll-contain bg-offwhite supports-[]:bg-offwhite">
           <PortalAccountLoadingState compact />
         </div>
       ) : null}
@@ -1859,7 +1859,7 @@ export function ClientDashboardPage() {
                         'flex gap-3 rounded-2xl border px-4 py-3 shadow-sm transition-colors',
                         transferBuilderOpen && tripDraft.stages.transfer
                           ? 'border-fairway-400 bg-fairway-50/70'
-                          : 'border-forest-100 bg-white/90 hover:border-fairway-300'
+                          : 'border-forest-100 bg-white hover:border-fairway-300'
                       )}
                       key={key}
                     >
@@ -1884,7 +1884,7 @@ export function ClientDashboardPage() {
                     </div>
                   ) : (
                     <label
-                      className="flex cursor-pointer gap-3 rounded-2xl border border-forest-100 bg-white/90 px-4 py-3 shadow-sm transition-colors hover:border-fairway-300"
+                      className="flex cursor-pointer gap-3 rounded-2xl border border-forest-100 bg-white px-4 py-3 shadow-sm transition-colors hover:border-fairway-300"
                       key={key}
                     >
                       <input
@@ -1971,7 +1971,7 @@ export function ClientDashboardPage() {
                   stops={normalizeTransferStops(tripDraft.transferStops)}
                 />
               ) : tripDraft.stages.transfer ? (
-                <div className="rounded-2xl border border-dashed border-forest-200 bg-white/90 p-5 text-center shadow-sm">
+                <div className="rounded-2xl border border-dashed border-forest-200 bg-white p-5 text-center shadow-sm">
                   <p className="text-sm text-forest-700">
                     Build your route: Málaga Airport or a corridor hotel as pick-up, then add up to eight stops including
                     airports, hotels, and courses.
@@ -1990,7 +1990,7 @@ export function ClientDashboardPage() {
           </div>
 
           {tripIllustrative ? (
-            <div className="mt-8 rounded-2xl border border-forest-200 bg-white/95 px-5 py-4 text-sm text-forest-800">
+            <div className="mt-8 rounded-2xl border border-forest-200 bg-white px-5 py-4 text-sm text-forest-800">
               <p className="font-semibold text-forest-950">Illustrative ballpark (not a binding quote)</p>
               <p className="mt-1 text-forest-700">
                 From roughly{' '}

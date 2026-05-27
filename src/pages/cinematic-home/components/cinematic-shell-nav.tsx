@@ -7,7 +7,7 @@ export function CinematicShellNav({ className }: { readonly className?: string }
   return (
     <header
       className={cx(
-        'sticky top-0 z-50 border-b border-white/[0.06] bg-forest-950/55 backdrop-blur-xl',
+        'sticky top-0 z-50 border-b border-white/[0.06] bg-forest-950/55',
         className
       )}
     >

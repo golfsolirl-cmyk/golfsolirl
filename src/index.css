@@ -46,6 +46,9 @@
     /** Header navbar — locked (unchanged). */
     --header-bg: #f7f4ec;
 
+    /** Fixed header (nav row + tagline ribbon) — hero spacers match this exactly. */
+    --ge-fixed-header-h: 178px;
+
     /* ========= TEXT ========= */
     --text-primary: #08120d;
     --text-secondary: #425047;
@@ -135,6 +138,30 @@
     --green-light: var(--brand-500);
     --text-main: var(--text-primary);
     --border-soft: var(--border-default);
+  }
+
+  @media (min-width: 640px) {
+    :root {
+      --ge-fixed-header-h: 180px;
+    }
+  }
+
+  @media (min-width: 768px) {
+    :root {
+      --ge-fixed-header-h: 182px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    :root {
+      --ge-fixed-header-h: 166px;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    :root {
+      --ge-fixed-header-h: 168px;
+    }
   }
 
   html {
@@ -494,6 +521,20 @@
   .pdf-page-shell {
     padding: 0 !important;
     background: #ffffff !important;
+  }
+
+  #proposal-pdf-export-root [data-proposal-dark-panel] :is(h1, h2, h3, h4, p, li, span, strong) {
+    color: #ffffff !important;
+  }
+
+  #proposal-pdf-export-root [data-proposal-dark-panel] .proposal-pdf-kicker {
+    color: #c9e8d4 !important;
+  }
+
+  #proposal-pdf-export-root [data-proposal-dark-panel] .proposal-pdf-muted,
+  #proposal-pdf-export-root [data-proposal-dark-panel] .proposal-pdf-meta-card,
+  #proposal-pdf-export-root [data-proposal-dark-panel] .proposal-pdf-meta-card p {
+    color: #eef6f1 !important;
   }
 }
 

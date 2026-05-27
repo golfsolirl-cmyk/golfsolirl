@@ -84,10 +84,10 @@ export const NAMED_HERO_IMAGE_SETS = {
     alt: 'Twilight golf on the Costa del Sol — softer light and great value tee times.'
   },
   packages: {
-    desktop: '/images/hero-from-plane-to-fairway-premium-desktop.webp',
-    tablet: '/images/hero-from-plane-to-fairway-premium.webp',
-    mobile: '/images/hero-from-plane-to-fairway-mobile.webp',
-    alt: 'Stay-and-play golf packages for Irish societies on the Costa del Sol.'
+    desktop: '/images/packages-hero-v3-desktop.webp',
+    tablet: '/images/packages-hero-v3-tablet.webp',
+    mobile: '/images/packages-hero-v3-mobile.webp',
+    alt: 'Twilight golf and premium Costa del Sol stays — build your stay-and-play package with live pricing.'
   },
   testimonial: {
     desktop: '/images/ge-premium-golf-group-testimonial.webp',

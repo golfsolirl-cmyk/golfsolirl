@@ -13,8 +13,9 @@ export function GeFinalCta() {
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-[12%] top-0 h-px bg-gradient-to-r from-transparent via-brand-700/90 to-transparent"
-        />
+          className="pointer-events-none absolute inset-x-0 top-0 flex justify-center"
+        ><div className="mx-auto h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent" />
+        </div>
         <div className="relative">
           <p className="font-ge text-[0.82rem] font-bold uppercase tracking-[0.22em] text-gs-green sm:text-[0.86rem]">
             Ready when you are

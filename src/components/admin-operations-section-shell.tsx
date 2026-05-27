@@ -27,7 +27,7 @@ export function AdminOperationsSectionShell(props: {
       id={props.id}
     >
       {showHeaderRow ? (
-        <div className="border-b border-forest-900/[0.05] bg-white/40 px-6 py-5 sm:px-8">
+        <div className="border-b border-forest-900/[0.05] bg-offwhite px-6 py-5 sm:px-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0 flex-1">
               {props.kicker ? (

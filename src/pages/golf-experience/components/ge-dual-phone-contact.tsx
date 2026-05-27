@@ -28,7 +28,7 @@ export function GeDualPhoneTopBarDesktop() {
 }
 
 const topBarMobileIconClass =
-  'inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/15 transition-colors hover:bg-white/25'
+  'inline-flex h-11 w-11 items-center justify-center rounded-full bg-forest-900 transition-colors hover:bg-white/25'
 
 /** Mobile green strip: Irish + Spanish tap targets beside mail. */
 export function GeDualPhoneTopBarMobileIcons() {

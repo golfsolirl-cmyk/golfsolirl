@@ -425,22 +425,29 @@ function ProposalTemplatePage() {
         ) : null}
       </div>
 
-      <div ref={proposalCardRef} className="mx-auto max-w-[1100px] overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-[0_22px_70px_rgba(10,32,8,0.12)] print:shadow-none">
-        <div className="relative overflow-hidden bg-forest-950 px-8 py-8 text-white md:px-10">
+      <div
+        ref={proposalCardRef}
+        id="proposal-pdf-export-root"
+        className="mx-auto max-w-[1100px] overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-[0_22px_70px_rgba(10,32,8,0.12)] print:shadow-none"
+      >
+        <div
+          className="relative overflow-hidden bg-forest-950 px-8 py-8 text-white md:px-10"
+          data-proposal-dark-panel
+        >
           <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(80,163,45,0.18),transparent_24%),radial-gradient(circle_at_top_right,rgba(19, 96, 71,0.14),transparent_20%)]" />
           <div className="relative z-10 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
             <div>
               <Logo tone="scrolled" />
-              <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-300">{documentTemplate.hero.kicker}</p>
-              <h1 className="mt-3 max-w-2xl font-display text-4xl font-bold leading-tight text-white md:text-5xl">
+              <p className="proposal-pdf-kicker mt-5 text-[11px] font-semibold uppercase tracking-[0.24em]">{documentTemplate.hero.kicker}</p>
+              <h1 className="mt-3 max-w-2xl font-display text-4xl font-bold leading-tight md:text-5xl" style={{ color: '#ffffff' }}>
                 {documentTemplate.hero.title}
               </h1>
-              <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/72">
+              <p className="proposal-pdf-muted mt-4 max-w-2xl text-sm leading-relaxed">
                 {documentTemplate.hero.description}
               </p>
             </div>
 
-            <div className="rounded-[1.5rem] bg-white/8 px-5 py-4 text-sm text-white/74">
+            <div className="proposal-pdf-meta-card rounded-[1.5rem] px-5 py-4 text-sm">
               <p>{documentTemplate.hero.metaCard[0]}</p>
               <p className="mt-2">{documentTemplate.hero.metaCard[1]}</p>
             </div>
@@ -510,17 +517,17 @@ function ProposalTemplatePage() {
               </div>
             </div>
 
-            <div className="rounded-[1.8rem] border border-forest-100 bg-forest-950 p-6 text-white">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-300">{documentTemplate.lower.right.kicker}</p>
-              <div className="mt-5 space-y-4 text-sm leading-relaxed text-white/76">
+            <div className="rounded-[1.8rem] border border-forest-100 bg-forest-950 p-6 text-white" data-proposal-dark-panel>
+              <p className="proposal-pdf-kicker text-[11px] font-semibold uppercase tracking-[0.22em]">{documentTemplate.lower.right.kicker}</p>
+              <div className="proposal-pdf-muted mt-5 space-y-4 text-sm leading-relaxed">
                 {documentTemplate.lower.right.paragraphs.map((paragraph) => (
                   <p key={paragraph}>{paragraph}</p>
                 ))}
               </div>
 
-              <div className="mt-6 rounded-[1.5rem] bg-white/6 p-5">
-                <p className="text-sm font-semibold text-white">{documentTemplate.lower.right.signoffTitle}</p>
-                <div className="mt-4 space-y-3 text-sm text-white/74">
+              <div className="proposal-pdf-meta-card mt-6 rounded-[1.5rem] p-5">
+                <p className="text-sm font-semibold">{documentTemplate.lower.right.signoffTitle}</p>
+                <div className="proposal-pdf-muted mt-4 space-y-3 text-sm">
                   {documentTemplate.lower.right.signoffLines.map((line) => (
                     <p key={line}>{line}</p>
                   ))}

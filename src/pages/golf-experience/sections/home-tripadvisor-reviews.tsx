@@ -223,10 +223,6 @@ export function GeHomeTripadvisorReviews() {
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-700/50 to-transparent"
-      />
-      <div
-        aria-hidden="true"
         className="pointer-events-none absolute -right-20 top-1/3 h-72 w-72 rounded-full bg-gs-green/[0.06] blur-[90px]"
       />
       <div

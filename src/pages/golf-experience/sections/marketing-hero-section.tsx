@@ -123,7 +123,7 @@ export function MarketingHeroSection() {
                 Costa Del Sol Tee-Off
               </div>
               <span
-                className="hidden rounded-full border border-dashed border-[#0b4d3b]/50 bg-[#063b2e]/65 px-2.5 py-1 font-ge text-[9px] font-bold uppercase tracking-[0.35em] text-[#e3ebe6] backdrop-blur-sm min-[901px]:inline-flex"
+                className="hidden rounded-full border border-dashed border-[#0b4d3b]/50 bg-[#063b2e]/65 px-2.5 py-1 font-ge text-[9px] font-bold uppercase tracking-[0.35em] text-[#e3ebe6] min-[901px]:inline-flex"
                 title="Irish-owned"
               >
                 ☘ Irish-owned
@@ -202,7 +202,7 @@ export function MarketingHeroSection() {
         </div>
 
         {/* Bottom feature strip */}
-        <div className="relative z-[1] mt-auto border-t-[3px] border-[#0b4d3b] bg-gradient-to-r from-[rgba(4,62,45,0.96)] to-[rgba(6,77,58,0.91)] px-4 py-6 backdrop-blur-[3px] supports-[padding:max(0px)]:pb-[max(1.35rem,env(safe-area-inset-bottom))] min-[901px]:grid min-[901px]:grid-cols-[1.22fr_0.78fr] min-[901px]:items-center min-[901px]:gap-6 min-[901px]:px-[clamp(20px,3.8vw,52px)] min-[901px]:py-[clamp(20px,3.2vw,40px)]">
+        <div className="relative z-[1] mt-auto border-t-[3px] border-[#0b4d3b] bg-gradient-to-r from-[rgba(4,62,45,0.96)] to-[rgba(6,77,58,0.91)] px-4 py-6 supports-[padding:max(0px)]:pb-[max(1.35rem,env(safe-area-inset-bottom))] min-[901px]:grid min-[901px]:grid-cols-[1.22fr_0.78fr] min-[901px]:items-center min-[901px]:gap-6 min-[901px]:px-[clamp(20px,3.8vw,52px)] min-[901px]:py-[clamp(20px,3.2vw,40px)]">
           <ul className="grid list-none grid-cols-1 gap-3 p-0 min-[901px]:grid-cols-2 min-[901px]:gap-x-10 min-[901px]:gap-y-3">
             {CHECKS.map((line) => (
               <li
@@ -246,7 +246,7 @@ export function MarketingHeroSection() {
         href="#design-package"
         onClick={scrollToDesignPackage}
         aria-label="Scroll to design your package"
-        className="pointer-events-auto absolute bottom-[calc(4.25rem+env(safe-area-inset-bottom,0px))] left-1/2 z-40 inline-flex size-10 -translate-x-1/2 items-center justify-center rounded-full border border-[#0b4d3b]/40 bg-[#063b2e]/88 text-[#eef2ef] shadow-[0_10px_24px_rgba(0,0,0,0.32)] backdrop-blur-sm min-[901px]:bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))] sm:size-11"
+        className="pointer-events-auto absolute bottom-[calc(4.25rem+env(safe-area-inset-bottom,0px))] left-1/2 z-40 inline-flex size-10 -translate-x-1/2 items-center justify-center rounded-full border border-[#0b4d3b]/40 bg-[#063b2e]/88 text-[#eef2ef] shadow-[0_10px_24px_rgba(0,0,0,0.32)] min-[901px]:bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))] sm:size-11"
         whileHover={reduce ? undefined : { scale: 1.06 }}
         animate={reduce ? undefined : { y: [0, 5, 0] }}
         transition={reduce ? undefined : { y: { duration: 2.2, repeat: Infinity, ease: 'easeInOut' } }}

@@ -1,23 +1,22 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
-import { m  } from 'framer-motion'
+import { m, type Variants } from 'framer-motion'
 import {
+  ArrowRight,
   BedDouble,
   Bus,
   CalendarRange,
   CheckCircle2,
-  ShieldCheck,
   Sparkles,
   Users
 } from 'lucide-react'
-import { HeroFormScrollCue } from '../components/home/hero-form-scroll-cue'
-import { Navbar } from '../components/home/navbar'
-import { PageIdentityBar } from '../components/page-identity-bar'
-import { LuxuryButton } from '../components/ui/button'
-import { SiteFooter } from '../components/site-footer'
-import { AmbientGolfBall } from '../components/ui/ambient-golf-ball'
-import { Logo, ShamrockIcon } from '../components/ui/logo'
-import { AnimatedStepKicker, SectionHeader } from '../components/ui/section-header'
-import { WaveDivider } from '../components/ui/wave-divider'
+import { PremiumPageHero } from '../components/home/premium-page-hero'
+import { NAMED_HERO_IMAGE_SETS } from '../lib/page-hero-images'
+import { usePageMeta } from '../lib/use-page-meta'
+import { GeButton } from './golf-experience/components/ge-button'
+import { GeSection } from './golf-experience/components/ge-section'
+import { WhatsappFab } from './golf-experience/components/whatsapp-fab'
+import { GeFooter } from './golf-experience/sections/ge-footer'
+import { GeNavbar } from './golf-experience/sections/ge-navbar'
 import { integrationRegistry } from '../config/integrations'
 import {
   COURSES,
@@ -31,98 +30,106 @@ import { ENQUIRY_CONFLICT_EXISTING_PHONE, postWebsiteEnquiry } from '../lib/post
 import { TERMS_ACCEPTANCE_ERROR, termsAcceptanceFormFields } from '../lib/terms-acceptance'
 import { GeTermsAcceptanceField } from './golf-experience/components/ge-terms-acceptance-field'
 import { buildPackageConfig, defaultLabelForBuild } from '../lib/package-build'
+import { usePackageCalculatorPricing } from '../lib/use-package-calculator-pricing'
 import { cx } from '../lib/utils'
 import { useAuth } from '../providers/auth-provider'
-import { CookieBanner, FloatingWhatsAppButton, formatEuro } from './packages'
+import { CookieBanner, formatEuro } from './packages'
 
 const CourseHotelMapPicker = lazy(async () => {
-  const m = await import('../components/course-hotel-map-picker')
-  return { default: m.CourseHotelMapPicker }
+  const mod = await import('../components/course-hotel-map-picker')
+  return { default: mod.CourseHotelMapPicker }
 })
 
-const packagePageLinks = ['Packages', 'Stays', 'Calculator', 'Enquire'] as const
+const PACKAGE_HERO_TRUST = [
+  { icon: Users, label: '1 to 8 golfers' },
+  { icon: CalendarRange, label: 'Live trip estimate' },
+  { icon: BedDouble, label: 'Stay levels priced in' },
+  { icon: Bus, label: 'Transfer options included' }
+] as const
 
-const packageStyles = [
+const sectionHeaderContainer: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.07, delayChildren: 0.04 } }
+}
+
+const sectionHeaderItem: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.48, ease: 'easeOut' } }
+}
+
+const packageCardSelected =
+  'ge-on-dark border-brand-700 bg-gradient-to-br from-gs-green to-brand-800 text-white shadow-[0_18px_48px_rgba(6,59,42,0.28)]'
+const packageCardDefault =
+  'border-forest-800/15 bg-gradient-to-b from-white to-[#f5f1e8] text-gs-dark shadow-[0_10px_28px_rgba(6,32,22,0.09)]'
+
+const packageFieldLabel =
+  'mb-1.5 block font-ge text-[0.72rem] font-bold uppercase tracking-[0.14em] text-gs-dark/72'
+const packageFieldInput =
+  'h-12 w-full rounded-xl border border-ge-gray200 bg-white px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-brand-700/40 transition-shadow placeholder:text-ge-gray300 focus:border-brand-700 focus:ring-2'
+
+const PACKAGE_STYLE_META = [
   {
     name: 'Social Escape',
     badge: 'Easy-going premium',
     summary: 'A polished Costa del Sol golf trip with strong value, smart transfers, and everything lined up cleanly.',
-    roundPrice: 118,
-    planningFee: 105,
     included: ['Golf planning', 'Airport transfer setup', 'Stay matching', 'Ideal for shorter trips']
   },
   {
     name: 'Premium Fairway',
     badge: 'Most popular',
     summary: 'The sweet spot for Irish groups who want better hotels, cleaner routing, and a more premium overall trip feel.',
-    roundPrice: 145,
-    planningFee: 145,
     included: ['Premium accommodation fit', 'Smoother transfer plan', 'Stronger course shortlist', 'Best all-round choice']
   },
   {
     name: 'Signature Costa',
     badge: 'Luxury build',
     summary: 'A stronger high-end package for groups that want marquee golf, luxury stays, and a more elevated travel setup.',
-    roundPrice: 182,
-    planningFee: 210,
     included: ['Luxury routing', 'Marquee course mix', 'Higher-touch package setup', 'Best for standout trips']
   }
 ] as const
 
-const stayOptions = [
+const STAY_META = [
   {
     name: 'Coastal 3-star',
     area: 'La Cala',
-    pricePerNight: 92,
-    singleSupplementPerNight: 26,
     summary: 'Smart, social, and ideal for golfers who want the package to feel clean without overreaching on hotel spend.'
   },
   {
     name: 'Premium 4-star',
     area: 'Marbella',
-    pricePerNight: 148,
-    singleSupplementPerNight: 34,
     summary: 'The strongest all-round hotel option for most groups: better rooms, better feel, and a more premium stay rhythm.'
   },
   {
     name: 'Luxury 5-star',
     area: 'Estepona',
-    pricePerNight: 248,
-    singleSupplementPerNight: 56,
     summary: 'A more refined, elevated stay level for golfers who want the hotel to feel as premium as the courses.'
   }
 ] as const
 
-const transferOptions = [
+const TRANSFER_META = [
   {
     name: 'Shared arrival and golf transfers',
-    tripCost: 120,
     summary: 'The lightest transport setup for smaller groups who still want airport and golf-day movements covered.'
   },
   {
     name: 'Private return transfers',
-    tripCost: 260,
     summary: 'A cleaner, more private transport option that suits most premium golf groups very well.'
   },
   {
     name: 'Dedicated driver support',
-    tripCost: 520,
     summary: 'The smoothest premium option, with driver support across the trip rather than just the airport runs.'
   }
 ] as const
+
+const DEFAULT_PACKAGE_STYLE_NAME = PACKAGE_STYLE_META[1].name
+const DEFAULT_STAY_NAME = STAY_META[1].name
+const DEFAULT_TRANSFER_NAME = TRANSFER_META[1].name
 
 const transferNameByParam = {
   shared: 'Shared arrival and golf transfers',
   private: 'Private return transfers',
   driver: 'Dedicated driver support'
 } as const
-
-const routeStops = [
-  'Choose your group size',
-  'Pick the stay level',
-  'Add rounds and transfers',
-  'See the live package total'
-] as const
 
 const revealUp = {
   initial: { opacity: 0, y: 26 },
@@ -143,11 +150,11 @@ const getInitialSelectedPackageName = () => {
   const searchParams = new URLSearchParams(window.location.search)
   const raw = searchParams.get('package')
 
-  if (raw && packageStyles.some((item) => item.name === raw)) {
+  if (raw && PACKAGE_STYLE_META.some((item) => item.name === raw)) {
     return raw
   }
 
-  return packageStyles[1].name
+  return DEFAULT_PACKAGE_STYLE_NAME
 }
 
 const getInitialSelectedStayName = () => {
@@ -164,7 +171,7 @@ const getInitialSelectedStayName = () => {
     return stayNameByTier[Number(storedTier) as 3 | 4 | 5]
   }
 
-  return stayOptions[1].name
+  return DEFAULT_STAY_NAME
 }
 
 const getInitialSelectedTransferName = () => {
@@ -175,7 +182,7 @@ const getInitialSelectedTransferName = () => {
     return transferNameByParam[transferParam]
   }
 
-  return transferOptions[1].name
+  return DEFAULT_TRANSFER_NAME
 }
 
 const getInitialNumberParam = ({
@@ -200,7 +207,54 @@ const getInitialNumberParam = ({
 }
 
 function CustomerPackagePage() {
+  usePageMeta({
+    title: 'Costa del Sol golf packages for Irish travellers',
+    description:
+      'Build a Costa del Sol golf package live — choose stay level, group size, rounds, and transfers. Instant estimate for Irish golfers.',
+    canonicalPath: '/packages'
+  })
+
   const { session, isLoading: authLoading } = useAuth()
+  const calculatorPricing = usePackageCalculatorPricing()
+
+  const packageStyles = useMemo(
+    () =>
+      PACKAGE_STYLE_META.map((meta) => {
+        const rates = calculatorPricing.packages.find((item) => item.name === meta.name)
+        return {
+          ...meta,
+          roundPrice: rates?.roundPrice ?? 145,
+          planningFee: rates?.planningFee ?? 145
+        }
+      }),
+    [calculatorPricing.packages]
+  )
+
+  const stayOptions = useMemo(
+    () =>
+      STAY_META.map((meta) => {
+        const rates = calculatorPricing.stays.find((item) => item.name === meta.name)
+        return {
+          ...meta,
+          pricePerNight: rates?.pricePerNight ?? 148,
+          singleSupplementPerNight: rates?.singleSupplementPerNight ?? 34
+        }
+      }),
+    [calculatorPricing.stays]
+  )
+
+  const transferOptions = useMemo(
+    () =>
+      TRANSFER_META.map((meta) => {
+        const rates = calculatorPricing.transfers.find((item) => item.name === meta.name)
+        return {
+          ...meta,
+          tripCost: rates?.tripCost ?? 260
+        }
+      }),
+    [calculatorPricing.transfers]
+  )
+
   const [selectedPackageName, setSelectedPackageName] = useState<string>(getInitialSelectedPackageName)
   const [selectedStayName, setSelectedStayName] = useState<string>(getInitialSelectedStayName)
   const [selectedTransferName, setSelectedTransferName] = useState<string>(getInitialSelectedTransferName)
@@ -211,7 +265,6 @@ function CustomerPackagePage() {
     parseCourseHotelSearch(window.location.search)
   )
   const [hasAcceptedCookies, setHasAcceptedCookies] = useState(true)
-  const [isFooterInView, setIsFooterInView] = useState(false)
   const [isSavingBuild, setIsSavingBuild] = useState(false)
   const [saveBuildError, setSaveBuildError] = useState<string | null>(null)
   const [saveBuildOk, setSaveBuildOk] = useState(false)
@@ -223,7 +276,6 @@ function CustomerPackagePage() {
   const [enquiryError, setEnquiryError] = useState<string | null>(null)
   const [enquiryErrorCode, setEnquiryErrorCode] = useState<string | null>(null)
   const [termsAccepted, setTermsAccepted] = useState(false)
-  const footerRef = useRef<HTMLElement | null>(null)
   const enquiryConfirmationRef = useRef<HTMLDivElement>(null)
   const whatsAppHref = footerSocialLinks.find((link) => link.label === 'WhatsApp')?.href ?? 'https://www.whatsapp.com/'
 
@@ -598,498 +650,474 @@ function CustomerPackagePage() {
     }
   }, [enquiryStatus])
 
-  useEffect(() => {
-    if (!footerRef.current) {
-      return
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsFooterInView(entry.isIntersecting)
-      },
-      {
-        threshold: 0.2
-      }
-    )
-
-    observer.observe(footerRef.current)
-
-    return () => {
-      observer.disconnect()
-    }
-  }, [])
-
   return (
-    <div className="ge-page overflow-x-hidden bg-offwhite">
-      <Navbar links={packagePageLinks} primaryCta="Make enquiry" />
-      <PageIdentityBar
-        compact
-        description="Build a clear package, compare stay levels, and understand the trip cost live."
-        label="Packages"
-        offsetHeader
-      />
-      <FloatingWhatsAppButton hidden={isFooterInView} href={packageEnquiryWhatsAppHref} />
+    <div className="ge-page min-h-screen overflow-x-hidden bg-cream">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-brand-700 focus:px-4 focus:py-2 focus:font-ge focus:text-sm focus:font-bold focus:uppercase focus:tracking-[0.14em] focus:text-white"
+      >
+        Skip to content
+      </a>
+      <GeNavbar />
       <CookieBanner hidden={hasAcceptedCookies} onAccept={handleAcceptCookies} />
 
-      <main>
-        <section className="relative min-h-screen overflow-hidden bg-forest-900 px-6 pb-28 pt-36 md:pt-40" id="home">
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-cover bg-center opacity-45"
-            style={{ backgroundImage: `url(${heroBackgroundImage})` }}
+      <main id="main">
+        <PremiumPageHero
+          images={NAMED_HERO_IMAGE_SETS.packages}
+          kicker="Costa del Sol packages"
+          titleLine1="Choose your package style,"
+          titleLine2="size the group, see the cost live"
+          lead="Built for solo golfers, couples, and groups up to 8. Pick the stay level, transfer style, and number of rounds — the estimate updates instantly before you enquire."
+          primaryCta={{ label: 'Build your package', href: '#calculator', variant: 'gs-gold' }}
+          secondaryCta={{ label: 'Explore package styles', href: '#packages', variant: 'outline-gs-green' }}
+          trustBadges={PACKAGE_HERO_TRUST}
+          trustSectionTitle="Package builder"
+          formScrollTarget="#calculator"
+          formScrollLabel="Open the live calculator"
+          formScrollSublabel="Estimate updates as you choose"
+          formScrollShellTone="solid-light"
+          srTitle="Costa del Sol golf packages for Irish travellers"
+        />
+
+        <GeSection id="packages" background="white" innerClassName="!pt-14 !pb-16 sm:!pt-16 sm:!pb-20 scroll-mt-28">
+          <PackageSectionHeader
+            kicker="Package styles"
+            title="Choose the kind of Costa del Sol golf trip that fits your group"
+            body="Start with the package style that suits the trip best, then fine-tune the stay, group size, and trip shape in the live calculator."
           />
-          <div aria-hidden="true" className="absolute inset-0 bg-hero-overlay" />
-          <div aria-hidden="true" className="absolute inset-0 bg-hero-bottom" />
-          <div aria-hidden="true" className="absolute left-[-120px] top-[8%] h-72 w-72 rounded-full bg-fairway-500/18 blur-3xl md:h-96 md:w-96" />
-          <div aria-hidden="true" className="absolute right-[-90px] top-[-30px] h-72 w-72 rounded-full bg-brand-400/18 blur-3xl md:h-80 md:w-80" />
-          <AmbientGolfBall className="right-[4%] top-[16%] opacity-90 lg:right-[7%]" size="lg" tone="hero" variant="hero" />
 
-          <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[1.02fr_0.98fr]">
-            <m.div
-              animate={{ opacity: 1, y: 0 }}
-              initial={{ opacity: 0, y: 30 }}
-              transition={{ duration: 0.8, ease: 'easeOut' }}
+          <div className="mt-10 grid gap-6 lg:grid-cols-3">
+            {packageStyles.map((item) => {
+              const isSelected = item.name === selectedPackage.name
+
+              return (
+                <m.button
+                  key={item.name}
+                  aria-label={`Choose ${item.name} package style`}
+                  className={cx(
+                    'group relative overflow-hidden rounded-[1.75rem] border p-7 text-left transition-all duration-300 hover:-translate-y-0.5',
+                    isSelected ? packageCardSelected : packageCardDefault
+                  )}
+                  onClick={() => setSelectedPackageName(item.name)}
+                  type="button"
+                  {...revealUp}
+                >
+                  <span
+                    aria-hidden="true"
+                    className={cx(
+                      'pointer-events-none absolute inset-x-4 top-0 h-[2px] rounded-full bg-gradient-to-r from-transparent via-[#d4a843] to-transparent',
+                      isSelected ? 'opacity-100' : 'opacity-70'
+                    )}
+                  />
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <span
+                        className={cx(
+                          'inline-flex rounded-full border px-3 py-1.5 font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.14em]',
+                          isSelected
+                            ? 'border-white/25 bg-forest-900 text-white'
+                            : 'border-brand-700/25 bg-white text-gs-green'
+                        )}
+                      >
+                        {item.badge}
+                      </span>
+                      <h2 className="mt-4 font-ge text-[1.65rem] font-extrabold leading-tight tracking-[-0.02em] sm:text-[1.85rem]">
+                        {item.name}
+                      </h2>
+                    </div>
+                    <Sparkles className={cx('h-7 w-7 shrink-0', isSelected ? 'text-[#d4a843]' : 'text-brand-700')} aria-hidden="true" />
+                  </div>
+
+                  <p className={cx('mt-5 font-ge text-base leading-relaxed', isSelected ? 'text-white/82' : 'text-gs-dark/72')}>
+                    {item.summary}
+                  </p>
+
+                  <div
+                    className={cx(
+                      'mt-6 space-y-3 rounded-[1.35rem] border p-4',
+                      isSelected ? 'border-white/12 bg-forest-900' : 'border-forest-800/10 bg-white'
+                    )}
+                  >
+                    {item.included.map((entry) => (
+                      <div key={entry} className={cx('flex items-center gap-3 font-ge text-[0.98rem]', isSelected ? 'text-white/88' : 'text-gs-dark/78')}>
+                        <CheckCircle2 className={cx('h-4 w-4 shrink-0', isSelected ? 'text-[#d4a843]' : 'text-brand-700')} aria-hidden="true" />
+                        <span>{entry}</span>
+                      </div>
+                    ))}
+                  </div>
+                </m.button>
+              )
+            })}
+          </div>
+        </GeSection>
+
+        <GeSection id="stays" background="soft" innerClassName="!pt-14 !pb-16 sm:!pt-16 sm:!pb-20 scroll-mt-28">
+          <PackageSectionHeader
+            kicker="Stay options"
+            title="Choose the hotel level that feels right for the trip"
+            body="Accommodation is priced per person, per night. Choose the stay level that fits the trip and the calculator will update instantly."
+          />
+
+          <div className="mt-10 grid gap-6 lg:grid-cols-3">
+            {stayOptions.map((item) => {
+              const isSelected = item.name === selectedStay.name
+
+              return (
+                <m.button
+                  key={item.name}
+                  aria-label={`Choose ${item.name} stay option`}
+                    className={cx(
+                      'rounded-[1.75rem] border p-7 text-left transition-all duration-300 hover:-translate-y-0.5',
+                      isSelected ? `${packageCardSelected}` : 'border-forest-800/15 bg-white text-gs-dark shadow-[0_10px_28px_rgba(6,32,22,0.08)]'
+                    )}
+                  onClick={() => setSelectedStayName(item.name)}
+                  type="button"
+                  {...revealUp}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className={cx('font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.18em]', isSelected ? 'text-[#d4a843]' : 'text-gs-green')}>
+                        {item.area}
+                      </p>
+                      <h3 className="mt-3 font-ge text-[1.65rem] font-extrabold leading-tight tracking-[-0.02em]">{item.name}</h3>
+                    </div>
+                    <BedDouble className={cx('h-8 w-8 shrink-0', isSelected ? 'text-[#d4a843]' : 'text-brand-700')} aria-hidden="true" />
+                  </div>
+
+                  <div className="mt-6 rounded-[1.35rem] border border-current/10 bg-current/5 p-4">
+                    <p className={cx('font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.16em]', isSelected ? 'text-white/78' : 'text-gs-dark/62')}>
+                      Per person / per night
+                    </p>
+                    <p className="mt-2 font-ge text-[2rem] font-extrabold leading-none">{formatEuro(item.pricePerNight)}</p>
+                  </div>
+
+                  <p className={cx('mt-5 font-ge text-base leading-relaxed', isSelected ? 'text-white/80' : 'text-gs-dark/72')}>{item.summary}</p>
+                </m.button>
+              )
+            })}
+          </div>
+        </GeSection>
+
+        <GeSection
+          id="calculator"
+          background="white"
+          innerClassName="relative !pt-14 !pb-16 sm:!pt-16 sm:!pb-20 scroll-mt-28"
+          className="relative isolate overflow-hidden bg-[linear-gradient(180deg,_#FFFFFF_0%,_#FAF8F4_100%)]"
+        >
+          <div className="absolute top-0" id="plan-trip" />
+          <PackageSectionHeader
+            kicker="Live calculator"
+            title="Build the trip and see the package estimate"
+            body="Choose the group size, trip length, number of rounds, and transfer style. The estimate updates from a customer point of view and keeps the pricing easy to understand."
+          />
+
+          {fromLanding ? (
+            <div
+              className="mt-8 rounded-[1.35rem] border border-brand-700/20 bg-white px-5 py-4 font-ge text-base text-gs-dark shadow-[0_10px_28px_rgba(6,32,22,0.08)]"
+              role="status"
             >
-              <p className="mb-4 text-base font-semibold uppercase tracking-[0.18em] text-brand-200 drop-shadow-[0_4px_18px_rgba(8,27,8,0.35)] md:text-lg">
-                Costa del Sol golf packages for Irish travellers
+              <p className="font-extrabold text-gs-dark">Started from the homepage calculator</p>
+              <p className="mt-2 text-ge-gray500">
+                Adjust anything below, then save the build to your account or open it as a printable proposal for your group.
               </p>
-              <h1 className="max-w-3xl font-display text-5xl font-black leading-tight tracking-tight text-white md:text-7xl lg:text-[5rem]">
-                Choose the package style, size the group, and see the trip cost live
-              </h1>
-              <p className="mt-5 max-w-2xl text-[1.28rem] font-medium leading-8 text-white md:text-[1.42rem]">
-                Built for solo golfers, couples, and groups all the way up to 8 players.
-              </p>
-              <p className="mt-6 max-w-xl text-base leading-8 text-white md:text-lg">
-                Pick the stay level, transfer style, number of rounds, and group size. The page updates instantly so customers can understand the package price before they enquire.
-              </p>
+            </div>
+          ) : null}
 
-              <div className="mt-8 flex flex-wrap gap-4">
-                <LuxuryButton href="#calculator" showArrow>
-                  Build your package
-                </LuxuryButton>
-                <LuxuryButton href="#packages" variant="outline">
-                  Explore package styles
-                </LuxuryButton>
+          <div className="mt-10 grid gap-8 xl:grid-cols-[1.05fr_0.95fr]">
+            <m.div
+              className="rounded-[1.75rem] border border-forest-800/10 bg-cream p-6 shadow-[0_10px_28px_rgba(6,32,22,0.06)] md:p-7"
+              {...revealUp}
+            >
+              <div className="rounded-[1.35rem] border border-ge-gray200 bg-white p-5 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-forest-800 to-brand-700 text-white shadow-[0_6px_18px_rgba(11,77,59,0.28)]">
+                    <Users className="h-5 w-5" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <p className="font-ge text-base font-extrabold text-gs-dark">Group size</p>
+                    <p className="font-ge text-sm text-ge-gray500">Choose anywhere from 1 golfer up to 8 golfers</p>
+                  </div>
+                </div>
+
+                <div className="mt-4 grid grid-cols-4 gap-2 sm:grid-cols-8">
+                  {Array.from({ length: 8 }, (_, index) => index + 1).map((value) => {
+                    const isActive = value === groupSize
+
+                    return (
+                      <button
+                        key={value}
+                        className={cx(
+                          'rounded-xl border px-3 py-3 font-ge text-base font-bold transition-all',
+                          isActive
+                            ? 'border-brand-700 bg-gs-green text-white shadow-[0_8px_20px_rgba(6,59,42,0.22)]'
+                            : 'border-ge-gray200 bg-cream text-gs-dark hover:border-brand-700/40 hover:bg-white'
+                        )}
+                        onClick={() => setGroupSize(value)}
+                        type="button"
+                      >
+                        {value}
+                      </button>
+                    )
+                  })}
+                </div>
               </div>
 
-              <div className="mt-10 grid gap-4 sm:grid-cols-3">
-                <HeroStat label="Works from solo travel to full 8-person groups" value="1-8" />
-                <HeroStat label="Deposit shown clearly in the live estimate" value="20%" />
-                <HeroStat label="Flights are not included in package pricing" value="FYI" />
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                <SelectorCard label="Nights" options={[3, 4, 5, 6, 7]} value={nights} onSelect={setNights} suffix="nights" />
+                <SelectorCard label="Rounds" options={[2, 3, 4, 5]} value={rounds} onSelect={setRounds} suffix="rounds" />
+              </div>
+
+              <div className="mt-5 rounded-[1.35rem] border border-ge-gray200 bg-white p-5 shadow-sm">
+                <p className="font-ge text-base font-extrabold text-gs-dark">Choose a golf course & hotel</p>
+                <p className="mt-1 font-ge text-sm text-ge-gray500">
+                  Optional — same map as the homepage. Your picks stay with this estimate and are included when you save or open the proposal.
+                </p>
+                <div className="mt-4">
+                  <Suspense
+                    fallback={
+                      <div className="flex h-[400px] items-center justify-center rounded-xl border border-ge-gray200 bg-cream font-ge text-sm text-ge-gray500">
+                        Loading map…
+                      </div>
+                    }
+                  >
+                    <CourseHotelMapPicker
+                      initialCourseId={courseHotelPick.selectedCourse}
+                      initialHotel={courseHotelPick.selectedHotel}
+                      onSelectionChange={handleCourseHotelMapChange}
+                    />
+                  </Suspense>
+                </div>
+              </div>
+
+              <div className="mt-5 rounded-[1.35rem] border border-ge-gray200 bg-white p-5 shadow-sm">
+                <p className="font-ge text-base font-extrabold text-gs-dark">Transfer style</p>
+                <p className="mt-1 font-ge text-sm text-ge-gray500">Choose the level of transport support that suits the trip</p>
+
+                <div className="mt-4 space-y-3">
+                  {transferOptions.map((item) => {
+                    const isSelected = item.name === selectedTransfer.name
+
+                    return (
+                      <button
+                        key={item.name}
+                        aria-label={`Choose ${item.name}`}
+                        className={cx(
+                          'flex w-full items-start justify-between gap-4 rounded-[1.2rem] border p-4 text-left transition-all',
+                          isSelected
+                            ? 'ge-on-dark border-brand-700 bg-gs-green text-white shadow-[0_10px_24px_rgba(6,59,42,0.2)]'
+                            : 'border-ge-gray200 bg-cream text-gs-dark hover:border-brand-700/35 hover:bg-white'
+                        )}
+                        onClick={() => setSelectedTransferName(item.name)}
+                        type="button"
+                      >
+                        <div>
+                          <p className="font-ge text-base font-extrabold">{item.name}</p>
+                          <p className={cx('mt-1 font-ge text-sm leading-relaxed', isSelected ? 'text-white/85' : 'text-ge-gray500')}>
+                            {item.summary}
+                          </p>
+                        </div>
+                        <Bus className={cx('mt-0.5 h-5 w-5 shrink-0', isSelected ? 'text-[#d4a843]' : 'text-brand-700')} aria-hidden="true" />
+                      </button>
+                    )
+                  })}
+                </div>
               </div>
             </m.div>
 
-            <CustomerRouteMapShowcase />
-          </div>
-
-          <HeroFormScrollCue
-            href="#calculator"
-            placement="overlay"
-            className="bottom-6 left-1/2 z-20 hidden max-w-[min(100%,17rem)] md:block md:bottom-[10%] lg:bottom-12"
-          />
-          <HeroFormScrollCue
-            href="#calculator"
-            placement="inline"
-            className="relative z-20 mx-auto mt-8 max-w-[min(100%,18.5rem)] md:hidden"
-          />
-        </section>
-
-        <section className="section-shell bg-white pb-24" id="packages">
-          <div className="section-inner">
-            <SectionHeader
-              body="Start with the package style that suits the trip best, then fine-tune the stay, group size, and trip shape in the live calculator."
-              kicker="Package styles"
-              title="Choose the kind of Costa del Sol golf trip that fits your group"
-            />
-
-            <div className="grid gap-6 lg:grid-cols-3">
-              {packageStyles.map((item) => {
-                const isSelected = item.name === selectedPackage.name
-
-                return (
-                  <m.button
-                    key={item.name}
-                    aria-label={`Choose ${item.name} package style`}
-                    className={cx(
-                      'group relative overflow-hidden rounded-[2rem] border p-7 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl',
-                      isSelected
-                        ? 'border-brand-300 bg-forest-900 text-white'
-                        : 'border-forest-100 bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(247,244,237,0.94))] text-forest-900'
-                    )}
-                    onClick={() => setSelectedPackageName(item.name)}
-                    type="button"
-                    {...revealUp}
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <span
-                          className={cx(
-                            'inline-flex rounded-full border px-3 py-1.5 text-sm font-semibold uppercase tracking-[0.12em]',
-                            isSelected
-                              ? 'border-brand-300/30 bg-brand-400/15 text-brand-300'
-                              : 'border-brand-200 bg-brand-50 text-forest-950'
-                          )}
-                        >
-                          {item.badge}
-                        </span>
-                        <h2 className="mt-4 font-display text-3xl font-bold tracking-tight">{item.name}</h2>
-                      </div>
-                      <Sparkles className={cx('h-7 w-7', isSelected ? 'text-brand-300' : 'text-brand-500')} aria-hidden="true" />
-                    </div>
-
-                    <p className={cx('mt-5 text-base leading-relaxed', isSelected ? 'text-white/74' : 'text-forest-900/68')}>{item.summary}</p>
-
-                    <div className={cx('mt-6 space-y-3 rounded-[1.5rem] border p-4', isSelected ? 'border-white/10 bg-white/6' : 'border-forest-100 bg-white/72')}>
-                      {item.included.map((entry) => (
-                        <div key={entry} className={cx('flex items-center gap-3 text-[0.98rem]', isSelected ? 'text-white/82' : 'text-forest-900/72')}>
-                          <CheckCircle2 className={cx('h-4 w-4 shrink-0', isSelected ? 'text-brand-300' : 'text-brand-500')} aria-hidden="true" />
-                          <span>{entry}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </m.button>
-                )
-              })}
-            </div>
-          </div>
-        </section>
-
-        <section className="section-shell bg-[#eef2ef] py-24" id="stays">
-          <div className="section-inner">
-            <SectionHeader
-              body="Accommodation is priced per person, per night. Choose the stay level that fits the trip and the calculator will update instantly."
-              kicker="Stay options"
-              title="Choose the hotel level that feels right for the trip"
-            />
-
-            <div className="grid gap-6 lg:grid-cols-3">
-              {stayOptions.map((item) => {
-                const isSelected = item.name === selectedStay.name
-
-                return (
-                  <m.button
-                    key={item.name}
-                    aria-label={`Choose ${item.name} stay option`}
-                    className={cx(
-                      'rounded-[2rem] border p-7 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl',
-                      isSelected ? 'border-brand-300 bg-forest-900 text-white' : 'border-forest-100 bg-white text-forest-900'
-                    )}
-                    onClick={() => setSelectedStayName(item.name)}
-                    type="button"
-                    {...revealUp}
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className={cx('text-sm font-semibold uppercase tracking-[0.12em]', isSelected ? 'text-brand-300' : 'text-forest-900')}>
-                          {item.area}
-                        </p>
-                        <h3 className="mt-3 font-display text-3xl font-bold tracking-tight">{item.name}</h3>
-                      </div>
-                      <BedDouble className={cx('h-8 w-8', isSelected ? 'text-brand-300' : 'text-brand-500')} aria-hidden="true" />
-                    </div>
-
-                    <div className="mt-6 rounded-[1.5rem] border border-current/10 bg-current/5 p-4">
-                      <p className={cx('text-sm font-semibold uppercase tracking-[0.12em]', isSelected ? 'text-white/72' : 'text-forest-900/62')}>
-                        Per person / per night
-                      </p>
-                      <p className="mt-2 font-display text-4xl font-bold">{formatEuro(item.pricePerNight)}</p>
-                    </div>
-
-                    <p className={cx('mt-5 text-base leading-relaxed', isSelected ? 'text-white/74' : 'text-forest-900/68')}>{item.summary}</p>
-                  </m.button>
-                )
-              })}
-            </div>
-          </div>
-        </section>
-
-        <section className="section-shell bg-white py-24" id="calculator">
-          <div className="absolute top-0" id="plan-trip" />
-          <div className="section-inner">
-            <SectionHeader
-              body="Choose the group size, trip length, number of rounds, and transfer style. The estimate updates from a customer point of view and keeps the pricing easy to understand."
-              kicker="Live calculator"
-              title="Build the trip and see the package estimate"
-            />
-
-            {fromLanding ? (
-              <div
-                className="mb-8 rounded-[1.75rem] border border-forest-200 bg-white px-5 py-4 text-base text-forest-900 shadow-sm"
-                role="status"
-              >
-                <p className="font-semibold text-forest-950">Started from the homepage calculator</p>
-                <p className="mt-2 text-forest-700">
-                  Adjust anything below, then save the build to your account or open it as a printable proposal for your group.
-                </p>
+            <m.div
+              className="ge-on-dark rounded-[1.75rem] border border-forest-800/20 bg-gs-dark p-6 text-white shadow-[0_24px_60px_rgba(6,32,22,0.28)] md:p-7"
+              {...revealUp}
+            >
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <p className="font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.18em] text-[#d4a843]">Your live estimate</p>
+                  <h3 className="mt-3 font-ge text-[1.85rem] font-extrabold leading-tight tracking-[-0.02em] sm:text-[2.1rem]">
+                    Built from a customer point of view
+                  </h3>
+                </div>
+                <div className="rounded-full border border-white/12 bg-forest-900 px-4 py-2.5 font-ge text-sm font-bold text-white/90">
+                  {groupSize} golfer{groupSize > 1 ? 's' : ''}
+                </div>
               </div>
-            ) : null}
 
-            <div className="grid gap-8 xl:grid-cols-[1.05fr_0.95fr]">
-              <m.div className="rounded-[2rem] border border-forest-100 bg-[#eef2ef] p-6 shadow-sm md:p-7" {...revealUp}>
-                <div className="rounded-[1.6rem] border border-white/80 bg-white p-5 shadow-sm">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-forest-900 text-white">
-                      <Users className="h-5 w-5" aria-hidden="true" />
-                    </div>
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                <SummaryTile label="Package style" value={selectedPackage.name} />
+                <SummaryTile label="Stay level" value={selectedStay.name} />
+                <SummaryTile label="Trip shape" value={`${nights} nights / ${rounds} rounds`} />
+                <SummaryTile label="Transfer style" value={selectedTransfer.name} />
+                {courseHotelPick.selectedCourse ? (
+                  <SummaryTile
+                    label="Golf course"
+                    value={COURSES.find((c) => c.id === courseHotelPick.selectedCourse)?.name ?? courseHotelPick.selectedCourse}
+                  />
+                ) : null}
+                {courseHotelPick.selectedHotel ? (
+                  <SummaryTile
+                    label="Hotel pick"
+                    value={`${courseHotelPick.selectedHotel.name} · ${'★'.repeat(courseHotelPick.selectedHotel.stars)} · ${courseHotelPick.selectedHotel.dist}`}
+                  />
+                ) : null}
+              </div>
+
+              <div className="mt-6 space-y-3 rounded-[1.35rem] border border-white/10 bg-forest-950 p-5">
+                <BreakdownRow label="Accommodation per person" value={formatEuro(pricingSummary.accommodationPerPerson)} />
+                <BreakdownRow label="Golf per person" value={formatEuro(pricingSummary.golfPerPerson)} />
+                <BreakdownRow label="Transfer share per person" value={formatEuro(pricingSummary.transferPerPerson)} />
+                <BreakdownRow label="Planning and package setup" value={formatEuro(pricingSummary.planningPerPerson)} />
+                {pricingSummary.singleRoomAdjustment > 0 ? (
+                  <BreakdownRow label="Single room adjustment" value={formatEuro(pricingSummary.singleRoomAdjustment)} />
+                ) : null}
+                <BreakdownRow label="Estimated total per person" strong value={formatEuro(pricingSummary.estimatedPerPerson)} />
+              </div>
+
+              <div className="mt-6 rounded-[1.35rem] bg-[linear-gradient(135deg,rgba(212,168,67,0.35),rgba(19,96,71,0.22))] p-[1px]">
+                <div className="rounded-[1.3rem] bg-gs-dark/96 p-5">
+                  <p className="font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.16em] text-white/75">Estimated group total</p>
+                  <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
                     <div>
-                      <p className="text-base font-semibold text-forest-900">Group size</p>
-                      <p className="text-sm text-forest-900/56">Choose anywhere from 1 golfer up to 8 golfers</p>
+                      <p className="font-ge text-[2.75rem] font-extrabold leading-none text-white sm:text-[3rem]">
+                        {formatEuro(pricingSummary.estimatedGroupTotal)}
+                      </p>
+                      <p className="mt-2 font-ge text-base text-white/72">for the full group</p>
+                    </div>
+                    <div className="rounded-xl border border-white/10 bg-forest-950 px-4 py-3 font-ge text-sm font-semibold text-white/88">
+                      Flights not included
                     </div>
                   </div>
-
-                  <div className="mt-4 grid grid-cols-4 gap-2 sm:grid-cols-8">
-                    {Array.from({ length: 8 }, (_, index) => index + 1).map((value) => {
-                      const isActive = value === groupSize
-
-                      return (
-                        <button
-                          key={value}
-                          className={cx(
-                            'rounded-2xl border px-3 py-3 text-base font-semibold transition-all',
-                            isActive
-                              ? 'border-brand-400 bg-forest-900 text-white'
-                              : 'border-forest-100 bg-offwhite text-forest-900 hover:border-brand-300 hover:bg-white'
-                          )}
-                          onClick={() => setGroupSize(value)}
-                          type="button"
-                        >
-                          {value}
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-
-                <div className="mt-5 grid gap-4 md:grid-cols-2">
-                  <SelectorCard
-                    label="Nights"
-                    options={[3, 4, 5, 6, 7]}
-                    value={nights}
-                    onSelect={setNights}
-                    suffix="nights"
-                  />
-                  <SelectorCard
-                    label="Rounds"
-                    options={[2, 3, 4, 5]}
-                    value={rounds}
-                    onSelect={setRounds}
-                    suffix="rounds"
-                  />
-                </div>
-
-                <div className="mt-5 rounded-[1.6rem] border border-white/80 bg-white p-5 shadow-sm">
-                  <p className="text-base font-semibold text-forest-900">Choose a golf course & hotel</p>
-                  <p className="mt-1 text-sm text-forest-900/56">
-                    Optional — same map as the homepage. Your picks stay with this estimate and are included when you save or open the proposal.
-                  </p>
-                  <div className="mt-4">
-                    <Suspense
-                      fallback={
-                        <div className="flex h-[400px] items-center justify-center rounded-[0.625rem] border border-forest-200 bg-offwhite text-sm text-forest-600">
-                          Loading map…
-                        </div>
-                      }
-                    >
-                      <CourseHotelMapPicker
-                        initialCourseId={courseHotelPick.selectedCourse}
-                        initialHotel={courseHotelPick.selectedHotel}
-                        onSelectionChange={handleCourseHotelMapChange}
-                      />
-                    </Suspense>
-                  </div>
-                </div>
-
-                <div className="mt-5 rounded-[1.6rem] border border-white/80 bg-white p-5 shadow-sm">
-                  <p className="text-base font-semibold text-forest-900">Transfer style</p>
-                  <p className="mt-1 text-sm text-forest-900/56">Choose the level of transport support that suits the trip</p>
-
-                  <div className="mt-4 space-y-3">
-                    {transferOptions.map((item) => {
-                      const isSelected = item.name === selectedTransfer.name
-
-                      return (
-                        <button
-                          key={item.name}
-                          aria-label={`Choose ${item.name}`}
-                          className={cx(
-                            'flex w-full items-start justify-between gap-4 rounded-[1.4rem] border p-4 text-left transition-all',
-                            isSelected
-                              ? 'border-brand-300 bg-forest-900 text-white'
-                              : 'border-forest-100 bg-offwhite text-forest-900 hover:bg-white'
-                          )}
-                          onClick={() => setSelectedTransferName(item.name)}
-                          type="button"
-                        >
-                          <div>
-                            <p className="text-base font-semibold">{item.name}</p>
-                            <p className={cx('mt-1 text-sm leading-relaxed', isSelected ? 'text-white/85' : 'text-forest-900/70')}>{item.summary}</p>
-                          </div>
-                          <Bus className={cx('mt-0.5 h-5 w-5 shrink-0', isSelected ? 'text-brand-300' : 'text-brand-500')} aria-hidden="true" />
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-              </m.div>
-
-              <m.div className="rounded-[2rem] border border-white/10 bg-forest-950 p-6 text-white shadow-soft md:p-7" {...revealUp}>
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                  <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-300">Your live estimate</p>
-                    <h3 className="mt-3 font-display text-4xl font-bold tracking-tight">Built from a customer point of view</h3>
-                  </div>
-                  <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-base text-white/88">
-                    {groupSize} golfer{groupSize > 1 ? 's' : ''}
-                  </div>
-                </div>
-
-                <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                  <SummaryTile label="Package style" value={selectedPackage.name} />
-                  <SummaryTile label="Stay level" value={selectedStay.name} />
-                  <SummaryTile label="Trip shape" value={`${nights} nights / ${rounds} rounds`} />
-                  <SummaryTile label="Transfer style" value={selectedTransfer.name} />
-                  {courseHotelPick.selectedCourse ? (
-                    <SummaryTile
-                      label="Golf course"
-                      value={COURSES.find((c) => c.id === courseHotelPick.selectedCourse)?.name ?? courseHotelPick.selectedCourse}
-                    />
-                  ) : null}
-                  {courseHotelPick.selectedHotel ? (
-                    <SummaryTile
-                      label="Hotel pick"
-                      value={`${courseHotelPick.selectedHotel.name} · ${'★'.repeat(courseHotelPick.selectedHotel.stars)} · ${courseHotelPick.selectedHotel.dist}`}
-                    />
-                  ) : null}
-                </div>
-
-                <div className="mt-6 space-y-3 rounded-[1.75rem] border border-white/10 bg-white/5 p-5">
-                  <BreakdownRow label="Accommodation per person" value={formatEuro(pricingSummary.accommodationPerPerson)} />
-                  <BreakdownRow label="Golf per person" value={formatEuro(pricingSummary.golfPerPerson)} />
-                  <BreakdownRow label="Transfer share per person" value={formatEuro(pricingSummary.transferPerPerson)} />
-                  <BreakdownRow label="Planning and package setup" value={formatEuro(pricingSummary.planningPerPerson)} />
-                  {pricingSummary.singleRoomAdjustment > 0 ? (
-                    <BreakdownRow label="Single room adjustment" value={formatEuro(pricingSummary.singleRoomAdjustment)} />
-                  ) : null}
-                  <BreakdownRow label="Estimated total per person" strong value={formatEuro(pricingSummary.estimatedPerPerson)} />
-                </div>
-
-                <div className="mt-6 rounded-[1.75rem] bg-[linear-gradient(135deg,rgba(19, 96, 71,0.18),rgba(253,186,116,0.1),rgba(80,163,45,0.12))] p-[1px]">
-                  <div className="rounded-[1.7rem] bg-forest-950/96 p-5">
-                    <p className="text-sm font-semibold uppercase tracking-[0.14em] text-white/72">Estimated group total</p>
-                    <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
-                      <div>
-                        <p className="font-display text-5xl font-black leading-none text-white">{formatEuro(pricingSummary.estimatedGroupTotal)}</p>
-                        <p className="mt-2 text-base text-white/72">for the full group</p>
-                      </div>
-                      <div className="rounded-[1.3rem] border border-white/10 bg-white/5 px-4 py-3 text-base text-white/88">
-                        Flights not included
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                  <MiniSummaryCard label="Deposit upfront" value={formatEuro(pricingSummary.depositAmount)} />
-                  <MiniSummaryCard label="Remaining balance" value={formatEuro(pricingSummary.remainingBalance)} />
-                </div>
-
-                <p className="mt-5 text-base leading-8 text-white/85">
-                  Indicative pricing only. Final package price depends on live hotel rates, golf availability, and the transfer route across your dates.
-                </p>
-                {courseHotelPick.selectedCourse || courseHotelPick.selectedHotel ? (
-                  <p className="mt-4 rounded-[1.25rem] border border-white/10 bg-white/5 px-4 py-3 text-sm leading-7 text-white/88">
-                    <span className="font-semibold text-brand-200">Course & hotel:</span> Shown on the proposal PDF / print view and saved with your package when you sign in and use{' '}
-                    <span className="font-medium text-white">Save to my account</span>. After saving, they appear in your dashboard trip details and stay attached when you reopen this build in
-                    the calculator.
-                  </p>
-                ) : null}
-                <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                  <LuxuryButton href={proposalTemplateHref} showArrow variant="white">
-                    View as proposal (print / PDF)
-                  </LuxuryButton>
-                  {integrationRegistry.supabase.enabled ? (
-                    <LuxuryButton
-                      className="border-white/25 bg-white/10 text-white hover:bg-white/15"
-                      disabled={authLoading || isSavingBuild}
-                      onClick={handleSavePackageToAccount}
-                      type="button"
-                      variant="outline"
-                    >
-                      {isSavingBuild ? 'Saving…' : session ? 'Save to my account' : 'Sign in to save this package'}
-                    </LuxuryButton>
-                  ) : null}
-                  {integrationRegistry.supabase.enabled && session ? (
-                    <LuxuryButton className="border-white/20 text-white/90" href="/dashboard" variant="outline">
-                      My saved packages
-                    </LuxuryButton>
-                  ) : null}
-                </div>
-                {saveBuildError ? (
-                  <p className="mt-3 text-base font-medium text-red-300" role="alert">
-                    {saveBuildError}
-                  </p>
-                ) : null}
-                {saveBuildOk ? (
-                  <p className="mt-3 text-base font-medium text-brand-200" role="status">
-                    Saved. You can review it anytime under your dashboard.
-                  </p>
-                ) : null}
-              </m.div>
-            </div>
-          </div>
-        </section>
-
-        <section className="section-shell bg-forest-900 py-24" id="enquire">
-          <div aria-hidden="true" className="absolute left-[-80px] top-[10%] h-72 w-72 rounded-full bg-fairway-500/12 blur-3xl" />
-          <div aria-hidden="true" className="absolute bottom-[-60px] right-[-30px] h-72 w-72 rounded-full bg-brand-400/12 blur-3xl" />
-
-          <div className="section-inner">
-            <div className="grid gap-10 lg:grid-cols-[1fr_0.92fr] lg:items-center">
-              <div>
-                <AnimatedStepKicker className="mb-3" dark kicker="Make the enquiry" />
-                <h2 className="max-w-2xl font-display text-4xl font-bold leading-tight text-white md:text-5xl">
-                  Found a package shape you like? Send the enquiry and we can tailor it properly
-                </h2>
-                <p className="mt-5 max-w-xl text-base leading-8 text-white/72 md:text-lg">
-                  The live figure gives your group a clear starting point. From there we can refine hotels, golf days, transfer style, and the exact routing around your dates.
-                </p>
-
-                <div className="mt-8 flex flex-wrap gap-4">
-                  <LuxuryButton href={packageEnquiryWhatsAppHref} rel="noreferrer" target="_blank">
-                    WhatsApp enquiry
-                  </LuxuryButton>
-                  <LuxuryButton href={proposalTemplateHref} variant="white">
-                    View proposal (print / PDF)
-                  </LuxuryButton>
-                  <LuxuryButton href={packageEnquiryMailtoHref} variant="outline">
-                    Email fallback
-                  </LuxuryButton>
                 </div>
               </div>
 
-              <m.div className="rounded-[2rem] border border-white/10 bg-white/6 p-6 text-white backdrop-blur-sm" {...revealUp}>
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                <MiniSummaryCard label="Deposit upfront" value={formatEuro(pricingSummary.depositAmount)} />
+                <MiniSummaryCard label="Remaining balance" value={formatEuro(pricingSummary.remainingBalance)} />
+              </div>
+
+              <p className="mt-5 font-ge text-base leading-8 text-white/85">
+                Indicative pricing only. Final package price depends on live hotel rates, golf availability, and the transfer route across your dates.
+              </p>
+              {courseHotelPick.selectedCourse || courseHotelPick.selectedHotel ? (
+                <p className="mt-4 rounded-xl border border-white/10 bg-forest-950 px-4 py-3 font-ge text-sm leading-7 text-white/88">
+                  <span className="font-semibold text-[#d4a843]">Course & hotel:</span> Shown on the proposal PDF / print view and saved with your package when you sign in and use{' '}
+                  <span className="font-medium text-white">Save to my account</span>.
+                </p>
+              ) : null}
+              <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <GeButton className="package-dark-panel-cta" href={proposalTemplateHref} size="md" variant="gs-gold">
+                  View proposal (print / PDF)
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                </GeButton>
+                {integrationRegistry.supabase.enabled ? (
+                  <GeButton
+                    disabled={authLoading || isSavingBuild}
+                    onClick={handleSavePackageToAccount}
+                    size="md"
+                    type="button"
+                    variant="outline-gs-white"
+                  >
+                    {isSavingBuild ? 'Saving…' : session ? 'Save to my account' : 'Sign in to save this package'}
+                  </GeButton>
+                ) : null}
+                {integrationRegistry.supabase.enabled && session ? (
+                  <GeButton href="/dashboard" size="md" variant="outline-gs-white">
+                    My saved packages
+                  </GeButton>
+                ) : null}
+              </div>
+              {saveBuildError ? (
+                <p className="mt-3 font-ge text-base font-semibold text-red-300" role="alert">
+                  {saveBuildError}
+                </p>
+              ) : null}
+              {saveBuildOk ? (
+                <p className="mt-3 font-ge text-base font-semibold text-[#d4a843]" role="status">
+                  Saved. You can review it anytime under your dashboard.
+                </p>
+              ) : null}
+            </m.div>
+          </div>
+        </GeSection>
+
+        <GeSection
+          id="enquire"
+          background="white"
+          innerClassName="relative !pt-20 !pb-20 sm:!pt-24 sm:!pb-24 scroll-mt-28"
+          className="relative isolate overflow-hidden bg-[linear-gradient(180deg,_#FAF8F4_0%,_#FFFFFF_62%)]"
+        >
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -left-32 top-1/4 h-96 w-96 -translate-y-1/2 rounded-full bg-gs-green/[0.07] blur-[100px]"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-brand-700/[0.1] blur-[90px]"
+          />
+
+          <div className="grid gap-10 lg:grid-cols-[1fr_1.05fr] lg:items-start lg:gap-14">
+            <m.div variants={sectionHeaderContainer} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.25 }}>
+              <m.span
+                variants={sectionHeaderItem}
+                className="inline-flex items-center gap-2 rounded-full border border-brand-700/35 bg-white px-4 py-1.5 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.24em] text-gs-green shadow-[0_8px_22px_rgba(6,59,42,0.08)] sm:text-[0.74rem]"
+              >
+                <Sparkles className="h-3.5 w-3.5 shrink-0 text-brand-700" aria-hidden />
+                Make the enquiry
+              </m.span>
+              <m.span
+                aria-hidden="true"
+                variants={sectionHeaderItem}
+                className="mt-5 mx-auto h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent"
+              />
+              <m.h2
+                variants={sectionHeaderItem}
+                className="mt-5 max-w-[20ch] font-ge text-[2.15rem] font-extrabold leading-[1.04] tracking-[-0.005em] text-gs-dark sm:max-w-3xl sm:text-[2.85rem] lg:text-[3.05rem]"
+              >
+                <span className="text-gs-dark">Found a package shape you like?</span>{' '}
+                <span className="text-gs-green">Send the enquiry and we will tailor it properly.</span>
+              </m.h2>
+              <m.p variants={sectionHeaderItem} className="mt-5 max-w-xl font-ge text-[1.06rem] leading-[1.7] text-gs-dark/85 sm:text-[1.12rem] sm:leading-8">
+                The live figure gives your group a clear starting point. From there we can refine hotels, golf days, transfer style, and the exact routing around your dates.
+              </m.p>
+
+              <m.div variants={sectionHeaderItem} className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <GeButton href={packageEnquiryWhatsAppHref} rel="noreferrer" size="lg" target="_blank" variant="gs-green">
+                  WhatsApp enquiry
+                </GeButton>
+                <GeButton href={proposalTemplateHref} size="lg" variant="gs-gold">
+                  View proposal (print / PDF)
+                </GeButton>
+                <GeButton href={packageEnquiryMailtoHref} size="lg" variant="outline-gs-green">
+                  Email fallback
+                </GeButton>
+              </m.div>
+            </m.div>
+
+            <m.div {...revealUp} className="relative">
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute -inset-2 rounded-[2.15rem] bg-gradient-to-br from-brand-700/10 via-transparent to-[#d9be7a]/10"
+              />
+              <div className="relative rounded-[1.75rem] border border-ge-gray200 bg-white p-6 shadow-[0_26px_70px_rgba(40,33,19,0.12)] sm:p-7">
                 {enquiryStatus === 'success' ? (
-                  <div ref={enquiryConfirmationRef} className="rounded-[1.5rem] border border-brand-300/40 bg-brand-300/10 p-5 text-center">
-                    <CheckCircle2 className="mx-auto h-8 w-8 text-brand-300" aria-hidden="true" />
-                    <p className="mt-4 text-sm font-semibold uppercase tracking-[0.14em] text-brand-300">Package enquiry sent</p>
-                    <p className="mt-3 text-base leading-7 text-white/78">
+                  <div ref={enquiryConfirmationRef} className="rounded-[1.35rem] border border-brand-700/25 bg-brand-700/8 p-5 text-center">
+                    <CheckCircle2 className="mx-auto h-8 w-8 text-brand-700" aria-hidden="true" />
+                    <p className="mt-4 font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.16em] text-gs-green">Package enquiry sent</p>
+                    <p className="mt-3 font-ge text-base leading-7 text-gs-dark/78">
                       Check your inbox for the branded GolfSol confirmation and PDF. We will reply with the next step.
                     </p>
                   </div>
                 ) : (
                   <form className="space-y-4" onSubmit={handlePackageEnquirySubmit} noValidate>
                     <div>
-                      <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-300">Send package request</p>
-                      <p className="mt-2 text-base leading-7 text-white/72">
+                      <p className="font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.16em] text-gs-green">Send package request</p>
+                      <p className="mt-2 font-ge text-base leading-7 text-ge-gray500">
                         This sends your selected package shape through the same branded email and PDF workflow as the main enquiry forms.
                       </p>
                     </div>
 
                     <label className="block">
-                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Full name</span>
+                      <span className={packageFieldLabel}>Full name</span>
                       <input
                         autoComplete="name"
-                        className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3.5 text-base text-white outline-none transition placeholder:text-white/35 focus:border-brand-300 focus:ring-2 focus:ring-brand-300/25"
+                        className={packageFieldInput}
                         onChange={(event) => setEnquiryName(event.target.value)}
                         placeholder="Your name"
                         required
@@ -1097,10 +1125,10 @@ function CustomerPackagePage() {
                       />
                     </label>
                     <label className="block">
-                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Email</span>
+                      <span className={packageFieldLabel}>Email</span>
                       <input
                         autoComplete="email"
-                        className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3.5 text-base text-white outline-none transition placeholder:text-white/35 focus:border-brand-300 focus:ring-2 focus:ring-brand-300/25"
+                        className={packageFieldInput}
                         onChange={(event) => setEnquiryEmail(event.target.value)}
                         placeholder="you@example.com"
                         required
@@ -1109,10 +1137,10 @@ function CustomerPackagePage() {
                       />
                     </label>
                     <label className="block">
-                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Phone / WhatsApp</span>
+                      <span className={packageFieldLabel}>Phone / WhatsApp</span>
                       <input
                         autoComplete="tel"
-                        className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3.5 text-base text-white outline-none transition placeholder:text-white/35 focus:border-brand-300 focus:ring-2 focus:ring-brand-300/25"
+                        className={packageFieldInput}
                         onChange={(event) => setEnquiryPhone(event.target.value)}
                         placeholder="+353 87 000 0000"
                         required
@@ -1121,9 +1149,9 @@ function CustomerPackagePage() {
                       />
                     </label>
                     <label className="block">
-                      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Best time to call</span>
+                      <span className={packageFieldLabel}>Best time to call</span>
                       <input
-                        className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3.5 text-base text-white outline-none transition placeholder:text-white/35 focus:border-brand-300 focus:ring-2 focus:ring-brand-300/25"
+                        className={packageFieldInput}
                         onChange={(event) => setEnquiryBestTime(event.target.value)}
                         placeholder="Any time"
                         value={enquiryBestTime}
@@ -1131,10 +1159,10 @@ function CustomerPackagePage() {
                     </label>
 
                     {enquiryStatus === 'error' && enquiryError ? (
-                      <div className="rounded-xl border border-brand-300/40 bg-brand-300/10 px-3 py-2.5 text-sm leading-6 text-white" role="alert">
+                      <div className="rounded-xl border border-brand-700/25 bg-brand-700/8 px-3 py-2.5 font-ge text-sm leading-6 text-gs-dark" role="alert">
                         <p>{enquiryError}</p>
                         {enquiryErrorCode === ENQUIRY_CONFLICT_EXISTING_PHONE ? (
-                          <p className="mt-2 font-semibold text-brand-100">
+                          <p className="mt-2 font-semibold text-gs-green">
                             <a className="underline underline-offset-2" href="/dashboard/login">
                               Sign in to your trip desk
                             </a>
@@ -1143,130 +1171,58 @@ function CustomerPackagePage() {
                       </div>
                     ) : null}
 
-                    <GeTermsAcceptanceField
-                      checked={termsAccepted}
-                      onChange={setTermsAccepted}
-                      id="terms-package-builder"
-                      tone="dark"
-                    />
+                    <GeTermsAcceptanceField checked={termsAccepted} onChange={setTermsAccepted} id="terms-package-builder" tone="light" />
 
-                    <LuxuryButton className="w-full" disabled={enquiryStatus === 'submitting'} type="submit">
+                    <GeButton className="w-full" disabled={enquiryStatus === 'submitting' || !termsAccepted} size="lg" type="submit" variant="gs-green">
                       {enquiryStatus === 'submitting' ? 'Sending package...' : 'Send branded enquiry'}
-                    </LuxuryButton>
+                    </GeButton>
                   </form>
                 )}
-              </m.div>
-            </div>
+              </div>
+            </m.div>
           </div>
-
-          <WaveDivider fill="#0a2008" />
-        </section>
+        </GeSection>
       </main>
 
-      <SiteFooter
-        copyrightNote="Public-facing package selector for Irish golfers travelling to the Costa del Sol."
-        footerRef={footerRef}
-        intro="Golf Sol Ireland creates premium Costa del Sol golf packages for Irish golfers who want a cleaner route from first enquiry to final round."
+      <GeFooter />
+      <WhatsappFab />
+    </div>
+  )
+}
+
+function PackageSectionHeader({
+  kicker,
+  title,
+  body
+}: {
+  readonly kicker: string
+  readonly title: string
+  readonly body: string
+}) {
+  return (
+    <m.div variants={sectionHeaderContainer} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
+      <m.span
+        variants={sectionHeaderItem}
+        className="inline-flex items-center gap-2 rounded-full border border-brand-700/35 bg-white px-4 py-1.5 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.24em] text-gs-green shadow-[0_8px_22px_rgba(6,59,42,0.08)] sm:text-[0.74rem]"
+      >
+        <Sparkles className="h-3.5 w-3.5 shrink-0 text-brand-700" aria-hidden />
+        {kicker}
+      </m.span>
+      <m.span
+        aria-hidden="true"
+        variants={sectionHeaderItem}
+        className="mt-5 mx-auto h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent"
       />
-    </div>
-  )
-}
-
-function CustomerRouteMapShowcase() {
-  return (
-    <m.div
-      animate={{ opacity: 1, y: 0 }}
-      className="relative"
-      initial={{ opacity: 0, y: 36 }}
-      transition={{ delay: 0.18, duration: 0.85, ease: 'easeOut' }}
-    >
-      <div className="relative overflow-hidden rounded-[2.4rem] border border-white/10 bg-[linear-gradient(160deg,rgba(255,255,255,0.14),rgba(255,255,255,0.04))] p-5 shadow-soft backdrop-blur-md md:p-7">
-        <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(80,163,45,0.22),transparent_24%),radial-gradient(circle_at_82%_12%,rgba(19, 96, 71,0.22),transparent_22%),radial-gradient(circle_at_70%_70%,rgba(253,186,116,0.16),transparent_26%)]" />
-        <div className="relative z-10 grid gap-6 md:grid-cols-[0.9fr_1.2fr]">
-          <div className="space-y-3">
-            {routeStops.map((item, index) => (
-              <m.div
-                key={item}
-                animate={{ x: [0, 6, 0] }}
-                className="rounded-[1.6rem] border border-white/10 bg-forest-950/58 p-4 text-white shadow-lg backdrop-blur-sm"
-                transition={{ delay: index * 0.24, duration: 4.4, ease: 'easeInOut', repeat: Infinity }}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-forest-950 shadow-[0_12px_24px_rgba(0,0,0,0.18)]">
-                    <ShamrockIcon className="h-6 w-6" />
-                  </div>
-                  <p className="text-base font-semibold">{item}</p>
-                </div>
-              </m.div>
-            ))}
-          </div>
-
-          <div className="relative min-h-[24rem] overflow-hidden rounded-[2rem] border border-white/10 bg-white/5">
-            <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:44px_44px] opacity-25" />
-
-            <svg aria-hidden="true" className="absolute inset-0 h-full w-full" fill="none" viewBox="0 0 560 420">
-              <defs>
-                <linearGradient id="customer-package-route-line" x1="60" x2="500" y1="120" y2="280">
-                  <stop offset="0%" stopColor="rgba(80,163,45,0.95)" />
-                  <stop offset="52%" stopColor="rgba(253,186,116,0.95)" />
-                  <stop offset="100%" stopColor="rgba(19, 96, 71,0.95)" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M68 92C150 44 236 58 298 130C346 186 398 206 494 176"
-                opacity="0.34"
-                stroke="rgba(255,255,255,0.34)"
-                strokeDasharray="8 12"
-                strokeLinecap="round"
-                strokeWidth="2"
-              />
-              <m.path
-                animate={{ pathLength: [0.2, 1, 0.2] }}
-                d="M68 92C150 44 236 58 298 130C346 186 398 206 494 176"
-                pathLength={1}
-                stroke="url(#customer-package-route-line)"
-                strokeLinecap="round"
-                strokeWidth="5"
-                transition={{ duration: 5.8, ease: 'easeInOut', repeat: Infinity }}
-              />
-            </svg>
-
-            <m.div
-              animate={{
-                x: [0, 108, 216, 306, 382, 0],
-                y: [0, -36, 12, 64, 84, 0],
-                rotate: [0, 16, 42, 70, 95, 0]
-              }}
-              className="absolute left-[10%] top-[18%] flex h-16 w-16 items-center justify-center rounded-full bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.98),rgba(247,247,247,0.92)_48%,rgba(212,216,223,0.9)_100%)] shadow-[0_24px_60px_rgba(0,0,0,0.28)]"
-              transition={{ duration: 6.6, ease: 'easeInOut', repeat: Infinity }}
-            >
-              <div className="absolute inset-[18%] rounded-full border border-slate-300/28" />
-              <div className="absolute inset-[35%] rounded-full border border-slate-300/22" />
-            </m.div>
-
-            <div className="absolute left-[8%] top-[9%] rounded-[1.4rem] border border-brand-300/26 bg-forest-950/76 px-4 py-3 text-white backdrop-blur-sm">
-              <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-300">Choose your group</p>
-              <p className="mt-2 text-base font-semibold">1 to 8 golfers</p>
-            </div>
-
-            <div className="absolute bottom-[11%] right-[8%] rounded-[1.5rem] border border-[#136047]/26 bg-forest-950/62 px-4 py-4 text-white backdrop-blur-sm">
-              <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#f7a24f]">Live package view</p>
-              <p className="mt-2 text-base font-semibold">Stay, golf, transfers</p>
-              <p className="mt-1 text-sm text-white/80">A clearer way to price the trip</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <m.h2
+        variants={sectionHeaderItem}
+        className="mt-5 max-w-3xl font-ge text-[2rem] font-extrabold leading-[1.06] tracking-[-0.02em] text-gs-dark sm:text-[2.45rem] lg:text-[2.75rem]"
+      >
+        {title}
+      </m.h2>
+      <m.p variants={sectionHeaderItem} className="mt-4 max-w-3xl font-ge text-[1.04rem] leading-[1.72] text-gs-dark/82 sm:text-[1.08rem] sm:leading-8">
+        {body}
+      </m.p>
     </m.div>
-  )
-}
-
-function HeroStat({ value, label }: { readonly value: string; readonly label: string }) {
-  return (
-    <div className="min-w-[110px] rounded-[1.6rem] border border-white/12 bg-white/8 px-4 py-4 backdrop-blur-sm shadow-[0_14px_30px_rgba(8,27,8,0.16)]">
-      <p className="font-display text-[2rem] font-bold text-[#f7a24f]">{value}</p>
-      <p className="mt-1 text-sm leading-relaxed text-white">{label}</p>
-    </div>
   )
 }
 
@@ -1284,8 +1240,8 @@ function SelectorCard({
   readonly suffix: string
 }) {
   return (
-    <div className="rounded-[1.6rem] border border-white/80 bg-white p-5 shadow-sm">
-      <p className="text-base font-semibold text-forest-900">{label}</p>
+    <div className="rounded-[1.35rem] border border-ge-gray200 bg-white p-5 shadow-sm">
+      <p className="font-ge text-base font-extrabold text-gs-dark">{label}</p>
       <div className="mt-4 flex flex-wrap gap-2">
         {options.map((option) => {
           const isActive = option === value
@@ -1294,10 +1250,10 @@ function SelectorCard({
             <button
               key={option}
               className={cx(
-                'rounded-full border px-4 py-2.5 text-base font-semibold transition-all',
+                'rounded-full border px-4 py-2.5 font-ge text-base font-bold transition-all',
                 isActive
-                  ? 'border-brand-400 bg-forest-900 text-white'
-                  : 'border-forest-100 bg-offwhite text-forest-900 hover:border-brand-300 hover:bg-white'
+                  ? 'border-brand-700 bg-gs-green text-white shadow-[0_8px_20px_rgba(6,59,42,0.22)]'
+                  : 'border-ge-gray200 bg-cream text-gs-dark hover:border-brand-700/40 hover:bg-white'
               )}
               onClick={() => onSelect(option)}
               type="button"
@@ -1313,9 +1269,9 @@ function SelectorCard({
 
 function SummaryTile({ label, value }: { readonly label: string; readonly value: string }) {
   return (
-    <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
-      <p className="text-sm font-semibold uppercase tracking-[0.12em] text-white/76">{label}</p>
-      <p className="mt-2 text-[1.15rem] font-semibold text-white">{value}</p>
+    <div className="rounded-[1.2rem] border border-white/10 bg-forest-950 p-4">
+      <p className="font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.14em] text-white/76">{label}</p>
+      <p className="mt-2 font-ge text-[1.05rem] font-bold text-white">{value}</p>
     </div>
   )
 }
@@ -1330,18 +1286,18 @@ function BreakdownRow({
   readonly strong?: boolean
 }) {
   return (
-    <div className={cx('flex items-center justify-between gap-4 border-b border-white/8 pb-3 text-base', strong && 'pt-2')}>
-      <span className={cx(strong ? 'font-semibold text-white' : 'text-white/85')}>{label}</span>
-      <span className={cx('text-right', strong ? 'font-semibold text-brand-300' : 'text-white')}>{value}</span>
+    <div className={cx('flex items-center justify-between gap-4 border-b border-white/8 pb-3 font-ge text-base', strong && 'pt-2')}>
+      <span className={cx(strong ? 'font-extrabold text-white' : 'text-white/85')}>{label}</span>
+      <span className={cx('text-right', strong ? 'font-extrabold text-[#d4a843]' : 'text-white')}>{value}</span>
     </div>
   )
 }
 
 function MiniSummaryCard({ label, value }: { readonly label: string; readonly value: string }) {
   return (
-    <div className="rounded-[1.3rem] border border-white/10 bg-white/5 p-4">
-      <p className="text-sm font-semibold uppercase tracking-[0.12em] text-white/74">{label}</p>
-      <p className="mt-2 text-[1.15rem] font-semibold text-white">{value}</p>
+    <div className="rounded-[1.2rem] border border-white/10 bg-forest-950 p-4">
+      <p className="font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.14em] text-white/74">{label}</p>
+      <p className="mt-2 font-ge text-[1.05rem] font-bold text-white">{value}</p>
     </div>
   )
 }

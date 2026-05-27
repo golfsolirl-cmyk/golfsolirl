@@ -69,7 +69,7 @@ export function PortalAddToYourTripStrip(props: {
             <span className="relative flex w-full items-start justify-between gap-2">
               <span
                 className={cx(
-                  'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl backdrop-blur-sm transition-transform duration-300 group-hover:scale-105',
+                  'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-105',
                   portalAddOnPremiumTileClass('transfers')
                 )}
               >
@@ -104,7 +104,7 @@ export function PortalAddToYourTripStrip(props: {
             <span className="relative flex w-full items-start justify-between gap-2">
               <span
                 className={cx(
-                  'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl backdrop-blur-sm transition-transform duration-300 group-hover:scale-105',
+                  'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-105',
                   portalAddOnPremiumTileClass('golf_courses')
                 )}
               >
@@ -139,7 +139,7 @@ export function PortalAddToYourTripStrip(props: {
             <span className="relative flex w-full items-start justify-between gap-2">
               <span
                 className={cx(
-                  'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl backdrop-blur-sm transition-transform duration-300 group-hover:scale-105',
+                  'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-105',
                   portalAddOnPremiumTileClass('hotels')
                 )}
               >

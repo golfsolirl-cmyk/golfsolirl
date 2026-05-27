@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { AnimatePresence,  m  } from 'framer-motion'
 import { ChevronDown, Menu, X } from 'lucide-react'
 import { cx } from '../../../lib/utils'
+import { BrandPlaneToFairwayTagline } from '../../../components/brand-plane-to-fairway-tagline'
 import { GeBrandLockup } from '../components/brand-lockup'
 import { GeButton } from '../components/ge-button'
 import { primaryNav, type GeNavLink } from '../data/nav'
@@ -104,7 +105,7 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
               aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={isMenuOpen}
               aria-controls="ge-mobile-menu"
-              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-white/60 text-white transition-colors hover:border-white hover:bg-white/15 lg:hidden"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-white/60 text-white transition-colors hover:border-white hover:bg-forest-900 lg:hidden"
               onClick={() => setIsMenuOpen((value) => !value)}
             >
               {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -124,6 +125,20 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
               )}
             </GeMobileGlintIconButton>
           )}
+        </div>
+      </div>
+
+      {/* Brand ribbon — own row so crest + nav keep their layout; never pushes menu sideways */}
+      <div
+        className={cx(
+          'border-t',
+          isOverlay
+            ? 'border-white/10 bg-forest-950/40'
+            : 'border-brand-700/12 bg-gradient-to-r from-cream via-white to-cream'
+        )}
+      >
+        <div className="mx-auto flex w-full max-w-[1340px] justify-center px-2.5 py-1 sm:px-5 sm:py-1.5 lg:py-1.5">
+          <BrandPlaneToFairwayTagline tone={isOverlay ? 'dark' : 'light'} layout="ribbon" className="max-w-full" />
         </div>
       </div>
 

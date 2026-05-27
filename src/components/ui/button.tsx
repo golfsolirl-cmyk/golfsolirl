@@ -25,7 +25,7 @@ const baseClasses =
 const variantClasses = {
   primary: 'gsol-cta-primary hover:-translate-y-0.5',
   secondary: 'gsol-cta-secondary hover:-translate-y-0.5',
-  outline: 'border border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 hover:border-brand-400/50',
+  outline: 'border border-white/30 bg-forest-900 text-white hover:bg-white/20 hover:border-brand-400/50',
   outlineOnLight:
     'gsol-cta-outline-on-light border-2 border-forest-300/90 bg-white text-forest-900 shadow-sm hover:border-fairway-500 hover:bg-offwhite hover:text-forest-950',
   white: 'gsol-cta-secondary hover:-translate-y-0.5'

@@ -13,6 +13,8 @@ export type HeroFormScrollCueProps = {
   readonly sublabel?: string
   /** `overlay` = on the hero photo (desktop). `inline` = below the photo on mobile. */
   readonly placement?: 'overlay' | 'inline'
+  /** `solid-dark` = forest card on hero photos. `solid-light` = cream card (readable, no blur). */
+  readonly shellTone?: 'solid-dark' | 'solid-light'
   readonly className?: string
 }
 
@@ -26,25 +28,27 @@ export function HeroFormScrollCue({
   label = HERO_FORM_SCROLL_DEFAULT_LABEL,
   sublabel = HERO_FORM_SCROLL_DEFAULT_SUBLABEL,
   placement = 'overlay',
+  shellTone = 'solid-light',
   className
 }: HeroFormScrollCueProps) {
   const reduceMotion = useReducedMotion()
   const isInline = placement === 'inline'
+  const useSolidLight = shellTone === 'solid-light' || isInline
 
   const shellClass = cx(
     'group relative shrink-0 transition-all duration-300 rounded-2xl border-2',
-    ...(isInline
+    ...(useSolidLight
       ? [
           'hero-form-scroll-cue__shell--inline',
-          'mx-auto flex w-full max-w-[min(100%,19.75rem)] flex-col items-center gap-2.5 px-4 py-3 sm:px-4 sm:py-3.5',
-          'border-forest-800/25 bg-white shadow-[0_12px_36px_rgba(6,32,22,0.1)]',
-          'hover:border-[#d4a843]/80 hover:bg-[#faf8f3] hover:shadow-[0_18px_48px_rgba(6,32,22,0.16)]'
+          'mx-auto flex w-full max-w-[min(100%,19.75rem)] flex-col items-center gap-2.5 px-4 py-3 sm:max-w-[23rem] sm:flex-row sm:px-4 sm:py-3.5',
+          'border-[#d4a843]/55 bg-[#faf8f3] shadow-[0_14px_40px_rgba(6,32,22,0.14)]',
+          'hover:border-brand-700/45 hover:bg-white hover:shadow-[0_18px_48px_rgba(6,32,22,0.18)]'
         ]
       : [
           'inline-flex w-full max-w-[21rem] items-center gap-2.5 px-3.5 py-2.5 sm:max-w-[23rem] sm:gap-3 sm:px-4 sm:py-3',
-          'shadow-[0_14px_40px_rgba(6,32,22,0.18)] backdrop-blur-md',
-          'border-white/30 bg-forest-950/72',
-          'hover:border-[#d4a843]/80 hover:bg-[#faf8f3] hover:shadow-[0_18px_48px_rgba(6,32,22,0.28)]'
+          'shadow-[0_14px_40px_rgba(6,32,22,0.18)]',
+          'border-forest-800 bg-forest-950 text-white',
+          'hover:border-[#d4a843]/80 hover:bg-forest-900 hover:shadow-[0_18px_48px_rgba(6,32,22,0.28)]'
         ])
   )
 
@@ -99,7 +103,7 @@ export function HeroFormScrollCue({
       className={linkClass}
       initial={reduceMotion ? undefined : { opacity: 0, y: 10 }}
       animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.35, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
     >
       {content}
       {!reduceMotion && !isInline ? (

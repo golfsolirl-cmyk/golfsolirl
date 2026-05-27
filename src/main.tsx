@@ -4,6 +4,10 @@ import { AppErrorBoundary } from './components/app-error-boundary'
 import { pathnameNeedsImmediateSupabaseHydration } from './lib/auth-bootstrap-path'
 import { MotionRoot } from './providers/motion-root'
 import { isGeContentPagePath } from './pages/golf-experience/data/content-pages'
+import { GolfExperienceHome } from './pages/golf-experience/golf-experience-home'
+import { TransportServicePage } from './pages/golf-experience/transport-service-page'
+import { GeContentPage } from './pages/golf-experience/content-page'
+import { CustomerPackagePage } from './pages/customer-packages'
 import './index.css'
 import './theme/ge-page-token-overrides.css'
 import './theme/site-readable-typography.css'
@@ -17,15 +21,6 @@ if (typeof window !== 'undefined') {
   }
 }
 
-const GolfExperienceHome = lazy(() =>
-  import('./pages/golf-experience/golf-experience-home').then((m) => ({ default: m.GolfExperienceHome }))
-)
-const TransportServicePage = lazy(() =>
-  import('./pages/golf-experience/transport-service-page').then((m) => ({ default: m.TransportServicePage }))
-)
-const GeContentPage = lazy(() =>
-  import('./pages/golf-experience/content-page').then((m) => ({ default: m.GeContentPage }))
-)
 const ContinueTripPage = lazy(() =>
   import('./pages/continue-trip-page').then((m) => ({ default: m.ContinueTripPage }))
 )
@@ -49,9 +44,6 @@ const AdminDashboardPage = lazy(() =>
 )
 const ClientDocumentPage = lazy(() =>
   import('./pages/client-document-page').then((m) => ({ default: m.ClientDocumentPage }))
-)
-const CustomerPackagePage = lazy(() =>
-  import('./pages/customer-packages').then((m) => ({ default: m.CustomerPackagePage }))
 )
 const PackageAdminPage = lazy(() => import('./pages/packages').then((m) => ({ default: m.PackageAdminPage })))
 const ProposalTemplatePage = lazy(() =>
@@ -91,7 +83,7 @@ const BrandIdentityMockupPage = lazy(() =>
 
 const NotFoundPage = lazy(() => import('./pages/not-found-page').then((m) => ({ default: m.NotFoundPage })))
 
-type PageComponent = LazyExoticComponent<ComponentType>
+type PageComponent = ComponentType | LazyExoticComponent<ComponentType>
 
 /** Print/PDF layout routes keep exact typography (no site-wide bump or card resize). */
 const SITE_READABLE_OFF_PATHS = new Set([
@@ -263,25 +255,11 @@ const AuthProviderShell = lazy(() =>
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <AppErrorBoundary>
-    <Suspense
-      fallback={
-        <div className="flex min-h-screen items-center justify-center bg-offwhite font-ge text-base text-forest-700">
-          Loading…
-        </div>
-      }
-    >
+    <Suspense fallback={null}>
       <AuthProviderShell>
-        <Suspense
-          fallback={
-            <div className="flex min-h-screen items-center justify-center bg-offwhite font-ge text-base text-forest-700">
-              Loading…
-            </div>
-          }
-        >
-          <MotionRoot>
-            <ActivePage />
-          </MotionRoot>
-        </Suspense>
+        <MotionRoot>
+          <ActivePage />
+        </MotionRoot>
       </AuthProviderShell>
     </Suspense>
   </AppErrorBoundary>

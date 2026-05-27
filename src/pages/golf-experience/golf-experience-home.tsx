@@ -1,12 +1,11 @@
-import { lazy, Suspense, useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { PremiumGolfHero } from '../../components/home/premium-golf-hero'
 import { HomeCreativeCanvas } from '../../components/ui/HomeCreativeCanvas'
 import { GeNavbar } from './sections/ge-navbar'
 import { HOMEPAGE_CREATIVE_CANVAS_ENABLED } from '../../lib/homepage-luxury-background'
 import { cx } from '../../lib/utils'
 import { useJsonLd, usePageMeta } from '../../lib/use-page-meta'
-
-const HomeBelowTheFold = lazy(() => import('./home-below-the-fold'))
+import HomeBelowTheFold from './home-below-the-fold'
 
 export function GolfExperienceHome() {
   usePageMeta({
@@ -32,37 +31,6 @@ export function GolfExperienceHome() {
     )
   )
 
-  useEffect(() => {
-    const prefetch = () => {
-      void import('./home-below-the-fold')
-    }
-    if (typeof window.requestIdleCallback === 'function') {
-      const id = window.requestIdleCallback(prefetch, { timeout: 2000 })
-      return () => window.cancelIdleCallback(id)
-    }
-    const t = window.setTimeout(prefetch, 800)
-    return () => window.clearTimeout(t)
-  }, [])
-
-  useEffect(() => {
-    let done = false
-    const prefetch = () => {
-      if (done) {
-        return
-      }
-      done = true
-      void import('./home-below-the-fold')
-    }
-    window.addEventListener('scroll', prefetch, { passive: true, once: true })
-    window.addEventListener('wheel', prefetch, { passive: true, once: true })
-    window.addEventListener('touchstart', prefetch, { passive: true, once: true })
-    return () => {
-      window.removeEventListener('scroll', prefetch)
-      window.removeEventListener('wheel', prefetch)
-      window.removeEventListener('touchstart', prefetch)
-    }
-  }, [])
-
   return (
     <div
       className={cx(
@@ -81,21 +49,7 @@ export function GolfExperienceHome() {
 
       <main id="main">
         <PremiumGolfHero />
-        <Suspense
-          fallback={
-            <div
-              className={cx(
-                'min-h-[50vh] w-full',
-                HOMEPAGE_CREATIVE_CANVAS_ENABLED
-                  ? 'bg-transparent'
-                  : 'bg-gradient-to-b from-cream to-offwhite/80'
-              )}
-              aria-hidden="true"
-            />
-          }
-        >
-          <HomeBelowTheFold />
-        </Suspense>
+        <HomeBelowTheFold />
       </main>
     </div>
   )

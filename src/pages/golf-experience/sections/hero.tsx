@@ -54,7 +54,8 @@ export function GeHero({
       {/* Reserve space under fixed navbar */}
       <div
         aria-hidden="true"
-        className="h-[152px] w-full max-sm:h-[156px] sm:h-[160px] md:h-[168px] lg:h-[132px] xl:h-[142px] bg-cream"
+        className="w-full bg-cream"
+        style={{ height: 'var(--ge-fixed-header-h)' }}
       />
 
       <div className={cx('relative w-full', isPortal && 'max-sm:aspect-[9/17] sm:aspect-[2/1]')}>
@@ -153,7 +154,7 @@ export function GeHero({
                 <div className="min-w-0">
                   {portalKicker ? (
                     <m.p
-                      className="inline-flex rounded-full border border-white/25 bg-gradient-to-r from-white/[0.14] to-white/[0.06] px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-[0.22em] text-emerald-50 shadow-[0_0_24px_rgba(0,0,0,0.35)] backdrop-blur-md sm:text-sm"
+                      className="inline-flex rounded-full border border-white/25 bg-gradient-to-r from-white/[0.14] to-white/[0.06] px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-[0.22em] text-emerald-50 shadow-[0_0_24px_rgba(0,0,0,0.35)] sm:text-sm"
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}

@@ -678,7 +678,7 @@ export function TransportHeroEnquiryForm() {
               id="terms-transport-hero"
             />
 
-            <GeButton type="submit" variant="gs-green" size="md" className="w-full" disabled={status === 'submitting'}>
+            <GeButton type="submit" variant="gs-green" size="md" className="w-full" disabled={status === 'submitting' || !termsAccepted}>
               <Send className="h-4 w-4" aria-hidden />
               {status === 'submitting' ? transportEnquiryFormCopy.sending : transportEnquiryFormCopy.submit}
             </GeButton>

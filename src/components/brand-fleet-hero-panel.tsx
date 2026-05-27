@@ -21,7 +21,7 @@ export function BrandFleetHeroPanel({
   return (
     <div
       className={cx(
-        'overflow-hidden rounded-[1.35rem] border border-[#d9d9d9]/90 bg-[#eef2ef]/95 shadow-[0_18px_48px_rgba(6,59,42,0.12)] ring-1 ring-white/60 backdrop-blur-sm',
+        'overflow-hidden rounded-[1.35rem] border border-[#d9d9d9]/90 bg-[#eef2ef]/95 shadow-[0_18px_48px_rgba(6,59,42,0.12)] ring-1 ring-white/60',
         isLogin && 'lg:max-w-none',
         isPdf && 'rounded-xl border-ge-gray200 bg-offwhite',
         className
@@ -34,7 +34,7 @@ export function BrandFleetHeroPanel({
             isPdf && 'px-3 py-2.5'
           )}
         >
-          <span className="inline-flex items-center gap-2 rounded-full border border-gs-green/25 bg-white/90 px-3 py-1 font-ge text-[0.62rem] font-bold uppercase tracking-[0.2em] text-gs-green shadow-sm">
+          <span className="inline-flex items-center gap-2 rounded-full border border-gs-green/25 bg-white px-3 py-1 font-ge text-[0.62rem] font-bold uppercase tracking-[0.2em] text-gs-green shadow-sm">
             <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-fairway-500" />
             Airport transfer desk
           </span>
@@ -57,7 +57,7 @@ export function BrandFleetHeroPanel({
           src={BRAND_FLEET_HERO_IMAGE_SRC}
           width={1280}
         />
-        <p className="absolute bottom-2 left-2 right-2 rounded-lg bg-black/45 px-3 py-1.5 text-center font-ge text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-white backdrop-blur-sm sm:text-xs">
+        <p className="absolute bottom-2 left-2 right-2 rounded-lg bg-brand-charcoal px-3 py-1.5 text-center font-ge text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-white sm:text-xs">
           Fleet ready for golf bags
         </p>
       </div>

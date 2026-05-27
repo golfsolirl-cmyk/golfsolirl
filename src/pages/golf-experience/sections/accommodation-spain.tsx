@@ -74,10 +74,6 @@ export function GeAccommodationSpain() {
         aria-hidden="true"
         className="pointer-events-none absolute right-[-6rem] top-40 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(217,190,122,0.10),transparent_72%)] blur-3xl"
       />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-700/40 to-transparent"
-      />
 
       {/* —— Editorial header —— */}
       <m.div
@@ -85,7 +81,7 @@ export function GeAccommodationSpain() {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.3 }}
-        className="mx-auto max-w-3xl text-center"
+        className="mx-auto max-w-4xl text-center"
       >
         <m.span
           variants={headerItem}
@@ -97,7 +93,7 @@ export function GeAccommodationSpain() {
 
         <m.h2
           variants={headerItem}
-          className="mt-6 font-ge text-[2rem] font-extrabold uppercase leading-[1.06] tracking-[0.02em] text-gs-dark sm:text-[2.4rem] lg:text-[2.6rem]"
+          className="mt-6 text-balance font-ge text-[1.85rem] font-extrabold leading-[1.12] tracking-[-0.02em] text-gs-dark sm:text-[2.35rem] lg:text-[2.55rem]"
         >
           <span className="text-gs-dark">Hotels Irish groups love</span>{' '}
           <span className="text-gs-green">on the Costa del Sol</span>
@@ -106,12 +102,12 @@ export function GeAccommodationSpain() {
         <m.span
           aria-hidden="true"
           variants={headerItem}
-          className="mx-auto mt-5 block h-[3px] w-24 rounded-full bg-gradient-to-r from-transparent via-brand-700 to-transparent"
+          className="mx-auto mt-5 h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent"
         />
 
         <m.p
           variants={headerItem}
-          className="mt-5 font-ge text-[0.98rem] font-semibold uppercase tracking-[0.16em] text-gs-green sm:text-[1.02rem]"
+          className="mt-5 text-balance font-ge text-[0.92rem] font-semibold uppercase tracking-[0.12em] text-gs-green sm:text-[0.98rem]"
         >
           {hotelListsCopy.lead}
         </m.p>
@@ -142,8 +138,9 @@ export function GeAccommodationSpain() {
         {/* chrome top hairline */}
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-brand-700 to-transparent"
-        />
+          className="pointer-events-none absolute inset-x-0 top-0 flex justify-center"
+        ><div className="mx-auto h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent" />
+        </span>
         <span
           aria-hidden="true"
           className="pointer-events-none absolute -right-10 -bottom-10 h-32 w-32 rounded-full bg-brand-700/[0.06] blur-3xl"
@@ -166,9 +163,9 @@ export function GeAccommodationSpain() {
       <m.div
         {...fadeUp}
         transition={{ ...fadeUp.transition, delay: 0.1 }}
-        className="mt-12 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4"
+        className="mt-12 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center sm:justify-center sm:gap-4"
       >
-        <GeButton href="/contact" variant="gs-green" size="lg" className="w-full sm:w-auto">
+        <GeButton href="/contact" variant="gs-green" size="lg" className="w-full sm:w-auto sm:min-w-[14rem]">
           {hotelListsCopy.cta}
           <ArrowRight className="ml-1 h-4 w-4" aria-hidden />
         </GeButton>
@@ -176,7 +173,7 @@ export function GeAccommodationSpain() {
           href="#enquire"
           variant="outline-gs-green"
           size="lg"
-          className="w-full sm:w-auto"
+          className="w-full sm:w-auto sm:min-w-[14rem]"
         >
           {hotelListsCopy.secondaryCta}
         </GeButton>

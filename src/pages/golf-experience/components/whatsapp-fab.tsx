@@ -110,7 +110,7 @@ export function WhatsappFab() {
           <WhatsappGlyph className="relative h-7 w-7 drop-shadow-[0_0_10px_rgba(37,211,102,0.55)] md:h-8 md:w-8" />
 
           {/* Optional label that only appears on hover, desktop+ */}
-          <span className="pointer-events-none absolute right-full mr-3 hidden whitespace-nowrap rounded-md border border-[#25D366]/55 bg-gs-dark/95 px-3 py-1.5 font-ge text-xs font-extrabold uppercase tracking-[0.16em] text-[#5cf08c] opacity-0 shadow-lg backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100 md:block">
+          <span className="pointer-events-none absolute right-full mr-3 hidden whitespace-nowrap rounded-md border border-[#25D366]/55 bg-gs-dark px-3 py-1.5 font-ge text-xs font-extrabold uppercase tracking-[0.16em] text-[#5cf08c] opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100 md:block">
             Chat on WhatsApp
           </span>
         </m.a>

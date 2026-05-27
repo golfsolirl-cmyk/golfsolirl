@@ -76,8 +76,8 @@ export function PackageCard({ name, description, price, duration, highlight, inc
               className={cx(
                 'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium',
                 isFeaturedPackage
-                  ? 'border-white/10 bg-white/8 text-white/75'
-                  : 'border-forest-100 bg-white/80 text-forest-900/68'
+                  ? 'border-white/10 bg-forest-900 text-white/75'
+                  : 'border-forest-100 bg-white text-forest-900/68'
               )}
             >
               <CalendarDays className="h-3.5 w-3.5" aria-hidden="true" />
@@ -115,7 +115,7 @@ export function PackageCard({ name, description, price, duration, highlight, inc
         <div
           className={cx(
             'mb-6 space-y-3 rounded-[1.5rem] border p-4',
-            isFeaturedPackage ? 'border-white/10 bg-white/6 backdrop-blur-sm' : 'border-forest-100 bg-white/80'
+            isFeaturedPackage ? 'border-white/10 bg-forest-900' : 'border-forest-100 bg-white'
           )}
         >
           {includes.map((item) => (
@@ -269,7 +269,7 @@ export function HotelCard({ name, tier, area, image, description, perks, price }
 export function FeatureTile({ title, description, icon: Icon }: TransferFeature) {
   return (
     <m.article
-      className="rounded-[2rem] border border-white/15 bg-white/10 p-6 backdrop-blur-md"
+      className="rounded-[2rem] border border-white/15 bg-forest-900 p-6"
       {...fadeUpProps}
     >
       <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-forest-950 shadow-[0_12px_24px_rgba(0,0,0,0.16)]">

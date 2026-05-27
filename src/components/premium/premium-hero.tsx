@@ -167,7 +167,7 @@ export function PremiumHero({
             {/* Page-label badge */}
             <m.span
               variants={heroItem}
-              className="inline-flex items-center gap-2 rounded-full border border-[#f4dfa6]/55 bg-white/[0.08] px-3.5 py-1.5 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.22em] backdrop-blur-sm sm:text-[0.74rem]"
+              className="inline-flex items-center gap-2 rounded-full border border-[#f4dfa6]/55 bg-forest-900 px-3.5 py-1.5 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.22em] sm:text-[0.74rem]"
               style={{ color: '#fbe8b5' }}
             >
               <KickerIcon className="h-3.5 w-3.5 shrink-0" aria-hidden style={{ color: '#fbe8b5' }} />

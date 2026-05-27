@@ -70,11 +70,7 @@ export function GeAboutBlock() {
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-brand-700/[0.14] blur-[90px]"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-700/40 to-transparent"
-      />
+      />
 
       <div className="grid gap-12 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)] lg:items-center lg:gap-14">
         {/* —— Left: photo plate with solid brand logo card (no glass) —— */}
@@ -173,8 +169,9 @@ export function GeAboutBlock() {
           <div className="relative rounded-[1.85rem] border border-gs-green/12 bg-white p-7 shadow-[0_22px_55px_rgba(6,59,42,0.08)] ring-1 ring-chrome-300/70 sm:p-9 lg:p-10">
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-brand-700 to-transparent"
-            />
+              className="pointer-events-none absolute inset-x-0 top-0 flex justify-center"
+            ><div className="mx-auto h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent" />
+        </div>
             <div
               aria-hidden="true"
               className="pointer-events-none absolute -right-16 top-24 h-40 w-40 rounded-full bg-brand-700/[0.06] blur-3xl"

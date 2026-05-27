@@ -77,6 +77,7 @@ export type PremiumPageHeroProps = {
   readonly formScrollTarget?: string
   readonly formScrollLabel?: string
   readonly formScrollSublabel?: string
+  readonly formScrollShellTone?: 'solid-dark' | 'solid-light'
   readonly mobileImageObjectPosition?: string
   /** When true, skip cream fade overlays so baked-in hero footer art stays visible. */
   readonly preserveFooterArt?: boolean
@@ -101,6 +102,7 @@ export function PremiumPageHero({
   formScrollTarget,
   formScrollLabel,
   formScrollSublabel,
+  formScrollShellTone,
   mobileImageObjectPosition = 'center 72%',
   preserveFooterArt = false,
   className,
@@ -126,10 +128,11 @@ export function PremiumPageHero({
 
       <div
         aria-hidden="true"
-        className="relative z-20 h-[116px] w-full shrink-0 bg-cream max-sm:h-[126px] sm:h-[140px] md:h-[154px] lg:h-[124px] xl:h-[132px]"
+        className="ge-fixed-header-spacer relative z-20 w-full shrink-0 bg-cream"
+        style={{ height: 'var(--ge-fixed-header-h)' }}
       />
 
-      <div className="relative max-md:-mt-5 max-sm:max-md:-mt-6 overflow-visible md:-mt-2 lg:-mt-3">
+      <div className="relative overflow-visible">
         <div className="relative md:hidden">
           <div className="relative h-[min(52vh,400px)] min-h-[260px] w-full overflow-hidden">
             <img
@@ -154,6 +157,7 @@ export function PremiumPageHero({
               label={scrollLabel}
               sublabel={scrollSublabel}
               placement="inline"
+              shellTone={formScrollShellTone}
               className="bg-cream pb-2 pt-3"
             />
           ) : null}
@@ -187,7 +191,7 @@ export function PremiumPageHero({
 
         <div className="relative hidden md:block">
           <div className="relative">
-            <picture className="block w-full lg:-mt-2">
+            <picture className="block w-full">
               <source media="(min-width: 1024px)" srcSet={desktopSrc} type="image/webp" />
               <source media="(min-width: 768px)" srcSet={tabletSrc} type="image/webp" />
               <img
@@ -199,7 +203,7 @@ export function PremiumPageHero({
               />
             </picture>
 
-            <div className="pointer-events-none absolute inset-0 z-20 flex items-start justify-start pt-5 md:pt-6 lg:pt-8">
+            <div className="pointer-events-none absolute inset-0 z-20 flex items-start justify-start pt-4 md:pt-5 lg:pt-7 xl:pt-8">
               <div className="pointer-events-auto ml-5 w-full max-w-[22.5rem] md:ml-6 md:max-w-[24rem] lg:ml-10 lg:max-w-[26.5rem] xl:max-w-[28rem]">
                 <div className={cx(COPY_PANEL_CLASS, 'p-5 md:p-5 lg:p-6')}>
                   <HeroCopyPanel
@@ -226,6 +230,7 @@ export function PremiumPageHero({
                 label={scrollLabel}
                 sublabel={scrollSublabel}
                 placement="overlay"
+                shellTone={formScrollShellTone}
                 className="bottom-[18%] left-1/2 right-auto max-md:max-w-[min(100%,18.5rem)] md:bottom-[14%] lg:bottom-10"
               />
             ) : null}
@@ -395,7 +400,7 @@ function HeroTrustSection({
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#d4a843]/70 to-transparent"
+        className="mx-auto h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent"
       />
       <div className={cx('relative', isScroll ? '' : 'mx-auto max-w-[1240px]')}>
         <div className="mb-4 flex items-center gap-3 md:mb-5">

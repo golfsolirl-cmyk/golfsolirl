@@ -43,13 +43,13 @@ const variants: Record<Variant, string> = {
   'outline-teal': 'gsol-cta-secondary',
   'outline-blue': 'gsol-cta-secondary',
   'outline-white':
-    'border-2 border-white/80 bg-transparent text-white hover:bg-white/10 hover:border-brand-500/60',
+    'border-2 border-white/80 bg-transparent text-white hover:bg-forest-900 hover:border-brand-500/60',
   'ghost-white': 'bg-transparent text-white hover:text-chrome-200',
   'gs-green': 'gsol-cta-primary',
   'gs-gold': 'gsol-cta-primary',
   'gs-electric': 'gsol-cta-secondary',
   'outline-gs-white':
-    'border-2 border-white/80 bg-transparent text-white hover:bg-white/10 hover:border-brand-500/60',
+    'border-2 border-white/80 bg-transparent text-white hover:bg-forest-900 hover:border-brand-500/60',
   'outline-gs-green': 'gsol-cta-secondary',
   ink: 'gsol-cta-primary',
   'outline-ink': 'gsol-cta-secondary'

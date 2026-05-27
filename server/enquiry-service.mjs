@@ -260,6 +260,18 @@ export const validateEnquiryPayload = (payload) => {
   }
 }
 
+const TERMS_ACCEPTED_FIELD = '_termsAccepted'
+
+const assertWebsiteEnquiryTermsAccepted = (enquiry) => {
+  const accepted = enquiry.formPayload?.fields?.[TERMS_ACCEPTED_FIELD]
+  if (accepted === 'yes') {
+    return
+  }
+  const error = new Error('Please tick the box to confirm you agree to our terms and conditions.')
+  error.statusCode = 400
+  throw error
+}
+
 const rowHeightForValue = (value, font, maxW) => {
   const lines = wrapText({ text: value, font, fontSize: PDF_READING_PT, maxWidth: maxW })
   const bodyH = measureWrappedDrawHeight(lines, PDF_READING_LH)
@@ -901,6 +913,7 @@ export const handleEnquirySubmission = async (payload, env = process.env, runtim
   })
 
   const enquiry = validateEnquiryPayload(payload)
+  assertWebsiteEnquiryTermsAccepted(enquiry)
   const enquiryId = createEnquiryReferenceId()
   const enquiryDate = formatDocumentDate()
   const resendApiKey = env.RESEND_API_KEY
@@ -924,87 +937,91 @@ export const handleEnquirySubmission = async (payload, env = process.env, runtim
     await assertEnquiryDriverDatesNotBlocked(sb, enquiry)
   }
 
-  const resend = new Resend(resendApiKey)
-
-  const [pdfBytes, termsPdfBytes, travellerContactsPdfBytes, packingChecklistPdfBytes] = await Promise.all([
-    createBrandedEnquiryPdf({ ...enquiry, enquiryId, enquiryDate }),
-    createTermsAndConditionsPdf(),
-    createTravellerContactsPdf(),
-    createPackingChecklistPdf()
-  ])
-  const pdfAttachment = {
-    filename: `golf-sol-ireland-enquiry-${slugify(enquiryId)}.pdf`,
-    content: Buffer.from(pdfBytes).toString('base64'),
-    contentType: 'application/pdf'
-  }
-  const termsPdfAttachment = {
-    filename: 'golf-sol-ireland-terms-and-conditions.pdf',
-    content: Buffer.from(termsPdfBytes).toString('base64'),
-    contentType: 'application/pdf'
-  }
-  const travellerContactsPdfAttachment = {
-    filename: 'golf-sol-ireland-costa-del-sol-traveller-contacts.pdf',
-    content: Buffer.from(travellerContactsPdfBytes).toString('base64'),
-    contentType: 'application/pdf'
-  }
-  const packingChecklistPdfAttachment = {
-    filename: 'golf-sol-ireland-packing-checklist.pdf',
-    content: Buffer.from(packingChecklistPdfBytes).toString('base64'),
-    contentType: 'application/pdf'
-  }
-  const enquiryPdfAttachments = [pdfAttachment, termsPdfAttachment, travellerContactsPdfAttachment, packingChecklistPdfAttachment]
-
-  // Persist before emails so portal login can sync name/phone from enquiries immediately after magic link.
+  // Persist immediately so the client sees success without waiting on PDFs or email delivery.
   await recordEnquiryToSupabase(enquiry, enquiryId, env)
 
-  const customerTo = resolveResendToAddress(enquiry.email, env)
-  const ownerTo = resolveResendToAddress(notificationEmail, env)
+  const deliverEnquiryArtifacts = async () => {
+    try {
+      const resend = new Resend(resendApiKey)
 
-  const [customerResult, ownerResult] = await Promise.all([
-    resend.emails.send({
-      from: fromEmail,
-      to: [customerTo],
-      subject: `Your Golf Sol Ireland enquiry confirmation (${enquiryId})`,
-      html: buildCustomerHtml({ ...enquiry, enquiryId, enquiryDate }),
-      attachments: enquiryPdfAttachments
-    }),
-    resend.emails.send({
-      from: fromEmail,
-      to: [ownerTo],
-      replyTo: enquiry.email,
-      subject: `New Golf Sol Ireland enquiry ${enquiryId} from ${enquiry.fullName}`,
-      html: buildOwnerHtml({ ...enquiry, enquiryId, enquiryDate }),
-      attachments: enquiryPdfAttachments
-    })
-  ])
+      const [pdfBytes, termsPdfBytes, travellerContactsPdfBytes, packingChecklistPdfBytes] = await Promise.all([
+        createBrandedEnquiryPdf({ ...enquiry, enquiryId, enquiryDate }),
+        createTermsAndConditionsPdf(),
+        createTravellerContactsPdf(),
+        createPackingChecklistPdf()
+      ])
+      const pdfAttachment = {
+        filename: `golf-sol-ireland-enquiry-${slugify(enquiryId)}.pdf`,
+        content: Buffer.from(pdfBytes).toString('base64'),
+        contentType: 'application/pdf'
+      }
+      const termsPdfAttachment = {
+        filename: 'golf-sol-ireland-terms-and-conditions.pdf',
+        content: Buffer.from(termsPdfBytes).toString('base64'),
+        contentType: 'application/pdf'
+      }
+      const travellerContactsPdfAttachment = {
+        filename: 'golf-sol-ireland-costa-del-sol-traveller-contacts.pdf',
+        content: Buffer.from(travellerContactsPdfBytes).toString('base64'),
+        contentType: 'application/pdf'
+      }
+      const packingChecklistPdfAttachment = {
+        filename: 'golf-sol-ireland-packing-checklist.pdf',
+        content: Buffer.from(packingChecklistPdfBytes).toString('base64'),
+        contentType: 'application/pdf'
+      }
+      const enquiryPdfAttachments = [
+        pdfAttachment,
+        termsPdfAttachment,
+        travellerContactsPdfAttachment,
+        packingChecklistPdfAttachment
+      ]
 
-  const sendError = customerResult.error ?? ownerResult.error
-  if (sendError) {
-    const raw = sendError.message ?? 'Could not send enquiry confirmation email.'
-    const message =
-      raw.includes('only send testing emails to your own email address') ||
-      raw.includes('verify a domain at resend.com/domains')
-        ? resendSandboxRecipientHint(env)
-        : raw
-    const error = new Error(message)
-    error.statusCode = 502
-    throw error
+      const customerTo = resolveResendToAddress(enquiry.email, env)
+      const ownerTo = resolveResendToAddress(notificationEmail, env)
+
+      const [customerResult, ownerResult] = await Promise.all([
+        resend.emails.send({
+          from: fromEmail,
+          to: [customerTo],
+          subject: `Your Golf Sol Ireland enquiry confirmation (${enquiryId})`,
+          html: buildCustomerHtml({ ...enquiry, enquiryId, enquiryDate }),
+          attachments: enquiryPdfAttachments
+        }),
+        resend.emails.send({
+          from: fromEmail,
+          to: [ownerTo],
+          replyTo: enquiry.email,
+          subject: `New Golf Sol Ireland enquiry ${enquiryId} from ${enquiry.fullName}`,
+          html: buildOwnerHtml({ ...enquiry, enquiryId, enquiryDate }),
+          attachments: enquiryPdfAttachments
+        })
+      ])
+
+      const sendError = customerResult.error ?? ownerResult.error
+      if (sendError) {
+        const raw = sendError.message ?? 'Could not send enquiry confirmation email.'
+        console.error('[enquiry-service] background email delivery failed:', raw)
+        return
+      }
+
+      await insertWebsiteFormPackageBuildIfProfileExists(enquiry, enquiryId, env)
+      await insertTransferBookingFromWebsiteEnquiry(enquiry, enquiryId, env)
+      await runPostEnquiryPortalInviteJob({ enquiry, enquiryId, enquiryDate, env })
+    } catch (err) {
+      console.error('[enquiry-service] background enquiry delivery failed:', err)
+    }
   }
-  await insertWebsiteFormPackageBuildIfProfileExists(enquiry, enquiryId, env)
-  await insertTransferBookingFromWebsiteEnquiry(enquiry, enquiryId, env)
 
-  const portalInviteTask = runPostEnquiryPortalInviteJob({ enquiry, enquiryId, enquiryDate, env })
   if (typeof runtime.waitUntil === 'function') {
-    runtime.waitUntil(portalInviteTask)
+    runtime.waitUntil(deliverEnquiryArtifacts())
   } else {
-    void portalInviteTask.catch((err) => {
-      console.error('[enquiry-service] post-enquiry portal invite job failed:', err)
-    })
+    void deliverEnquiryArtifacts()
   }
 
   return {
     success: true,
-    message: 'Your enquiry has been sent. Check your inbox for the enquiry, terms, traveller contacts, and packing checklist PDFs.'
+    message: 'Your enquiry has been sent. We will email your confirmation and PDFs shortly.'
   }
 }
 

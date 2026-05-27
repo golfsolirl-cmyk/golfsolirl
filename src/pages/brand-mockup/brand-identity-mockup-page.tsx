@@ -55,7 +55,7 @@ function PhoneHeroMockup() {
         <div className="pointer-events-none absolute inset-x-1/2 top-2 z-20 h-6 w-[34%] -translate-x-1/2 rounded-full bg-black/80" />
         <div className="relative overflow-hidden rounded-[2.35rem] bg-black">
           <div className={cx('relative max-h-[min(78vh,720px)] overflow-y-auto', goldBar)}>
-            <header className="flex items-center justify-between gap-2 border-b border-black/10 bg-white/90 px-3 py-2.5 backdrop-blur-md">
+            <header className="flex items-center justify-between gap-2 border-b border-black/10 bg-white px-3 py-2.5">
               <Menu className="h-5 w-5 text-forest-950/70" aria-hidden />
               <BrandLogoPicture
                 alt="GolfSol Ireland"
@@ -68,11 +68,11 @@ function PhoneHeroMockup() {
             </header>
 
             <div className="flex flex-wrap justify-center gap-2 px-3 pt-3">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-white/90 px-3 py-1.5 text-[0.58rem] font-extrabold uppercase tracking-[0.12em] text-forest-950 shadow-sm backdrop-blur">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-white px-3 py-1.5 text-[0.58rem] font-extrabold uppercase tracking-[0.12em] text-forest-950 shadow-sm">
                 <Plane className="h-3.5 w-3.5 text-gs-green" aria-hidden />
                 Malaga arrivals
               </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-white/90 px-3 py-1.5 text-[0.58rem] font-extrabold uppercase tracking-[0.12em] text-forest-950 shadow-sm backdrop-blur">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-white px-3 py-1.5 text-[0.58rem] font-extrabold uppercase tracking-[0.12em] text-forest-950 shadow-sm">
                 <Flag className="h-3.5 w-3.5 text-gs-green" aria-hidden />
                 Costa del Sol tee-off
               </span>
@@ -87,7 +87,7 @@ function PhoneHeroMockup() {
                 decoding="async"
               />
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
-              <div className="absolute left-2 top-2 rounded-full border-2 border-dashed border-[#d9be7a] bg-white/95 px-2 py-1.5 text-center shadow-lg backdrop-blur">
+              <div className="absolute left-2 top-2 rounded-full border-2 border-dashed border-[#d9be7a] bg-white px-2 py-1.5 text-center shadow-lg">
                 <Clock className="mx-auto h-3.5 w-3.5 text-forest-950" aria-hidden />
                 <p className="text-[0.5rem] font-extrabold uppercase leading-tight text-forest-950">24/7</p>
                 <p className="text-[0.45rem] font-bold uppercase text-forest-900/80">Service</p>
@@ -102,12 +102,12 @@ function PhoneHeroMockup() {
               </div>
             </div>
 
-            <p className="mx-3 mt-3 rounded-xl border border-white/30 bg-white/75 px-3 py-2.5 text-[0.7rem] leading-relaxed text-forest-950/90 shadow-inner backdrop-blur">
+            <p className="mx-3 mt-3 rounded-xl border border-white/30 bg-cream px-3 py-2.5 text-[0.7rem] leading-relaxed text-forest-950/90 shadow-inner">
               Meet-and-greet at Malaga, golf-bag friendly Mercedes transfers, tee times pre-booked. Your group is taken
               care of from the carousel to the first cut.
             </p>
 
-            <div className="mx-3 my-3 rounded-2xl border border-white/25 bg-white/55 p-3 shadow-inner backdrop-blur-md">
+            <div className="mx-3 my-3 rounded-2xl border border-white/25 bg-offwhite p-3 shadow-inner">
               <FeatureRow compact />
             </div>
 
@@ -211,7 +211,7 @@ function BusinessCard({
             TO <span className="text-white drop-shadow-sm">FAIRWAY.</span>
           </p>
         </div>
-        <div className="rounded-xl border border-black/10 bg-white/35 p-2.5 shadow-inner backdrop-blur-sm">
+        <div className="rounded-xl border border-black/10 bg-offwhite p-2.5 shadow-inner">
           <FeatureRow compact />
         </div>
         <a
@@ -271,7 +271,7 @@ function BusinessCard({
       </div>
       <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-[0.52rem] font-semibold leading-tight">
         {FEATURES.map((f) => (
-          <div key={f} className="flex items-start gap-1 rounded-lg bg-white/40 px-1.5 py-1 backdrop-blur-sm">
+          <div key={f} className="flex items-start gap-1 rounded-lg bg-offwhite px-1.5 py-1">
             <Check className="mt-0.5 h-3 w-3 shrink-0 text-forest-950" aria-hidden />
             <span>{f}</span>
           </div>
@@ -298,7 +298,7 @@ function PersonDeck({
     { face: 'landscape-back', label: 'Landscape · back' }
   ]
   return (
-    <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-2xl backdrop-blur-sm sm:p-10">
+    <section className="rounded-3xl border border-white/10 bg-forest-950 p-6 shadow-2xl sm:p-10">
       <h2 className="text-center font-display text-2xl font-bold text-white sm:text-3xl">{personName}</h2>
       <p className="mt-1 text-center text-sm font-semibold uppercase tracking-[0.2em] text-[#d9be7a]/90">{personTitle}</p>
       <div className="mt-8 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">

@@ -2,6 +2,7 @@ import { m  } from 'framer-motion'
 import type { LucideIcon } from 'lucide-react'
 import { ArrowRight, CheckCircle2 } from 'lucide-react'
 import { HeroFormScrollCue } from '../../../components/home/hero-form-scroll-cue'
+import { GeGoldDividerLineAbsoluteTop } from '../../../components/ge-gold-divider-line'
 import { GeButton } from '../components/ge-button'
 import { GeDualPhoneHeroButtons } from '../components/ge-dual-phone-contact'
 
@@ -117,7 +118,7 @@ export function GeServiceStyleHero({
     >
       <h1 className="sr-only">{srTitle}</h1>
       {showNavbarSpacer ? (
-        <div aria-hidden="true" className="h-[150px] w-full bg-white sm:h-[164px] md:h-[180px] lg:h-[146px] xl:h-[158px]" />
+        <div aria-hidden="true" className="w-full bg-white" style={{ height: 'var(--ge-fixed-header-h)' }} />
       ) : null}
 
       <div className={sunny ? 'relative w-full overflow-hidden bg-[#eef2ef]' : 'relative w-full overflow-hidden bg-gs-dark'}>
@@ -152,7 +153,7 @@ export function GeServiceStyleHero({
               className={
                 sunny
                   ? 'mx-auto w-full max-w-[34rem] overflow-hidden rounded-[1.75rem] border border-chrome-200/70 bg-white p-5 shadow-[0_22px_50px_rgba(115,132,33,0.18)]'
-                  : 'relative mx-auto w-full max-w-[34rem] overflow-hidden rounded-[1.75rem] border border-[#f4dfa6]/45 p-5 shadow-[0_26px_60px_rgba(1,16,12,0.62),0_0_30px_rgba(217,190,122,0.16)] backdrop-blur-xl'
+                  : 'relative mx-auto w-full max-w-[34rem] overflow-hidden rounded-[1.75rem] border border-[#f4dfa6]/45 p-5 shadow-[0_26px_60px_rgba(1,16,12,0.62),0_0_30px_rgba(217,190,122,0.16)]'
               }
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -160,17 +161,14 @@ export function GeServiceStyleHero({
               style={sunny ? undefined : { background: 'linear-gradient(135deg, rgba(13,58,42,0.96) 0%, rgba(10,45,32,0.96) 50%, rgba(8,35,26,0.97) 100%)' }}
             >
               {sunny ? null : (
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[#f4dfa6]/55 to-transparent"
-                />
+                <GeGoldDividerLineAbsoluteTop />
               )}
 
               <span
                 className={
                   sunny
                     ? 'inline-flex items-center gap-2 rounded-full border border-brand-700/45 bg-chrome-50/90 px-3 py-1.5 font-ge text-[0.78rem] font-bold uppercase tracking-[0.16em] text-gs-green'
-                    : 'inline-flex items-center gap-2 rounded-full border border-[#f4dfa6]/55 bg-white/[0.08] px-3 py-1.5 font-ge text-[0.66rem] font-extrabold uppercase tracking-[0.2em] backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.16)]'
+                    : 'inline-flex items-center gap-2 rounded-full border border-[#f4dfa6]/55 bg-forest-900 px-3 py-1.5 font-ge text-[0.66rem] font-extrabold uppercase tracking-[0.2em] shadow-[inset_0_1px_0_rgba(255,255,255,0.16)]'
                 }
                 data-keep-color
                 style={sunny ? undefined : { color: '#fbe8b5' }}
@@ -186,7 +184,7 @@ export function GeServiceStyleHero({
               {sunny ? null : (
                 <span
                   aria-hidden="true"
-                  className="mt-4 block h-[3px] w-20 rounded-full bg-gradient-to-r from-transparent via-[#f4dfa6] to-transparent"
+                  className="mt-4 h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent"
                 />
               )}
 
@@ -294,7 +292,7 @@ export function GeServiceStyleHero({
                   className={
                     sunny
                       ? 'inline-flex items-center gap-2 rounded-full border border-brand-700/50 bg-white px-4 py-1.5 font-ge text-[0.7rem] font-bold uppercase tracking-[0.18em] text-gs-green shadow-sm sm:text-[0.78rem]'
-                      : 'inline-flex items-center gap-2 rounded-full border border-[#f4dfa6]/55 bg-white/[0.08] px-4 py-1.5 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.22em] backdrop-blur-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_0_24px_rgba(217,190,122,0.18)] sm:text-[0.74rem]'
+                      : 'inline-flex items-center gap-2 rounded-full border border-[#f4dfa6]/55 bg-forest-900 px-4 py-1.5 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.22em] shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_0_24px_rgba(217,190,122,0.18)] sm:text-[0.74rem]'
                   }
                   data-keep-color
                   style={sunny ? undefined : { color: '#fbe8b5' }}
@@ -310,7 +308,7 @@ export function GeServiceStyleHero({
                 {sunny ? null : (
                   <span
                     aria-hidden="true"
-                    className="mt-5 block h-[3px] w-24 rounded-full bg-gradient-to-r from-transparent via-[#f4dfa6] to-transparent"
+                    className="mt-5 mx-auto h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent"
                   />
                 )}
 

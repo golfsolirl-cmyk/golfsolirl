@@ -3,6 +3,7 @@ import { FaBluesky, FaFacebookF, FaLinkedinIn, FaWhatsapp } from 'react-icons/fa
 import { integrationRegistry } from '../config/integrations'
 import { FooterCompanyContact } from './footer-company-contact'
 import { FooterBrandLogoPicture } from './brand-logo-picture'
+import { BrandPlaneToFairwayTagline } from './brand-plane-to-fairway-tagline'
 import { AmbientGolfBall } from './ui/ambient-golf-ball'
 import { footerGroups, footerSocialLinks } from '../data/site-content'
 import { GOLFSOL_BRAND_LOGO_FOOTER_SIZES, GOLFSOL_BRAND_LOGO_INTRINSIC } from '../lib/brand-logo-assets'
@@ -41,7 +42,8 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
             decoding="async"
             className="h-auto w-[min(100%,15.5rem)] select-none object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.45)] sm:w-[17rem] md:w-[18.5rem]"
           />
-          <p className="mt-4 text-[1.08rem] leading-8 text-white/76 md:text-[1.14rem]">{intro}</p>
+          <BrandPlaneToFairwayTagline tone="dark" layout="footer" className="mt-4" />
+          <p className="mt-4 text-[1.08rem] leading-8 text-white/76 md:mt-5 md:text-[1.14rem]">{intro}</p>
           {showAuthFooter && !authLoading ? (
             <div className="mt-6 border-t border-white/10 pt-6">
               <p className="text-[0.96rem] font-semibold uppercase tracking-[0.14em] text-white/72">Account</p>
@@ -79,7 +81,7 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
                   <a
                     key={label}
                     aria-label={`Visit our ${label} page`}
-                    className="group inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#136047]/25 bg-white/5 text-[#136047] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#136047]/65 hover:bg-[#136047] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#136047] focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                    className="group inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#136047]/25 bg-forest-950 text-[#136047] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#136047]/65 hover:bg-[#136047] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#136047] focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
                     href={href}
                     rel="noreferrer"
                     target="_blank"

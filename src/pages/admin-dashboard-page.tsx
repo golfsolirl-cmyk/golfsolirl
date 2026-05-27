@@ -3717,8 +3717,8 @@ export function AdminDashboardPage() {
         <div className="rounded-3xl border border-chrome-200/90 bg-chrome-50/90 px-6 py-5 text-sm text-brand-950 shadow-soft">
           <p className="font-medium">Cannot verify admin access without a profile.</p>
           <p className="mt-2 text-brand-900/90">
-            If your account is an admin, confirm <code className="rounded bg-white/80 px-1">profiles.role</code> is{' '}
-            <code className="rounded bg-white/80 px-1">admin</code> for this user in Supabase, then retry.
+            If your account is an admin, confirm <code className="rounded bg-white px-1">profiles.role</code> is{' '}
+            <code className="rounded bg-white px-1">admin</code> for this user in Supabase, then retry.
           </p>
           <LuxuryButton className="mt-4" onClick={() => void refreshProfile()} type="button" variant="primary">
             Retry loading profile
@@ -3766,7 +3766,7 @@ export function AdminDashboardPage() {
 
           <div className="ge-on-dark rounded-[1.35rem] border border-brand-700/40 bg-gradient-to-br from-[#0f3d24] via-[#143d28] to-[#0a2416] px-5 py-4 shadow-[0_12px_32px_rgba(11,73,52,0.2)] ring-1 ring-white/10 sm:px-6 sm:py-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
-              <span className="inline-flex w-fit shrink-0 rounded-lg border border-white/15 bg-white/10 px-2.5 py-1.5 font-ge text-[0.58rem] font-extrabold uppercase tracking-[0.18em] text-white">
+              <span className="inline-flex w-fit shrink-0 rounded-lg border border-white/15 bg-forest-900 px-2.5 py-1.5 font-ge text-[0.58rem] font-extrabold uppercase tracking-[0.18em] text-white">
                 Stripe &amp; receipts
               </span>
               <p className="min-w-0 flex-1 text-sm leading-relaxed text-white/95">
@@ -4320,9 +4320,9 @@ export function AdminDashboardPage() {
                     <p className="mt-3 text-xs text-forest-700">{portalInvoiceSendMessage}</p>
                   ) : null}
                   <p className="mt-3 text-[11px] leading-relaxed text-ge-gray500">
-                    Requires <code className="rounded bg-white/90 px-1">STRIPE_SECRET_KEY</code>,{' '}
-                    <code className="rounded bg-white/90 px-1">STRIPE_WEBHOOK_SECRET</code>, and a Stripe webhook pointing to{' '}
-                    <code className="rounded bg-white/90 px-1">/api/stripe-webhook</code> for <code className="rounded bg-white/90 px-1">checkout.session.completed</code>.
+                    Requires <code className="rounded bg-white px-1">STRIPE_SECRET_KEY</code>,{' '}
+                    <code className="rounded bg-white px-1">STRIPE_WEBHOOK_SECRET</code>, and a Stripe webhook pointing to{' '}
+                    <code className="rounded bg-white px-1">/api/stripe-webhook</code> for <code className="rounded bg-white px-1">checkout.session.completed</code>.
                   </p>
                 </div>
 
@@ -4412,7 +4412,7 @@ export function AdminDashboardPage() {
                 <strong className="text-forest-900">Manual customer proposal</strong> — complete mustard-green fields, preview, and email the PDF when ready.
               </li>
             </ol>
-            <div className="mt-4 rounded-xl border border-dashed border-fairway-300/70 bg-white/70 px-4 py-3 text-xs leading-relaxed text-forest-700">
+            <div className="mt-4 rounded-xl border border-dashed border-fairway-300/70 bg-cream px-4 py-3 text-xs leading-relaxed text-forest-700">
               <p className="font-semibold text-forest-900">Show transfer package builder</p>
               <p className="mt-1 font-semibold text-forest-900">Show manual customer proposal</p>
             </div>
@@ -4961,7 +4961,7 @@ export function AdminDashboardPage() {
                         </dd>
                       </div>
                     </dl>
-                    <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-forest-200 bg-white/90 p-3 text-sm text-forest-900">
+                    <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-forest-200 bg-white p-3 text-sm text-forest-900">
                       <input
                         checked={manualSaveProposalToPortal}
                         className="mt-0.5 h-4 w-4 rounded border-forest-300 text-fairway-600 focus:ring-fairway-400"
@@ -7126,10 +7126,10 @@ export function AdminDashboardPage() {
                 <p className="font-medium">Package builds could not be loaded.</p>
                 <p className="mt-2 text-brand-900/85">{buildsLoadError}</p>
                 <p className="mt-2 text-xs text-brand-900/70">
-                  If the error mentions <code className="rounded bg-white/80 px-1">client_details</code>, run{' '}
-                  <code className="rounded bg-white/80 px-1">supabase/run-in-sql-editor-add-client-details.sql</code> in Supabase
-                  SQL. Otherwise check the <code className="rounded bg-white/80 px-1">package_builds</code> migration and the{' '}
-                  <code className="rounded bg-white/80 px-1">profiles</code> join if PostgREST reports ambiguity.
+                  If the error mentions <code className="rounded bg-white px-1">client_details</code>, run{' '}
+                  <code className="rounded bg-white px-1">supabase/run-in-sql-editor-add-client-details.sql</code> in Supabase
+                  SQL. Otherwise check the <code className="rounded bg-white px-1">package_builds</code> migration and the{' '}
+                  <code className="rounded bg-white px-1">profiles</code> join if PostgREST reports ambiguity.
                 </p>
               </div>
             ) : packageBuilds.length === 0 ? (
@@ -7289,7 +7289,7 @@ export function AdminDashboardPage() {
         <div className="fixed inset-0 z-[90] flex items-end justify-center p-4 sm:items-center sm:p-6">
           <button
             aria-label="Close build details"
-            className="absolute inset-0 bg-forest-950/55 backdrop-blur-[2px]"
+            className="absolute inset-0 bg-forest-950/55"
             onClick={handleCloseBuildDetail}
             type="button"
           />
@@ -7393,7 +7393,7 @@ export function AdminDashboardPage() {
                       </p>
                     ) : null}
                     {detailWebsite.portalTransferPlan.golfLegs.some((l) => l.courseId.trim()) ? (
-                      <ul className="mt-3 space-y-2 rounded-xl border border-forest-100 bg-white/90 px-3 py-2">
+                      <ul className="mt-3 space-y-2 rounded-xl border border-forest-100 bg-white px-3 py-2">
                         {detailWebsite.portalTransferPlan.golfLegs
                           .filter((l) => l.courseId.trim())
                           .map((leg, gi) => {
@@ -7413,7 +7413,7 @@ export function AdminDashboardPage() {
                       </ul>
                     ) : null}
                     {detailWebsite.portalTransferPlan.hotelLegs.some((l) => l.hotelName.trim()) ? (
-                      <ul className="mt-3 space-y-2 rounded-xl border border-forest-100 bg-white/90 px-3 py-2">
+                      <ul className="mt-3 space-y-2 rounded-xl border border-forest-100 bg-white px-3 py-2">
                         {detailWebsite.portalTransferPlan.hotelLegs
                           .filter((l) => l.hotelName.trim())
                           .map((leg, hi) => (
@@ -7467,7 +7467,7 @@ export function AdminDashboardPage() {
                       </div>
                     </div>
                     {websiteQuotePreview ? (
-                      <ul className="mt-4 space-y-2 rounded-xl border border-forest-200/80 bg-white/90 px-4 py-3 text-xs text-forest-800">
+                      <ul className="mt-4 space-y-2 rounded-xl border border-forest-200/80 bg-white px-4 py-3 text-xs text-forest-800">
                         <li className="flex justify-between gap-3">
                           <span>Services (ex VAT)</span>
                           <span className="font-semibold">{formatEur(websiteQuotePreview.netServicesEur)}</span>
@@ -7623,7 +7623,7 @@ export function AdminDashboardPage() {
           <h2 className="font-display mt-2 text-xl font-semibold text-forest-950">Clear dashboard or copy signed login URL</h2>
           <p className="mt-2 max-w-3xl text-sm text-forest-700">
             Use <strong className="font-medium text-forest-900">client login email</strong> and/or an <strong className="font-medium text-forest-900">account or enquiry ref</strong> (GSI-…) so we match the same profile that owns the inbox. Signed links use the account ref field and{' '}
-            <code className="rounded bg-white/90 px-1 font-mono text-xs ring-1 ring-forest-200">PORTAL_LINK_SIGNING_SECRET</code> on the server.
+            <code className="rounded bg-white px-1 font-mono text-xs ring-1 ring-forest-200">PORTAL_LINK_SIGNING_SECRET</code> on the server.
           </p>
           <label className="mb-2 mt-5 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="bottom-clear-portal-client-email">
             Client login email

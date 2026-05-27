@@ -24,8 +24,8 @@ export function GeTermsAcceptanceField({
       className={cx(
         'flex cursor-pointer items-start gap-3 rounded-xl border px-3.5 py-3 font-ge text-[0.98rem] leading-relaxed sm:text-[1rem]',
         isDark
-          ? 'border-white/15 bg-white/[0.06] text-white/92'
-          : 'border-ge-gray200 bg-ge-gray50/80 text-gs-dark',
+          ? 'border-forest-800 bg-forest-950 text-white'
+          : 'border-ge-gray200 bg-ge-gray50 text-gs-dark',
         className
       )}
     >

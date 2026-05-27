@@ -1,4 +1,5 @@
 import { m, type Variants } from 'framer-motion'
+import { GeGoldDividerLineAbsoluteTop } from '../../../components/ge-gold-divider-line'
 import type { LucideIcon } from 'lucide-react'
 import {
   ArrowRight,
@@ -60,10 +61,6 @@ export function GeFacts() {
         aria-hidden="true"
         className="pointer-events-none absolute -left-24 bottom-0 h-72 w-72 rounded-full bg-brand-700/[0.12] blur-[90px]"
       />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gs-green/20 to-transparent"
-      />
 
       <div className="grid gap-14 lg:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] lg:items-start lg:gap-16">
         <m.div className="flex flex-col items-center text-center lg:items-start lg:text-left" {...fadeUp}>
@@ -90,7 +87,7 @@ export function GeFacts() {
             return (
               <m.article
                 key={pillar.title}
-                className="group relative overflow-hidden rounded-[1.65rem] border border-gs-green/10 bg-white/95 p-6 shadow-[0_20px_50px_rgba(6,59,42,0.07)] ring-1 ring-gs-green/[0.04] transition-shadow duration-300 hover:shadow-[0_26px_60px_rgba(6,59,42,0.1)] sm:p-7"
+                className="group relative overflow-hidden rounded-[1.65rem] border border-gs-green/10 bg-white p-6 shadow-[0_20px_50px_rgba(6,59,42,0.07)] ring-1 ring-gs-green/[0.04] transition-shadow duration-300 hover:shadow-[0_26px_60px_rgba(6,59,42,0.1)] sm:p-7"
                 {...fadeUp}
                 transition={{ ...fadeUp.transition, delay: 0.05 * index }}
               >
@@ -100,7 +97,7 @@ export function GeFacts() {
                 />
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-700/50 to-transparent opacity-70"
+                  className="mx-auto h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent"
                 />
                 <div className="relative flex gap-5 sm:items-start sm:gap-6">
                   <span className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-2 border-[#f4dfa6]/70 bg-gradient-to-br from-[#1a7a59] via-[#136047] to-[#0c3527] text-white shadow-[0_16px_36px_rgba(11,107,69,0.32),0_0_24px_rgba(217,190,122,0.28)] ring-2 ring-white/20 transition-transform duration-500 group-hover:scale-[1.04] sm:h-[3.75rem] sm:w-[3.75rem]">
@@ -145,10 +142,7 @@ export function GeFacts() {
           aria-hidden="true"
           className="pointer-events-none absolute -right-28 bottom-[-6rem] h-80 w-80 rounded-full bg-[radial-gradient(circle_at_center,rgba(11,107,69,0.32),transparent_72%)] blur-3xl"
         />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-[#f4dfa6]/65 to-transparent"
-        />
+        <GeGoldDividerLineAbsoluteTop />
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-16 bottom-0 h-px bg-gradient-to-r from-transparent via-[#f4dfa6]/40 to-transparent"
@@ -158,7 +152,7 @@ export function GeFacts() {
           {/* Kicker pill */}
           <m.span
             variants={ctaItem}
-            className="ge-on-dark-kicker inline-flex items-center gap-2 rounded-full border border-[#f4dfa6]/55 bg-white/[0.08] px-4 py-2 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.24em] shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_0_24px_rgba(217,190,122,0.18)] backdrop-blur-sm sm:text-[0.74rem]"
+            className="ge-on-dark-kicker inline-flex items-center gap-2 rounded-full border border-[#f4dfa6]/55 bg-forest-900 px-4 py-2 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.24em] shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_0_24px_rgba(217,190,122,0.18)] sm:text-[0.74rem]"
             data-keep-color
             style={{ color: '#fbe8b5' }}
           >
@@ -174,7 +168,7 @@ export function GeFacts() {
           <m.span
             aria-hidden="true"
             variants={ctaItem}
-            className="mx-auto mt-6 block h-[3px] w-24 rounded-full bg-gradient-to-r from-transparent via-[#f4dfa6] to-transparent"
+            className="mx-auto mt-6 h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent"
           />
 
           {/* Two-tone headline (white "Let us design your" + gold "perfect Costa del Sol golf trip.") */}
@@ -215,12 +209,9 @@ export function GeFacts() {
                 <m.li
                   key={signal.label}
                   variants={ctaItem}
-                  className="group relative overflow-hidden rounded-2xl border border-[#f4dfa6]/45 bg-white/[0.06] px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.10),0_8px_22px_rgba(0,0,0,0.28)] backdrop-blur-sm transition-transform duration-300 hover:-translate-y-0.5 sm:px-5 sm:py-5"
+                  className="group relative overflow-hidden rounded-2xl border border-[#f4dfa6]/45 bg-forest-900 px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.10),0_8px_22px_rgba(0,0,0,0.28)] transition-transform duration-300 hover:-translate-y-0.5 sm:px-5 sm:py-5"
                 >
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-[#f4dfa6]/55 to-transparent"
-                  />
+                  <GeGoldDividerLineAbsoluteTop />
                   <div className="flex items-center gap-3 sm:flex-col sm:items-start sm:gap-3.5">
                     <span
                       aria-hidden="true"

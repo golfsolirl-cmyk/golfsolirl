@@ -307,7 +307,7 @@ export function LoginPage() {
           <>
             {heroBody}
             {safeReturnPath ? (
-              <span className="mt-4 block max-w-xl rounded-2xl border border-white/18 bg-white/10 px-4 py-3 font-ge text-base leading-7 text-white/92">
+              <span className="mt-4 block max-w-xl rounded-2xl border border-white/18 bg-forest-900 px-4 py-3 font-ge text-base leading-7 text-white/92">
                 After you sign in, we&apos;ll bring you back to your package so you can save it to your account.
               </span>
             ) : null}

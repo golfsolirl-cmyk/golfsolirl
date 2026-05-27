@@ -52,11 +52,7 @@ export function GeAccommodationIntro() {
       <div
         aria-hidden="true"
         className="pointer-events-none absolute right-[-6rem] bottom-[-4rem] h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(217,190,122,0.12),transparent_72%)] blur-3xl"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-700/40 to-transparent"
-      />
+      />
 
       <m.div
         variants={heroContainer}
@@ -126,8 +122,9 @@ export function GeAccommodationIntro() {
           <div className="relative rounded-[1.85rem] border border-gs-green/15 bg-white p-7 shadow-[0_22px_55px_rgba(6,59,42,0.10)] ring-1 ring-chrome-300/70 sm:p-8">
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-brand-700 to-transparent"
-            />
+              className="pointer-events-none absolute inset-x-0 top-0 flex justify-center"
+            ><div className="mx-auto h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent" />
+        </div>
             <div
               aria-hidden="true"
               className="pointer-events-none absolute -right-12 top-12 h-32 w-32 rounded-full bg-brand-700/[0.06] blur-3xl"
@@ -168,8 +165,9 @@ export function GeAccommodationIntro() {
             >
               <span
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-brand-700/45 to-transparent"
-              />
+                className="pointer-events-none absolute inset-x-0 top-0 flex justify-center"
+              ><div className="mx-auto h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent" />
+        </span>
               <span
                 aria-hidden="true"
                 className="pointer-events-none absolute -right-10 -bottom-10 h-28 w-28 rounded-full bg-brand-700/[0.05] blur-3xl"

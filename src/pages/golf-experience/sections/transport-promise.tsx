@@ -58,10 +58,6 @@ export function TransportPromise() {
         aria-hidden="true"
         className="pointer-events-none absolute right-[-6rem] bottom-[-4rem] h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(217,190,122,0.10),transparent_72%)] blur-3xl"
       />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-700/40 to-transparent"
-      />
 
       <m.div
         variants={heroContainer}
@@ -136,8 +132,9 @@ export function TransportPromise() {
               {/* Top chrome hairline */}
               <span
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-brand-700/45 to-transparent"
-              />
+                className="pointer-events-none absolute inset-x-0 top-0 flex justify-center"
+              ><div className="mx-auto h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent" />
+        </span>
               {/* Brand-green left accent (premium upgrade from the previous flat green bar) */}
               <span
                 aria-hidden

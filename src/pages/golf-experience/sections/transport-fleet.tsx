@@ -1,4 +1,5 @@
 import { m, type Variants } from 'framer-motion'
+import { GeGoldDividerLineAbsoluteTop } from '../../../components/ge-gold-divider-line'
 import { Briefcase, Sparkles, Star, Users } from 'lucide-react'
 import { GeSection } from '../components/ge-section'
 import { transportFleetIntroCopy, transportFleetTiers } from '../data/transport-service'
@@ -117,10 +118,7 @@ export function TransportFleet() {
             className="pointer-events-none absolute -inset-2 rounded-[2rem] border border-[#d9be7a]/35"
           />
           <div className="relative overflow-hidden rounded-[1.85rem] border border-gs-dark/10 bg-gs-dark shadow-[0_28px_70px_rgba(6,59,42,0.2)] ring-1 ring-chrome-300/70">
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-12 top-0 z-[2] h-px bg-gradient-to-r from-transparent via-[#f4dfa6]/55 to-transparent"
-          />
+          <GeGoldDividerLineAbsoluteTop className="z-[2]" />
           <img
             src="/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp"
             alt="GolfSol Ireland Mercedes V-Class, E-Class and Sprinter parked on a Costa del Sol forecourt beside a manicured fairway with the Sierra Blanca mountains behind."
@@ -134,7 +132,7 @@ export function TransportFleet() {
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#04130c]/82 via-[#04130c]/10 to-transparent"
           />
-          <div className="absolute bottom-4 left-4 right-4 z-[3] rounded-2xl border border-[#f4dfa6]/40 bg-[#06150f]/95 px-4 py-3.5 shadow-[0_14px_30px_rgba(0,0,0,0.5)] backdrop-blur-sm sm:bottom-5 sm:left-5 sm:right-5 sm:px-5 sm:py-4">
+          <div className="absolute bottom-4 left-4 right-4 z-[3] rounded-2xl border border-[#f4dfa6]/40 bg-[#06150f]/95 px-4 py-3.5 shadow-[0_14px_30px_rgba(0,0,0,0.5)] sm:bottom-5 sm:left-5 sm:right-5 sm:px-5 sm:py-4">
             <p
               className="font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.24em]"
               data-keep-color

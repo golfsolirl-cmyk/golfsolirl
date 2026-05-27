@@ -16,7 +16,7 @@ export function FooterCompanyContact() {
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-300/95">Dublin office</p>
             <div className="mt-4 flex gap-4">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white/[0.06] text-brand-300">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-forest-900 text-brand-300">
                 <MapPin className="h-5 w-5" aria-hidden="true" />
               </div>
               <div className="min-w-0">
@@ -44,7 +44,7 @@ export function FooterCompanyContact() {
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-300/95">Phone &amp; WhatsApp</p>
             <div className="mt-4 flex gap-4">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white/[0.06] text-brand-300">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-forest-900 text-brand-300">
                 <Phone className="h-5 w-5" aria-hidden="true" />
               </div>
               <div className="min-w-0 space-y-3">
@@ -67,7 +67,7 @@ export function FooterCompanyContact() {
                 </p>
                 <a
                   aria-label={`Message Golf Sol Ireland on WhatsApp at ${companyContact.phoneDisplay}`}
-                  className="group inline-flex min-h-11 items-center gap-2.5 rounded-full border border-white/25 bg-white/10 px-5 py-3 text-base font-semibold text-white transition-all hover:border-white/40 hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                  className="group inline-flex min-h-11 items-center gap-2.5 rounded-full border border-white/25 bg-forest-900 px-5 py-3 text-base font-semibold text-white transition-all hover:border-white/40 hover:bg-forest-900 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
                   href={companyContact.whatsappHref}
                   rel="noreferrer"
                   target="_blank"

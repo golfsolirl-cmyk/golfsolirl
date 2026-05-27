@@ -79,7 +79,7 @@ export function TermsEmailRequest() {
               <Mail className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-white/70" aria-hidden="true" />
               <input
                 autoComplete="email"
-                className="h-14 w-full rounded-2xl border border-white/15 bg-white/10 pl-12 pr-4 font-ge text-base text-white outline-none transition placeholder:text-white/60 focus:border-brand-700 focus:ring-2 focus:ring-brand-700/25"
+                className="h-14 w-full rounded-2xl border border-white/15 bg-forest-900 pl-12 pr-4 font-ge text-base text-white outline-none transition placeholder:text-white/60 focus:border-brand-700 focus:ring-2 focus:ring-brand-700/25"
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder="you@example.com"
                 required

@@ -75,7 +75,7 @@ export function GeContentStoryGrid({ eyebrow, title, lead, cards }: GeContentSto
                     'linear-gradient(90deg, transparent 0%, #738421 15%, #136047 35%, #d9be7a 50%, #136047 65%, #738421 85%, transparent 100%)'
                 }}
               />
-              <span className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-gs-dark/60 px-3 py-1.5 font-ge text-[0.82rem] font-extrabold uppercase tracking-[0.16em] text-[#fbe8b5] backdrop-blur-md sm:text-[0.86rem]">
+              <span className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-gs-dark/60 px-3 py-1.5 font-ge text-[0.82rem] font-extrabold uppercase tracking-[0.16em] text-[#fbe8b5] sm:text-[0.86rem]">
                 <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[#fbe8b5]" />
                 {card.badge}
               </span>

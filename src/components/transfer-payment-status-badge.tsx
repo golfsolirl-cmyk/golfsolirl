@@ -26,7 +26,7 @@ const BADGE_STYLES: Record<
 
 const BADGE_STYLES_ON_DARK: Record<TransferPaymentBadgeStatus, { readonly pill: string; readonly icon: string }> = {
   unpaid: {
-    pill: 'border-white/20 bg-white/10 text-emerald-100/95 ring-1 ring-white/10',
+    pill: 'border-white/20 bg-forest-900 text-emerald-100/95 ring-1 ring-white/10',
     icon: 'text-emerald-200/90'
   },
   deposit_paid: {

@@ -82,7 +82,7 @@ export function FormalProposalPayloadSummary(props: {
       ) : (
         <dl className="mt-5 grid gap-3 sm:grid-cols-2">
           {rows.map((row) => (
-            <div className="rounded-xl border border-forest-100 bg-white/90 px-3 py-2.5" key={row.label}>
+            <div className="rounded-xl border border-forest-100 bg-white px-3 py-2.5" key={row.label}>
               <dt className="text-[10px] font-semibold uppercase tracking-[0.12em] text-ge-gray500">{row.label}</dt>
               <dd className="mt-1 whitespace-pre-wrap break-words text-sm font-medium text-forest-900">{row.text}</dd>
             </div>

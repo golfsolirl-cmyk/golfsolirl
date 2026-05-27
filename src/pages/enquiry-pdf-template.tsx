@@ -62,7 +62,7 @@ function EnquiryPdfTemplatePage() {
               </p>
             </div>
 
-            <div className="rounded-[1.5rem] bg-white/8 px-5 py-4 text-sm text-white/74">
+            <div className="rounded-[1.5rem] bg-forest-900 px-5 py-4 text-sm text-white/74">
               <p>{documentTemplate.hero.metaCard[0]}</p>
               <p className="mt-2">{documentTemplate.hero.metaCard[1]}</p>
             </div>
@@ -140,7 +140,7 @@ function EnquiryPdfTemplatePage() {
                 ))}
               </div>
 
-              <div className="mt-6 rounded-[1.5rem] bg-white/6 p-5">
+              <div className="mt-6 rounded-[1.5rem] bg-forest-900 p-5">
                 <p className="text-sm font-semibold text-white">{documentTemplate.lower.right.signoffTitle}</p>
                 <div className="mt-4 space-y-3 text-sm text-white/74">
                   {documentTemplate.lower.right.signoffLines.map((line) => (

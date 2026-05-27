@@ -712,7 +712,7 @@ export function ContinueTripPage() {
 
                     <button
                       type="submit"
-                      disabled={submitStatus === 'submitting'}
+                      disabled={submitStatus === 'submitting' || !termsAccepted}
                       className="group relative min-h-[52px] overflow-hidden rounded-full bg-gradient-to-r from-brand-800 via-[#136047] to-brand-600 px-6 font-ge text-sm font-extrabold uppercase tracking-[0.14em] text-white shadow-gs-green transition-transform duration-300 hover:scale-[1.02] active:scale-[0.99] disabled:cursor-wait disabled:opacity-70 sm:col-span-2"
                     >
                       <span className="relative z-[1] inline-flex items-center justify-center gap-2">

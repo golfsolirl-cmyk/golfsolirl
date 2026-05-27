@@ -229,7 +229,7 @@ export function PortalTransferRequestsSection(props: {
                 : ''
 
           return (
-            <li key={b.id} className="relative bg-white/90">
+            <li key={b.id} className="relative bg-white">
               <div className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7 sm:py-4">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
@@ -298,7 +298,7 @@ export function PortalTransferRequestsSection(props: {
                         </p>
                       ) : null}
                       {linkedPackageDiffers ? (
-                        <p className="mt-2 rounded-lg border border-brand-400/25 bg-black/25 px-3 py-2 text-sm font-medium leading-snug text-brand-100/95">
+                        <p className="mt-2 rounded-lg border border-brand-400/25 bg-brand-charcoal/80 px-3 py-2 text-sm font-medium leading-snug text-brand-100/95">
                           Showing the earliest saved website snapshot for this reference. A newer package revision may exist in
                           &ldquo;Your packages&rdquo; — fields below match what you first sent.
                         </p>
@@ -394,7 +394,7 @@ export function PortalTransferRequestsSection(props: {
           </p>
           <ul className="mt-5 grid gap-3 sm:grid-cols-1" aria-label="Interest ticket threads">
             {sortedTickets.length === 0 ? (
-              <li className="list-none rounded-2xl border border-dashed border-forest-200/90 bg-white/80 px-5 py-10 text-center text-base leading-relaxed text-forest-600 shadow-inner md:text-lg">
+              <li className="list-none rounded-2xl border border-dashed border-forest-200/90 bg-white px-5 py-10 text-center text-base leading-relaxed text-forest-600 shadow-inner md:text-lg">
                 <p className="font-medium text-forest-800">No tickets yet</p>
                 <p className="mt-2">
                   When you use <span className="font-semibold text-forest-900">Add to your trip</span> above, threads show here —
@@ -408,7 +408,7 @@ export function PortalTransferRequestsSection(props: {
                 return (
                   <li
                     key={t.id}
-                    className="overflow-hidden rounded-2xl border border-forest-200/90 bg-white/90 text-base text-forest-900 shadow-sm ring-1 ring-forest-900/[0.04] md:text-lg"
+                    className="overflow-hidden rounded-2xl border border-forest-200/90 bg-white text-base text-forest-900 shadow-sm ring-1 ring-forest-900/[0.04] md:text-lg"
                   >
                     <button
                       type="button"
