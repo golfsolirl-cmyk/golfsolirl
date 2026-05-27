@@ -22,9 +22,26 @@ export function GeFooter() {
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           {footerColumns.map((column) => (
             <div key={column.title}>
-              <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-emerald-200 drop-shadow-sm sm:text-[0.82rem]">
-                {column.title}
-              </p>
+              {column.title === 'Docs' ? (
+                <div className="mb-3 flex items-center gap-3">
+                  <FooterBrandLogoPicture
+                    alt=""
+                    width={GOLFSOL_BRAND_LOGO_INTRINSIC.width}
+                    height={GOLFSOL_BRAND_LOGO_INTRINSIC.height}
+                    sizes="72px"
+                    loading="lazy"
+                    decoding="async"
+                    className="h-12 w-12 shrink-0 object-contain drop-shadow-[0_6px_16px_rgba(0,0,0,0.4)] sm:h-14 sm:w-14"
+                  />
+                  <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-emerald-200 drop-shadow-sm sm:text-[0.82rem]">
+                    {column.title}
+                  </p>
+                </div>
+              ) : (
+                <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-emerald-200 drop-shadow-sm sm:text-[0.82rem]">
+                  {column.title}
+                </p>
+              )}
               <ul className="mt-4 space-y-2.5">
                 {column.links.map((link) => (
                   <li key={`${column.title}-${link.label}`} className="flex items-start gap-2">

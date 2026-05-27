@@ -161,9 +161,9 @@ async function generateTransferPortalBundle() {
     profileName: 'Sean Murphy',
     profileEmail: 'sean.murphy@example.com',
     accountRef: 'GSOL-SAMPLE-001',
-    amountPaidEur: 55.50,
-    paymentKind: 'deposit',
-    stripeReceiptUrl: 'https://pay.stripe.com/receipts/sample'
+    amountChargedEur: 55.50,
+    receiptType: 'deposit',
+    stripeSessionId: 'cs_sample_deposit'
   })
   write('3-transfer-portal-paper-trail', 'deposit-receipt.pdf', depositBytes)
 
@@ -172,9 +172,9 @@ async function generateTransferPortalBundle() {
     profileName: 'Sean Murphy',
     profileEmail: 'sean.murphy@example.com',
     accountRef: 'GSOL-SAMPLE-001',
-    amountPaidEur: 185,
-    paymentKind: 'full',
-    stripeReceiptUrl: 'https://pay.stripe.com/receipts/sample'
+    amountChargedEur: 185,
+    receiptType: 'paid_in_full',
+    stripeSessionId: 'cs_sample_paid'
   })
   write('3-transfer-portal-paper-trail', 'paid-in-full-confirmation.pdf', paidBytes)
 }

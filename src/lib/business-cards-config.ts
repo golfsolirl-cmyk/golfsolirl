@@ -14,8 +14,7 @@ export type BusinessCardPersonBlurb = {
 
 export const businessCardPerson: BusinessCardPersonBlurb = {
   name: 'Martin Kelly',
-  /** Executive title — premium / duplex backs */
-  roleTitle: 'Director · Golf Travel & Concierge',
+  roleTitle: 'Operations Manager',
   /** Short positioning line for luxury fronts */
   premiumDescriptor: 'Premium golf travel · Costa del Sol',
   /** Corridor / markets line */
@@ -25,7 +24,7 @@ export const businessCardPerson: BusinessCardPersonBlurb = {
 /** Second staff set — same company contact lines on card backs */
 export const businessCardPersonGreg: BusinessCardPersonBlurb = {
   name: 'Greg McDonald',
-  roleTitle: 'Operations',
+  roleTitle: 'Operations Manager',
   premiumDescriptor: 'Premium golf travel · Costa del Sol',
   corridorLine: 'Dublin · Málaga'
 }

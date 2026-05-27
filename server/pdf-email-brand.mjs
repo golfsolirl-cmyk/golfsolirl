@@ -7,13 +7,15 @@ const currentFilePath = fileURLToPath(import.meta.url)
 const currentDirectory = path.dirname(currentFilePath)
 const publicImagesDirectory = path.resolve(currentDirectory, '../public/images')
 
-/** Bitmap logo + fleet hero — same assets as formal proposal PDFs and quote PDFs. */
+/** Bitmap logo + fleet hero — same assets as homepage header and formal PDFs. */
 export const brandedPdfAssetPaths = {
   /** Hosted logo for HTML email — same crest as site header/footer. */
   logoWeb: GOLFSOL_BRAND_LOGO_HOSTED,
-  /** Transparent PNG deploy copy for pdf-lib (`embedPng`). Generated from crest source via sync script. */
-  logo: path.join(publicImagesDirectory, 'gsirl.png'),
-  homepageCrest: path.join(publicImagesDirectory, 'gsirl.png'),
+  /** Homepage crest PNG for pdf-lib (`embedPng`). */
+  logo: path.join(publicImagesDirectory, 'newbf9f08a4-8fac-496b-8181-6f6b680d19c3.png'),
+  homepageCrest: path.join(publicImagesDirectory, 'newbf9f08a4-8fac-496b-8181-6f6b680d19c3.png'),
+  /** Homepage desktop hero (marketing banner) — business cards + optional PDF bands. */
+  homepageHero: path.join(publicImagesDirectory, 'fpf-bcadd429-0f8b-4b75-afdd-f521413396c5.png'),
   /** Airport-desk style fleet plate (PNG); replace file in `public/images` to refresh all PDFs/emails. */
   fleetLineup: path.join(publicImagesDirectory, 'fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png')
 }

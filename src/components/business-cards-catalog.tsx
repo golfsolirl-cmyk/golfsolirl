@@ -97,12 +97,12 @@ export function BusinessCardsCatalog() {
             id="business-card-catalog-title"
             className="mt-3 font-ge text-3xl font-extrabold leading-tight tracking-[-0.04em] text-[#08120d] sm:text-4xl"
           >
-            Sixteen faces — two names, two editions, one contact system.
+            Eight faces — homepage hero, crest, and one contact system.
           </h2>
           <p className="mt-4 font-ge text-base font-medium leading-8 text-[#4e4e4e] sm:text-lg">
-            Martin Kelly and Greg McDonald each have portrait and landscape fronts and backs. Layout, colours, and{' '}
-            <span className="whitespace-nowrap">golfsol.png</span> photography match across the set; crest on cards uses{' '}
-            <span className="whitespace-nowrap">hosted crest PNG</span> at a large, bounded size. Phone, email, and web are identical on every back.
+            Martin Kelly and Greg McDonald each have portrait and landscape cards. Every face uses the homepage hero
+            plate, the site crest on the left, a gold divider, Operations Manager on the right, and a contact dock with
+            social icons, Irish phone, email, and web.
           </p>
           <p className="mt-3 font-ge text-sm font-semibold text-[#08120d]">
             Contact on cards:{' '}
