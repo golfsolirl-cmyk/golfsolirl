@@ -1,9 +1,11 @@
 import { m } from 'framer-motion'
+import { GsolGoldCornerAccents } from '../../../components/gsol-gold-corner-accents'
 
 export function CinematicFooter() {
   return (
-    <footer className="border-t border-white/[0.07] bg-forest-950 px-4 py-14 sm:px-8">
-      <div className="mx-auto flex max-w-[1400px] flex-col gap-10 md:flex-row md:items-end md:justify-between">
+    <footer className="relative overflow-hidden border-t border-white/[0.07] bg-forest-950 px-4 py-14 sm:px-8">
+      <GsolGoldCornerAccents preset="footer" />
+      <div className="relative z-[1] mx-auto flex max-w-[1400px] flex-col gap-10 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="cin-display text-2xl text-cream sm:text-3xl">Ready when you are.</p>
           <p className="mt-3 max-w-md text-sm leading-relaxed text-cream/70">
@@ -29,7 +31,7 @@ export function CinematicFooter() {
           </div>
         </div>
       </div>
-      <div className="mx-auto mt-12 max-w-[1400px] border-t border-white/[0.06] pt-8 text-center text-[0.7rem] text-cream/70">
+      <div className="relative z-[1] mx-auto mt-12 max-w-[1400px] border-t border-white/[0.06] pt-8 text-center text-[0.7rem] text-cream/70">
         <a href="/documents/terms" className="hover:text-cream/65">
           Terms
         </a>

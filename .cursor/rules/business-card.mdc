@@ -1,7 +1,8 @@
 ---
-description: Business cards page — official PNG fronts/backs are source of truth; mustard front + forest back; homepage crest only
+description: Business cards page — VIP-style duplex; forest front + barcode back; homepage crest
 globs:
   - src/components/business-cards-catalog.tsx
+  - src/components/business-cards-press-specs.tsx
   - src/lib/business-cards-config.ts
   - src/pages/golf-experience/sections/business-cards-hero.tsx
   - public/business-cards/**
@@ -12,70 +13,61 @@ alwaysApply: false
 
 ## Authority
 
-1. **Official reference artwork** (mustard marketing front + forest operational back) — kept as design targets when exported PNGs are attached to the task or saved under project assets.
-2. **`business-card/Golf-Sol-Ireland-Business-Card.pdf`** — supplementary print proof only; **do not** revert the live page to unrelated ivory/fleet-column layouts unless product asks.
+1. **VIP-style duplex** implemented in [`business-cards-press-specs.tsx`](mdc:src/components/business-cards-press-specs.tsx) — forest front with gold fleet cutout; forest back with crest, social icons, CODE128 barcode.
+2. **`business-card/Golf-Sol-Ireland-Business-Card.pdf`** — supplementary print proof only.
 
-The marketing **front** is **not** the operational ivory duplex from older explorations: it is a **solid mustard / gold field** with centred copy and a **four-icon social row** (Facebook, Instagram, X, LinkedIn).
+React + PDF export on `/business-cards` is the live source of truth (not static PNG tiles unless regenerated deliberately).
 
-The **back** is **deep forest green** with **only** the **homepage crest** (`/golfsol-crest-footer.png`, fallback `/golfsol-crest.svg`) — **no** separate wordmark SVG (`golf-sol-ireland-logo.svg`) on the card faces.
+## Required faces
 
-## Required faces (exactly eight)
+### Operations — Martin Kelly & Greg McDonald (eight faces)
 
-Implement **only** these tiles — **no** extra “concept library” cards:
+Portrait + landscape × front + back each. Spec IDs: `portrait-front`, `greg-portrait-front`, etc.
 
-**Gregg McDonald**
+VIP duplex: forest front + barcode back — see [`business-cards-press-specs.tsx`](mdc:src/components/business-cards-press-specs.tsx).
 
-1. Portrait · front  
-2. Portrait · back  
-3. Landscape · front  
-4. Landscape · back  
+### Executive — Tommy O'Shea (two faces)
 
-**Martin Kelly**
+Landscape only:
 
-5. Portrait · front  
-6. Portrait · back  
-7. Landscape · front  
-8. Landscape · back  
+1. `tommy-luxury-front` — emerald Celtic texture, gold foil crest, chauffeur + golf lockup  
+2. `tommy-luxury-back` — executive contact, premium QR → `https://golfsolirl.com`, NFC accent  
 
-Spec IDs: `GRPF`, `GRPB`, `GRLF`, `GRLB`, `MKPF`, `MKPB`, `MKLF`, `MKLB`.
+See [`business-cards-tommy-luxury.tsx`](mdc:src/components/business-cards-tommy-luxury.tsx). Palette in `businessCardLuxuryPalette`. Print SVG overlays in `public/business-cards/tommy-luxury/`.
 
-Group the grid under section headings **Gregg McDonald** and **Martin Kelly**.
+## Front (forest + gold cutout)
 
-## Front (mustard) — copy & structure
+- Background: deep forest `#063B2A` / `#03150f`.
+- **Gold panel** top-left (portrait) or left column (landscape) with **fleet lineup** photo (`BRAND_FLEET_LINEUP_IMAGE_SRC`) in a clipped inset.
+- Small **crest** (`GOLFSOL_BRAND_LOGO_HOSTED`).
+- Diagonal **GOLF SOL IRELAND** in `font-ge-display`.
+- **Name** + **Operations** (Martin Kelly vs Greg McDonald only person difference).
+- Gold rule divider.
+- Contact icons (Lucide): IE phone, ES phone, email, web, **Dublin · Costa del Sol** — from `businessCardContact` + corridor line.
 
-- Background: bright mustard / golden yellow (tokenised in catalog as `MUSTARD`, aligned to `#EEC339`-class tones — adjust only to match reference screenshots).
-- Centred layout; generous padding.
-- **Slogan (italic, large):** “From Plane To Fairway” — **From Plane** white; **To Fairway** forest green `#063B2A`.
-- **Headline (bold caps):**  
-  `ARRIVE IN MALAGA`  
-  `LET US DO THE REST`
-- **Body (italic, smaller, white):** four lines — meet & greet, flight awareness, clubs, hotel (exact strings in `CardMustardFront`).
-- **Footer:** social buttons styled per reference — Facebook ring in forest green; Instagram gradient tile; X black disc; LinkedIn blue tile. URLs from `businessCardSocial` + `xTwitter`.
+## Back (forest + barcode)
 
-## Back (forest) — structure
-
-- Background: `#063B2A` with **fleet lineup** photo strip (`BRAND_FLEET_LINEUP_IMAGE_SRC`) along the **bottom**, blended upward with a **forest gradient** (no harsh cut).
-- **Logo:** homepage crest only (`businessCardAssets.crestWidePng` → PNG/SVG fallback).
-- **Name** + **OPERATIONS MANAGER** (Gregg vs Martin only difference between people).
-- **Phones:** Ireland / Spain labels italic white; numbers **bold gold** `#FFC72C`. Display formats mirror reference (`353 …`, `0034 …`) via helpers — **tel:** links use normalised digits from `businessCardContact`.
-- **Email / Web:** `businessCardContact.email`, `businessCardContact.websiteDisplay` — **Email:** / **Web:** prefixes.
-
-Do **not** add Co. Reg. or extra logos unless reference artwork explicitly includes them.
+- Solid forest field `#03150f`.
+- Large centred **crest** + **GOLF SOL IRELAND**.
+- Social row from `businessCardSocialLinks` (LinkedIn, Facebook, WhatsApp, Bluesky — same as site footer).
+- **CODE128 barcode** encoding `businessCardBarcodeValue` (`https://www.golfsolirl.com`) via `BusinessCardBarcode` + `jsbarcode`. **No QR code.**
 
 ## Landscape behaviour
 
-- **Front:** split marketing copy into **two columns** on wide cards (slogan + headline vs body), social row **anchored bottom** — do **not** only rotate the portrait layout.
-- **Back:** **crest column + credentials column** with fleet band still **full width** at bottom.
+- **Front:** fleet/gold panel **left ~38%**, identity + contact **right** — do not only rotate portrait.
+- **Back:** crest + brand **left column**, social + barcode **right column**.
 
 ## Data
 
-- People: `businessCardOperationsTeam` in `business-cards-config.ts`.
-- Contact + social: `businessCardContact`, `businessCardSocial` (includes `xTwitter`).
+- People: `businessCardPerson`, `businessCardPersonGreg` in [`business-cards-config.ts`](mdc:src/lib/business-cards-config.ts).
+- Contact: `businessCardContact`.
+- Social: `businessCardSocialLinks` (imports `footerSocialLinks`).
+- Barcode: `businessCardBarcodeValue`.
 
 ## PDF export
 
-Hidden `#business-cards-pdf-export-root` must expose one `[data-pdf-page]` block per spec ID for `save-business-cards-pdf.ts`.
+Hidden `#business-cards-pdf-export-root` must expose one `[data-pdf-page]` block per spec ID for `save-business-cards-pdf.ts`. Front and back must render **different** components (`VipStyleCardFront` vs `VipStyleCardBack`).
 
 ---
 
-When editing this page, **preserve reference fidelity** — treat changes as **implementation tweaks** (spacing, colour tokens, responsive breakpoints), not a new creative direction.
+When editing this page, preserve VIP duplex fidelity — spacing and colour tweaks only, not a new creative direction unless product asks.

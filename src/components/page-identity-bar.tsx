@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { GsolGoldCornerAccents } from './gsol-gold-corner-accents'
 import { GeGoldDividerLineAbsoluteTop } from './ge-gold-divider-line'
 import { cx } from '../lib/utils'
 
@@ -71,6 +72,7 @@ export function PageIdentityBar({
         className
       )}
     >
+      <GsolGoldCornerAccents preset="section" celticCorners={['tl', 'br']} arcCorners={['tl', 'br']} />
       {/* Top + bottom chrome-gold hairlines anchor the band so it never
           feels like a floating slab. */}
       <span
@@ -90,7 +92,7 @@ export function PageIdentityBar({
         }}
       />
 
-      <div className="mx-auto max-w-[1180px] px-4 sm:px-6 md:px-8">
+      <div className="relative z-[1] mx-auto max-w-[1180px] px-4 sm:px-6 md:px-8">
         <div
           className={cx(
             'relative flex flex-col items-center gap-3 py-4 md:flex-row md:items-center md:justify-center md:gap-5 md:py-5',

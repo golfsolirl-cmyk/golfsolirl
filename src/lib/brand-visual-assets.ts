@@ -46,6 +46,10 @@ export const BRAND_MARKETING_SCENIC_HERO_SPLIT_ALT =
 export const BRAND_FLEET_LINEUP_IMAGE_SRC = '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp'
 export const BRAND_FLEET_LINEUP_ALT =
   'Golf Sol Ireland private transfer fleet — Mercedes E-Class, V-Class and Sprinter vehicles on the Costa del Sol.'
+
+/** Golden-hour Mercedes fleet on fairway — business card blurred background. */
+export const BRAND_BUSINESS_CARD_HERO_BG_SRC = BRAND_FLEET_LINEUP_IMAGE_SRC
+
 /** Marketing golf twilight — legacy backdrop; admin/driver portals may still reference elsewhere. */
 export const BRAND_PORTAL_HERO_GOLF_BACKDROP_SRC = '/images/twilight-golf-hero.webp'
 

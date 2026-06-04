@@ -976,6 +976,7 @@ export default defineConfig(({ mode }) => {
       }
     },
     optimizeDeps: {
+      include: ['qrcode'],
       rolldownOptions: {
         checks: {
           pluginTimings: false

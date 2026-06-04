@@ -582,7 +582,7 @@ export function ClientDashboardPage() {
     if (isLoading || !session?.user?.id) {
       return undefined
     }
-    let t: ReturnType<typeof setTimeout> | undefined
+    let t: number | undefined
     const schedule = () => {
       if (document.visibilityState !== 'visible') {
         return

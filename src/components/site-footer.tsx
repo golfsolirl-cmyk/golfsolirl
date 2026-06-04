@@ -4,6 +4,7 @@ import { integrationRegistry } from '../config/integrations'
 import { FooterCompanyContact } from './footer-company-contact'
 import { FooterBrandLogoPicture } from './brand-logo-picture'
 import { BrandPlaneToFairwayTagline } from './brand-plane-to-fairway-tagline'
+import { GsolGoldCornerAccents } from './gsol-gold-corner-accents'
 import { AmbientGolfBall } from './ui/ambient-golf-ball'
 import { footerGroups, footerSocialLinks } from '../data/site-content'
 import { GOLFSOL_BRAND_LOGO_FOOTER_SIZES, GOLFSOL_BRAND_LOGO_INTRINSIC } from '../lib/brand-logo-assets'
@@ -29,9 +30,13 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
   const dashboardHref = profile?.role === 'admin' ? '/dashboard/admin' : '/dashboard'
 
   return (
-    <footer ref={footerRef} className="relative overflow-x-hidden border-t border-white/10 bg-forest-950 px-6 py-12 text-white">
-      <AmbientGolfBall className="right-[3%] top-2 opacity-75 xl:right-[6%]" size="sm" tone="footer" />
-      <div className="mx-auto flex max-w-7xl flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+    <footer
+      ref={footerRef}
+      className="relative overflow-hidden border-t border-white/10 bg-forest-950 px-6 py-12 text-white"
+    >
+      <GsolGoldCornerAccents preset="footer" />
+      <AmbientGolfBall className="right-[3%] top-2 z-[2] opacity-75 xl:right-[6%]" size="sm" tone="footer" />
+      <div className="relative z-[1] mx-auto flex max-w-7xl flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-md">
           <FooterBrandLogoPicture
             alt="Golf Sol Ireland"
@@ -116,9 +121,11 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
         </div>
       </div>
 
-      <FooterCompanyContact />
+      <div className="relative z-[1]">
+        <FooterCompanyContact />
+      </div>
 
-      <div className="mx-auto mt-8 flex max-w-7xl flex-col gap-3 border-t border-white/10 pt-5 text-[1.02rem] text-white/80 md:flex-row md:items-center md:justify-between">
+      <div className="relative z-[1] mx-auto mt-8 flex max-w-7xl flex-col gap-3 border-t border-white/10 pt-5 text-[1.02rem] text-white/80 md:flex-row md:items-center md:justify-between">
         <p>Copyright {new Date().getFullYear()} Golf Sol Ireland. All rights reserved.</p>
         <p>{copyrightNote}</p>
       </div>

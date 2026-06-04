@@ -6,6 +6,7 @@ import { GOLFSOL_BRAND_LOGO_FOOTER_SIZES, GOLFSOL_BRAND_LOGO_INTRINSIC } from '.
 import { GeButton } from '../components/ge-button'
 import { GeDualPhoneFooterLines } from '../components/ge-dual-phone-contact'
 import { aboutFooterCopy, contactInfo } from '../data/copy'
+import { GsolGoldCornerAccents } from '../../../components/gsol-gold-corner-accents'
 import { footerColumns } from '../data/nav'
 
 const socials = [
@@ -17,8 +18,9 @@ const socials = [
 
 export function GeFooter() {
   return (
-    <footer className="bg-gs-dark text-white">
-      <div className="mx-auto max-w-[1180px] px-5 py-14">
+    <footer className="relative overflow-hidden bg-gs-dark text-white">
+      <GsolGoldCornerAccents preset="footer" />
+      <div className="relative z-[1] mx-auto max-w-[1180px] px-5 py-14">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           {footerColumns.map((column) => (
             <div key={column.title}>
@@ -124,7 +126,7 @@ export function GeFooter() {
         </div>
       </div>
 
-      <div className="border-t border-white/10 bg-black/30">
+      <div className="relative z-[1] border-t border-white/10 bg-black/30">
         <div className="mx-auto flex max-w-[1180px] flex-col items-center gap-4 px-5 py-5 text-center sm:flex-row sm:flex-wrap sm:justify-between sm:text-left">
           <p className="font-ge text-[0.98rem] leading-6 text-white sm:text-[0.88rem]">
             Copyright © {new Date().getFullYear()} – GolfSol Ireland – All Rights Reserved

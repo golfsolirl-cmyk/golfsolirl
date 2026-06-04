@@ -37,6 +37,59 @@ function triggerPdfDownload(blob: Blob, filename: string) {
  * Export DOM uses `fixed -left-[9999px]`, so getBoundingClientRect().left is hugely negative; default
  * scrollX (0) keeps content off-canvas → blank PDF. Pad scrollX/scrollY and window size so the subtree fits.
  */
+/** html2canvas often ignores container queries / clamp — freeze layout from live DOM. */
+const LAYOUT_INLINE_PROPS = [
+  'fontSize',
+  'lineHeight',
+  'letterSpacing',
+  'fontWeight',
+  'paddingTop',
+  'paddingRight',
+  'paddingBottom',
+  'paddingLeft',
+  'marginTop',
+  'marginRight',
+  'marginBottom',
+  'marginLeft',
+  'gap',
+  'rowGap',
+  'columnGap',
+  'width',
+  'height',
+  'minWidth',
+  'minHeight',
+  'maxWidth',
+  'maxHeight',
+  'flex',
+  'flexBasis',
+  'flexGrow',
+  'flexShrink',
+  'top',
+  'left',
+  'right',
+  'bottom',
+  'transform',
+  'transformOrigin'
+] as const
+
+function inlineResolvedLayoutStyles(liveRoot: HTMLElement, cloneRoot: HTMLElement) {
+  const liveNodes: Element[] = [liveRoot, ...liveRoot.querySelectorAll('*')]
+  const cloneNodes: Element[] = [cloneRoot, ...cloneRoot.querySelectorAll('*')]
+  if (liveNodes.length !== cloneNodes.length) return
+
+  for (let i = 0; i < liveNodes.length; i++) {
+    const live = liveNodes[i]
+    const clone = cloneNodes[i]
+    if (!(live instanceof HTMLElement) || !(clone instanceof HTMLElement)) continue
+    const cs = getComputedStyle(live)
+    for (const prop of LAYOUT_INLINE_PROPS) {
+      const val = cs[prop]
+      if (!val || val === 'auto' || val === 'normal' || val === '0px') continue
+      clone.style.setProperty(prop.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`), val)
+    }
+  }
+}
+
 function html2canvasViewportPadding(el: HTMLElement) {
   const r = el.getBoundingClientRect()
   const pad = 32
@@ -52,6 +105,9 @@ export function sanitizePdfFilenameBase(base: string) {
 }
 
 async function captureSlideToCanvas(el: HTMLElement): Promise<HTMLCanvasElement> {
+  el.getBoundingClientRect()
+  void el.offsetHeight
+
   const { scrollX, scrollY, windowWidth, windowHeight } = html2canvasViewportPadding(el)
   /** Slightly higher floor keeps fine type + crest edges sharp after downscale to mm-sized PDF. */
   const scale = Math.max(2.5, Math.min((window.devicePixelRatio || 1) * 2, 3))
@@ -75,6 +131,7 @@ async function captureSlideToCanvas(el: HTMLElement): Promise<HTMLCanvasElement>
         clonedRoot.style.setProperty('position', 'fixed', 'important')
       }
       clonedSlide.style.setProperty('opacity', '1', 'important')
+      inlineResolvedLayoutStyles(el, clonedSlide)
     }
   })
 }
@@ -245,4 +302,31 @@ export async function saveAllBusinessCardProofsPdf(
   }
 
   triggerPdfDownload(pdf.output('blob'), 'Golf-Sol-Ireland-Business-Cards-Proof.pdf')
+}
+
+/** Transparent PNG export at ~300 DPI equivalent (850×550 card pixels, scale 3). */
+export async function saveSingleBusinessCardPng(slideEl: HTMLElement, filenameBase: string) {
+  if (document.fonts?.ready) {
+    await document.fonts.ready
+  }
+
+  await waitForImages(slideEl)
+  await new Promise((r) => setTimeout(r, 120))
+
+  const canvas = await captureSlideToCanvas(slideEl)
+  let blob: Blob | null = null
+  try {
+    blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob((b) => resolve(b), 'image/png', 1)
+    })
+  } catch {
+    throw new Error('Could not read the rendered card. Try again after refreshing.')
+  }
+
+  if (!blob) {
+    throw new Error('Could not build PNG.')
+  }
+
+  const safeName = sanitizePdfFilenameBase(filenameBase)
+  triggerPdfDownload(blob, `${safeName}.png`)
 }

@@ -1,5 +1,5 @@
 /** Hero for `/business-cards` — staff press suite. */
-import { businessCardContact, businessCardPerson, businessCardPersonGreg } from '../../../lib/business-cards-config'
+import { businessCardContact, businessCardPerson, businessCardPersonGreg, businessCardTommy } from '../../../lib/business-cards-config'
 
 const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`
 const CARD_HERO_IMG = `${base}images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp`
@@ -33,7 +33,8 @@ export function BusinessCardsHero() {
               Cards for the people guests actually meet.
             </h1>
             <p className="mt-5 max-w-xl font-ge text-base font-medium leading-relaxed sm:text-lg" style={{ color: 'rgba(255,255,255,0.92)' }}>
-              Portrait and landscape faces in Classic and Dark Edition styles — high-contrast type and a large <span className="whitespace-nowrap">hosted crest</span>, tuned so nothing clips at export. Sixteen layouts below: Martin Kelly and Greg McDonald share one number set and web presence.
+              Exact foil luxury mockup — forest green texture, gold type, Celtic corners, brand front, split contact +
+              QR back. Martin Kelly, Greg McDonald, and Tommy O&apos;Shea.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
@@ -42,6 +43,9 @@ export function BusinessCardsHero() {
               </span>
               <span className="rounded-full border border-[#136047]/35 bg-[#136047]/15 px-4 py-2 font-ge text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[#fdf6bf]">
                 {businessCardPersonGreg.name}
+              </span>
+              <span className="rounded-full border border-[#D4AF37]/40 bg-[#0E3B2E]/80 px-4 py-2 font-ge text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[#E5C76B]">
+                {businessCardTommy.name}
               </span>
             </div>
 

@@ -1,6 +1,7 @@
 import { m, type Variants } from 'framer-motion'
 import { Bus, CalendarDays, ShieldCheck, Sparkles, ArrowRight, type LucideIcon } from 'lucide-react'
 import { GeButton } from '../components/ge-button'
+import { GsolGoldCornerAccents } from '../../../components/gsol-gold-corner-accents'
 import { GeSection } from '../components/ge-section'
 import { extrasCopy } from '../data/copy'
 
@@ -83,6 +84,7 @@ export function GeExtrasStrip() {
       className="relative isolate overflow-hidden pt-20 pb-24 sm:pt-24 sm:pb-28"
       innerClassName="!pt-12 !pb-14 sm:!pt-16 sm:!pb-20"
     >
+      <GsolGoldCornerAccents preset="hero" />
       <m.div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"

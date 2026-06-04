@@ -363,11 +363,11 @@
 .ge-page .ge-on-dark h2:not([data-keep-color]),
 .ge-page .ge-on-dark h3:not([data-keep-color]),
 .ge-page .ge-on-dark h4:not([data-keep-color]),
-.ge-page .ge-on-dark p:not([data-keep-color]),
+.ge-page .ge-on-dark p:not([data-keep-color]):not(.gsol-business-card *),
 .ge-page .ge-on-dark li:not([data-keep-color]),
 .ge-page .ge-on-dark dt:not([data-keep-color]),
 .ge-page .ge-on-dark dd:not([data-keep-color]),
-.ge-page .ge-on-dark span:not([data-keep-color]),
+.ge-page .ge-on-dark span:not([data-keep-color]):not(.gsol-business-card *),
 .ge-page .ge-on-dark label:not([data-keep-color]),
 .ge-page .ge-on-dark strong:not([data-keep-color]),
 .ge-page .ge-on-dark a:not([data-keep-color]):not(.gsol-cta-secondary):not(.gsol-cta-outline-on-light),
@@ -460,6 +460,8 @@
     [class*='#0f3d24'],
     [class*='#0c3d2c'],
     [class*='#0a2416'],
+    [class*='#04140c'],
+    [class*='#062016'],
     [class*='linear-gradient(180deg,#0f3d24']
   )
   :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small, strong):not(
@@ -535,6 +537,59 @@
 .ge-page footer.bg-gs-dark .text-white\/90,
 .ge-page footer.bg-gs-dark .text-white\/95 {
   color: rgba(255, 255, 255, 0.94) !important;
+}
+
+/* —— Business cards (`/business-cards`) — beat `.ge-page h*` / `p` dark defaults on forest shell —— */
+.ge-page #business-cards-main.ge-on-dark > :not(#bc-specs) h1,
+.ge-page #business-cards-main.ge-on-dark > :not(#bc-specs) h2,
+.ge-page #business-cards-main.ge-on-dark > :not(#bc-specs) h3,
+.ge-page #business-cards-main.ge-on-dark > :not(#bc-specs) h4,
+.ge-page #business-cards-main.ge-on-dark > :not(#bc-specs) p,
+.ge-page #business-cards-main.ge-on-dark > :not(#bc-specs) li,
+.ge-page #business-cards-main.ge-on-dark > :not(#bc-specs) span:not(.gsol-business-card *),
+.ge-page #business-cards-main.ge-on-dark > :not(#bc-specs) button:not(.gsol-cta-secondary),
+.ge-page #business-cards-main.ge-on-dark > :not(#bc-specs) a:not(.gsol-cta-secondary) {
+  color: #f7f4ec;
+}
+
+.ge-page #business-cards-main.ge-on-dark .bc-gold,
+.ge-page #business-cards-main.ge-on-dark .bc-gold svg {
+  color: #d9be7a !important;
+}
+
+.ge-page #business-cards-main #bc-specs h2 {
+  color: #062016 !important;
+}
+
+.ge-page #business-cards-main #bc-specs p,
+.ge-page #business-cards-main #bc-specs li {
+  color: #425047 !important;
+}
+
+/* Card figure — never inherit marketing body colour */
+.ge-page .gsol-business-card,
+.ge-page .gsol-business-card[data-keep-color] {
+  color: #ffffff;
+}
+
+/* Social icons only — do not restyle corner Celtic / gold arc SVGs */
+.ge-page .gsol-business-card [aria-label='Social media'] svg {
+  color: #f7f3e9;
+  fill: currentColor;
+}
+
+.ge-page .gsol-business-card .gsol-card-deco {
+  color: #e8bc55;
+}
+
+.ge-page .gsol-business-card .gsol-card-deco path {
+  fill: none !important;
+  stroke: #e8bc55 !important;
+}
+
+.ge-page .gsol-business-card .gsol-card-deco circle {
+  fill: #e8bc55 !important;
+  stroke: none !important;
 }
 
 /* —— Course cards — h3 was being forced dark by the global `.ge-page h3` rule —— */

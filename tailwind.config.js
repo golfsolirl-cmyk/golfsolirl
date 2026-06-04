@@ -142,7 +142,9 @@ export default {
         'brand-script': ['"Dancing Script"', 'cursive'],
         'brand-serif': ['"Rubik"', 'system-ui', 'sans-serif'],
         'ge-display': ['"Cormorant Garamond"', 'Georgia', 'serif'],
-        ge: ['"Open Sans"', 'system-ui', 'sans-serif']
+        ge: ['"Open Sans"', 'system-ui', 'sans-serif'],
+        'bc-display': ['"Playfair Display"', 'Georgia', 'serif'],
+        'bc-body': ['"Inter"', 'system-ui', 'sans-serif']
       },
       borderRadius: {
         'gs-sm': 'var(--radius-sm)',

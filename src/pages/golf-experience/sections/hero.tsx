@@ -8,6 +8,7 @@ import {
   BRAND_PORTAL_HERO_GOLF_BACKDROP_SRC
 } from '../../../lib/brand-visual-assets'
 import { cx } from '../../../lib/utils'
+import { GsolGoldCornerAccents } from '../../../components/gsol-gold-corner-accents'
 import { GeMarketingHeroPicture } from '../components/ge-marketing-hero-picture'
 
 /** Same resolution as `AdminOperationsHubHero` — respects Vite `base`. */
@@ -59,6 +60,7 @@ export function GeHero({
       />
 
       <div className={cx('relative w-full', isPortal && 'max-sm:aspect-[9/17] sm:aspect-[2/1]')}>
+        <GsolGoldCornerAccents preset={isPortal ? 'hero' : 'light'} className="z-[4]" />
         {isPortal && portalBackdrop === 'client' ? (
           <div className="absolute inset-0 z-0">
             <img
