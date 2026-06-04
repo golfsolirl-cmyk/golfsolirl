@@ -52,7 +52,9 @@ export const businessCardContactGreg = {
   whatsappHref: 'https://wa.me/353874464766'
 } as const
 
-export type BusinessCardContactPack = typeof businessCardContact
+export type BusinessCardContactPack =
+  | typeof businessCardContact
+  | typeof businessCardContactGreg
 
 export function businessCardContactForPerson(person: { readonly name: string }): BusinessCardContactPack {
   return person.name === businessCardPersonGreg.name ? businessCardContactGreg : businessCardContact
