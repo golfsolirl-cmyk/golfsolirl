@@ -23,18 +23,24 @@ export const notifyClientPortalTransferPayment = async (admin, bookingId) => {
   const pay = String(row.payment_status ?? 'unpaid').toLowerCase()
   const route = `${String(row.pickup_label ?? '').trim() || 'Pickup'} → ${String(row.dropoff_label ?? '').trim() || 'Drop-off'}`
   const title =
-    pay === 'paid' ? 'Transfer paid in full' : pay === 'deposit' ? 'Transfer deposit received' : 'Transfer payment updated'
+    pay === 'paid'
+      ? 'Transfer paid in full'
+      : pay === 'deposit'
+        ? 'Transfer deposit received'
+        : 'Transfer payment updated'
   const summary =
-    pay === 'deposit'
-      ? `${route}: your card deposit is on file. Open Your trip → transfers to pay the balance when ready.`
-      : `${route}: your payment is recorded. Open Your trip → transfers for receipts and status.`
+    pay === 'paid'
+      ? `${route}: payment complete — your trip pass is ready under Trip pass. Receipts are in Your transfers.`
+      : pay === 'deposit'
+        ? `${route}: deposit received. Open Payments to pay the remaining balance. Your trip pass unlocks when paid in full.`
+        : `${route}: payment status updated. Open Your trip → transfers for details.`
 
   const { error: logErr } = await admin.from('portal_client_updates').insert({
     owner_id: row.client_user_id,
     title,
     summary,
     email_subject: title,
-    template_key: 'stripe_transfer_payment',
+    template_key: pay === 'paid' ? 'stripe_transfer_paid_full' : pay === 'deposit' ? 'stripe_transfer_deposit' : 'stripe_transfer_payment',
     attachment_filenames: []
   })
 

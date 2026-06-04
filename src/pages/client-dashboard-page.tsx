@@ -750,6 +750,20 @@ export function ClientDashboardPage() {
               if (syncOk) {
                 if (data.kind === 'portal_invoice' && typeof data.invoiceId === 'string') {
                   setInvoiceHighlightId(data.invoiceId)
+                  if (typeof data.bookingId === 'string' && data.bookingId.trim()) {
+                    setStripePaidTransferBookingId(data.bookingId.trim())
+                    setActiveClientSection('pass')
+                  }
+                } else if (typeof data.bookingId === 'string' && data.bookingId.trim()) {
+                  setStripePaidTransferBookingId(data.bookingId.trim())
+                  const sbCheck = getSupabaseBrowserClient()
+                  const { data: tbRow } = await (sbCheck
+                    ?.from('transfer_bookings')
+                    .select('payment_status')
+                    .eq('id', data.bookingId.trim())
+                    .maybeSingle() ?? Promise.resolve({ data: null }))
+                  const st = String(tbRow?.payment_status ?? 'unpaid').toLowerCase()
+                  setActiveClientSection(st === 'paid' ? 'pass' : 'payments')
                 }
                 syncMessage = null
                 break
@@ -783,7 +797,9 @@ export function ClientDashboardPage() {
         sp.delete('checkout_session_id')
         setInvoicePanelRefresh((n) => n + 1)
         stripeSuccessPoll = true
-        void loadData()
+        void loadData().then(() => {
+          setActiveClientSection('pass')
+        })
       } else if (sp.get('invoice_cancel') === '1') {
         stripUrl = true
         parts.push('Checkout was cancelled. You can open Pay again from your trip invoice card whenever you are ready.')
@@ -792,15 +808,35 @@ export function ClientDashboardPage() {
       if (sp.get('transfer_paid') === '1') {
         stripUrl = true
         const bid = sp.get('transfer_booking_id')?.trim()
+        const payKind = sp.get('transfer_payment_kind')?.trim().toLowerCase()
         if (bid) {
           setStripePaidTransferBookingId(bid)
         }
-        setActiveClientSection('pass')
+        if (payKind === 'deposit') {
+          setActiveClientSection('payments')
+        } else if (payKind === 'balance' || payKind === 'full') {
+          setActiveClientSection('pass')
+        } else {
+          setActiveClientSection('payments')
+        }
         sp.delete('transfer_paid')
         sp.delete('transfer_booking_id')
+        sp.delete('transfer_payment_kind')
         sp.delete('checkout_session_id')
         stripeSuccessPoll = true
-        void loadData()
+        void loadData().then(async () => {
+          if (!bid || payKind) {
+            return
+          }
+          const sb = getSupabaseBrowserClient()
+          const { data: tbRow } = await (sb
+            ?.from('transfer_bookings')
+            .select('payment_status')
+            .eq('id', bid)
+            .maybeSingle() ?? Promise.resolve({ data: null }))
+          const st = String(tbRow?.payment_status ?? 'unpaid').toLowerCase()
+          setActiveClientSection(st === 'paid' ? 'pass' : 'payments')
+        })
       } else if (sp.get('transfer_pay_cancel') === '1') {
         stripUrl = true
         parts.push('Checkout was cancelled. You can use Pay now on your transfer when you are ready.')

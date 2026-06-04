@@ -224,7 +224,7 @@ export const handleTransferStripeCheckout = async (body, env = process.env, meta
   const route = `${String(booking.pickup_label ?? '').trim() || 'Pickup'} → ${String(booking.dropoff_label ?? '').trim() || 'Drop-off'}`
   const origin = getTransferCheckoutOrigin(env)
   const bid = encodeURIComponent(bookingId)
-  const successUrl = `${origin}/dashboard?transfer_paid=1&transfer_booking_id=${bid}&checkout_session_id={CHECKOUT_SESSION_ID}`
+  const successUrl = `${origin}/dashboard?transfer_paid=1&transfer_booking_id=${bid}&transfer_payment_kind=${encodeURIComponent(paymentKind)}&checkout_session_id={CHECKOUT_SESSION_ID}`
   const cancelUrl = `${origin}/dashboard?transfer_pay_cancel=1&transfer_booking_id=${bid}`
 
   const stripe = new Stripe(stripeKey)

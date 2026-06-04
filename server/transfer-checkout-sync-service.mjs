@@ -2,6 +2,7 @@ import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 import { clientOwnsTransferBooking } from './transfer-checkout-service.mjs'
 import { markPortalInvoicePaid, markTransferBookingPaid } from './stripe-webhook-service.mjs'
+import { syncTransferBookingFromPaidPortalInvoice } from './portal-invoice-transfer-sync.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
   const e = new Error(message)
@@ -102,15 +103,36 @@ export const handleTransferCheckoutSync = async (body, env = process.env, meta =
       }
 
       const alreadyPaid = String(invoice.status ?? '').toLowerCase() === 'paid'
+      const paymentIntent =
+        typeof session.payment_intent === 'string'
+          ? session.payment_intent
+          : session.payment_intent && typeof session.payment_intent === 'object'
+            ? session.payment_intent.id
+            : null
+      const amountEur =
+        typeof session.amount_total === 'number' && Number.isFinite(session.amount_total)
+          ? session.amount_total / 100
+          : null
+
       let updated = alreadyPaid
       if (!alreadyPaid) {
-        const paymentIntent =
-          typeof session.payment_intent === 'string'
-            ? session.payment_intent
-            : session.payment_intent && typeof session.payment_intent === 'object'
-              ? session.payment_intent.id
-              : null
-        updated = await markPortalInvoicePaid(admin, String(invoice.id), paymentIntent, new Date().toISOString())
+        updated = await markPortalInvoicePaid(admin, String(invoice.id), paymentIntent, new Date().toISOString(), {
+          stripeSessionId: session.id,
+          amountEur
+        })
+      } else {
+        try {
+          const sync = await syncTransferBookingFromPaidPortalInvoice(admin, String(invoice.id), {
+            paymentIntent,
+            stripeSessionId: session.id,
+            amountEur
+          })
+          if (sync.bookingId) {
+            return { ok: true, updated: sync.synced, invoiceId: invoice.id, kind: 'portal_invoice', bookingId: sync.bookingId }
+          }
+        } catch (e) {
+          console.error('[transfer-checkout-sync] trip pass resync', e)
+        }
       }
 
       return { ok: true, updated, invoiceId: invoice.id, kind: 'portal_invoice' }

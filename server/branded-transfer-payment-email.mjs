@@ -7,19 +7,65 @@ const esc = (s) =>
     .replace(/</g, '&lt;')
     .replace(/"/g, '&quot;')
 
+const fmtEur = (n) =>
+  new Intl.NumberFormat('en-IE', {
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(Number(n) || 0)
+
+const amountSummaryHtml = ({ amountPaidEur, grossEur, balanceEur, labelPaid = 'Amount paid today' }) => {
+  const lines = []
+  if (amountPaidEur != null && Number.isFinite(amountPaidEur)) {
+    lines.push(
+      `<tr><td style="padding:8px 0;font-family:${emailFonts.sans};font-size:14px;color:#6b7280;">${labelPaid}</td><td style="padding:8px 0;font-family:${emailFonts.sans};font-size:16px;font-weight:700;color:${gs.green};text-align:right;">${fmtEur(amountPaidEur)}</td></tr>`
+    )
+  }
+  if (grossEur != null && Number.isFinite(grossEur) && grossEur > 0) {
+    lines.push(
+      `<tr><td style="padding:8px 0;font-family:${emailFonts.sans};font-size:14px;color:#6b7280;">Trip total quoted</td><td style="padding:8px 0;font-family:${emailFonts.sans};font-size:15px;font-weight:600;color:${gs.text};text-align:right;">${fmtEur(grossEur)}</td></tr>`
+    )
+  }
+  if (balanceEur != null && Number.isFinite(balanceEur) && balanceEur > 0) {
+    lines.push(
+      `<tr><td style="padding:8px 0;font-family:${emailFonts.sans};font-size:14px;color:#6b7280;">Balance remaining</td><td style="padding:8px 0;font-family:${emailFonts.sans};font-size:16px;font-weight:700;color:${gs.text};text-align:right;">${fmtEur(balanceEur)}</td></tr>`
+    )
+  }
+  if (lines.length === 0) {
+    return ''
+  }
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0 0 20px 0;border-collapse:collapse;background:${gs.rowA};border-radius:12px;">
+    <tr><td style="padding:16px 18px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">${lines.join('')}</table>
+    </td></tr>
+  </table>`
+}
+
+const refLineHtml = (booking) => {
+  const ref = String(booking.enquiry_reference_id ?? '').trim()
+  if (!ref) {
+    return ''
+  }
+  return `<p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:13px;line-height:1.6;color:#6b7280;">Reference: <strong style="color:${gs.text};">${esc(ref)}</strong></p>`
+}
+
 /**
  * @param {Record<string, unknown>} booking
  * @param {number} depositPercent
+ * @param {{ amountPaidEur?: number, grossEur?: number, balanceEur?: number }} [amounts]
  */
-export const buildTransferDepositThankYouEmail = (booking, depositPercent) => {
+export const buildTransferDepositThankYouEmail = (booking, depositPercent, amounts = {}) => {
   const site = getGsolSiteUrl()
   const route = `${esc(booking.pickup_label)} → ${esc(booking.dropoff_label)}`
-  const subject = `Golf Sol Ireland — thank you for your ${depositPercent}% deposit`
+  const paidTxt = amounts.amountPaidEur != null ? fmtEur(amounts.amountPaidEur) : `${depositPercent}% deposit`
+  const subject = `Golf Sol Ireland — payment received (${paidTxt})`
   const heroTitle = 'Deposit received — thank you'
-  const heroLead = `We have recorded your ${depositPercent}% deposit for your Costa transfer. Your route: ${route}. We will hold your date and keep everything moving smoothly.`
-  const bodyHtml = `<p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">If anything changes on your side, just reply to this email or WhatsApp us — we are happy to adjust timings where we can.</p>
-    <p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">The <strong>remaining balance</strong> is due <strong>48 hours before your scheduled pickup</strong>. We will email you again at that point if it is still outstanding — please pay from your dashboard in good time so we can hold your driver.</p>
-    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Questions? Call <a href="tel:+353874464766" style="color:${gs.green};font-weight:600;">+353 87 446 4766</a> or open your <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">client dashboard</a>.</p>`
+  const heroLead = `We have recorded your ${depositPercent}% deposit (${paidTxt}) for your Costa transfer. Your route: ${route}.`
+  const bodyHtml = `${refLineHtml(booking)}
+    ${amountSummaryHtml({ ...amounts, labelPaid: 'Deposit paid today' })}
+    <p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">If anything changes on your side, just reply to this email or WhatsApp us — we are happy to adjust timings where we can.</p>
+    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">You will receive a <strong>separate email</strong> with a link to pay the remaining balance from your dashboard.</p>`
 
   const htmlRaw = buildGsolTransactionalEmail({
     documentTitle: subject,
@@ -35,15 +81,22 @@ export const buildTransferDepositThankYouEmail = (booking, depositPercent) => {
 
 /**
  * @param {Record<string, unknown>} booking
+ * @param {{ amountPaidEur?: number, grossEur?: number }} [amounts]
  */
-export const buildTransferFullPaymentThankYouEmail = (booking) => {
+export const buildTransferFullPaymentThankYouEmail = (booking, amounts = {}) => {
   const site = getGsolSiteUrl()
   const route = `${esc(booking.pickup_label)} → ${esc(booking.dropoff_label)}`
-  const subject = 'Golf Sol Ireland — thank you, your transfer is fully paid'
+  const paidTxt = amounts.amountPaidEur != null ? fmtEur(amounts.amountPaidEur) : 'your payment'
+  const subject =
+    amounts.amountPaidEur != null
+      ? `Golf Sol Ireland — payment received (${paidTxt})`
+      : 'Golf Sol Ireland — thank you, your transfer is fully paid'
   const heroTitle = 'Payment received in full'
-  const heroLead = `Thank you — we have recorded full payment for your Costa transfer (${route}). That is one less thing for you to think about before you travel.`
-  const bodyHtml = `<p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">We will confirm pick-up details closer to travel. If you need to tweak times or passenger numbers, message the team any time.</p>
-    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Warm regards from the Golf Sol Ireland desk · <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">Your dashboard</a></p>`
+  const heroLead = `Thank you — we have recorded payment of ${paidTxt} for your Costa transfer (${route}). That is one less thing for you to think about before you travel.`
+  const bodyHtml = `${refLineHtml(booking)}
+    ${amountSummaryHtml({ ...amounts, balanceEur: 0, labelPaid: 'Amount paid' })}
+    <p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">We will confirm pick-up details closer to travel. If you need to tweak times or passenger numbers, message the team any time.</p>
+    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Warm regards from the Golf Sol Ireland desk · <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">Your dashboard</a> · Trip pass barcode available after payment.</p>`
 
   const htmlRaw = buildGsolTransactionalEmail({
     documentTitle: subject,
@@ -58,9 +111,87 @@ export const buildTransferFullPaymentThankYouEmail = (booking) => {
 }
 
 /**
+ * Sent immediately after a deposit — prompts guest to pay the remaining balance online.
  * @param {Record<string, unknown>} booking
  * @param {number} depositPercent
+ * @param {{ depositPaidEur?: number, balanceEur?: number, grossEur?: number }} amounts
  */
+export const buildTransferBalancePayNowEmail = (booking, depositPercent, amounts = {}) => {
+  const site = getGsolSiteUrl()
+  const route = `${esc(booking.pickup_label)} → ${esc(booking.dropoff_label)}`
+  const balanceTxt =
+    amounts.balanceEur != null && Number.isFinite(amounts.balanceEur)
+      ? fmtEur(amounts.balanceEur)
+      : `the remaining ${Math.max(1, 100 - depositPercent)}%`
+  const payHref = `${site}/dashboard`
+  const subject = `Golf Sol Ireland — please pay your balance (${balanceTxt})`
+  const heroTitle = 'Balance due — pay from your dashboard'
+  const heroLead = `Your deposit for (${route}) is on file. Please pay the outstanding balance of ${balanceTxt} when you can so we can hold your driver and activate your full trip pass.`
+  const bodyHtml = `${refLineHtml(booking)}
+    ${amountSummaryHtml({
+      amountPaidEur: amounts.depositPaidEur,
+      grossEur: amounts.grossEur,
+      balanceEur: amounts.balanceEur,
+      labelPaid: 'Deposit already paid'
+    })}
+    <p style="margin:0 0 18px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Open <strong>Your trip → Transfers</strong> and tap <strong>Pay balance</strong>. We will also remind you again before pickup if the balance is still outstanding.</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 22px 0;border-collapse:collapse;">
+      <tr>
+        <td style="padding:0;">
+          <a href="${payHref}" style="${ctaGold}">Pay balance in dashboard</a>
+        </td>
+      </tr>
+    </table>
+    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Questions? <a href="tel:+353874464766" style="color:${gs.green};font-weight:600;">+353 87 446 4766</a> · <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">Client dashboard</a></p>`
+
+  const htmlRaw = buildGsolTransactionalEmail({
+    documentTitle: subject,
+    preheader: heroLead.slice(0, 118),
+    heroKicker: 'Golf Sol Ireland',
+    heroTitle,
+    heroLead,
+    heroMetaHtml: `<div style="font-size:12px;line-height:1.6;color:rgba(255,255,255,0.82);">Outstanding balance · secure card payment</div>`,
+    bodyHtml
+  })
+  return { subject, html: finalizeGsolEmailHtml(htmlRaw) }
+}
+
+/**
+ * Trip invoice paid in full (portal invoice checkout).
+ * @param {{ enquiryReferenceId?: string, clientName?: string, amountPaidEur: number, route?: string }} detail
+ */
+export const buildPortalInvoicePaidThankYouEmail = (detail) => {
+  const site = getGsolSiteUrl()
+  const ref = detail.enquiryReferenceId?.trim()
+  const amountTxt = fmtEur(detail.amountPaidEur)
+  const subject = `Golf Sol Ireland — payment received (${amountTxt})`
+  const heroTitle = 'Thank you — your trip payment is confirmed'
+  const heroLead = ref
+    ? `We have received ${amountTxt} for trip reference ${ref}. Your client dashboard and trip pass are updated.`
+    : `We have received ${amountTxt} for your Golf Sol Ireland trip. Your client dashboard is updated.`
+  const routeLine = detail.route?.trim()
+    ? `<p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Route: <strong>${esc(detail.route)}</strong></p>`
+    : ''
+  const bodyHtml = `<p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Amount paid: <strong style="color:${gs.green};font-size:18px;">${amountTxt}</strong></p>
+    ${routeLine}
+    <p style="margin:0 0 18px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Open your dashboard for receipts, your trip pass barcode, and any balance steps if your booking is on a deposit plan.</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 22px 0;border-collapse:collapse;">
+      <tr><td style="padding:0;"><a href="${site}/dashboard" style="${ctaGold}">Open your dashboard</a></td></tr>
+    </table>
+    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Questions? <a href="tel:+353874464766" style="color:${gs.green};font-weight:600;">+353 87 446 4766</a></p>`
+
+  const htmlRaw = buildGsolTransactionalEmail({
+    documentTitle: subject,
+    preheader: heroLead.slice(0, 118),
+    heroKicker: 'Golf Sol Ireland',
+    heroTitle,
+    heroLead,
+    heroMetaHtml: `<div style="font-size:12px;line-height:1.6;color:rgba(255,255,255,0.82);">Payment confirmation · Costa del Sol</div>`,
+    bodyHtml
+  })
+  return { subject, html: finalizeGsolEmailHtml(htmlRaw) }
+}
+
 /**
  * Admin-triggered: ask guest to pay for a specific transfer (preview link until checkout is wired).
  * @param {Record<string, unknown>} booking

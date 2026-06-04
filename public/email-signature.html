@@ -1,95 +1,258 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Golf Sol Ireland – Email Signature</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Golf Sol Ireland — Email Signature Preview</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: linear-gradient(165deg, #eef2ef 0%, #dce8e1 45%, #063b2a 100%);
+      color: #16231d;
+      padding: 32px 20px 48px;
+    }
+    .wrap { max-width: 720px; margin: 0 auto; }
+    .hero {
+      text-align: center;
+      margin-bottom: 28px;
+      color: #063b2a;
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 1.55rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .hero p {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #3d5248;
+      max-width: 540px;
+      margin-inline: auto;
+    }
+    .panel {
+      background: #fff;
+      border: 1px solid rgba(6, 59, 42, 0.12);
+      border-radius: 20px;
+      box-shadow: 0 24px 60px rgba(6, 59, 42, 0.14);
+      overflow: hidden;
+    }
+    .panel-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 20px;
+      background: #063b2a;
+      color: #eef2ef;
+    }
+    .panel-head span {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #d4a843;
+    }
+    .btn {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 18px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      background: linear-gradient(135deg, #d4a843 0%, #b8922e 100%);
+      color: #063b2a;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+    }
+    .btn:hover { filter: brightness(1.05); }
+    .preview {
+      padding: 36px 28px 32px;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(212, 168, 67, 0.08), transparent 42%),
+        #fafcfb;
+    }
+    .steps {
+      margin-top: 24px;
+      padding: 20px 22px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(6, 59, 42, 0.1);
+      border-radius: 16px;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      color: #3d5248;
+    }
+    .steps ol { margin: 8px 0 0; padding-left: 1.2rem; }
+    .steps li { margin-bottom: 6px; }
+    .steps code {
+      font-size: 0.8rem;
+      background: #eef2ef;
+      padding: 2px 6px;
+      border-radius: 6px;
+      color: #063b2a;
+    }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #063b2a;
+      color: #eef2ef;
+      padding: 12px 20px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      opacity: 0;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      pointer-events: none;
+      z-index: 99;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
 </head>
-<body style="margin:0;padding:0;">
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1>Golf Sol Ireland — Email Signature</h1>
+      <p>Premium signature for Gmail. Copy the block below, or use <strong>Copy signature</strong>, then paste into Gmail → Settings → See all settings → Signature.</p>
+    </div>
 
-<!--
-  GMAIL SIGNATURE — Copy everything inside <table>...</table> below,
-  then paste into Gmail Settings → Signature (use "Insert HTML" or
-  paste directly from a browser preview of this file).
--->
+    <div class="panel">
+      <div class="panel-head">
+        <span>From plane to fairway · Preview</span>
+        <button type="button" class="btn" id="copy-signature">Copy signature</button>
+      </div>
 
-<table cellpadding="0" cellspacing="0" border="0" style="font-family:Helvetica,Arial,sans-serif;font-size:14px;line-height:1.4;color:#16231d;max-width:480px;">
+      <div class="preview">
+        <!-- ═══ START GMAIL SIGNATURE — copy from here ═══ -->
+        <div id="signature-copy">
+
+<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="font-family:Helvetica,Arial,sans-serif;font-size:14px;line-height:1.45;color:#16231d;max-width:520px;border-collapse:collapse;">
+  <!-- Top chrome bar -->
   <tr>
-    <td style="padding-bottom:12px;">
-      <!-- Green-to-cream gradient accent line -->
-      <table cellpadding="0" cellspacing="0" border="0" width="100%">
+    <td colspan="2" style="padding:0 0 14px 0;">
+      <table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation" style="border-collapse:collapse;">
         <tr>
-          <td style="height:3px;background:linear-gradient(90deg,#063b2a 0%,#0f513c 40%,#eef2ef 100%);font-size:0;line-height:0;">&nbsp;</td>
+          <td width="56" style="height:4px;background-color:#d4a843;font-size:0;line-height:0;">&nbsp;</td>
+          <td style="height:4px;background-color:#063b2a;font-size:0;line-height:0;">&nbsp;</td>
         </tr>
       </table>
     </td>
   </tr>
+
   <tr>
-    <td>
-      <table cellpadding="0" cellspacing="0" border="0">
+    <!-- Crest column -->
+    <td width="92" style="vertical-align:top;padding:0 18px 0 0;">
+      <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;">
         <tr>
-          <!-- Logo -->
-          <td style="vertical-align:top;padding-right:16px;">
-            <a href="https://golfsolirl.com" target="_blank" style="text-decoration:none;">
+          <td style="background-color:#063b2a;padding:12px 10px 10px;border-radius:12px;text-align:center;">
+            <a href="https://golfsolirl.com" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
               <img
                 src="https://golfsolirl.com/images/newbf9f08a4-8fac-496b-8181-6f6b680d19c3.png"
-                alt="Golf Sol Ireland"
-                width="72"
-                style="display:block;border:0;width:72px;height:auto;"
+                alt="Golf Sol Ireland crest"
+                width="64"
+                style="display:block;margin:0 auto;border:0;width:64px;height:auto;"
               />
             </a>
+            <div style="margin-top:8px;font-size:8px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#d4a843;line-height:1.3;">
+              From Plane<br />to Fairway
+            </div>
           </td>
-          <!-- Details -->
-          <td style="vertical-align:top;">
-            <table cellpadding="0" cellspacing="0" border="0">
+        </tr>
+      </table>
+    </td>
+
+    <!-- Details column -->
+    <td style="vertical-align:top;padding:0;">
+      <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;">
+        <tr>
+          <td style="font-size:20px;font-weight:800;color:#063b2a;padding:0 0 2px 0;letter-spacing:-0.02em;">
+            Golf Sol Ireland
+          </td>
+        </tr>
+        <tr>
+          <td style="font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#0f513c;padding:0 0 12px 0;">
+            Irish-owned · Costa del Sol golf specialists
+          </td>
+        </tr>
+
+        <!-- Contact rows -->
+        <tr>
+          <td style="padding:0 0 6px 0;">
+            <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;">
               <tr>
-                <td style="font-size:17px;font-weight:700;color:#063b2a;padding-bottom:2px;">
-                  Golf Sol Ireland
+                <td width="28" style="font-size:9px;font-weight:800;letter-spacing:0.08em;color:#fff;background-color:#063b2a;padding:3px 6px;border-radius:4px;text-align:center;">IE</td>
+                <td width="8">&nbsp;</td>
+                <td style="font-size:13px;color:#16231d;">
+                  <a href="tel:+353874464766" style="color:#063b2a;text-decoration:none;font-weight:700;">+353 87 446 4766</a>
+                  <span style="font-size:11px;color:#6b7a72;"> · </span>
+                  <a href="https://wa.me/353874464766" target="_blank" rel="noopener noreferrer" style="color:#0f513c;text-decoration:none;font-weight:600;font-size:11px;">WhatsApp</a>
                 </td>
               </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 0 6px 0;">
+            <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;">
               <tr>
-                <td style="font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:#0f513c;padding-bottom:10px;">
-                  Irish-Owned · Costa del Sol Golf Specialists
+                <td width="28" style="font-size:9px;font-weight:800;letter-spacing:0.08em;color:#063b2a;background-color:#eef2ef;padding:3px 6px;border-radius:4px;text-align:center;border:1px solid #c5d4cb;">ES</td>
+                <td width="8">&nbsp;</td>
+                <td style="font-size:13px;">
+                  <a href="tel:+34641815366" style="color:#063b2a;text-decoration:none;font-weight:700;">+34 641 81 53 66</a>
                 </td>
               </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 0 4px 0;font-size:13px;">
+            <a href="mailto:info@golfsolirl.com" style="color:#063b2a;text-decoration:none;font-weight:600;">info@golfsolirl.com</a>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 0 14px 0;font-size:13px;">
+            <a href="https://golfsolirl.com" target="_blank" rel="noopener noreferrer" style="color:#0f513c;text-decoration:none;font-weight:700;">golfsolirl.com</a>
+          </td>
+        </tr>
+
+        <!-- Service pills -->
+        <tr>
+          <td style="padding:0 0 10px 0;">
+            <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;">
               <tr>
-                <td style="font-size:13px;color:#16231d;padding-bottom:4px;">
-                  <span style="color:#666d69;">IE</span>&nbsp;&nbsp;<a href="tel:+353874464766" style="color:#063b2a;text-decoration:none;font-weight:600;">+353 87 446 4766</a>&nbsp;&nbsp;<span style="font-size:11px;color:#999;">(WhatsApp)</span>
-                </td>
+                <td style="font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#eef2ef;background-color:#063b2a;padding:5px 10px;border-radius:999px;">Transfers</td>
+                <td width="6">&nbsp;</td>
+                <td style="font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#063b2a;background-color:#eef2ef;padding:5px 10px;border-radius:999px;border:1px solid #c5d4cb;">Golf</td>
+                <td width="6">&nbsp;</td>
+                <td style="font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#063b2a;background-color:#f5ecd4;padding:5px 10px;border-radius:999px;border:1px solid #d4a843;">Stay</td>
               </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Sol corridor route -->
+        <tr>
+          <td style="padding:0;">
+            <table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation" style="border-collapse:collapse;background-color:#f6faf7;border:1px solid #dce8e1;border-radius:8px;">
               <tr>
-                <td style="font-size:13px;color:#16231d;padding-bottom:4px;">
-                  <span style="color:#666d69;">ES</span>&nbsp;&nbsp;<a href="tel:+34641815366" style="color:#063b2a;text-decoration:none;font-weight:600;">+34 641 81 53 66</a>
-                </td>
-              </tr>
-              <tr>
-                <td style="font-size:13px;padding-bottom:4px;">
-                  <a href="mailto:info@golfsolirl.com" style="color:#063b2a;text-decoration:none;">info@golfsolirl.com</a>
-                </td>
-              </tr>
-              <tr>
-                <td style="font-size:13px;padding-bottom:12px;">
-                  <a href="https://golfsolirl.com" style="color:#0f513c;text-decoration:none;font-weight:500;">golfsolirl.com</a>
-                </td>
-              </tr>
-              <!-- Divider -->
-              <tr>
-                <td style="padding-bottom:10px;">
-                  <table cellpadding="0" cellspacing="0" border="0" width="100%">
-                    <tr>
-                      <td style="height:2px;background:linear-gradient(90deg,#063b2a 0%,#eef2ef 100%);font-size:0;line-height:0;">&nbsp;</td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-              <!-- Services -->
-              <tr>
-                <td style="font-size:11.5px;color:#666d69;line-height:1.5;">
-                  Airport Transfers&nbsp;&nbsp;·&nbsp;&nbsp;Golf Courses&nbsp;&nbsp;·&nbsp;&nbsp;Accommodation
-                </td>
-              </tr>
-              <tr>
-                <td style="font-size:11px;color:#999;padding-top:6px;">
-                  Málaga&nbsp;&nbsp;→&nbsp;&nbsp;Marbella&nbsp;&nbsp;→&nbsp;&nbsp;Sotogrande
+                <td style="padding:8px 12px;font-size:10px;font-weight:600;letter-spacing:0.04em;color:#3d5248;">
+                  <span style="color:#d4a843;font-weight:800;">●</span>&nbsp; Málaga
+                  <span style="color:#9aaba2;"> &nbsp;→&nbsp; </span>
+                  Marbella
+                  <span style="color:#9aaba2;"> &nbsp;→&nbsp; </span>
+                  Sotogrande
+                  <span style="color:#d4a843;font-weight:800;"> ●</span>
                 </td>
               </tr>
             </table>
@@ -98,17 +261,82 @@
       </table>
     </td>
   </tr>
-  <!-- Bottom gradient bar -->
+
+  <!-- Footer rule -->
   <tr>
-    <td style="padding-top:14px;">
-      <table cellpadding="0" cellspacing="0" border="0" width="100%">
+    <td colspan="2" style="padding:16px 0 0 0;">
+      <table cellpadding="0" cellspacing="0" border="0" width="100%" role="presentation" style="border-collapse:collapse;">
         <tr>
-          <td style="height:3px;background:linear-gradient(90deg,#eef2ef 0%,#0f513c 60%,#063b2a 100%);font-size:0;line-height:0;border-radius:2px;">&nbsp;</td>
+          <td style="height:1px;background-color:#dce8e1;font-size:0;line-height:0;">&nbsp;</td>
+        </tr>
+        <tr>
+          <td style="padding-top:8px;font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:#9aaba2;">
+            Airport transfers · Tee times · Accommodation · Irish-owned
+          </td>
         </tr>
       </table>
     </td>
   </tr>
 </table>
 
+        </div>
+        <!-- ═══ END GMAIL SIGNATURE ═══ -->
+      </div>
+    </div>
+
+    <div class="steps">
+      <strong>Gmail setup</strong>
+      <ol>
+        <li>Open <code>https://golfsolirl.com/email-signature.html</code> (or this file locally).</li>
+        <li>Click <strong>Copy signature</strong>, or select the signature block and copy.</li>
+        <li>Gmail → Settings → <strong>See all settings</strong> → <strong>Signature</strong> → paste.</li>
+        <li>Set as default for new emails and replies. Send yourself a test.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status">Signature copied — paste into Gmail</div>
+
+  <script>
+    (function () {
+      var btn = document.getElementById('copy-signature')
+      var root = document.getElementById('signature-copy')
+      var toast = document.getElementById('toast')
+      if (!btn || !root) return
+
+      function showToast() {
+        toast.classList.add('show')
+        window.setTimeout(function () { toast.classList.remove('show') }, 2600)
+      }
+
+      btn.addEventListener('click', function () {
+        var html = root.innerHTML.trim()
+        if (navigator.clipboard && window.ClipboardItem) {
+          var blobHtml = new Blob([html], { type: 'text/html' })
+          var blobText = new Blob([root.innerText.trim()], { type: 'text/plain' })
+          navigator.clipboard.write([
+            new ClipboardItem({ 'text/html': blobHtml, 'text/plain': blobText })
+          ]).then(showToast).catch(fallback)
+        } else {
+          fallback()
+        }
+
+        function fallback() {
+          var range = document.createRange()
+          range.selectNodeContents(root)
+          var sel = window.getSelection()
+          sel.removeAllRanges()
+          sel.addRange(range)
+          try {
+            document.execCommand('copy')
+            showToast()
+          } catch (e) {
+            window.alert('Select the signature block and copy manually (Ctrl+C).')
+          }
+          sel.removeAllRanges()
+        }
+      })
+    })()
+  </script>
 </body>
 </html>

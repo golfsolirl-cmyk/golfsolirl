@@ -50,8 +50,8 @@ export function ClientTransferPassPanel({ guestName, transfers, onSelectUnpaid }
           Show your driver this barcode
         </h2>
         <p className="mt-3 max-w-prose text-lg leading-relaxed text-forest-700">
-          After your deposit or full payment, your Costa del Sol transfer pass activates here — like a golf-trip boarding
-          pass. Your driver scans it at pickup to confirm the booking is paid.
+          After your transfer is <strong className="font-semibold text-forest-900">paid in full</strong>, your Costa del Sol
+          trip pass activates here — like a golf-trip boarding pass. Your driver scans it at pickup to confirm payment.
         </p>
       </div>
 
@@ -60,8 +60,9 @@ export function ClientTransferPassPanel({ guestName, transfers, onSelectUnpaid }
           <Car aria-hidden className="mx-auto h-10 w-10 text-forest-400" />
           <p className="mt-4 font-display text-xl font-semibold text-forest-950">No active pass yet</p>
           <p className="mx-auto mt-2 max-w-md text-lg leading-relaxed text-forest-600">
-            Once Golf Sol Ireland quotes your transfer and you pay the deposit or balance, your barcode appears here
-            automatically.
+            Once Golf Sol Ireland quotes your transfer and you pay in full, your barcode appears here automatically.
+            If you paid a deposit only, finish the balance under <strong className="font-medium text-forest-800">Payments</strong>{' '}
+            — your pass unlocks when the trip is fully paid.
           </p>
           {unpaid.length > 0 && onSelectUnpaid ? (
             <button
@@ -152,6 +153,14 @@ export const verifyTransferPassAgainstBookings = (
       headline: 'Not paid yet',
       detail: `${row.pickup_label} → ${row.dropoff_label} — payment still outstanding. Do not depart until ops confirms.`,
       tone: 'error'
+    }
+  }
+  if (parsed.paymentLevel === 'deposit' && pay === 'deposit') {
+    return {
+      ok: false,
+      headline: 'Deposit only — balance due',
+      detail: `${row.pickup_label} → ${row.dropoff_label} — deposit on file but trip pass requires full payment. Ask the guest to pay the balance in their dashboard before pickup.`,
+      tone: 'warning'
     }
   }
   if (parsed.paymentLevel === 'deposit' && pay !== 'deposit' && pay !== 'paid') {

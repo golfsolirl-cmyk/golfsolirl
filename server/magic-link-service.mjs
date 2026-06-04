@@ -7,8 +7,7 @@ import { isAuthEmailBlocked } from './email-address-registry.mjs'
 import { resolveResendToAddress, resendSandboxRecipientHint } from './resend-delivery-email.mjs'
 import {
   ensureSingleAdminProfile,
-  isAllowedAdminLoginEmail,
-  resolveAdminLoginEmail
+  isAllowedAdminLoginEmail
 } from './admin-login-email.mjs'
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -148,8 +147,7 @@ export const handleMagicLinkRequest = async (payload, env = process.env, meta = 
   }
 
   if (portal === 'admin' && !isAllowedAdminLoginEmail(email, env)) {
-    const allowed = resolveAdminLoginEmail(env)
-    const error = new Error(`Admin sign-in is restricted to ${allowed}.`)
+    const error = new Error('This email is not authorized for admin sign-in.')
     error.statusCode = 403
     throw error
   }

@@ -1,14 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
-import { Resend } from 'resend'
 import { requireAdminFromBearer } from './auth-verify-admin.mjs'
-import {
-  buildTransferBalanceReminderEmail,
-  buildTransferDepositThankYouEmail,
-  buildTransferFullPaymentThankYouEmail,
-  buildTransferPaymentRequestEmail
-} from './branded-transfer-payment-email.mjs'
+import { buildTransferBalanceReminderEmail, buildTransferPaymentRequestEmail } from './branded-transfer-payment-email.mjs'
 import { publishTransferAdminPricePortalPdfs } from './transfer-portal-publish-admin-price-pdfs.mjs'
 import { balanceDueReminderIso } from './transfer-payment-amounts.mjs'
+import {
+  resolveClientEmail,
+  sendBookingEmailHtml,
+  sendTransferPaymentCustomerEmails
+} from './transfer-payment-customer-email.mjs'
+import { notifyClientPortalTransferPayment } from './portal-transfer-payment-notify.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
   const e = new Error(message)
@@ -19,51 +19,11 @@ const throwStatus = (message, statusCode = 400) => {
 /**
  * @param {import('@supabase/supabase-js').SupabaseClient} admin
  * @param {Record<string, unknown>} booking
- * @param {import('node:process').ProcessEnv} env
- */
-const resolveClientEmail = async (admin, booking) => {
-  const direct = String(booking.client_email ?? '').trim()
-  if (direct) {
-    return direct
-  }
-  const uid = booking.client_user_id
-  if (!uid) {
-    return ''
-  }
-  const { data, error } = await admin.from('profiles').select('email').eq('id', uid).maybeSingle()
-  if (error) {
-    console.error('[transfer-payment] profile email lookup', error.message)
-    return ''
-  }
-  return String(data?.email ?? '').trim()
-}
-
-/**
- * @param {import('@supabase/supabase-js').SupabaseClient} admin
- * @param {Record<string, unknown>} booking
  * @param {{ subject: string; html: string }} content
  * @param {import('node:process').ProcessEnv} env
  */
 const sendResendHtml = async (admin, booking, content, env) => {
-  const resendKey = env.RESEND_API_KEY?.trim()
-  const from = env.RESEND_FROM_EMAIL?.trim()
-  if (!resendKey || !from) {
-    throwStatus('Resend is not configured.', 500)
-  }
-  const to = await resolveClientEmail(admin, booking)
-  if (!to) {
-    throwStatus('No client email on file for this transfer.', 400)
-  }
-  const resend = new Resend(resendKey)
-  const { error: sendErr } = await resend.emails.send({
-    from,
-    to,
-    subject: content.subject,
-    html: content.html
-  })
-  if (sendErr) {
-    throwStatus(sendErr.message ?? 'Resend failed', 500)
-  }
+  await sendBookingEmailHtml(admin, booking, content, env, { throwOnError: true })
 }
 
 /**
@@ -342,15 +302,39 @@ export const handleTransferPaymentAdmin = async (body, env = process.env, meta =
   if (sendEmails && prev !== nextStatus) {
     try {
       if (nextStatus === 'deposit') {
-        const pct = Number(fresh.deposit_percent) || 20
-        await sendResendHtml(admin, fresh, buildTransferDepositThankYouEmail(fresh, pct), env)
-        thankYouSent = 'deposit'
+        const emailResult = await sendTransferPaymentCustomerEmails(admin, bookingId, {
+          paymentKind: 'deposit',
+          skipIdempotency: true
+        }, env)
+        thankYouSent = emailResult.sent?.join(',') || 'deposit'
+        if (emailResult.errors?.length) {
+          thankYouError = emailResult.errors.map((e) => e.message ?? e.reason).join('; ')
+        }
       } else if (nextStatus === 'paid') {
-        await sendResendHtml(admin, fresh, buildTransferFullPaymentThankYouEmail(fresh), env)
-        thankYouSent = 'full'
+        const emailResult = await sendTransferPaymentCustomerEmails(
+          admin,
+          bookingId,
+          {
+            paymentKind: prev === 'deposit' ? 'balance' : 'full',
+            skipIdempotency: true
+          },
+          env
+        )
+        thankYouSent = emailResult.sent?.join(',') || 'full'
+        if (emailResult.errors?.length) {
+          thankYouError = emailResult.errors.map((e) => e.message ?? e.reason).join('; ')
+        }
       }
     } catch (e) {
       thankYouError = e instanceof Error ? e.message : String(e)
+    }
+  }
+
+  if (prev !== nextStatus && (nextStatus === 'deposit' || nextStatus === 'paid')) {
+    try {
+      await notifyClientPortalTransferPayment(admin, bookingId)
+    } catch (e) {
+      console.error('[transfer-payment] portal notify', e)
     }
   }
 

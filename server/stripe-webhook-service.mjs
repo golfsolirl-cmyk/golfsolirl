@@ -10,6 +10,11 @@ import {
 } from './transfer-payment-amounts.mjs'
 import { notifyClientPortalTransferPayment } from './portal-transfer-payment-notify.mjs'
 import { publishTransferPortalPaymentReceipt } from './transfer-portal-publish-payment-pdf.mjs'
+import { syncTransferBookingFromPaidPortalInvoice } from './portal-invoice-transfer-sync.mjs'
+import {
+  sendPortalInvoicePaidCustomerEmail,
+  sendTransferPaymentCustomerEmails
+} from './transfer-payment-customer-email.mjs'
 
 
 
@@ -23,11 +28,13 @@ import { publishTransferPortalPaymentReceipt } from './transfer-portal-publish-p
 
  * @param {string} paidAt
 
+ * @param {{ stripeSessionId?: string | null, amountEur?: number | null }} [syncOpts]
+
  * @returns {Promise<boolean>}
 
  */
 
-export const markPortalInvoicePaid = async (supabase, invoiceId, paymentIntent, paidAt) => {
+export const markPortalInvoicePaid = async (supabase, invoiceId, paymentIntent, paidAt, syncOpts = {}) => {
 
   const { error, data } = await supabase
 
@@ -59,6 +66,32 @@ export const markPortalInvoicePaid = async (supabase, invoiceId, paymentIntent, 
 
     throw err
 
+  }
+
+  if (data?.id) {
+    let syncResult = null
+    try {
+      syncResult = await syncTransferBookingFromPaidPortalInvoice(supabase, invoiceId, {
+        paymentIntent,
+        stripeSessionId: syncOpts.stripeSessionId ?? null,
+        amountEur: syncOpts.amountEur ?? null
+      })
+    } catch (e) {
+      console.error('[stripe-webhook] portal invoice trip pass sync', e)
+    }
+    try {
+      await sendPortalInvoicePaidCustomerEmail(
+        supabase,
+        invoiceId,
+        {
+          amountPaidEur: syncOpts.amountEur ?? null,
+          bookingId: syncResult?.bookingId ?? null
+        },
+        process.env
+      )
+    } catch (e) {
+      console.error('[stripe-webhook] portal invoice customer email', e)
+    }
   }
 
   return Boolean(data?.id)
@@ -166,6 +199,16 @@ export const markTransferBookingPaid = async (supabase, bookingId, session, paym
       if (!r.ok) {
         console.error('[stripe-webhook] portal deposit receipt pdf', r.reason, r.message ?? '')
       }
+      try {
+        await sendTransferPaymentCustomerEmails(
+          supabase,
+          bookingId,
+          { paymentKind: 'deposit', amountPaidEur: amountEur },
+          process.env
+        )
+      } catch (emailErr) {
+        console.error('[stripe-webhook] deposit customer emails', emailErr)
+      }
     } catch (e) {
       console.error('[stripe-webhook] portal deposit receipt pdf', e)
     }
@@ -232,6 +275,16 @@ export const markTransferBookingPaid = async (supabase, bookingId, session, paym
     })
     if (!r.ok) {
       console.error('[stripe-webhook] portal payment confirmation pdf', r.reason, r.message ?? '')
+    }
+    try {
+      await sendTransferPaymentCustomerEmails(
+        supabase,
+        bookingId,
+        { paymentKind: kind === 'balance' ? 'balance' : 'full', amountPaidEur: amountEur },
+        process.env
+      )
+    } catch (emailErr) {
+      console.error('[stripe-webhook] full/balance customer emails', emailErr)
     }
   } catch (e) {
     console.error('[stripe-webhook] portal payment confirmation pdf', e)
@@ -383,7 +436,13 @@ export const handleStripeWebhook = async (rawBody, signatureHeader, env = proces
 
     if (metaPortal) {
 
-      await markPortalInvoicePaid(supabase, metaPortal, paymentIntent, paidAt)
+      await markPortalInvoicePaid(supabase, metaPortal, paymentIntent, paidAt, {
+        stripeSessionId: session.id,
+        amountEur:
+          typeof session.amount_total === 'number' && Number.isFinite(session.amount_total)
+            ? session.amount_total / 100
+            : null
+      })
 
     } else if (metaTransfer) {
 
@@ -391,7 +450,13 @@ export const handleStripeWebhook = async (rawBody, signatureHeader, env = proces
 
     } else if (cref) {
 
-      const invOk = await markPortalInvoicePaid(supabase, cref, paymentIntent, paidAt)
+      const invOk = await markPortalInvoicePaid(supabase, cref, paymentIntent, paidAt, {
+        stripeSessionId: session.id,
+        amountEur:
+          typeof session.amount_total === 'number' && Number.isFinite(session.amount_total)
+            ? session.amount_total / 100
+            : null
+      })
 
       if (!invOk) {
 

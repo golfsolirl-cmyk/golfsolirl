@@ -34,9 +34,10 @@ export const parseTransferPaymentPass = (raw: string): ParsedTransferPaymentPass
   return null
 }
 
+/** Trip pass barcode is issued only after the transfer is paid in full (not on deposit alone). */
 export const transferPassIsScannable = (paymentStatus: string | null | undefined) => {
   const pay = String(paymentStatus ?? 'unpaid').toLowerCase()
-  return pay === 'deposit' || pay === 'paid'
+  return pay === 'paid'
 }
 
 export const transferPassPaymentLevelFromStatus = (

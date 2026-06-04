@@ -4,6 +4,7 @@ import { isAllowedAdminLoginEmail } from '../lib/admin-login-email'
 import { PortalInterestCategoryGlyph } from '../components/portal-interest-category-glyph'
 import { FocusTrapDialog } from '../components/focus-trap-dialog'
 import { AdminOperationsHubHero } from '../components/admin-operations-hub-hero'
+import { AdminPaidTripsRevenuePanel } from '../components/admin-paid-trips-revenue-panel'
 import { AdminPortalShell, AdminPortalSection, type AdminPortalSectionId } from '../components/admin-portal-shell'
 import { AdminOperationsSectionShell } from '../components/admin-operations-section-shell'
 import {
@@ -3763,6 +3764,8 @@ export function AdminDashboardPage() {
           id="admin-hub-payments"
         >
           <PortalClientDataCard sections={adminDataCardSections} />
+
+          <AdminPaidTripsRevenuePanel />
 
           <div className="ge-on-dark rounded-[1.35rem] border border-brand-700/40 bg-gradient-to-br from-[#0f3d24] via-[#143d28] to-[#0a2416] px-5 py-4 shadow-[0_12px_32px_rgba(11,73,52,0.2)] ring-1 ring-white/10 sm:px-6 sm:py-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">

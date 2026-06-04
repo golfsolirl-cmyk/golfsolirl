@@ -378,6 +378,53 @@ export const drawUnifiedParagraphBlock = (page, topY, ctx, text, opts = {}) => {
 export const unifiedPdfMinBodyY = () => UNIFIED_PDF_LAYOUT.footerReserve + 24
 
 /**
+ * Paginate long body copy — returns updated y (and optional new page ref via callback).
+ * @param {import('pdf-lib').PDFPage} page
+ * @param {number} y
+ * @param {object} ctx fonts + logo ctx
+ * @param {string} text
+ * @param {object} opts
+ * @param {{ ensureSpace?: (needed: number) => { page: import('pdf-lib').PDFPage, y: number } }} [paginate]
+ */
+export const drawUnifiedParagraphBlockPaginated = (page, y, ctx, text, opts = {}, paginate = null) => {
+  const { pageWidth, margin } = UNIFIED_PDF_LAYOUT
+  const contentW = pageWidth - margin * 2
+  const size = opts.size ?? TYPE.body
+  const lineHeight = opts.lineHeight ?? 15
+  const color = opts.color ?? t.muted
+  const minY = opts.minY ?? unifiedPdfMinBodyY()
+  let currentPage = page
+  let currentY = y
+
+  const ensure = (needed) => {
+    if (currentY - needed >= minY || !paginate?.ensureSpace) {
+      return
+    }
+    const next = paginate.ensureSpace(needed)
+    currentPage = next.page
+    currentY = next.y
+  }
+
+  const paragraphs = String(text ?? '').split('\n')
+  for (const para of paragraphs) {
+    if (!para.trim()) {
+      ensure(lineHeight * 0.35)
+      currentY -= lineHeight * 0.35
+      continue
+    }
+    const wrapped = wrapPlainLinesWithFont(ctx.font, para, size, contentW)
+    ensure(wrapped.length * lineHeight + lineHeight * 0.2)
+    for (const line of wrapped) {
+      currentPage.drawText(line, { x: margin, y: currentY, font: ctx.font, size, color })
+      currentY -= lineHeight
+    }
+    currentY -= lineHeight * 0.2
+  }
+
+  return { page: currentPage, y: currentY }
+}
+
+/**
  * Full sample PDF (two pages) — regenerate with npm run generate:unified-pdf-sample
  * @returns {Promise<Uint8Array>}
  */

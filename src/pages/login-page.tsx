@@ -228,7 +228,7 @@ export function LoginPage() {
       ? 'Live jobs · Same magic link · Driver desk'
       : 'Saved trips · Quotes · Account access'
   const heroBody = isAdminLoginPath
-    ? `Enter your operator code and ${DEFAULT_ADMIN_LOGIN_EMAIL} — we'll send a secure sign-in link to that inbox.`
+    ? "Enter your operator code — we'll send a secure sign-in link to your operator inbox.[hidethis] Restricted to info@golfsolirl.com."
     : isDriverLoginPage
       ? 'Same secure magic link as the client portal and admin — after sign-in, admins use the Irish Driver preview desk; linked drivers see live jobs.'
       : "We'll email you a secure magic link — the same GolfSol Ireland experience as the rest of the site. No password to remember."

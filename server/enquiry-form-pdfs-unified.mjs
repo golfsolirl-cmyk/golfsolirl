@@ -20,9 +20,11 @@ import {
   estimateUnifiedKeyValueTableHeight,
   drawUnifiedGoldRule,
   drawUnifiedParagraphBlock,
+  drawUnifiedParagraphBlockPaginated,
   drawUnifiedBulletCard,
   estimateUnifiedBulletCardHeight,
-  wrapPlainLinesWithFont
+  wrapPlainLinesWithFont,
+  unifiedPdfMinBodyY
 } from './gsol-unified-pdf-template.mjs'
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
@@ -240,8 +242,42 @@ const applyFooters = (doc, ctx, extraLines = []) => {
   const pages = doc.getPages()
   const total = pages.length
   pages.forEach((page, i) => {
-    drawUnifiedDocumentFooter(page, 52, ctx, [...extraLines, `Page ${i + 1} of ${total}`])
+    drawUnifiedDocumentFooter(page, 52, ctx, extraLines, { current: i + 1, total })
   })
+}
+
+const drawWrappedCaption = (page, ctx, x, y, width, title, body) => {
+  const innerW = width - 16
+  let cy = y
+  for (const line of wrapPlainLinesWithFont(ctx.fontBold, title, 10, innerW)) {
+    page.drawText(sanitizeStandardFontText(line), {
+      x: x + 10,
+      y: cy,
+      font: ctx.fontBold,
+      size: 10,
+      color: pdfEmailTheme.ink
+    })
+    cy -= 14
+  }
+  cy -= 2
+  for (const line of wrapPlainLinesWithFont(ctx.font, body, 9.5, innerW)) {
+    page.drawText(sanitizeStandardFontText(line), {
+      x: x + 10,
+      y: cy,
+      font: ctx.font,
+      size: 9.5,
+      color: pdfEmailTheme.muted
+    })
+    cy -= 13
+  }
+  return cy
+}
+
+const estimateCaptionHeight = (ctx, width, title, body) => {
+  const innerW = width - 16
+  const titleLines = wrapPlainLinesWithFont(ctx.fontBold, title, 10, innerW)
+  const bodyLines = wrapPlainLinesWithFont(ctx.font, body, 9.5, innerW)
+  return titleLines.length * 14 + 2 + bodyLines.length * 13
 }
 
 /**
@@ -260,24 +296,35 @@ export const createBrandedEnquiryPdf = async ({
   const ctx = { ...(await loadUnifiedPdfFonts(doc)), ...(await embedUnifiedLogo(doc)) }
   const { pageWidth, pageHeight, margin } = UNIFIED_PDF_LAYOUT
   const contentW = pageWidth - margin * 2
-  const MIN_BODY = 96
+  const MIN_BODY = unifiedPdfMinBodyY()
+
+  const ensurePageSpace = (pageRef, yRef, needed, header) => {
+    if (yRef - needed >= MIN_BODY) {
+      return { page: pageRef, y: yRef }
+    }
+    const nextPage = doc.addPage([pageWidth, pageHeight])
+    const nextY = drawUnifiedDocumentHeader(nextPage, ctx, header)
+    return { page: nextPage, y: nextY - 12 }
+  }
 
   const fleetImage = await embedPdfJpg(doc, assets.fleetLineup, 1280, 390)
   const arrivalsImage = await embedPdfJpg(doc, assets.arrivals, 640, 408)
   const resortImage = await embedPdfJpg(doc, assets.resort, 640, 408)
   const coastalImage = await embedPdfJpg(doc, assets.coastalDrive, 640, 408)
 
-  // —— Page 1: welcome + fleet + snapshot
-  let page = doc.addPage([pageWidth, pageHeight])
-  let y = drawUnifiedDocumentHeader(page, ctx, {
+  const page1Header = {
     kicker: 'WEBSITE ENQUIRY',
     title: 'Your Costa del Sol golf trip brief',
     subtitle:
       'Thanks for sending your trip details. We will review dates, group shape, transfers and tee-time needs before replying.'
-  })
+  }
+
+  // —— Page 1: welcome + fleet + snapshot (paginated when content is tall)
+  let page = doc.addPage([pageWidth, pageHeight])
+  let y = drawUnifiedDocumentHeader(page, ctx, page1Header)
 
   y -= 10
-  y = drawUnifiedParagraphBlock(
+  const introBlock = drawUnifiedParagraphBlockPaginated(
     page,
     y,
     ctx,
@@ -286,15 +333,39 @@ export const createBrandedEnquiryPdf = async ({
       '',
       'Thanks for sending your Costa del Sol trip details. We will review your dates, group shape, transfers and tee-time needs before replying.'
     ].join('\n'),
-    { size: 10.5, lineHeight: 15, color: pdfEmailTheme.ink }
+    { size: 10.5, lineHeight: 15, color: pdfEmailTheme.ink, minY: MIN_BODY },
+    {
+      ensureSpace: (needed) => {
+        const next = ensurePageSpace(page, y, needed, {
+          ...page1Header,
+          title: 'Your Costa del Sol golf trip brief (continued)',
+          subtitle: ''
+        })
+        page = next.page
+        y = next.y
+        return next
+      }
+    }
   )
+  page = introBlock.page
+  y = introBlock.y
 
   y -= 12
   const fleetImgW = contentW
   const fleetImgH = Math.min(168, (fleetImage.height / fleetImage.width) * fleetImgW)
+  ;({ page, y } = ensurePageSpace(page, y, fleetImgH + 120, {
+    ...page1Header,
+    title: 'Your Costa del Sol golf trip brief (continued)',
+    subtitle: ''
+  }))
   page.drawImage(fleetImage, { x: margin, y: y - fleetImgH, width: fleetImgW, height: fleetImgH })
   y -= fleetImgH + 14
 
+  ;({ page, y } = ensurePageSpace(page, y, 80, {
+    ...page1Header,
+    title: 'Your Costa del Sol golf trip brief (continued)',
+    subtitle: ''
+  }))
   y = drawUnifiedSectionHeading(page, y, ctx, 'Golf-bag friendly Mercedes fleet')
   y = drawUnifiedParagraphBlock(
     page,
@@ -305,6 +376,16 @@ export const createBrandedEnquiryPdf = async ({
   )
 
   y -= 8
+  ;({ page, y } = ensurePageSpace(page, y, estimateUnifiedKeyValueTableHeight(ctx, [
+    { label: 'Transfer', value: 'Private AGP pickup — flight-aware driver and room for clubs.' },
+    { label: 'Stay', value: 'Hotel or resort matched to the group.' },
+    { label: 'Golf', value: 'Courses selected around ability and daylight.' },
+    { label: 'Support', value: 'Irish phone line — email, phone or WhatsApp follow-up.' }
+  ]) + 90, {
+    ...page1Header,
+    title: 'Recommended itinerary snapshot',
+    subtitle: 'Built around the details you sent.'
+  }))
   y = drawUnifiedGoldRule(page, y)
   y = drawUnifiedSectionHeading(page, y, ctx, 'Recommended itinerary snapshot')
   y = drawUnifiedParagraphBlock(page, y, ctx, 'Built around the details you sent.', {
@@ -365,81 +446,98 @@ export const createBrandedEnquiryPdf = async ({
 
   const cardW = (contentW - 24) / 3
   const imgH = 102
+  const captions = [
+    ['Arrivals tracked', 'Driver ready when your flight lands.'],
+    ['Resort drop-off', 'Straight to hotel, villa or course.'],
+    ['Sol corridor', 'Malaga, Marbella and beyond.']
+  ]
+  const captionHeights = captions.map(([title, body]) => estimateCaptionHeight(ctx, cardW, title, body))
+  const captionBlockH = Math.max(...captionHeights, 36)
+  const trioCardH = imgH + 16 + captionBlockH + 16
+  ;({ page, y } = ensurePageSpace(page, y, trioCardH + 160, {
+    kicker: 'TRANSFER EXPERIENCE',
+    title: 'From arrivals hall to resort door',
+    subtitle: 'Meet-and-greet transfers along the Sol corridor.'
+  }))
+
   const trioTop = y
-  const trioBottom = trioTop - imgH - 72
+  const trioBottom = trioTop - trioCardH
   ;[arrivalsImage, resortImage, coastalImage].forEach((img, index) => {
     const x = margin + index * (cardW + 12)
     page.drawRectangle({
       x,
       y: trioBottom,
       width: cardW,
-      height: imgH + 68,
+      height: trioCardH,
       color: index === 1 ? pdfEmailTheme.paleGold : pdfEmailTheme.paleGreen,
       borderColor: pdfEmailTheme.sand,
       borderWidth: 0.65
     })
-    page.drawImage(img, { x: x + 4, y: trioBottom + 68, width: cardW - 8, height: imgH })
+    page.drawImage(img, { x: x + 4, y: trioBottom + captionBlockH + 16, width: cardW - 8, height: imgH })
   })
 
-  const captions = [
-    ['Arrivals tracked', 'Driver ready when your flight lands.'],
-    ['Resort drop-off', 'Straight to hotel, villa or course.'],
-    ['Sol corridor', 'Malaga, Marbella and beyond.']
-  ]
   captions.forEach(([title, body], index) => {
     const x = margin + index * (cardW + 12)
-    let cy = trioBottom + 58
-    page.drawText(sanitizeStandardFontText(title), {
-      x: x + 10,
-      y: cy,
-      font: ctx.fontBold,
-      size: 10,
-      color: pdfEmailTheme.ink,
-      maxWidth: cardW - 16
-    })
-    cy -= 16
-    page.drawText(sanitizeStandardFontText(body), {
-      x: x + 10,
-      y: cy,
-      font: ctx.font,
-      size: 9.5,
-      color: pdfEmailTheme.muted,
-      maxWidth: cardW - 16,
-      lineHeight: 13
-    })
+    drawWrappedCaption(page, ctx, x, trioBottom + captionBlockH + 8, cardW, title, body)
   })
 
   y = trioBottom - 24
+  ;({ page, y } = ensurePageSpace(page, y, 120, {
+    kicker: 'TRANSFER EXPERIENCE',
+    title: 'Next step',
+    subtitle: ''
+  }))
   y = drawUnifiedGoldRule(page, y)
   y = drawUnifiedSectionHeading(page, y, ctx, 'Next step')
-  y = drawUnifiedParagraphBlock(
+  const nextStepBlock = drawUnifiedParagraphBlockPaginated(
     page,
     y,
     ctx,
     'Tell us what to tune.\n\nReply with any dates, group changes or must-play courses. We will shape the quote around the group rather than forcing you into a fixed package.',
+    { size: 10.5, lineHeight: 15, color: pdfEmailTheme.ink, minY: MIN_BODY },
     {
-      size: 10.5,
-      lineHeight: 15,
-      color: pdfEmailTheme.ink
+      ensureSpace: (needed) => {
+        const next = ensurePageSpace(page, y, needed, {
+          kicker: 'TRANSFER EXPERIENCE',
+          title: 'Next step (continued)',
+          subtitle: ''
+        })
+        page = next.page
+        y = next.y
+        return next
+      }
     }
   )
+  page = nextStepBlock.page
+  y = nextStepBlock.y
 
-  if (y < 140) {
-    page = doc.addPage([pageWidth, pageHeight])
-    y = drawUnifiedDocumentHeader(page, ctx, {
-      kicker: 'DISCLAIMER',
-      title: 'Important notice',
-      subtitle: ''
-    })
-    y -= 18
-  }
-
+  ;({ page, y } = ensurePageSpace(page, y, 80, {
+    kicker: 'DISCLAIMER',
+    title: 'Important notice',
+    subtitle: ''
+  }))
   y = drawUnifiedSectionHeading(page, y, ctx, 'Important disclaimer')
-  y = drawUnifiedParagraphBlock(page, y, ctx, disclaimerParagraphsPdf.join('\n\n'), {
-    size: 10,
-    lineHeight: 14,
-    color: pdfEmailTheme.muted
-  })
+  const disclaimerBlock = drawUnifiedParagraphBlockPaginated(
+    page,
+    y,
+    ctx,
+    disclaimerParagraphsPdf.join('\n\n'),
+    { size: 10, lineHeight: 14, color: pdfEmailTheme.muted, minY: MIN_BODY },
+    {
+      ensureSpace: (needed) => {
+        const next = ensurePageSpace(page, y, needed, {
+          kicker: 'DISCLAIMER',
+          title: 'Important notice (continued)',
+          subtitle: ''
+        })
+        page = next.page
+        y = next.y
+        return next
+      }
+    }
+  )
+  page = disclaimerBlock.page
+  y = disclaimerBlock.y
 
   applyFooters(doc, ctx, [
     `© ${new Date().getFullYear()} GolfSol Ireland · Irish-owned Costa del Sol golf travel · Transfers, accommodation and tee times in one place.`

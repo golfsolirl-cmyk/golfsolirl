@@ -59,6 +59,7 @@
     { "source": "/api/transfer-booking-sweep", "destination": "/api/gateway?r=transfer-booking-sweep" },
     { "source": "/api/transfer-balance-reminder-sweep", "destination": "/api/gateway?r=transfer-balance-reminder-sweep" },
     { "source": "/api/transfer-payment-admin", "destination": "/api/gateway?r=transfer-payment-admin" },
+    { "source": "/api/admin-revenue-stats", "destination": "/api/gateway?r=admin-revenue-stats" },
     { "source": "/api/package-build-admin-publish", "destination": "/api/gateway?r=package-build-admin-publish" },
     { "source": "/api/transfer-refund", "destination": "/api/gateway?r=transfer-refund" },
     { "source": "/api/transfer-checkout", "destination": "/api/gateway?r=transfer-checkout" },

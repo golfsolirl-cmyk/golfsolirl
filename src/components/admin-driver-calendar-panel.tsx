@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { LuxuryButton } from './ui/button'
+import { TransferPaymentStatusBadge } from './transfer-payment-status-badge'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { useAuth } from '../providers/auth-provider'
 
@@ -14,13 +15,27 @@ type BookingRow = {
   created_at: string
 }
 
-type CalendarGridCell = { kind: 'blank' } | { kind: 'day'; iso: string; n: number }
-
-type TransferMonthRow = {
+type TransferCalendarRow = {
+  id: string
   scheduled_at: string
   admin_price_eur: number | null
   status: string | null
+  payment_status: string | null
+  deposit_percent: number | null
+  pickup_label: string
+  dropoff_label: string
+  client_display_name: string | null
+  client_email: string | null
+  client_phone: string | null
+  enquiry_reference_id: string | null
+  client_timing_note: string | null
+  booking_source: string | null
+  next_available_driver: boolean | null
 }
+
+type CalendarGridCell = { kind: 'blank' } | { kind: 'day'; iso: string; n: number }
+
+type DayTransferAgg = { depositCount: number; paidCount: number; sumEur: number }
 
 function pad2(n: number) {
   return String(n).padStart(2, '0')
@@ -50,6 +65,25 @@ function serviceDayKeyMadrid(iso: string): string {
 const formatEurCompact = (n: number) =>
   new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n)
 
+const formatTransferWhen = (scheduledAt: string | null | undefined, nextAvailable?: boolean | null) => {
+  if (!scheduledAt) {
+    return nextAvailable ? 'ASAP · next available driver' : 'Date TBC'
+  }
+  const d = new Date(scheduledAt)
+  if (Number.isNaN(d.getTime())) {
+    return 'Date TBC'
+  }
+  return d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Europe/Madrid' })
+}
+
+const formatSelectedDayLabel = (iso: string) =>
+  new Date(`${iso}T12:00:00`).toLocaleDateString(undefined, {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  })
+
 /** Monday-based week index (0 = Mon) for first of month */
 function mondayOffset(y: number, m0: number) {
   const js = new Date(y, m0, 1).getDay()
@@ -73,7 +107,8 @@ export function AdminDriverCalendarPanel() {
     return { y: n.getFullYear(), m0: n.getMonth() }
   })
   const [rows, setRows] = useState<BookingRow[]>([])
-  const [transferMonthRows, setTransferMonthRows] = useState<TransferMonthRow[]>([])
+  const [transferMonthRows, setTransferMonthRows] = useState<TransferCalendarRow[]>([])
+  const [unscheduledPaidTransfers, setUnscheduledPaidTransfers] = useState<TransferCalendarRow[]>([])
   const [loadError, setLoadError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [selectedIso, setSelectedIso] = useState<string | null>(null)
@@ -118,7 +153,7 @@ export function AdminDriverCalendarPanel() {
     const rangeStartUtc = `${from}T00:00:00.000Z`
     const rangeEndUtcExclusive = `${nextMonthStart}T00:00:00.000Z`
 
-    const [dayRes, tbRes] = await Promise.all([
+    const [dayRes, tbRes, unschedRes] = await Promise.all([
       supabase
         .from('driver_calendar_bookings')
         .select('id, service_day, customer_name, customer_email, customer_phone, reference_id, notes, created_at')
@@ -128,10 +163,22 @@ export function AdminDriverCalendarPanel() {
         .order('created_at', { ascending: true }),
       supabase
         .from('transfer_bookings')
-        .select('scheduled_at, admin_price_eur, status')
+        .select(
+          'id, scheduled_at, admin_price_eur, status, payment_status, deposit_percent, pickup_label, dropoff_label, client_display_name, client_email, client_phone, enquiry_reference_id, client_timing_note, booking_source, next_available_driver'
+        )
+        .in('payment_status', ['deposit', 'paid'])
         .not('scheduled_at', 'is', null)
         .gte('scheduled_at', rangeStartUtc)
-        .lt('scheduled_at', rangeEndUtcExclusive)
+        .lt('scheduled_at', rangeEndUtcExclusive),
+      supabase
+        .from('transfer_bookings')
+        .select(
+          'id, scheduled_at, admin_price_eur, status, payment_status, deposit_percent, pickup_label, dropoff_label, client_display_name, client_email, client_phone, enquiry_reference_id, client_timing_note, booking_source, next_available_driver'
+        )
+        .in('payment_status', ['deposit', 'paid'])
+        .is('scheduled_at', null)
+        .order('updated_at', { ascending: false })
+        .limit(24)
     ])
 
     const { data, error } = dayRes
@@ -142,7 +189,13 @@ export function AdminDriverCalendarPanel() {
       }
       setTransferMonthRows([])
     } else {
-      setTransferMonthRows((tbRes.data ?? []) as TransferMonthRow[])
+      setTransferMonthRows((tbRes.data ?? []) as TransferCalendarRow[])
+    }
+
+    if (unschedRes.error) {
+      setUnscheduledPaidTransfers([])
+    } else {
+      setUnscheduledPaidTransfers((unschedRes.data ?? []) as TransferCalendarRow[])
     }
 
     if (error) {
@@ -162,6 +215,25 @@ export function AdminDriverCalendarPanel() {
   useEffect(() => {
     void load()
   }, [load])
+
+  useEffect(() => {
+    if (!session || !isAdmin) {
+      return
+    }
+    const supabase = getSupabaseBrowserClient()
+    if (!supabase) {
+      return
+    }
+    const channel = supabase
+      .channel('admin-driver-calendar-transfers')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'transfer_bookings' }, () => {
+        void load()
+      })
+      .subscribe()
+    return () => {
+      void supabase.removeChannel(channel)
+    }
+  }, [session, isAdmin, load])
 
   useEffect(() => {
     if (!session || !isAdmin) {
@@ -233,7 +305,7 @@ export function AdminDriverCalendarPanel() {
   }, [rows])
 
   const transferAggByDay = useMemo(() => {
-    const m = new Map<string, { count: number; sumEur: number }>()
+    const m = new Map<string, DayTransferAgg>()
     for (const r of transferMonthRows) {
       if (!r.scheduled_at) {
         continue
@@ -242,8 +314,13 @@ export function AdminDriverCalendarPanel() {
         continue
       }
       const k = serviceDayKeyMadrid(r.scheduled_at)
-      const cur = m.get(k) ?? { count: 0, sumEur: 0 }
-      cur.count += 1
+      const cur = m.get(k) ?? { depositCount: 0, paidCount: 0, sumEur: 0 }
+      const pay = (r.payment_status ?? 'unpaid').toLowerCase()
+      if (pay === 'deposit') {
+        cur.depositCount += 1
+      } else if (pay === 'paid') {
+        cur.paidCount += 1
+      }
       const p = r.admin_price_eur
       if (typeof p === 'number' && Number.isFinite(p)) {
         cur.sumEur += p
@@ -252,6 +329,25 @@ export function AdminDriverCalendarPanel() {
     }
     return m
   }, [transferMonthRows])
+
+  const transfersByDay = useMemo(() => {
+    const m = new Map<string, TransferCalendarRow[]>()
+    for (const r of transferMonthRows) {
+      if (!r.scheduled_at || (r.status ?? '').toLowerCase() === 'cancelled') {
+        continue
+      }
+      const k = serviceDayKeyMadrid(r.scheduled_at)
+      const arr = m.get(k) ?? []
+      arr.push(r)
+      m.set(k, arr)
+    }
+    for (const arr of m.values()) {
+      arr.sort((a, b) => String(a.scheduled_at).localeCompare(String(b.scheduled_at)))
+    }
+    return m
+  }, [transferMonthRows])
+
+  const selectedTransfers = selectedIso ? (transfersByDay.get(selectedIso) ?? []) : []
 
   const selectedBookings = selectedIso ? (byDay.get(selectedIso) ?? []) : []
 
@@ -497,9 +593,10 @@ export function AdminDriverCalendarPanel() {
       </div>
 
       <p className="max-w-3xl text-xs text-forest-600 print:hidden">
-        <span className="font-semibold text-forest-800">Transfer pipeline</span> (below): day cells show scheduled runs with a pick-up
-        on that date in <span className="font-medium">Europe/Madrid</span> and the sum of saved <span className="font-medium">quoted EUR</span>{' '}
-        (excludes cancelled). Diary &quot;Booked&quot; rows are separate website capacity blocks.
+        <span className="font-semibold text-forest-800">Paid transfers</span> (deposit or paid in full) appear on the day
+        of scheduled pickup (<span className="font-medium">Europe/Madrid</span>). Cells show deposit vs paid counts and
+        quoted EUR. Click a date to open the detail panel with full client and route information. Website diary
+        &quot;Booked&quot; rows are separate capacity blocks.
       </p>
 
       {loadError ? (
@@ -508,6 +605,8 @@ export function AdminDriverCalendarPanel() {
         </div>
       ) : null}
 
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(300px,380px)] print:block">
+        <div className="space-y-6">
       <div className="overflow-x-auto rounded-2xl border border-forest-100 bg-white p-4 shadow-soft print:border-0 print:shadow-none">
         <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold uppercase tracking-[0.12em] text-forest-600 print:hidden">
           {weekdayLabels().map((w) => (
@@ -521,17 +620,20 @@ export function AdminDriverCalendarPanel() {
             if (cell.kind === 'blank') {
               return <div className="min-h-[3rem] rounded-xl bg-offwhite/40 print:min-h-0" key={`b-${idx}`} />
             }
-            const has = (byDay.get(cell.iso)?.length ?? 0) > 0
+            const hasDiary = (byDay.get(cell.iso)?.length ?? 0) > 0
             const trAgg = transferAggByDay.get(cell.iso)
+            const hasTransfers = Boolean(trAgg && (trAgg.depositCount > 0 || trAgg.paidCount > 0))
             const sel = selectedIso === cell.iso
             return (
               <button
-                className={`min-h-[3rem] rounded-xl border px-1 py-2 text-left text-sm transition-colors print:hidden ${
+                className={`min-h-[4rem] rounded-xl border px-1 py-2 text-left text-sm transition-colors print:hidden ${
                   sel
-                    ? 'border-fairway-500 bg-fairway-50 text-forest-950'
-                    : has
-                      ? 'border-brand-300 bg-brand-50/80 text-forest-900 hover:border-fairway-400'
-                      : 'border-forest-100 bg-offwhite/60 text-forest-700 hover:border-fairway-300'
+                    ? 'border-fairway-500 bg-fairway-50 text-forest-950 ring-2 ring-fairway-300/50'
+                    : hasTransfers
+                      ? 'border-brand-400 bg-brand-50/90 text-forest-900 hover:border-fairway-400'
+                      : hasDiary
+                        ? 'border-brand-300 bg-brand-50/80 text-forest-900 hover:border-fairway-400'
+                        : 'border-forest-100 bg-offwhite/60 text-forest-700 hover:border-fairway-300'
                 }`}
                 key={cell.iso}
                 onClick={() => {
@@ -542,10 +644,14 @@ export function AdminDriverCalendarPanel() {
                 type="button"
               >
                 <span className="block font-semibold">{cell.n}</span>
-                {has ? <span className="mt-0.5 block text-[10px] font-medium uppercase tracking-wide text-brand-700">Booked</span> : null}
-                {trAgg && trAgg.count > 0 ? (
+                {hasDiary ? (
+                  <span className="mt-0.5 block text-[10px] font-medium uppercase tracking-wide text-brand-700">Diary</span>
+                ) : null}
+                {hasTransfers && trAgg ? (
                   <span className="mt-0.5 block text-[9px] font-semibold leading-tight text-fairway-900">
-                    {trAgg.count} run{trAgg.count === 1 ? '' : 's'}
+                    {trAgg.depositCount > 0 ? `${trAgg.depositCount} dep` : null}
+                    {trAgg.depositCount > 0 && trAgg.paidCount > 0 ? ' · ' : null}
+                    {trAgg.paidCount > 0 ? `${trAgg.paidCount} paid` : null}
                     {trAgg.sumEur > 0 ? ` · ${formatEurCompact(trAgg.sumEur)}` : ''}
                   </span>
                 ) : null}
@@ -553,83 +659,29 @@ export function AdminDriverCalendarPanel() {
             )
           })}
         </div>
+      </div>
 
-        <div className="mt-6 border-t border-forest-100 pt-6 print:mt-4 print:border-t-0 print:pt-2">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between print:block">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600 print:text-sm">
-              {selectedIso
-                ? `Bookings — ${new Date(`${selectedIso}T12:00:00`).toLocaleDateString(undefined, {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                  })}`
-                : 'Select a date on the calendar'}
-            </p>
-            {selectedIso && selectedBookings.length > 0 ? (
-              <LuxuryButton
-                className="print:hidden sm:ml-4 sm:shrink-0 !text-fairway-700 hover:!text-fairway-800"
-                disabled={busy}
-                onClick={() => void handleClearBookedDay()}
-                type="button"
-                variant="white"
-              >
-                Open day for website
-              </LuxuryButton>
-            ) : null}
-          </div>
-
-          {selectedBookings.length === 0 && selectedIso ? (
-            <div className="mt-3 space-y-3 rounded-2xl border border-fairway-200 bg-fairway-50/50 px-4 py-3 print:hidden">
-              <p className="text-sm text-forest-700">
-                No diary row yet — the website still allows transfer enquiries on this date. Use a quick block if you are at capacity but
-                do not have a booking to attach, or add a full row with customer details for the printable day sheet.
-              </p>
-              <LuxuryButton disabled={busy} onClick={() => void handleQuickBlockDay()} type="button" variant="primary">
-                {busy ? 'Saving…' : 'Block transfers on website (no customer details)'}
-              </LuxuryButton>
-            </div>
-          ) : null}
-
-          <ul className="mt-3 space-y-3 print:block">
-            {selectedBookings.map((b) => (
-              <li
-                className="rounded-2xl border border-forest-100 bg-offwhite/80 px-4 py-3 text-sm text-forest-900 print:break-inside-avoid"
-                key={b.id}
-              >
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="min-w-0 space-y-1">
-                    {isWebsiteCapacityBlockRow(b) ? (
-                      <p className="font-semibold text-forest-950">
-                        Website capacity block <span className="font-normal text-forest-600">(no customer on file)</span>
-                      </p>
-                    ) : (
-                      <p className="font-semibold text-forest-950">{b.customer_name || '—'}</p>
-                    )}
-                    {!isWebsiteCapacityBlockRow(b) ? (
-                      <>
-                        <p className="break-all text-forest-800">{b.customer_email || '—'}</p>
-                        <p>{b.customer_phone || '—'}</p>
-                      </>
-                    ) : null}
-                    {b.reference_id ? <p className="font-mono text-xs">Ref {b.reference_id}</p> : null}
-                    {b.notes ? <p className="whitespace-pre-wrap text-forest-700">{b.notes}</p> : null}
-                  </div>
-                  <LuxuryButton
-                    className="print:hidden"
-                    disabled={busy}
-                    onClick={() => void handleDelete(b.id)}
-                    type="button"
-                    variant="outline"
-                  >
-                    Remove
-                  </LuxuryButton>
+      {unscheduledPaidTransfers.length > 0 ? (
+        <div className="rounded-2xl border border-forest-100 bg-white p-4 shadow-soft print:hidden">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Paid · no pickup date yet</p>
+          <p className="mt-1 text-sm text-forest-600">ASAP / next-available runs with deposit or full payment on file.</p>
+          <ul className="mt-3 space-y-2">
+            {unscheduledPaidTransfers.map((t) => (
+              <li className="rounded-xl border border-forest-100 bg-offwhite/70 px-3 py-2 text-sm" key={t.id}>
+                <p className="font-semibold text-forest-950">
+                  {t.pickup_label} → {t.dropoff_label}
+                </p>
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  <TransferPaymentStatusBadge deposit_percent={t.deposit_percent} payment_status={t.payment_status} size="sm" />
+                  {t.enquiry_reference_id ? (
+                    <span className="font-mono text-xs text-forest-600">{t.enquiry_reference_id}</span>
+                  ) : null}
                 </div>
               </li>
             ))}
           </ul>
         </div>
-      </div>
+      ) : null}
 
       <div className="rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft print:hidden">
         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Add booking or block a day</p>
@@ -712,6 +764,128 @@ export function AdminDriverCalendarPanel() {
             {formMessage}
           </p>
         ) : null}
+      </div>
+        </div>
+
+        <aside className="print:hidden lg:sticky lg:top-4 lg:self-start">
+          <div className="rounded-[1.75rem] border border-forest-100 bg-white p-5 shadow-soft">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Day detail</p>
+            <h3 className="mt-2 font-display text-lg font-semibold text-forest-950">
+              {selectedIso ? formatSelectedDayLabel(selectedIso) : 'Select a date'}
+            </h3>
+            {!selectedIso ? (
+              <p className="mt-3 text-sm leading-relaxed text-forest-600">
+                Click a calendar day to see paid transfers (deposit or paid in full) and website diary blocks for that
+                date.
+              </p>
+            ) : (
+              <div className="mt-4 space-y-5">
+                <section>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-fairway-800">
+                    Paid transfers ({selectedTransfers.length})
+                  </p>
+                  {selectedTransfers.length === 0 ? (
+                    <p className="mt-2 text-sm text-forest-600">No deposit or paid-in-full transfers scheduled this day.</p>
+                  ) : (
+                    <ul className="mt-3 space-y-3">
+                      {selectedTransfers.map((t) => (
+                        <li className="rounded-2xl border border-forest-100 bg-offwhite/80 px-4 py-3 text-sm" key={t.id}>
+                          <div className="flex flex-wrap items-start justify-between gap-2">
+                            <p className="font-semibold leading-snug text-forest-950">
+                              {t.pickup_label} → {t.dropoff_label}
+                            </p>
+                            <TransferPaymentStatusBadge
+                              deposit_percent={t.deposit_percent}
+                              payment_status={t.payment_status}
+                              size="sm"
+                            />
+                          </div>
+                          <p className="mt-2 text-forest-700">{formatTransferWhen(t.scheduled_at, t.next_available_driver)}</p>
+                          <p className="mt-2 font-medium text-forest-950">{t.client_display_name?.trim() || '—'}</p>
+                          <p className="break-all text-forest-800">{t.client_email?.trim() || '—'}</p>
+                          <p className="text-forest-800">{t.client_phone?.trim() || '—'}</p>
+                          {t.enquiry_reference_id ? (
+                            <p className="mt-2 font-mono text-xs text-forest-700">Ref {t.enquiry_reference_id}</p>
+                          ) : null}
+                          {typeof t.admin_price_eur === 'number' && Number.isFinite(t.admin_price_eur) ? (
+                            <p className="mt-2 text-sm font-semibold text-brand-800">
+                              Quoted {formatEurCompact(t.admin_price_eur)}
+                            </p>
+                          ) : null}
+                          <p className="mt-1 text-xs uppercase tracking-wide text-forest-500">
+                            Ops · {(t.status ?? 'pending').replace(/_/g, ' ')}
+                            {t.booking_source ? ` · ${t.booking_source.replace(/_/g, ' ')}` : ''}
+                          </p>
+                          {t.client_timing_note?.trim() ? (
+                            <p className="mt-2 whitespace-pre-wrap rounded-xl bg-white px-3 py-2 text-forest-700 ring-1 ring-forest-100">
+                              {t.client_timing_note.trim()}
+                            </p>
+                          ) : null}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </section>
+
+                <section className="border-t border-forest-100 pt-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-700">
+                      Website diary ({selectedBookings.length})
+                    </p>
+                    {selectedBookings.length > 0 ? (
+                      <LuxuryButton
+                        className="!text-fairway-700 hover:!text-fairway-800"
+                        disabled={busy}
+                        onClick={() => void handleClearBookedDay()}
+                        type="button"
+                        variant="white"
+                      >
+                        Open day
+                      </LuxuryButton>
+                    ) : null}
+                  </div>
+                  {selectedBookings.length === 0 ? (
+                    <div className="mt-3 space-y-3 rounded-2xl border border-fairway-200 bg-fairway-50/50 px-4 py-3">
+                      <p className="text-sm text-forest-700">
+                        No diary block — the website still accepts enquiries on this date.
+                      </p>
+                      <LuxuryButton disabled={busy} onClick={() => void handleQuickBlockDay()} type="button" variant="primary">
+                        {busy ? 'Saving…' : 'Block website capacity'}
+                      </LuxuryButton>
+                    </div>
+                  ) : (
+                    <ul className="mt-3 space-y-3">
+                      {selectedBookings.map((b) => (
+                        <li className="rounded-2xl border border-forest-100 bg-offwhite/80 px-4 py-3 text-sm" key={b.id}>
+                          <div className="flex flex-col gap-2">
+                            <div className="min-w-0 space-y-1">
+                              {isWebsiteCapacityBlockRow(b) ? (
+                                <p className="font-semibold text-forest-950">Capacity block</p>
+                              ) : (
+                                <p className="font-semibold text-forest-950">{b.customer_name || '—'}</p>
+                              )}
+                              {!isWebsiteCapacityBlockRow(b) ? (
+                                <>
+                                  <p className="break-all text-forest-800">{b.customer_email || '—'}</p>
+                                  <p>{b.customer_phone || '—'}</p>
+                                </>
+                              ) : null}
+                              {b.reference_id ? <p className="font-mono text-xs">Ref {b.reference_id}</p> : null}
+                              {b.notes ? <p className="whitespace-pre-wrap text-forest-700">{b.notes}</p> : null}
+                            </div>
+                            <LuxuryButton disabled={busy} onClick={() => void handleDelete(b.id)} type="button" variant="outline">
+                              Remove
+                            </LuxuryButton>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </section>
+              </div>
+            )}
+          </div>
+        </aside>
       </div>
     </div>
   )

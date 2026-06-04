@@ -24,6 +24,7 @@ import {
   handleTransferRejectNoDriver
 } from './server/transfer-booking-no-driver-service.mjs'
 import { handleTransferBalanceReminderSweep, handleTransferPaymentAdmin } from './server/transfer-payment-service.mjs'
+import { handleAdminRevenueStats } from './server/admin-revenue-stats-service.mjs'
 import { handlePackageBuildAdminPublish } from './server/package-build-admin-publish-service.mjs'
 import { handleTransferRefund } from './server/transfer-refund-service.mjs'
 import { handleTransferStripeCheckout } from './server/transfer-checkout-service.mjs'
@@ -710,6 +711,36 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
         const payload = rawBody ? JSON.parse(rawBody) : {}
         const authHeader = typeof request.headers.authorization === 'string' ? request.headers.authorization : ''
         const result = await handleTransferPaymentAdmin(payload, { ...process.env, ...serverEnv }, { authHeader })
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Request failed.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/admin-revenue-stats', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const rawBody = await readRequestBody(request)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const authHeader = typeof request.headers.authorization === 'string' ? request.headers.authorization : ''
+        const result = await handleAdminRevenueStats(payload, { ...process.env, ...serverEnv }, { authHeader })
 
         response.statusCode = 200
         response.setHeader('Content-Type', 'application/json')

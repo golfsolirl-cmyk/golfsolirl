@@ -29,6 +29,7 @@ import {
   handleTransferRejectNoDriver
 } from '../server/transfer-booking-no-driver-service.mjs'
 import { handleTransferBalanceReminderSweep, handleTransferPaymentAdmin } from '../server/transfer-payment-service.mjs'
+import { handleAdminRevenueStats } from '../server/admin-revenue-stats-service.mjs'
 import { handleTransferRefund } from '../server/transfer-refund-service.mjs'
 import { handleRegeneratePortalPdfs } from '../server/transfer-portal-regenerate-pdfs.mjs'
 import { guardHomepageClientPdfRequest, guardProposalPdfRequest } from '../server/pdf-route-guards.mjs'
@@ -469,6 +470,19 @@ export default async function handler(req, res) {
         const payload = raw ? JSON.parse(raw) : {}
         const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
         const result = await handleTransferPaymentAdmin(payload, process.env, { authHeader })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'admin-revenue-stats': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const result = await handleAdminRevenueStats(payload, process.env, { authHeader })
         jsonEnd(res, 200, result)
         return
       }
