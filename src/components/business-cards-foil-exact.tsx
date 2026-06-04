@@ -131,10 +131,13 @@ function portraitBackType(_mode: BusinessCardRenderMode) {
   }
 }
 
-type FoilEditorialBackTypeScale = ReturnType<typeof portraitBackType>
+type FoilEditorialBackTypeScale = ReturnType<typeof portraitBackType> & {
+  readonly identityToContact?: string
+  readonly detailRowPad?: string
+}
 
 /** Landscape back — larger type with tight cqh/cqw caps to avoid clip. */
-function landscapeBackType(_mode: BusinessCardRenderMode): FoilEditorialBackTypeScale {
+function landscapeBackType(_mode: BusinessCardRenderMode) {
   return {
     name: 'text-[clamp(1.28rem,9.2cqh,1.68rem)] leading-[1.03] tracking-[0.05em]',
     role: 'text-[clamp(10px,3.4cqh,0.88rem)] leading-[1.1] tracking-[0.14em]',
@@ -794,7 +797,7 @@ function FoilLandscapeBack({
                 <FoilBackIdentityBlock person={person} type={type} align="left" showDivider={false} />
               </div>
               <div
-                className={`${type.identityToContact} flex w-full min-w-0 max-w-full shrink-0 flex-col items-center overflow-visible px-0.5 text-center`}
+                className={`${type.identityToContact ?? 'mt-[clamp(6px,1.35cqh,10px)]'} flex w-full min-w-0 max-w-full shrink-0 flex-col items-center overflow-visible px-0.5 text-center`}
               >
                 <FoilBackContactStack
                   person={person}

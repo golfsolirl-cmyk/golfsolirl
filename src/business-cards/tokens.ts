@@ -23,7 +23,12 @@ export const GREG_CARD_EXPORT_IDS = {
   landscapeBack: 'greg-landscape-back'
 } as const
 
-export type CardExportIds = typeof CARD_EXPORT_IDS
+export type CardExportIds = {
+  readonly portraitFront: string
+  readonly portraitBack: string
+  readonly landscapeFront: string
+  readonly landscapeBack: string
+}
 
 export const CARD_STAFF = [
   {
