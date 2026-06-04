@@ -27,6 +27,57 @@ type InvoiceDueRow = {
   readonly status: string
   readonly stripe_checkout_url: string | null
   readonly enquiry_reference_id: string
+  readonly paid_at?: string | null
+  readonly created_at?: string | null
+}
+
+type PaymentHistoryItem =
+  | {
+      kind: 'transfer'
+      id: string
+      sortAt: string
+      title: string
+      subtitle: string
+      amountDisplay: string
+      paymentStatus: string
+      depositPercent: number | null
+      transfer: ClientPortalTransferHeroRow
+    }
+  | {
+      kind: 'invoice'
+      id: string
+      sortAt: string
+      title: string
+      subtitle: string
+      amountDisplay: string
+      invoiceId: string
+    }
+
+const formatWhen = (iso: string | null | undefined) => {
+  if (!iso) {
+    return '—'
+  }
+  try {
+    return new Intl.DateTimeFormat('en-IE', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso))
+  } catch {
+    return iso
+  }
+}
+
+const transferCollectedDisplay = (t: ClientPortalTransferHeroRow) => {
+  const pay = (t.payment_status ?? 'unpaid').toLowerCase()
+  const gross = typeof t.admin_price_eur === 'number' && Number.isFinite(t.admin_price_eur) ? t.admin_price_eur : null
+  if (gross === null) {
+    return null
+  }
+  const pct = normalizedDepositPercent(t.deposit_percent)
+  if (pay === 'paid') {
+    return gross
+  }
+  if (pay === 'deposit') {
+    return depositAmountEur(gross, pct)
+  }
+  return null
 }
 
 export function ClientPortalPaymentsDue(props: {
@@ -39,9 +90,14 @@ export function ClientPortalPaymentsDue(props: {
   ) => void | Promise<void>
   readonly onGoToPaymentsTab?: () => void
   readonly onViewInvoice?: (invoiceId: string) => void
+  readonly onDownloadTransferReceipt?: (transfer: ClientPortalTransferHeroRow) => void | Promise<void>
   readonly className?: string
   /** Set on the primary instance only (scroll target from menu / hero). */
   readonly anchorId?: string
+  /** Scroll target for “All payments” history block (payments tab). */
+  readonly historyAnchorId?: string
+  /** Show completed payment history (default true on payments tab). */
+  readonly showPaymentHistory?: boolean
 }) {
   const [invoices, setInvoices] = useState<InvoiceDueRow[]>([])
   const [payBusyId, setPayBusyId] = useState<string | null>(null)
@@ -54,7 +110,7 @@ export function ClientPortalPaymentsDue(props: {
     }
     const { data, error } = await props.supabase
       .from('portal_invoices')
-      .select('id, invoice_number, amount_cents, status, stripe_checkout_url, enquiry_reference_id')
+      .select('id, invoice_number, amount_cents, status, stripe_checkout_url, enquiry_reference_id, paid_at, created_at')
       .eq('profile_id', props.userId)
       .order('created_at', { ascending: false })
     if (error) {
@@ -117,10 +173,56 @@ export function ClientPortalPaymentsDue(props: {
     [invoices]
   )
 
+  const paidTransfers = useMemo(
+    () =>
+      props.transfers.filter((t) => {
+        const pay = (t.payment_status ?? 'unpaid').toLowerCase()
+        return pay === 'deposit' || pay === 'paid'
+      }),
+    [props.transfers]
+  )
+
+  const paymentHistory = useMemo((): PaymentHistoryItem[] => {
+    const items: PaymentHistoryItem[] = []
+    for (const t of paidTransfers) {
+      const pay = (t.payment_status ?? 'unpaid').toLowerCase()
+      const collected = transferCollectedDisplay(t)
+      items.push({
+        kind: 'transfer',
+        id: `transfer-${t.id}`,
+        sortAt: t.updated_at ?? t.created_at ?? '',
+        title: `${t.pickup_label} → ${t.dropoff_label}`,
+        subtitle: `Transfer · ${formatWhen(t.updated_at ?? t.created_at)}${t.enquiry_reference_id ? ` · Ref ${t.enquiry_reference_id}` : ''}`,
+        amountDisplay: collected !== null ? formatEurInline(collected) : 'See receipt PDF',
+        paymentStatus: pay,
+        depositPercent: t.deposit_percent ?? null,
+        transfer: t
+      })
+    }
+    for (const row of paidInvoices) {
+      items.push({
+        kind: 'invoice',
+        id: `invoice-${row.id}`,
+        sortAt: row.paid_at ?? row.created_at ?? '',
+        title: `Trip invoice ${row.invoice_number}`,
+        subtitle: `Invoice · ${formatWhen(row.paid_at ?? row.created_at)} · Ref ${row.enquiry_reference_id}`,
+        amountDisplay: formatEurFromCents(row.amount_cents),
+        invoiceId: row.id
+      })
+    }
+    return items.sort((a, b) => String(b.sortAt).localeCompare(String(a.sortAt)))
+  }, [paidInvoices, paidTransfers])
+
+  const showHistory = props.showPaymentHistory !== false
+
   const awaitingQuoteCount = unpaidTransfers.length - pricedUnpaidTransfers.length
   const hasPayActions = pricedUnpaidTransfers.length > 0 || unpaidInvoices.length > 0
   const showSection =
-    hasPayActions || paidInvoices.length > 0 || awaitingQuoteCount > 0 || props.transfers.length > 0 || invoices.length > 0
+    hasPayActions ||
+    paymentHistory.length > 0 ||
+    awaitingQuoteCount > 0 ||
+    props.transfers.length > 0 ||
+    invoices.length > 0
 
   if (!showSection) {
     return null
@@ -139,13 +241,13 @@ export function ClientPortalPaymentsDue(props: {
           <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-brand-600">Payments</p>
           <h2 className="font-display mt-1 text-2xl font-semibold text-forest-950 sm:text-3xl">Pay for your trip</h2>
           <p className="mt-2 max-w-2xl text-base leading-relaxed text-forest-700">
-            Secure card checkout with Stripe. Use the buttons below for transfers and trip invoices — or open{' '}
-            <strong className="font-semibold text-forest-900">Payments</strong> in the left menu for receipts.
+            Secure card checkout with Stripe. Pay transfers and trip invoices below — completed payments appear under{' '}
+            <strong className="font-semibold text-forest-900">All payments</strong>.
           </p>
         </div>
         {props.onGoToPaymentsTab ? (
           <LuxuryButton className="shrink-0 !px-5 !py-2.5 !text-xs" onClick={props.onGoToPaymentsTab} type="button" variant="outlineOnLight">
-            All payments
+            All payments{paymentHistory.length > 0 ? ` (${paymentHistory.length})` : ''}
           </LuxuryButton>
         ) : null}
       </div>
@@ -297,50 +399,92 @@ export function ClientPortalPaymentsDue(props: {
         </ul>
       ) : null}
 
-      {paidInvoices.length > 0 ? (
-        <ul
-          className={cx(
-            'space-y-3',
-            pricedUnpaidTransfers.length > 0 || unpaidInvoices.length > 0 ? 'mt-4' : 'mt-6'
-          )}
-          aria-label="Paid trip invoices"
-        >
-          {paidInvoices.map((row) => (
-            <li className="rounded-2xl border border-emerald-200/90 bg-emerald-50/40 px-4 py-4 shadow-sm sm:px-5" key={row.id}>
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="min-w-0">
-                  <p className="font-ge text-lg font-semibold text-forest-950">Trip invoice {row.invoice_number}</p>
-                  <p className="mt-1 text-sm text-forest-600">
-                    Ref <span className="font-mono">{row.enquiry_reference_id}</span> ·{' '}
-                    <span className="font-semibold text-emerald-900">{formatEurFromCents(row.amount_cents)}</span>
-                    <span className="ml-2 rounded-full bg-emerald-200/80 px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-emerald-950">
-                      Paid
-                    </span>
-                  </p>
-                </div>
-                {props.onViewInvoice ? (
-                  <LuxuryButton
-                    className="shrink-0 !px-6 !py-2.5"
-                    onClick={() => props.onViewInvoice?.(row.id)}
-                    type="button"
-                    variant="outlineOnLight"
-                  >
-                    <FileText className="mr-2 h-4 w-4" aria-hidden />
-                    View invoice
-                  </LuxuryButton>
-                ) : null}
-              </div>
-            </li>
-          ))}
-        </ul>
-      ) : null}
-
       {awaitingQuoteCount > 0 ? (
         <p className="mt-4 rounded-xl border border-forest-200/80 bg-offwhite/90 px-4 py-3 text-sm leading-relaxed text-forest-700">
           {awaitingQuoteCount === 1 ? 'One transfer' : `${awaitingQuoteCount} transfers`} on your account{' '}
           {awaitingQuoteCount === 1 ? 'is' : 'are'} waiting for a price from our team — pay buttons appear here as soon as
           your quote is saved.
         </p>
+      ) : null}
+
+      {showHistory && paymentHistory.length > 0 ? (
+        <section
+          aria-labelledby="client-all-payments-heading"
+          className={cx(hasPayActions || awaitingQuoteCount > 0 ? 'mt-8 border-t border-forest-200/80 pt-8' : 'mt-6')}
+          id={props.historyAnchorId ?? 'client-all-payments'}
+        >
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-brand-600">Payment history</p>
+              <h3 className="font-display mt-1 text-xl font-semibold text-forest-950 sm:text-2xl" id="client-all-payments-heading">
+                All payments
+              </h3>
+              <p className="mt-1 max-w-2xl text-sm leading-relaxed text-forest-600">
+                Every card payment recorded on your account — deposits, balances, full transfers, and trip invoices.
+              </p>
+            </div>
+          </div>
+          <ul className="mt-5 space-y-3" aria-label="All payments">
+            {paymentHistory.map((item) => (
+              <li
+                className="rounded-2xl border border-emerald-200/90 bg-white px-4 py-4 shadow-sm sm:px-5"
+                key={item.id}
+              >
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-ge text-lg font-semibold text-forest-950">{item.title}</p>
+                    <p className="mt-1 text-sm text-forest-600">{item.subtitle}</p>
+                    <p className="mt-2 font-display text-xl font-bold text-brand-800">{item.amountDisplay}</p>
+                    {item.kind === 'transfer' ? (
+                      <p className="mt-2">
+                        <TransferPaymentStatusBadge
+                          deposit_percent={item.depositPercent}
+                          payment_status={item.paymentStatus}
+                          size="sm"
+                        />
+                      </p>
+                    ) : (
+                      <span className="mt-2 inline-flex rounded-full bg-emerald-200/80 px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-emerald-950">
+                        Paid
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex shrink-0 flex-wrap gap-2">
+                    {item.kind === 'transfer' && props.onDownloadTransferReceipt ? (
+                      <LuxuryButton
+                        className="!px-5 !py-2.5"
+                        onClick={() => void props.onDownloadTransferReceipt?.(item.transfer)}
+                        type="button"
+                        variant="outlineOnLight"
+                      >
+                        <FileText className="mr-2 h-4 w-4" aria-hidden />
+                        Receipt PDF
+                      </LuxuryButton>
+                    ) : null}
+                    {item.kind === 'invoice' && props.onViewInvoice ? (
+                      <LuxuryButton
+                        className="!px-5 !py-2.5"
+                        onClick={() => props.onViewInvoice?.(item.invoiceId)}
+                        type="button"
+                        variant="outlineOnLight"
+                      >
+                        <FileText className="mr-2 h-4 w-4" aria-hidden />
+                        View invoice
+                      </LuxuryButton>
+                    ) : null}
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : showHistory ? (
+        <section
+          className={cx(hasPayActions ? 'mt-8 border-t border-forest-200/80 pt-8' : 'mt-6')}
+          id={props.historyAnchorId ?? 'client-all-payments'}
+        >
+          <p className="text-sm text-forest-600">No completed payments yet — they will appear here after your first Stripe checkout.</p>
+        </section>
       ) : null}
 
       {!hasPayActions && props.transfers.length === 0 && invoices.length === 0 ? (

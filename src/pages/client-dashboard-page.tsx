@@ -1796,7 +1796,7 @@ export function ClientDashboardPage() {
           onGoToPaymentsTab={() => {
             setActiveClientSection('payments')
             window.requestAnimationFrame(() => {
-              document.getElementById('client-pay-now')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              document.getElementById('client-all-payments')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
             })
           }}
           onPayTransfer={handlePayTransfer}
@@ -1808,6 +1808,7 @@ export function ClientDashboardPage() {
               document.getElementById('client-trip-invoices')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
             })
           }}
+          showPaymentHistory={false}
           supabase={getSupabaseBrowserClient()}
           transfers={transferBookingsPortal}
           userId={session.user.id}
@@ -1841,6 +1842,8 @@ export function ClientDashboardPage() {
         <ClientPortalSection activeSection={activeClientSection} section="payments">
           <div className="space-y-10">
             <ClientPortalPaymentsDue
+              historyAnchorId="client-all-payments"
+              onDownloadTransferReceipt={handleTransferPaidInvoicePdf}
               onPayTransfer={handlePayTransfer}
               onViewInvoice={(invoiceId) => {
                 setInvoiceHighlightId(invoiceId)
@@ -1849,6 +1852,7 @@ export function ClientDashboardPage() {
                   document.getElementById('client-trip-invoices')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
                 })
               }}
+              showPaymentHistory
               supabase={portalSupabase}
               transfers={transferBookingsPortal}
               userId={session.user.id}
