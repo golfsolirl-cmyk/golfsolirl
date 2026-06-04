@@ -225,6 +225,22 @@ export const accommodationIntroCopy = {
   body:
     'These are hand-picked Costa del Sol bases Irish societies and four-balls book again and again — beachfront in Fuengirola, classic Torremolinos resorts and apartment-style stays for big groups. Better rates, friendlier cancellation terms, every detail looked after by our team on the ground.',
   bodyEmphasis: 'Pick the base. We line up the rounds, the routes and the rates.',
+  heroImage: '/images/ge-premium-resort-hotel-hero.webp',
+  heroImageAlt:
+    'Premium Costa del Sol resort stay — sunlit terrace and golf-trip hotel base for Irish groups',
+  stats: [
+    { value: '7+', label: 'Hand-picked bases' },
+    { value: '4★', label: 'Beach & resort' },
+    { value: '8–24', label: 'Typical group size' }
+  ] as const,
+  corridorStops: [
+    { town: 'Fuengirola', hint: 'Paseo Marítimo' },
+    { town: 'Torremolinos', hint: 'Classic resorts' },
+    { town: 'Benalmádena', hint: 'Marina & clubs' },
+    { town: 'Marbella', hint: 'Golf valley' },
+    { town: 'Estepona', hint: 'Coastal calm' },
+    { town: 'Sotogrande', hint: 'Championship base' }
+  ] as const,
   signals: [
     {
       label: 'Beachfront 4★',

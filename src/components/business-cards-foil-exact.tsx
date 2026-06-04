@@ -8,7 +8,13 @@ import { BusinessCardQr } from './business-card-qr'
 import type { BusinessCardRenderMode } from '../lib/business-cards-catalog-types'
 import { GOLFSOL_BRAND_LOGO_INTRINSIC, GOLFSOL_BRAND_LOGO_SOURCE } from '../lib/brand-logo-assets'
 import { BRAND_BUSINESS_CARD_HERO_BG_SRC } from '../lib/brand-visual-assets'
-import { businessCardContact, businessCardLuxuryPalette, businessCardSocialLinks } from '../lib/business-cards-config'
+import {
+  businessCardContact,
+  businessCardContactForPerson,
+  businessCardLuxuryPalette,
+  businessCardSocialLinks,
+  type BusinessCardPersonBlurb
+} from '../lib/business-cards-config'
 
 export const FOIL_CARD_LW = 850
 export const FOIL_CARD_LH = Math.round((FOIL_CARD_LW * 55) / 85)
@@ -54,6 +60,7 @@ export type FoilCardPerson = {
   readonly websiteUrl: string
   readonly location: string
   readonly qrUrl: string
+  readonly whatsappHref: string
 }
 
 function foilInset(_mode: BusinessCardRenderMode) {
@@ -157,12 +164,14 @@ function landscapeBackType(_mode: BusinessCardRenderMode) {
   }
 }
 
-/** Portrait back socials — LinkedIn, Facebook, WhatsApp only. */
-const PORTRAIT_CARD_SOCIALS = [
-  { label: 'LinkedIn' as const, href: 'https://www.linkedin.com/' },
-  { label: 'Facebook' as const, href: 'https://www.facebook.com/' },
-  { label: 'WhatsApp' as const, href: 'https://wa.me/353874464766' }
-]
+/** Portrait / landscape back socials — LinkedIn, Facebook, WhatsApp only. */
+function foilPortraitBackSocials(whatsappHref: string) {
+  return [
+    { label: 'LinkedIn' as const, href: 'https://www.linkedin.com/' },
+    { label: 'Facebook' as const, href: 'https://www.facebook.com/' },
+    { label: 'WhatsApp' as const, href: whatsappHref }
+  ]
+}
 
 const FOIL_SOCIAL_ICON = {
   LinkedIn: FaLinkedinIn,
@@ -640,13 +649,15 @@ function FoilSocialIconRow({
   mode,
   large = false,
   align = 'center',
-  chipScale = 'portrait'
+  chipScale = 'portrait',
+  whatsappHref = businessCardContact.whatsappHref
 }: {
   readonly mode: BusinessCardRenderMode
   readonly large?: boolean
   readonly align?: 'center' | 'left'
   /** Landscape back uses card height (cqh), not width (cqw), for chip sizing. */
   readonly chipScale?: 'landscape-back' | 'portrait' | 'landscape' | 'portrait-back'
+  readonly whatsappHref?: string
 }) {
   const landscapeLarge = large && chipScale === 'landscape'
   const landscapeBack = large && chipScale === 'landscape-back'
@@ -669,7 +680,7 @@ function FoilSocialIconRow({
         : large
           ? 'h-[clamp(18px,4.2cqh,22px)] w-[clamp(18px,4.2cqh,22px)]'
           : 'h-[clamp(9px,2.2cqw,11px)] w-[clamp(9px,2.2cqw,11px)]'
-  const links = large ? PORTRAIT_CARD_SOCIALS : businessCardSocialLinks
+  const links = large ? foilPortraitBackSocials(whatsappHref) : businessCardSocialLinks
   const justify = align === 'left' ? 'justify-start' : 'justify-center'
 
   return (
@@ -758,7 +769,7 @@ function FoilPortraitBack({
             style={{ background: FOIL_GOLD_DIVIDER_H }}
           />
 
-          <FoilSocialIconRow mode={mode} large chipScale="portrait-back" />
+          <FoilSocialIconRow mode={mode} large chipScale="portrait-back" whatsappHref={person.whatsappHref} />
         </footer>
       </div>
     </div>
@@ -810,7 +821,13 @@ function FoilLandscapeBack({
                   className={`${type.socialDivider} h-px w-[min(92%,12rem)] opacity-80`}
                   style={{ background: FOIL_GOLD_DIVIDER_H }}
                 />
-                <FoilSocialIconRow mode={mode} large align="center" chipScale="landscape-back" />
+                <FoilSocialIconRow
+                  mode={mode}
+                  large
+                  align="center"
+                  chipScale="landscape-back"
+                  whatsappHref={person.whatsappHref}
+                />
               </div>
             </div>
           </div>
@@ -1136,19 +1153,21 @@ export function FoilExactBack({
 }
 
 export function foilPersonFromContact(
-  person: { name: string; roleTitle: string },
+  person: BusinessCardPersonBlurb,
   overrides?: Partial<FoilCardPerson>
 ): FoilCardPerson {
+  const contact = businessCardContactForPerson(person)
   return {
     name: person.name.toUpperCase(),
     roleTitle: person.roleTitle.toUpperCase(),
-    phone: businessCardContact.phoneIe,
-    phoneTel: businessCardContact.phoneIe.replace(/\s/g, ''),
-    email: businessCardContact.email,
-    websiteDisplay: businessCardContact.websiteDisplay,
-    websiteUrl: businessCardContact.websiteUrl,
+    phone: contact.phoneIe,
+    phoneTel: contact.phoneIe.replace(/\s/g, ''),
+    email: contact.email,
+    websiteDisplay: contact.websiteDisplay,
+    websiteUrl: contact.websiteUrl,
     location: 'Costa del Sol, Spain',
-    qrUrl: businessCardContact.websiteUrl,
+    qrUrl: contact.websiteUrl,
+    whatsappHref: contact.whatsappHref,
     ...overrides
   }
 }
@@ -1163,6 +1182,7 @@ export function foilPersonTommy(): FoilCardPerson {
     websiteDisplay: 'www.golfsolirl.com',
     websiteUrl: 'https://golfsolirl.com',
     location: 'Costa del Sol, Spain',
-    qrUrl: 'https://golfsolirl.com'
+    qrUrl: 'https://golfsolirl.com',
+    whatsappHref: 'https://wa.me/353874464766'
   }
 }

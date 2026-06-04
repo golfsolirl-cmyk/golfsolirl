@@ -8,7 +8,7 @@
 export interface GeHotel {
   readonly name: string
   readonly area: string
-  /** Star rating shown as a small gold pill on the card. */
+  /** Star rating shown beneath the hotel photo on the card. */
   readonly stars: 3 | 4 | 5
   /** Optional editorial badge for standout properties. */
   readonly badge?: string

@@ -20,7 +20,7 @@ import { contactInfo } from '../data/copy'
  *     screaming for attention.
  */
 
-const WHATSAPP_NUMBER = contactInfo.phoneTel.replace(/[^0-9]/g, '')
+const WHATSAPP_NUMBER = contactInfo.spanishPhoneTel.replace(/[^0-9]/g, '')
 const WHATSAPP_MESSAGE = encodeURIComponent(
   "Hi GolfSol Ireland — I'd like a quote for a Costa del Sol golf trip."
 )
@@ -89,7 +89,7 @@ export function WhatsappFab() {
           href={WHATSAPP_URL}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`Chat with GolfSol Ireland on WhatsApp at ${contactInfo.phoneDisplay}`}
+          aria-label={`Chat with GolfSol Ireland on WhatsApp at ${contactInfo.spanishPhoneDisplay}`}
           className="group fixed bottom-5 right-5 z-[60] inline-flex h-14 w-14 items-center justify-center rounded-full bg-gs-dark text-[#25D366] shadow-[0_8px_24px_rgba(0,0,0,0.35),0_0_0_1px_rgba(37,211,102,0.55)] ring-1 ring-[#25D366]/80 transition-all duration-300 hover:scale-105 hover:bg-[#08120d] hover:text-[#5cf08c] hover:shadow-[0_12px_32px_rgba(0,0,0,0.45),0_0_0_2px_rgba(37,211,102,0.85)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2 focus-visible:ring-offset-gs-dark sm:bottom-6 sm:right-6 md:h-16 md:w-16"
           initial={{ opacity: 0, scale: 0.6, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}

@@ -1,29 +1,10 @@
 import { m, type Variants } from 'framer-motion'
-import { ArrowRight, BedDouble, Sparkles } from 'lucide-react'
+import { ArrowRight, Sparkles } from 'lucide-react'
 import { GeButton } from '../components/ge-button'
 import { GeHotelCard } from '../components/hotel-card'
 import { GeSection } from '../components/ge-section'
 import { hotelListsCopy } from '../data/copy'
 import { hotelsSpain } from '../data/hotels'
-
-const headerContainer: Variants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.07,
-      delayChildren: 0.05
-    }
-  }
-}
-
-const headerItem: Variants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.55, ease: [0.22, 0.61, 0.36, 1] }
-  }
-}
 
 const cardStagger: Variants = {
   hidden: {},
@@ -63,8 +44,21 @@ export function GeAccommodationSpain() {
     <GeSection
       background="white"
       id="accommodation-spain"
-      className="relative overflow-hidden pt-16 pb-20 sm:pt-20 sm:pb-24"
+      className="relative overflow-hidden pt-12 pb-20 sm:pt-14 sm:pb-24"
     >
+      {/* Slim bridge from intro — grid starts without repeating the full headline */}
+      <m.div
+        {...fadeUp}
+        className="mx-auto mb-10 max-w-2xl text-center sm:mb-12"
+      >
+        <p className="font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.22em] text-gs-green sm:text-[0.76rem]">
+          {hotelListsCopy.kicker}
+        </p>
+        <p className="mt-3 font-ge text-base leading-relaxed text-ge-gray500 sm:text-[1.05rem]">
+          {hotelListsCopy.lead}
+        </p>
+      </m.div>
+
       {/* Editorial background accents */}
       <div
         aria-hidden="true"
@@ -74,44 +68,6 @@ export function GeAccommodationSpain() {
         aria-hidden="true"
         className="pointer-events-none absolute right-[-6rem] top-40 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(217,190,122,0.10),transparent_72%)] blur-3xl"
       />
-
-      {/* —— Editorial header —— */}
-      <m.div
-        variants={headerContainer}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
-        className="mx-auto max-w-4xl text-center"
-      >
-        <m.span
-          variants={headerItem}
-          className="inline-flex items-center gap-2 rounded-full border border-brand-700/30 bg-white px-3.5 py-1.5 font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.22em] text-gs-green shadow-[0_8px_20px_rgba(6,59,42,0.06)] sm:text-[0.72rem]"
-        >
-          <BedDouble className="h-3.5 w-3.5 shrink-0" aria-hidden />
-          {hotelListsCopy.kicker}
-        </m.span>
-
-        <m.h2
-          variants={headerItem}
-          className="mt-6 text-balance font-ge text-[1.85rem] font-extrabold leading-[1.12] tracking-[-0.02em] text-gs-dark sm:text-[2.35rem] lg:text-[2.55rem]"
-        >
-          <span className="text-gs-dark">Hotels Irish groups love</span>{' '}
-          <span className="text-gs-green">on the Costa del Sol</span>
-        </m.h2>
-
-        <m.span
-          aria-hidden="true"
-          variants={headerItem}
-          className="mx-auto mt-5 h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent"
-        />
-
-        <m.p
-          variants={headerItem}
-          className="mt-5 text-balance font-ge text-[0.92rem] font-semibold uppercase tracking-[0.12em] text-gs-green sm:text-[0.98rem]"
-        >
-          {hotelListsCopy.lead}
-        </m.p>
-      </m.div>
 
       {/* —— Hotel grid —— */}
       <m.div
@@ -173,7 +129,7 @@ export function GeAccommodationSpain() {
           href="#enquire"
           variant="outline-gs-green"
           size="lg"
-          className="w-full sm:w-auto sm:min-w-[14rem]"
+          className="gsol-cta-outline-on-light w-full sm:w-auto sm:min-w-[14rem]"
         >
           {hotelListsCopy.secondaryCta}
         </GeButton>

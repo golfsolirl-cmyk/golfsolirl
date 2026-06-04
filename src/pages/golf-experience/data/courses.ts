@@ -60,7 +60,7 @@ export const coursesSpain: readonly GeCourse[] = [
     badge: 'Group favourite',
     description:
       'Stunning orange-tree lined fairways in the heart of Nueva Andalucía’s “Golf Valley”. A long-time favourite with Irish societies — fair and fun.',
-    image: '/images/hero-malaga-fleet-golden-hour.webp',
+    image: '/images/ge-premium-golf-group-testimonial.webp',
     href: '/contact'
   },
   {

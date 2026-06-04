@@ -30,25 +30,64 @@ export const businessCardPersonGreg: BusinessCardPersonBlurb = {
   corridorLine: 'Dublin · Málaga'
 }
 
-export const businessCardContact = {
+const businessCardSharedContact = {
   email: 'info@golfsolirl.com',
-  /** Public web — shown as www… on cards; links use HTTPS. */
   websiteUrl: 'https://www.golfsolirl.com',
   websiteDisplay: 'www.golfsolirl.com',
-  phoneIe: '+353 87 446 4766',
   phoneEs: '+34 641 81 53 66',
   companyRegIreland: '814210'
 } as const
 
+/** Martin Kelly — Irish 086 line; WhatsApp on card backs uses Spanish line. */
+export const businessCardContact = {
+  ...businessCardSharedContact,
+  phoneIe: '+353 86 600 6202',
+  whatsappHref: 'https://wa.me/34641815366'
+} as const
+
+/** Greg McDonald — Irish 087 line; WhatsApp on card backs uses same Irish mobile. */
+export const businessCardContactGreg = {
+  ...businessCardSharedContact,
+  phoneIe: '+353 87 446 4766',
+  whatsappHref: 'https://wa.me/353874464766'
+} as const
+
+export type BusinessCardContactPack = typeof businessCardContact
+
+export function businessCardContactForPerson(person: { readonly name: string }): BusinessCardContactPack {
+  return person.name === businessCardPersonGreg.name ? businessCardContactGreg : businessCardContact
+}
+
+function socialLinksWithWhatsapp(whatsappHref: string): readonly FooterSocialLink[] {
+  return footerSocialLinks.map((link) =>
+    link.label === 'WhatsApp' ? { ...link, href: whatsappHref } : link
+  )
+}
+
+/** Martin Kelly card backs (default). */
+export const businessCardSocialLinks: readonly FooterSocialLink[] = socialLinksWithWhatsapp(
+  businessCardContact.whatsappHref
+)
+
+/** Greg McDonald card backs — Irish WhatsApp. */
+export const businessCardSocialLinksGreg: readonly FooterSocialLink[] = socialLinksWithWhatsapp(
+  businessCardContactGreg.whatsappHref
+)
+
+export function businessCardSocialLinksForPerson(person: {
+  readonly name: string
+}): readonly FooterSocialLink[] {
+  return person.name === businessCardPersonGreg.name
+    ? businessCardSocialLinksGreg
+    : businessCardSocialLinks
+}
+
 /** CODE128 payload on card backs */
 export const businessCardBarcodeValue = businessCardContact.websiteUrl
 
-/** Same links as site footer — single source of truth */
-export const businessCardSocialLinks: readonly FooterSocialLink[] = footerSocialLinks
-
 /** @deprecated Use businessCardSocialLinks — kept for any legacy imports */
 export const businessCardSocial = {
-  whatsapp: footerSocialLinks.find((l) => l.label === 'WhatsApp')?.href ?? 'https://wa.me/353874464766',
+  whatsapp: businessCardContact.whatsappHref,
   facebook: footerSocialLinks.find((l) => l.label === 'Facebook')?.href ?? 'https://www.facebook.com/',
   linkedin: footerSocialLinks.find((l) => l.label === 'LinkedIn')?.href ?? 'https://www.linkedin.com/',
   bluesky: footerSocialLinks.find((l) => l.label === 'Bluesky')?.href ?? 'https://bsky.app/'

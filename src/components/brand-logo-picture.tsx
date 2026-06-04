@@ -1,5 +1,5 @@
 import type { CSSProperties, ImgHTMLAttributes } from 'react'
-import { GOLFSOL_BRAND_LOGO, GOLFSOL_BRAND_LOGO_INTRINSIC, GOLFSOL_BRAND_LOGO_SOURCE, brandLogoAssetUrl } from '../lib/brand-logo-assets'
+import { GOLFSOL_BRAND_LOGO, GOLFSOL_BRAND_LOGO_INTRINSIC } from '../lib/brand-logo-assets'
 import { useHomepageTestLogo } from '../providers/homepagetest-variant'
 import { cx } from '../lib/utils'
 
@@ -7,14 +7,14 @@ const LOGO_SRCSET_WIDTH = `${GOLFSOL_BRAND_LOGO_INTRINSIC.width}w`
 
 export type BrandLogoPictureProps = Omit<ImgHTMLAttributes<HTMLImageElement>, 'src' | 'srcSet' | 'sizes'> & {
   readonly alt: string
-  /** Footer + legal surfaces always use production crest (source PNG). */
+  /** Footer + legal surfaces always use production crest (`gsirl.png`). */
   readonly ignoreTestVariant?: boolean
   /** Hint for responsive pick (retina-safe). */
   readonly sizes?: string
 }
 
 /**
- * Header + footer logo — Golf Sol Ireland shield crest (source PNG).
+ * Header + footer logo — Golf Sol Ireland shield crest (WebP + PNG, full-resolution srcset).
  */
 export function BrandLogoPicture({
   alt,
@@ -30,14 +30,16 @@ export function BrandLogoPicture({
   const logo = useTestLogo ? testLogo : GOLFSOL_BRAND_LOGO
   const width = widthProp ?? (useTestLogo ? testLogo.width : GOLFSOL_BRAND_LOGO_INTRINSIC.width)
   const height = heightProp ?? (useTestLogo ? testLogo.height : GOLFSOL_BRAND_LOGO_INTRINSIC.height)
-  const src = useTestLogo ? testLogo.png : brandLogoAssetUrl(logo.png)
-  const srcSet = `${src} ${LOGO_SRCSET_WIDTH}`
+  const srcSet = `${logo.png} ${LOGO_SRCSET_WIDTH}`
   const sizes = sizesProp ?? `${Math.round(Math.min(Number(width), 360) * 2)}px`
 
   return (
     <picture className="inline-flex max-w-full leading-none">
+      {!useTestLogo ? (
+        <source srcSet={`${GOLFSOL_BRAND_LOGO.webp} ${LOGO_SRCSET_WIDTH}`} sizes={sizes} type="image/webp" />
+      ) : null}
       <img
-        src={src}
+        src={logo.png}
         srcSet={srcSet}
         sizes={sizes}
         alt={alt}
@@ -71,12 +73,12 @@ function crestAlphaMaskStyle(png: string): CSSProperties {
 }
 
 /**
- * Footer-only: opaque `#fff` clipped to crest alpha (PNG) so semi-transparent ball/flag
- * pixels composite on solid white, not the dark footer. Foreground uses the hosted crest PNG.
+ * Footer-only: optional white plate clipped to crest alpha so soft edges read cleanly on
+ * the dark footer. Foreground uses transparent WebP + PNG (not the black-plate master PNG).
  */
 export function FooterBrandLogoPicture({ className, ...props }: BrandLogoPictureProps) {
   const testLogo = useHomepageTestLogo()
-  const maskPng = testLogo?.png ?? brandLogoAssetUrl(GOLFSOL_BRAND_LOGO_SOURCE)
+  const maskPng = testLogo?.png ?? GOLFSOL_BRAND_LOGO.png
   const crestAlphaMaskPng = crestAlphaMaskStyle(maskPng)
 
   return (
