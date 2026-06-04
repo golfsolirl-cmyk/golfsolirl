@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Banknote, RefreshCw, ScanLine, Wallet } from 'lucide-react'
-import { getSupabaseBrowserClient } from '../lib/supabase-browser'
+import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { cx } from '../lib/utils'
 
 type RevenueSummary = {
