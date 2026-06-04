@@ -59,34 +59,62 @@ export const handleAdminRevenueStats = async (body, env = process.env, meta = {}
   const limitRaw = body?.limit
   const limit = typeof limitRaw === 'number' && limitRaw > 0 ? Math.min(limitRaw, 200) : 80
 
-  const [{ data: transfers, error: tErr }, { data: invoices, error: iErr }] = await Promise.all([
-    supabase
-      .from('transfer_bookings')
-      .select(
-        'id, pickup_label, dropoff_label, payment_status, admin_price_eur, deposit_percent, enquiry_reference_id, client_email, client_display_name, updated_at, created_at, stripe_payment_intent_id'
-      )
-      .in('payment_status', ['deposit', 'paid'])
-      .order('updated_at', { ascending: false })
-      .limit(limit),
-    supabase
-      .from('portal_invoices')
-      .select(
-        'id, invoice_number, enquiry_reference_id, amount_cents, status, paid_at, profile_id, stripe_payment_intent_id'
-      )
-      .eq('status', 'paid')
-      .order('paid_at', { ascending: false })
-      .limit(limit)
-  ])
+  const [{ data: transfers, error: tErr }, { data: stripeMarkedUnpaid, error: uErr }, { data: invoices, error: iErr }] =
+    await Promise.all([
+      supabase
+        .from('transfer_bookings')
+        .select(
+          'id, pickup_label, dropoff_label, payment_status, admin_price_eur, deposit_percent, enquiry_reference_id, client_email, client_display_name, updated_at, created_at, stripe_payment_intent_id'
+        )
+        .in('payment_status', ['deposit', 'paid'])
+        .order('updated_at', { ascending: false })
+        .limit(limit),
+      supabase
+        .from('transfer_bookings')
+        .select(
+          'id, pickup_label, dropoff_label, payment_status, admin_price_eur, deposit_percent, enquiry_reference_id, client_email, client_display_name, updated_at, created_at, stripe_payment_intent_id'
+        )
+        .eq('payment_status', 'unpaid')
+        .not('stripe_payment_intent_id', 'is', null)
+        .gt('admin_price_eur', 0)
+        .order('updated_at', { ascending: false })
+        .limit(limit),
+      supabase
+        .from('portal_invoices')
+        .select(
+          'id, invoice_number, enquiry_reference_id, amount_cents, status, paid_at, profile_id, stripe_payment_intent_id'
+        )
+        .or('status.eq.paid,paid_at.not.is.null')
+        .order('paid_at', { ascending: false, nullsFirst: false })
+        .limit(limit)
+    ])
 
   if (tErr) {
     throwStatus(tErr.message, 500)
+  }
+  if (uErr) {
+    throwStatus(uErr.message, 500)
   }
   if (iErr) {
     throwStatus(iErr.message, 500)
   }
 
-  const paidTrips = (transfers ?? []).map((row) => {
-    const collected = estimateCollectedEurForBooking(row)
+  const transferById = new Map()
+  for (const row of transfers ?? []) {
+    transferById.set(row.id, row)
+  }
+  for (const row of stripeMarkedUnpaid ?? []) {
+    if (!transferById.has(row.id)) {
+      transferById.set(row.id, row)
+    }
+  }
+
+  const paidTrips = [...transferById.values()].map((row) => {
+    const stripePaidButUnmarked =
+      String(row.payment_status ?? 'unpaid').toLowerCase() === 'unpaid' &&
+      Boolean(String(row.stripe_payment_intent_id ?? '').trim())
+    const bookingForEstimate = stripePaidButUnmarked ? { ...row, payment_status: 'paid' } : row
+    const collected = estimateCollectedEurForBooking(bookingForEstimate)
     return {
       id: row.id,
       kind: 'transfer',
@@ -94,17 +122,21 @@ export const handleAdminRevenueStats = async (body, env = process.env, meta = {}
       guest: row.client_display_name ?? row.client_email ?? 'Guest',
       email: row.client_email ?? null,
       route: `${row.pickup_label ?? 'Pickup'} → ${row.dropoff_label ?? 'Dropoff'}`,
-      paymentStatus: row.payment_status,
+      paymentStatus: stripePaidButUnmarked ? 'paid (sync pending)' : row.payment_status,
       quotedEur: Number(row.admin_price_eur) || 0,
       collectedEur: collected,
       collectedDisplay: fmtEur(collected),
-      updatedAt: row.updated_at ?? row.created_at
+      updatedAt: row.updated_at ?? row.created_at,
+      needsPaymentSync: stripePaidButUnmarked
     }
   })
 
   const transferCollectedTotal = paidTrips.reduce((sum, row) => sum + row.collectedEur, 0)
-  const transferPaidCount = paidTrips.filter((r) => r.paymentStatus === 'paid').length
-  const transferDepositCount = paidTrips.filter((r) => r.paymentStatus === 'deposit').length
+  const transferPaidCount = paidTrips.filter((r) => {
+    const st = String(r.paymentStatus ?? '').toLowerCase()
+    return st === 'paid' || st.startsWith('paid ')
+  }).length
+  const transferDepositCount = paidTrips.filter((r) => String(r.paymentStatus ?? '').toLowerCase() === 'deposit').length
 
   const paidInvoiceRows = (invoices ?? []).map((inv) => ({
     id: inv.id,

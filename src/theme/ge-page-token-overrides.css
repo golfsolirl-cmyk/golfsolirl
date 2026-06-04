@@ -1092,3 +1092,45 @@
   color: rgba(255, 255, 255, 0.96) !important;
 }
 
+/* Admin revenue desk — light body must stay forest-on-white (beats dashboard on-dark inheritance) */
+.ge-page[data-dashboard-variant='admin'] .admin-revenue-panel__body,
+.ge-page[data-dashboard-variant='admin'] .admin-revenue-panel__body[data-keep-color] {
+  color: #0b2818;
+}
+
+.ge-page[data-dashboard-variant='admin'] .admin-revenue-panel__body :is(h4, h5, p, li, dt, dd, span, strong, label, input, button):not(
+    .ge-on-dark,
+    .ge-on-dark *
+  ) {
+  color: inherit;
+}
+
+.ge-page[data-dashboard-variant='admin'] .admin-revenue-panel__body .text-forest-950,
+.ge-page[data-dashboard-variant='admin'] .admin-revenue-panel__body .font-display.text-forest-950 {
+  color: #04130c !important;
+}
+
+.ge-page[data-dashboard-variant='admin'] .admin-revenue-panel__body .text-forest-900 {
+  color: #0b2818 !important;
+}
+
+.ge-page[data-dashboard-variant='admin'] .admin-revenue-panel__body .text-forest-800 {
+  color: #143d28 !important;
+}
+
+.ge-page[data-dashboard-variant='admin'] .admin-revenue-panel__body .text-forest-700 {
+  color: #1a4d38 !important;
+}
+
+.ge-page[data-dashboard-variant='admin'] .admin-revenue-panel__body .text-forest-600 {
+  color: #2d6b52 !important;
+}
+
+.ge-page[data-dashboard-variant='admin'] .admin-revenue-panel__body .text-brand-800 {
+  color: #8a6914 !important;
+}
+
+.ge-page[data-dashboard-variant='admin'] .admin-revenue-panel__body .text-brand-700 {
+  color: #9a7618 !important;
+}
+
