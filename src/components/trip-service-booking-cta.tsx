@@ -237,9 +237,8 @@ export function TripServiceBookingCta({
       bestTimeToCall: draft.bestTimeToCall.trim() || 'Any time',
       formPayload: {
         form: WEBSITE_ENQUIRY_FORM.tripServiceCta,
-        fields
-      },
-      ...termsAcceptanceFormFields()
+        fields: { ...fields, ...termsAcceptanceFormFields() }
+      }
     })
 
     if (!result.ok) {
@@ -636,7 +635,7 @@ export function TripServiceBookingCta({
                   <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                     <GeButton
                       className="w-full sm:w-auto"
-                      disabled={status === 'submitting'}
+                      disabled={status === 'submitting' || !termsAccepted}
                       form={`${formId}-form`}
                       size="md"
                       type="submit"
