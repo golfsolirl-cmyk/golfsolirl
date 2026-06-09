@@ -33,6 +33,7 @@ import {
 import { LuxuryButton } from '../components/ui/button'
 import { COURSES } from '../data/coastal-golf-data'
 import { fetchPackageBuildsClientList } from '../lib/fetch-package-builds'
+import { persistPortalTripWorkspace, persistPortalTripWorkspaceViaApi } from '../lib/persist-portal-trip-workspace'
 import { GOLFSOL_BRAND_LOGO } from '../lib/brand-logo-assets'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import type { TransferReceiptVatTreatment } from '../lib/transfer-vat-receipt-pdf'
@@ -1096,6 +1097,14 @@ export function ClientDashboardPage() {
         )
         saveTripWorkspaceDraft(merged)
         setTripDraft(merged)
+        if (session?.access_token) {
+          void (async () => {
+            const direct = await persistPortalTripWorkspace(session, merged)
+            if (!direct.ok) {
+              await persistPortalTripWorkspaceViaApi(session.access_token, merged)
+            }
+          })()
+        }
         window.history.replaceState({}, document.title, '/dashboard')
         return
       }
@@ -1113,7 +1122,7 @@ export function ClientDashboardPage() {
       }
       return nextDraft
     })
-  }, [isLoading, session?.user?.id])
+  }, [isLoading, session, session?.user?.id])
 
   const loadTransferPortalPdfBlob = useCallback(async (row: TransferPortalDocumentRow) => {
     const supabase = getSupabaseBrowserClient()
@@ -1170,10 +1179,26 @@ export function ClientDashboardPage() {
     return res.blob()
   }, [session?.access_token])
 
+  const flushTripDraftToProfile = useCallback(
+    (shaped: TripWorkspaceDraft) => {
+      if (!session?.access_token) {
+        return
+      }
+      void (async () => {
+        const direct = await persistPortalTripWorkspace(session, shaped)
+        if (!direct.ok) {
+          await persistPortalTripWorkspaceViaApi(session.access_token, shaped)
+        }
+      })()
+    },
+    [session]
+  )
+
   const persistTripDraft = (next: TripWorkspaceDraft) => {
     const shaped = ensureTripWorkspaceDraftShape(next)
     saveTripWorkspaceDraft(shaped)
     setTripDraft(shaped)
+    flushTripDraftToProfile(shaped)
   }
 
   const handleTripStageToggle = (key: TripStageKey) => () => {
@@ -1879,7 +1904,7 @@ export function ClientDashboardPage() {
               <p className="mt-2 max-w-2xl text-base text-forest-600 md:text-lg">
                 Reference <span className="font-mono font-semibold text-forest-900">{tripDraft.referenceId}</span> — choose
                 what you want quoted next. This saves to this browser until we connect it to your account in the database;
-                use <span className="font-medium">Save preferences</span> after each change. Your team at Golf Sol Ireland sees
+                use <span className="font-medium">Save preferences</span> — stored on your profile and trip desk. Your team at Golf Sol Ireland sees
                 the full enquiry from your original form email.
               </p>
             </div>

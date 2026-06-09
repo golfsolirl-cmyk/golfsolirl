@@ -392,7 +392,7 @@ export const footerGroups: readonly FooterLinkGroup[] = [
 export const footerSocialLinks: readonly FooterSocialLink[] = [
   {
     label: 'LinkedIn',
-    href: 'https://www.linkedin.com/'
+    href: 'https://www.linkedin.com/in/gregory-mcdonald-44a537415/'
   },
   {
     label: 'Facebook',

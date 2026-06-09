@@ -11,6 +11,7 @@ export type PostEnquiryFailure = {
 export type PostEnquirySuccess = {
   ok: true
   message: string
+  referenceId?: string
 }
 
 /**
@@ -25,7 +26,7 @@ export const postWebsiteEnquiry = async (body: Record<string, unknown>): Promise
     body: JSON.stringify(body)
   })
 
-  const data = (await response.json().catch(() => ({}))) as { message?: string; code?: string }
+  const data = (await response.json().catch(() => ({}))) as { message?: string; code?: string; referenceId?: string }
 
   if (!response.ok) {
     return {
@@ -38,6 +39,7 @@ export const postWebsiteEnquiry = async (body: Record<string, unknown>): Promise
 
   return {
     ok: true,
-    message: data.message ?? 'Your enquiry has been sent.'
+    message: data.message ?? 'Your enquiry has been sent.',
+    referenceId: typeof data.referenceId === 'string' ? data.referenceId : undefined
   }
 }

@@ -31,9 +31,11 @@ export function CourseHotelMapPicker({ onSelectionChange, initialCourseId, initi
   const [selectedCourse, setSelectedCourse] = useState<string | null>(initialCourseId ?? null)
   const [selectedHotel, setSelectedHotel] = useState<NearbyHotel | null>(initialHotel ?? null)
   const [activeStars, setActiveStars] = useState<Set<number>>(() => new Set([3, 4, 5]))
+  const [showAccommodation, setShowAccommodation] = useState(true)
 
   useEffect(() => {
     setSelectedCourse(initialCourseId ?? null)
+    setShowAccommodation(true)
   }, [initialCourseId])
 
   useEffect(() => {
@@ -86,8 +88,10 @@ export function CourseHotelMapPicker({ onSelectionChange, initialCourseId, initi
       marker.on('click', () => {
         setSelectedCourse((prev) => {
           if (prev === course.id) {
+            setShowAccommodation(true)
             return null
           }
+          setShowAccommodation(true)
           return course.id
         })
         setSelectedHotel(null)
@@ -136,7 +140,7 @@ export function CourseHotelMapPicker({ onSelectionChange, initialCourseId, initi
     hotelMarkersRef.current.forEach((m) => map.removeLayer(m))
     hotelMarkersRef.current = []
 
-    if (!selectedCourse) {
+    if (!selectedCourse || !showAccommodation) {
       return
     }
 
@@ -159,11 +163,21 @@ export function CourseHotelMapPicker({ onSelectionChange, initialCourseId, initi
       })
       hotelMarkersRef.current.push(marker)
     })
-  }, [selectedCourse, activeStars, selectedHotel, mapReady])
+  }, [selectedCourse, activeStars, selectedHotel, mapReady, showAccommodation])
 
   const handleClearAll = () => {
     setSelectedCourse(null)
     setSelectedHotel(null)
+    setShowAccommodation(true)
+  }
+
+  const handleSkipAccommodation = () => {
+    setShowAccommodation(false)
+    setSelectedHotel(null)
+  }
+
+  const handleShowAccommodation = () => {
+    setShowAccommodation(true)
   }
 
   const handleToggleStar = (n: (typeof STAR_OPTIONS)[number]) => {
@@ -238,68 +252,92 @@ export function CourseHotelMapPicker({ onSelectionChange, initialCourseId, initi
             </button>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 border-b border-forest-200 bg-[#f4f4f0] px-4 py-2.5">
-            <span className="text-xs text-forest-600">Hotel stars:</span>
-            {STAR_OPTIONS.map((n) => (
-              <button
-                key={n}
-                type="button"
-                className={cx(
-                  'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
-                  activeStars.has(n)
-                    ? 'border-fairway-600 bg-fairway-600 font-semibold text-white'
-                    : 'border-forest-200 bg-white text-forest-600 hover:border-forest-300'
-                )}
-                onClick={() => handleToggleStar(n)}
-                aria-pressed={activeStars.has(n)}
-              >
-                {n}★
-              </button>
-            ))}
-          </div>
+          {showAccommodation ? (
+            <>
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-forest-200 bg-[#f4f4f0] px-4 py-2.5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs text-forest-600">Hotel stars:</span>
+                  {STAR_OPTIONS.map((n) => (
+                    <button
+                      key={n}
+                      type="button"
+                      className={cx(
+                        'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
+                        activeStars.has(n)
+                          ? 'border-fairway-600 bg-fairway-600 font-semibold text-white'
+                          : 'border-forest-200 bg-white text-forest-600 hover:border-forest-300'
+                      )}
+                      onClick={() => handleToggleStar(n)}
+                      aria-pressed={activeStars.has(n)}
+                    >
+                      {n}★
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  className="rounded-lg border border-forest-200 bg-white px-3 py-1.5 text-xs font-semibold text-forest-700 transition-colors hover:border-forest-300 hover:bg-forest-50"
+                  onClick={handleSkipAccommodation}
+                >
+                  I don&apos;t need accommodation
+                </button>
+              </div>
 
-          {filteredHotels.length === 0 ? (
-            <p className="px-4 py-4 text-center text-sm text-forest-600">No hotels match the selected star rating near this course.</p>
+              {filteredHotels.length === 0 ? (
+                <p className="px-4 py-4 text-center text-sm text-forest-600">No hotels match the selected star rating near this course.</p>
+              ) : (
+                <ul className="m-0 list-none p-0">
+                  {filteredHotels.map((hotel) => {
+                    const isSelected = selectedHotel?.name === hotel.name
+                    return (
+                      <li
+                        key={hotel.name}
+                        className={cx(
+                          'flex cursor-pointer items-center justify-between gap-3 border-b border-forest-100 px-4 py-3 transition-colors last:border-b-0',
+                          isSelected ? 'border-l-[3px] border-l-fairway-600 bg-fairway-50/80 pl-[13px]' : 'hover:bg-offwhite'
+                        )}
+                        onClick={() => setSelectedHotel((prev) => (prev?.name === hotel.name ? null : hotel))}
+                        onKeyDown={(e) => handleHotelRowKeyDown(e, hotel)}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`${hotel.name}, ${hotel.stars} stars, ${hotel.dist} from course`}
+                      >
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-forest-900">{hotel.name}</p>
+                          <p className="mt-0.5 text-xs text-brand-700">
+                            {'★'.repeat(hotel.stars)}
+                            {'☆'.repeat(5 - hotel.stars)}
+                          </p>
+                        </div>
+                        <div className="flex shrink-0 items-center gap-2">
+                          <span className="rounded-full bg-offwhite px-2 py-0.5 text-[11px] text-forest-700">{hotel.rating}/5</span>
+                          <span className="text-[11px] text-ge-gray500">{hotel.dist}</span>
+                          {isSelected ? (
+                            <span
+                              className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-fairway-700 text-[10px] text-white"
+                              aria-hidden="true"
+                            >
+                              ✓
+                            </span>
+                          ) : null}
+                        </div>
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
+            </>
           ) : (
-            <ul className="m-0 list-none p-0">
-              {filteredHotels.map((hotel) => {
-                const isSelected = selectedHotel?.name === hotel.name
-                return (
-                  <li
-                    key={hotel.name}
-                    className={cx(
-                      'flex cursor-pointer items-center justify-between gap-3 border-b border-forest-100 px-4 py-3 transition-colors last:border-b-0',
-                      isSelected ? 'border-l-[3px] border-l-fairway-600 bg-fairway-50/80 pl-[13px]' : 'hover:bg-offwhite'
-                    )}
-                    onClick={() => setSelectedHotel((prev) => (prev?.name === hotel.name ? null : hotel))}
-                    onKeyDown={(e) => handleHotelRowKeyDown(e, hotel)}
-                    role="button"
-                    tabIndex={0}
-                    aria-label={`${hotel.name}, ${hotel.stars} stars, ${hotel.dist} from course`}
-                  >
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-forest-900">{hotel.name}</p>
-                      <p className="mt-0.5 text-xs text-brand-700">
-                        {'★'.repeat(hotel.stars)}
-                        {'☆'.repeat(5 - hotel.stars)}
-                      </p>
-                    </div>
-                    <div className="flex shrink-0 items-center gap-2">
-                      <span className="rounded-full bg-offwhite px-2 py-0.5 text-[11px] text-forest-700">{hotel.rating}/5</span>
-                      <span className="text-[11px] text-ge-gray500">{hotel.dist}</span>
-                      {isSelected ? (
-                        <span
-                          className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-fairway-700 text-[10px] text-white"
-                          aria-hidden="true"
-                        >
-                          ✓
-                        </span>
-                      ) : null}
-                    </div>
-                  </li>
-                )
-              })}
-            </ul>
+            <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-4">
+              <p className="text-sm text-forest-600">Golf course only — no accommodation selected.</p>
+              <button
+                type="button"
+                className="rounded-lg border border-forest-200 bg-white px-3 py-1.5 text-xs font-semibold text-brand-700 transition-colors hover:border-brand-300 hover:bg-brand-50"
+                onClick={handleShowAccommodation}
+              >
+                Show accommodation options
+              </button>
+            </div>
           )}
         </div>
       ) : (

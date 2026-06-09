@@ -11,9 +11,9 @@ import { footerColumns } from '../data/nav'
 
 const socials = [
   { label: 'Facebook', icon: FaFacebookF, href: 'https://www.facebook.com/' },
-  { label: 'Instagram', icon: FaInstagram, href: 'https://www.instagram.com/' },
-  { label: 'X', icon: FaXTwitter, href: 'https://x.com/' },
-  { label: 'LinkedIn', icon: FaLinkedinIn, href: 'https://www.linkedin.com/' }
+  { label: 'Instagram', icon: FaInstagram, href: 'https://www.instagram.com/golfsolireland/' },
+  { label: 'X', icon: FaXTwitter, href: 'https://x.com/golfsolireland' },
+  { label: 'LinkedIn', icon: FaLinkedinIn, href: 'https://www.linkedin.com/in/gregory-mcdonald-44a537415/' }
 ]
 
 export function GeFooter() {

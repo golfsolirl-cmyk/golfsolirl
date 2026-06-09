@@ -12,6 +12,7 @@ import {
 import { PremiumPageHero } from '../components/home/premium-page-hero'
 import { NAMED_HERO_IMAGE_SETS } from '../lib/page-hero-images'
 import { usePageMeta } from '../lib/use-page-meta'
+import { TripServiceBookingCta } from '../components/trip-service-booking-cta'
 import { GeButton } from './golf-experience/components/ge-button'
 import { GeSection } from './golf-experience/components/ge-section'
 import { WhatsappFab } from './golf-experience/components/whatsapp-fab'
@@ -288,10 +289,15 @@ function CustomerPackagePage() {
     []
   )
 
-  const loginHrefForSave = useMemo(
-    () => `/dashboard/login?next=${encodeURIComponent(`${window.location.pathname}${window.location.search}`)}`,
-    []
-  )
+  const loginHrefForSave = useMemo(() => {
+    const returnParams = new URLSearchParams(window.location.search)
+    returnParams.set('save', '1')
+    const returnPath = `${window.location.pathname}?${returnParams.toString()}`
+    return `/dashboard/login?next=${encodeURIComponent(returnPath)}`
+  }, [])
+
+  const pendingAutoSave = useMemo(() => new URLSearchParams(window.location.search).get('save') === '1', [])
+  const autoSaveAttemptedRef = useRef(false)
 
   const pricingSummary = useMemo(() => {
     const accommodationPerPerson = selectedStay.pricePerNight * nights
@@ -633,6 +639,24 @@ function CustomerPackagePage() {
     courseHotelPick.selectedCourse,
     courseHotelPick.selectedHotel?.name
   ])
+
+  useEffect(() => {
+    if (!pendingAutoSave || autoSaveAttemptedRef.current) {
+      return
+    }
+    if (authLoading || !session?.user || isSavingBuild) {
+      return
+    }
+
+    autoSaveAttemptedRef.current = true
+
+    const sp = new URLSearchParams(window.location.search)
+    sp.delete('save')
+    const q = sp.toString()
+    window.history.replaceState(null, '', `${window.location.pathname}${q ? `?${q}` : ''}`)
+
+    void handleSavePackageToAccount()
+  }, [authLoading, handleSavePackageToAccount, isSavingBuild, pendingAutoSave, session?.user])
 
   const handleAcceptCookies = () => {
     localStorage.setItem('gsol-cookie-banner-dismissed', 'true')
@@ -1007,15 +1031,21 @@ function CustomerPackagePage() {
                   <ArrowRight className="h-4 w-4" aria-hidden />
                 </GeButton>
                 {integrationRegistry.supabase.enabled ? (
-                  <GeButton
-                    disabled={authLoading || isSavingBuild}
-                    onClick={handleSavePackageToAccount}
-                    size="md"
-                    type="button"
-                    variant="outline-gs-white"
-                  >
-                    {isSavingBuild ? 'Saving…' : session ? 'Save to my account' : 'Sign in to save this package'}
-                  </GeButton>
+                  session ? (
+                    <GeButton
+                      disabled={authLoading || isSavingBuild}
+                      onClick={handleSavePackageToAccount}
+                      size="md"
+                      type="button"
+                      variant="outline-gs-white"
+                    >
+                      {isSavingBuild ? 'Saving…' : 'Save to my account'}
+                    </GeButton>
+                  ) : (
+                    <GeButton href={loginHrefForSave} size="md" variant="outline-gs-white">
+                      Sign in to save this package
+                    </GeButton>
+                  )
                 ) : null}
                 {integrationRegistry.supabase.enabled && session ? (
                   <GeButton href="/dashboard" size="md" variant="outline-gs-white">
@@ -1035,6 +1065,14 @@ function CustomerPackagePage() {
               ) : null}
             </m.div>
           </div>
+        </GeSection>
+
+        <GeSection background="soft" innerClassName="!py-12 sm:!py-14 scroll-mt-28">
+          <TripServiceBookingCta
+            pageLabel="Packages calculator"
+            variant="inline"
+            sectionLead="Need transfers, tee times, or a hotel as well? Book any combination — saved to your profile when you sign in."
+          />
         </GeSection>
 
         <GeSection

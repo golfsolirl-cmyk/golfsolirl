@@ -8,6 +8,7 @@ import { TransportHero } from './sections/transport-hero'
 import { TransportPromise } from './sections/transport-promise'
 import { TransportRouteStory } from './sections/transport-route-story'
 import { GeTransfersInsuranceBanner } from './components/ge-transfers-insurance-banner'
+import { TripServiceBookingCta } from '../../components/trip-service-booking-cta'
 import { WhatsappFab } from './components/whatsapp-fab'
 
 /**
@@ -38,6 +39,14 @@ export function TransportServicePage() {
         </div>
         <TransportRouteStory />
         <TransportFleet />
+        <div className="bg-cream px-3 py-6 sm:px-8 sm:py-10">
+          <div className="mx-auto max-w-[1180px]">
+            <TripServiceBookingCta
+              pageLabel="Transport"
+              sectionLead="Book Málaga airport transfers for your group — optionally add golf rounds or accommodation in the same request."
+            />
+          </div>
+        </div>
         <TransportEnquireBlock />
         <GeFinalCta />
       </main>

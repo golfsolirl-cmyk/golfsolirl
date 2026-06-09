@@ -878,6 +878,34 @@ const insertWebsiteFormPackageBuildIfProfileExists = async (enquiry, enquiryId, 
       ...(anchorRef ? { accountAnchorRef: anchorRef } : {})
     }
 
+    const workspaceRaw = fields._portalTripWorkspace
+    if (typeof workspaceRaw === 'string' && workspaceRaw.trim()) {
+      try {
+        const parsed = JSON.parse(workspaceRaw)
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+          const stagesRaw = parsed.stages && typeof parsed.stages === 'object' ? parsed.stages : {}
+          config.portalTripWorkspace = {
+            stages: {
+              transfer: Boolean(stagesRaw.transfer),
+              golf: Boolean(stagesRaw.golf),
+              hotel: Boolean(stagesRaw.hotel)
+            },
+            partySize:
+              typeof parsed.partySize === 'number' && Number.isFinite(parsed.partySize)
+                ? Math.min(8, Math.max(1, Math.round(parsed.partySize)))
+                : 4,
+            courseIds: Array.isArray(parsed.courseIds) ? parsed.courseIds.filter((c) => typeof c === 'string') : [],
+            hotelNotes: typeof parsed.hotelNotes === 'string' ? parsed.hotelNotes : '',
+            transferStops: Array.isArray(parsed.transferStops) ? parsed.transferStops : [{ kind: 'malaga_airport', ref: 'agp' }],
+            transferContactPhone: typeof parsed.transferContactPhone === 'string' ? parsed.transferContactPhone : '',
+            updatedAt: typeof parsed.updatedAt === 'string' ? parsed.updatedAt : new Date().toISOString()
+          }
+        }
+      } catch {
+        /* ignore malformed workspace JSON */
+      }
+    }
+
     const label = `${formKey.replace(/_/g, ' ')} · ${enquiryId}`
 
     const { error: insErr } = await sb.from('package_builds').insert({
@@ -1021,6 +1049,7 @@ export const handleEnquirySubmission = async (payload, env = process.env, runtim
 
   return {
     success: true,
+    referenceId: enquiryId,
     message: 'Your enquiry has been sent. We will email your confirmation and PDFs shortly.'
   }
 }

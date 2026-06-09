@@ -11,6 +11,7 @@
  * | `homepage_hotel_booked_snapshot` | `GeAlreadyBookedFlightPanel` |
  * | `continue_trip` | `ContinueTripPage` |
  * | `package_builder` | `CustomerPackagePage` |
+ * | `trip_service_cta` | `TripServiceBookingCta` (marketing pages) |
  *
  * Trip timing: forms collect `tripArrivalMode` (`planned` | `already_at_agp`) plus optional ISO `travelDateFrom` / `travelDateTo`, mirrored in `fields` via `ENQUIRY_STRUCTURED_FIELD_KEYS`.
  */
@@ -20,7 +21,8 @@ export const WEBSITE_ENQUIRY_FORM = {
   courseMap: 'course_map',
   homepageHotelBookedSnapshot: 'homepage_hotel_booked_snapshot',
   continueTrip: 'continue_trip',
-  packageBuilder: 'package_builder'
+  packageBuilder: 'package_builder',
+  tripServiceCta: 'trip_service_cta'
 } as const
 
 export type WebsiteEnquiryFormKey = (typeof WEBSITE_ENQUIRY_FORM)[keyof typeof WEBSITE_ENQUIRY_FORM]
@@ -49,7 +51,13 @@ export const ENQUIRY_STRUCTURED_FIELD_KEYS = {
   /** `yes` when the client ticked terms acceptance on a website form. */
   termsAccepted: '_termsAccepted',
   /** ISO timestamp when terms were accepted at submit. */
-  termsAcceptedAt: '_termsAcceptedAt'
+  termsAcceptedAt: '_termsAcceptedAt',
+  /** Primary CTA: `transfer` | `golf` | `accommodation`. */
+  servicePrimary: '_servicePrimary',
+  /** JSON `{ transfer, golf, accommodation }` booleans. */
+  serviceStages: '_serviceStages',
+  /** JSON `TripWorkspaceDraft` slice for portal + profile restore. */
+  portalTripWorkspace: '_portalTripWorkspace'
 } as const
 
 /** Stored in `fields` / structured payload for select `tripArrivalMode`. */

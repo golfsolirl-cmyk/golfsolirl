@@ -6,6 +6,7 @@ import { handleMagicLinkRequest } from './server/magic-link-service.mjs'
 import { handleSyncPortalProfile } from './server/sync-portal-profile-service.mjs'
 import { handleProfileMe } from './server/profile-me-service.mjs'
 import { handlePortalContactSetup } from './server/portal-contact-setup-service.mjs'
+import { handlePortalTripWorkspaceSave } from './server/portal-trip-workspace-save-service.mjs'
 import { handleSendClientPortalEmail } from './server/client-portal-email-service.mjs'
 import { handleSendWebsiteQuoteEmail } from './server/website-quote-email.mjs'
 import { handleSyncWebsiteQuotePortalPayment } from './server/sync-website-quote-portal-payment.mjs'
@@ -255,6 +256,36 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
         response.end(JSON.stringify(result))
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Unable to save contact details right now.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/portal-trip-workspace-save', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+
+      try {
+        const rawBody = await readRequestBody(request)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const authHeader = request.headers.authorization ?? ''
+        const result = await handlePortalTripWorkspaceSave(payload, { ...process.env, ...serverEnv }, { authHeader })
+
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unable to save trip preferences right now.'
         const statusCode =
           error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
             ? error.statusCode

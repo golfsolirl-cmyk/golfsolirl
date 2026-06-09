@@ -7,6 +7,7 @@ import { getFormEmailPreviewHtml } from '../server/form-email-browser-preview.mj
 import { getBrandedSampleDocumentPreviewHtml } from '../server/branded-sample-document-html.mjs'
 import { handleMagicLinkRequest } from '../server/magic-link-service.mjs'
 import { handleSyncPortalProfile } from '../server/sync-portal-profile-service.mjs'
+import { handlePortalTripWorkspaceSave } from '../server/portal-trip-workspace-save-service.mjs'
 import { handleProfileMe } from '../server/profile-me-service.mjs'
 import { handlePortalContactSetup } from '../server/portal-contact-setup-service.mjs'
 import { handleSendClientPortalEmail } from '../server/client-portal-email-service.mjs'
@@ -216,6 +217,19 @@ export default async function handler(req, res) {
         const payload = raw ? JSON.parse(raw) : {}
         const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
         const result = await handlePortalContactSetup(payload, process.env, { authHeader })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'portal-trip-workspace-save': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const result = await handlePortalTripWorkspaceSave(payload, process.env, { authHeader })
         jsonEnd(res, 200, result)
         return
       }

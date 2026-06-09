@@ -40,6 +40,7 @@
     { "source": "/api/sync-portal-profile", "destination": "/api/gateway?r=sync-portal-profile" },
     { "source": "/api/profile-me", "destination": "/api/gateway?r=profile-me" },
     { "source": "/api/portal-contact-setup", "destination": "/api/gateway?r=portal-contact-setup" },
+    { "source": "/api/portal-trip-workspace-save", "destination": "/api/gateway?r=portal-trip-workspace-save" },
     { "source": "/api/auth/magic-link", "destination": "/api/gateway?r=magic-link" },
     { "source": "/api/proposal-pdf", "destination": "/api/gateway?r=proposal-pdf" },
     { "source": "/api/homepage-client-pdf", "destination": "/api/gateway?r=homepage-client-pdf" },

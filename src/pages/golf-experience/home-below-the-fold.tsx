@@ -13,6 +13,7 @@ import { HomeAirportTransfersCta } from './sections/home-airport-transfers-cta'
 import { GeHomeEnquiry } from './sections/home-enquiry'
 import { GeHomeEuNordicWelcome } from './sections/home-eu-nordic-welcome'
 import { GeHomeFleetHighlight } from './sections/home-fleet-highlight'
+import { TripServiceBookingCta } from '../../components/trip-service-booking-cta'
 import { GeHomeWhatWeDo } from './sections/home-what-we-do'
 import { WhatsappFab } from './components/whatsapp-fab'
 
@@ -24,6 +25,11 @@ export default function HomeBelowTheFold() {
   return (
     <>
       <GeHomeWhatWeDo />
+      <div className="bg-cream px-3 py-6 sm:px-8 sm:py-10">
+        <div className="mx-auto max-w-[1180px]">
+          <TripServiceBookingCta pageLabel="Homepage" />
+        </div>
+      </div>
       <GeHomeEuNordicWelcome />
       <GeDesignYourPackage />
       <HomeAirportTransfersCta />
