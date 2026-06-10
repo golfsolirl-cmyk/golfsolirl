@@ -26,6 +26,7 @@ import { PortalInvoicesPanel } from '../components/portal-invoices-panel'
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
 import {
   buildClientDataCardSections,
+  buildClientSubmittedFormsSections,
   clientEnquiryDisplayFullName,
   clientGreetingFirstName,
   type ClientEnquiryRowLite
@@ -1514,6 +1515,11 @@ export function ClientDashboardPage() {
     [profile, session?.user?.email]
   )
 
+  const submittedFormsSections = useMemo(
+    () => buildClientSubmittedFormsSections(enquiries, packageBuilds),
+    [enquiries, packageBuilds]
+  )
+
   const dashboardPaymentBanner = useMemo(():
     | { kind: 'transfer_paid'; headline: string; detail: string }
     | { kind: 'plain'; text: string }
@@ -1843,6 +1849,21 @@ export function ClientDashboardPage() {
           <div className="space-y-10">
             <PortalAddToYourTripStrip onSelect={openInterestModal} variant="page" />
             {accountCardSections.length > 0 ? <PortalClientDataCard sections={accountCardSections} /> : null}
+            <section aria-labelledby="client-submitted-forms-heading">
+              <div className="mb-5 max-w-2xl">
+                <h2
+                  id="client-submitted-forms-heading"
+                  className="font-display text-2xl font-semibold tracking-tight text-forest-950 sm:text-[1.65rem]"
+                >
+                  Your submitted forms
+                </h2>
+                <p className="mt-2 text-base leading-relaxed text-forest-700">
+                  Every enquiry and booking request you send from the website with this login email appears here — transfers,
+                  golf, accommodation, package calculator, and quick quotes.
+                </p>
+              </div>
+              <PortalClientDataCard sections={submittedFormsSections} />
+            </section>
             <PortalTransferRequestsSection
               bookings={transferBookingsPortal}
               enquiries={enquiries}

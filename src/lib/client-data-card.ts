@@ -76,6 +76,27 @@ const transfersSection = (rows: readonly ClientTransferBookingLite[]): ClientDat
 const isWebsiteEnquiryFormKey = (key: string): key is WebsiteEnquiryFormKey =>
   (Object.values(WEBSITE_ENQUIRY_FORM) as string[]).includes(key)
 
+/** Friendly titles for website `formPayload.form` keys on the client dashboard. */
+const WEBSITE_FORM_DISPLAY_LABELS: Partial<Record<WebsiteEnquiryFormKey, string>> = {
+  [WEBSITE_ENQUIRY_FORM.tripServiceCta]: 'Transfers · Golf · Hotels',
+  [WEBSITE_ENQUIRY_FORM.contentQuickEnquiry]: 'Quick enquiry',
+  [WEBSITE_ENQUIRY_FORM.transportServicePage]: 'Transfer enquiry',
+  [WEBSITE_ENQUIRY_FORM.courseMap]: 'Golf course map enquiry',
+  [WEBSITE_ENQUIRY_FORM.homepageHotelBookedSnapshot]: 'Flight & hotel snapshot',
+  [WEBSITE_ENQUIRY_FORM.continueTrip]: 'Continue your trip',
+  [WEBSITE_ENQUIRY_FORM.packageBuilder]: 'Package calculator enquiry'
+}
+
+export const websiteFormDisplayLabel = (form: string | null): string => {
+  if (!form) {
+    return 'Website enquiry'
+  }
+  if (isWebsiteEnquiryFormKey(form) && WEBSITE_FORM_DISPLAY_LABELS[form]) {
+    return WEBSITE_FORM_DISPLAY_LABELS[form]
+  }
+  return humanizeFormKey(form.replace(/_/g, ' '))
+}
+
 export const parseClientEnquiryFormPayload = (
   raw: unknown
 ): { form: string | null; fields: Record<string, string> } => {
@@ -175,12 +196,7 @@ export const buildEnquiryItinerarySection = (row: ClientEnquiryRowLite): ClientD
   if (rows.length === 0 && !form) {
     return null
   }
-  const formLabel =
-    form && isWebsiteEnquiryFormKey(form)
-      ? humanizeFormKey(form.replace(/_/g, ' '))
-      : form
-        ? humanizeFormKey(form)
-        : 'Website enquiry'
+  const formLabel = websiteFormDisplayLabel(form)
   return {
     id: `enquiry-${row.id}`,
     title: `${formLabel} · ${row.reference_id}`,
@@ -300,13 +316,7 @@ export const resolveFirstWebsiteFormPackageBuildForTransfer = (
 /** One-line title for an enquiry row (matches package card style). */
 export const enquirySnapshotKicker = (row: ClientEnquiryRowLite): string => {
   const { form } = parseFormPayload(row.form_payload)
-  const formLabel =
-    form && isWebsiteEnquiryFormKey(form)
-      ? humanizeFormKey(form.replace(/_/g, ' '))
-      : form
-        ? humanizeFormKey(form)
-        : 'Website enquiry'
-  return `${formLabel} · ${row.reference_id}`
+  return `${websiteFormDisplayLabel(form)} · ${row.reference_id}`
 }
 
 export const findFirstEnquiryForReference = (
@@ -336,13 +346,68 @@ const packageBuildSection = (row: ClientPackageBuildLite): ClientDataCardSection
     return null
   }
 
-  const label = row.label?.trim() || (parsed.type === 'website_form' ? parsed.config.enquiryReferenceId : 'Package')
+  const label =
+    row.label?.trim() ||
+    (parsed.type === 'website_form'
+      ? `${websiteFormDisplayLabel(parsed.config.formKey)} · ${parsed.config.enquiryReferenceId}`
+      : 'Package')
   return {
     id: `build-${row.id}`,
-    title: `Saved package · ${label}`,
+    title: parsed.type === 'website_form' ? label : `Saved package · ${label}`,
     subtitle: formatDateTimeDdMmYy(row.created_at),
     rows
   }
+}
+
+/**
+ * Website form submissions for the signed-in client — enquiries first, then `website_form`
+ * package rows that are not already covered by an enquiry reference (deduped).
+ */
+export const buildClientSubmittedFormsSections = (
+  enquiries: readonly ClientEnquiryRowLite[],
+  packageBuilds: readonly ClientPackageBuildLite[]
+): ClientDataCardSection[] => {
+  const out: ClientDataCardSection[] = []
+  const enquiryRefs = new Set<string>()
+
+  const enquiriesSorted = [...enquiries].sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  )
+
+  for (const e of enquiriesSorted) {
+    const ref = (e.reference_id ?? '').trim()
+    if (ref) {
+      enquiryRefs.add(ref)
+    }
+    const section = buildEnquiryItinerarySection(e)
+    if (section) {
+      out.push(section)
+    }
+  }
+
+  const buildsSorted = [...packageBuilds].sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  )
+
+  for (const build of buildsSorted) {
+    if (build.source !== 'website_form') {
+      continue
+    }
+    const parsed = parseAnyPackageBuildRowConfig(build.config)
+    if (parsed?.type !== 'website_form') {
+      continue
+    }
+    const ref = parsed.config.enquiryReferenceId?.trim() ?? ''
+    if (ref && enquiryRefs.has(ref)) {
+      continue
+    }
+    const section = packageBuildSection(build)
+    if (section) {
+      out.push(section)
+    }
+  }
+
+  return out
 }
 
 /**

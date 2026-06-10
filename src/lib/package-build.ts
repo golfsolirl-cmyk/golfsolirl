@@ -358,8 +358,27 @@ export const WEBSITE_FORM_CLIENT_CARD_FIELD_ORDER: readonly string[] = [
   '_quoteIntent',
   '_alreadyAtMalagaAgp',
   'Service date (already here)',
-  'Public form'
+  'Public form',
+  'Primary request',
+  'Also requested',
+  'Page',
+  'Best time to call',
+  'Transfer notes',
+  'Golf course ids',
+  'Accommodation notes',
+  'Travel from',
+  'Travel to'
 ]
+
+/** Machine keys hidden on client dashboard cards (human labels are stored separately). */
+const WEBSITE_FORM_INTERNAL_FIELD_KEYS = new Set<string>([
+  ENQUIRY_STRUCTURED_FIELD_KEYS.portalTripWorkspace,
+  ENQUIRY_STRUCTURED_FIELD_KEYS.termsAccepted,
+  ENQUIRY_STRUCTURED_FIELD_KEYS.termsAcceptedAt,
+  ENQUIRY_STRUCTURED_FIELD_KEYS.servicePrimary,
+  ENQUIRY_STRUCTURED_FIELD_KEYS.serviceStages,
+  ENQUIRY_STRUCTURED_FIELD_KEYS.accountAnchorRef
+])
 
 export const orderedWebsiteFormFieldEntries = (fields: Readonly<Record<string, string>>): [string, string][] => {
   const used = new Set<string>()
@@ -372,7 +391,7 @@ export const orderedWebsiteFormFieldEntries = (fields: Readonly<Record<string, s
   }
 
   const add = (key: string) => {
-    if (used.has(key)) {
+    if (used.has(key) || WEBSITE_FORM_INTERNAL_FIELD_KEYS.has(key)) {
       return
     }
     const v = fields[key]
