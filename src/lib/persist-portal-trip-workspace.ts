@@ -37,7 +37,7 @@ const findTargetPackageBuild = async (userId: string, enquiryReferenceId: string
     }
   }
 
-  return { supabase, row: list[0] ?? null, error: null }
+  return { supabase, row: null, error: null }
 }
 
 /**
