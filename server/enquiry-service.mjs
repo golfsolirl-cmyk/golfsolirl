@@ -908,6 +908,49 @@ const insertWebsiteFormPackageBuildIfProfileExists = async (enquiry, enquiryId, 
 
     const label = `${formKey.replace(/_/g, ' ')} · ${enquiryId}`
 
+    const { data: existingRows, error: existingErr } = await sb
+      .from('package_builds')
+      .select('id, config')
+      .eq('owner_id', prof.id)
+      .eq('source', 'website_form')
+      .order('created_at', { ascending: false })
+      .limit(20)
+
+    if (existingErr) {
+      console.error('[enquiry-service] website_form package_build lookup failed:', existingErr.message)
+    }
+
+    const existing = (existingRows ?? []).find((row) => {
+      const cfg = row?.config
+      return cfg && typeof cfg === 'object' && cfg.enquiryReferenceId === enquiryId
+    })
+
+    if (existing?.id) {
+      const oldConfig = existing.config && typeof existing.config === 'object' ? existing.config : {}
+      const mergedConfig = {
+        ...config,
+        ...(oldConfig.adminQuote && !config.adminQuote ? { adminQuote: oldConfig.adminQuote } : {}),
+        ...(oldConfig.portalTransferPlan && !config.portalTransferPlan
+          ? { portalTransferPlan: oldConfig.portalTransferPlan }
+          : {}),
+        ...(oldConfig.portalTripWorkspace ? { portalTripWorkspace: oldConfig.portalTripWorkspace } : {})
+      }
+      const { error: updErr } = await sb
+        .from('package_builds')
+        .update({
+          label,
+          config: mergedConfig,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', existing.id)
+        .eq('owner_id', prof.id)
+
+      if (updErr) {
+        console.error('[enquiry-service] website_form package_build update failed:', updErr.message)
+      }
+      return
+    }
+
     const { error: insErr } = await sb.from('package_builds').insert({
       owner_id: prof.id,
       source: 'website_form',

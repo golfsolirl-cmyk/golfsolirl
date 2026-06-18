@@ -39,7 +39,6 @@ export const syncTransferBookingFromPaidPortalInvoice = async (supabase, invoice
 
   const ref =
     typeof invoice.enquiry_reference_id === 'string' ? invoice.enquiry_reference_id.trim().toUpperCase() : ''
-  const profileId = typeof invoice.profile_id === 'string' ? invoice.profile_id.trim() : ''
   const paymentIntent =
     opts.paymentIntent?.trim() ||
     (typeof invoice.stripe_payment_intent_id === 'string' ? invoice.stripe_payment_intent_id.trim() : '') ||
@@ -55,7 +54,7 @@ export const syncTransferBookingFromPaidPortalInvoice = async (supabase, invoice
         ? Math.round(Number(invoice.amount_cents)) / 100
         : null
 
-  let booking = await findTransferBookingForInvoice(supabase, { ref, profileId, enquiryId: invoice.enquiry_id })
+  let booking = await findTransferBookingForInvoice(supabase, { ref, enquiryId: invoice.enquiry_id })
   let created = false
 
   if (!booking?.id) {
@@ -149,9 +148,9 @@ export const syncTransferBookingFromPaidPortalInvoice = async (supabase, invoice
 
 /**
  * @param {import('@supabase/supabase-js').SupabaseClient} supabase
- * @param {{ ref: string, profileId: string, enquiryId?: string | null }} keys
+ * @param {{ ref: string, enquiryId?: string | null }} keys
  */
-const findTransferBookingForInvoice = async (supabase, { ref, profileId, enquiryId }) => {
+const findTransferBookingForInvoice = async (supabase, { ref, enquiryId }) => {
   if (ref) {
     const { data: byRef } = await supabase
       .from('transfer_bookings')
@@ -162,19 +161,6 @@ const findTransferBookingForInvoice = async (supabase, { ref, profileId, enquiry
       .maybeSingle()
     if (byRef?.id) {
       return byRef
-    }
-  }
-
-  if (profileId) {
-    const { data: byProfile } = await supabase
-      .from('transfer_bookings')
-      .select('id, payment_status, admin_price_eur, deposit_percent, client_user_id, enquiry_reference_id')
-      .eq('client_user_id', profileId)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle()
-    if (byProfile?.id) {
-      return byProfile
     }
   }
 
