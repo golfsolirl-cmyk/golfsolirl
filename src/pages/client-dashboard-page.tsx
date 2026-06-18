@@ -410,9 +410,14 @@ export function ClientDashboardPage() {
       if (rawBuilds.length === 0) {
         resetTripShellAndModals()
       } else if (!loadTripWorkspaceDraft()) {
-        const persistedDraft = rawBuilds
-          .map((b) => parseAnyPackageBuildRowConfig(b.config))
-          .find((p) => p?.type === 'website_form' && p.config.portalTripWorkspace)?.config.portalTripWorkspace
+        let persistedDraft: TripWorkspaceDraft | undefined
+        for (const build of rawBuilds) {
+          const parsed = parseAnyPackageBuildRowConfig(build.config)
+          if (parsed?.type === 'website_form' && parsed.config.portalTripWorkspace) {
+            persistedDraft = parsed.config.portalTripWorkspace
+            break
+          }
+        }
         if (persistedDraft) {
           const shaped = ensureTripWorkspaceDraftShape(persistedDraft)
           saveTripWorkspaceDraft(shaped)
