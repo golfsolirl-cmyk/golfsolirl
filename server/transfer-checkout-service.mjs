@@ -260,8 +260,27 @@ export const handleTransferStripeCheckout = async (body, env = process.env, meta
   }
 
   const checkoutUrl = session.url
-  if (!checkoutUrl) {
+  const checkoutSessionId = session.id
+  if (!checkoutUrl || !checkoutSessionId) {
     throwStatus('Stripe did not return a checkout URL.', 502)
+  }
+
+  const { data: storedSession, error: storeErr } = await admin
+    .from('transfer_bookings')
+    .update({
+      stripe_checkout_session_id: checkoutSessionId,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', bookingId)
+    .eq('payment_status', paySt)
+    .select('id')
+    .maybeSingle()
+
+  if (storeErr) {
+    throwStatus(storeErr.message, 500)
+  }
+  if (!storedSession?.id) {
+    throwStatus('Transfer payment state changed while creating Checkout. Refresh and try again.', 409)
   }
 
   return {

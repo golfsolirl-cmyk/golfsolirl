@@ -165,19 +165,6 @@ const findTransferBookingForInvoice = async (supabase, { ref, profileId, enquiry
     }
   }
 
-  if (profileId) {
-    const { data: byProfile } = await supabase
-      .from('transfer_bookings')
-      .select('id, payment_status, admin_price_eur, deposit_percent, client_user_id, enquiry_reference_id')
-      .eq('client_user_id', profileId)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle()
-    if (byProfile?.id) {
-      return byProfile
-    }
-  }
-
   if (enquiryId) {
     const { data: enquiry } = await supabase
       .from('enquiries')
