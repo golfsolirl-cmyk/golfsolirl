@@ -7,6 +7,11 @@ export type PersistPortalTripWorkspaceResult =
   | { ok: true; packageBuildId: string }
   | { ok: false; error: string }
 
+const isRealEnquiryReferenceId = (value: string): boolean => {
+  const ref = value.trim()
+  return isLikelyEnquiryReferenceId(ref) && ref.toUpperCase() !== 'GSI-PENDING'
+}
+
 const findTargetPackageBuild = async (userId: string, enquiryReferenceId: string) => {
   const supabase = getSupabaseBrowserClient()
   if (!supabase) {
@@ -27,7 +32,7 @@ const findTargetPackageBuild = async (userId: string, enquiryReferenceId: string
   }
 
   const list = rows ?? []
-  if (ref && isLikelyEnquiryReferenceId(ref)) {
+  if (isRealEnquiryReferenceId(ref)) {
     const matched = list.find((row) => {
       const cfg = row.config as { enquiryReferenceId?: string } | null
       return cfg?.enquiryReferenceId === ref
@@ -35,6 +40,8 @@ const findTargetPackageBuild = async (userId: string, enquiryReferenceId: string
     if (matched) {
       return { supabase, row: matched, error: null }
     }
+
+    return { supabase, row: null, error: null }
   }
 
   return { supabase, row: list[0] ?? null, error: null }

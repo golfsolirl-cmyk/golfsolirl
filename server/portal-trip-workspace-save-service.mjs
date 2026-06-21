@@ -1,6 +1,10 @@
 import { createClient } from '@supabase/supabase-js'
 
 const isLikelyEnquiryReferenceId = (value) => /^GSI-[A-Z0-9-]+$/i.test(String(value ?? '').trim())
+const isRealEnquiryReferenceId = (value) => {
+  const ref = String(value ?? '').trim()
+  return isLikelyEnquiryReferenceId(ref) && ref.toUpperCase() !== 'GSI-PENDING'
+}
 
 const defaultStages = () => ({ transfer: true, golf: true, hotel: false })
 
@@ -72,7 +76,7 @@ const mergePortalTripWorkspaceIntoConfig = (existingRaw, draft, enquiryReference
       : { version: 3, fields: {} }
 
   const ref = enquiryReferenceId.trim()
-  if (ref && isLikelyEnquiryReferenceId(ref)) {
+  if (ref && isRealEnquiryReferenceId(ref)) {
     base.enquiryReferenceId = ref
   }
 
@@ -93,6 +97,22 @@ const mergePortalTripWorkspaceIntoConfig = (existingRaw, draft, enquiryReference
   }
 
   return base
+}
+
+export const selectPortalTripWorkspaceTarget = (rows, enquiryReferenceId) => {
+  const list = Array.isArray(rows) ? rows : []
+  const ref = String(enquiryReferenceId ?? '').trim()
+
+  if (isRealEnquiryReferenceId(ref)) {
+    return (
+      list.find((row) => {
+        const cfg = row?.config
+        return cfg && typeof cfg === 'object' && cfg.enquiryReferenceId === ref
+      }) ?? null
+    )
+  }
+
+  return list[0] ?? null
 }
 
 /**
@@ -148,17 +168,7 @@ export const handlePortalTripWorkspaceSave = async (payload, env = process.env, 
     throw err
   }
 
-  const list = rows ?? []
-  let target = null
-  if (isLikelyEnquiryReferenceId(ref)) {
-    target = list.find((row) => {
-      const cfg = row.config
-      return cfg && typeof cfg === 'object' && cfg.enquiryReferenceId === ref
-    })
-  }
-  if (!target) {
-    target = list[0] ?? null
-  }
+  const target = selectPortalTripWorkspaceTarget(rows, ref)
 
   const now = new Date().toISOString()
 
