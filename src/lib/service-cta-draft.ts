@@ -4,6 +4,7 @@ import {
   emptyTripWorkspaceDraft,
   ensureTripWorkspaceDraftShape,
   isLikelyEnquiryReferenceId,
+  PENDING_TRIP_WORKSPACE_REFERENCE_ID,
   saveTripWorkspaceDraft,
   type TripWorkspaceDraft
 } from './trip-workspace-draft'
@@ -156,7 +157,9 @@ export const serviceCtaInterestSummary = (draft: ServiceCtaDraft): string => {
 
 export const serviceCtaToTripWorkspace = (draft: ServiceCtaDraft, referenceId: string): TripWorkspaceDraft => {
   const ref = referenceId.trim()
-  const base = isLikelyEnquiryReferenceId(ref) ? emptyTripWorkspaceDraft(ref) : emptyTripWorkspaceDraft('GSI-PENDING')
+  const base = isLikelyEnquiryReferenceId(ref)
+    ? emptyTripWorkspaceDraft(ref)
+    : emptyTripWorkspaceDraft(PENDING_TRIP_WORKSPACE_REFERENCE_ID)
 
   const hotelNotes = [
     draft.accommodationNotes.trim(),

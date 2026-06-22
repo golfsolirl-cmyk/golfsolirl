@@ -25,6 +25,7 @@ import {
   type ServiceCtaStages
 } from '../lib/service-cta-draft'
 import { TERMS_ACCEPTANCE_ERROR, termsAcceptanceFormFields } from '../lib/terms-acceptance'
+import { PENDING_TRIP_WORKSPACE_REFERENCE_ID } from '../lib/trip-workspace-draft'
 import { plannedTravelDatesErrorMessage, travelEndMinIso, travelStartMinIso } from '../lib/travel-date-bounds'
 import { cx } from '../lib/utils'
 import { useAuth } from '../providers/auth-provider'
@@ -226,7 +227,7 @@ export function TripServiceBookingCta({
 
     setStatus('submitting')
 
-    const workspace = serviceCtaToTripWorkspace(draft, 'GSI-PENDING')
+    const workspace = serviceCtaToTripWorkspace(draft, PENDING_TRIP_WORKSPACE_REFERENCE_ID)
     const fields = buildServiceCtaEnquiryFields(draft, workspace)
 
     const result = await postWebsiteEnquiry({

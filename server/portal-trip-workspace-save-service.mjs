@@ -1,6 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
 
-const isLikelyEnquiryReferenceId = (value) => /^GSI-[A-Z0-9-]+$/i.test(String(value ?? '').trim())
+export const PENDING_TRIP_WORKSPACE_REFERENCE_ID = 'GSI-PENDING'
+
+export const isLikelyEnquiryReferenceId = (value) => {
+  const ref = String(value ?? '').trim()
+  return /^GSI-[A-Z0-9-]+$/i.test(ref) && ref.toUpperCase() !== PENDING_TRIP_WORKSPACE_REFERENCE_ID
+}
 
 const defaultStages = () => ({ transfer: true, golf: true, hotel: false })
 
@@ -50,7 +55,7 @@ const parseTripWorkspaceDraft = (raw) => {
   const updatedAt = typeof o.updatedAt === 'string' && o.updatedAt.trim() ? o.updatedAt.trim() : new Date().toISOString()
 
   return {
-    referenceId: isLikelyEnquiryReferenceId(referenceId) ? referenceId : 'GSI-PENDING',
+    referenceId: isLikelyEnquiryReferenceId(referenceId) ? referenceId : PENDING_TRIP_WORKSPACE_REFERENCE_ID,
     stages: {
       transfer: typeof stagesRaw.transfer === 'boolean' ? stagesRaw.transfer : def.transfer,
       golf: typeof stagesRaw.golf === 'boolean' ? stagesRaw.golf : def.golf,
@@ -93,6 +98,25 @@ const mergePortalTripWorkspaceIntoConfig = (existingRaw, draft, enquiryReference
   }
 
   return base
+}
+
+const rowEnquiryReferenceId = (row) => {
+  const cfg = row?.config
+  if (!cfg || typeof cfg !== 'object' || Array.isArray(cfg)) {
+    return ''
+  }
+  return typeof cfg.enquiryReferenceId === 'string' ? cfg.enquiryReferenceId.trim() : ''
+}
+
+export const selectPortalTripWorkspacePackageBuild = (rows, referenceId) => {
+  const list = Array.isArray(rows) ? rows : []
+  const ref = String(referenceId ?? '').trim()
+
+  if (isLikelyEnquiryReferenceId(ref)) {
+    return list.find((row) => rowEnquiryReferenceId(row) === ref) ?? null
+  }
+
+  return list.find((row) => !isLikelyEnquiryReferenceId(rowEnquiryReferenceId(row))) ?? null
 }
 
 /**
@@ -148,17 +172,7 @@ export const handlePortalTripWorkspaceSave = async (payload, env = process.env, 
     throw err
   }
 
-  const list = rows ?? []
-  let target = null
-  if (isLikelyEnquiryReferenceId(ref)) {
-    target = list.find((row) => {
-      const cfg = row.config
-      return cfg && typeof cfg === 'object' && cfg.enquiryReferenceId === ref
-    })
-  }
-  if (!target) {
-    target = list[0] ?? null
-  }
+  const target = selectPortalTripWorkspacePackageBuild(rows, ref)
 
   const now = new Date().toISOString()
 
@@ -183,7 +197,7 @@ export const handlePortalTripWorkspaceSave = async (payload, env = process.env, 
     {
       version: 3,
       formKey: 'trip_service_cta',
-      enquiryReferenceId: isLikelyEnquiryReferenceId(ref) ? ref : '',
+      enquiryReferenceId: isLikelyEnquiryReferenceId(ref) ? ref : PENDING_TRIP_WORKSPACE_REFERENCE_ID,
       submittedAt: now,
       fields: {}
     },

@@ -1,4 +1,5 @@
 export const TRIP_DRAFT_STORAGE_KEY = 'gsol_trip_draft_v1'
+export const PENDING_TRIP_WORKSPACE_REFERENCE_ID = 'GSI-PENDING'
 
 export type TripStageKey = 'transfer' | 'golf' | 'hotel'
 
@@ -108,7 +109,10 @@ export const isUnsavedDefaultTripWorkspace = (d: TripWorkspaceDraft, referenceId
   )
 }
 
-export const isLikelyEnquiryReferenceId = (value: string): boolean => /^GSI-[A-Z0-9-]+$/i.test(value.trim())
+export const isLikelyEnquiryReferenceId = (value: string): boolean => {
+  const ref = value.trim()
+  return /^GSI-[A-Z0-9-]+$/i.test(ref) && ref.toUpperCase() !== PENDING_TRIP_WORKSPACE_REFERENCE_ID
+}
 
 /**
  * Restores a trip workspace slice stored on `package_builds.config.portalTripWorkspace` (website_form v3).
