@@ -1,7 +1,11 @@
 import type { Session } from '@supabase/supabase-js'
 import { mergePortalTripWorkspaceIntoWebsiteFormConfig } from './package-build'
 import { getSupabaseBrowserClient } from './supabase-client'
-import { isLikelyEnquiryReferenceId, type TripWorkspaceDraft } from './trip-workspace-draft'
+import {
+  isLikelyEnquiryReferenceId,
+  PENDING_TRIP_WORKSPACE_REFERENCE_ID,
+  type TripWorkspaceDraft
+} from './trip-workspace-draft'
 
 export type PersistPortalTripWorkspaceResult =
   | { ok: true; packageBuildId: string }
@@ -35,9 +39,16 @@ const findTargetPackageBuild = async (userId: string, enquiryReferenceId: string
     if (matched) {
       return { supabase, row: matched, error: null }
     }
+    return { supabase, row: null, error: null }
   }
 
-  return { supabase, row: list[0] ?? null, error: null }
+  const placeholder = list.find((row) => {
+    const cfg = row.config as { enquiryReferenceId?: string } | null
+    const rowRef = typeof cfg?.enquiryReferenceId === 'string' ? cfg.enquiryReferenceId.trim() : ''
+    return !isLikelyEnquiryReferenceId(rowRef)
+  })
+
+  return { supabase, row: placeholder ?? null, error: null }
 }
 
 /**
@@ -76,19 +87,21 @@ export const persistPortalTripWorkspace = async (
     return { ok: true, packageBuildId: row.id }
   }
 
+  const hasRealReference = isLikelyEnquiryReferenceId(enquiryReferenceId)
+  const configReferenceId = hasRealReference ? enquiryReferenceId : PENDING_TRIP_WORKSPACE_REFERENCE_ID
   const config = mergePortalTripWorkspaceIntoWebsiteFormConfig(
     {
       version: 3,
       formKey: 'trip_service_cta',
-      enquiryReferenceId: isLikelyEnquiryReferenceId(enquiryReferenceId) ? enquiryReferenceId : '',
+      enquiryReferenceId: configReferenceId,
       submittedAt: now,
       fields: {}
     },
     draft,
-    isLikelyEnquiryReferenceId(enquiryReferenceId) ? enquiryReferenceId : 'GSI-PENDING'
+    configReferenceId
   )
 
-  const label = isLikelyEnquiryReferenceId(enquiryReferenceId)
+  const label = hasRealReference
     ? `trip service cta · ${enquiryReferenceId}`
     : 'trip service cta · saved preferences'
 
