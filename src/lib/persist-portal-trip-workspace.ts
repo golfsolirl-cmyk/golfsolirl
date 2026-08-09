@@ -7,6 +7,20 @@ export type PersistPortalTripWorkspaceResult =
   | { ok: true; packageBuildId: string }
   | { ok: false; error: string }
 
+const isRealEnquiryReferenceId = (value: string): boolean => {
+  const ref = value.trim()
+  return isLikelyEnquiryReferenceId(ref) && ref.toUpperCase() !== 'GSI-PENDING'
+}
+
+const isReusablePendingTripWorkspaceRow = (row: { config: unknown }): boolean => {
+  const cfg = row.config as { enquiryReferenceId?: unknown; formKey?: unknown; portalTripWorkspace?: unknown } | null
+  if (!cfg || typeof cfg !== 'object') {
+    return false
+  }
+  const ref = typeof cfg.enquiryReferenceId === 'string' ? cfg.enquiryReferenceId.trim() : ''
+  return cfg.formKey === 'trip_service_cta' && (!ref || ref.toUpperCase() === 'GSI-PENDING')
+}
+
 const findTargetPackageBuild = async (userId: string, enquiryReferenceId: string) => {
   const supabase = getSupabaseBrowserClient()
   if (!supabase) {
@@ -27,17 +41,20 @@ const findTargetPackageBuild = async (userId: string, enquiryReferenceId: string
   }
 
   const list = rows ?? []
-  if (ref && isLikelyEnquiryReferenceId(ref)) {
+  if (isRealEnquiryReferenceId(ref)) {
+    const normalizedRef = ref.toUpperCase()
     const matched = list.find((row) => {
       const cfg = row.config as { enquiryReferenceId?: string } | null
-      return cfg?.enquiryReferenceId === ref
+      return typeof cfg?.enquiryReferenceId === 'string' && cfg.enquiryReferenceId.trim().toUpperCase() === normalizedRef
     })
     if (matched) {
       return { supabase, row: matched, error: null }
     }
+
+    return { supabase, row: null, error: null }
   }
 
-  return { supabase, row: list[0] ?? null, error: null }
+  return { supabase, row: list.find(isReusablePendingTripWorkspaceRow) ?? null, error: null }
 }
 
 /**
@@ -80,15 +97,15 @@ export const persistPortalTripWorkspace = async (
     {
       version: 3,
       formKey: 'trip_service_cta',
-      enquiryReferenceId: isLikelyEnquiryReferenceId(enquiryReferenceId) ? enquiryReferenceId : '',
+      enquiryReferenceId: isRealEnquiryReferenceId(enquiryReferenceId) ? enquiryReferenceId : '',
       submittedAt: now,
       fields: {}
     },
     draft,
-    isLikelyEnquiryReferenceId(enquiryReferenceId) ? enquiryReferenceId : 'GSI-PENDING'
+    isRealEnquiryReferenceId(enquiryReferenceId) ? enquiryReferenceId : 'GSI-PENDING'
   )
 
-  const label = isLikelyEnquiryReferenceId(enquiryReferenceId)
+  const label = isRealEnquiryReferenceId(enquiryReferenceId)
     ? `trip service cta · ${enquiryReferenceId}`
     : 'trip service cta · saved preferences'
 
