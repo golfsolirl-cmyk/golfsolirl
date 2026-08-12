@@ -153,20 +153,19 @@ export function PortalTransferRequestsSection(props: {
   const hasTransfers = props.bookings.length > 0
 
   return (
-    <section ref={rootRef} aria-label="Linked requests" className="space-y-6">
+    <section ref={rootRef} aria-label="Your requests" className="space-y-6">
       <div className="px-1 sm:px-0">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-600 sm:text-base">Linked requests</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-600 sm:text-base">Your requests</p>
         <p className="mt-2 max-w-3xl text-base leading-relaxed text-forest-700 md:text-lg">
           {hasTransfers ? (
             <>
-              Other map transfers on the same enquiry reference, plus your golf, hotel, and transfer message threads. Tap an interest
-              ticket to read the full conversation (read-only here).
+              Transfer routes on file, plus your messages about golf, hotels, and transfers. Tap a message below to read it
+              (reply under Messages).
             </>
           ) : (
             <>
-              Your golf, hotel, and transfer message threads from <span className="font-semibold text-forest-800">Add to your trip</span>{' '}
-              are below — tap a ticket to read the full conversation (read-only here). Map transfer rows will appear here once you
-              submit a route from the dashboard or transport flow.
+              Messages from <span className="font-semibold text-forest-800">Add to your trip</span> show below. Transfer routes
+              appear here once a pickup is priced for you.
             </>
           )}
         </p>
@@ -177,13 +176,13 @@ export function PortalTransferRequestsSection(props: {
         <header className="ge-on-dark border-b border-ge-gray100 bg-gradient-to-r from-[#0f3d24]/95 via-[#143d28] to-[#0a2416] px-6 py-5 sm:px-8">
           <div className="flex flex-wrap items-center gap-2">
             <MapPinned className="h-4 w-4 text-brand-400" aria-hidden />
-            <p className="font-ge text-xs font-extrabold uppercase tracking-[0.14em] text-emerald-200/90 sm:text-sm">Transfer requests</p>
+            <p className="font-ge text-xs font-extrabold uppercase tracking-[0.14em] text-emerald-200/90 sm:text-sm">Transfers</p>
           </div>
           <h2 className="font-display mt-2 text-lg font-semibold tracking-tight text-white sm:text-xl">
-            Map requests and saved trip routes
+            Airport, hotel &amp; course runs
           </h2>
           <p className="mt-2 max-w-2xl font-ge text-sm font-semibold uppercase leading-relaxed tracking-[0.12em] text-emerald-100/80 sm:text-base">
-            Shared with Golf Sol Ireland — Trip details opens your first submitted form snapshot plus related threads.
+            Open Trip details for what you asked for on the form.
           </p>
         </header>
 
@@ -349,10 +348,9 @@ export function PortalTransferRequestsSection(props: {
                           className="font-semibold text-brand-200/95 underline decoration-gold-400/50 underline-offset-2 hover:text-brand-100"
                           href="#portal-linked-interest-tickets"
                         >
-                          Interest tickets
+                          Your messages
                         </a>{' '}
-                        for golf, hotels, and transfers live in the box below — tap a row to read the thread (read-only) when you
-                        have messages.
+                        about golf, hotels, and transfers are in the box below — tap a row to read (reply under Messages).
                       </p>
                     </div>
                   </div>
@@ -368,10 +366,10 @@ export function PortalTransferRequestsSection(props: {
           role="status"
           className="rounded-2xl border border-dashed border-forest-200/90 bg-offwhite/80 px-5 py-4 text-base text-forest-700 shadow-inner md:text-lg"
         >
-          <p className="font-display font-semibold text-forest-900">No transfer requests yet</p>
+          <p className="font-display font-semibold text-forest-900">No transfers listed yet</p>
           <p className="mt-1 leading-relaxed">
-            When you request a route from the map or save trip legs, rows appear here with <span className="font-semibold">Trip details</span>.
-            Your threads from <span className="font-semibold">Add to your trip</span> stay in <span className="font-semibold">Interest tickets</span> below.
+            When we price a pickup for you, it shows here. Messages from{' '}
+            <span className="font-semibold">Add to your trip</span> stay in the list below.
           </p>
         </div>
       )}
@@ -385,20 +383,20 @@ export function PortalTransferRequestsSection(props: {
         <div className="relative">
           <div className="flex flex-wrap items-center gap-2">
             <Sparkles className="h-4 w-4 text-brand-500" aria-hidden />
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-600 sm:text-base">Interest tickets</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-600 sm:text-base">Your messages</p>
           </div>
           <div className="mt-2 h-px max-w-[7rem] rounded-full bg-gradient-to-r from-brand-400 via-brand-300/80 to-transparent" />
           <p className="mt-3 max-w-2xl text-base leading-relaxed text-forest-700 md:text-lg">
-            Golf, hotel, and transfer threads from <span className="font-semibold text-forest-800">Add to your trip</span>. Tap a
-            row to read the conversation — read-only here; reply via <span className="font-semibold text-forest-800">Message the team</span>.
+            Golf, hotel, and transfer notes from <span className="font-semibold text-forest-800">Add to your trip</span>. Tap to
+            read — reply under <span className="font-semibold text-forest-800">Messages</span> in the menu.
           </p>
-          <ul className="mt-5 grid gap-3 sm:grid-cols-1" aria-label="Interest ticket threads">
+          <ul className="mt-5 grid gap-3 sm:grid-cols-1" aria-label="Your message threads">
             {sortedTickets.length === 0 ? (
               <li className="list-none rounded-2xl border border-dashed border-forest-200/90 bg-white px-5 py-10 text-center text-base leading-relaxed text-forest-600 shadow-inner md:text-lg">
-                <p className="font-medium text-forest-800">No tickets yet</p>
+                <p className="font-medium text-forest-800">No messages yet</p>
                 <p className="mt-2">
-                  When you use <span className="font-semibold text-forest-900">Add to your trip</span> above, threads show here —
-                  tap a row to read messages (read-only).
+                  Use <span className="font-semibold text-forest-900">Add to your trip</span> above — threads show here so you can
+                  read what you sent.
                 </p>
               </li>
             ) : (

@@ -173,11 +173,21 @@ export function LoginPage() {
     }
 
     const path = normalizeLoginPath()
-    const callbackBase = `${window.location.origin}/auth/callback`
+    const emailNorm = email.trim().toLowerCase()
+    const adminInbox = isAllowedAdminLoginEmail(emailNorm)
+    const isAdminPortal = path === '/dashboard/admin/login'
+    // Admin magic links always open production (server also enforces SITE_URL).
+    const productionSite =
+      (typeof import.meta.env.VITE_SITE_URL === 'string' && import.meta.env.VITE_SITE_URL.trim()) ||
+      'https://www.golfsolirl.com'
+    const callbackOrigin = isAdminPortal
+      ? productionSite.replace(/\/+$/, '')
+      : window.location.origin
+    const callbackBase = `${callbackOrigin}/auth/callback`
     let redirectTo = `${callbackBase}`
-    if (safeReturnPath) {
+    if (safeReturnPath && !isAdminPortal) {
       redirectTo = `${callbackBase}?next=${encodeURIComponent(safeReturnPath)}`
-    } else if (path === '/dashboard/admin/login') {
+    } else if (isAdminPortal || (adminInbox && path !== '/driver/login')) {
       redirectTo = `${callbackBase}?next=${encodeURIComponent('/dashboard/admin')}`
     } else if (path === '/driver/login') {
       redirectTo = `${callbackBase}?next=${encodeURIComponent('/driver')}`
@@ -186,7 +196,7 @@ export function LoginPage() {
     try {
       if (safeReturnPath) {
         sessionStorage.setItem(AUTH_NEXT_STORAGE_KEY, safeReturnPath)
-      } else if (path === '/dashboard/admin/login') {
+      } else if (path === '/dashboard/admin/login' || (adminInbox && path !== '/driver/login')) {
         sessionStorage.setItem(AUTH_NEXT_STORAGE_KEY, '/dashboard/admin')
       } else if (path === '/driver/login') {
         sessionStorage.setItem(AUTH_NEXT_STORAGE_KEY, '/driver')
@@ -230,13 +240,20 @@ export function LoginPage() {
   const adminHeroBodyPublic =
     'Enter your operator code - we will send a secure sign-in link to your operator inbox.'
   const adminHeroBodyDevSuffix = ' Restricted to info@golfsolirl.com.'
+  const isLocalDevHost =
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname === '[::1]')
   const heroBody = isAdminLoginPath
     ? import.meta.env.PROD
-      ? adminHeroBodyPublic
-      : `${adminHeroBodyPublic}${adminHeroBodyDevSuffix}`
+      ? `${adminHeroBodyPublic} The email link opens golfsolirl.com (production admin desk).`
+      : `${adminHeroBodyPublic}${adminHeroBodyDevSuffix} The email link opens golfsolirl.com — not localhost.`
     : isDriverLoginPage
       ? 'Same secure magic link as the client portal and admin — after sign-in, admins use the Irish Driver preview desk; linked drivers see live jobs.'
-      : "We'll email you a secure magic link — the same GolfSol Ireland experience as the rest of the site. No password to remember."
+      : isLocalDevHost
+        ? "We'll email you a secure magic link that opens back on localhost for testing. No password to remember."
+        : "We'll email you a secure magic link — the same GolfSol Ireland experience as the rest of the site. No password to remember."
 
   // —— Supabase-not-configured fallback ——
   if (!integrationRegistry.supabase.enabled || !isSupabaseConfigured) {
@@ -350,7 +367,15 @@ export function LoginPage() {
                 <p className="text-sm text-ge-gray600">
                   Check Supabase → Authentication → URL configuration: add{' '}
                   <code className="rounded bg-white px-1 py-0.5 font-mono text-xs text-gs-dark ring-1 ring-ge-gray200">
-                    {`${window.location.origin}/auth/callback`}
+                    {`${
+                      isAdminLoginPath
+                        ? (
+                            (typeof import.meta.env.VITE_SITE_URL === 'string' &&
+                              import.meta.env.VITE_SITE_URL.trim()) ||
+                            'https://www.golfsolirl.com'
+                          ).replace(/\/+$/, '')
+                        : window.location.origin
+                    }/auth/callback`}
                   </code>{' '}
                   under Redirect URLs, then try again.
                 </p>
@@ -367,8 +392,9 @@ export function LoginPage() {
                 <Mail className="h-4 w-4 text-gs-green" aria-hidden /> Check your inbox
               </p>
               <p className="mt-2 text-ge-gray600">
-                Open the link from GolfSol Ireland to finish signing in. You can close this tab — the link opens in
-                your browser.
+                {isAdminLoginPath
+                  ? 'Open the link from Golf Sol Ireland — it signs you into the admin desk on golfsolirl.com (production), not localhost.'
+                  : 'Open the link from GolfSol Ireland to finish signing in. You can close this tab — the link opens in your browser.'}
               </p>
             </div>
           ) : (

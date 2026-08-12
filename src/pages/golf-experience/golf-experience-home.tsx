@@ -1,11 +1,13 @@
-import { useMemo } from 'react'
+import { lazy, Suspense, useEffect, useMemo } from 'react'
 import { PremiumGolfHero } from '../../components/home/premium-golf-hero'
 import { HomeCreativeCanvas } from '../../components/ui/HomeCreativeCanvas'
 import { GeNavbar } from './sections/ge-navbar'
 import { HOMEPAGE_CREATIVE_CANVAS_ENABLED } from '../../lib/homepage-luxury-background'
+import { prefetchLikelyMarketingRoutes } from '../../lib/prefetch-route-chunk'
 import { cx } from '../../lib/utils'
 import { useJsonLd, usePageMeta } from '../../lib/use-page-meta'
-import HomeBelowTheFold from './home-below-the-fold'
+
+const HomeBelowTheFold = lazy(() => import('./home-below-the-fold'))
 
 export function GolfExperienceHome() {
   usePageMeta({
@@ -31,6 +33,10 @@ export function GolfExperienceHome() {
     )
   )
 
+  useEffect(() => {
+    prefetchLikelyMarketingRoutes()
+  }, [])
+
   return (
     <div
       className={cx(
@@ -49,7 +55,16 @@ export function GolfExperienceHome() {
 
       <main id="main">
         <PremiumGolfHero />
-        <HomeBelowTheFold />
+        <Suspense
+          fallback={
+            <div
+              className="min-h-[40vh] w-full bg-gradient-to-b from-cream to-offwhite/80"
+              aria-hidden="true"
+            />
+          }
+        >
+          <HomeBelowTheFold />
+        </Suspense>
       </main>
     </div>
   )

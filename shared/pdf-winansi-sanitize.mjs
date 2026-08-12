@@ -18,3 +18,6 @@ export const sanitizeStandardFontText = (value) =>
     .replace(/\u2605/g, '*')
     .replace(/\u2606/g, '*')
     .replace(/\u00a0/g, ' ') // nbsp
+    // Helvetica / WinAnsi has no euro glyph — Intl currency would become "?"
+    .replace(/\u20AC/g, 'EUR ')
+    .replace(/€/g, 'EUR ')

@@ -27,6 +27,19 @@ const getSiteOrigin = (env) => {
   return 'http://localhost:5173'
 }
 
+/** Prefer TRANSFER_CHECKOUT_ORIGIN so local Stripe returns land on localhost while SITE_URL stays production. */
+const getCheckoutReturnOrigin = (env) => {
+  const raw = env.TRANSFER_CHECKOUT_ORIGIN?.trim() || env.TRANSFER_CHECKOUT_SITE_URL?.trim()
+  if (raw) {
+    try {
+      return new URL(raw.startsWith('http') ? raw : `https://${raw}`).origin
+    } catch {
+      /* fall through */
+    }
+  }
+  return getSiteOrigin(env)
+}
+
 const fmtEur = (n) =>
   new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2, minimumFractionDigits: 2 }).format(
     Number(n) || 0
@@ -129,7 +142,7 @@ export const handlePortalInvoiceSend = async (body, env = process.env, meta = {}
   }
 
   const invoiceRowId = inserted.id
-  const origin = getSiteOrigin(env)
+  const origin = getCheckoutReturnOrigin(env)
   const successUrl = `${origin}/dashboard?invoice_paid=1&checkout_session_id={CHECKOUT_SESSION_ID}`
   const cancelUrl = `${origin}/dashboard?invoice_cancel=1`
 

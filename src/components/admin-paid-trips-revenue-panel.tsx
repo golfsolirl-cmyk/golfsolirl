@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState, type ReactNode } from 'react'
-import { Banknote, RefreshCw, ScanLine, Wallet } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
+import { RefreshCw } from 'lucide-react'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { cx } from '../lib/utils'
 
@@ -32,6 +32,19 @@ type PaidInvoiceRow = {
   paidAt: string | null
 }
 
+type UnifiedPaymentRow = {
+  key: string
+  kind: 'transfer' | 'invoice'
+  title: string
+  subtitle: string
+  amount: string
+  status: string
+  when: string | null
+  needsPass?: boolean
+  trip?: PaidTripRow
+  invoice?: PaidInvoiceRow
+}
+
 const fmtWhen = (iso: string | null | undefined) => {
   if (!iso) {
     return '—'
@@ -43,41 +56,15 @@ const fmtWhen = (iso: string | null | undefined) => {
   }
 }
 
-function RevenueStatCard(props: {
-  readonly label: string
-  readonly amount: string
-  readonly detail: string
-  readonly icon: ReactNode
-  readonly accent?: 'default' | 'highlight'
-}) {
-  return (
-    <article
-      className={cx(
-        'flex min-h-[148px] flex-col rounded-2xl border-2 p-6 sm:min-h-[156px] sm:p-7',
-        props.accent === 'highlight'
-          ? 'border-brand-600/30 bg-gradient-to-br from-fairway-50 to-white'
-          : 'border-forest-200 bg-white shadow-sm'
-      )}
-    >
-      <div className="flex items-center gap-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-forest-100 text-forest-800">
-          {props.icon}
-        </span>
-        <p className="font-ge text-sm font-extrabold uppercase tracking-[0.12em] text-forest-800">{props.label}</p>
-      </div>
-      <p className="font-display mt-5 text-3xl font-bold tracking-tight text-forest-950 sm:text-[2rem]">{props.amount}</p>
-      <p className="mt-2 text-base leading-relaxed text-forest-700">{props.detail}</p>
-    </article>
-  )
-}
-
-function EmptyListCard(props: { readonly title: string; readonly body: string }) {
-  return (
-    <div className="mt-5 rounded-2xl border-2 border-dashed border-forest-200 bg-offwhite/80 px-6 py-10 text-center">
-      <p className="font-display text-lg font-semibold text-forest-950">{props.title}</p>
-      <p className="mx-auto mt-2 max-w-md text-base leading-relaxed text-forest-700">{props.body}</p>
-    </div>
-  )
+const statusLabel = (raw: string) => {
+  const s = raw.trim().toLowerCase()
+  if (s === 'paid') {
+    return 'Paid in full'
+  }
+  if (s === 'deposit') {
+    return 'Deposit paid'
+  }
+  return raw || 'Paid'
 }
 
 export function AdminPaidTripsRevenuePanel() {
@@ -86,11 +73,10 @@ export function AdminPaidTripsRevenuePanel() {
   const [summary, setSummary] = useState<RevenueSummary | null>(null)
   const [paidTrips, setPaidTrips] = useState<PaidTripRow[]>([])
   const [paidInvoices, setPaidInvoices] = useState<PaidInvoiceRow[]>([])
-  const [syncRef, setSyncRef] = useState('GSI-S2V6-6778')
+  const [syncRef, setSyncRef] = useState('')
   const [syncBusy, setSyncBusy] = useState(false)
   const [syncMessage, setSyncMessage] = useState<string | null>(null)
-  const [selectedTripId, setSelectedTripId] = useState<string | null>(null)
-  const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null)
+  const [selectedKey, setSelectedKey] = useState<string | null>(null)
 
   const loadStats = useCallback(async () => {
     setLoading(true)
@@ -125,7 +111,7 @@ export function AdminPaidTripsRevenuePanel() {
       setPaidTrips(data.paidTrips ?? [])
       setPaidInvoices(data.paidInvoices ?? [])
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Could not load revenue stats.')
+      setError(e instanceof Error ? e.message : 'Could not load payments.')
     } finally {
       setLoading(false)
     }
@@ -138,7 +124,7 @@ export function AdminPaidTripsRevenuePanel() {
   const handleSyncTripPass = async () => {
     const ref = syncRef.trim()
     if (!ref) {
-      setSyncMessage('Enter a reference ID (e.g. GSI-S2V6-6778).')
+      setSyncMessage('Enter the booking reference from the guest’s form (e.g. GSI-…).')
       return
     }
     setSyncBusy(true)
@@ -163,344 +149,241 @@ export function AdminPaidTripsRevenuePanel() {
         ok?: boolean
         message?: string
         synced?: boolean
-        bookingId?: string
         reason?: string
       }
       if (!res.ok) {
         throw new Error(data.message ?? res.statusText)
       }
       if (data.synced) {
-        setSyncMessage(`Trip pass activated for ${ref}${data.bookingId ? ` (booking ${data.bookingId.slice(0, 8)}…)` : ''}.`)
+        setSyncMessage(`Pass activated for ${ref}.`)
       } else {
-        setSyncMessage(data.reason === 'no_paid_invoice_for_reference' ? `No paid invoice found for ${ref}.` : `Could not sync: ${data.reason ?? 'unknown'}.`)
+        setSyncMessage(
+          data.reason === 'no_paid_invoice_for_reference'
+            ? `No paid invoice found for ${ref}.`
+            : `Could not activate: ${data.reason ?? 'unknown'}.`
+        )
       }
       await loadStats()
     } catch (e) {
-      setSyncMessage(e instanceof Error ? e.message : 'Sync failed.')
+      setSyncMessage(e instanceof Error ? e.message : 'Could not activate pass.')
     } finally {
       setSyncBusy(false)
     }
   }
 
-  const hasAnyPayments = paidTrips.length > 0 || paidInvoices.length > 0
+  const rows: UnifiedPaymentRow[] = [
+    ...paidTrips.map((row) => ({
+      key: `t-${row.id}`,
+      kind: 'transfer' as const,
+      title: row.guest,
+      subtitle: row.route,
+      amount: row.collectedDisplay,
+      status: statusLabel(row.paymentStatus),
+      when: row.updatedAt,
+      needsPass: Boolean(row.needsPaymentSync),
+      trip: row
+    })),
+    ...paidInvoices.map((row) => ({
+      key: `i-${row.id}`,
+      kind: 'invoice' as const,
+      title: row.invoiceNumber ?? row.reference ?? 'Trip invoice',
+      subtitle: row.reference ? `Ref ${row.reference}` : 'Invoice payment',
+      amount: row.collectedDisplay,
+      status: 'Paid in full',
+      when: row.paidAt,
+      invoice: row
+    }))
+  ]
+
+  const selected = rows.find((r) => r.key === selectedKey) ?? null
   const companyTotal = summary?.companyTotalDisplay ?? (loading ? '…' : '€0.00')
+  const tripBits = summary
+    ? `${summary.paidTripCount + summary.depositTripCount} transfer · ${summary.paidInvoiceCount} invoice`
+    : 'Transfers and invoices paid in Stripe'
 
   return (
     <section
       aria-labelledby="admin-paid-trips-heading"
-      className="admin-revenue-panel overflow-hidden rounded-[2rem] border-2 border-forest-200 bg-white shadow-soft"
+      className="overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-soft"
       id="admin-hub-revenue"
     >
-      <header className="ge-on-dark border-b border-white/10 bg-gradient-to-r from-[#0f3d24] via-[#143d28] to-[#0a2416] px-6 py-8 sm:px-10 sm:py-10">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-          <div className="max-w-3xl space-y-4">
-            <p className="ge-on-dark-kicker font-ge text-xs font-extrabold uppercase tracking-[0.22em] !text-[#f4dfa6] sm:text-sm">
-              Revenue desk
-            </p>
-            <h3
-              className="font-display text-2xl font-bold tracking-tight !text-white sm:text-3xl lg:text-4xl"
-              id="admin-paid-trips-heading"
-            >
-              Paid trips &amp; company totals
+      <header className="border-b border-forest-100 bg-offwhite/80 px-5 py-6 sm:px-7 sm:py-7">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="max-w-2xl">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-700">1 · Money in</p>
+            <h3 className="font-display mt-1 text-xl font-semibold text-forest-950 sm:text-2xl" id="admin-paid-trips-heading">
+              Payments received
             </h3>
-            <p className="max-w-2xl text-base leading-[1.75] !text-white/92 sm:text-lg">
-              Stripe card payments from guest transfers and trip invoices. Trip pass barcodes unlock only after{' '}
-              <strong className="font-semibold !text-white">paid in full</strong>.
+            <p className="mt-2 text-sm leading-relaxed text-forest-700">
+              What guests have paid through Stripe. Tap a row for details.
             </p>
           </div>
           <button
-            className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full border-2 border-white/30 bg-white/10 px-6 py-3 text-sm font-bold uppercase tracking-[0.1em] !text-white transition hover:bg-white/20 disabled:opacity-60"
+            className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full border border-forest-200 bg-white px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.1em] text-forest-900 transition hover:bg-fairway-50 disabled:opacity-60"
             disabled={loading}
             onClick={() => void loadStats()}
             type="button"
           >
             <RefreshCw className={cx('h-4 w-4', loading && 'animate-spin')} aria-hidden />
-            Refresh totals
+            Refresh
           </button>
+        </div>
+
+        <div className="mt-6 rounded-2xl border border-fairway-200 bg-gradient-to-br from-fairway-50 to-white px-5 py-5 sm:px-6">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-forest-700">Total taken in</p>
+          <p className="font-display mt-1 text-3xl font-bold tracking-tight text-forest-950 sm:text-4xl">{companyTotal}</p>
+          <p className="mt-1 text-sm text-forest-600">{loading ? 'Loading…' : tripBits}</p>
         </div>
       </header>
 
-      <div className="admin-revenue-panel__body space-y-12 p-6 sm:space-y-14 sm:p-10" data-keep-color>
+      <div className="space-y-6 p-5 sm:p-7">
         {error ? (
-          <p className="rounded-2xl border-2 border-red-200 bg-red-50 px-5 py-4 text-base text-red-900" role="alert">
+          <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900" role="alert">
             {error}
           </p>
         ) : null}
 
-        {!loading && !hasAnyPayments ? (
-          <div className="rounded-2xl border-2 border-forest-200 bg-offwhite px-6 py-8 sm:px-8 sm:py-10">
-            <p className="font-display text-xl font-semibold text-forest-950 sm:text-2xl">No payments recorded yet</p>
-            <p className="mt-3 max-w-2xl text-base leading-relaxed text-forest-700 sm:text-lg">
-              When a guest pays a transfer deposit, balance, or trip invoice through Stripe, totals and rows appear here
-              automatically. If someone paid before this panel existed, use <strong className="font-semibold text-forest-900">Repair trip pass</strong> below.
-            </p>
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(260px,320px)]">
+          <div>
+            {loading ? (
+              <p className="text-sm text-forest-600">Loading payments…</p>
+            ) : rows.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-forest-200 bg-offwhite/70 px-5 py-8 text-center">
+                <p className="font-display text-lg font-semibold text-forest-950">No payments yet</p>
+                <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-forest-600">
+                  When a guest pays a deposit, balance, or invoice, it shows up here.
+                </p>
+              </div>
+            ) : (
+              <ul className="space-y-2">
+                {rows.map((row) => (
+                  <li key={row.key}>
+                    <button
+                      className={cx(
+                        'w-full rounded-2xl border px-4 py-3.5 text-left transition sm:px-5',
+                        selectedKey === row.key
+                          ? 'border-fairway-500 bg-fairway-50'
+                          : 'border-forest-100 bg-white hover:border-fairway-300 hover:bg-offwhite/50'
+                      )}
+                      onClick={() => setSelectedKey(row.key)}
+                      type="button"
+                    >
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="font-semibold text-forest-950">{row.title}</p>
+                          <p className="mt-0.5 text-sm text-forest-600">{row.subtitle}</p>
+                        </div>
+                        <p className="font-display text-lg font-bold text-forest-950">{row.amount}</p>
+                      </div>
+                      <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+                        <span className="rounded-full bg-forest-100 px-2.5 py-0.5 font-semibold text-forest-900">
+                          {row.status}
+                        </span>
+                        <span className="text-ge-gray500">{fmtWhen(row.when)}</span>
+                        {row.needsPass ? (
+                          <span className="rounded-full bg-amber-100 px-2.5 py-0.5 font-semibold text-amber-950">
+                            Needs pass
+                          </span>
+                        ) : null}
+                      </div>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
-        ) : null}
 
-        <div>
-          <h4 className="font-ge text-sm font-extrabold uppercase tracking-[0.16em] text-forest-800 sm:text-base">
-            Company totals
-          </h4>
-          <div className="mt-5 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            <RevenueStatCard
-              accent="highlight"
-              amount={companyTotal}
-              detail="Transfer payments + invoice-only (no double count)"
-              icon={<Wallet className="h-5 w-5" aria-hidden />}
-              label="Company total"
-            />
-            <RevenueStatCard
-              amount={summary?.transferCollectedDisplay ?? (loading ? '…' : '€0.00')}
-              detail={
-                summary
-                  ? `${summary.paidTripCount} paid in full · ${summary.depositTripCount} deposit`
-                  : 'Transfer deposits and paid-in-full checkout'
-              }
-              icon={<Banknote className="h-5 w-5" aria-hidden />}
-              label="Transfer payments"
-            />
-            <RevenueStatCard
-              amount={summary?.invoiceOnlyDisplay ?? (loading ? '…' : '€0.00')}
-              detail={
-                summary ? `${summary.paidInvoiceCount} paid trip invoices` : 'Trip invoices paid without a transfer row'
-              }
-              icon={<Banknote className="h-5 w-5" aria-hidden />}
-              label="Invoice-only"
-            />
-          </div>
+          <aside className="rounded-2xl border border-forest-100 bg-offwhite/60 p-4 sm:p-5 lg:sticky lg:top-6 lg:self-start">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-700">Details</p>
+            {!selected ? (
+              <p className="mt-3 text-sm leading-relaxed text-forest-600">Choose a payment on the left.</p>
+            ) : selected.trip ? (
+              <dl className="mt-3 space-y-3 text-sm">
+                <div>
+                  <dt className="text-xs text-ge-gray500">Guest</dt>
+                  <dd className="mt-0.5 font-semibold text-forest-950">{selected.trip.guest}</dd>
+                </div>
+                {selected.trip.email ? (
+                  <div>
+                    <dt className="text-xs text-ge-gray500">Email</dt>
+                    <dd className="mt-0.5 break-all text-forest-900">{selected.trip.email}</dd>
+                  </div>
+                ) : null}
+                <div>
+                  <dt className="text-xs text-ge-gray500">Reference</dt>
+                  <dd className="mt-0.5 font-mono text-forest-950">{selected.trip.reference ?? '—'}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-ge-gray500">Collected</dt>
+                  <dd className="mt-0.5 font-display text-xl font-bold text-forest-950">{selected.trip.collectedDisplay}</dd>
+                </div>
+                <p
+                  className={cx(
+                    'rounded-xl px-3 py-2 text-xs leading-relaxed',
+                    selected.trip.needsPaymentSync || selected.trip.paymentStatus.toLowerCase() === 'deposit'
+                      ? 'border border-amber-200 bg-amber-50 text-amber-950'
+                      : 'border border-emerald-200 bg-emerald-50 text-emerald-950'
+                  )}
+                >
+                  {selected.trip.needsPaymentSync
+                    ? 'Payment on file — use “Fix trip pass” below if they still need a scannable pass.'
+                    : selected.trip.paymentStatus.toLowerCase() === 'deposit'
+                      ? 'Deposit only — trip pass unlocks when paid in full.'
+                      : 'Paid in full — trip pass is active for the guest.'}
+                </p>
+              </dl>
+            ) : selected.invoice ? (
+              <dl className="mt-3 space-y-3 text-sm">
+                <div>
+                  <dt className="text-xs text-ge-gray500">Invoice</dt>
+                  <dd className="mt-0.5 font-mono text-forest-950">
+                    {selected.invoice.invoiceNumber ?? selected.invoice.id.slice(0, 8)}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-ge-gray500">Reference</dt>
+                  <dd className="mt-0.5 font-mono text-forest-950">{selected.invoice.reference ?? '—'}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-ge-gray500">Paid</dt>
+                  <dd className="mt-0.5 font-display text-xl font-bold text-forest-950">
+                    {selected.invoice.collectedDisplay}
+                  </dd>
+                </div>
+              </dl>
+            ) : null}
+          </aside>
         </div>
 
-        <div className="rounded-2xl border-2 border-amber-300/80 bg-[#fff9e8] p-6 sm:p-8">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-brand-900">
-              <ScanLine className="h-5 w-5" aria-hidden />
-            </span>
-            <div>
-              <h4 className="font-display text-lg font-semibold text-forest-950 sm:text-xl">Repair trip pass</h4>
-              <p className="mt-1 text-base leading-relaxed text-forest-700">
-                Guest paid a trip invoice but no scannable pass? Enter their reference and activate.
-              </p>
-            </div>
-          </div>
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <details className="rounded-2xl border border-forest-100 bg-white px-4 py-3">
+          <summary className="cursor-pointer text-sm font-semibold text-forest-900">
+            Fix trip pass (rare)
+          </summary>
+          <p className="mt-2 text-sm leading-relaxed text-forest-600">
+            Only if a guest paid an invoice but still has no scannable pass. Enter their booking reference.
+          </p>
+          <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
             <input
-              className="min-h-12 flex-1 rounded-xl border-2 border-amber-300/70 bg-white px-4 font-mono text-base text-forest-950 outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20"
+              className="min-h-11 flex-1 rounded-xl border border-forest-200 bg-offwhite px-3 font-mono text-sm text-forest-950 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
               onChange={(e) => setSyncRef(e.target.value)}
-              placeholder="GSI-S2V6-6778"
+              placeholder="GSI-…"
               value={syncRef}
             />
             <button
-              className="min-h-12 shrink-0 rounded-xl bg-brand-700 px-6 text-sm font-bold uppercase tracking-[0.08em] text-white hover:bg-brand-800 disabled:opacity-60"
+              className="min-h-11 shrink-0 rounded-xl bg-forest-900 px-5 text-sm font-semibold text-white hover:bg-forest-800 disabled:opacity-60"
               disabled={syncBusy}
               onClick={() => void handleSyncTripPass()}
               type="button"
             >
-              {syncBusy ? 'Syncing…' : 'Activate pass'}
+              {syncBusy ? 'Working…' : 'Activate pass'}
             </button>
           </div>
           {syncMessage ? (
-            <p className="mt-4 rounded-xl border border-amber-200 bg-white px-4 py-3 text-base leading-relaxed text-forest-900">
+            <p className="mt-2 text-sm text-forest-800" role="status">
               {syncMessage}
             </p>
           ) : null}
-        </div>
-
-        <div className="grid gap-10 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,380px)] xl:gap-12">
-          <div className="space-y-10">
-            <div>
-              <h4 className="font-ge text-sm font-extrabold uppercase tracking-[0.16em] text-forest-800 sm:text-base">
-                Paid &amp; deposit trips
-              </h4>
-              {loading ? (
-                <p className="mt-5 text-base text-forest-700">Loading…</p>
-              ) : paidTrips.length === 0 ? (
-                <EmptyListCard
-                  body="Transfer checkout (deposit or paid in full) will list here with guest, route, and amount collected."
-                  title="No transfer payments yet"
-                />
-              ) : (
-                <ul className="mt-5 space-y-3">
-                  {paidTrips.map((row) => (
-                    <li key={row.id}>
-                      <button
-                        className={cx(
-                          'w-full rounded-2xl border-2 px-5 py-4 text-left transition-colors sm:px-6 sm:py-5',
-                          selectedTripId === row.id
-                            ? 'border-fairway-500 bg-fairway-50'
-                            : 'border-forest-200 bg-white hover:border-fairway-400 hover:bg-offwhite/60'
-                        )}
-                        onClick={() => {
-                          setSelectedTripId(row.id)
-                          setSelectedInvoiceId(null)
-                        }}
-                        type="button"
-                      >
-                        <div className="flex flex-wrap items-center justify-between gap-3">
-                          <span className="font-mono text-sm font-bold text-brand-800">
-                            {row.reference ?? row.id.slice(0, 8)}
-                          </span>
-                          <span
-                            className={cx(
-                              'rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide',
-                              row.needsPaymentSync
-                                ? 'bg-amber-100 text-amber-950'
-                                : 'bg-forest-100 text-forest-900'
-                            )}
-                          >
-                            {row.paymentStatus}
-                          </span>
-                        </div>
-                        <p className="mt-3 text-lg font-semibold text-forest-950">{row.guest}</p>
-                        <p className="mt-1 text-base text-forest-700">{row.route}</p>
-                        <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-forest-100 pt-3">
-                          <span className="font-display text-xl font-bold text-forest-950">{row.collectedDisplay}</span>
-                          <span className="text-sm text-forest-600">{fmtWhen(row.updatedAt)}</span>
-                        </div>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-
-            <div>
-              <h4 className="font-ge text-sm font-extrabold uppercase tracking-[0.16em] text-forest-800 sm:text-base">
-                Paid invoices
-              </h4>
-              {loading ? (
-                <p className="mt-5 text-base text-forest-700">Loading…</p>
-              ) : paidInvoices.length === 0 ? (
-                <EmptyListCard
-                  body="Trip invoice checkout from the client Payments tab appears here once Stripe marks it paid."
-                  title="No paid invoices yet"
-                />
-              ) : (
-                <ul className="mt-5 space-y-3">
-                  {paidInvoices.map((row) => (
-                    <li key={row.id}>
-                      <button
-                        className={cx(
-                          'w-full rounded-2xl border-2 px-5 py-4 text-left transition-colors sm:px-6 sm:py-5',
-                          selectedInvoiceId === row.id
-                            ? 'border-fairway-500 bg-fairway-50'
-                            : 'border-forest-200 bg-white hover:border-fairway-400 hover:bg-offwhite/60'
-                        )}
-                        onClick={() => {
-                          setSelectedInvoiceId(row.id)
-                          setSelectedTripId(null)
-                        }}
-                        type="button"
-                      >
-                        <div className="flex flex-wrap items-center justify-between gap-3">
-                          <span className="font-mono text-sm font-bold text-brand-800">
-                            {row.reference ?? row.invoiceNumber ?? row.id.slice(0, 8)}
-                          </span>
-                          <span className="font-display text-xl font-bold text-forest-950">{row.collectedDisplay}</span>
-                        </div>
-                        <p className="mt-3 text-base text-forest-700">Paid {fmtWhen(row.paidAt)}</p>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </div>
-
-          <aside className="rounded-2xl border-2 border-forest-200 bg-white p-6 shadow-sm sm:p-8 xl:sticky xl:top-6 xl:self-start">
-            <p className="font-ge text-xs font-extrabold uppercase tracking-[0.16em] text-brand-700 sm:text-sm">
-              Client payment view
-            </p>
-            <h4 className="font-display mt-3 text-xl font-semibold text-forest-950 sm:text-2xl">Payment detail</h4>
-            {!selectedTripId && !selectedInvoiceId ? (
-              <p className="mt-5 text-base leading-relaxed text-forest-700">
-                Select a paid trip or invoice — same rows guests see under{' '}
-                <strong className="font-semibold text-forest-950">Payments → All payments</strong>.
-              </p>
-            ) : selectedTripId ? (
-              (() => {
-                const row = paidTrips.find((r) => r.id === selectedTripId)
-                if (!row) {
-                  return null
-                }
-                const isDeposit = row.paymentStatus.toLowerCase() === 'deposit'
-                return (
-                  <dl className="mt-6 space-y-5 text-base">
-                    <div>
-                      <dt className="text-xs font-bold uppercase tracking-[0.14em] text-forest-600">Guest</dt>
-                      <dd className="mt-2 font-semibold text-forest-950">{row.guest}</dd>
-                    </div>
-                    {row.email ? (
-                      <div>
-                        <dt className="text-xs font-bold uppercase tracking-[0.14em] text-forest-600">Email</dt>
-                        <dd className="mt-2 break-all text-forest-900">{row.email}</dd>
-                      </div>
-                    ) : null}
-                    <div>
-                      <dt className="text-xs font-bold uppercase tracking-[0.14em] text-forest-600">Route</dt>
-                      <dd className="mt-2 text-forest-900">{row.route}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs font-bold uppercase tracking-[0.14em] text-forest-600">Reference</dt>
-                      <dd className="mt-2 font-mono text-forest-950">{row.reference ?? '—'}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs font-bold uppercase tracking-[0.14em] text-forest-600">Status</dt>
-                      <dd className="mt-2 font-semibold capitalize text-brand-800">{row.paymentStatus}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs font-bold uppercase tracking-[0.14em] text-forest-600">Collected</dt>
-                      <dd className="mt-2 font-display text-2xl font-bold text-forest-950">{row.collectedDisplay}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs font-bold uppercase tracking-[0.14em] text-forest-600">Updated</dt>
-                      <dd className="mt-2 text-forest-800">{fmtWhen(row.updatedAt)}</dd>
-                    </div>
-                    {row.needsPaymentSync ? (
-                      <p className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-950">
-                        Stripe payment on file — run <strong>Activate pass</strong> if the guest still needs a trip pass.
-                      </p>
-                    ) : isDeposit ? (
-                      <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-950">
-                        Deposit only — no trip pass until paid in full.
-                      </p>
-                    ) : (
-                      <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-relaxed text-emerald-950">
-                        Paid in full — trip pass active on the client dashboard.
-                      </p>
-                    )}
-                  </dl>
-                )
-              })()
-            ) : (
-              (() => {
-                const row = paidInvoices.find((r) => r.id === selectedInvoiceId)
-                if (!row) {
-                  return null
-                }
-                return (
-                  <dl className="mt-6 space-y-5 text-base">
-                    <div>
-                      <dt className="text-xs font-bold uppercase tracking-[0.14em] text-forest-600">Invoice</dt>
-                      <dd className="mt-2 font-mono text-forest-950">{row.invoiceNumber ?? row.id.slice(0, 8)}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs font-bold uppercase tracking-[0.14em] text-forest-600">Reference</dt>
-                      <dd className="mt-2 font-mono text-forest-950">{row.reference ?? '—'}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs font-bold uppercase tracking-[0.14em] text-forest-600">Amount paid</dt>
-                      <dd className="mt-2 font-display text-2xl font-bold text-forest-950">{row.collectedDisplay}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-xs font-bold uppercase tracking-[0.14em] text-forest-600">Paid at</dt>
-                      <dd className="mt-2 text-forest-800">{fmtWhen(row.paidAt)}</dd>
-                    </div>
-                  </dl>
-                )
-              })()
-            )}
-          </aside>
-        </div>
+        </details>
       </div>
     </section>
   )

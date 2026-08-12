@@ -2,18 +2,14 @@
  * Transfer deposit vs full-upfront rules (mirrors src/lib/transfer-payment-breakdown.ts).
  */
 
-/** @param {{ next_available_driver?: unknown; scheduled_at?: unknown }} booking */
-export const isTransferFullUpfront = (booking) => {
-  if (booking.next_available_driver === true) {
-    return true
-  }
-  const s = booking.scheduled_at
-  if (s == null) {
-    return true
-  }
-  const t = String(s).trim()
-  return t.length === 0
-}
+/**
+ * Full upfront (no deposit/balance split) when the job is flagged next-available / ASAP.
+ * Admin “Send deposit quote” clears `next_available_driver` so a 20% deposit can apply
+ * even before a pickup datetime is set.
+ *
+ * @param {{ next_available_driver?: unknown; scheduled_at?: unknown }} booking
+ */
+export const isTransferFullUpfront = (booking) => booking.next_available_driver === true
 
 /** @param {unknown} raw */
 export const normalizedDepositPercent = (raw) => {

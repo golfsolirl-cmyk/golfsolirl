@@ -34,6 +34,18 @@ const getSiteOrigin = (env) => {
   return 'http://localhost:5173'
 }
 
+const getCheckoutReturnOrigin = (env) => {
+  const raw = env.TRANSFER_CHECKOUT_ORIGIN?.trim() || env.TRANSFER_CHECKOUT_SITE_URL?.trim()
+  if (raw) {
+    try {
+      return new URL(raw.startsWith('http') ? raw : `https://${raw}`).origin
+    } catch {
+      /* fall through */
+    }
+  }
+  return getSiteOrigin(env)
+}
+
 /** @param {unknown} raw */
 const parseAdminQuote = (raw) => {
   if (!raw || typeof raw !== 'object') {
@@ -117,7 +129,7 @@ const upsertPortalInvoiceCheckout = async (admin, env, ctx) => {
     }
   }
 
-  const origin = getSiteOrigin(env)
+  const origin = getCheckoutReturnOrigin(env)
   const stripe = new Stripe(stripeKey)
   let session
   try {

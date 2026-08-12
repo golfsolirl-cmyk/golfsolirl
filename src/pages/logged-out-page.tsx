@@ -12,6 +12,9 @@ import { useAuth } from '../providers/auth-provider'
  */
 export function LoggedOutPage() {
   const { session, profile, isLoading } = useAuth()
+  const idleLogout =
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('reason') === 'idle'
 
   useEffect(() => {
     if (isLoading || !session) {
@@ -43,17 +46,28 @@ export function LoggedOutPage() {
     >
       <PremiumHero
         variant="loggedOut"
-        kicker="Session closed"
+        kicker={idleLogout ? 'Signed out for safety' : 'Session closed'}
         kickerIcon={ShieldCheck}
         headlinePrimary="You're"
         headlineAccent="signed out."
-        lead="Same crew · Same number · Whenever you're back."
+        lead={
+          idleLogout
+            ? 'No activity for a while · Session closed automatically.'
+            : 'Same crew · Same number · Whenever you\'re back.'
+        }
         body={
-          <>
-            Thanks for visiting your <span className="font-extrabold">Golf Sol Ireland</span> workspace.
-            Your session is cleared on this device — same polished experience as sign-in, just walking
-            you to the exit.
-          </>
+          idleLogout ? (
+            <>
+              We signed you out of your <span className="font-extrabold">Golf Sol Ireland</span> desk after a
+              period with no activity. Request a new magic link when you&apos;re ready to continue.
+            </>
+          ) : (
+            <>
+              Thanks for visiting your <span className="font-extrabold">Golf Sol Ireland</span> workspace.
+              Your session is cleared on this device — same polished experience as sign-in, just walking
+              you to the exit.
+            </>
+          )
         }
         primaryCta={{
           label: 'Sign in again',

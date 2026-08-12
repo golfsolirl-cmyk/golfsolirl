@@ -58,6 +58,43 @@ const assertMagicLinkRateLimit = (clientIp, email, env) => {
 }
 
 /**
+ * Admin magic links always land on production (SITE_URL), even when requested from localhost.
+ * Preserves `?next=` from the client (defaults to /dashboard/admin).
+ *
+ * @param {string} redirectTo
+ * @param {'client' | 'admin' | 'driver'} portal
+ * @param {NodeJS.ProcessEnv} env
+ */
+const resolveMagicLinkRedirectTo = (redirectTo, portal, env) => {
+  if (portal !== 'admin') {
+    return redirectTo
+  }
+
+  const siteRaw = env.SITE_URL?.trim() || 'https://golfsolirl.com'
+  const siteUrl = siteRaw.startsWith('http') ? siteRaw : `https://${siteRaw}`
+  let siteOrigin
+  try {
+    siteOrigin = new URL(siteUrl).origin
+  } catch {
+    siteOrigin = 'https://golfsolirl.com'
+  }
+
+  try {
+    const requested = new URL(redirectTo)
+    const out = new URL(`${siteOrigin}/auth/callback`)
+    for (const [key, value] of requested.searchParams.entries()) {
+      out.searchParams.set(key, value)
+    }
+    if (!out.searchParams.has('next')) {
+      out.searchParams.set('next', '/dashboard/admin')
+    }
+    return out.toString()
+  } catch {
+    return `${siteOrigin}/auth/callback?next=${encodeURIComponent('/dashboard/admin')}`
+  }
+}
+
+/**
  * @param {string} redirectTo
  * @param {NodeJS.ProcessEnv} env
  */
@@ -146,6 +183,9 @@ export const handleMagicLinkRequest = async (payload, env = process.env, meta = 
     throw error
   }
 
+  // After allowlist check: admin emails always use production callback (not localhost).
+  const effectiveRedirectTo = resolveMagicLinkRedirectTo(redirectTo, portal, env)
+
   if (portal === 'admin' && !isAllowedAdminLoginEmail(email, env)) {
     const error = new Error('This email is not authorized for admin sign-in.')
     error.statusCode = 403
@@ -193,7 +233,7 @@ export const handleMagicLinkRequest = async (payload, env = process.env, meta = 
   const { data, error: genError } = await admin.auth.admin.generateLink({
     type: 'magiclink',
     email,
-    options: { redirectTo }
+    options: { redirectTo: effectiveRedirectTo }
   })
 
   if (genError) {
@@ -202,8 +242,51 @@ export const handleMagicLinkRequest = async (payload, env = process.env, meta = 
     throw error
   }
 
-  const actionLink = data?.properties?.action_link
-  if (!actionLink || typeof actionLink !== 'string') {
+  /**
+   * Prefer a direct app callback with `token_hash`.
+   * Client/driver links keep the requested origin (localhost in local testing).
+   * Admin links use SITE_URL via effectiveRedirectTo (production).
+   * Falls back to rewriting `redirect_to` on the Supabase verify URL.
+   */
+  const buildMagicLinkHref = (properties, requestedRedirect) => {
+    const hashed =
+      typeof properties?.hashed_token === 'string' ? properties.hashed_token.trim() : ''
+    const rawAction =
+      typeof properties?.action_link === 'string' ? properties.action_link.trim() : ''
+
+    if (hashed) {
+      try {
+        const requested = new URL(requestedRedirect)
+        const out = new URL(`${requested.origin}/auth/callback`)
+        out.searchParams.set('token_hash', hashed)
+        // `email` matches generateLink + verifyOtp in our local test scripts
+        out.searchParams.set('type', 'email')
+        for (const [key, value] of requested.searchParams.entries()) {
+          if (!out.searchParams.has(key)) {
+            out.searchParams.set(key, value)
+          }
+        }
+        return out.toString()
+      } catch {
+        /* fall through */
+      }
+    }
+
+    if (rawAction) {
+      try {
+        const u = new URL(rawAction)
+        u.searchParams.set('redirect_to', requestedRedirect)
+        return u.toString()
+      } catch {
+        return rawAction
+      }
+    }
+
+    return ''
+  }
+
+  const actionLink = buildMagicLinkHref(data?.properties, effectiveRedirectTo)
+  if (!actionLink) {
     const error = new Error('Could not create sign-in link.')
     error.statusCode = 500
     throw error

@@ -34,7 +34,8 @@ import { buildPackageConfig, defaultLabelForBuild } from '../lib/package-build'
 import { usePackageCalculatorPricing } from '../lib/use-package-calculator-pricing'
 import { cx } from '../lib/utils'
 import { useAuth } from '../providers/auth-provider'
-import { CookieBanner, formatEuro } from './packages'
+import { CookieBanner } from '../components/cookie-banner'
+import { formatEuro } from '../lib/format-euro'
 
 const CourseHotelMapPicker = lazy(async () => {
   const mod = await import('../components/course-hotel-map-picker')

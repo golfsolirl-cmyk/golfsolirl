@@ -22,7 +22,7 @@ export const publishTransferAdminPricePortalPdfs = async (admin, env, bookingId)
   const { data: booking, error: bErr } = await admin
     .from('transfer_bookings')
     .select(
-      'id, client_user_id, client_email, pickup_label, dropoff_label, scheduled_at, client_timing_note, enquiry_reference_id, booking_source, client_display_name, client_phone, package_build_id, admin_price_eur, admin_price_vat_treatment, payment_status'
+      'id, client_user_id, client_email, pickup_label, dropoff_label, scheduled_at, client_timing_note, enquiry_reference_id, booking_source, client_display_name, client_phone, package_build_id, admin_price_eur, admin_price_vat_treatment, payment_status, deposit_percent, next_available_driver'
     )
     .eq('id', bookingId)
     .maybeSingle()

@@ -105,7 +105,7 @@ export function AdminTestimonialsPanel({ sessionToken }: AdminTestimonialsPanelP
   }
 
   const remove = async (id: string, authorName: string) => {
-    if (!window.confirm(`Delete the testimonial from ${authorName}? This cannot be undone.`)) {
+    if (!window.confirm(`Delete ${authorName}’s review permanently? This cannot be undone.`)) {
       return
     }
     const sb = getSupabaseBrowserClient()
@@ -124,9 +124,9 @@ export function AdminTestimonialsPanel({ sessionToken }: AdminTestimonialsPanelP
   const statusBadge = (status: RowStatus) => {
     if (status === 'pending') {
       return (
-        <span className="inline-flex items-center gap-1 rounded-full bg-brand-700/15 px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-brand-800">
+        <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-amber-950">
           <Clock className="h-3 w-3" aria-hidden />
-          Awaiting approval
+          Needs approval
         </span>
       )
     }
@@ -134,7 +134,7 @@ export function AdminTestimonialsPanel({ sessionToken }: AdminTestimonialsPanelP
       return (
         <span className="inline-flex items-center gap-1 rounded-full bg-fairway-100 px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-fairway-900">
           <Home className="h-3 w-3" aria-hidden />
-          Live on homepage
+          On homepage
         </span>
       )
     }
@@ -167,14 +167,14 @@ export function AdminTestimonialsPanel({ sessionToken }: AdminTestimonialsPanelP
             <p className="mt-3 text-sm leading-relaxed text-forest-800">“{row.quote_text}”</p>
             <p className="mt-3 text-xs text-forest-600">
               {row.trip_type}
-              {row.travel_month ? ` · ${row.travel_month}` : ''} · {row.source_page || '/testimonials'}
+              {row.travel_month ? ` · ${row.travel_month}` : ''}
             </p>
             <p className="mt-2 text-xs text-ge-gray500">
-              Submitted {formatDateTimeDdMmYy(row.created_at)}
-              {row.published_at ? ` · Published ${formatDateTimeDdMmYy(row.published_at)}` : ''}
+              Sent {formatDateTimeDdMmYy(row.created_at)}
+              {row.published_at ? ` · Approved ${formatDateTimeDdMmYy(row.published_at)}` : ''}
             </p>
             <details className="mt-3">
-              <summary className="cursor-pointer text-xs font-semibold text-forest-700">Contact (admin only)</summary>
+              <summary className="cursor-pointer text-xs font-semibold text-forest-700">Guest contact</summary>
               <p className="mt-2 font-mono text-xs text-forest-600">
                 {row.email}
                 {row.phone ? ` · ${row.phone}` : ''}
@@ -190,7 +190,7 @@ export function AdminTestimonialsPanel({ sessionToken }: AdminTestimonialsPanelP
                 type="button"
                 variant="primary"
               >
-                {busy ? 'Saving…' : 'Approve for homepage'}
+                {busy ? 'Saving…' : 'Approve → homepage'}
               </LuxuryButton>
             ) : null}
             {status === 'live' ? (
@@ -201,7 +201,7 @@ export function AdminTestimonialsPanel({ sessionToken }: AdminTestimonialsPanelP
                 type="button"
                 variant="outline"
               >
-                {busy ? 'Saving…' : 'Hide from homepage'}
+                {busy ? 'Saving…' : 'Hide from site'}
               </LuxuryButton>
             ) : null}
             {status === 'hidden' ? (
@@ -212,7 +212,7 @@ export function AdminTestimonialsPanel({ sessionToken }: AdminTestimonialsPanelP
                 type="button"
                 variant="outline"
               >
-                {busy ? 'Saving…' : 'Show on homepage again'}
+                {busy ? 'Saving…' : 'Show on homepage'}
               </LuxuryButton>
             ) : null}
             <LuxuryButton
@@ -223,7 +223,7 @@ export function AdminTestimonialsPanel({ sessionToken }: AdminTestimonialsPanelP
               variant="outline"
             >
               <Trash2 className="mr-1 inline h-3.5 w-3.5" aria-hidden />
-              {busy ? 'Deleting…' : 'Delete permanently'}
+              {busy ? 'Deleting…' : 'Delete'}
             </LuxuryButton>
           </div>
         </div>
@@ -232,46 +232,31 @@ export function AdminTestimonialsPanel({ sessionToken }: AdminTestimonialsPanelP
   }
 
   return (
-    <section id="admin-hub-testimonials" className="scroll-mt-28 space-y-8">
-      <div className="rounded-[2rem] border border-forest-100/90 bg-gradient-to-br from-white via-fairway-50/30 to-white p-6 shadow-soft sm:p-8">
-        <div className="flex flex-wrap items-start gap-4">
-          <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-fairway-800 text-white shadow-md">
-            <Star className="h-6 w-6" aria-hidden />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="font-ge text-xs font-extrabold uppercase tracking-[0.2em] text-brand-600">Homepage reviews</p>
-            <h2 className="font-display mt-1 text-2xl font-bold text-forest-950 sm:text-3xl">Testimonials desk</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-forest-700">
-              Submissions from <strong className="font-semibold text-forest-900">Give a testimonial</strong> wait here first.
-              Approve to show on the homepage, hide to remove from public view, or delete to remove completely.
-            </p>
+    <section id="admin-hub-testimonials" className="scroll-mt-28 space-y-6">
+      <div className="flex flex-col gap-4 rounded-2xl border border-forest-100 bg-offwhite/80 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <div className="flex flex-wrap gap-2">
+          <div className="rounded-xl border border-amber-200 bg-white px-3.5 py-2.5 text-center min-w-[5.5rem]">
+            <p className="font-display text-xl font-bold text-amber-950">{pendingRows.length}</p>
+            <p className="text-[0.65rem] font-bold uppercase tracking-[0.12em] text-forest-600">Waiting</p>
           </div>
-          <div className="flex flex-wrap gap-3 text-center">
-            <div className="rounded-xl border border-brand-700/25 bg-white px-4 py-3">
-              <p className="font-display text-2xl font-bold text-brand-800">{pendingRows.length}</p>
-              <p className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-forest-600">Pending</p>
-            </div>
-            <div className="rounded-xl border border-fairway-200/80 bg-white px-4 py-3">
-              <p className="font-display text-2xl font-bold text-fairway-900">{liveRows.length}</p>
-              <p className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-forest-600">Live</p>
-            </div>
-            <div className="rounded-xl border border-forest-200/80 bg-white px-4 py-3">
-              <p className="font-display text-2xl font-bold text-forest-800">{hiddenRows.length}</p>
-              <p className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-forest-600">Hidden</p>
-            </div>
+          <div className="rounded-xl border border-fairway-200 bg-white px-3.5 py-2.5 text-center min-w-[5.5rem]">
+            <p className="font-display text-xl font-bold text-fairway-900">{liveRows.length}</p>
+            <p className="text-[0.65rem] font-bold uppercase tracking-[0.12em] text-forest-600">On homepage</p>
+          </div>
+          <div className="rounded-xl border border-forest-200 bg-white px-3.5 py-2.5 text-center min-w-[5.5rem]">
+            <p className="font-display text-xl font-bold text-forest-800">{hiddenRows.length}</p>
+            <p className="text-[0.65rem] font-bold uppercase tracking-[0.12em] text-forest-600">Hidden</p>
           </div>
         </div>
-        <p className="mt-4 text-sm text-forest-600">
-          <a
-            className="font-semibold text-fairway-800 underline underline-offset-2"
-            href="/#tripadvisor-reviews"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Open homepage reviews section
-          </a>{' '}
-          · Only <strong>approved</strong> testimonials appear there.
-        </p>
+        <a
+          className="inline-flex items-center gap-2 text-sm font-semibold text-fairway-800 underline underline-offset-2"
+          href="/#tripadvisor-reviews"
+          rel="noreferrer"
+          target="_blank"
+        >
+          <Star className="h-4 w-4" aria-hidden />
+          Preview homepage reviews
+        </a>
       </div>
 
       {message ? (
@@ -279,41 +264,46 @@ export function AdminTestimonialsPanel({ sessionToken }: AdminTestimonialsPanelP
       ) : null}
 
       {loading ? (
-        <p className="text-sm text-forest-600">Loading testimonials…</p>
+        <p className="text-sm text-forest-600">Loading reviews…</p>
       ) : rows.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-forest-200 bg-forest-50/50 px-5 py-8 text-sm text-forest-700">
-          No testimonials yet. When a guest submits the form on{' '}
-          <a className="font-semibold underline" href="/testimonials">
-            /testimonials
-          </a>
-          , it will appear here for approval.
-        </p>
+        <div className="rounded-2xl border border-dashed border-forest-200 bg-offwhite px-5 py-10 text-center">
+          <p className="font-display text-lg font-semibold text-forest-950">No reviews yet</p>
+          <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-forest-600">
+            When a guest submits a review on the website, it appears here for you to approve.
+          </p>
+        </div>
       ) : (
         <>
           {pendingRows.length > 0 ? (
             <div>
-              <h3 className="flex items-center gap-2 font-display text-xl font-semibold text-forest-950">
-                <Clock className="h-5 w-5 text-brand-700" aria-hidden />
-                Awaiting approval ({pendingRows.length})
+              <h3 className="flex items-center gap-2 font-display text-lg font-semibold text-forest-950">
+                <Clock className="h-5 w-5 text-amber-700" aria-hidden />
+                Waiting for approval ({pendingRows.length})
               </h3>
+              <p className="mt-1 text-sm text-forest-600">These are not on the homepage yet.</p>
               <ul className="mt-4 space-y-4">{pendingRows.map(renderRow)}</ul>
             </div>
-          ) : null}
+          ) : (
+            <div className="rounded-2xl border border-fairway-200 bg-fairway-50/40 px-4 py-4 text-sm text-forest-700">
+              Nothing waiting — you’re up to date on new reviews.
+            </div>
+          )}
           {liveRows.length > 0 ? (
             <div>
-              <h3 className="flex items-center gap-2 font-display text-xl font-semibold text-forest-950">
+              <h3 className="flex items-center gap-2 font-display text-lg font-semibold text-forest-950">
                 <Eye className="h-5 w-5 text-fairway-800" aria-hidden />
-                Live on homepage ({liveRows.length})
+                On the homepage ({liveRows.length})
               </h3>
               <ul className="mt-4 space-y-4">{liveRows.map(renderRow)}</ul>
             </div>
           ) : null}
           {hiddenRows.length > 0 ? (
             <div>
-              <h3 className="flex items-center gap-2 font-display text-xl font-semibold text-forest-950">
+              <h3 className="flex items-center gap-2 font-display text-lg font-semibold text-forest-950">
                 <EyeOff className="h-5 w-5 text-forest-600" aria-hidden />
                 Hidden ({hiddenRows.length})
               </h3>
+              <p className="mt-1 text-sm text-forest-600">Approved before, but taken off the public site.</p>
               <ul className="mt-4 space-y-4">{hiddenRows.map(renderRow)}</ul>
             </div>
           ) : null}

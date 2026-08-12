@@ -2,6 +2,51 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "headers": [
     {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/images/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=2592000, stale-while-revalidate=86400"
+        }
+      ]
+    },
+    {
+      "source": "/fonts/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/index.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
@@ -68,6 +113,11 @@
     { "source": "/api/trip-review-submit", "destination": "/api/gateway?r=trip-review-submit" },
     { "source": "/api/website-testimonial", "destination": "/api/gateway?r=website-testimonial" },
     { "source": "/api/portal-invoice-send", "destination": "/api/gateway?r=portal-invoice-send" },
+    { "source": "/api/enquiry-contact-verify-send", "destination": "/api/gateway?r=enquiry-contact-verify-send" },
+    { "source": "/api/enquiry-contact-verify-check", "destination": "/api/gateway?r=enquiry-contact-verify-check" },
+    { "source": "/api/enquiry-admin-quote", "destination": "/api/gateway?r=enquiry-admin-quote" },
+    { "source": "/api/enquiry-admin-message", "destination": "/api/gateway?r=enquiry-admin-message" },
+    { "source": "/api/admin-send-document", "destination": "/api/gateway?r=admin-send-document" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

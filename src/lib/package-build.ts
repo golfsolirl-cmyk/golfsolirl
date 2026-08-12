@@ -225,6 +225,40 @@ export interface WebsiteFormPackageConfig {
   readonly portalTransferPlan?: PortalTransferPlan
   /** Client-saved trip workspace (route stops, stages, party) from the portal dashboard. */
   readonly portalTripWorkspace?: TripWorkspaceDraft
+  /** True after client saves trip stages — admin Packages bell until priced/reviewed. */
+  readonly needsAdminReview?: boolean
+  /** ISO when client last submitted the trip build for pricing. */
+  readonly clientBuildSubmittedAt?: string
+  /** ISO when admin opened/priced the build (clears the notification). */
+  readonly adminReviewedAt?: string
+}
+
+/** Admin Packages badge: client saved a trip build that still needs a price / review. */
+export const packageBuildNeedsAdminReview = (configRaw: unknown): boolean => {
+  if (!configRaw || typeof configRaw !== 'object' || Array.isArray(configRaw)) {
+    return false
+  }
+  const o = configRaw as Record<string, unknown>
+  if (o.needsAdminReview === true) {
+    return true
+  }
+  const tw = o.portalTripWorkspace
+  const quote = o.adminQuote
+  if (!tw || typeof tw !== 'object' || Array.isArray(tw)) {
+    return false
+  }
+  const twUpdated = typeof (tw as { updatedAt?: unknown }).updatedAt === 'string' ? (tw as { updatedAt: string }).updatedAt : ''
+  const quoteSaved =
+    quote && typeof quote === 'object' && typeof (quote as { savedAt?: unknown }).savedAt === 'string'
+      ? (quote as { savedAt: string }).savedAt
+      : ''
+  if (!twUpdated) {
+    return false
+  }
+  if (!quoteSaved) {
+    return true
+  }
+  return Date.parse(twUpdated) > Date.parse(quoteSaved)
 }
 
 /** Human copy when pickup type is “match fleet to group” (stored as `free_text`). */
@@ -264,7 +298,14 @@ const WEBSITE_FORM_FIELD_LABELS: Readonly<Record<string, string>> = {
   'Service date (already here)': 'Service date (already here)',
   'Public form': 'Public form',
   Interest: 'Interest',
-  interest: 'Interest'
+  interest: 'Interest',
+  Topic: 'Topic',
+  'Group size': 'Group size',
+  'Trip brief': 'Trip brief',
+  'Preferred location': 'Preferred location',
+  Page: 'Submitted from',
+  'Terms accepted': 'Terms accepted',
+  'Party size (structured)': 'Party size'
 }
 
 const splitCamelToWords = (s: string) =>
@@ -336,12 +377,16 @@ export const formatWebsiteFormFieldValueForDisplay = (key: string, raw: string):
 
 /** Preferred order for enquiry fields on the client dashboard card (remaining keys follow alphabetically). */
 export const WEBSITE_FORM_CLIENT_CARD_FIELD_ORDER: readonly string[] = [
+  'Topic',
   'Interest',
   'interest',
+  'Group size',
   'ASAP',
   'Passengers',
   '_pax',
+  'Trip brief',
   'Destination',
+  'Preferred location',
   'Trip timing',
   'Collection point',
   'Collection timing',
@@ -370,18 +415,40 @@ export const WEBSITE_FORM_CLIENT_CARD_FIELD_ORDER: readonly string[] = [
   'Travel to'
 ]
 
-/** Machine keys hidden on client dashboard cards (human labels are stored separately). */
+/** Machine / duplicate keys hidden on client + admin form summaries. */
 const WEBSITE_FORM_INTERNAL_FIELD_KEYS = new Set<string>([
   ENQUIRY_STRUCTURED_FIELD_KEYS.portalTripWorkspace,
   ENQUIRY_STRUCTURED_FIELD_KEYS.termsAccepted,
   ENQUIRY_STRUCTURED_FIELD_KEYS.termsAcceptedAt,
   ENQUIRY_STRUCTURED_FIELD_KEYS.servicePrimary,
   ENQUIRY_STRUCTURED_FIELD_KEYS.serviceStages,
-  ENQUIRY_STRUCTURED_FIELD_KEYS.accountAnchorRef
+  ENQUIRY_STRUCTURED_FIELD_KEYS.accountAnchorRef,
+  // CamelCase variants sometimes stored without underscore prefix
+  'TermsAccepted',
+  'TermsAcceptedAt',
+  'AccountAnchorRef',
+  'termsAccepted',
+  'termsAcceptedAt',
+  'accountAnchorRef'
+])
+
+const normalizeWebsiteFormFieldKey = (key: string) => key.toLowerCase().replace(/[^a-z0-9]+/g, '')
+
+/** Extra keys never useful in guest-facing / admin card summaries. */
+const WEBSITE_FORM_HIDDEN_NORMALIZED_KEYS = new Set<string>([
+  'termsaccepted',
+  'termsacceptedat',
+  'accountanchorref',
+  'portaltripworkspace',
+  'serviceprimary',
+  'servicestages',
+  'pickupid',
+  'dropoffid'
 ])
 
 export const orderedWebsiteFormFieldEntries = (fields: Readonly<Record<string, string>>): [string, string][] => {
   const used = new Set<string>()
+  const usedNormalizedLabels = new Set<string>()
   const out: [string, string][] = []
 
   const sameCalendarDay = (a: string, b: string) => {
@@ -390,8 +457,17 @@ export const orderedWebsiteFormFieldEntries = (fields: Readonly<Record<string, s
     return /^\d{4}-\d{2}-\d{2}$/.test(sa) && sa === sb.slice(0, 10)
   }
 
+  const partyDigits = (raw: string) => {
+    const n = parseInt(String(raw).replace(/[^\d]/g, ''), 10)
+    return Number.isFinite(n) && n > 0 ? String(n) : ''
+  }
+
   const add = (key: string) => {
     if (used.has(key) || WEBSITE_FORM_INTERNAL_FIELD_KEYS.has(key)) {
+      return
+    }
+    const nk = normalizeWebsiteFormFieldKey(key)
+    if (WEBSITE_FORM_HIDDEN_NORMALIZED_KEYS.has(nk)) {
       return
     }
     const v = fields[key]
@@ -401,7 +477,27 @@ export const orderedWebsiteFormFieldEntries = (fields: Readonly<Record<string, s
     if (key === '_pax' && typeof fields.Passengers === 'string' && fields.Passengers.trim() === String(v).trim()) {
       return
     }
+    // Prefer “Group size” / Passengers over bare structured party count
+    if (
+      (key === '_pax' || nk === 'partysizestructured' || nk === 'partysize') &&
+      (fields['Group size'] || fields.Passengers)
+    ) {
+      const g = partyDigits(fields['Group size'] ?? fields.Passengers ?? '')
+      if (g && g === partyDigits(String(v))) {
+        return
+      }
+    }
     if (key === 'interest' && typeof fields.Interest === 'string' && fields.Interest.trim() === String(v).trim()) {
+      return
+    }
+    if (
+      (nk === 'interest' || nk === 'topic') &&
+      usedNormalizedLabels.has('topic') &&
+      String(v).trim().toLowerCase() ===
+        String(fields.Topic ?? fields.Interest ?? fields.interest ?? '')
+          .trim()
+          .toLowerCase()
+    ) {
       return
     }
     if (key === 'Travel start date' && used.has(ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateFrom)) {
@@ -416,11 +512,27 @@ export const orderedWebsiteFormFieldEntries = (fields: Readonly<Record<string, s
         return
       }
     }
+    const labelNorm = normalizeWebsiteFormFieldKey(getWebsiteFormFieldLabel(key))
+    if (usedNormalizedLabels.has(labelNorm)) {
+      return
+    }
     used.add(key)
+    usedNormalizedLabels.add(labelNorm)
+    if (nk === 'topic' || nk === 'interest') {
+      usedNormalizedLabels.add('topic')
+      usedNormalizedLabels.add('interest')
+    }
     out.push([key, String(v)])
   }
 
   for (const key of WEBSITE_FORM_CLIENT_CARD_FIELD_ORDER) {
+    if (key in fields) {
+      add(key)
+    }
+  }
+
+  // Prefer human Topic / Group size / Trip brief before leftover keys
+  for (const key of ['Topic', 'Group size', 'Trip brief', 'Preferred location', 'Terms accepted', 'Page'] as const) {
     if (key in fields) {
       add(key)
     }
@@ -551,7 +663,8 @@ export const mergePortalTransferPlanIntoWebsiteFormConfig = (
 export const mergePortalTripWorkspaceIntoWebsiteFormConfig = (
   existingRaw: unknown,
   draft: TripWorkspaceDraft,
-  enquiryReferenceId: string
+  enquiryReferenceId: string,
+  options?: { readonly notifyAdmin?: boolean }
 ): Record<string, unknown> => {
   if (!existingRaw || typeof existingRaw !== 'object') {
     throw new Error('Invalid package config')
@@ -559,6 +672,7 @@ export const mergePortalTripWorkspaceIntoWebsiteFormConfig = (
   const base = { ...(existingRaw as Record<string, unknown>) }
   const aligned = ensureTripWorkspaceDraftShape({ ...draft, referenceId: enquiryReferenceId.trim() })
   const stops = normalizeTransferStops(aligned.transferStops)
+  const submittedAt = aligned.updatedAt || new Date().toISOString()
   base.portalTripWorkspace = {
     stages: { ...aligned.stages },
     partySize: aligned.partySize,
@@ -573,7 +687,12 @@ export const mergePortalTripWorkspaceIntoWebsiteFormConfig = (
       return row
     }),
     transferContactPhone: aligned.transferContactPhone ?? '',
-    updatedAt: aligned.updatedAt
+    updatedAt: submittedAt
+  }
+  // Only ping admin Packages when the client explicitly sends for pricing
+  if (options?.notifyAdmin === true) {
+    base.needsAdminReview = true
+    base.clientBuildSubmittedAt = submittedAt
   }
   return base
 }
@@ -583,7 +702,24 @@ export const mergeAdminQuoteIntoWebsiteFormConfig = (existingRaw: unknown, quote
   if (!existingRaw || typeof existingRaw !== 'object') {
     throw new Error('Invalid package config')
   }
-  return { ...(existingRaw as Record<string, unknown>), adminQuote: quote }
+  return {
+    ...(existingRaw as Record<string, unknown>),
+    adminQuote: quote,
+    needsAdminReview: false,
+    adminReviewedAt: new Date().toISOString()
+  }
+}
+
+/** Clear the admin notification without changing the quote. */
+export const markPackageBuildAdminReviewed = (existingRaw: unknown): Record<string, unknown> => {
+  if (!existingRaw || typeof existingRaw !== 'object') {
+    throw new Error('Invalid package config')
+  }
+  return {
+    ...(existingRaw as Record<string, unknown>),
+    needsAdminReview: false,
+    adminReviewedAt: new Date().toISOString()
+  }
 }
 
 export const parseManualAdminPackageConfig = (raw: unknown): AdminManualPackageConfig | null => {
@@ -671,6 +807,14 @@ export const parseWebsiteFormPackageConfig = (raw: unknown): WebsiteFormPackageC
     }
   }
 
+  const needsAdminReview = o.needsAdminReview === true
+  const clientBuildSubmittedAt =
+    typeof o.clientBuildSubmittedAt === 'string' && o.clientBuildSubmittedAt.trim()
+      ? o.clientBuildSubmittedAt.trim()
+      : undefined
+  const adminReviewedAt =
+    typeof o.adminReviewedAt === 'string' && o.adminReviewedAt.trim() ? o.adminReviewedAt.trim() : undefined
+
   return {
     version: 3,
     formKey: o.formKey.trim(),
@@ -679,7 +823,10 @@ export const parseWebsiteFormPackageConfig = (raw: unknown): WebsiteFormPackageC
     fields,
     ...(adminQuote ? { adminQuote } : {}),
     ...(hasPortalPlan ? { portalTransferPlan: portalTransferPlanRaw } : {}),
-    ...(portalTripWorkspace ? { portalTripWorkspace } : {})
+    ...(portalTripWorkspace ? { portalTripWorkspace } : {}),
+    ...(needsAdminReview ? { needsAdminReview: true } : {}),
+    ...(clientBuildSubmittedAt ? { clientBuildSubmittedAt } : {}),
+    ...(adminReviewedAt ? { adminReviewedAt } : {})
   }
 }
 

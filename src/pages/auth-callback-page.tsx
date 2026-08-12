@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { PageIdentityBar } from '../components/page-identity-bar'
 import { GeFooter } from '../pages/golf-experience/sections/ge-footer'
 import { GeNavbar } from '../pages/golf-experience/sections/ge-navbar'
+import { isAllowedAdminLoginEmail } from '../lib/admin-login-email'
 import { AUTH_NEXT_STORAGE_KEY, isSafeInternalPath } from '../lib/internal-redirect'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 
@@ -20,11 +21,15 @@ const parseHashParams = (): Record<string, string> => {
   return Object.fromEntries(new URLSearchParams(raw))
 }
 
-const resolvePostLoginPath = (search: URLSearchParams): string => {
-  const fromQuery = search.get('next') ?? ''
+/**
+ * Prefer ?next= / sessionStorage, then route the operator inbox to admin.
+ * Explicit `/dashboard` (or `/dashboard?…`) is kept so admins can open the client desk when requested.
+ */
+const resolvePostLoginPath = (search: URLSearchParams, sessionEmail?: string | null): string => {
+  const fromQuery = (search.get('next') ?? '').trim()
   let fromStorage = ''
   try {
-    fromStorage = sessionStorage.getItem(AUTH_NEXT_STORAGE_KEY) ?? ''
+    fromStorage = (sessionStorage.getItem(AUTH_NEXT_STORAGE_KEY) ?? '').trim()
     sessionStorage.removeItem(AUTH_NEXT_STORAGE_KEY)
   } catch {
     /* private mode */
@@ -33,6 +38,10 @@ const resolvePostLoginPath = (search: URLSearchParams): string => {
   const candidate = fromQuery || fromStorage
   if (candidate && isSafeInternalPath(candidate)) {
     return candidate
+  }
+
+  if (isAllowedAdminLoginEmail(sessionEmail ?? '')) {
+    return '/dashboard/admin'
   }
 
   return '/dashboard'
@@ -64,7 +73,6 @@ export function AuthCallbackPage() {
     let cancelled = false
 
     const search = new URLSearchParams(window.location.search)
-    const postLoginPath = resolvePostLoginPath(search)
     const oauthError = search.get('error')
     const oauthDescription = search.get('error_description')
 
@@ -80,8 +88,9 @@ export function AuthCallbackPage() {
       }
     }
 
-    const redirectAfterSession = async (session: Session, path: string) => {
+    const redirectAfterSession = async (session: Session) => {
       await syncPortalProfileAfterLogin(session)
+      const path = resolvePostLoginPath(search, session.user.email)
       replaceIfActive(path)
     }
 
@@ -94,7 +103,7 @@ export function AuthCallbackPage() {
       }
 
       if (session) {
-        await redirectAfterSession(session, postLoginPath)
+        await redirectAfterSession(session)
         return
       }
 
@@ -109,7 +118,7 @@ export function AuthCallbackPage() {
         }
         session = await readSession()
         if (session) {
-          await redirectAfterSession(session, postLoginPath)
+          await redirectAfterSession(session)
           return
         }
       }
@@ -129,7 +138,7 @@ export function AuthCallbackPage() {
         }
         session = await readSession()
         if (session) {
-          await redirectAfterSession(session, postLoginPath)
+          await redirectAfterSession(session)
           return
         }
       }
@@ -151,7 +160,7 @@ export function AuthCallbackPage() {
         window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
         session = await readSession()
         if (session) {
-          await redirectAfterSession(session, postLoginPath)
+          await redirectAfterSession(session)
           return
         }
       }
@@ -163,7 +172,7 @@ export function AuthCallbackPage() {
       }
       session = await readSession()
       if (session) {
-        await redirectAfterSession(session, postLoginPath)
+        await redirectAfterSession(session)
         return
       }
 

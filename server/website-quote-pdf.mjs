@@ -6,10 +6,13 @@ import { brandedPdfAssetPaths, pdfEmailTheme } from './pdf-email-brand.mjs'
 import { pdfFieldLabel, pdfFieldValueDisplay } from './website-form-field-labels-pdf.mjs'
 import { costaSolCourseNameById, costaSolCourseRegionById } from '../shared/costa-sol-course-names.mjs'
 
-const fmtEur = (n) =>
-  new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(
-    Number(n) || 0
-  )
+const fmtEur = (n) => {
+  const num = new Intl.NumberFormat('en-IE', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(Number(n) || 0)
+  return `EUR ${num}`
+}
 
 const vatPct = (rate) => `${Math.round(Number(rate) * 1000) / 10}%`
 

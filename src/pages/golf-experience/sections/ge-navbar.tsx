@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence,  m  } from 'framer-motion'
 import { ChevronDown, Menu, X } from 'lucide-react'
+import { prefetchRouteChunk } from '../../../lib/prefetch-route-chunk'
 import { cx } from '../../../lib/utils'
 import { BrandPlaneToFairwayTagline } from '../../../components/brand-plane-to-fairway-tagline'
 import { GeBrandLockup } from '../components/brand-lockup'
@@ -190,6 +191,8 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
                                     href={child.href}
                                     className="block min-h-[44px] py-2 text-sm text-ge-gray500 hover:text-gs-green"
                                     onClick={() => setIsMenuOpen(false)}
+                                    onFocus={() => prefetchRouteChunk(child.href)}
+                                    onMouseEnter={() => prefetchRouteChunk(child.href)}
                                   >
                                     {child.label}
                                   </a>
@@ -204,6 +207,8 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
                         href={link.href}
                         className="block min-h-[48px] py-3 font-ge text-sm font-bold uppercase tracking-[0.1em] text-gs-dark hover:text-gs-green"
                         onClick={() => setIsMenuOpen(false)}
+                        onFocus={() => prefetchRouteChunk(link.href)}
+                        onMouseEnter={() => prefetchRouteChunk(link.href)}
                       >
                         {link.label}
                       </a>
@@ -293,9 +298,16 @@ function DesktopNavItem({ link, colorClass }: { readonly link: GeNavLink; readon
   return (
     <div
       className="relative"
-      onMouseEnter={() => hasChildren && setOpen(true)}
+      onMouseEnter={() => {
+        if (hasChildren) setOpen(true)
+        prefetchRouteChunk(link.href)
+        link.children?.forEach((child) => prefetchRouteChunk(child.href))
+      }}
       onMouseLeave={() => hasChildren && setOpen(false)}
-      onFocus={() => hasChildren && setOpen(true)}
+      onFocus={() => {
+        if (hasChildren) setOpen(true)
+        prefetchRouteChunk(link.href)
+      }}
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
           setOpen(false)
@@ -326,6 +338,8 @@ function DesktopNavItem({ link, colorClass }: { readonly link: GeNavLink; readon
                 key={child.label}
                 href={child.href}
                 className="block px-4 py-2.5 font-ge text-[0.78rem] font-semibold uppercase tracking-[0.1em] text-gs-dark hover:bg-ge-gray50 hover:text-gs-green"
+                onFocus={() => prefetchRouteChunk(child.href)}
+                onMouseEnter={() => prefetchRouteChunk(child.href)}
               >
                 {child.label}
               </a>

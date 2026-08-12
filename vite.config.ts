@@ -31,6 +31,12 @@ import { handleTransferRefund } from './server/transfer-refund-service.mjs'
 import { handleTransferStripeCheckout } from './server/transfer-checkout-service.mjs'
 import { handleTransferCheckoutSync } from './server/transfer-checkout-sync-service.mjs'
 import { handlePortalInvoiceSend } from './server/portal-invoice-send-service.mjs'
+import {
+  handleEnquiryContactVerifyCheck,
+  handleEnquiryContactVerifySend
+} from './server/enquiry-contact-verify-service.mjs'
+import { handleEnquiryAdminMessage, handleEnquiryAdminQuote } from './server/enquiry-admin-quote-service.mjs'
+import { handleAdminSendDocument } from './server/admin-send-document-service.mjs'
 import { handleStripeWebhook } from './server/stripe-webhook-service.mjs'
 import { readIncomingMessageBodyBuffer } from './server/vercel-read-body.mjs'
 import { handlePortalLinkIssue, handlePortalLinkVerify } from './server/portal-link-context-service.mjs'
@@ -95,7 +101,11 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
 
         response.statusCode = statusCode
         response.setHeader('Content-Type', 'application/json')
-        response.end(JSON.stringify({ message }))
+        const code =
+          error && typeof error === 'object' && 'code' in error && typeof error.code === 'string'
+            ? error.code
+            : undefined
+        response.end(JSON.stringify(code ? { message, code } : { message }))
       }
     })
 
@@ -972,6 +982,55 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
         response.end(JSON.stringify({ message }))
       }
     })
+
+    const jsonApi = (
+      path: string,
+      handler: (payload: Record<string, unknown>, env: Record<string, string>, meta: Record<string, string>) => Promise<unknown>,
+      opts?: { auth?: boolean; ip?: boolean }
+    ) => {
+      server.middlewares.use(path, async (request, response) => {
+        if (request.method !== 'POST') {
+          response.statusCode = 405
+          response.setHeader('Content-Type', 'application/json')
+          response.end(JSON.stringify({ message: 'Method not allowed' }))
+          return
+        }
+        try {
+          const rawBody = await readRequestBody(request)
+          const payload = rawBody ? JSON.parse(rawBody) : {}
+          const meta: Record<string, string> = {}
+          if (opts?.auth) {
+            meta.authHeader = typeof request.headers.authorization === 'string' ? request.headers.authorization : ''
+          }
+          if (opts?.ip) {
+            meta.clientIp = getClientIp(request)
+          }
+          const result = await handler(payload, { ...process.env, ...serverEnv }, meta)
+          response.statusCode = 200
+          response.setHeader('Content-Type', 'application/json')
+          response.end(JSON.stringify(result))
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Request failed.'
+          const statusCode =
+            error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+              ? error.statusCode
+              : 500
+          const code =
+            error && typeof error === 'object' && 'code' in error && typeof error.code === 'string'
+              ? error.code
+              : undefined
+          response.statusCode = statusCode
+          response.setHeader('Content-Type', 'application/json')
+          response.end(JSON.stringify(code ? { message, code } : { message }))
+        }
+      })
+    }
+
+    jsonApi('/api/enquiry-contact-verify-send', handleEnquiryContactVerifySend as never, { ip: true })
+    jsonApi('/api/enquiry-contact-verify-check', handleEnquiryContactVerifyCheck as never, { ip: true })
+    jsonApi('/api/enquiry-admin-quote', handleEnquiryAdminQuote as never, { auth: true })
+    jsonApi('/api/enquiry-admin-message', handleEnquiryAdminMessage as never, { auth: true })
+    jsonApi('/api/admin-send-document', handleAdminSendDocument as never, { auth: true })
   }
 })
 

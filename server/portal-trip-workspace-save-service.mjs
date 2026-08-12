@@ -65,7 +65,7 @@ const parseTripWorkspaceDraft = (raw) => {
   }
 }
 
-const mergePortalTripWorkspaceIntoConfig = (existingRaw, draft, enquiryReferenceId) => {
+const mergePortalTripWorkspaceIntoConfig = (existingRaw, draft, enquiryReferenceId, notifyAdmin = false) => {
   const base =
     existingRaw && typeof existingRaw === 'object' && !Array.isArray(existingRaw)
       ? { ...existingRaw }
@@ -76,6 +76,7 @@ const mergePortalTripWorkspaceIntoConfig = (existingRaw, draft, enquiryReference
     base.enquiryReferenceId = ref
   }
 
+  const submittedAt = draft.updatedAt || new Date().toISOString()
   base.portalTripWorkspace = {
     stages: { ...draft.stages },
     partySize: draft.partySize,
@@ -89,7 +90,11 @@ const mergePortalTripWorkspaceIntoConfig = (existingRaw, draft, enquiryReference
       return row
     }),
     transferContactPhone: draft.transferContactPhone ?? '',
-    updatedAt: draft.updatedAt
+    updatedAt: submittedAt
+  }
+  if (notifyAdmin) {
+    base.needsAdminReview = true
+    base.clientBuildSubmittedAt = submittedAt
   }
 
   return base
@@ -119,6 +124,7 @@ export const handlePortalTripWorkspaceSave = async (payload, env = process.env, 
   }
 
   const draft = parseTripWorkspaceDraft(payload?.draft)
+  const notifyAdmin = payload?.notifyAdmin === true
 
   const admin = createClient(url, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false }
@@ -163,7 +169,7 @@ export const handlePortalTripWorkspaceSave = async (payload, env = process.env, 
   const now = new Date().toISOString()
 
   if (target) {
-    const merged = mergePortalTripWorkspaceIntoConfig(target.config, draft, ref)
+    const merged = mergePortalTripWorkspaceIntoConfig(target.config, draft, ref, notifyAdmin)
     const { error: updErr } = await admin
       .from('package_builds')
       .update({ config: merged, updated_at: now })
@@ -188,7 +194,8 @@ export const handlePortalTripWorkspaceSave = async (payload, env = process.env, 
       fields: {}
     },
     draft,
-    ref
+    ref,
+    notifyAdmin
   )
 
   const label = isLikelyEnquiryReferenceId(ref) ? `trip service cta · ${ref}` : 'trip service cta · saved preferences'

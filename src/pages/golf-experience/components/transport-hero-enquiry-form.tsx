@@ -20,6 +20,7 @@ import {
 } from '../../../lib/enquiry-form-registry'
 import { getSupabaseBrowserClient } from '../../../lib/supabase-client'
 import { ENQUIRY_CONFLICT_EXISTING_PHONE, postWebsiteEnquiry } from '../../../lib/post-enquiry-client'
+import { validateMobilePhoneInput } from '../../../lib/phone-mobile'
 import { TERMS_ACCEPTANCE_ERROR, termsAcceptanceFormFields } from '../../../lib/terms-acceptance'
 import { GeTermsAcceptanceField } from './ge-terms-acceptance-field'
 import { MAX_ENQUIRY_PEOPLE } from '../data/form-people-options'
@@ -174,6 +175,12 @@ export function TransportHeroEnquiryForm() {
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) {
       setErrorMessage(transportEnquiryFormCopy.validationEmail)
+      setStatus('error')
+      return
+    }
+    const phoneCheck = validateMobilePhoneInput(phone)
+    if (!phoneCheck.ok) {
+      setErrorMessage(phoneCheck.message)
       setStatus('error')
       return
     }

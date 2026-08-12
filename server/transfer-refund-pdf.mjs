@@ -10,13 +10,13 @@ import {
   loadUnifiedPdfFonts
 } from './gsol-unified-pdf-template.mjs'
 
-const formatEur = (n) =>
-  new Intl.NumberFormat('en-IE', {
-    style: 'currency',
-    currency: 'EUR',
+const formatEur = (n) => {
+  const num = new Intl.NumberFormat('en-IE', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
-  }).format(n)
+  }).format(Number(n) || 0)
+  return `EUR ${num}`
+}
 
 /**
  * @param {object} opts

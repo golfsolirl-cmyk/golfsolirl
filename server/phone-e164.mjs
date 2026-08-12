@@ -48,3 +48,51 @@ export const computePhoneUniquenessKey = (raw) => {
 
   return null
 }
+
+/**
+ * True when the uniqueness key looks like a mobile (IE / UK / ES focus for Golf Sol).
+ * Landlines and unrecognised national formats return false.
+ *
+ * @param {string | null | undefined} e164
+ * @returns {boolean}
+ */
+export const isLikelyMobileE164 = (e164) => {
+  if (typeof e164 !== 'string' || !e164.startsWith('+')) {
+    return false
+  }
+  // Ireland mobile: +353 8[2379]xxxxxxx
+  if (/^\+3538[2379]\d{7}$/.test(e164)) {
+    return true
+  }
+  // UK mobile: +44 7xxxxxxxxx
+  if (/^\+447\d{9}$/.test(e164)) {
+    return true
+  }
+  // Spain mobile: +34 6/7xxxxxxxx
+  if (/^\+34[67]\d{8}$/.test(e164)) {
+    return true
+  }
+  return false
+}
+
+/**
+ * Normalize + validate a mobile for website forms. Throws nothing — returns result object.
+ *
+ * @param {string} raw
+ * @returns {{ ok: true, phoneE164: string } | { ok: false, message: string }}
+ */
+export const validateMobilePhoneInput = (raw) => {
+  const trimmed = typeof raw === 'string' ? raw.trim() : ''
+  if (!trimmed) {
+    return { ok: false, message: 'Please enter a valid mobile number (Ireland, UK, or Spain).' }
+  }
+  const phoneE164 = computePhoneUniquenessKey(trimmed)
+  if (!phoneE164 || !isLikelyMobileE164(phoneE164)) {
+    return {
+      ok: false,
+      message:
+        'Enter a valid mobile number with country code or national format (e.g. 087… for Ireland, 07… for UK, or +34 6… for Spain). Landlines are not accepted.'
+    }
+  }
+  return { ok: true, phoneE164 }
+}

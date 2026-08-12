@@ -35,16 +35,16 @@ export type AdminSidebarItem = {
 }
 
 export const ADMIN_SIDEBAR_ITEMS: readonly AdminSidebarItem[] = [
-  { id: 'desk', label: 'Desk & inbox', description: 'Tickets, Stripe, publish lines', icon: Inbox },
+  { id: 'desk', label: 'Desk & inbox', description: 'Payments · messages · publish', icon: Inbox },
   { id: 'scan', label: 'Scan trip pass', description: 'Verify guest payment barcode', icon: ScanLine },
-  { id: 'forms', label: 'Website forms', description: 'Enquiry submissions', icon: FileText },
-  { id: 'testimonials', label: 'Testimonials', description: 'Homepage guest reviews', icon: Star },
-  { id: 'transfers', label: 'Transfer pipeline', description: 'Account lookup & drivers', icon: Car },
-  { id: 'packages', label: 'Packages', description: 'Client package builds', icon: Package },
-  { id: 'proposals', label: 'Proposals & workspace', description: 'PDF builders & CRM records', icon: PenLine },
-  { id: 'portal', label: 'Portal & clients', description: 'Accounts, access, resets', icon: Users },
-  { id: 'emails', label: 'Emails & comms', description: 'Branded sends & PDF access', icon: Mail },
-  { id: 'drivers', label: 'Driver calendar', description: 'Capacity & assignments', icon: Calendar }
+  { id: 'forms', label: 'Website forms', description: 'New forms · trip · price', icon: FileText },
+  { id: 'testimonials', label: 'Guest reviews', description: 'Approve for homepage', icon: Star },
+  { id: 'transfers', label: 'Transfers & drivers', description: 'Quoted · paid · dispatch', icon: Car },
+  { id: 'packages', label: 'Packages', description: 'Client builds · needs price', icon: Package },
+  { id: 'proposals', label: 'Documents & proposals', description: 'Send PDFs · CRM list', icon: PenLine },
+  { id: 'portal', label: 'Client accounts', description: 'Create · settings · reset', icon: Users },
+  { id: 'emails', label: 'Guest emails', description: 'Notes · templates · PDF keys', icon: Mail },
+  { id: 'drivers', label: 'Run calendar', description: 'Busy days · AGP sheets', icon: Calendar }
 ] as const
 
 type AdminSidebarProps = {
@@ -52,18 +52,23 @@ type AdminSidebarProps = {
   readonly onSectionChange: (id: AdminPortalSectionId) => void
   readonly mobileOpen: boolean
   readonly onMobileClose: () => void
+  /** Count of client trip builds waiting for admin pricing. */
+  readonly packagesNeedsReviewCount?: number
 }
 
 function NavButton({
   item,
   active,
+  badgeCount,
   onSelect
 }: {
   readonly item: AdminSidebarItem
   readonly active: boolean
+  readonly badgeCount?: number
   readonly onSelect: () => void
 }) {
   const Icon = item.icon
+  const showBadge = typeof badgeCount === 'number' && badgeCount > 0
   return (
     <button
       className={cx(
@@ -80,11 +85,16 @@ function NavButton({
       ) : null}
       <span
         className={cx(
-          'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg',
+          'relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg',
           active ? 'bg-fairway-800 text-white' : 'bg-forest-100/80 text-forest-700 group-hover:bg-fairway-100'
         )}
       >
         <Icon aria-hidden className="h-4 w-4" />
+        {showBadge ? (
+          <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-600 px-1 text-[10px] font-bold text-white">
+            {badgeCount > 9 ? '9+' : badgeCount}
+          </span>
+        ) : null}
       </span>
       <span className="min-w-0 flex-1 pt-0.5">
         <span className={cx('block text-sm font-semibold', active ? 'text-forest-950' : 'text-forest-900')}>
@@ -96,7 +106,13 @@ function NavButton({
   )
 }
 
-export function AdminSidebar({ activeSection, onSectionChange, mobileOpen, onMobileClose }: AdminSidebarProps) {
+export function AdminSidebar({
+  activeSection,
+  onSectionChange,
+  mobileOpen,
+  onMobileClose,
+  packagesNeedsReviewCount = 0
+}: AdminSidebarProps) {
   const select = (id: AdminPortalSectionId) => {
     onSectionChange(id)
     onMobileClose()
@@ -135,6 +151,7 @@ export function AdminSidebar({ activeSection, onSectionChange, mobileOpen, onMob
           {ADMIN_SIDEBAR_ITEMS.map((item) => (
             <NavButton
               active={activeSection === item.id}
+              badgeCount={item.id === 'packages' ? packagesNeedsReviewCount : undefined}
               item={item}
               key={item.id}
               onSelect={() => select(item.id)}

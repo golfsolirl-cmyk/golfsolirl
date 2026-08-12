@@ -41,13 +41,10 @@ export function PortalAddToYourTripStrip(props: {
         <div className="mt-2 h-px max-w-[7rem] rounded-full bg-gradient-to-r from-brand-400 via-brand-300/80 to-transparent" />
         <p className="mt-3 max-w-2xl text-base leading-relaxed text-forest-700 md:text-lg">
           {overlay ? (
-            <>
-              You already have trip desk threads — add another request while we finish loading your dashboard.
-            </>
+            <>Add transfers, golf, or accommodation while your dashboard finishes loading.</>
           ) : (
             <>
-              Request private transfers on the Costa del Sol, extra golf rounds, or hotel and accommodation. We pick this up on
-              your existing trip desk thread.
+              Need more for the Costa? Ask for private transfers, extra golf rounds, or accommodation — we reply under Messages.
             </>
           )}
         </p>

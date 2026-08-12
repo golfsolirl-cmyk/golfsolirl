@@ -5,7 +5,12 @@ import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import { pdfEmailTheme } from './pdf-email-brand.mjs'
 import { sanitizeStandardFontText } from '../shared/pdf-winansi-sanitize.mjs'
 import { getGsolSiteUrl } from './site-url.mjs'
-import { balanceAmountEur, normalizedDepositPercent } from './transfer-payment-amounts.mjs'
+import {
+  balanceAmountEur,
+  depositAmountEur,
+  isTransferFullUpfront,
+  normalizedDepositPercent
+} from './transfer-payment-amounts.mjs'
 import {
   UNIFIED_PDF_LAYOUT,
   drawUnifiedDocumentFooter,
@@ -31,8 +36,14 @@ const vatFromGross = (gross, treatment) => {
   return { rate, gross: g, net, vat }
 }
 
-const formatEur = (n) =>
-  new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n)
+/** ASCII currency for WinAnsi / Helvetica (avoid "?" for the euro glyph). */
+const formatEur = (n) => {
+  const num = new Intl.NumberFormat('en-IE', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(Number(n) || 0)
+  return `EUR ${num}`
+}
 
 const wrapLines = (text, font, size, maxW) => {
   const paragraphs = sanitizeStandardFontText(String(text ?? '')).split('\n')
@@ -181,8 +192,17 @@ export const createTransferVatQuotePdf = async (ctx) => {
   const treatment = String(ctx.booking.admin_price_vat_treatment ?? 'tourism').toLowerCase() === 'services' ? 'services' : 'tourism'
   const { net, vat } = vatFromGross(gross, treatment)
   const pay = String(ctx.booking.payment_status ?? 'unpaid').toLowerCase()
+  const fullUpfront = isTransferFullUpfront(ctx.booking)
+  const pct = normalizedDepositPercent(ctx.booking.deposit_percent)
+  const depositDue = depositAmountEur(gross, pct)
   const payLine =
-    pay === 'paid' ? 'Paid in full' : pay === 'deposit' ? 'Deposit recorded — balance outstanding' : 'Outstanding — quote only until paid'
+    pay === 'paid'
+      ? 'Paid in full'
+      : pay === 'deposit'
+        ? `Deposit recorded — ${100 - pct}% balance outstanding`
+        : fullUpfront
+          ? 'Outstanding — pay full quoted total'
+          : `Outstanding — ${pct}% deposit due now (${formatEur(depositDue)})`
 
   const doc = await PDFDocument.create()
   const shell = await loadPdfShell(doc)
@@ -226,11 +246,13 @@ export const createTransferVatQuotePdf = async (ctx) => {
   page.drawText(sanitizeStandardFontText(`Reference: ${String(ctx.booking.id)}`), { x: m + 14, y: ty, size: 8, font, color: t.muted })
   y -= 132
 
+  const showDepositDue = pay === 'unpaid' && !fullUpfront
+  const vatBoxH = showDepositDue ? 128 : 112
   page.drawRectangle({
     x: m,
-    y: y - 108,
+    y: y - vatBoxH,
     width: W - 2 * m,
-    height: 108,
+    height: vatBoxH,
     color: t.paleGreen,
     borderColor: t.sand,
     borderWidth: 0.5
@@ -248,10 +270,31 @@ export const createTransferVatQuotePdf = async (ctx) => {
   vy -= 16
   page.drawText(sanitizeStandardFontText(`Net (ex VAT): ${formatEur(net)}`), { x: m + 14, y: vy, size: 10, font, color: t.ink })
   vy -= 14
-  page.drawText(sanitizeStandardFontText(`VAT: ${formatEur(vat)}`), { x: m + 14, y: vy, size: 10, font, color: t.ink })
+  page.drawText(
+    sanitizeStandardFontText(
+      `VAT @ ${(treatment === 'services' ? IRISH_VAT_STANDARD : IRISH_VAT_TOURISM) * 100}%: ${formatEur(vat)}`
+    ),
+    { x: m + 14, y: vy, size: 10, font, color: t.ink }
+  )
   vy -= 14
-  page.drawText(sanitizeStandardFontText(`Total (incl. VAT): ${formatEur(gross)}`), { x: m + 14, y: vy, size: 11, font: fontBold, color: t.goldDeep })
-  y -= 120
+  page.drawText(sanitizeStandardFontText(`Total (incl. VAT): ${formatEur(gross)}`), {
+    x: m + 14,
+    y: vy,
+    size: 11,
+    font: fontBold,
+    color: t.goldDeep
+  })
+  if (showDepositDue) {
+    vy -= 14
+    page.drawText(sanitizeStandardFontText(`Due now (${pct}% deposit): ${formatEur(depositDue)}`), {
+      x: m + 14,
+      y: vy,
+      size: 10,
+      font: fontBold,
+      color: t.ink
+    })
+  }
+  y -= vatBoxH + 12
 
   if (pay === 'unpaid') {
     const dash = `${ctx.siteOrigin.replace(/\/+$/, '')}/dashboard`

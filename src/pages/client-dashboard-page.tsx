@@ -1,5 +1,5 @@
 import type { Session } from '@supabase/supabase-js'
-import { ChevronDown, MessageCircle, Ticket, UserRound } from 'lucide-react'
+import { ChevronDown, MessageCircle, UserRound } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { FocusTrapDialog } from '../components/focus-trap-dialog'
 import { ClientPortalIdentityHero, type ClientPortalTransferHeroRow } from '../components/client-portal-identity-hero'
@@ -19,8 +19,10 @@ import {
   type TransferPortalDocumentRow
 } from '../components/portal-client-proposals-pdf-viewer'
 import { PortalAddToYourTripStrip } from '../components/portal-add-to-your-trip-strip'
+import { ClientPortalSectionGuide } from '../components/client-portal-section-guide'
 import { PortalInterestCategoryGlyph } from '../components/portal-interest-category-glyph'
 import { PortalClientDataCard } from '../components/portal-client-data-card'
+import { EnquiryTripStageStrip } from '../components/enquiry-trip-stage-strip'
 import { PortalTransferRequestsSection } from '../components/portal-transfer-requests-section'
 import { PortalInvoicesPanel } from '../components/portal-invoices-panel'
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
@@ -54,6 +56,7 @@ import {
   type TripWorkspaceDraft
 } from '../lib/trip-workspace-draft'
 import { PortalTransferRouteBuilder } from '../components/portal-transfer-route-builder'
+import { isAllowedAdminLoginEmail } from '../lib/admin-login-email'
 import { useAuth, type Profile } from '../providers/auth-provider'
 import { cx } from '../lib/utils'
 import {
@@ -198,10 +201,10 @@ const resolveClientPhone = (session: Session, profile: Profile | null): string =
   return ''
 }
 
-const tripStageOptionRows: readonly (readonly [TripStageKey, string, string])[] = [
-  ['transfer', 'Airport & golf-day transfers', 'AGP meet-and-greet, golf-bag friendly vehicles.'],
-  ['golf', 'Golf rounds', 'Pick courses — use the map for the full Sol corridor.'],
-  ['hotel', 'Hotel / villa base', 'Notes for 1–8 guests; we match star level and location.']
+const tripStageOptionRows: readonly (readonly [TripStageKey, string, string, string])[] = [
+  ['transfer', '1 · Transfers', 'Airport, hotel, and golf-day private transfers.', 'Include transfers'],
+  ['golf', '2 · Golf courses', 'Choose the courses you want to play.', 'Include golf'],
+  ['hotel', '3 · Accommodation', 'Tell us the hotel or villa style you want.', 'Include accommodation']
 ]
 
 type ClientPortalTransferBookingRow = {
@@ -237,6 +240,8 @@ export function ClientDashboardPage() {
   })
   const [tripDraft, setTripDraft] = useState<TripWorkspaceDraft | null>(null)
   const [transferBuilderOpen, setTransferBuilderOpen] = useState(false)
+  const [tripBuildMessage, setTripBuildMessage] = useState<string | null>(null)
+  const [tripBuildBusy, setTripBuildBusy] = useState(false)
   const [enquiries, setEnquiries] = useState<ClientEnquiryRowLite[]>([])
   const [transferBookingsPortal, setTransferBookingsPortal] = useState<ClientPortalTransferBookingRow[]>([])
   const [onboardingName, setOnboardingName] = useState('')
@@ -641,6 +646,24 @@ export function ClientDashboardPage() {
       cancelled = true
     }
   }, [isLoading, session?.user?.id])
+
+  /** Operator magic links should land on admin — bounce off the client desk unless ?as=client. */
+  useEffect(() => {
+    if (isLoading || !session?.user) {
+      return
+    }
+    if (profile === null) {
+      return
+    }
+    const asClient = new URLSearchParams(window.location.search).get('as')?.trim().toLowerCase() === 'client'
+    if (asClient) {
+      return
+    }
+    const email = profile.email ?? session.user.email ?? ''
+    if (profile.role === 'admin' && isAllowedAdminLoginEmail(email)) {
+      window.location.replace('/dashboard/admin')
+    }
+  }, [isLoading, session?.user?.id, session?.user?.email, profile])
 
   useEffect(() => {
     void loadData()
@@ -1181,15 +1204,17 @@ export function ClientDashboardPage() {
   }, [session?.access_token])
 
   const flushTripDraftToProfile = useCallback(
-    (shaped: TripWorkspaceDraft) => {
+    (shaped: TripWorkspaceDraft, notifyAdmin = false) => {
       if (!session?.access_token) {
-        return
+        return Promise.resolve({ ok: false as const, error: 'Sign in required.' })
       }
-      void (async () => {
-        const direct = await persistPortalTripWorkspace(session, shaped)
-        if (!direct.ok) {
-          await persistPortalTripWorkspaceViaApi(session.access_token, shaped)
+      return (async () => {
+        const opts = { notifyAdmin }
+        const direct = await persistPortalTripWorkspace(session, shaped, opts)
+        if (direct.ok) {
+          return direct
         }
+        return persistPortalTripWorkspaceViaApi(session.access_token, shaped, opts)
       })()
     },
     [session]
@@ -1199,7 +1224,35 @@ export function ClientDashboardPage() {
     const shaped = ensureTripWorkspaceDraftShape(next)
     saveTripWorkspaceDraft(shaped)
     setTripDraft(shaped)
-    flushTripDraftToProfile(shaped)
+    void flushTripDraftToProfile(shaped, false)
+  }
+
+  const handleSendTripBuildForPricing = async () => {
+    if (!tripDraft || !session?.access_token) {
+      setTripBuildMessage('Sign in again to send your trip build.')
+      return
+    }
+    if (!tripDraft.stages.transfer && !tripDraft.stages.golf && !tripDraft.stages.hotel) {
+      setTripBuildMessage('Turn on at least one stage: transfers, golf, or accommodation.')
+      return
+    }
+    setTripBuildBusy(true)
+    setTripBuildMessage(null)
+    const shaped = ensureTripWorkspaceDraftShape({
+      ...tripDraft,
+      updatedAt: new Date().toISOString()
+    })
+    saveTripWorkspaceDraft(shaped)
+    setTripDraft(shaped)
+    const result = await flushTripDraftToProfile(shaped, true)
+    setTripBuildBusy(false)
+    if (!result.ok) {
+      setTripBuildMessage(result.error || 'Could not send your trip build.')
+      return
+    }
+    setTripBuildMessage(
+      'Sent — Golf Sol Ireland has your trip build. We’ll add a price on your dashboard shortly.'
+    )
   }
 
   const handleTripStageToggle = (key: TripStageKey) => () => {
@@ -1572,6 +1625,20 @@ export function ClientDashboardPage() {
     }
   }, [transferServiceCardBookingId, transferBookingsPortal])
 
+  const clientTripStageInput = useMemo(() => {
+    const priced = [...transferBookingsPortal]
+      .filter((t) => typeof t.admin_price_eur === 'number' && t.admin_price_eur > 0)
+      .sort((a, b) => String(b.updated_at ?? b.created_at ?? '').localeCompare(String(a.updated_at ?? a.created_at ?? '')))[0]
+    const anyTransfer = transferBookingsPortal[0]
+    const pay = priced?.payment_status ?? anyTransfer?.payment_status ?? null
+    return {
+      adminViewedAt: enquiries.length > 0 ? 'client' : null,
+      hasQuotePrice: Boolean(priced),
+      paymentStatus: pay,
+      invoicePaid: String(pay ?? '').toLowerCase() === 'paid'
+    }
+  }, [transferBookingsPortal, enquiries.length])
+
   if (isLoading || !session) {
     return <DashboardLoadingShell label="Loading your dashboard…" />
   }
@@ -1747,8 +1814,8 @@ export function ClientDashboardPage() {
 
   return (
     <DashboardLayout
-      kicker="Your client area"
-      subtitle="Use the menu on the left for your trip, payments, messages, contact details, and documents — one area at a time."
+      kicker="Your trip desk"
+      subtitle="Transfers, golf, and stay for the Costa — one menu item at a time."
       title={dashboardTitle}
       titleAdornment={interestHeroAdornment}
       variant="client"
@@ -1821,6 +1888,13 @@ export function ClientDashboardPage() {
               ) : null}
         </div>
 
+        <div className="mb-8 rounded-[2rem] border border-forest-100 bg-white px-5 py-5 shadow-soft sm:px-7">
+          <EnquiryTripStageStrip input={clientTripStageInput} variant="client" />
+          <p className="mt-3 font-ge text-sm leading-relaxed text-ge-gray500">
+            Where your trip is: form in → we send a price → you pay → ready to travel.
+          </p>
+        </div>
+
         <ClientPortalPaymentsDue
           anchorId="client-pay-now"
           className="mb-10"
@@ -1845,6 +1919,8 @@ export function ClientDashboardPage() {
           userId={session.user.id}
         />
 
+        <ClientPortalSectionGuide activeSection={activeClientSection} />
+
         <ClientPortalSection activeSection={activeClientSection} section="home">
           <div className="space-y-10">
             <PortalAddToYourTripStrip onSelect={openInterestModal} variant="page" />
@@ -1855,11 +1931,10 @@ export function ClientDashboardPage() {
                   id="client-submitted-forms-heading"
                   className="font-display text-2xl font-semibold tracking-tight text-forest-950 sm:text-[1.65rem]"
                 >
-                  Your submitted forms
+                  Forms you sent us
                 </h2>
                 <p className="mt-2 text-base leading-relaxed text-forest-700">
-                  Every enquiry and booking request you send from the website with this login email appears here — transfers,
-                  golf, accommodation, package calculator, and quick quotes.
+                  Website quotes and requests from this login — transfers, golf, accommodation, and packages.
                 </p>
               </div>
               <PortalClientDataCard sections={submittedFormsSections} />
@@ -1905,10 +1980,10 @@ export function ClientDashboardPage() {
             />
             {tripInvoicesPanel ?? (
               <section className="rounded-2xl border border-forest-100 bg-white p-6 shadow-sm md:p-8">
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Payments</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Pay</p>
                 <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Invoices &amp; receipts</h2>
                 <p className="mt-2 max-w-2xl text-base text-forest-700">
-                  Trip invoices from Golf Sol Ireland appear here once sent. Transfer card payments are in the section above.
+                  Trip invoices appear here when we send them. Transfer card payments are in the section above.
                 </p>
               </section>
             )}
@@ -1920,25 +1995,46 @@ export function ClientDashboardPage() {
         <section className="rounded-[2rem] border border-fairway-200/90 bg-gradient-to-br from-offwhite via-white to-[#f4faf6] p-6 shadow-soft md:p-9">
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Enquiry workspace</p>
-              <h2 className="font-display mt-2 text-3xl font-semibold text-forest-950 sm:text-4xl">Build on your enquiry</h2>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Trip builder</p>
+              <h2 className="font-display mt-2 text-3xl font-semibold text-forest-950 sm:text-4xl">
+                Build your trip in 3 stages
+              </h2>
               <p className="mt-2 max-w-2xl text-base text-forest-600 md:text-lg">
-                Reference <span className="font-mono font-semibold text-forest-900">{tripDraft.referenceId}</span> — choose
-                what you want quoted next. This saves to this browser until we connect it to your account in the database;
-                use <span className="font-medium">Save preferences</span> — stored on your profile and trip desk. Your team at Golf Sol Ireland sees
-                the full enquiry from your original form email.
+                Booking <span className="font-mono font-semibold text-forest-900">{tripDraft.referenceId}</span> — choose
+                transfers, golf, and/or stay, fill in the details, then send for a price. We reply with totals on this
+                dashboard.
               </p>
             </div>
             <LuxuryButton className="shrink-0" onClick={handleClearTripWorkspace} type="button" variant="outlineOnLight">
-              Clear workspace
+              Clear
             </LuxuryButton>
           </div>
 
+          <ol className="mt-6 grid gap-3 sm:grid-cols-3">
+            {tripStageOptionRows.map(([key, title, hint]) => (
+              <li
+                className={cx(
+                  'rounded-2xl border px-4 py-3',
+                  tripDraft.stages[key]
+                    ? 'border-fairway-300 bg-fairway-50/80'
+                    : 'border-forest-100 bg-white'
+                )}
+                key={key}
+              >
+                <p className="text-sm font-semibold text-forest-950">{title}</p>
+                <p className="mt-1 text-xs leading-snug text-forest-600">{hint}</p>
+                <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.12em] text-fairway-800">
+                  {tripDraft.stages[key] ? 'Included' : 'Off'}
+                </p>
+              </li>
+            ))}
+          </ol>
+
           <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(280px,400px)] lg:items-start">
             <div className="space-y-5">
-              <p className="text-sm font-semibold uppercase tracking-[0.12em] text-forest-700">What should we quote?</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.12em] text-forest-700">Choose stages</p>
               <div className="flex flex-col gap-3">
-                {tripStageOptionRows.map(([key, title, hint]) =>
+                {tripStageOptionRows.map(([key, title, hint, includeLabel]) =>
                   key === 'transfer' ? (
                     <div
                       className={cx(
@@ -1950,6 +2046,7 @@ export function ClientDashboardPage() {
                       key={key}
                     >
                       <input
+                        aria-label={includeLabel}
                         checked={tripDraft.stages.transfer}
                         className="mt-1 h-4 w-4 shrink-0 rounded border-forest-300 text-fairway-600 focus:ring-fairway-400"
                         onChange={handleTripStageToggle('transfer')}
@@ -1964,7 +2061,7 @@ export function ClientDashboardPage() {
                         <span className="block text-base font-semibold text-forest-950">{title}</span>
                         <span className="mt-0.5 block text-sm text-forest-600">{hint}</span>
                         <span className="mt-1.5 block text-sm font-semibold text-fairway-800">
-                          Tap here to open the transfer planner (pick-up, drops, contact number).
+                          Open transfer planner →
                         </span>
                       </button>
                     </div>
@@ -1974,6 +2071,7 @@ export function ClientDashboardPage() {
                       key={key}
                     >
                       <input
+                        aria-label={includeLabel}
                         checked={tripDraft.stages[key]}
                         className="mt-1 h-4 w-4 rounded border-forest-300 text-fairway-600 focus:ring-fairway-400"
                         onChange={handleTripStageToggle(key)}
@@ -2008,10 +2106,10 @@ export function ClientDashboardPage() {
               {tripDraft.stages.golf ? (
                 <div>
                   <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="trip-courses">
-                    Preferred courses (multi-select)
+                    Preferred golf courses
                   </label>
                   <select
-                    className="h-48 w-full rounded-2xl border-2 border-orange-400 bg-white px-3 py-2 text-sm text-forest-900 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-300/70"
+                    className="h-48 w-full rounded-2xl border-2 border-forest-200 bg-white px-3 py-2 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
                     id="trip-courses"
                     multiple
                     onChange={handleTripCoursesChange}
@@ -2023,9 +2121,9 @@ export function ClientDashboardPage() {
                       </option>
                     ))}
                   </select>
-                  <p className="mt-2 text-xs text-ge-gray500">Hold Ctrl / ⌘ to select several. Corridor map: </p>
+                  <p className="mt-2 text-xs text-ge-gray500">Hold Ctrl / ⌘ to select several.</p>
                   <LuxuryButton className="mt-2" href="/golf-map" variant="outlineOnLight">
-                    Open interactive map
+                    Open course map
                   </LuxuryButton>
                 </div>
               ) : null}
@@ -2033,13 +2131,13 @@ export function ClientDashboardPage() {
               {tripDraft.stages.hotel ? (
                 <div>
                   <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="trip-hotel">
-                    Hotel notes
+                    Accommodation notes
                   </label>
                   <textarea
                     className={cx(inputClass, 'min-h-[100px]')}
                     id="trip-hotel"
                     onChange={handleTripHotelNotes}
-                    placeholder="e.g. 5★ Marbella front line, twin rooms, ground floor, B&B…"
+                    placeholder="e.g. 4★ near the courses, twin rooms, B&B, walking distance to old town…"
                     value={tripDraft.hotelNotes}
                   />
                 </div>
@@ -2059,8 +2157,7 @@ export function ClientDashboardPage() {
               ) : tripDraft.stages.transfer ? (
                 <div className="rounded-2xl border border-dashed border-forest-200 bg-white p-5 text-center shadow-sm">
                   <p className="text-sm text-forest-700">
-                    Build your route: Málaga Airport or a corridor hotel as pick-up, then add up to eight stops including
-                    airports, hotels, and courses.
+                    Plan pick-up (Málaga Airport or hotel) and stops for courses and hotels.
                   </p>
                   <LuxuryButton className="mt-4" onClick={() => setTransferBuilderOpen(true)} type="button" variant="outlineOnLight">
                     Open transfer planner
@@ -2068,8 +2165,7 @@ export function ClientDashboardPage() {
                 </div>
               ) : (
                 <p className="rounded-2xl border border-forest-100/80 bg-offwhite/60 p-4 text-sm text-forest-600 lg:max-w-none">
-                  Tick <strong className="font-medium text-forest-800">Airport &amp; golf-day transfers</strong> on the left to
-                  plan your corridor transfers here.
+                  Turn on <strong className="font-medium text-forest-800">1 · Transfers</strong> to plan your route here.
                 </p>
               )}
             </div>
@@ -2077,7 +2173,7 @@ export function ClientDashboardPage() {
 
           {tripIllustrative ? (
             <div className="mt-8 rounded-2xl border border-forest-200 bg-white px-5 py-4 text-sm text-forest-800">
-              <p className="font-semibold text-forest-950">Illustrative ballpark (not a binding quote)</p>
+              <p className="font-semibold text-forest-950">Rough guide only (not your final price)</p>
               <p className="mt-1 text-forest-700">
                 From roughly{' '}
                 <span className="font-semibold text-forest-900">
@@ -2086,29 +2182,47 @@ export function ClientDashboardPage() {
                 to{' '}
                 <span className="font-semibold text-forest-900">
                   {new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(tripIllustrative.high)}
-                </span>{' '}
-                depending on dates, tee times, and hotel availability. We will confirm everything in writing.
+                </span>
+                . We’ll confirm exact pricing after you send this build.
               </p>
             </div>
           ) : null}
 
+          {tripBuildMessage ? (
+            <p
+              className="mt-6 rounded-2xl border border-fairway-200 bg-fairway-50/70 px-4 py-3 text-sm text-forest-800"
+              role="status"
+            >
+              {tripBuildMessage}
+            </p>
+          ) : null}
+
           <div className="mt-6 flex flex-wrap gap-3">
             <LuxuryButton
-              onClick={() => tripDraft && persistTripDraft({ ...tripDraft, updatedAt: new Date().toISOString() })}
+              disabled={tripBuildBusy}
+              onClick={() => void handleSendTripBuildForPricing()}
               type="button"
               variant="primary"
             >
-              Save preferences
+              {tripBuildBusy ? 'Sending…' : 'Save & send for pricing'}
+            </LuxuryButton>
+            <LuxuryButton
+              disabled={tripBuildBusy}
+              onClick={() => tripDraft && persistTripDraft({ ...tripDraft, updatedAt: new Date().toISOString() })}
+              type="button"
+              variant="outlineOnLight"
+            >
+              Save draft only
             </LuxuryButton>
           </div>
         </section>
       ) : (
         <section className="rounded-2xl border border-forest-100 bg-white p-6 shadow-sm md:p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Trip planner</p>
-          <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Build on your enquiry</h2>
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Trip builder</p>
+          <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Build your trip in 3 stages</h2>
           <p className="mt-2 max-w-2xl text-base text-forest-700">
-            Submit a quote form on the website with this login email — your enquiry workspace opens here so you can add
-            transfers, golf, and hotels.
+            Submit a quote form on the website with this login email first — then you can add transfers, golf courses, and
+            accommodation here and send them for pricing.
           </p>
         </section>
       )}
@@ -2116,21 +2230,14 @@ export function ClientDashboardPage() {
 
         <ClientPortalSection activeSection={activeClientSection} section="contact">
       <section className="relative rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Your contact details</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Your details</p>
         <h2 className="font-display mt-2 text-3xl font-semibold text-forest-950 md:text-4xl">How we reach you</h2>
 
         {needsManualContactForm ? (
           <>
             <p className="mt-2 max-w-2xl text-base text-forest-600 md:text-lg">
-              You signed in directly — add your name and phone once so we can reach you. Your email is the one you used to sign
-              in. Website enquiries you submit later with the same email still appear in linked requests above.
-              {accountRef ? (
-                <>
-                  {' '}
-                  Your account number is already assigned (see below) — same GSI-style reference as enquiry confirmations. Only
-                  name and phone can be edited here.
-                </>
-              ) : null}
+              Add your name and phone once so we can reach you about pickups. Email stays as your login.
+              {accountRef ? <> Your account number is below — only name and phone can be edited here.</> : null}
             </p>
             <form className="mt-6 max-w-xl space-y-4" noValidate onSubmit={(e) => void handlePortalOnboardingSubmit(e)}>
               <div>
@@ -2177,14 +2284,12 @@ export function ClientDashboardPage() {
                   <>
                     <p className="mt-1 font-mono text-base font-semibold text-forest-950">{accountRef}</p>
                     <p className="mt-2 max-w-xl text-xs text-forest-600">
-                      This is your fixed account ID — it must match the number shown in “Your account” at the top. It cannot be
-                      changed here (only name and phone above).
+                      Same number as in “Your account” above. It cannot be changed here.
                     </p>
                   </>
                 ) : (
                   <p className="text-sm text-forest-700">
-                    Assigned automatically when you save — same style as enquiry references (e.g. GSI-…). Only name and phone can
-                    be edited.
+                    Assigned automatically when you save (e.g. GSI-…). Only name and phone can be edited.
                   </p>
                 )}
               </div>
@@ -2201,15 +2306,9 @@ export function ClientDashboardPage() {
         ) : needsConfirmImportedContact ? (
           <>
             <p className="mt-2 max-w-2xl text-base text-forest-600 md:text-lg">
-              We imported your name and phone from your website enquiry. Confirm they are correct for this account — we then
-              {accountRef ? ' unlock messaging the team.' : ' assign your account number and unlock messaging the team.'}
-              {accountRef ? (
-                <>
-                  {' '}
-                  Your account number is already on file below — the same GSI-style reference as enquiry confirmations and as in
-                  “Your account” at the top.
-                </>
-              ) : null}
+              We filled these from your website form. Confirm they’re right
+              {accountRef ? ' — then you can message us.' : ', and we’ll assign your account number so you can message us.'}
+              {accountRef ? <> Your account number is below (same as at the top of the page).</> : null}
             </p>
             <dl className="mt-5 grid gap-4 text-sm text-forest-800 sm:grid-cols-2">
               <div>
@@ -2231,13 +2330,10 @@ export function ClientDashboardPage() {
                 </dd>
                 {accountRef ? (
                   <p className="mt-2 max-w-xl text-xs text-forest-600">
-                    Must match the number in “Your account” above. This reference is not editable; only your name and phone can be
-                    changed after onboarding.
+                    Same as “Your account” above — not editable here.
                   </p>
                 ) : (
-                  <p className="mt-2 max-w-xl text-xs text-forest-600">
-                    Same style as enquiry references (e.g. GSI-…); assigned when you confirm.
-                  </p>
+                  <p className="mt-2 max-w-xl text-xs text-forest-600">Assigned when you confirm (e.g. GSI-…).</p>
                 )}
               </div>
             </dl>
@@ -2276,8 +2372,7 @@ export function ClientDashboardPage() {
               <dd className="mt-1 font-mono text-base font-semibold text-forest-950">{accountRef || '— pending'}</dd>
               {!accountRef ? (
                 <p className="mt-2 max-w-xl text-xs text-forest-600">
-                  This is the same style of ID as on your enquiry confirmation. Golf Sol Ireland can add it from admin when your
-                  trip is on file.
+                  We’ll add your account number once your trip is on file.
                 </p>
               ) : null}
             </div>
@@ -2290,10 +2385,10 @@ export function ClientDashboardPage() {
       <section className="relative rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Interest tickets</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Messages</p>
               <h2 className="font-display mt-2 text-xl font-semibold text-forest-950 md:text-2xl">Ask Golf Sol Ireland</h2>
               <p className="mt-1 max-w-2xl text-sm text-forest-600">
-                Open a ticket for transfers, golf courses, or hotels — we reply in the thread below.
+                Message us about transfers, golf courses, or hotels — we reply in the same thread.
               </p>
             </div>
             <button
@@ -2312,8 +2407,8 @@ export function ClientDashboardPage() {
                 aria-hidden
                 className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.12)_45%,transparent_90%)] opacity-0 transition group-hover:translate-x-full group-hover:opacity-100 group-hover:duration-700"
               />
-              <Ticket className="relative h-4 w-4 shrink-0 text-brand-300" strokeWidth={2.25} aria-hidden />
-              <span className="relative">{teamMessagingOpen ? 'Hide ticketing' : 'Open ticketing'}</span>
+              <MessageCircle className="relative h-4 w-4 shrink-0 text-brand-300" strokeWidth={2.25} aria-hidden />
+              <span className="relative">{teamMessagingOpen ? 'Hide messages' : 'Write a message'}</span>
               <ChevronDown
                 aria-hidden
                 className={cx(
@@ -2370,14 +2465,14 @@ export function ClientDashboardPage() {
                               minute: '2-digit'
                             })}
                           </span>
-                          <span className="mt-1 block text-xs text-fairway-700">Open thread</span>
+                          <span className="mt-1 block text-xs text-fairway-700">Open conversation</span>
                         </span>
                       </button>
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="mt-4 text-sm text-forest-600">No open tickets yet — use the buttons above to start one.</p>
+                <p className="mt-4 text-sm text-forest-600">No messages yet — use the buttons above to start one.</p>
               )}
             </div>
           ) : null}
@@ -2534,7 +2629,9 @@ export function ClientDashboardPage() {
               <h3 className="font-display pr-16 text-lg font-semibold text-forest-950 md:text-xl" id="interest-ticket-title">
                 {PORTAL_INTEREST_LABELS[interestModalCategory]}
               </h3>
-              <p className="mt-2 text-sm text-forest-600">Add a note for the team (optional). We open a ticket with this heading.</p>
+              <p className="mt-2 text-sm text-forest-600">
+                Optional note — dates, party size, or anything we should know. We reply under Messages.
+              </p>
               <label className={`${labelClass} mt-5`} htmlFor="interest-ticket-body">
                 Message
               </label>
@@ -2569,13 +2666,11 @@ export function ClientDashboardPage() {
             <section>
               <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Proposals &amp; PDFs</p>
-                  <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Documents from Golf Sol Ireland</h2>
+                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Documents</p>
+                  <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Quotes &amp; letters from us</h2>
                   <p className="mt-2 max-w-2xl text-base text-forest-600 md:text-lg">
-                    Terms, thank-you letters, and formal proposals appear in the preview when Golf Sol Ireland enables them for
-                    your account. After we save a transfer price for you, your original request snapshot, VAT quote PDF, and a
-                    terms summary appear under <span className="font-semibold text-forest-800">Your paper trail</span>. The
-                    preview is read-only — print, open in a new tab, download the PDF, or share a link to this dashboard.
+                    Open, print, or download PDFs we send for your trip — quotes, terms, and confirmations. Nothing here needs
+                    editing; it’s your copy of what we sent.
                   </p>
                 </div>
               </div>
@@ -2596,10 +2691,9 @@ export function ClientDashboardPage() {
             profile?.portal_proposals_enabled !== true &&
             profile?.portal_pdf_library_enabled === true ? (
                 <div className="rounded-[2rem] border border-forest-100 bg-offwhite/90 px-6 py-8 text-sm text-forest-700 md:px-10">
-                  <p className="font-semibold text-forest-900">Formal proposals</p>
+                  <p className="font-semibold text-forest-900">Proposal letters</p>
                   <p className="mt-2 max-w-2xl">
-                    Your PDF library can be shown separately. Formal proposal previews stay hidden until Golf Sol Ireland enables
-                    that option for your account.
+                    Terms and thank-you files can show here. Full proposal letters appear when we turn that on for your account.
                   </p>
                 </div>
               ) : null}
@@ -2615,15 +2709,13 @@ export function ClientDashboardPage() {
                 className="pointer-events-none absolute -bottom-24 -left-12 h-40 w-40 rounded-full bg-fairway-400/15 blur-3xl"
               />
               <div className="relative">
-                <p className="text-xs font-bold uppercase tracking-[0.22em] text-brand-600">Your paper trail, in one place</p>
+                <p className="text-xs font-bold uppercase tracking-[0.22em] text-brand-600">Documents</p>
                 <h3 className="font-display mt-3 text-xl font-semibold tracking-tight text-forest-950 md:text-2xl">
-                  The PDF shelf is almost ready
+                  Nothing here yet
                 </h3>
                 <p className="mt-3 max-w-2xl leading-relaxed">
-                  When Golf Sol Ireland switches this on for you, your terms, thank-you letter, and formal proposals will land
-                  here as polished PDFs — same preview you get after a quote, with print and share at your fingertips. Nothing to
-                  do for now except keep an eye on this card; the moment we publish a document for your trip, it will show up
-                  automatically.
+                  When we send a quote PDF, terms, or confirmation for your trip, it will show up here automatically. No action
+                  needed until then.
                 </p>
               </div>
             </section>

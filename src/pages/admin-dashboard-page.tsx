@@ -15,11 +15,11 @@ import { AdminDriverCalendarPanel } from '../components/admin-driver-calendar-pa
 import { AdminTransferPassScanPanel } from '../components/admin-transfer-pass-scan-panel'
 import { AdminTransferPipeline } from '../components/admin-transfer-pipeline'
 import { AdminTestimonialsPanel } from '../components/admin-testimonials-panel'
+import { AdminDocumentSendDesk } from '../components/admin-document-send-desk'
+import { AdminEmailsCommsDesk } from '../components/admin-emails-comms-desk'
+import { AdminEnquiryCardQueue } from '../components/admin-enquiry-card-queue'
 import { TransferPaymentStatusBadge } from '../components/transfer-payment-status-badge'
-import { PortalClientDataCard } from '../components/portal-client-data-card'
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
-import { buildClientDataCardSections, type AccountDeskDisplay } from '../lib/client-data-card'
-import { contactInfo } from '../pages/golf-experience/data/copy'
 import { formatDateTimeDdMmYy } from '../lib/date-format-ie'
 import { LuxuryButton } from '../components/ui/button'
 import { fetchPackageBuildsAdminList, isMissingClientDetailsColumnError } from '../lib/fetch-package-builds'
@@ -34,6 +34,7 @@ import {
   mergeTripDetailsWithSaved,
   mergeAdminQuoteIntoWebsiteFormConfig,
   packageBuildDbSourceLabel,
+  packageBuildNeedsAdminReview,
   parseAnyPackageBuildRowConfig,
   serializeTripDetailsForDb,
   TRIP_DETAILS_DASHBOARD_EXCLUDED_SECTION_TITLES,
@@ -111,12 +112,6 @@ type AdminInterestTicketRow = PortalInterestTicketRow & {
   client_name: string | null
   client_phone: string | null
   client_account_ref: string | null
-}
-
-const ADMIN_OPERATIONS_DESK_CARD: AccountDeskDisplay = {
-  sectionTitle: 'Admin',
-  fullName: 'Greg McDonald',
-  phone: contactInfo.phoneDisplay
 }
 
 const MANUAL_OFFER_PORTAL_CATEGORY: Record<AdminManualPackageKind, PortalInterestCategory> = {
@@ -3609,18 +3604,6 @@ export function AdminDashboardPage() {
     }
   }
 
-  const adminDataCardSections = useMemo(
-    () =>
-      buildClientDataCardSections({
-        profile,
-        userEmail: session?.user?.email ?? null,
-        enquiries: [],
-        packageBuilds: [],
-        accountDesk: ADMIN_OPERATIONS_DESK_CARD
-      }),
-    [profile, session?.user?.email]
-  )
-
   /** Operations hero uses a fixed desk identity (not the Supabase profile row). */
   const adminGreetingFirst = 'Greg'
   const adminHeroTitle = `Hello, ${adminGreetingFirst}`
@@ -3746,7 +3729,11 @@ export function AdminDashboardPage() {
         </div>
       ) : null}
 
-      <AdminPortalShell activeSection={activeAdminSection} onSectionChange={setActiveAdminSection}>
+      <AdminPortalShell
+        activeSection={activeAdminSection}
+        onSectionChange={setActiveAdminSection}
+        packagesNeedsReviewCount={packageBuilds.filter((row) => packageBuildNeedsAdminReview(row.config)).length}
+      >
         {accountLookupSeedFromTable && activeAdminSection !== 'transfers' ? (
           <div aria-hidden className="pointer-events-none fixed h-0 w-0 overflow-hidden opacity-0">
             <AdminAccountTransfersHub
@@ -3755,63 +3742,51 @@ export function AdminDashboardPage() {
             />
           </div>
         ) : null}
-        <AdminOperationsHubHero adminFirstName={adminGreetingFirst} />
+        <AdminOperationsHubHero
+          activeSection={activeAdminSection}
+          adminFirstName={adminGreetingFirst}
+        />
+
 
         <AdminPortalSection activeSection={activeAdminSection} section="desk">
         <AdminOperationsSectionShell
           bodyClassName="space-y-8 sm:space-y-10 sm:py-8"
-          hideHeader
+          description="Three simple jobs: see money in, reply to guests, add a priced line to their trip."
           id="admin-hub-payments"
+          kicker="Desk"
+          title="Inbox & payments"
         >
-          <PortalClientDataCard sections={adminDataCardSections} />
-
           <AdminPaidTripsRevenuePanel />
 
-          <div className="ge-on-dark rounded-[1.35rem] border border-brand-700/40 bg-gradient-to-br from-[#0f3d24] via-[#143d28] to-[#0a2416] px-5 py-4 shadow-[0_12px_32px_rgba(11,73,52,0.2)] ring-1 ring-white/10 sm:px-6 sm:py-5">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
-              <span className="inline-flex w-fit shrink-0 rounded-lg border border-white/15 bg-forest-900 px-2.5 py-1.5 font-ge text-[0.58rem] font-extrabold uppercase tracking-[0.18em] text-white">
-                Stripe &amp; receipts
-              </span>
-              <p className="min-w-0 flex-1 text-sm leading-relaxed text-white/95">
-                Same receipts and card totals guests see after checkout. Open{' '}
-                <strong className="font-semibold text-white">Desk &amp; inbox</strong> in the left menu when you need this block.
-              </p>
-            </div>
-          </div>
-
-          <div className="relative border-t border-forest-200/80 pt-8">
-            <div className="mb-6 max-w-3xl">
-              <p className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.22em] text-brand-600">Client interest tickets</p>
-              <h3 className="font-display mt-2 text-xl font-semibold tracking-tight text-forest-950 sm:text-2xl">
-                Transfers, golf &amp; hotels
+          <div className="relative scroll-mt-28 rounded-[2rem] border border-forest-100 bg-white p-5 shadow-soft sm:p-7" id="admin-hub-tickets">
+            <div className="mb-5 max-w-2xl">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-700">2 · Messages</p>
+              <h3 className="font-display mt-1 text-xl font-semibold text-forest-950 sm:text-2xl">
+                Guest messages
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-forest-600">
-                When a signed-in client opens a thread from their dashboard, it appears here. Reply to send an admin message back into
-                their ticket timeline.
+                Guests write from their dashboard about transfers, golf, or hotels. Pick a thread and reply — they get it in the portal and by email.
               </p>
             </div>
             {interestAdminTicketsError ? (
-              <p className="mb-6 text-sm text-brand-900" role="alert">
+              <p className="mb-5 text-sm text-brand-900" role="alert">
                 {interestAdminTicketsError}
               </p>
             ) : null}
-            <div className="grid gap-6 lg:grid-cols-2">
-              <div className="rounded-[2rem] border border-forest-100 bg-white p-5 shadow-soft md:p-6">
+            <div className="grid gap-5 lg:grid-cols-2">
+              <div className="rounded-2xl border border-forest-100 bg-offwhite/50 p-4 sm:p-5">
                 <div className="flex flex-wrap items-center gap-2">
-                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-700">Open tickets</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-700">Inbox</p>
                   {openInterestTicketCount > 0 ? (
-                    <span
-                      className="inline-flex items-center rounded-full bg-chrome-100 px-2.5 py-0.5 text-xs font-semibold text-brand-950 ring-1 ring-amber-200/80"
-                      title="Tickets still open — client is waiting for your first reply or follow-up."
-                    >
-                      {openInterestTicketCount} awaiting reply
+                    <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-950">
+                      {openInterestTicketCount} waiting
                     </span>
                   ) : interestAdminTickets.length > 0 ? (
                     <span className="text-xs font-medium text-ge-gray500">All caught up</span>
                   ) : null}
                 </div>
                 {interestAdminTickets.length === 0 ? (
-                  <p className="mt-3 text-sm text-forest-600">No tickets yet.</p>
+                  <p className="mt-3 text-sm text-forest-600">No messages yet — when a guest writes from their dashboard, it appears here.</p>
                 ) : (
                   <>
                     <ul className="mt-3 max-h-[420px] space-y-2 overflow-y-auto text-sm">
@@ -3876,12 +3851,12 @@ export function AdminDashboardPage() {
                   </>
                 )}
               </div>
-              <div className="rounded-[2rem] border border-forest-100 bg-white p-5 shadow-soft md:p-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-700">Thread</p>
+              <div className="rounded-2xl border border-forest-100 bg-offwhite/50 p-4 sm:p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-700">Conversation</p>
                 {!selectedAdminTicketId ? (
-                  <p className="mt-3 text-sm text-forest-600">Select a ticket to read messages and reply.</p>
+                  <p className="mt-3 text-sm text-forest-600">Select a message on the left to read and reply.</p>
                 ) : adminTicketMessagesLoading ? (
-                  <p className="mt-3 text-sm text-forest-600">Loading messages…</p>
+                  <p className="mt-3 text-sm text-forest-600">Loading…</p>
                 ) : (
                   <>
                     {selectedAdminInterestTicket ? (
@@ -3957,18 +3932,25 @@ export function AdminDashboardPage() {
             </div>
           </div>
 
-          <section className="relative mt-10 scroll-mt-28 border-t border-forest-200/80 pt-8" id="admin-hub-publish">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Publish client packages</p>
-            <h3 className="font-display mt-2 text-xl font-semibold text-forest-950 md:text-2xl">Transfers, golf &amp; hotel</h3>
+          <section className="scroll-mt-28 rounded-[2rem] border border-forest-100 bg-white p-5 shadow-soft sm:p-7" id="admin-hub-publish">
+            <div className="max-w-2xl">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-700">3 · Add to their trip</p>
+              <h3 className="font-display mt-1 text-xl font-semibold text-forest-950 sm:text-2xl">
+                Publish a priced line
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-forest-600">
+                Put a transfer, golf, or hotel line on the guest’s dashboard with a price. They see it after you publish.
+              </p>
+            </div>
 
             <form
-              className="mt-6 max-w-2xl space-y-5 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8"
+              className="mt-6 max-w-2xl space-y-4"
               noValidate
               onSubmit={(e) => void handlePublishManualPackage(e)}
             >
               <div>
                 <label className={adminTripLabelClass} htmlFor="manual-offer-email">
-                  Client login email
+                  Guest login email
                 </label>
                 <input
                   autoComplete="email"
@@ -3978,24 +3960,24 @@ export function AdminDashboardPage() {
                     setManualOfferEmail(e.target.value)
                     setManualOfferMessage(null)
                   }}
-                  placeholder="same@email they use to sign in"
+                  placeholder="Same email they use to sign in"
                   type="email"
                   value={manualOfferEmail}
                 />
               </div>
 
               <fieldset>
-                <legend className={adminTripLabelClass}>Package type</legend>
-                <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <legend className={adminTripLabelClass}>What is this for?</legend>
+                <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                   {(
                     [
                       ['transfer', 'Transfers'],
-                      ['golf', 'Golf courses'],
+                      ['golf', 'Golf'],
                       ['hotel', 'Hotel']
                     ] as const
                   ).map(([value, label]) => (
                     <label
-                      className="flex cursor-pointer items-center gap-3 rounded-2xl border border-forest-200 bg-offwhite/80 px-4 py-3 text-sm font-medium text-forest-900 has-[:checked]:border-fairway-500 has-[:checked]:bg-white"
+                      className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-forest-200 bg-offwhite/80 px-3.5 py-2.5 text-sm font-medium text-forest-900 has-[:checked]:border-fairway-500 has-[:checked]:bg-fairway-50"
                       key={value}
                     >
                       <input
@@ -4018,7 +4000,7 @@ export function AdminDashboardPage() {
 
               <div>
                 <label className={adminTripLabelClass} htmlFor="manual-offer-title">
-                  Title (shown on client dashboard)
+                  Short title
                 </label>
                 <input
                   className={adminTripInputClass}
@@ -4027,7 +4009,7 @@ export function AdminDashboardPage() {
                     setManualOfferTitle(e.target.value)
                     setManualOfferMessage(null)
                   }}
-                  placeholder="e.g. Private AGP return + two golf-day shuttles"
+                  placeholder="e.g. Airport return + 2 golf days"
                   type="text"
                   value={manualOfferTitle}
                 />
@@ -4035,26 +4017,26 @@ export function AdminDashboardPage() {
 
               <div>
                 <label className={adminTripLabelClass} htmlFor="manual-offer-summary">
-                  Description / inclusions
+                  What’s included
                 </label>
                 <textarea
-                  className={cx(adminTripInputClass, 'min-h-[120px] resize-y')}
+                  className={cx(adminTripInputClass, 'min-h-[96px] resize-y')}
                   id="manual-offer-summary"
                   onChange={(e) => {
                     setManualOfferSummary(e.target.value)
                     setManualOfferMessage(null)
                   }}
-                  placeholder="What is included, vehicle type, courses, board basis, etc."
+                  placeholder="Vehicle, courses, hotel notes…"
                   value={manualOfferSummary}
                 />
               </div>
 
               <div>
                 <label className={adminTripLabelClass} htmlFor="manual-offer-price">
-                  Price (EUR, total for this line)
+                  Price (€)
                 </label>
                 <input
-                  className={cx(adminTripInputClass, 'max-w-[220px]')}
+                  className={cx(adminTripInputClass, 'max-w-[200px]')}
                   id="manual-offer-price"
                   inputMode="decimal"
                   min={0}
@@ -4062,15 +4044,15 @@ export function AdminDashboardPage() {
                     setManualOfferPrice(e.target.value)
                     setManualOfferMessage(null)
                   }}
-                  placeholder="e.g. 1890"
+                  placeholder="1890"
                   type="number"
                   value={manualOfferPrice}
                 />
               </div>
 
-              <div className="flex flex-wrap items-center gap-3 pt-2">
+              <div className="flex flex-wrap items-center gap-3 pt-1">
                 <LuxuryButton disabled={manualOfferBusy} type="submit" variant="primary">
-                  {manualOfferBusy ? 'Publishing…' : 'Publish to client dashboard'}
+                  {manualOfferBusy ? 'Publishing…' : 'Publish to guest dashboard'}
                 </LuxuryButton>
               </div>
 
@@ -4106,84 +4088,70 @@ export function AdminDashboardPage() {
           <AdminOperationsSectionShell
             className="scroll-mt-28"
             id="admin-hub-forms"
-            kicker="Step 1 · Website forms"
-            title="Recent form submissions"
-            description="Loading workspace data — form rows appear here once the list is ready."
+            kicker="Website forms"
+            title="New forms"
+            description="Loading guest forms…"
           >
             <p className="text-sm font-medium text-forest-600">Loading…</p>
           </AdminOperationsSectionShell>
         ) : (
           <>
             <AdminOperationsSectionShell
-              bodyClassName="space-y-6 sm:py-8"
+              bodyClassName="space-y-5 sm:py-8"
               className="scroll-mt-28"
-              description={
-                <>
-                  <strong className="font-medium text-forest-900">New</strong> submissions stay here until you open one (click{' '}
-                  <span className="font-medium text-forest-800">Ref</span>). That loads{' '}
-                  <span className="font-medium text-forest-800">Account lookup → Customer activity</span> (open the Transfers tab to see
-                  results) and moves the row to <span className="font-medium text-forest-800">Already viewed</span> below.
-                </>
-              }
+              description="New website forms land here first. Open a card → build the trip → set a price → message the guest."
               headerAside={
                 enquiries.length > 0 ? (
-                  <div className="flex shrink-0 flex-col gap-2 self-start sm:flex-row sm:items-center">
-                    <LuxuryButton
-                      className="!px-5 !py-2.5 !text-xs"
-                      onClick={() => setEnquiriesSectionVisible((v) => !v)}
-                      type="button"
-                      variant="outline"
-                    >
-                      {enquiriesSectionVisible ? 'Hide table' : 'Show table'}
-                    </LuxuryButton>
-                    <LuxuryButton
-                      className="!border-red-300 !px-5 !py-2.5 !text-xs !text-red-800 hover:!bg-red-50"
-                      disabled={enquiryDeletingAll || enquiryDeletingId !== null}
-                      onClick={() => void handleRemoveAllEnquiries()}
-                      type="button"
-                      variant="outline"
-                    >
-                      {enquiryDeletingAll ? 'Removing…' : 'Remove all enquiries'}
-                    </LuxuryButton>
-                  </div>
+                  <button
+                    className="text-xs font-semibold uppercase tracking-[0.12em] text-forest-700 underline decoration-forest-300 underline-offset-4 hover:text-forest-950"
+                    onClick={() => setEnquiriesSectionVisible((v) => !v)}
+                    type="button"
+                  >
+                    {enquiriesSectionVisible ? 'Hide list' : 'Show list'}
+                  </button>
                 ) : undefined
               }
               id="admin-hub-forms"
-              kicker="Step 1 · Website forms"
-              title={`Recent form submissions${unviewedEnquiries.length > 0 ? ` (${unviewedEnquiries.length} new)` : ''}`}
+              kicker="Website forms"
+              title={
+                unviewedEnquiries.length > 0
+                  ? `New forms (${unviewedEnquiries.length})`
+                  : 'New forms'
+              }
             >
               {enquiriesSectionVisible && enquiries.length > 0 ? (
-                <div className="rounded-2xl border border-forest-200/80 bg-fairway-50/40 px-4 py-4 sm:px-5">
-                  <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-700" htmlFor="enquiry-filter">
-                    Filter by ref, name, email, or interest
-                  </label>
-                  <input
-                    className="w-full max-w-xl rounded-2xl border-2 border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none transition focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
-                    id="enquiry-filter"
-                    onChange={(e) => setEnquirySearchQuery(e.target.value)}
-                    placeholder="e.g. GSI-… or part of a name"
-                    type="search"
-                    value={enquirySearchQuery}
-                  />
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                  <div className="min-w-0 flex-1">
+                    <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.12em] text-forest-700" htmlFor="enquiry-filter">
+                      Find a guest
+                    </label>
+                    <input
+                      className="w-full max-w-xl rounded-xl border border-forest-200 bg-white px-4 py-2.5 text-sm text-forest-900 outline-none transition focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
+                      id="enquiry-filter"
+                      onChange={(e) => setEnquirySearchQuery(e.target.value)}
+                      placeholder="Name, email, or booking ref…"
+                      type="search"
+                      value={enquirySearchQuery}
+                    />
+                  </div>
+                  <details className="text-sm">
+                    <summary className="cursor-pointer text-xs font-semibold text-ge-gray500 hover:text-forest-800">
+                      More options
+                    </summary>
+                    <div className="mt-2">
+                      <LuxuryButton
+                        className="!border-red-300 !px-4 !py-2 !text-xs !text-red-800 hover:!bg-red-50"
+                        disabled={enquiryDeletingAll || enquiryDeletingId !== null}
+                        onClick={() => void handleRemoveAllEnquiries()}
+                        type="button"
+                        variant="outline"
+                      >
+                        {enquiryDeletingAll ? 'Removing…' : 'Delete all forms'}
+                      </LuxuryButton>
+                    </div>
+                  </details>
                 </div>
               ) : null}
-
-                <details className="rounded-2xl border border-forest-100 bg-offwhite/70 px-4 py-3 text-sm text-forest-700">
-                  <summary className="cursor-pointer text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">
-                    Setup &amp; imports
-                  </summary>
-                  <p className="mt-3 text-sm leading-relaxed text-forest-600">
-                    Rows appear after the SQL migration and when the dev server has{' '}
-                    <code className="rounded-md bg-forest-900 px-1.5 py-0.5 text-xs text-white">SUPABASE_SERVICE_ROLE_KEY</code>{' '}
-                    set for <code className="rounded-md bg-forest-900 px-1.5 py-0.5 text-xs text-white">/api/enquiry</code>. Each
-                    submitter gets a confirmation email with their enquiry PDF (Resend — same run as your internal notification). The{' '}
-                    <span className="font-medium text-forest-800">Ref</span> column matches email subjects, e.g.{' '}
-                    <span className="font-mono text-xs text-forest-800">GSI-E9DP-7132</span>. Trip timing, routes, and party size live in{' '}
-                    <code className="rounded-md bg-forest-900 px-1.5 py-0.5 text-xs text-white">form_payload</code> — run{' '}
-                    <code className="rounded-md bg-forest-900 px-1.5 py-0.5 text-xs text-white">supabase/run-in-sql-editor-enquiries-form-payload.sql</code>{' '}
-                    (or the matching migration) if Submission detail is empty.
-                  </p>
-                </details>
 
             {enquiryDeleteMessage ? (
               <div
@@ -4195,183 +4163,66 @@ export function AdminDashboardPage() {
             ) : null}
 
             {!enquiriesSectionVisible ? (
-              <div className="mt-6 rounded-[2rem] border border-forest-200 bg-offwhite px-6 py-8 text-center text-sm text-forest-900 md:px-10">
-                <p>Recent form submissions are hidden. Use <span className="font-medium text-forest-900">Show table</span> to view them again.</p>
+              <div className="rounded-2xl border border-dashed border-forest-200 bg-offwhite px-5 py-8 text-center text-sm text-forest-700">
+                List hidden. <button className="font-semibold text-forest-950 underline" onClick={() => setEnquiriesSectionVisible(true)} type="button">Show list</button>
               </div>
             ) : enquiries.length === 0 ? (
-              <div className="mt-6 rounded-[2rem] border border-dashed border-forest-200 bg-offwhite px-6 py-10 text-center text-sm text-forest-900 md:px-10">
-                No enquiries yet — submit the get-in-touch form locally to test the pipeline.
+              <div className="rounded-2xl border border-dashed border-forest-200 bg-offwhite px-5 py-10 text-center">
+                <p className="font-display text-lg font-semibold text-forest-950">No forms yet</p>
+                <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-forest-600">
+                  When someone submits a quote form on the website, their card appears here.
+                </p>
               </div>
             ) : unviewedEnquiries.length === 0 ? (
-              <div className="mt-6 rounded-[2rem] border border-dashed border-forest-200 bg-offwhite px-6 py-10 text-center text-sm text-forest-900 md:px-10">
-                {enquirySearchQuery.trim()
-                  ? `No new submissions match “${enquirySearchQuery.trim()}”.`
-                  : 'All caught up — no new form submissions. Previously viewed rows are listed below.'}
+              <div className="rounded-2xl border border-fairway-200 bg-fairway-50/50 px-5 py-8 text-center sm:text-left">
+                <p className="font-display text-lg font-semibold text-forest-950">
+                  {enquirySearchQuery.trim()
+                    ? `No new forms match “${enquirySearchQuery.trim()}”`
+                    : 'No new forms waiting'}
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-forest-700">
+                  {enquirySearchQuery.trim()
+                    ? 'Try another search, or check Opened forms below.'
+                    : 'You’re up to date. Opened forms are listed in the next section — open any card to price or message.'}
+                </p>
               </div>
             ) : (
-              renderEnquirySubmissionsTable(unviewedEnquiries)
+              <AdminEnquiryCardQueue
+                accessToken={session?.access_token ?? null}
+                buildDetailPairs={submissionDetailRows}
+                emptyLabel="No new forms waiting."
+                onOpen={(row) => {
+                  setSelectedEnquiryDetailRef(row.reference_id)
+                  void markEnquiryViewed(row)
+                }}
+                onRemove={(row) => void handleRemoveEnquiry(row)}
+                removingId={enquiryDeletingId}
+                rows={unviewedEnquiries}
+              />
             )}
-
-            {selectedEnquiryDetail ? (
-              <div className="mt-6 rounded-[2rem] border border-brand-200 bg-white p-6 shadow-soft md:p-8">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-600">Submission detail</p>
-                    <h3 className="font-display mt-2 text-xl font-semibold text-forest-950">
-                      {selectedEnquiryDetail.reference_id} — {selectedEnquiryDetail.full_name}
-                    </h3>
-                    <p className="mt-1 text-sm text-forest-600">
-                      Form answers including trip timing (dates or already at Málaga AGP), routes, and any structured fields sent from the
-                      site.
-                    </p>
-                    <p className="mt-2 text-xs text-ge-gray500">
-                      <strong className="font-medium text-forest-700">Full quote &amp; VAT breakdown</strong> (deposit split, calculator) lives on
-                      the linked <strong className="font-medium text-forest-700">client package build</strong> when it exists. You can also send a
-                      simple <strong className="font-medium text-forest-700">priced invoice + Stripe</strong> from this card (portal profile must
-                      match the enquiry email).
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <LuxuryButton
-                      className="!px-5 !py-2.5 !text-xs"
-                      onClick={() => {
-                        setWorkspaceEnquiryRef(selectedEnquiryDetail.reference_id)
-                        prefillManualProposalFromEnquiry(selectedEnquiryDetail, null)
-                      }}
-                      type="button"
-                      variant="outline"
-                    >
-                      Use in manual proposal
-                    </LuxuryButton>
-                    <LuxuryButton
-                      className="!px-5 !py-2.5 !text-xs"
-                      onClick={() => setSelectedEnquiryDetailRef(null)}
-                      type="button"
-                      variant="outline"
-                    >
-                      Close
-                    </LuxuryButton>
-                  </div>
-                </div>
-
-                {websiteFormPackageBuildForSelectedEnquiry ? (
-                  <div className="mt-5 rounded-2xl border border-emerald-200/90 bg-gradient-to-br from-fairway-50/90 to-white px-4 py-4 text-sm text-forest-900 shadow-sm">
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-900">Linked client package</p>
-                    <p className="mt-2 text-sm text-forest-700">
-                      This enquiry is mirrored as a dashboard package row. Open it to enter the VAT-inclusive total, save the quote to
-                      the portal, and trigger the branded PDF email.
-                    </p>
-                    <LuxuryButton
-                      className="!mt-3"
-                      onClick={() => {
-                        setDetailBuildId(websiteFormPackageBuildForSelectedEnquiry.id)
-                        window.requestAnimationFrame(() => {
-                          document.getElementById('admin-build-detail-title')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-                        })
-                      }}
-                      type="button"
-                      variant="primary"
-                    >
-                      Open package &amp; add pricing
-                    </LuxuryButton>
-                  </div>
-                ) : (
-                  <div className="mt-5 rounded-2xl border border-chrome-200/80 bg-chrome-50/80 px-4 py-4 text-sm text-brand-950">
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-900">No linked package for this ref in the list</p>
-                    <p className="mt-2 text-sm text-brand-950/90">
-                      A quotable <strong className="font-medium">website form</strong> package is created automatically only when the
-                      submitter&apos;s email already had a <strong className="font-medium">portal profile</strong> at submit time. If they
-                      were new, you still have this enquiry record — use <strong className="font-medium">Use in manual proposal</strong>, or
-                      find their row under <strong className="font-medium">Client package builds</strong> and click <strong className="font-medium">View</strong> when it appears after they sign in.
-                    </p>
-                  </div>
-                )}
-
-                <div className="mt-6 rounded-2xl border border-violet-200/90 bg-gradient-to-br from-violet-50/95 to-white px-4 py-4 text-sm text-forest-900 shadow-sm">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-800">Priced invoice + Stripe (simple path)</p>
-                  <p className="mt-2 text-sm text-forest-700">
-                    Enter one total (EUR, inc. VAT as you intend). We create a portal invoice row, Stripe Checkout, and email the client a
-                    branded message with an invoice PDF. They pay from <span className="font-mono text-xs">/dashboard</span> (two cards:
-                    submission + invoice).
-                  </p>
-                  <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
-                    <div className="min-w-[8rem] flex-1">
-                      <label className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.12em] text-violet-900/80" htmlFor="portal-invoice-amount">
-                        Amount (EUR)
-                      </label>
-                      <input
-                        className="w-full rounded-xl border border-violet-200 bg-white px-3 py-2.5 text-sm font-medium text-forest-900 outline-none ring-violet-300/40 focus:ring-2"
-                        id="portal-invoice-amount"
-                        inputMode="decimal"
-                        onChange={(e) => setPortalInvoiceAmountInput(e.target.value)}
-                        placeholder="e.g. 2499"
-                        type="text"
-                        value={portalInvoiceAmountInput}
-                      />
-                    </div>
-                    <LuxuryButton
-                      className="!px-6 !py-2.5"
-                      disabled={portalInvoiceSendBusy}
-                      onClick={() => void handleSendPortalInvoice()}
-                      type="button"
-                      variant="primary"
-                    >
-                      {portalInvoiceSendBusy ? 'Sending…' : 'Send invoice & payment link'}
-                    </LuxuryButton>
-                  </div>
-                  {portalInvoiceSendMessage ? (
-                    <p className="mt-3 text-xs text-forest-700">{portalInvoiceSendMessage}</p>
-                  ) : null}
-                  <p className="mt-3 text-[11px] leading-relaxed text-ge-gray500">
-                    Requires <code className="rounded bg-white px-1">STRIPE_SECRET_KEY</code>,{' '}
-                    <code className="rounded bg-white px-1">STRIPE_WEBHOOK_SECRET</code>, and a Stripe webhook pointing to{' '}
-                    <code className="rounded bg-white px-1">/api/stripe-webhook</code> for <code className="rounded bg-white px-1">checkout.session.completed</code>.
-                  </p>
-                </div>
-
-                <dl className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {submissionDetailRows(selectedEnquiryDetail).map(([label, value], rowIndex) => (
-                    <div
-                      className={cx(
-                        'rounded-2xl border border-forest-100 bg-offwhite/80 px-4 py-3',
-                        label === 'Trip interest (combined text)' && 'sm:col-span-2 lg:col-span-3'
-                      )}
-                      key={`${rowIndex}-${label}`}
-                    >
-                      <dt className="text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-600">{label}</dt>
-                      <dd className="mt-1 whitespace-pre-wrap break-words text-sm font-medium text-forest-900">{value}</dd>
-                    </div>
-                  ))}
-                </dl>
-
-                <details className="mt-5 rounded-2xl border border-forest-100 bg-forest-950 p-4 text-white">
-                  <summary className="cursor-pointer text-xs font-semibold uppercase tracking-[0.16em] text-brand-300">
-                    Raw database row
-                  </summary>
-                  <pre className="mt-4 max-h-72 overflow-auto rounded-xl bg-black/30 p-4 text-xs leading-relaxed text-white/85">
-                    {JSON.stringify(selectedEnquiryDetail, null, 2)}
-                  </pre>
-                </details>
-              </div>
-            ) : null}
             </AdminOperationsSectionShell>
 
             {enquiriesSectionVisible && enquiries.some((row) => isEnquiryAdminViewed(row)) ? (
               <AdminOperationsSectionShell
                 bodyClassName="space-y-6 sm:py-8"
                 className="scroll-mt-28"
-                description="Submissions you have already opened. Click Ref again to reload account lookup or reopen detail above."
+                description="Forms you’ve already opened. Build the trip, set a price, or send a message."
                 id="admin-hub-forms-viewed"
-                kicker="Step 1 · Website forms"
-                title={`Already viewed${viewedEnquiries.length > 0 ? ` (${viewedEnquiries.length})` : ''}`}
+                kicker="Website forms"
+                title={`Opened forms${viewedEnquiries.length > 0 ? ` (${viewedEnquiries.length})` : ''}`}
               >
-                {viewedEnquiries.length === 0 ? (
-                  <div className="rounded-[2rem] border border-dashed border-forest-200 bg-offwhite px-6 py-8 text-center text-sm text-forest-900">
-                    No viewed submissions match your filter.
-                  </div>
-                ) : (
-                  renderEnquirySubmissionsTable(viewedEnquiries)
-                )}
+                <AdminEnquiryCardQueue
+                  accessToken={session?.access_token ?? null}
+                  buildDetailPairs={submissionDetailRows}
+                  emptyLabel="No opened forms match your search."
+                  onOpen={(row) => {
+                    setSelectedEnquiryDetailRef(row.reference_id)
+                    void markEnquiryViewed(row)
+                  }}
+                  onRemove={(row) => void handleRemoveEnquiry(row)}
+                  removingId={enquiryDeletingId}
+                  rows={viewedEnquiries}
+                />
               </AdminOperationsSectionShell>
             ) : null}
 
@@ -4381,9 +4232,9 @@ export function AdminDashboardPage() {
 
         <AdminPortalSection activeSection={activeAdminSection} section="testimonials">
           <AdminOperationsSectionShell
-            kicker="Homepage · Guest reviews"
-            title="Testimonials from the website form"
-            description="Approve submissions before they appear on the homepage. Hide or delete anything you do not want public."
+            kicker="Homepage"
+            title="Guest reviews"
+            description="Reviews guests send from the website. Approve to show on the homepage, hide to take off the site, or delete forever."
           >
             <AdminTestimonialsPanel sessionToken={session?.access_token ?? null} />
           </AdminOperationsSectionShell>
@@ -6705,228 +6556,191 @@ export function AdminDashboardPage() {
         </AdminPortalSection>
 
         <AdminPortalSection activeSection={activeAdminSection} section="emails">
-          <section>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">CRM — client PDFs</p>
-            <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Terms and thank-you documents</h2>
-
-            <div className="mt-6 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
-              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="crm-doc-email">
-                Client account email
-              </label>
-              <input
-                autoComplete="email"
-                className="mb-6 w-full max-w-md rounded-2xl border border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
-                id="crm-doc-email"
-                onChange={(e) => {
-                  setCrmDocEmail(e.target.value)
-                  setCrmDocMessage(null)
-                }}
-                placeholder="client@example.com"
-                type="email"
-                value={crmDocEmail}
-              />
-
-              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <button
-                  aria-label="Send terms and conditions to client email"
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-forest-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-forest-800 disabled:opacity-60"
-                  disabled={crmDocSending !== 'idle'}
-                  onClick={() => handleSendCrmDocument('terms')}
-                  type="button"
-                >
-                  {crmDocSending === 'terms' ? 'Sending…' : 'Email terms PDF access'}
-                </button>
-                <button
-                  aria-label="Send thank you document to client email"
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border-2 border-[#136047] bg-white px-6 py-3 text-sm font-semibold text-[#b34701] transition-colors hover:bg-[#136047]/10 disabled:opacity-60"
-                  disabled={crmDocSending !== 'idle'}
-                  onClick={() => handleSendCrmDocument('welcome')}
-                  type="button"
-                >
-                  {crmDocSending === 'welcome' ? 'Sending…' : 'Email thank-you PDF access'}
-                </button>
-              </div>
-
-              {crmDocMessage ? (
-                <p className="mt-4 text-sm font-medium text-forest-800" role="status">
-                  {crmDocMessage}
-                </p>
-              ) : null}
-            </div>
-          </section>
+          <AdminEmailsCommsDesk
+            attachmentsRef={studioAttachmentsRef}
+            crmMessage={crmDocMessage}
+            crmSending={crmDocSending}
+            guestEmail={studioEmailTo || crmDocEmail}
+            inputClass={adminTripInputClass}
+            labelClass={adminTripLabelClass}
+            onGuestEmailChange={(value) => {
+              setStudioEmailTo(value)
+              setCrmDocEmail(value)
+              setStudioEmailMessage(null)
+              setCrmDocMessage(null)
+            }}
+            onSendCrm={(kind) => void handleSendCrmDocument(kind)}
+            onSendStudio={(e) => void handleSendStudioClientEmail(e)}
+            onStudioBodyChange={(value) => {
+              setStudioEmailBody(value)
+              setStudioEmailMessage(null)
+            }}
+            onStudioSubjectChange={(value) => {
+              setStudioEmailSubject(value)
+              setStudioEmailMessage(null)
+            }}
+            studioBody={studioEmailBody}
+            studioBusy={studioEmailBusy}
+            studioMessage={studioEmailMessage}
+            studioSubject={studioEmailSubject}
+          />
         </AdminPortalSection>
 
         <AdminPortalSection activeSection={activeAdminSection} section="portal">
-          <section>
-            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Manual clients</p>
-            <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Add or remove portal logins</h2>
-            <p className="mt-2 max-w-2xl text-sm text-forest-600">
-              Create a dashboard login with only name and email. An account number (same format as enquiry references) is assigned automatically. The client can add or update their mobile number after they sign in. Removing an enquiry from “Recent form submissions” does{' '}
-              <strong className="font-medium text-forest-800">not</strong> delete a portal account — use remove below only when you intend to wipe that login entirely.
-            </p>
+          <div className="space-y-8" id="admin-hub-portal">
+            <header>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Client accounts</p>
+              <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">
+                Dashboard logins
+              </h2>
+              <p className="mt-2 max-w-2xl text-sm text-forest-600">
+                Three everyday jobs: create a login, set what that guest sees, and (only when needed) reset or block access.
+                Website form rows are separate — deleting a form does not delete a login.
+              </p>
+            </header>
 
-            <div className="mt-6 grid gap-6 lg:grid-cols-2">
-              <div className="rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Add client</p>
-                <label className="mb-2 mt-4 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="manual-portal-full-name">
-                  Full name
-                </label>
-                <input
-                  autoComplete="name"
-                  className="mb-4 w-full rounded-2xl border border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
-                  id="manual-portal-full-name"
-                  onChange={(e) => setManualPortalCreateName(e.target.value)}
-                  placeholder="Karen Harte"
-                  type="text"
-                  value={manualPortalCreateName}
-                />
-                <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="manual-portal-email">
-                  Email (sign-in)
-                </label>
-                <input
-                  autoComplete="email"
-                  className="mb-4 w-full rounded-2xl border border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
-                  id="manual-portal-email"
-                  onChange={(e) => setManualPortalCreateEmail(e.target.value)}
-                  placeholder="client@example.com"
-                  type="email"
-                  value={manualPortalCreateEmail}
-                />
-                <label className="mb-4 flex cursor-pointer items-start gap-3 rounded-2xl border border-forest-100 bg-offwhite/80 px-4 py-3">
+            <section className="rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-700">1 · Create a login</p>
+              <h3 className="font-display mt-1 text-xl font-semibold text-forest-950">New client account</h3>
+              <p className="mt-1 text-sm text-forest-600">
+                Name + email only. We assign an account number automatically. They can add their phone after sign-in.
+              </p>
+              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                <label className="block">
+                  <span className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-600">
+                    Full name
+                  </span>
                   <input
-                    checked={manualPortalCreateSendLink}
+                    autoComplete="name"
+                    className="w-full rounded-xl border-2 border-forest-200 bg-white px-4 py-2.5 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
+                    id="manual-portal-full-name"
+                    onChange={(e) => setManualPortalCreateName(e.target.value)}
+                    placeholder="Karen Harte"
+                    type="text"
+                    value={manualPortalCreateName}
+                  />
+                </label>
+                <label className="block">
+                  <span className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-600">
+                    Login email
+                  </span>
+                  <input
+                    autoComplete="email"
+                    className="w-full rounded-xl border-2 border-forest-200 bg-white px-4 py-2.5 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
+                    id="manual-portal-email"
+                    onChange={(e) => setManualPortalCreateEmail(e.target.value)}
+                    placeholder="client@example.com"
+                    type="email"
+                    value={manualPortalCreateEmail}
+                  />
+                </label>
+              </div>
+              <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-xl border border-forest-100 bg-offwhite/80 px-4 py-3">
+                <input
+                  checked={manualPortalCreateSendLink}
+                  className="mt-1 h-4 w-4 rounded border-forest-300 text-fairway-600 focus:ring-fairway-400"
+                  onChange={(e) => setManualPortalCreateSendLink(e.target.checked)}
+                  type="checkbox"
+                />
+                <span className="text-sm text-forest-800">
+                  <span className="font-semibold text-forest-950">Email them a sign-in link</span>
+                  <span className="mt-0.5 block text-xs text-forest-600">Same branded magic link as the public login page.</span>
+                </span>
+              </label>
+              <button
+                className="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-forest-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-forest-800 disabled:opacity-60"
+                disabled={manualPortalCreateBusy}
+                onClick={() => void handleCreateManualPortalClient()}
+                type="button"
+              >
+                {manualPortalCreateBusy ? 'Creating…' : 'Create login'}
+              </button>
+              {manualPortalCreateMessage ? (
+                <p className="mt-3 text-sm font-medium text-forest-800" role="status">
+                  {manualPortalCreateMessage}
+                </p>
+              ) : null}
+            </section>
+
+            <section className="rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-700">2 · Account settings</p>
+              <h3 className="font-display mt-1 text-xl font-semibold text-forest-950">What this guest sees</h3>
+              <p className="mt-1 text-sm text-forest-600">
+                Load by login email, set their account number, then choose whether proposals and the PDF library show on their
+                dashboard.
+              </p>
+
+              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                <label className="block">
+                  <span className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-600">
+                    Login email
+                  </span>
+                  <input
+                    autoComplete="email"
+                    className="w-full rounded-xl border-2 border-forest-200 bg-white px-4 py-2.5 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
+                    id="portal-client-email"
+                    onChange={(e) => {
+                      setPortalClientEmail(e.target.value)
+                      setPortalSettingsMessage(null)
+                    }}
+                    placeholder="client@example.com"
+                    type="email"
+                    value={portalClientEmail}
+                  />
+                </label>
+                <label className="block">
+                  <span className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-600">
+                    Account number
+                  </span>
+                  <input
+                    className="w-full rounded-xl border-2 border-forest-200 bg-white px-4 py-2.5 font-mono text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
+                    id="portal-account-ref"
+                    onChange={(e) => {
+                      setPortalAccountRef(e.target.value)
+                      setPortalSettingsMessage(null)
+                    }}
+                    placeholder="e.g. GSI-AB12CD"
+                    type="text"
+                    value={portalAccountRef}
+                  />
+                </label>
+              </div>
+
+              <div className="mt-4 space-y-3">
+                <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-forest-100 bg-offwhite/80 px-4 py-3">
+                  <input
+                    checked={portalProposalsEnabled}
                     className="mt-1 h-4 w-4 rounded border-forest-300 text-fairway-600 focus:ring-fairway-400"
-                    onChange={(e) => setManualPortalCreateSendLink(e.target.checked)}
+                    onChange={(e) => setPortalProposalsEnabled(e.target.checked)}
                     type="checkbox"
                   />
-                  <span className="text-sm text-forest-800">
-                    <span className="font-semibold text-forest-950">Email magic sign-in link</span>
-                    <span className="mt-1 block text-xs text-forest-600">Uses the same branded mail as the public login flow (needs Resend + SITE_URL on the server).</span>
+                  <span>
+                    <span className="block text-sm font-semibold text-forest-900">Show formal proposals</span>
+                    <span className="mt-0.5 block text-xs text-forest-600">Proposal PDFs saved for this login.</span>
                   </span>
                 </label>
-                <button
-                  className="inline-flex min-h-11 items-center justify-center rounded-full bg-forest-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-forest-800 disabled:opacity-60"
-                  disabled={manualPortalCreateBusy}
-                  onClick={() => void handleCreateManualPortalClient()}
-                  type="button"
-                >
-                  {manualPortalCreateBusy ? 'Creating…' : 'Create client account'}
-                </button>
-              </div>
-
-              <div className="rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-red-800">Remove client</p>
-                <p className="mt-2 text-sm text-forest-600">
-                  Deletes the Supabase auth user and cascades their profile, package builds, and portal inbox rows. Does not remove enquiry history rows.
-                </p>
-                <label className="mb-2 mt-4 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="manual-portal-delete-email">
-                  Client login email
+                <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-forest-100 bg-offwhite/80 px-4 py-3">
+                  <input
+                    checked={portalPdfLibraryEnabled}
+                    className="mt-1 h-4 w-4 rounded border-forest-300 text-fairway-600 focus:ring-fairway-400"
+                    onChange={(e) => setPortalPdfLibraryEnabled(e.target.checked)}
+                    type="checkbox"
+                  />
+                  <span>
+                    <span className="block text-sm font-semibold text-forest-900">Show PDF library</span>
+                    <span className="mt-0.5 block text-xs text-forest-600">Terms / thank-you pages when they have access.</span>
+                  </span>
                 </label>
-                <input
-                  autoComplete="email"
-                  className="mb-4 w-full rounded-2xl border border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
-                  id="manual-portal-delete-email"
-                  onChange={(e) => setManualPortalDeleteEmail(e.target.value)}
-                  placeholder="client@example.com"
-                  type="email"
-                  value={manualPortalDeleteEmail}
-                />
-                <button
-                  className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-red-200 bg-white px-6 py-3 text-sm font-semibold text-red-800 transition-colors hover:bg-red-50 disabled:opacity-60"
-                  disabled={manualPortalDeleteBusy}
-                  onClick={() => void handleDeleteManualPortalClient()}
-                  type="button"
-                >
-                  {manualPortalDeleteBusy ? 'Removing…' : 'Remove client account'}
-                </button>
               </div>
-            </div>
 
-            {manualPortalCreateMessage ? (
-              <p className="mt-4 text-sm font-medium text-forest-800" role="status">
-                {manualPortalCreateMessage}
-              </p>
-            ) : null}
-          </section>
-
-          <section className="scroll-mt-28" id="admin-hub-portal">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Client portal</p>
-            <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Account number &amp; document area</h2>
-            <p className="mt-2 max-w-2xl text-sm text-forest-600">
-              Set the account number clients see after login. Use <strong className="font-medium text-forest-800">Formal proposals</strong> and{' '}
-              <strong className="font-medium text-forest-800">PDF library</strong> independently — load by their login email, adjust the ticks, then save.
-            </p>
-
-            <div className="mt-6 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
-              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="portal-client-email">
-                Client login email
-              </label>
-              <input
-                autoComplete="email"
-                className="mb-4 w-full max-w-md rounded-2xl border border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
-                id="portal-client-email"
-                onChange={(e) => {
-                  setPortalClientEmail(e.target.value)
-                  setPortalSettingsMessage(null)
-                }}
-                placeholder="client@example.com"
-                type="email"
-                value={portalClientEmail}
-              />
-
-              <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="portal-account-ref">
-                Account number (enquiry reference)
-              </label>
-              <input
-                className="mb-4 w-full max-w-md rounded-2xl border border-forest-200 bg-white px-4 py-3 font-mono text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
-                id="portal-account-ref"
-                onChange={(e) => {
-                  setPortalAccountRef(e.target.value)
-                  setPortalSettingsMessage(null)
-                }}
-                placeholder="e.g. GSI-AB12CD"
-                type="text"
-                value={portalAccountRef}
-              />
-
-              <label className="flex max-w-md cursor-pointer items-start gap-3 rounded-2xl border border-forest-100 bg-offwhite/80 px-4 py-3">
-                <input
-                  checked={portalProposalsEnabled}
-                  className="mt-1 h-4 w-4 rounded border-forest-300 text-fairway-600 focus:ring-fairway-400"
-                  onChange={(e) => setPortalProposalsEnabled(e.target.checked)}
-                  type="checkbox"
-                />
-                <span>
-                  <span className="block text-sm font-semibold text-forest-900">Show formal proposals on client dashboard</span>
-                  <span className="mt-1 block text-xs text-forest-600">
-                    Lists proposal PDFs we have saved for this login. Off by default.
-                  </span>
-                </span>
-              </label>
-
-              <label className="mt-3 flex max-w-md cursor-pointer items-start gap-3 rounded-2xl border border-forest-100 bg-offwhite/80 px-4 py-3">
-                <input
-                  checked={portalPdfLibraryEnabled}
-                  className="mt-1 h-4 w-4 rounded border-forest-300 text-fairway-600 focus:ring-fairway-400"
-                  onChange={(e) => setPortalPdfLibraryEnabled(e.target.checked)}
-                  type="checkbox"
-                />
-                <span>
-                  <span className="block text-sm font-semibold text-forest-900">Show PDF library (terms &amp; thank-you) on client dashboard</span>
-                  <span className="mt-1 block text-xs text-forest-600">
-                    When on, the “Your PDF library” block appears if they already have access from the document tools above.
-                  </span>
-                </span>
-              </label>
-
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <div className="mt-5 flex flex-wrap gap-3">
                 <button
                   className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-forest-200 bg-white px-6 py-3 text-sm font-semibold text-forest-900 transition-colors hover:border-fairway-400 disabled:opacity-60"
                   disabled={portalSettingsBusy !== 'idle'}
                   onClick={() => void handleLoadPortalProfile()}
                   type="button"
                 >
-                  {portalSettingsBusy === 'load' ? 'Loading…' : 'Load current'}
+                  {portalSettingsBusy === 'load' ? 'Loading…' : 'Load'}
                 </button>
                 <button
                   className="inline-flex min-h-11 items-center justify-center rounded-full bg-forest-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-forest-800 disabled:opacity-60"
@@ -6934,182 +6748,322 @@ export function AdminDashboardPage() {
                   onClick={() => void handleSavePortalProfile()}
                   type="button"
                 >
-                  {portalSettingsBusy === 'save' ? 'Saving…' : 'Save to client account'}
+                  {portalSettingsBusy === 'save' ? 'Saving…' : 'Save settings'}
                 </button>
               </div>
-
               {portalSettingsMessage ? (
-                <p className="mt-4 text-sm font-medium text-forest-800" role="status">
+                <p className="mt-3 text-sm font-medium text-forest-800" role="status">
                   {portalSettingsMessage}
                 </p>
               ) : null}
-            </div>
+            </section>
 
-            <div className="mt-8 rounded-[2rem] border border-forest-200 bg-offwhite/80 p-5 text-sm text-forest-700 shadow-inner md:p-6">
-              <p className="font-semibold text-forest-900">Client access &amp; portal reset</p>
-              <p className="mt-2 max-w-xl">
-                Clear dashboard, copy signed login links, and block or unblock sign-in / enquiries for an address — moved to the{' '}
-                <strong className="font-medium text-forest-900">bottom of this admin page</strong> so day-to-day enquiries and packages stay up top.
-              </p>
-            </div>
+            <details className="rounded-[2rem] border border-forest-200 bg-offwhite/70 px-5 py-4 sm:px-6">
+              <summary className="cursor-pointer text-sm font-semibold text-forest-900">
+                3 · Advanced — reset, clear, login links, block email
+              </summary>
+              <div className="mt-5 space-y-6 border-t border-forest-200/80 pt-5">
+                <div className="rounded-2xl border border-forest-100 bg-white p-5">
+                  <p className="text-sm font-semibold text-forest-950">Reset contact form (testing)</p>
+                  <p className="mt-1 text-xs text-forest-600">
+                    Clears name, phone, and account number so they see the one-time contact form again. Does not delete the login.
+                  </p>
+                  <label className="mb-1 mt-3 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="portal-onboarding-reset-email">
+                    Login email
+                  </label>
+                  <input
+                    autoComplete="email"
+                    className="mb-3 w-full max-w-md rounded-xl border-2 border-forest-200 bg-white px-4 py-2.5 text-sm text-forest-900 outline-none focus:border-fairway-500"
+                    id="portal-onboarding-reset-email"
+                    onChange={(e) => {
+                      setPortalOnboardingResetEmail(e.target.value)
+                      setPortalOnboardingResetMsg(null)
+                    }}
+                    placeholder="client@example.com"
+                    type="email"
+                    value={portalOnboardingResetEmail}
+                  />
+                  <button
+                    className="inline-flex min-h-10 items-center justify-center rounded-full border-2 border-forest-200 bg-white px-5 py-2 text-sm font-semibold text-forest-900 hover:border-fairway-400 disabled:opacity-60"
+                    disabled={portalOnboardingResetBusy}
+                    onClick={() => void handleResetPortalOnboarding()}
+                    type="button"
+                  >
+                    {portalOnboardingResetBusy ? 'Resetting…' : 'Reset contact form'}
+                  </button>
+                  {portalOnboardingResetMsg ? (
+                    <p className="mt-2 text-sm font-medium text-forest-800" role="status">
+                      {portalOnboardingResetMsg}
+                    </p>
+                  ) : null}
+                </div>
 
-            <div className="mt-8 rounded-[2rem] border border-dashed border-forest-200 bg-offwhite/60 p-6 md:p-8">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-700">Testing — reset one-time portal contact</p>
-              <p className="mt-2 text-sm text-forest-600">
-                Clears name, phone, account number, and the “contact saved” flag for this login email so the client (or your own
-                admin test account) sees the one-time contact form again. Does not remove admin role or delete the auth user.
-              </p>
-              <label className="mb-2 mt-4 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="portal-onboarding-reset-email">
-                Login email
-              </label>
-              <input
-                autoComplete="email"
-                className="mb-4 w-full max-w-md rounded-2xl border border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
-                id="portal-onboarding-reset-email"
-                onChange={(e) => {
-                  setPortalOnboardingResetEmail(e.target.value)
-                  setPortalOnboardingResetMsg(null)
-                }}
-                placeholder="e.g. golfsolirl@gmail.com"
-                type="email"
-                value={portalOnboardingResetEmail}
-              />
-              <button
-                className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-forest-200 bg-white px-6 py-3 text-sm font-semibold text-forest-900 transition-colors hover:border-fairway-400 disabled:opacity-60"
-                disabled={portalOnboardingResetBusy}
-                onClick={() => void handleResetPortalOnboarding()}
-                type="button"
-              >
-                {portalOnboardingResetBusy ? 'Resetting…' : 'Reset portal onboarding'}
-              </button>
-              {portalOnboardingResetMsg ? (
-                <p className="mt-3 text-sm font-medium text-forest-800" role="status">
-                  {portalOnboardingResetMsg}
-                </p>
-              ) : null}
-            </div>
-          </section>
+                <div className="rounded-2xl border border-red-200/80 bg-white p-5">
+                  <p className="text-sm font-semibold text-red-950">Remove login forever</p>
+                  <p className="mt-1 text-xs text-forest-600">
+                    Deletes the sign-in user, profile, packages, and inbox. Keeps website enquiry history.
+                  </p>
+                  <label className="mb-1 mt-3 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="manual-portal-delete-email">
+                    Login email
+                  </label>
+                  <input
+                    autoComplete="email"
+                    className="mb-3 w-full max-w-md rounded-xl border-2 border-forest-200 bg-white px-4 py-2.5 text-sm text-forest-900 outline-none focus:border-fairway-500"
+                    id="manual-portal-delete-email"
+                    onChange={(e) => setManualPortalDeleteEmail(e.target.value)}
+                    placeholder="client@example.com"
+                    type="email"
+                    value={manualPortalDeleteEmail}
+                  />
+                  <button
+                    className="inline-flex min-h-10 items-center justify-center rounded-full border-2 border-red-300 bg-white px-5 py-2 text-sm font-semibold text-red-800 hover:bg-red-50 disabled:opacity-60"
+                    disabled={manualPortalDeleteBusy}
+                    onClick={() => void handleDeleteManualPortalClient()}
+                    type="button"
+                  >
+                    {manualPortalDeleteBusy ? 'Removing…' : 'Delete login'}
+                  </button>
+                </div>
+
+                <div className="rounded-2xl border border-red-200/80 bg-gradient-to-br from-red-50/80 to-white p-5">
+                  <p className="text-sm font-semibold text-forest-950">Clear dashboard or copy login link</p>
+                  <p className="mt-1 text-xs text-forest-600">
+                    Use login email and/or GSI- ref. Prefer email when the enquiry ref differs from the account number.
+                  </p>
+                  <label className="mb-1 mt-3 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="bottom-clear-portal-client-email">
+                    Login email
+                  </label>
+                  <input
+                    autoComplete="email"
+                    className="mb-3 w-full max-w-md rounded-xl border-2 border-forest-200 bg-white px-4 py-2.5 text-sm text-forest-900 outline-none focus:border-fairway-500"
+                    id="bottom-clear-portal-client-email"
+                    onChange={(e) => {
+                      setClearPortalClientEmail(e.target.value)
+                      setClearDashboardMessage(null)
+                      setClearPortalInboxMessage(null)
+                      setPortalLinkCopyMessage(null)
+                    }}
+                    placeholder="client@example.com"
+                    type="email"
+                    value={clearPortalClientEmail}
+                  />
+                  <label className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="bottom-clear-dashboard-ref">
+                    Account / enquiry ref (optional)
+                  </label>
+                  <input
+                    className="mb-3 w-full max-w-md rounded-xl border-2 border-forest-200 bg-white px-4 py-2.5 font-mono text-sm text-forest-900 outline-none focus:border-fairway-500"
+                    id="bottom-clear-dashboard-ref"
+                    onChange={(e) => {
+                      setClearDashboardAccountRef(e.target.value)
+                      setClearDashboardMessage(null)
+                      setClearPortalInboxMessage(null)
+                      setPortalLinkCopyMessage(null)
+                    }}
+                    placeholder="GSI-…"
+                    type="text"
+                    value={clearDashboardAccountRef}
+                  />
+                  <div className="flex flex-col flex-wrap gap-2 sm:flex-row">
+                    <button
+                      className="inline-flex min-h-10 items-center justify-center rounded-full border-2 border-chrome-300 bg-white px-4 py-2 text-xs font-semibold text-brand-950 hover:bg-chrome-50 disabled:opacity-60"
+                      disabled={clearPortalInboxBusy || clearDashboardBusy}
+                      onClick={() => void handleClearPortalMessagesOnly()}
+                      type="button"
+                    >
+                      {clearPortalInboxBusy ? 'Clearing…' : 'Clear messages only'}
+                    </button>
+                    <button
+                      className="inline-flex min-h-10 items-center justify-center rounded-full border-2 border-red-300 bg-white px-4 py-2 text-xs font-semibold text-red-950 hover:bg-red-50 disabled:opacity-60"
+                      disabled={clearDashboardBusy || clearPortalInboxBusy}
+                      onClick={() => void handleClearDashboardByAccountRef()}
+                      type="button"
+                    >
+                      {clearDashboardBusy ? 'Clearing…' : 'Clear whole dashboard'}
+                    </button>
+                    <button
+                      className="inline-flex min-h-10 items-center justify-center rounded-full border-2 border-forest-200 bg-white px-4 py-2 text-xs font-semibold text-forest-900 hover:border-fairway-400 disabled:opacity-60"
+                      disabled={portalLinkCopyBusy !== 'idle'}
+                      onClick={() => void handleCopySignedPortalLoginLink('client')}
+                      type="button"
+                    >
+                      {portalLinkCopyBusy === 'client' ? 'Preparing…' : 'Copy client login link'}
+                    </button>
+                    <button
+                      className="inline-flex min-h-10 items-center justify-center rounded-full border-2 border-forest-200 bg-white px-4 py-2 text-xs font-semibold text-forest-900 hover:border-fairway-400 disabled:opacity-60"
+                      disabled={portalLinkCopyBusy !== 'idle'}
+                      onClick={() => void handleCopySignedPortalLoginLink('admin')}
+                      type="button"
+                    >
+                      {portalLinkCopyBusy === 'admin' ? 'Preparing…' : 'Copy admin login link'}
+                    </button>
+                  </div>
+                  {clearPortalInboxMessage ? (
+                    <p className="mt-3 text-sm font-medium text-brand-950" role="status">
+                      {clearPortalInboxMessage}
+                    </p>
+                  ) : null}
+                  {clearDashboardMessage ? (
+                    <p className="mt-2 text-sm font-medium text-forest-900" role="status">
+                      {clearDashboardMessage}
+                    </p>
+                  ) : null}
+                  {portalLinkCopyMessage ? (
+                    <p className="mt-2 text-sm font-medium text-forest-900" role="status">
+                      {portalLinkCopyMessage}
+                    </p>
+                  ) : null}
+                </div>
+
+                <div className="rounded-2xl border border-forest-100 bg-white p-5">
+                  <p className="text-sm font-semibold text-forest-950">Block or unblock an email</p>
+                  <p className="mt-1 text-xs text-forest-600">
+                    Blocked addresses cannot get magic links, submit website forms, or be created as a new client here.
+                  </p>
+                  <div className="mt-3 flex max-w-xl flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+                    <div className="min-w-0 flex-1">
+                      <label className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="auth-block-email">
+                        Email
+                      </label>
+                      <input
+                        autoComplete="email"
+                        className="w-full rounded-xl border-2 border-forest-200 bg-white px-4 py-2.5 text-sm text-forest-900 outline-none focus:border-fairway-500"
+                        id="auth-block-email"
+                        onChange={(e) => setAuthBlockEmailInput(e.target.value)}
+                        placeholder="client@example.com"
+                        type="email"
+                        value={authBlockEmailInput}
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1 sm:min-w-[10rem]">
+                      <label className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="auth-block-reason">
+                        Reason (optional)
+                      </label>
+                      <input
+                        className="w-full rounded-xl border-2 border-forest-200 bg-white px-4 py-2.5 text-sm text-forest-900 outline-none focus:border-fairway-500"
+                        id="auth-block-reason"
+                        onChange={(e) => setAuthBlockReasonInput(e.target.value)}
+                        placeholder="Spam, duplicate…"
+                        type="text"
+                        value={authBlockReasonInput}
+                      />
+                    </div>
+                    <button
+                      className="inline-flex min-h-10 items-center justify-center rounded-full bg-forest-900 px-5 py-2 text-sm font-semibold text-white hover:bg-forest-800 disabled:opacity-60"
+                      disabled={authBlockBusy}
+                      onClick={() => void handleBlockAuthEmail()}
+                      type="button"
+                    >
+                      {authBlockBusy ? 'Working…' : 'Block'}
+                    </button>
+                  </div>
+                  {authBlockMessage ? (
+                    <p className="mt-3 text-sm font-medium text-forest-900" role="status">
+                      {authBlockMessage}
+                    </p>
+                  ) : null}
+                  <div className="mt-5">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-600">Blocked list</p>
+                      <button
+                        className="text-xs font-semibold text-fairway-800 underline"
+                        disabled={authBlockListLoading}
+                        onClick={() => void loadAuthEmailBlocks()}
+                        type="button"
+                      >
+                        {authBlockListLoading ? 'Refreshing…' : 'Refresh'}
+                      </button>
+                    </div>
+                    {authBlockListLoading && authBlockList.length === 0 ? (
+                      <p className="mt-2 text-sm text-forest-600">Loading…</p>
+                    ) : authBlockList.length === 0 ? (
+                      <p className="mt-2 text-sm text-forest-600">None blocked.</p>
+                    ) : (
+                      <ul className="mt-3 space-y-2">
+                        {authBlockList.map((row) => (
+                          <li
+                            className="flex flex-col gap-2 rounded-xl border border-forest-100 bg-offwhite/80 px-3 py-2.5 text-sm sm:flex-row sm:items-center sm:justify-between"
+                            key={row.email}
+                          >
+                            <div>
+                              <p className="font-mono text-sm font-semibold text-forest-950">{row.email}</p>
+                              <p className="text-xs text-ge-gray500">
+                                Since {formatDateTimeDdMmYy(row.blocked_at)}
+                                {row.reason ? ` · ${row.reason}` : ''}
+                              </p>
+                            </div>
+                            <button
+                              className="inline-flex min-h-9 shrink-0 items-center justify-center rounded-full border border-forest-200 bg-white px-4 text-xs font-semibold text-forest-900 hover:border-fairway-400 disabled:opacity-60"
+                              disabled={authBlockBusy}
+                              onClick={() => void handleUnblockAuthEmail(row.email)}
+                              type="button"
+                            >
+                              Unblock
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </details>
+          </div>
         </AdminPortalSection>
 
         <AdminPortalSection activeSection={activeAdminSection} section="drivers">
-          <section className="mb-14 md:mb-16">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Driver calendar</p>
-            <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Booked days &amp; printable runs</h2>
-            <p className="mt-2 max-w-2xl text-sm text-forest-600">
-              Add a row for each day that is <strong className="font-medium text-forest-800">fully booked</strong>. You do not need a real
-              booking in other tables — use <strong className="font-medium text-forest-800">Block transfers on website</strong> on a selected
-              day when you are at capacity. Public forms show a &quot;fully booked&quot; notice before submit and refuse those dates. Click a
-              date for details and <strong className="font-medium text-forest-800">Print day sheet</strong> when you have passenger info.
-            </p>
-            <div className="mt-6">
-              <AdminDriverCalendarPanel />
+          <div className="mb-14 space-y-8 md:mb-16" id="admin-hub-drivers">
+            <header>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Costa run calendar</p>
+              <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">
+                AGP days, capacity &amp; day sheets
+              </h2>
+              <p className="mt-2 max-w-2xl text-sm text-forest-600">
+                Your ops diary for Irish groups on the Sol — Málaga airport, hotel, and course runs. Days use{' '}
+                <strong className="font-medium text-forest-800">Madrid time</strong>. Assign drivers under{' '}
+                <strong className="font-medium text-forest-800">Transfers &amp; drivers</strong>; this page is for seeing the
+                month, closing busy dates, and printing.
+              </p>
+            </header>
+
+            <div className="grid gap-3 sm:grid-cols-3">
+              {[
+                {
+                  title: '1 · See the road',
+                  text: 'Green cells = deposit or paid pickups that day. Click for names, phones, and AGP → hotel routes.'
+                },
+                {
+                  title: '2 · Close busy days',
+                  text: 'Mark a date Full when vans are taken. Website forms show “fully booked” and won’t take that day.'
+                },
+                {
+                  title: '3 · Print for the driver',
+                  text: 'Below the calendar: pick “Guest for Arrivals print”, save, then Print day sheet.'
+                }
+              ].map((card) => (
+                <div
+                  className="rounded-2xl border border-forest-100 bg-gradient-to-br from-white to-offwhite/90 px-4 py-4 shadow-soft"
+                  key={card.title}
+                >
+                  <p className="text-sm font-semibold text-forest-950">{card.title}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-forest-600">{card.text}</p>
+                </div>
+              ))}
             </div>
-          </section>
-        </AdminPortalSection>
 
-        <AdminPortalSection activeSection={activeAdminSection} section="emails">
-          <section className="mb-14 md:mb-16">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Studio → client email</p>
-            <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Branded send + PDFs</h2>
-            <p className="mt-2 max-w-2xl text-sm text-forest-600">
-              Same visual family as enquiry and proposal mail — optional PDF attachments (quotes, hotel PDFs, etc.). Sends with
-              Resend and logs a row on the client dashboard under <strong className="font-medium text-forest-800">Messages &amp; files</strong> so
-              you both share one timeline.
-            </p>
-
-            <form
-              className="mt-8 max-w-2xl space-y-5 rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8"
-              noValidate
-              onSubmit={(e) => void handleSendStudioClientEmail(e)}
-            >
-              <div>
-                <label className={adminTripLabelClass} htmlFor="studio-email-to">
-                  Client login email
-                </label>
-                <input
-                  autoComplete="email"
-                  className={adminTripInputClass}
-                  id="studio-email-to"
-                  onChange={(e) => {
-                    setStudioEmailTo(e.target.value)
-                    setStudioEmailMessage(null)
-                  }}
-                  placeholder="client@email.com"
-                  type="email"
-                  value={studioEmailTo}
-                />
-              </div>
-
-              <div>
-                <label className={adminTripLabelClass} htmlFor="studio-email-subject">
-                  Subject
-                </label>
-                <input
-                  className={adminTripInputClass}
-                  id="studio-email-subject"
-                  onChange={(e) => {
-                    setStudioEmailSubject(e.target.value)
-                    setStudioEmailMessage(null)
-                  }}
-                  placeholder="e.g. Your Marbella transfer quote — PDF attached"
-                  type="text"
-                  value={studioEmailSubject}
-                />
-              </div>
-
-              <div>
-                <label className={adminTripLabelClass} htmlFor="studio-email-body">
-                  Message
-                </label>
-                <textarea
-                  className={cx(adminTripInputClass, 'min-h-[160px] resize-y')}
-                  id="studio-email-body"
-                  onChange={(e) => {
-                    setStudioEmailBody(e.target.value)
-                    setStudioEmailMessage(null)
-                  }}
-                  placeholder="Write in paragraphs. Blank lines become separate paragraphs in the email."
-                  value={studioEmailBody}
-                />
-              </div>
-
-              <div>
-                <label className={adminTripLabelClass} htmlFor="studio-email-files">
-                  PDF attachments (optional, max 4 × 4 MB)
-                </label>
-                <input
-                  accept="application/pdf,.pdf"
-                  className="mt-2 block w-full text-sm text-forest-800 file:mr-4 file:rounded-full file:border-0 file:bg-forest-900 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-forest-800"
-                  id="studio-email-files"
-                  multiple
-                  ref={studioAttachmentsRef}
-                  type="file"
-                />
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3 pt-2">
-                <LuxuryButton disabled={studioEmailBusy} type="submit" variant="primary">
-                  {studioEmailBusy ? 'Sending…' : 'Send email + log to client dashboard'}
-                </LuxuryButton>
-              </div>
-
-              {studioEmailMessage ? (
-                <p className="text-sm font-medium text-forest-800" role="status">
-                  {studioEmailMessage}
-                </p>
-              ) : null}
-            </form>
-          </section>
+            <AdminDriverCalendarPanel />
+          </div>
         </AdminPortalSection>
 
         <AdminPortalSection activeSection={activeAdminSection} section="packages">
           <section className="scroll-mt-28" id="admin-hub-packages">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Client package builds</p>
-            <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">All saved &amp; published packages</h2>
+            <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">
+              Trip builds awaiting your price
+            </h2>
             <p className="mt-2 max-w-2xl text-sm text-forest-600">
-              Calculator saves, website form captures (signed-in email), and manual lines you publish. Use View to open the trip
-              form and adjust locked fields for the client. Use Remove to delete a row from the database — it disappears from this
-              list and from the client dashboard packages.
+              Guests send transfers, golf courses, and accommodation from their trip builder. Builds that need a price
+              show a badge and ring the bell. Open <strong className="font-medium text-forest-800">Add price</strong> to
+              quote them — it appears on their dashboard.
             </p>
 
             {packageBuildDeleteMessage ? (
@@ -7128,46 +7082,66 @@ export function AdminDashboardPage() {
               <div className="mt-6 rounded-3xl border border-chrome-200/90 bg-chrome-50/90 px-6 py-4 text-sm text-brand-950 shadow-soft">
                 <p className="font-medium">Package builds could not be loaded.</p>
                 <p className="mt-2 text-brand-900/85">{buildsLoadError}</p>
-                <p className="mt-2 text-xs text-brand-900/70">
-                  If the error mentions <code className="rounded bg-white px-1">client_details</code>, run{' '}
-                  <code className="rounded bg-white px-1">supabase/run-in-sql-editor-add-client-details.sql</code> in Supabase
-                  SQL. Otherwise check the <code className="rounded bg-white px-1">package_builds</code> migration and the{' '}
-                  <code className="rounded bg-white px-1">profiles</code> join if PostgREST reports ambiguity.
-                </p>
               </div>
             ) : packageBuilds.length === 0 ? (
-              <div className="mt-6 rounded-[2rem] border border-dashed border-forest-200 bg-offwhite px-6 py-10 text-center text-sm text-forest-900 md:px-10">
-                No client-saved package builds yet.
+              <div className="mt-6 rounded-[2rem] border border-dashed border-forest-200 bg-offwhite px-6 py-10 text-center md:px-10">
+                <p className="font-display text-lg font-semibold text-forest-950">No client trip builds yet</p>
+                <p className="mx-auto mt-2 max-w-md text-sm text-forest-600">
+                  When a guest uses Trip builder → Save &amp; send for pricing, their build appears here for you to price.
+                </p>
               </div>
             ) : (
               <div className="mt-6 overflow-x-auto rounded-[2rem] border border-forest-100 bg-white shadow-soft">
                 <table className="min-w-full text-left text-sm">
                   <thead>
                     <tr className="bg-forest-950 text-xs font-semibold uppercase tracking-[0.12em] text-white">
-                      <th className="whitespace-nowrap px-4 py-4 md:px-6">When</th>
+                      <th className="whitespace-nowrap px-4 py-4 md:px-6">Updated</th>
                       <th className="whitespace-nowrap px-4 py-4 md:px-6">Customer</th>
-                      <th className="px-4 py-4 md:px-6">Build</th>
-                      <th className="whitespace-nowrap px-4 py-4 md:px-6">Source</th>
-                      <th className="whitespace-nowrap px-4 py-4 md:px-6">Trip form</th>
-                      <th className="whitespace-nowrap px-4 py-4 md:px-6">Group total</th>
-                      <th className="whitespace-nowrap px-4 py-4 md:px-6">Details</th>
+                      <th className="px-4 py-4 md:px-6">Stages</th>
+                      <th className="whitespace-nowrap px-4 py-4 md:px-6">Status</th>
+                      <th className="whitespace-nowrap px-4 py-4 md:px-6">Price</th>
+                      <th className="whitespace-nowrap px-4 py-4 md:px-6">Action</th>
                       <th className="whitespace-nowrap px-4 py-4 text-right md:px-6">Remove</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-forest-100">
-                    {packageBuilds.map((row, index) => {
+                    {[...packageBuilds]
+                      .sort((a, b) => {
+                        const ar = packageBuildNeedsAdminReview(a.config) ? 0 : 1
+                        const br = packageBuildNeedsAdminReview(b.config) ? 0 : 1
+                        if (ar !== br) return ar - br
+                        return Date.parse(b.updated_at || b.created_at) - Date.parse(a.updated_at || a.created_at)
+                      })
+                      .map((row, index) => {
                       const prof = profileFromRow(row)
                       const cfg = parseAnyPackageBuildRowConfig(row.config)
-                      const total =
-                        cfg?.type === 'calculator' ? cfg.config.totals.estimatedGroupTotal : cfg?.type === 'manual' ? cfg.config.priceEur : undefined
+                      const needsReview = packageBuildNeedsAdminReview(row.config)
+                      const tw = cfg?.type === 'website_form' ? cfg.config.portalTripWorkspace : null
+                      const quoteTotal =
+                        cfg?.type === 'website_form' && cfg.config.adminQuote
+                          ? cfg.config.adminQuote.grossTotalEur
+                          : cfg?.type === 'calculator'
+                            ? cfg.config.totals.estimatedGroupTotal
+                            : cfg?.type === 'manual'
+                              ? cfg.config.priceEur
+                              : undefined
+                      const stages = tw?.stages
+                      const stageChips = [
+                        stages?.transfer ? 'Transfers' : null,
+                        stages?.golf ? 'Golf' : null,
+                        stages?.hotel ? 'Stay' : null
+                      ].filter(Boolean) as string[]
 
                       return (
                         <tr
-                          className={cx('text-forest-900', index % 2 === 1 ? 'bg-offwhite/90' : 'bg-white')}
+                          className={cx(
+                            'text-forest-900',
+                            needsReview ? 'bg-amber-50/70' : index % 2 === 1 ? 'bg-offwhite/90' : 'bg-white'
+                          )}
                           key={row.id}
                         >
                           <td className="whitespace-nowrap px-4 py-4 text-xs text-ge-gray500 md:px-6">
-                            {formatAdminDateTime(row.created_at)}
+                            {formatAdminDateTime(row.updated_at || row.created_at)}
                           </td>
                           <td className="px-4 py-4 md:px-6">
                             <p className="font-medium text-forest-900">{prof?.full_name?.trim() || '—'}</p>
@@ -7181,41 +7155,55 @@ export function AdminDashboardPage() {
                             ) : (
                               <p className="mt-1 font-mono text-[11px] text-ge-gray500">{row.owner_id.slice(0, 8)}…</p>
                             )}
-                          </td>
-                          <td className="max-w-xs px-4 py-4 md:max-w-md md:px-6">
-                            <p className="font-medium text-forest-900">{row.label ?? 'Package build'}</p>
-                            {cfg?.type === 'calculator' ? (
-                              <p className="mt-1 text-xs text-forest-600">
-                                {cfg.config.packageStyle} · {cfg.config.groupSize} pax · {cfg.config.nights}n /{' '}
-                                {cfg.config.rounds} rounds
-                              </p>
-                            ) : cfg?.type === 'manual' ? (
-                              <p className="mt-1 line-clamp-2 text-xs text-forest-600">
-                                {cfg.config.summary.trim() || 'Manual quote'}
-                              </p>
-                            ) : cfg?.type === 'website_form' ? (
-                              <p className="mt-1 line-clamp-2 text-xs text-forest-600">
-                                {humanizeFormKey(cfg.config.formKey)} · {cfg.config.enquiryReferenceId}
+                            {cfg?.type === 'website_form' && cfg.config.enquiryReferenceId ? (
+                              <p className="mt-1 font-mono text-[11px] font-semibold text-forest-700">
+                                {cfg.config.enquiryReferenceId}
                               </p>
                             ) : null}
                           </td>
-                          <td className="whitespace-nowrap px-4 py-4 text-xs text-forest-600 md:px-6">
-                            {packageBuildDbSourceLabel(row.source)}
+                          <td className="px-4 py-4 md:px-6">
+                            {stageChips.length > 0 ? (
+                              <div className="flex flex-wrap gap-1.5">
+                                {stageChips.map((chip) => (
+                                  <span
+                                    className="rounded-full bg-forest-900/90 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white"
+                                    key={chip}
+                                  >
+                                    {chip}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-xs text-forest-600">{packageBuildDbSourceLabel(row.source)}</p>
+                            )}
+                            {tw?.partySize ? (
+                              <p className="mt-1 text-xs text-forest-600">{tw.partySize} guests</p>
+                            ) : null}
                           </td>
-                          <td className="whitespace-nowrap px-4 py-4 text-xs font-medium text-forest-700 md:px-6">
-                            {hasMeaningfulTripDetails(row.client_details) ? 'Yes' : '—'}
+                          <td className="whitespace-nowrap px-4 py-4 md:px-6">
+                            {needsReview ? (
+                              <span className="inline-flex rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-950">
+                                Needs price
+                              </span>
+                            ) : typeof quoteTotal === 'number' ? (
+                              <span className="inline-flex rounded-full bg-fairway-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-fairway-900">
+                                Priced
+                              </span>
+                            ) : (
+                              <span className="text-xs text-ge-gray500">—</span>
+                            )}
                           </td>
                           <td className="whitespace-nowrap px-4 py-4 font-medium text-forest-900 md:px-6">
-                            {typeof total === 'number' ? formatEur(total) : '—'}
+                            {typeof quoteTotal === 'number' ? formatEur(quoteTotal) : '—'}
                           </td>
                           <td className="whitespace-nowrap px-4 py-4 md:px-6">
                             <LuxuryButton
                               className="!px-5 !py-2.5 !text-xs"
                               onClick={() => setDetailBuildId(row.id)}
                               type="button"
-                              variant="white"
+                              variant={needsReview ? 'primary' : 'white'}
                             >
-                              View
+                              {needsReview ? 'Add price' : 'View'}
                             </LuxuryButton>
                           </td>
                           <td className="whitespace-nowrap px-4 py-4 text-right md:px-6">
@@ -7240,51 +7228,57 @@ export function AdminDashboardPage() {
         </AdminPortalSection>
 
         <AdminPortalSection activeSection={activeAdminSection} section="proposals">
-          <section>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">Proposals</p>
-            <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">CRM records</h2>
-            <p className="mt-2 max-w-2xl text-sm text-forest-600">
-              Populated when you insert rows (or automate later). Owners see their own rows on the client dashboard.
-            </p>
+          <div className="space-y-10">
+            <AdminDocumentSendDesk accessToken={session?.access_token ?? null} />
 
-            {proposals.length === 0 ? (
-              <div className="mt-6 rounded-[2rem] border border-dashed border-forest-200 bg-offwhite px-6 py-10 text-center text-sm text-forest-900 md:px-10">
-                No proposal rows in the database yet.
-              </div>
-            ) : (
-              <ul className="mt-6 overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-soft">
-                {proposals.map((row, index) => (
-                  <li
-                    className={cx(
-                      'flex flex-col gap-3 border-b border-forest-100/80 px-5 py-5 last:border-b-0 sm:flex-row sm:items-center sm:justify-between md:px-7',
-                      index % 2 === 1 ? 'bg-offwhite/90' : 'bg-white'
-                    )}
-                    key={row.id}
-                  >
-                    <div className="min-w-0">
-                      <p className="font-display text-lg font-semibold text-forest-950">
-                        {row.title?.trim() || row.proposal_id}
-                      </p>
-                      <p className="mt-1 font-mono text-xs text-ge-gray500">{row.proposal_id}</p>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-3">
-                      <span
-                        className={cx(
-                          'inline-flex rounded-full px-3 py-1 text-xs font-semibold capitalize ring-1 ring-black/5',
-                          proposalStatusStyles[row.status] ?? 'bg-forest-800 text-white'
-                        )}
-                      >
-                        {row.status}
-                      </span>
-                      <span className="text-xs font-medium text-ge-gray500">
-                        {formatAdminDateTime(row.created_at)}
-                      </span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
+            <section>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-600">CRM list</p>
+              <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">
+                Saved proposal records
+              </h2>
+              <p className="mt-2 max-w-2xl text-sm text-forest-600">
+                Formal proposals saved to the portal appear here. Day-to-day PDF sends use the desk above (email + Messages).
+              </p>
+
+              {proposals.length === 0 ? (
+                <div className="mt-6 rounded-[2rem] border border-dashed border-forest-200 bg-offwhite px-6 py-10 text-center text-sm text-forest-900 md:px-10">
+                  No formal proposal rows yet — use Send a PDF above for quotes, confirmations, and terms.
+                </div>
+              ) : (
+                <ul className="mt-6 overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-soft">
+                  {proposals.map((row, index) => (
+                    <li
+                      className={cx(
+                        'flex flex-col gap-3 border-b border-forest-100/80 px-5 py-5 last:border-b-0 sm:flex-row sm:items-center sm:justify-between md:px-7',
+                        index % 2 === 1 ? 'bg-offwhite/90' : 'bg-white'
+                      )}
+                      key={row.id}
+                    >
+                      <div className="min-w-0">
+                        <p className="font-display text-lg font-semibold text-forest-950">
+                          {row.title?.trim() || row.proposal_id}
+                        </p>
+                        <p className="mt-1 font-mono text-xs text-ge-gray500">{row.proposal_id}</p>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <span
+                          className={cx(
+                            'inline-flex rounded-full px-3 py-1 text-xs font-semibold capitalize ring-1 ring-black/5',
+                            proposalStatusStyles[row.status] ?? 'bg-forest-800 text-white'
+                          )}
+                        >
+                          {row.status}
+                        </span>
+                        <span className="text-xs font-medium text-ge-gray500">
+                          {formatAdminDateTime(row.created_at)}
+                        </span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          </div>
         </AdminPortalSection>
         </div>
 
@@ -7616,204 +7610,6 @@ export function AdminDashboardPage() {
         </div>
       ) : null}
 
-      <AdminPortalSection activeSection={activeAdminSection} section="portal">
-      <div className="mt-20 space-y-12 border-t border-forest-200 pt-14">
-        <section
-          aria-label="Clear client portal and copy signed login links"
-          className="rounded-3xl border-2 border-red-200/90 bg-gradient-to-br from-red-50/95 to-white p-6 shadow-soft sm:p-8"
-        >
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-red-900">Client portal reset</p>
-          <h2 className="font-display mt-2 text-xl font-semibold text-forest-950">Clear dashboard or copy signed login URL</h2>
-          <p className="mt-2 max-w-3xl text-sm text-forest-700">
-            Use <strong className="font-medium text-forest-900">client login email</strong> and/or an <strong className="font-medium text-forest-900">account or enquiry ref</strong> (GSI-…) so we match the same profile that owns the inbox. Signed links use the account ref field and{' '}
-            <code className="rounded bg-white px-1 font-mono text-xs ring-1 ring-forest-200">PORTAL_LINK_SIGNING_SECRET</code> on the server.
-          </p>
-          <label className="mb-2 mt-5 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="bottom-clear-portal-client-email">
-            Client login email
-          </label>
-          <input
-            autoComplete="email"
-            className="mb-3 w-full max-w-md rounded-2xl border border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
-            id="bottom-clear-portal-client-email"
-            onChange={(e) => {
-              setClearPortalClientEmail(e.target.value)
-              setClearDashboardMessage(null)
-              setClearPortalInboxMessage(null)
-              setPortalLinkCopyMessage(null)
-            }}
-            placeholder="Address they sign in with (best for clearing Messages & files)"
-            type="email"
-            value={clearPortalClientEmail}
-          />
-          <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="bottom-clear-dashboard-ref">
-            Account or enquiry reference (optional if email above is set)
-          </label>
-          <input
-            className="mb-2 w-full max-w-md rounded-2xl border border-forest-200 bg-white px-4 py-3 font-mono text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
-            id="bottom-clear-dashboard-ref"
-            onChange={(e) => {
-              setClearDashboardAccountRef(e.target.value)
-              setClearDashboardMessage(null)
-              setClearPortalInboxMessage(null)
-              setPortalLinkCopyMessage(null)
-            }}
-            placeholder="e.g. GSI-3TY1-2719 (profile account # or quote enquiry ref)"
-            type="text"
-            value={clearDashboardAccountRef}
-          />
-          <p className="mb-4 max-w-xl text-xs text-forest-600">
-            Quote titles may show an enquiry ref that differs from the profile account number — use login email when in doubt.
-          </p>
-          <p className="mb-4 max-w-2xl text-xs text-forest-600">
-            <strong className="font-medium text-forest-800">Full dashboard clear</strong> also deletes portal invoices, transfer
-            bookings, and the email→account anchor so the client can receive a <strong className="font-medium text-forest-800">new</strong>{' '}
-            portal account number on next sign-in or when they save contact details again. Enquiry rows in the table above are kept.
-          </p>
-          <div className="flex flex-col flex-wrap gap-3 sm:flex-row sm:items-center">
-            <button
-              className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-chrome-300 bg-white px-6 py-3 text-sm font-semibold text-brand-950 transition-colors hover:bg-chrome-50 disabled:opacity-60"
-              disabled={clearPortalInboxBusy || clearDashboardBusy}
-              onClick={() => void handleClearPortalMessagesOnly()}
-              type="button"
-            >
-              {clearPortalInboxBusy ? 'Clearing…' : 'Clear Messages & files only'}
-            </button>
-            <button
-              className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-red-300 bg-white px-6 py-3 text-sm font-semibold text-red-950 transition-colors hover:bg-red-50 disabled:opacity-60"
-              disabled={clearDashboardBusy || clearPortalInboxBusy}
-              onClick={() => void handleClearDashboardByAccountRef()}
-              type="button"
-            >
-              {clearDashboardBusy ? 'Clearing…' : 'Clear entire client portal'}
-            </button>
-            <button
-              className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-forest-200 bg-white px-6 py-3 text-sm font-semibold text-forest-900 transition-colors hover:border-fairway-400 disabled:opacity-60"
-              disabled={portalLinkCopyBusy !== 'idle'}
-              onClick={() => void handleCopySignedPortalLoginLink('client')}
-              type="button"
-            >
-              {portalLinkCopyBusy === 'client' ? 'Preparing…' : 'Copy signed client login link'}
-            </button>
-            <button
-              className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-forest-200 bg-white px-6 py-3 text-sm font-semibold text-forest-900 transition-colors hover:border-fairway-400 disabled:opacity-60"
-              disabled={portalLinkCopyBusy !== 'idle'}
-              onClick={() => void handleCopySignedPortalLoginLink('admin')}
-              type="button"
-            >
-              {portalLinkCopyBusy === 'admin' ? 'Preparing…' : 'Copy signed admin login link'}
-            </button>
-          </div>
-          {clearPortalInboxMessage ? (
-            <p className="mt-4 text-sm font-medium text-brand-950" role="status">
-              {clearPortalInboxMessage}
-            </p>
-          ) : null}
-          {clearDashboardMessage ? (
-            <p className="mt-4 text-sm font-medium text-forest-900" role="status">
-              {clearDashboardMessage}
-            </p>
-          ) : null}
-          {portalLinkCopyMessage ? (
-            <p className="mt-3 text-sm font-medium text-forest-900" role="status">
-              {portalLinkCopyMessage}
-            </p>
-          ) : null}
-        </section>
-
-        <section aria-label="Block sign-in and enquiries" className="rounded-3xl border border-forest-200 bg-white p-6 shadow-soft sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-800">Access control</p>
-          <h2 className="font-display mt-2 text-lg font-semibold text-forest-950">Block or unblock an email</h2>
-          <p className="mt-2 max-w-2xl text-sm text-forest-600">
-            Blocked addresses cannot request magic links, submit website enquiries, or be created as a new client via admin “Create portal user”. Existing sessions are not revoked automatically.
-          </p>
-          <div className="mt-5 flex max-w-xl flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
-            <div className="min-w-0 flex-1">
-              <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="auth-block-email">
-                Email to block
-              </label>
-              <input
-                autoComplete="email"
-                className="w-full rounded-2xl border border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
-                id="auth-block-email"
-                onChange={(e) => setAuthBlockEmailInput(e.target.value)}
-                placeholder="client@example.com"
-                type="email"
-                value={authBlockEmailInput}
-              />
-            </div>
-            <div className="min-w-0 flex-1 sm:min-w-[12rem]">
-              <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="auth-block-reason">
-                Reason (optional)
-              </label>
-              <input
-                className="w-full rounded-2xl border border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
-                id="auth-block-reason"
-                onChange={(e) => setAuthBlockReasonInput(e.target.value)}
-                placeholder="Spam, abuse, duplicate…"
-                type="text"
-                value={authBlockReasonInput}
-              />
-            </div>
-            <button
-              className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-forest-900 bg-forest-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-forest-800 disabled:opacity-60"
-              disabled={authBlockBusy}
-              onClick={() => void handleBlockAuthEmail()}
-              type="button"
-            >
-              {authBlockBusy ? 'Working…' : 'Block email'}
-            </button>
-          </div>
-          {authBlockMessage ? (
-            <p className="mt-4 text-sm font-medium text-forest-900" role="status">
-              {authBlockMessage}
-            </p>
-          ) : null}
-          <div className="mt-8">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Currently blocked</p>
-              <button
-                className="text-xs font-semibold text-gs-green underline decoration-gs-green/40 hover:decoration-gs-green"
-                disabled={authBlockListLoading}
-                onClick={() => void loadAuthEmailBlocks()}
-                type="button"
-              >
-                {authBlockListLoading ? 'Refreshing…' : 'Refresh list'}
-              </button>
-            </div>
-            {authBlockListLoading && authBlockList.length === 0 ? (
-              <p className="mt-3 text-sm text-forest-600">Loading…</p>
-            ) : authBlockList.length === 0 ? (
-              <p className="mt-3 text-sm text-forest-600">No blocked addresses.</p>
-            ) : (
-              <ul className="mt-4 space-y-3">
-                {authBlockList.map((row) => (
-                  <li
-                    className="flex flex-col gap-2 rounded-2xl border border-forest-100 bg-offwhite/80 px-4 py-3 text-sm text-forest-800 sm:flex-row sm:items-center sm:justify-between"
-                    key={row.email}
-                  >
-                    <div>
-                      <p className="font-mono text-sm font-semibold text-forest-950">{row.email}</p>
-                      <p className="text-xs text-ge-gray500">
-                        Since {formatDateTimeDdMmYy(row.blocked_at)}
-                        {row.reason ? ` · ${row.reason}` : ''}
-                      </p>
-                    </div>
-                    <button
-                      className="inline-flex min-h-9 shrink-0 items-center justify-center rounded-full border border-forest-200 bg-white px-4 text-xs font-semibold text-forest-900 hover:border-fairway-400 disabled:opacity-60"
-                      disabled={authBlockBusy}
-                      onClick={() => void handleUnblockAuthEmail(row.email)}
-                      type="button"
-                    >
-                      Unblock
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </section>
-      </div>
-      </AdminPortalSection>
       </AdminPortalShell>
     </DashboardLayout>
   )

@@ -3,11 +3,9 @@ import { lazy, Suspense, type LazyExoticComponent, type ComponentType } from 're
 import { AppErrorBoundary } from './components/app-error-boundary'
 import { pathnameNeedsImmediateSupabaseHydration } from './lib/auth-bootstrap-path'
 import { MotionRoot } from './providers/motion-root'
-import { isGeContentPagePath } from './pages/golf-experience/data/content-pages'
+import { isGeContentPagePath } from './pages/golf-experience/data/ge-content-page-paths'
+/** Homepage only is eager — keeps LCP path short; other marketing pages load as route chunks. */
 import { GolfExperienceHome } from './pages/golf-experience/golf-experience-home'
-import { TransportServicePage } from './pages/golf-experience/transport-service-page'
-import { GeContentPage } from './pages/golf-experience/content-page'
-import { CustomerPackagePage } from './pages/customer-packages'
 import './index.css'
 import './theme/ge-page-token-overrides.css'
 import './theme/site-readable-typography.css'
@@ -21,6 +19,15 @@ if (typeof window !== 'undefined') {
   }
 }
 
+const TransportServicePage = lazy(() =>
+  import('./pages/golf-experience/transport-service-page').then((m) => ({ default: m.TransportServicePage }))
+)
+const GeContentPage = lazy(() =>
+  import('./pages/golf-experience/content-page').then((m) => ({ default: m.GeContentPage }))
+)
+const CustomerPackagePage = lazy(() =>
+  import('./pages/customer-packages').then((m) => ({ default: m.CustomerPackagePage }))
+)
 const ContinueTripPage = lazy(() =>
   import('./pages/continue-trip-page').then((m) => ({ default: m.ContinueTripPage }))
 )

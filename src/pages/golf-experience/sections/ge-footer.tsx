@@ -1,5 +1,5 @@
+import type { SVGProps } from 'react'
 import { ChevronRight, Mail } from 'lucide-react'
-import { FaFacebookF, FaInstagram, FaLinkedinIn, FaXTwitter } from 'react-icons/fa6'
 import { FooterBrandLogoPicture } from '../../../components/brand-logo-picture'
 import { BrandPlaneToFairwayTagline } from '../../../components/brand-plane-to-fairway-tagline'
 import { GOLFSOL_BRAND_LOGO_FOOTER_SIZES, GOLFSOL_BRAND_LOGO_INTRINSIC } from '../../../lib/brand-logo-assets'
@@ -9,11 +9,45 @@ import { aboutFooterCopy, contactInfo } from '../data/copy'
 import { GsolGoldCornerAccents } from '../../../components/gsol-gold-corner-accents'
 import { footerColumns } from '../data/nav'
 
+type IconProps = SVGProps<SVGSVGElement>
+
+function FacebookIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
+      <path d="M14 8.2h2.2V5.1c-.4 0-1.7-.2-3.2-.2-3.2 0-5.4 1.9-5.4 5.5V13H5.5v3.4H7.6V22h3.5v-5.6h2.7l.4-3.4h-3.1v-2.3c0-1 .3-1.7 1.9-1.7Z" />
+    </svg>
+  )
+}
+
+function InstagramIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
+      <path d="M12 7.2A4.8 4.8 0 1 0 12 16.8 4.8 4.8 0 0 0 12 7.2Zm0 7.9a3.1 3.1 0 1 1 0-6.2 3.1 3.1 0 0 1 0 6.2Zm5.1-8.2a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0ZM12 4.4c-2 0-2.3 0-3.1.1a4.7 4.7 0 0 0-3.4 3.4c-.1.8-.1 1.1-.1 3.1s0 2.3.1 3.1a4.7 4.7 0 0 0 3.4 3.4c.8.1 1.1.1 3.1.1s2.3 0 3.1-.1a4.7 4.7 0 0 0 3.4-3.4c.1-.8.1-1.1.1-3.1s0-2.3-.1-3.1a4.7 4.7 0 0 0-3.4-3.4c-.8-.1-1.1-.1-3.1-.1Zm0 1.6c2 0 2.2 0 3 .1a3.1 3.1 0 0 1 2.2 2.2c.1.8.1 1 .1 3s0 2.2-.1 3a3.1 3.1 0 0 1-2.2 2.2c-.8.1-1 .1-3 .1s-2.2 0-3-.1a3.1 3.1 0 0 1-2.2-2.2c-.1-.8-.1-1-.1-3s0-2.2.1-3a3.1 3.1 0 0 1 2.2-2.2c.8-.1 1-.1 3-.1Z" />
+    </svg>
+  )
+}
+
+function XIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
+      <path d="M17.6 3.5h2.7l-5.9 6.7 7 9.3h-5.5l-4.3-5.6-4.9 5.6H4l6.3-7.2L3.7 3.5h5.6l3.9 5.1 4.4-5.1Zm-1 14.4h1.5L7.5 5h-1.6l10.7 12.9Z" />
+    </svg>
+  )
+}
+
+function LinkedInIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
+      <path d="M6.3 9.1H3.5V20.5h2.8V9.1ZM4.9 3.5a1.7 1.7 0 1 0 0 3.4 1.7 1.7 0 0 0 0-3.4ZM20.5 20.5h-2.8v-5.6c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9v5.7H11V9.1h2.7v1.6h.1c.4-.7 1.3-1.8 3.2-1.8 3.4 0 4 2.2 4 5.1v6.5Z" />
+    </svg>
+  )
+}
+
 const socials = [
-  { label: 'Facebook', icon: FaFacebookF, href: 'https://www.facebook.com/' },
-  { label: 'Instagram', icon: FaInstagram, href: 'https://www.instagram.com/golfsolireland/' },
-  { label: 'X', icon: FaXTwitter, href: 'https://x.com/golfsolireland' },
-  { label: 'LinkedIn', icon: FaLinkedinIn, href: 'https://www.linkedin.com/in/gregory-mcdonald-44a537415/' }
+  { label: 'Facebook', icon: FacebookIcon, href: 'https://www.facebook.com/' },
+  { label: 'Instagram', icon: InstagramIcon, href: 'https://www.instagram.com/golfsolireland/' },
+  { label: 'X', icon: XIcon, href: 'https://x.com/golfsolireland' },
+  { label: 'LinkedIn', icon: LinkedInIcon, href: 'https://www.linkedin.com/in/gregory-mcdonald-44a537415/' }
 ]
 
 export function GeFooter() {

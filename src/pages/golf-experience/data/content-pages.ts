@@ -751,6 +751,6 @@ const geContentPages: Record<string, GeContentPageData> = {
 
 export { geContentPages }
 
-export const isGeContentPagePath = (path: string): boolean => path in geContentPages
+export { isGeContentPagePath } from './ge-content-page-paths'
 
 export const getGeContentPage = (path: string): GeContentPageData | null => geContentPages[path] ?? null

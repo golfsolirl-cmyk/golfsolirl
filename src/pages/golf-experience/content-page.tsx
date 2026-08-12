@@ -17,7 +17,10 @@ import { formatContentPageRouteLabel, getContentPageFormConfig, getContentStoryS
 import { GeTransfersInsuranceBanner } from './components/ge-transfers-insurance-banner'
 import { WhatsappFab } from './components/whatsapp-fab'
 import { GeSection } from './components/ge-section'
-import { GOLF_COURSES_MAP_SECTION_ID, shouldShowInteractiveCourseMap } from './components/ge-courses-interactive-corridor'
+import {
+  GOLF_COURSES_MAP_SECTION_ID,
+  shouldShowInteractiveCourseMap
+} from './components/ge-courses-map-visibility'
 
 const GeCoursesInteractiveCorridor = lazy(async () => {
   const mod = await import('./components/ge-courses-interactive-corridor')

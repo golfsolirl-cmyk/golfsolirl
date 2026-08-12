@@ -119,6 +119,8 @@ export function AdminDriverCalendarPanel() {
   const [formRef, setFormRef] = useState('')
   const [formNotes, setFormNotes] = useState('')
   const [formMessage, setFormMessage] = useState<string | null>(null)
+  /** Which full-width close-day action the admin is filling in. */
+  const [closeDayIntent, setCloseDayIntent] = useState<'full' | 'print'>('full')
   const [hideCollectionOnWebsite, setHideCollectionOnWebsite] = useState(false)
   const [hideCollectionLoaded, setHideCollectionLoaded] = useState(false)
   const [hideCollectionBusy, setHideCollectionBusy] = useState(false)
@@ -394,13 +396,13 @@ export function AdminDriverCalendarPanel() {
     }
     const day = (formDay || selectedIso || '').trim().slice(0, 10)
     if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) {
-      setFormMessage('Pick a date on the calendar or set the service day first.')
+      setFormMessage('Pick a day first (calendar or date field).')
       return
     }
     const existing = byDay.get(day) ?? []
     if (existing.length > 0) {
       setFormMessage(
-        'This date already has a calendar row, so transfers are already blocked on the website for that day. Add details below if you need a printable run sheet.'
+        'This day is already Full. To add a printable guest, use choice B. To take bookings again, use Re-open day on the right.'
       )
       return
     }
@@ -423,7 +425,7 @@ export function AdminDriverCalendarPanel() {
       setFormMessage(error.message)
       return
     }
-    setFormMessage('Saved — that day is blocked on public forms and appears in the “fully booked” notice before customers submit.')
+    setFormMessage('Saved — that day is Full on public forms (guests see “fully booked” before submit).')
     setSelectedIso(day)
     await load()
   }
@@ -435,7 +437,15 @@ export function AdminDriverCalendarPanel() {
     }
     const day = (formDay || selectedIso || '').trim().slice(0, 10)
     if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) {
-      setFormMessage('Pick a valid service day (yyyy-mm-dd).')
+      setFormMessage('Pick a day first (calendar or date field).')
+      return
+    }
+    const name = formName.trim()
+    const email = formEmail.trim()
+    const phone = formPhone.trim()
+    const notes = formNotes.trim()
+    if (!name && !email && !phone && !notes && !formRef.trim()) {
+      setFormMessage('For a print sheet, add at least a guest name or driver notes. Or use Mark Full (choice A) instead.')
       return
     }
     const supabase = getSupabaseBrowserClient()
@@ -446,11 +456,11 @@ export function AdminDriverCalendarPanel() {
     setBusy(true)
     const { error } = await supabase.from('driver_calendar_bookings').insert({
       service_day: day,
-      customer_name: formName.trim(),
-      customer_email: formEmail.trim(),
-      customer_phone: formPhone.trim(),
+      customer_name: name,
+      customer_email: email,
+      customer_phone: phone,
       reference_id: formRef.trim() || null,
-      notes: formNotes.trim() || null
+      notes: notes || null
     })
     setBusy(false)
     if (error) {
@@ -462,7 +472,7 @@ export function AdminDriverCalendarPanel() {
     setFormPhone('')
     setFormRef('')
     setFormNotes('')
-    setFormMessage('Saved — that day is now blocked on public forms.')
+    setFormMessage('Saved on the day sheet — website also shows this day as Full. Use Print day sheet when ready.')
     setSelectedIso(day)
     await load()
   }
@@ -475,7 +485,7 @@ export function AdminDriverCalendarPanel() {
     if (!supabase) {
       return
     }
-    if (!window.confirm('Remove this booking row? The day may become available if no other rows remain.')) {
+    if (!window.confirm('Remove this day-sheet row? If it’s the last one, the website will take enquiries on that date again.')) {
       return
     }
     setBusy(true)
@@ -504,7 +514,7 @@ export function AdminDriverCalendarPanel() {
     })
     if (
       !window.confirm(
-        `Remove all ${selectedBookings.length} booking row(s) for ${dayLabel}? The website will allow new enquiries on this date again.`
+        `Re-open ${dayLabel}? This removes ${selectedBookings.length} day-sheet row(s) and lets the website take that date again.`
       )
     ) {
       return
@@ -540,10 +550,11 @@ export function AdminDriverCalendarPanel() {
   return (
     <div className="space-y-6 print:block">
       <div className="rounded-[2rem] border border-forest-100 bg-offwhite/40 p-5 shadow-soft print:hidden">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Transport enquiry page</p>
-        <p className="mt-2 max-w-2xl text-sm text-forest-700">
-          When you are very busy, hide the collection date and time field on the public transport form. Customers still choose trip
-          timing and travel dates; collection is confirmed by phone or message instead.
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-700">Busy season shortcut</p>
+        <h3 className="mt-1 font-display text-lg font-semibold text-forest-950">Hide pickup time on the website form</h3>
+        <p className="mt-1 max-w-2xl text-sm text-forest-600">
+          When AGP days are slammed, turn off the collection date/time picker on the public transport form. Guests still
+          send trip dates — you confirm exact pickup by phone or message.
         </p>
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <LuxuryButton
@@ -552,7 +563,11 @@ export function AdminDriverCalendarPanel() {
             type="button"
             variant={hideCollectionOnWebsite ? 'primary' : 'outline'}
           >
-            {hideCollectionBusy ? 'Saving…' : hideCollectionOnWebsite ? 'Collection picker is hidden — click to show again' : 'Hide collection date & time on website'}
+            {hideCollectionBusy
+              ? 'Saving…'
+              : hideCollectionOnWebsite
+                ? 'Show pickup time on website again'
+                : 'Hide pickup time on website'}
           </LuxuryButton>
           {hideCollectionLoaded ? (
             <span className="text-sm font-medium text-forest-800">
@@ -592,12 +607,21 @@ export function AdminDriverCalendarPanel() {
         </LuxuryButton>
       </div>
 
-      <p className="max-w-3xl text-xs text-forest-600 print:hidden">
-        <span className="font-semibold text-forest-800">Paid transfers</span> (deposit or paid in full) appear on the day
-        of scheduled pickup (<span className="font-medium">Europe/Madrid</span>). Cells show deposit vs paid counts and
-        quoted EUR. Click a date to open the detail panel with full client and route information. Website diary
-        &quot;Booked&quot; rows are separate capacity blocks.
-      </p>
+      <div className="flex flex-wrap gap-x-4 gap-y-2 rounded-2xl border border-forest-100 bg-white px-4 py-3 text-xs text-forest-700 print:hidden">
+        <span className="inline-flex items-center gap-1.5">
+          <span aria-hidden className="h-2.5 w-2.5 rounded-sm border border-brand-400 bg-brand-50" />
+          Paid / deposit run
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span aria-hidden className="h-2.5 w-2.5 rounded-sm border border-brand-300 bg-brand-50/80" />
+          Full on website
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span aria-hidden className="h-2.5 w-2.5 rounded-sm border border-forest-100 bg-offwhite/60" />
+          Open for enquiries
+        </span>
+        <span className="text-forest-500">Pickup times = Madrid · dep = deposit · paid = paid in full</span>
+      </div>
 
       {loadError ? (
         <div className="rounded-2xl border border-chrome-200 bg-chrome-50/90 px-4 py-3 text-sm text-brand-950" role="alert">
@@ -645,7 +669,7 @@ export function AdminDriverCalendarPanel() {
               >
                 <span className="block font-semibold">{cell.n}</span>
                 {hasDiary ? (
-                  <span className="mt-0.5 block text-[10px] font-medium uppercase tracking-wide text-brand-700">Diary</span>
+                  <span className="mt-0.5 block text-[10px] font-medium uppercase tracking-wide text-brand-700">Full</span>
                 ) : null}
                 {hasTransfers && trAgg ? (
                   <span className="mt-0.5 block text-[9px] font-semibold leading-tight text-fairway-900">
@@ -662,9 +686,12 @@ export function AdminDriverCalendarPanel() {
       </div>
 
       {unscheduledPaidTransfers.length > 0 ? (
-        <div className="rounded-2xl border border-forest-100 bg-white p-4 shadow-soft print:hidden">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Paid · no pickup date yet</p>
-          <p className="mt-1 text-sm text-forest-600">ASAP / next-available runs with deposit or full payment on file.</p>
+        <div className="rounded-2xl border border-amber-200/80 bg-amber-50/40 p-4 shadow-soft print:hidden">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-900">Needs a pickup time</p>
+          <p className="mt-1 text-sm text-forest-700">
+            Paid or deposit on file, but no scheduled day yet (ASAP / next available). Set the time under Transfers &amp;
+            drivers so they appear on this calendar.
+          </p>
           <ul className="mt-3 space-y-2">
             {unscheduledPaidTransfers.map((t) => (
               <li className="rounded-xl border border-forest-100 bg-offwhite/70 px-3 py-2 text-sm" key={t.id}>
@@ -682,110 +709,27 @@ export function AdminDriverCalendarPanel() {
           </ul>
         </div>
       ) : null}
-
-      <div className="rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft print:hidden">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Add booking or block a day</p>
-        <p className="mt-2 max-w-2xl text-sm text-forest-600">
-          One row on a date is enough: public enquiry forms load that date as <strong className="font-medium text-forest-800">fully booked</strong> and show a notice before submit. Customer fields can stay empty for a capacity-only block — or use{' '}
-          <strong className="font-medium text-forest-800">Block transfers on website</strong> above after selecting a day.
-        </p>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <label className="block sm:col-span-1">
-            <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">Service day</span>
-            <input
-              className="w-full rounded-xl border border-forest-200 px-3 py-2.5 text-sm text-forest-900"
-              onChange={(e) => setFormDay(e.target.value)}
-              type="date"
-              value={formDay || selectedIso || ''}
-            />
-          </label>
-          <label className="block sm:col-span-1">
-            <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">Reference (optional)</span>
-            <input
-              className="w-full rounded-xl border border-forest-200 px-3 py-2.5 font-mono text-sm text-forest-900"
-              onChange={(e) => setFormRef(e.target.value)}
-              placeholder="GSI-…"
-              type="text"
-              value={formRef}
-            />
-          </label>
-          <label className="block sm:col-span-1">
-            <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">Customer name (optional)</span>
-            <input
-              className="w-full rounded-xl border border-forest-200 px-3 py-2.5 text-sm text-forest-900"
-              onChange={(e) => setFormName(e.target.value)}
-              placeholder="Leave blank for diary-only block"
-              type="text"
-              value={formName}
-            />
-          </label>
-          <label className="block sm:col-span-1">
-            <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">Email (optional)</span>
-            <input
-              className="w-full rounded-xl border border-forest-200 px-3 py-2.5 text-sm text-forest-900"
-              onChange={(e) => setFormEmail(e.target.value)}
-              type="email"
-              value={formEmail}
-            />
-          </label>
-          <label className="block sm:col-span-2">
-            <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">Phone (optional)</span>
-            <input
-              className="w-full rounded-xl border border-forest-200 px-3 py-2.5 text-sm text-forest-900"
-              onChange={(e) => setFormPhone(e.target.value)}
-              type="tel"
-              value={formPhone}
-            />
-          </label>
-          <label className="block sm:col-span-2">
-            <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">Notes (printable)</span>
-            <textarea
-              className="min-h-[88px] w-full rounded-xl border border-forest-200 px-3 py-2.5 text-sm text-forest-900"
-              onChange={(e) => setFormNotes(e.target.value)}
-              value={formNotes}
-            />
-          </label>
-        </div>
-        <div className="mt-4 flex flex-wrap gap-3">
-          <LuxuryButton disabled={busy} onClick={() => void handleAdd()} type="button" variant="primary">
-            {busy ? 'Saving…' : 'Save row (blocks website even with empty customer fields)'}
-          </LuxuryButton>
-          <LuxuryButton
-            disabled={busy || !(formDay || selectedIso || '').trim()}
-            onClick={() => void handleQuickBlockDay()}
-            type="button"
-            variant="outline"
-          >
-            Quick block from date field only
-          </LuxuryButton>
-        </div>
-        {formMessage ? (
-          <p className="mt-3 text-sm font-medium text-forest-800" role="status">
-            {formMessage}
-          </p>
-        ) : null}
-      </div>
         </div>
 
         <aside className="print:hidden lg:sticky lg:top-4 lg:self-start">
           <div className="rounded-[1.75rem] border border-forest-100 bg-white p-5 shadow-soft">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Day detail</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-700">That day’s runs</p>
             <h3 className="mt-2 font-display text-lg font-semibold text-forest-950">
-              {selectedIso ? formatSelectedDayLabel(selectedIso) : 'Select a date'}
+              {selectedIso ? formatSelectedDayLabel(selectedIso) : 'Pick a date'}
             </h3>
             {!selectedIso ? (
               <p className="mt-3 text-sm leading-relaxed text-forest-600">
-                Click a calendar day to see paid transfers (deposit or paid in full) and website diary blocks for that
-                date.
+                Click a day to see AGP / hotel / course pickups with deposit or paid in full, plus whether the website is
+                marked Full.
               </p>
             ) : (
               <div className="mt-4 space-y-5">
                 <section>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-fairway-800">
-                    Paid transfers ({selectedTransfers.length})
+                    On the road ({selectedTransfers.length})
                   </p>
                   {selectedTransfers.length === 0 ? (
-                    <p className="mt-2 text-sm text-forest-600">No deposit or paid-in-full transfers scheduled this day.</p>
+                    <p className="mt-2 text-sm text-forest-600">No paid or deposit runs scheduled this Madrid day yet.</p>
                   ) : (
                     <ul className="mt-3 space-y-3">
                       {selectedTransfers.map((t) => (
@@ -830,7 +774,7 @@ export function AdminDriverCalendarPanel() {
                 <section className="border-t border-forest-100 pt-4">
                   <div className="flex items-center justify-between gap-2">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-700">
-                      Website diary ({selectedBookings.length})
+                      Website capacity ({selectedBookings.length})
                     </p>
                     {selectedBookings.length > 0 ? (
                       <LuxuryButton
@@ -840,17 +784,17 @@ export function AdminDriverCalendarPanel() {
                         type="button"
                         variant="white"
                       >
-                        Open day
+                        Re-open day
                       </LuxuryButton>
                     ) : null}
                   </div>
                   {selectedBookings.length === 0 ? (
                     <div className="mt-3 space-y-3 rounded-2xl border border-fairway-200 bg-fairway-50/50 px-4 py-3">
                       <p className="text-sm text-forest-700">
-                        No diary block — the website still accepts enquiries on this date.
+                        Website still takes enquiries for this date. Mark Full when every van is spoken for.
                       </p>
                       <LuxuryButton disabled={busy} onClick={() => void handleQuickBlockDay()} type="button" variant="primary">
-                        {busy ? 'Saving…' : 'Block website capacity'}
+                        {busy ? 'Saving…' : 'Mark day Full'}
                       </LuxuryButton>
                     </div>
                   ) : (
@@ -860,7 +804,7 @@ export function AdminDriverCalendarPanel() {
                           <div className="flex flex-col gap-2">
                             <div className="min-w-0 space-y-1">
                               {isWebsiteCapacityBlockRow(b) ? (
-                                <p className="font-semibold text-forest-950">Capacity block</p>
+                                <p className="font-semibold text-forest-950">Marked Full (no guest row)</p>
                               ) : (
                                 <p className="font-semibold text-forest-950">{b.customer_name || '—'}</p>
                               )}
@@ -887,6 +831,196 @@ export function AdminDriverCalendarPanel() {
           </div>
         </aside>
       </div>
+
+      <section
+        aria-label="Close a day on the website or add a printable guest"
+        className="rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft print:hidden sm:p-8 md:p-10"
+      >
+        <header className="max-w-3xl">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-700">Step after the calendar</p>
+          <h3 className="font-display mt-2 text-2xl font-semibold text-forest-950 md:text-3xl">Close a day</h3>
+          <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm leading-relaxed text-forest-700">
+            <li>Choose the day (click the calendar above, or use the date field).</li>
+            <li>Pick what you want to do — stop website bookings, or save a guest for print.</li>
+            <li>Press the green button.</li>
+          </ol>
+        </header>
+
+        <div className="mt-8 rounded-2xl border-2 border-forest-100 bg-offwhite/70 px-5 py-5 sm:px-6">
+          <label className="block max-w-sm">
+            <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">Day</span>
+            <input
+              className="w-full rounded-xl border-2 border-forest-200 bg-white px-4 py-3 text-base text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
+              onChange={(e) => {
+                const v = e.target.value
+                setFormDay(v)
+                if (v) setSelectedIso(v)
+                setFormMessage(null)
+              }}
+              type="date"
+              value={formDay || selectedIso || ''}
+            />
+          </label>
+          <p className="mt-3 text-base font-semibold text-forest-950">
+            {(formDay || selectedIso)
+              ? formatSelectedDayLabel((formDay || selectedIso || '').slice(0, 10))
+              : 'No day selected yet'}
+          </p>
+        </div>
+
+        <div
+          className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
+          role="tablist"
+          aria-label="What do you want to do?"
+        >
+          <button
+            aria-selected={closeDayIntent === 'full'}
+            className={
+              closeDayIntent === 'full'
+                ? 'rounded-2xl border-2 border-forest-900 bg-forest-900 px-5 py-4 text-left text-white shadow-md'
+                : 'rounded-2xl border-2 border-forest-200 bg-white px-5 py-4 text-left text-forest-900 hover:border-fairway-400'
+            }
+            onClick={() => {
+              setCloseDayIntent('full')
+              setFormMessage(null)
+            }}
+            role="tab"
+            type="button"
+          >
+            <span className="block text-sm font-semibold">1 · Stop website bookings</span>
+            <span
+              className={
+                closeDayIntent === 'full' ? 'mt-1 block text-xs text-white/80' : 'mt-1 block text-xs text-forest-600'
+              }
+            >
+              Mark the day Full — no guest details
+            </span>
+          </button>
+          <button
+            aria-selected={closeDayIntent === 'print'}
+            className={
+              closeDayIntent === 'print'
+                ? 'rounded-2xl border-2 border-forest-900 bg-forest-900 px-5 py-4 text-left text-white shadow-md'
+                : 'rounded-2xl border-2 border-forest-200 bg-white px-5 py-4 text-left text-forest-900 hover:border-fairway-400'
+            }
+            onClick={() => {
+              setCloseDayIntent('print')
+              setFormMessage(null)
+            }}
+            role="tab"
+            type="button"
+          >
+            <span className="block text-sm font-semibold">2 · Guest for Arrivals print</span>
+            <span
+              className={
+                closeDayIntent === 'print' ? 'mt-1 block text-xs text-white/80' : 'mt-1 block text-xs text-forest-600'
+              }
+            >
+              Name, flight notes — also marks Full
+            </span>
+          </button>
+        </div>
+
+        <div className="mt-8 max-w-2xl" role="tabpanel">
+          {closeDayIntent === 'full' ? (
+            <div className="space-y-5 rounded-2xl border border-forest-100 bg-offwhite/50 px-5 py-6 sm:px-7 sm:py-8">
+              <div>
+                <p className="text-lg font-semibold text-forest-950">Mark this day Full</p>
+                <p className="mt-2 text-sm leading-relaxed text-forest-600">
+                  Public forms stop taking that transfer date. Guests see “fully booked”. You do not need a name or phone.
+                </p>
+              </div>
+              <LuxuryButton
+                disabled={busy || !(formDay || selectedIso || '').trim()}
+                onClick={() => void handleQuickBlockDay()}
+                type="button"
+                variant="primary"
+              >
+                {busy ? 'Saving…' : 'Mark day Full'}
+              </LuxuryButton>
+            </div>
+          ) : (
+            <div className="space-y-6 rounded-2xl border border-forest-100 bg-offwhite/50 px-5 py-6 sm:px-7 sm:py-8">
+              <div>
+                <p className="text-lg font-semibold text-forest-950">Add guest to the day sheet</p>
+                <p className="mt-2 text-sm leading-relaxed text-forest-600">
+                  Saved for Print day sheet at the top. This also marks the day Full on the website.
+                </p>
+              </div>
+              <div className="grid gap-5 sm:grid-cols-2">
+                <label className="block sm:col-span-2">
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">
+                    Guest name
+                  </span>
+                  <input
+                    className="w-full rounded-xl border-2 border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500"
+                    onChange={(e) => setFormName(e.target.value)}
+                    placeholder="As on the booking"
+                    type="text"
+                    value={formName}
+                  />
+                </label>
+                <label className="block">
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">Phone</span>
+                  <input
+                    className="w-full rounded-xl border-2 border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500"
+                    onChange={(e) => setFormPhone(e.target.value)}
+                    placeholder="+353…"
+                    type="tel"
+                    value={formPhone}
+                  />
+                </label>
+                <label className="block">
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">Email</span>
+                  <input
+                    className="w-full rounded-xl border-2 border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500"
+                    onChange={(e) => setFormEmail(e.target.value)}
+                    type="email"
+                    value={formEmail}
+                  />
+                </label>
+                <label className="block sm:col-span-2">
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">
+                    Account / ref
+                  </span>
+                  <input
+                    className="w-full rounded-xl border-2 border-forest-200 bg-white px-4 py-3 font-mono text-sm text-forest-900 outline-none focus:border-fairway-500"
+                    onChange={(e) => setFormRef(e.target.value)}
+                    placeholder="GSI-…"
+                    type="text"
+                    value={formRef}
+                  />
+                </label>
+                <label className="block sm:col-span-2">
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-forest-600">
+                    Notes for the driver
+                  </span>
+                  <textarea
+                    className="min-h-[100px] w-full rounded-xl border-2 border-forest-200 bg-white px-4 py-3 text-sm text-forest-900 outline-none focus:border-fairway-500"
+                    onChange={(e) => setFormNotes(e.target.value)}
+                    placeholder="Flight EI582 · 3 golf bags · Hotel Sol Timor"
+                    value={formNotes}
+                  />
+                </label>
+              </div>
+              <LuxuryButton
+                disabled={busy || !(formDay || selectedIso || '').trim()}
+                onClick={() => void handleAdd()}
+                type="button"
+                variant="primary"
+              >
+                {busy ? 'Saving…' : 'Save guest for print'}
+              </LuxuryButton>
+            </div>
+          )}
+        </div>
+
+        {formMessage ? (
+          <p className="mt-6 text-sm font-medium text-forest-800" role="status">
+            {formMessage}
+          </p>
+        ) : null}
+      </section>
     </div>
   )
 }

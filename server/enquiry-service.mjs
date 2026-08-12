@@ -14,7 +14,8 @@ import { insertTransferBookingFromWebsiteEnquiry } from './insert-transfer-booki
 import { assertEnquiryDriverDatesNotBlocked } from './enquiry-booked-dates.mjs'
 import { ensureEmailAccountAnchor, isAuthEmailBlocked } from './email-address-registry.mjs'
 import { assertApiRateLimit, parsePositiveInt } from './api-rate-limit.mjs'
-import { computePhoneUniquenessKey } from './phone-e164.mjs'
+import { computePhoneUniquenessKey, validateMobilePhoneInput } from './phone-e164.mjs'
+import { assertEnquiryContactVerified } from './enquiry-contact-verify-service.mjs'
 import { resolveResendToAddress, resendSandboxRecipientHint } from './resend-delivery-email.mjs'
 /** Real imports (not `export { … } from './…'` only): handlers call these by name in module scope. */
 import {
@@ -248,7 +249,16 @@ export const validateEnquiryPayload = (payload) => {
     throw error
   }
 
+  const phoneCheck = validateMobilePhoneInput(phoneWhatsApp)
+  if (!phoneCheck.ok) {
+    const error = new Error(phoneCheck.message)
+    error.statusCode = 400
+    throw error
+  }
+
   const formPayload = sanitizeFormPayload(payload?.formPayload)
+  const contactVerifyToken =
+    typeof payload?.contactVerifyToken === 'string' ? payload.contactVerifyToken.trim() : ''
 
   return {
     fullName,
@@ -256,6 +266,8 @@ export const validateEnquiryPayload = (payload) => {
     interest,
     phoneWhatsApp,
     bestTimeToCall,
+    phoneE164: phoneCheck.phoneE164,
+    ...(contactVerifyToken ? { contactVerifyToken } : {}),
     ...(formPayload ? { formPayload } : {})
   }
 }
@@ -962,6 +974,7 @@ export const handleEnquirySubmission = async (payload, env = process.env, runtim
       auth: { persistSession: false, autoRefreshToken: false }
     })
     await assertNoDuplicatePhoneForWebsiteEnquiry(sb, enquiry.phoneWhatsApp, env)
+    await assertEnquiryContactVerified(sb, enquiry, env)
     await assertEnquiryDriverDatesNotBlocked(sb, enquiry)
   }
 

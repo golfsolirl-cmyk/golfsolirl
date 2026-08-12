@@ -18,6 +18,8 @@ import { getSupabaseBrowserClient } from '../../../lib/supabase-client'
 import { ENQUIRY_CONFLICT_EXISTING_PHONE, postWebsiteEnquiry } from '../../../lib/post-enquiry-client'
 import { postWebsiteTestimonial } from '../../../lib/post-website-testimonial'
 import { TERMS_ACCEPTANCE_ERROR, termsAcceptanceFormFields } from '../../../lib/terms-acceptance'
+import { validateMobilePhoneInput } from '../../../lib/phone-mobile'
+import { EnquiryContactVerifyFields } from '../../../components/enquiry-contact-verify-fields'
 import { GeTermsAcceptanceField } from './ge-terms-acceptance-field'
 
 interface GeQuickEnquiryFormProps {
@@ -64,6 +66,7 @@ export function GeQuickEnquiryForm({
   const [bookedDays, setBookedDays] = useState<Set<string>>(() => new Set())
   const [testimonialRating, setTestimonialRating] = useState(5)
   const [termsAccepted, setTermsAccepted] = useState(false)
+  const [contactVerifyToken, setContactVerifyToken] = useState<string | null>(null)
   const confirmationRef = useRef<HTMLDivElement>(null)
   const isTestimonialForm = formConfig.submissionKind === 'testimonial'
 
@@ -86,6 +89,7 @@ export function GeQuickEnquiryForm({
     setErrorMessage(null)
     setErrorCode(null)
     setTermsAccepted(false)
+    setContactVerifyToken(null)
   }, [initialFieldValues])
 
   useEffect(() => {
@@ -172,12 +176,18 @@ export function GeQuickEnquiryForm({
     const phone = phoneWhatsApp.trim()
 
     if (!name || !mail || !phone) {
-      setErrorMessage('Please add your name, email, and phone/WhatsApp.')
+      setErrorMessage('Please add your name, email, and mobile number.')
       setStatus('error')
       return
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) {
       setErrorMessage('Please enter a valid email address.')
+      setStatus('error')
+      return
+    }
+    const phoneCheck = validateMobilePhoneInput(phone)
+    if (!phoneCheck.ok) {
+      setErrorMessage(phoneCheck.message)
       setStatus('error')
       return
     }
@@ -342,6 +352,7 @@ export function GeQuickEnquiryForm({
         phoneWhatsApp: phone,
         interest: interestLines.join('\n'),
         bestTimeToCall: 'Any time',
+        ...(contactVerifyToken ? { contactVerifyToken } : {}),
         formPayload: {
           form: WEBSITE_ENQUIRY_FORM.contentQuickEnquiry,
           fields: { ...formFields, ...termsAcceptanceFormFields() }
@@ -362,6 +373,7 @@ export function GeQuickEnquiryForm({
       setPhoneWhatsApp('')
       setFieldValues(initialFieldValues)
       setTermsAccepted(false)
+      setContactVerifyToken(null)
     } catch (error) {
       setStatus('error')
       setErrorCode(null)
@@ -444,17 +456,35 @@ export function GeQuickEnquiryForm({
             />
           </label>
           <label className="block">
-            <span className={labelClass}>Phone / WhatsApp</span>
+            <span className={labelClass}>Mobile (WhatsApp)</span>
             <input
               className={inputClass}
               value={phoneWhatsApp}
-              onChange={(e) => setPhoneWhatsApp(e.target.value)}
+              onChange={(e) => {
+                setPhoneWhatsApp(e.target.value)
+                setContactVerifyToken(null)
+              }}
               autoComplete="tel"
               type="tel"
               required
               placeholder={contactInfo.phoneFieldPlaceholder}
             />
+            <span className="mt-1.5 block font-ge text-xs text-ge-gray500">
+              Ireland, UK, or Spain mobile only (e.g. 087… / 07… / +34 6…).
+            </span>
           </label>
+
+          {!isTestimonialForm ? (
+            <EnquiryContactVerifyFields
+              contactVerifyToken={contactVerifyToken}
+              email={email}
+              labelClassName={labelClass}
+              inputClassName={inputClass}
+              onTokenCleared={() => setContactVerifyToken(null)}
+              onVerified={(token) => setContactVerifyToken(token)}
+              phoneWhatsApp={phoneWhatsApp}
+            />
+          ) : null}
 
           {isTestimonialForm ? (
             <div className="block">

@@ -238,10 +238,10 @@ export function ClientPortalPaymentsDue(props: {
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-brand-600">Payments</p>
-          <h2 className="font-display mt-1 text-2xl font-semibold text-forest-950 sm:text-3xl">Pay for your trip</h2>
+          <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-brand-600">Pay</p>
+          <h2 className="font-display mt-1 text-2xl font-semibold text-forest-950 sm:text-3xl">What’s due</h2>
           <p className="mt-2 max-w-2xl text-base leading-relaxed text-forest-700">
-            Secure card checkout with Stripe. Pay transfers and trip invoices below — completed payments appear under{' '}
+            Pay transfers and trip invoices by card. Finished payments stay under{' '}
             <strong className="font-semibold text-forest-900">All payments</strong>.
           </p>
         </div>

@@ -141,7 +141,7 @@ export function ClientPortalIdentityHero(props: {
         {props.transfers.length > 0 ? (
           <div className="w-full min-w-0 shrink-0 rounded-2xl border border-white/12 bg-black/20 p-5 xl:w-auto xl:max-w-lg xl:flex-1">
             <p className="font-ge text-xs font-extrabold uppercase tracking-[0.14em] text-emerald-200/85 sm:text-sm">Your transfers</p>
-            <p className="mt-1 font-ge text-sm text-emerald-100/75 sm:text-base">Live status from our operations desk.</p>
+            <p className="mt-1 font-ge text-sm text-emerald-100/75 sm:text-base">Airport, hotel, and course runs — live status.</p>
             <ul className="mt-4 space-y-3">
               {props.transfers.slice(0, 5).map((t) => {
                 const pay = (t.payment_status ?? 'unpaid').toLowerCase()

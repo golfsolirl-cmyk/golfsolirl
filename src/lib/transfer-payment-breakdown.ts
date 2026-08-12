@@ -8,16 +8,9 @@ export type TransferPaymentBreakdownInput = {
   readonly payment_status?: string | null
 }
 
-export const transferPaymentFullUpfront = (t: TransferPaymentBreakdownInput): boolean => {
-  if (t.next_available_driver === true) {
-    return true
-  }
-  const s = t.scheduled_at
-  if (s == null) {
-    return true
-  }
-  return String(s).trim().length === 0
-}
+/** Matches server `isTransferFullUpfront` — ASAP / next-available only (deposit quotes clear that flag). */
+export const transferPaymentFullUpfront = (t: TransferPaymentBreakdownInput): boolean =>
+  t.next_available_driver === true
 
 export const normalizedDepositPercent = (raw: number | null | undefined): number => {
   const n = typeof raw === 'number' ? raw : Number(raw)

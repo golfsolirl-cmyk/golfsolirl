@@ -7,6 +7,11 @@ export type PersistPortalTripWorkspaceResult =
   | { ok: true; packageBuildId: string }
   | { ok: false; error: string }
 
+export type PersistPortalTripWorkspaceOptions = {
+  /** When true, flags the build for the admin Packages notification bell. */
+  readonly notifyAdmin?: boolean
+}
+
 const findTargetPackageBuild = async (userId: string, enquiryReferenceId: string) => {
   const supabase = getSupabaseBrowserClient()
   if (!supabase) {
@@ -46,7 +51,8 @@ const findTargetPackageBuild = async (userId: string, enquiryReferenceId: string
  */
 export const persistPortalTripWorkspace = async (
   session: Session,
-  draft: TripWorkspaceDraft
+  draft: TripWorkspaceDraft,
+  options: PersistPortalTripWorkspaceOptions = {}
 ): Promise<PersistPortalTripWorkspaceResult> => {
   const userId = session.user.id
   const enquiryReferenceId = draft.referenceId.trim()
@@ -60,9 +66,15 @@ export const persistPortalTripWorkspace = async (
   }
 
   const now = new Date().toISOString()
+  const mergeOpts = { notifyAdmin: options.notifyAdmin === true }
 
   if (row) {
-    const mergedConfig = mergePortalTripWorkspaceIntoWebsiteFormConfig(row.config, draft, enquiryReferenceId)
+    const mergedConfig = mergePortalTripWorkspaceIntoWebsiteFormConfig(
+      row.config,
+      draft,
+      enquiryReferenceId,
+      mergeOpts
+    )
     const { error } = await supabase
       .from('package_builds')
       .update({ config: mergedConfig, updated_at: now })
@@ -85,7 +97,8 @@ export const persistPortalTripWorkspace = async (
       fields: {}
     },
     draft,
-    isLikelyEnquiryReferenceId(enquiryReferenceId) ? enquiryReferenceId : 'GSI-PENDING'
+    isLikelyEnquiryReferenceId(enquiryReferenceId) ? enquiryReferenceId : 'GSI-PENDING',
+    mergeOpts
   )
 
   const label = isLikelyEnquiryReferenceId(enquiryReferenceId)
@@ -106,7 +119,7 @@ export const persistPortalTripWorkspace = async (
     .single()
 
   if (insertError || !inserted?.id) {
-    return { ok: false, error: insertError?.message ?? 'Could not save your preferences.' }
+    return { ok: false, error: insertError?.message ?? 'Could not save your trip build.' }
   }
 
   return { ok: true, packageBuildId: inserted.id }
@@ -115,7 +128,8 @@ export const persistPortalTripWorkspace = async (
 /** Authenticated save via gateway (service role) — used when direct RLS update is blocked. */
 export const persistPortalTripWorkspaceViaApi = async (
   accessToken: string,
-  draft: TripWorkspaceDraft
+  draft: TripWorkspaceDraft,
+  options: PersistPortalTripWorkspaceOptions = {}
 ): Promise<PersistPortalTripWorkspaceResult> => {
   const response = await fetch('/api/portal-trip-workspace-save', {
     method: 'POST',
@@ -123,7 +137,7 @@ export const persistPortalTripWorkspaceViaApi = async (
       'Content-Type': 'application/json',
       Authorization: `Bearer ${accessToken}`
     },
-    body: JSON.stringify({ draft })
+    body: JSON.stringify({ draft, notifyAdmin: options.notifyAdmin === true })
   })
 
   const data = (await response.json().catch(() => ({}))) as {
@@ -133,7 +147,7 @@ export const persistPortalTripWorkspaceViaApi = async (
   }
 
   if (!response.ok || !data.ok || !data.packageBuildId) {
-    return { ok: false, error: data.message ?? 'Could not save your preferences right now.' }
+    return { ok: false, error: data.message ?? 'Could not save your trip build right now.' }
   }
 
   return { ok: true, packageBuildId: data.packageBuildId }

@@ -1013,11 +1013,14 @@ export function AdminAccountTransfersHub(props: {
       className="scroll-mt-28 overflow-hidden rounded-[2rem] border-2 border-brand-700/35 bg-gradient-to-br from-white via-offwhite/95 to-fairway-50/40 p-6 shadow-[0_22px_56px_rgba(11,73,52,0.08)] ring-1 ring-forest-900/[0.06] sm:p-8"
       id="admin-hub-account-lookup"
     >
-      <p className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.22em] text-brand-600">Account lookup</p>
-      <h2 className="font-display mt-2 text-xl font-bold tracking-tight text-forest-950 sm:text-2xl">Customer activity &amp; transfers</h2>
+      <p className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.22em] text-brand-600">Find a guest</p>
+      <h2 className="font-display mt-2 text-xl font-bold tracking-tight text-forest-950 sm:text-2xl">
+        Look up payments &amp; transfers
+      </h2>
       <p className="mt-2 max-w-3xl text-sm text-forest-600">
-        Paste an <strong className="font-medium text-forest-800">account number</strong> or{' '}
-        <strong className="font-medium text-forest-800">GSI-</strong> enquiry ref. You will see (newest first).
+        Paste a <strong className="font-medium text-forest-800">GSI-</strong> booking ref or account number to see their
+        forms, packages, and payment status. Use this to mark deposit / paid, then dispatch from{' '}
+        <strong className="font-medium text-forest-800">Ready to dispatch</strong> below.
       </p>
 
       <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-end">

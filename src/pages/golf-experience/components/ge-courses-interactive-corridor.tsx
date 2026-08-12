@@ -23,13 +23,9 @@ import { BookedDatesAvailabilityNotice } from '../../../components/booked-dates-
 import { GeButton } from './ge-button'
 import { GeTermsAcceptanceField } from './ge-terms-acceptance-field'
 import { cx } from '../../../lib/utils'
+import { GOLF_COURSES_MAP_SECTION_ID } from './ge-courses-map-visibility'
 
-export const GOLF_COURSES_MAP_SECTION_ID = 'golf-sol-course-corridor'
-
-/** Interactive corridor map: main + cluster golf course URLs and the promo golf map page. */
-export function shouldShowInteractiveCourseMap(path: string): boolean {
-  return path === '/golf-map' || path.includes('/golf-courses')
-}
+export { GOLF_COURSES_MAP_SECTION_ID, shouldShowInteractiveCourseMap } from './ge-courses-map-visibility'
 
 const labelClass =
   'mb-1.5 block font-ge text-[0.78rem] font-bold uppercase tracking-[0.14em] text-ge-gray500 sm:text-[0.82rem]'

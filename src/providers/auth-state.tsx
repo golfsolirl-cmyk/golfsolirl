@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { Session, SupabaseClient, User } from '@supabase/supabase-js'
+import { IdleSessionLogout } from '../components/idle-session-logout'
 import { clearSupabaseBrowserAuthStorage } from '../lib/supabase-clear-storage'
 
 export type ProfileRole = 'client' | 'admin' | 'driver'
@@ -41,7 +42,7 @@ interface AuthContextValue {
       readonly operatorCode?: string
     }
   ) => Promise<{ error: Error | null }>
-  readonly signOut: () => Promise<void>
+  readonly signOut: (options?: { readonly reason?: 'idle' | 'manual' }) => Promise<void>
   readonly refreshProfile: () => Promise<void>
 }
 
@@ -309,7 +310,7 @@ export function AuthProviderImpl({
     [supabase]
   )
 
-  const signOut = useCallback(async () => {
+  const signOut = useCallback(async (options?: { readonly reason?: 'idle' | 'manual' }) => {
     if (supabase) {
       try {
         const { error } = await supabase.auth.signOut()
@@ -325,7 +326,8 @@ export function AuthProviderImpl({
     setProfile(null)
 
     if (typeof window !== 'undefined') {
-      window.location.href = '/logged-out'
+      const reason = options?.reason === 'idle' ? 'idle' : ''
+      window.location.href = reason ? `/logged-out?reason=${encodeURIComponent(reason)}` : '/logged-out'
     }
   }, [supabase])
 
@@ -343,7 +345,12 @@ export function AuthProviderImpl({
     [session, profile, isLoading, supabase, signInWithMagicLink, signOut, refreshProfile]
   )
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider value={value}>
+      <IdleSessionLogout />
+      {children}
+    </AuthContext.Provider>
+  )
 }
 
 export const useAuth = (): AuthContextValue => {

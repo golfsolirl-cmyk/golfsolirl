@@ -13,14 +13,14 @@ export type ClientSidebarItem = {
 }
 
 export const CLIENT_SIDEBAR_ITEMS: readonly ClientSidebarItem[] = [
-  { id: 'home', label: 'Your trip', description: 'Account, transfers, add-ons', icon: LayoutDashboard },
-  { id: 'pass', label: 'Trip pass', description: 'Barcode for your driver', icon: Barcode },
-  { id: 'perks', label: 'Perks & deals', description: 'Coupons and scan-to-win', icon: Gift },
-  { id: 'trip', label: 'Trip planner', description: 'Build on your enquiry', icon: MapPin },
-  { id: 'payments', label: 'Payments', description: 'Pay transfers & invoices', icon: CreditCard },
-  { id: 'messages', label: 'Messages', description: 'Tickets & team replies', icon: MessageCircle },
-  { id: 'contact', label: 'Contact', description: 'Name, phone, account ref', icon: UserRound },
-  { id: 'documents', label: 'Documents', description: 'Proposals & PDFs', icon: FileText }
+  { id: 'home', label: 'Your trip', description: 'Overview · add-ons', icon: LayoutDashboard },
+  { id: 'pass', label: 'Trip pass', description: 'Show the driver', icon: Barcode },
+  { id: 'perks', label: 'Perks & deals', description: 'Costa extras', icon: Gift },
+  { id: 'trip', label: 'Trip builder', description: 'Transfers · golf · stay', icon: MapPin },
+  { id: 'payments', label: 'Pay', description: 'Transfers & invoices', icon: CreditCard },
+  { id: 'messages', label: 'Messages', description: 'Ask us · replies', icon: MessageCircle },
+  { id: 'contact', label: 'Your details', description: 'Name · phone · account', icon: UserRound },
+  { id: 'documents', label: 'Documents', description: 'Quotes & letters', icon: FileText }
 ] as const
 
 type ClientSidebarProps = {
@@ -117,8 +117,8 @@ export function ClientSidebar({
             width={GOLFSOL_BRAND_LOGO_INTRINSIC.width}
           />
           <div className="min-w-0">
-            <p className="font-ge text-sm font-extrabold uppercase tracking-[0.16em] text-brand-600">Your trip desk</p>
-            <p className="truncate text-base font-bold text-forest-950">Client portal</p>
+            <p className="font-ge text-sm font-extrabold uppercase tracking-[0.16em] text-brand-600">Golf Sol Ireland</p>
+            <p className="truncate text-base font-bold text-forest-950">Your trip desk</p>
           </div>
         </div>
         <nav aria-label="Client portal sections" className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
