@@ -61,7 +61,16 @@ export function usePageMeta(meta: PageMeta) {
 
     document.title = fullTitle
     upsertMeta('name', 'description', meta.description)
-    upsertMeta('name', 'robots', meta.noIndex ? 'noindex, nofollow' : 'index, follow')
+    upsertMeta(
+      'name',
+      'robots',
+      meta.noIndex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+    )
+    upsertMeta(
+      'name',
+      'googlebot',
+      meta.noIndex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'
+    )
     upsertLink('canonical', canonical)
 
     upsertMeta('property', 'og:type', 'website')

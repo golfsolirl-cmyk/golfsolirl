@@ -6,29 +6,42 @@ import { HOMEPAGE_CREATIVE_CANVAS_ENABLED } from '../../lib/homepage-luxury-back
 import { prefetchLikelyMarketingRoutes } from '../../lib/prefetch-route-chunk'
 import { cx } from '../../lib/utils'
 import { useJsonLd, usePageMeta } from '../../lib/use-page-meta'
+import {
+  buildOrganizationSchema,
+  buildWebPageSchema,
+  buildWebSiteSchema
+} from '../../lib/seo/organization-schema'
+import { absoluteOgImageUrl, DEFAULT_OG_IMAGE_PATH } from '../../lib/site-seo'
 
 const HomeBelowTheFold = lazy(() => import('./home-below-the-fold'))
 
 export function GolfExperienceHome() {
   usePageMeta({
-    title: 'Premium Costa del Sol golf holidays for Irish travellers',
+    title: 'Costa del Sol Golf Holidays from Ireland | GolfSol Ireland',
     description:
-      'Golf Sol Ireland creates premium Costa del Sol golf holidays for Irish travellers with handpicked packages, hotels, tee times, and transfers.',
+      'Costa del Sol golf holidays for Irish golfers. Handpicked courses, hotels, tee times & Málaga airport transfers. Dublin, Cork, Shannon & Belfast departures.',
     canonicalPath: '/'
   })
 
   useJsonLd(
     'gsol-home-org',
+    useMemo(() => buildOrganizationSchema(), [])
+  )
+  useJsonLd(
+    'gsol-home-website',
+    useMemo(() => buildWebSiteSchema(), [])
+  )
+  useJsonLd(
+    'gsol-home-webpage',
     useMemo(
-      () => ({
-        '@context': 'https://schema.org',
-        '@type': 'TravelAgency',
-        name: 'Golf Sol Ireland',
-        url: typeof window !== 'undefined' ? window.location.origin : 'https://golfsolirl.com',
-        description:
-          'Premium Costa del Sol golf holidays for Irish travellers with transfers, tee times, and accommodation.',
-        areaServed: ['IE', 'ES']
-      }),
+      () =>
+        buildWebPageSchema({
+          path: '/',
+          name: 'Costa del Sol Golf Holidays from Ireland | GolfSol Ireland',
+          description:
+            'Costa del Sol golf holidays for Irish golfers. Handpicked courses, hotels, tee times & Málaga airport transfers.',
+          imageUrl: absoluteOgImageUrl(DEFAULT_OG_IMAGE_PATH)
+        }),
       []
     )
   )

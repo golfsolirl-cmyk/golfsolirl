@@ -10,6 +10,7 @@ import { TransportRouteStory } from './sections/transport-route-story'
 import { GeTransfersInsuranceBanner } from './components/ge-transfers-insurance-banner'
 import { TripServiceBookingCta } from '../../components/trip-service-booking-cta'
 import { WhatsappFab } from './components/whatsapp-fab'
+import { usePageMeta } from '../../lib/use-page-meta'
 
 /**
  * Dedicated Transport service page — same shell as {@link GolfExperienceHome}
@@ -18,6 +19,15 @@ import { WhatsappFab } from './components/whatsapp-fab'
  * final CTA.
  */
 export function TransportServicePage() {
+  usePageMeta({
+    title: 'Málaga Airport Golf Transfers | GolfSol Ireland',
+    description:
+      'Golf-bag-friendly private transfers from Málaga Airport to Costa del Sol hotels for Irish golf groups. Meet-and-greet and group transport.',
+    canonicalPath: '/services/transport',
+    ogImage: '/images/hero-costa-del-sol-transfer-banner.webp',
+    ogImageAlt: 'Málaga Airport golf transfers for Irish golf groups on the Costa del Sol.'
+  })
+
   return (
     <div className="ge-page min-h-screen overflow-x-hidden bg-white">
       <a

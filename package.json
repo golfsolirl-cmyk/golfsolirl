@@ -21,6 +21,7 @@
     "generate:asset-pack": "node scripts/generate-brand-asset-pack.mjs",
     "generate:favicons": "node scripts/generate-favicons.mjs",
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
+    "seo:audit": "node scripts/generate-sitemap.mjs && node scripts/seo-audit.mjs",
     "images:update-refs": "node scripts/update-image-refs-from-manifest.mjs"
   },
   "type": "module",

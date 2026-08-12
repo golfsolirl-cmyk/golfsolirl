@@ -1,5 +1,5 @@
 /**
- * Generates public/sitemap.xml from content-pages.ts route keys.
+ * Generates public/sitemap.xml (+ image sitemap) from content routes.
  * Usage: node scripts/generate-sitemap.mjs
  */
 import fs from 'node:fs'
@@ -7,16 +7,19 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const contentPagesPath = path.join(__dirname, '../src/pages/golf-experience/data/content-pages.ts')
-const outPath = path.join(__dirname, '../public/sitemap.xml')
+const root = path.join(__dirname, '..')
+const contentPagesPath = path.join(root, 'src/pages/golf-experience/data/content-pages.ts')
+const footerArticlesPath = path.join(root, 'src/data/footer-article-pages.ts')
+const seoPathsFile = path.join(root, 'src/data/seo-landing-page-paths.ts')
+const outPath = path.join(root, 'public/sitemap.xml')
+const imageOutPath = path.join(root, 'public/sitemap-images.xml')
 
-const siteBase = (process.env.SITE_URL || 'https://golfsolirl.com').replace(/\/+$/, '')
+const siteBase = (process.env.SITE_URL || 'https://www.golfsolirl.com').replace(/\/+$/, '')
 
 const staticPaths = [
   '/',
   '/services/transport',
   '/packages',
-  '/package',
   '/about',
   '/contact',
   '/golf-courses',
@@ -25,12 +28,56 @@ const staticPaths = [
   '/booking'
 ]
 
-const src = fs.readFileSync(contentPagesPath, 'utf8')
-const contentPaths = [...src.matchAll(/^\s+'(\/[^']+)':/gm)].map((match) => match[1])
+/** Secondary aliases — keep out of sitemap; vercel redirects to canonical. */
+const excludeFromSitemap = new Set([
+  '/package',
+  '/transport',
+  '/terms-conditions',
+  '/links-and-information/dress-code-for-golf-in-spain',
+  '/links-and-information/travelling-to-spain',
+  '/tee-time-bookings-only',
+  '/twilight-golf',
+  '/contact/golf-holiday-enquiry-form',
+  '/contact/give-a-testimonial',
+  '/contact/privacy-policy',
+  '/services/tee-time-bookings',
+  '/services/twilight-golf',
+  '/services/society-group-trips'
+])
 
-const paths = [...new Set([...staticPaths, ...contentPaths])].sort()
+const scrapePaths = (filePath) => {
+  if (!fs.existsSync(filePath)) return []
+  const src = fs.readFileSync(filePath, 'utf8')
+  return [...src.matchAll(/['"](\/[^'"]+)['"]\s*:/g)].map((m) => m[1])
+}
+
+const scrapeSeoConstPaths = (filePath) => {
+  if (!fs.existsSync(filePath)) return []
+  const src = fs.readFileSync(filePath, 'utf8')
+  return [...src.matchAll(/['"](\/[^'"]+)['"]/g)].map((m) => m[1])
+}
+
+const contentPaths = scrapePaths(contentPagesPath)
+const footerPaths = scrapePaths(footerArticlesPath)
+const seoPaths = scrapeSeoConstPaths(seoPathsFile)
+
+const paths = [...new Set([...staticPaths, ...contentPaths, ...footerPaths, ...seoPaths])]
+  .filter((p) => !excludeFromSitemap.has(p))
+  .sort()
 
 const today = new Date().toISOString().slice(0, 10)
+
+const priorityFor = (p) => {
+  if (p === '/') return '1.0'
+  if (p === '/golf-holidays' || p === '/golf-holidays/costa-del-sol') return '0.95'
+  if (p.startsWith('/golf-holidays')) return '0.9'
+  if (p.startsWith('/golf-holidays-spain-from')) return '0.88'
+  if (p.startsWith('/golf-packages/')) return '0.85'
+  if (p.startsWith('/guides/')) return '0.8'
+  if (p.startsWith('/transfers/')) return '0.85'
+  if (['/packages', '/golf-courses', '/contact', '/booking', '/services/transport'].includes(p)) return '0.85'
+  return '0.7'
+}
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -40,7 +87,7 @@ ${paths
     <loc>${siteBase}${p === '/' ? '' : p}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>${p === '/' ? 'weekly' : 'monthly'}</changefreq>
-    <priority>${p === '/' ? '1.0' : '0.7'}</priority>
+    <priority>${priorityFor(p)}</priority>
   </url>`
   )
   .join('\n')}
@@ -48,4 +95,59 @@ ${paths
 `
 
 fs.writeFileSync(outPath, xml)
+
+/** Representative images for key commercial URLs (existing assets only). */
+const imageEntries = [
+  { path: '/', image: '/images/og-share-fleet.jpg', title: 'Costa del Sol golf holidays from Ireland' },
+  {
+    path: '/golf-holidays',
+    image: '/images/ge-premium-golf-fairway-coastal.webp',
+    title: 'Costa del Sol golf holidays'
+  },
+  {
+    path: '/golf-holidays/costa-del-sol',
+    image: '/images/ge-premium-golf-fairway-coastal.webp',
+    title: 'Costa del Sol golf holidays'
+  },
+  {
+    path: '/golf-holidays/marbella',
+    image: '/images/ge-premium-golf-fairway-coastal.webp',
+    title: 'Marbella golf holidays'
+  },
+  {
+    path: '/transfers/malaga-airport-golf-transfers',
+    image: '/images/hero-costa-del-sol-transfer-banner.webp',
+    title: 'Málaga Airport golf transfers'
+  },
+  {
+    path: '/services/transport',
+    image: '/images/hero-costa-del-sol-transfer-banner.webp',
+    title: 'Golf Sol Ireland transport'
+  },
+  {
+    path: '/packages',
+    image: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
+    title: 'Costa del Sol golf packages'
+  }
+]
+
+const imageXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${imageEntries
+  .map(
+    (e) => `  <url>
+    <loc>${siteBase}${e.path === '/' ? '' : e.path}</loc>
+    <image:image>
+      <image:loc>${siteBase}${e.image}</image:loc>
+      <image:title>${e.title}</image:title>
+    </image:image>
+  </url>`
+  )
+  .join('\n')}
+</urlset>
+`
+
+fs.writeFileSync(imageOutPath, imageXml)
 console.log(`Wrote ${paths.length} URLs to ${outPath}`)
+console.log(`Wrote ${imageEntries.length} image URLs to ${imageOutPath}`)

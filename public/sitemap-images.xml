@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://www.golfsolirl.com</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/og-share-fleet.jpg</image:loc>
+      <image:title>Costa del Sol golf holidays from Ireland</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/ge-premium-golf-fairway-coastal.webp</image:loc>
+      <image:title>Costa del Sol golf holidays</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays/costa-del-sol</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/ge-premium-golf-fairway-coastal.webp</image:loc>
+      <image:title>Costa del Sol golf holidays</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays/marbella</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/ge-premium-golf-fairway-coastal.webp</image:loc>
+      <image:title>Marbella golf holidays</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/transfers/malaga-airport-golf-transfers</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/hero-costa-del-sol-transfer-banner.webp</image:loc>
+      <image:title>Málaga Airport golf transfers</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/services/transport</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/hero-costa-del-sol-transfer-banner.webp</image:loc>
+      <image:title>Golf Sol Ireland transport</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/packages</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp</image:loc>
+      <image:title>Costa del Sol golf packages</image:title>
+    </image:image>
+  </url>
+</urlset>

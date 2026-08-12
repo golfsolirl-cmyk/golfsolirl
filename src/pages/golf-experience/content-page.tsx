@@ -1,6 +1,8 @@
 import { lazy, Suspense, useMemo } from 'react'
 import { ChevronRight } from 'lucide-react'
-import { usePageMeta } from '../../lib/use-page-meta'
+import { useJsonLd, usePageMeta } from '../../lib/use-page-meta'
+import { buildBreadcrumbListSchema, buildWebPageSchema } from '../../lib/seo/organization-schema'
+import { absoluteOgImageUrl } from '../../lib/site-seo'
 import { GeFooter } from './sections/ge-footer'
 import { GeNavbar } from './sections/ge-navbar'
 import { GePaymentsIreland } from './sections/payments-ireland'
@@ -32,6 +34,46 @@ function normalisePath() {
   return path === '' ? '/' : path
 }
 
+function breadcrumbItemsForPath(path: string, title: string) {
+  const items: { name: string; path: string }[] = [{ name: 'Home', path: '/' }]
+  const parts = path.split('/').filter(Boolean)
+  let acc = ''
+  for (let i = 0; i < parts.length; i += 1) {
+    acc += `/${parts[i]}`
+    const isLast = i === parts.length - 1
+    items.push({
+      name: isLast
+        ? title
+        : parts[i]
+            .split('-')
+            .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+            .join(' '),
+      path: acc
+    })
+  }
+  return items
+}
+
+function ContentBullet({ bullet }: { readonly bullet: string }) {
+  const match = bullet.match(/^(.*?)\s+[—–-]\s+(\/[\w\-./]+)\s*$/)
+  if (match) {
+    return (
+      <li className="flex items-start gap-2.5 font-ge text-base text-gs-dark">
+        <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-brand-700" aria-hidden />
+        <a className="underline decoration-brand-500/40 underline-offset-2 hover:text-gs-green" href={match[2]}>
+          {match[1]}
+        </a>
+      </li>
+    )
+  }
+  return (
+    <li className="flex items-start gap-2.5 font-ge text-base text-gs-dark">
+      <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-brand-700" aria-hidden />
+      <span>{bullet}</span>
+    </li>
+  )
+}
+
 export function GeContentPage() {
   const path = useMemo(() => normalisePath(), [])
   const page = useMemo(() => getGeContentPage(path), [path])
@@ -46,19 +88,49 @@ export function GeContentPage() {
     })
   }, [page, path])
 
+  const crumbs = useMemo(
+    () => (page ? breadcrumbItemsForPath(path, page.title) : []),
+    [page, path]
+  )
 
   usePageMeta(
     page
       ? {
           title: page.metaTitle,
           description: page.subtitle,
-          canonicalPath: path
+          canonicalPath: path,
+          ogImage: page.heroImage,
+          ogImageAlt: page.heroAlt
         }
       : {
           title: 'Page not found',
           description: 'This Golf Sol Ireland page could not be found.',
           noIndex: true
         }
+  )
+
+  useJsonLd(
+    'gsol-content-webpage',
+    useMemo(
+      () =>
+        page
+          ? buildWebPageSchema({
+              path,
+              name: page.metaTitle,
+              description: page.subtitle,
+              imageUrl: absoluteOgImageUrl(page.heroImage)
+            })
+          : { '@context': 'https://schema.org', '@type': 'WebPage' },
+      [page, path]
+    )
+  )
+
+  useJsonLd(
+    'gsol-content-breadcrumbs',
+    useMemo(
+      () => (page ? buildBreadcrumbListSchema(crumbs) : { '@context': 'https://schema.org', '@type': 'BreadcrumbList' }),
+      [crumbs, page]
+    )
   )
 
   if (!page) {
@@ -97,6 +169,25 @@ export function GeContentPage() {
       <GeNavbar />
 
       <main id="main">
+        <nav aria-label="Breadcrumb" className="border-b border-ge-gray100 bg-white px-5 py-3 sm:px-8">
+          <ol className="mx-auto flex max-w-[1180px] flex-wrap items-center gap-1.5 font-ge text-sm text-ge-gray500">
+            {crumbs.map((crumb, index) => (
+              <li key={crumb.path} className="flex items-center gap-1.5">
+                {index > 0 ? <ChevronRight className="h-3.5 w-3.5 shrink-0 opacity-60" aria-hidden /> : null}
+                {index === crumbs.length - 1 ? (
+                  <span aria-current="page" className="font-semibold text-gs-dark">
+                    {crumb.name}
+                  </span>
+                ) : (
+                  <a className="hover:text-gs-green" href={crumb.path}>
+                    {crumb.name}
+                  </a>
+                )}
+              </li>
+            ))}
+          </ol>
+        </nav>
+
         <PremiumPageHero
           srTitle={page.title}
           images={heroConfig.images}
@@ -170,10 +261,7 @@ export function GeContentPage() {
                   {section.bullets ? (
                     <ul className="mt-4 space-y-2.5">
                       {section.bullets.map((bullet) => (
-                        <li key={bullet} className="flex items-start gap-2.5 font-ge text-base text-gs-dark">
-                          <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-brand-700" aria-hidden />
-                          <span>{bullet}</span>
-                        </li>
+                        <ContentBullet key={bullet} bullet={bullet} />
                       ))}
                     </ul>
                   ) : null}

@@ -77,6 +77,42 @@
       "schedule": "0 12 * * *"
     }
   ],
+  "redirects": [
+    { "source": "/package", "destination": "/packages", "permanent": true },
+    { "source": "/golf-sol", "destination": "/", "permanent": true },
+    { "source": "/transport", "destination": "/services/transport", "permanent": true },
+    { "source": "/airport-transfers", "destination": "/transfers/malaga-airport-golf-transfers", "permanent": true },
+    { "source": "/terms-conditions", "destination": "/terms-and-conditions", "permanent": true },
+    {
+      "source": "/links-and-information/dress-code-for-golf-in-spain",
+      "destination": "/guides/dress-code-costa-del-sol",
+      "permanent": true
+    },
+    {
+      "source": "/links-and-information/travelling-to-spain",
+      "destination": "/guides/travelling-to-malaga-agp",
+      "permanent": true
+    },
+    { "source": "/twilight-golf", "destination": "/services/twilight-golf", "permanent": true },
+    { "source": "/tee-time-bookings-only", "destination": "/services/tee-time-bookings", "permanent": true },
+    {
+      "source": "/contact/golf-holiday-enquiry-form",
+      "destination": "/contact",
+      "permanent": true
+    },
+    { "source": "/contact/privacy-policy", "destination": "/privacy-policy", "permanent": true },
+    {
+      "source": "/guides/costa-del-sol-golf-map",
+      "destination": "/golf-map",
+      "permanent": true
+    },
+    { "source": "/golf-holidays/", "destination": "/golf-holidays", "permanent": true },
+    {
+      "source": "/golf-holidays/costa-del-sol/",
+      "destination": "/golf-holidays/costa-del-sol",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     { "source": "/api/enquiry", "destination": "/api/gateway?r=enquiry" },
     { "source": "/api/terms-email", "destination": "/api/gateway?r=terms-email" },

@@ -1,243 +1,411 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://golfsolirl.com</loc>
+    <loc>https://www.golfsolirl.com</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/about</loc>
+    <loc>https://www.golfsolirl.com/about</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/accommodation</loc>
+    <loc>https://www.golfsolirl.com/accommodation</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/accommodation-tiers</loc>
+    <loc>https://www.golfsolirl.com/accommodation-tiers</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/accommodation/fuengirola-hotels</loc>
+    <loc>https://www.golfsolirl.com/accommodation/fuengirola-hotels</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/accommodation/torremolinos-hotels</loc>
+    <loc>https://www.golfsolirl.com/accommodation/torremolinos-hotels</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/booking</loc>
+    <loc>https://www.golfsolirl.com/airport-transfers</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/contact</loc>
+    <loc>https://www.golfsolirl.com/booking</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/booking-follow-up</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/contact/give-a-testimonial</loc>
+    <loc>https://www.golfsolirl.com/contact</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/costa-del-sol-routing</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/contact/golf-holiday-enquiry-form</loc>
+    <loc>https://www.golfsolirl.com/course-shortlist</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/contact/privacy-policy</loc>
+    <loc>https://www.golfsolirl.com/deposit-upfront</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/faq</loc>
+    <loc>https://www.golfsolirl.com/faq</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/golf-courses</loc>
+    <loc>https://www.golfsolirl.com/featured-courses</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/golf-courses/marbella-golf-valley</loc>
+    <loc>https://www.golfsolirl.com/final-balance-terms</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/golf-courses/mijas-fuengirola</loc>
+    <loc>https://www.golfsolirl.com/golf-courses</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-courses/marbella-golf-valley</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/golf-courses/sotogrande</loc>
+    <loc>https://www.golfsolirl.com/golf-courses/mijas-fuengirola</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/golf-map</loc>
+    <loc>https://www.golfsolirl.com/golf-courses/sotogrande</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/guides/dress-code-costa-del-sol</loc>
+    <loc>https://www.golfsolirl.com/golf-holidays</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays-spain-from-belfast</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays-spain-from-cork</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays-spain-from-dublin</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays-spain-from-ireland</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays-spain-from-shannon</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays/benalmadena</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays/costa-del-sol</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays/estepona</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays/fuengirola</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays/malaga</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays/marbella</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays/mijas</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays/torremolinos</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-map</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/guides/travelling-to-malaga-agp</loc>
+    <loc>https://www.golfsolirl.com/golf-packages</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/hotel-matching</loc>
+    <loc>https://www.golfsolirl.com/golf-packages/3-night-golf-breaks</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-packages/4-night-golf-breaks</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-packages/5-night-golf-holidays</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-packages/7-night-golf-holidays</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-packages/bespoke-golf-packages</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-packages/golf-society-packages</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-packages/group-golf-holidays</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/group-preferences</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/iagto</loc>
+    <loc>https://www.golfsolirl.com/guides/best-golf-courses-costa-del-sol</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/guides/best-time-golf-costa-del-sol</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/guides/costa-del-sol-golf-faq</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/guides/costa-del-sol-golf-trip-guide</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/guides/dress-code-costa-del-sol</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/guides/how-to-organise-golf-society-trip-spain</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/guides/travelling-to-malaga-agp</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/hotel-matching</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/incentive-packages</loc>
+    <loc>https://www.golfsolirl.com/iagto</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/links-and-information/dress-code-for-golf-in-spain</loc>
+    <loc>https://www.golfsolirl.com/incentive-packages</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/links-and-information/travelling-to-spain</loc>
+    <loc>https://www.golfsolirl.com/irish-group-planning</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/news</loc>
+    <loc>https://www.golfsolirl.com/news</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/newsletter</loc>
+    <loc>https://www.golfsolirl.com/newsletter</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/package</loc>
+    <loc>https://www.golfsolirl.com/no-obligation-enquiry</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/packages</loc>
+    <loc>https://www.golfsolirl.com/packages</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/privacy-policy</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/privacy-policy</loc>
+    <loc>https://www.golfsolirl.com/promo-maps</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/promo-maps</loc>
+    <loc>https://www.golfsolirl.com/services/transport</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/tailored-itinerary</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/services/society-group-trips</loc>
+    <loc>https://www.golfsolirl.com/terms-and-conditions</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/services/tee-time-bookings</loc>
+    <loc>https://www.golfsolirl.com/testimonials</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/services/transport</loc>
+    <loc>https://www.golfsolirl.com/transfer-coordination</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/services/twilight-golf</loc>
+    <loc>https://www.golfsolirl.com/transfers/golf-group-transfers</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://golfsolirl.com/tee-time-bookings-only</loc>
+    <loc>https://www.golfsolirl.com/transfers/malaga-airport-golf-transfers</loc>
     <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://golfsolirl.com/terms-and-conditions</loc>
-    <lastmod>2026-08-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://golfsolirl.com/terms-conditions</loc>
-    <lastmod>2026-08-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://golfsolirl.com/testimonials</loc>
-    <lastmod>2026-08-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://golfsolirl.com/transport</loc>
-    <lastmod>2026-08-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://golfsolirl.com/twilight-golf</loc>
-    <lastmod>2026-08-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.85</priority>
   </url>
 </urlset>

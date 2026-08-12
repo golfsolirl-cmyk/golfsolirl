@@ -13,9 +13,24 @@ Disallow: /email-template-preview
 Disallow: /logo-preview
 Disallow: /logo-capture
 Disallow: /brand-mockup
+Disallow: /brand-logos
+Disallow: /logos
+Disallow: /business-cards
 Disallow: /homepagetest
 Disallow: /cinematic-home
 Disallow: /homepage-v2
 Disallow: /preview
+Disallow: /proposal-template
+Disallow: /package-proposal
+Disallow: /enquiry-pdf-template
+Disallow: /enquiry-record
+Disallow: /proposal-pdf-sample
+Disallow: /unified-pdf-sample
+Disallow: /homepage-client-pdf-sample
+Disallow: /documents/
+Disallow: /rate-trip
+Disallow: /continue-trip
+Disallow: /golf-sol
 
-Sitemap: https://golfsolirl.com/sitemap.xml
+Sitemap: https://www.golfsolirl.com/sitemap.xml
+Sitemap: https://www.golfsolirl.com/sitemap-images.xml

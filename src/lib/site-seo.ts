@@ -1,5 +1,5 @@
 /** Production origin for absolute Open Graph / Twitter URLs (crawlers ignore relative paths). */
-export const SITE_ORIGIN = 'https://golfsolirl.com' as const
+export const SITE_ORIGIN = 'https://www.golfsolirl.com' as const
 
 /** Mercedes fleet + Costa del Sol — default link preview (1200×630). */
 export const OG_IMAGE_FLEET_PATH = '/images/og-share-fleet.jpg' as const

@@ -354,28 +354,28 @@ export const footerGroups: readonly FooterLinkGroup[] = [
   {
     title: 'Explore',
     links: [
+      { label: 'Golf holidays', href: '/golf-holidays' },
+      { label: 'Costa del Sol', href: '/golf-holidays/costa-del-sol' },
       { label: 'Golf packages', href: '/golf-packages' },
-      { label: 'Featured courses', href: '/featured-courses' },
-      { label: 'Accommodation tiers', href: '/accommodation-tiers' },
-      { label: 'Airport transfers', href: '/airport-transfers' }
+      { label: 'Featured courses', href: '/featured-courses' }
     ]
   },
   {
     title: 'Plan your trip',
     links: [
-      { label: 'Tailored itinerary', href: '/tailored-itinerary' },
+      { label: 'From Ireland', href: '/golf-holidays-spain-from-ireland' },
+      { label: 'Society packages', href: '/golf-packages/golf-society-packages' },
       { label: 'Course shortlist', href: '/course-shortlist' },
-      { label: 'Hotel matching', href: '/hotel-matching' },
-      { label: 'Group preferences', href: '/group-preferences' }
+      { label: 'Hotel matching', href: '/hotel-matching' }
     ]
   },
   {
     title: 'Travel support',
     links: [
-      { label: 'Irish group planning', href: '/irish-group-planning' },
-      { label: 'Costa del Sol routing', href: '/costa-del-sol-routing' },
-      { label: 'Transfer coordination', href: '/transfer-coordination' },
-      { label: 'Booking follow-up', href: '/booking-follow-up' }
+      { label: 'Málaga golf transfers', href: '/transfers/malaga-airport-golf-transfers' },
+      { label: 'Trip guide', href: '/guides/costa-del-sol-golf-trip-guide' },
+      { label: 'Society trip guide', href: '/guides/how-to-organise-golf-society-trip-spain' },
+      { label: 'Golf FAQ', href: '/guides/costa-del-sol-golf-faq' }
     ]
   },
   {

@@ -1,4 +1,5 @@
 import { footerArticlePages, type FooterArticleContent } from '../../../data/footer-article-pages'
+import { seoLandingPages } from '../../../data/seo-landing-pages'
 
 export interface GeContentPageSection {
   readonly title: string
@@ -746,7 +747,8 @@ const coreGeContentPages: Record<string, GeContentPageData> = {
 
 const geContentPages: Record<string, GeContentPageData> = {
   ...convertedFooterArticlePages,
-  ...coreGeContentPages
+  ...coreGeContentPages,
+  ...seoLandingPages
 }
 
 export { geContentPages }

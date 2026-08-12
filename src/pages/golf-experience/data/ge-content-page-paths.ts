@@ -1,3 +1,5 @@
+import { SEO_LANDING_PAGE_PATHS } from '../../../data/seo-landing-page-paths'
+
 /** Path registry only — keep out of heavy page-content modules for smaller entry chunks. */
 const GE_CONTENT_PAGE_PATH_SET = new Set<string>([
   '/about',
@@ -48,7 +50,8 @@ const GE_CONTENT_PAGE_PATH_SET = new Set<string>([
   '/testimonials',
   '/transfer-coordination',
   '/transport',
-  '/twilight-golf'
+  '/twilight-golf',
+  ...SEO_LANDING_PAGE_PATHS
 ])
 
 export function isGeContentPagePath(path: string): boolean {

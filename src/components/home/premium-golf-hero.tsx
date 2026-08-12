@@ -39,7 +39,7 @@ export function PremiumGolfHero({ className }: PremiumGolfHeroProps) {
       formScrollTarget="#enquire"
       formScrollLabel="Plan your trip here"
       formScrollSublabel="Quick quote form below"
-      srTitle="Ireland to Costa del Sol golf trips — Golf Sol Ireland"
+      srTitle="Costa del Sol golf holidays from Ireland — Golf Sol Ireland"
     />
   )
 }
