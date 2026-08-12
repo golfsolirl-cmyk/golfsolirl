@@ -142,18 +142,42 @@ export const handleTransferBookingNotify = async (env, meta = {}) => {
       .eq('id', booking.assigned_driver_id)
       .maybeSingle()
     const dn = dRow?.display_name ? esc(dRow.display_name) : 'Martin Kelly'
-    const driverPhoneRaw = typeof dRow?.phone === 'string' ? dRow.phone.trim() : ''
     const irishOpsTel = esc(gsolEmailBrand.phoneTel)
     const irishOpsDisplay = esc(gsolEmailBrand.phoneDisplay)
-    const callDriverHtml = driverPhoneRaw
-      ? `<strong>${esc(driverPhoneRaw)}</strong> — call or WhatsApp ${dn} for pickup coordination.`
-      : `Call our Irish operations team on <strong>${irishOpsDisplay}</strong> (<a href="tel:${irishOpsTel}" style="color:${gs.green};font-weight:700;text-decoration:none;">tap to call</a>).`
-    subject = 'Your Golf Sol transfer — driver on the way'
-    heroTitle = 'Driver dispatched'
-    heroLead = `${dn} has been dispatched and is en route to your pickup. He will meet you at the collection point below.`
+    const spanishDisplay = esc(gsolEmailBrand.spanishPhoneDisplay)
+    const spanishTel = esc(gsolEmailBrand.spanishPhoneTel)
+    const spanishWaDigits = String(gsolEmailBrand.spanishPhoneTel || '').replace(/\D/g, '')
+    const spanishWaHref = esc(`https://wa.me/${spanishWaDigits}`)
+    const spanishSmsHref = esc(`sms:${gsolEmailBrand.spanishPhoneTel}`)
+    subject = 'Your Golf Sol transfer — driver allocated'
+    heroTitle = 'Your driver is confirmed'
+    heroLead = `${dn} has been allocated for your transfer. Use the Spanish mobile below as your first point of contact when you land.`
     const viaClient = viaLabelsHtml(booking)
     const whenLine = esc(formatTransferWhen(booking))
-    bodyHtml = `<p style="margin:0 0 12px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.7;color:${gs.text};">Pickup: <strong>${esc(booking.pickup_label)}</strong>${flightLine}<br />Destination: <strong>${esc(booking.dropoff_label)}</strong>${viaClient ? `<br />Via: <strong>${viaClient}</strong>` : ''}<br />When: <strong>${whenLine}</strong></p><p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.7;color:${gs.text};">${callDriverHtml}</p><p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.65;color:${gs.text};"><strong>Irish operations (24/7 coordination):</strong> ${irishOpsDisplay} · <a href="tel:${irishOpsTel}" style="color:${gs.green};font-weight:800;text-decoration:none;">${irishOpsTel}</a></p>`
+    bodyHtml = `<p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.7;color:${gs.text};">Pickup: <strong>${esc(booking.pickup_label)}</strong>${flightLine}<br />Destination: <strong>${esc(booking.dropoff_label)}</strong>${viaClient ? `<br />Via: <strong>${viaClient}</strong>` : ''}<br />When: <strong>${whenLine}</strong></p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px 0;border-collapse:collapse;background:${gs.cream};border:1px solid ${gs.border};border-radius:12px;">
+  <tr>
+    <td style="padding:18px 20px;">
+      <p style="margin:0 0 6px 0;font-family:${emailFonts.sans};font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:${gs.green};">On the day</p>
+      <p style="margin:0 0 12px 0;font-family:${emailFonts.sans};font-size:17px;line-height:1.45;color:${gs.text};"><strong>Your driver:</strong> ${dn}</p>
+      <p style="margin:0 0 4px 0;font-family:${emailFonts.sans};font-size:14px;line-height:1.55;color:${gs.text};"><strong>Contact mobile (Spain):</strong></p>
+      <p style="margin:0 0 12px 0;font-family:${emailFonts.sans};font-size:20px;line-height:1.3;font-weight:800;color:${gs.dark};">
+        <a href="tel:${spanishTel}" style="color:${gs.dark};text-decoration:none;">${spanishDisplay}</a>
+      </p>
+      <p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:14px;line-height:1.65;color:${gs.text};">
+        Reach ${dn} by
+        <a href="tel:${spanishTel}" style="color:${gs.green};font-weight:700;text-decoration:none;">direct call</a>,
+        <a href="${spanishWaHref}" style="color:${gs.green};font-weight:700;text-decoration:none;">WhatsApp</a>,
+        or
+        <a href="${spanishSmsHref}" style="color:${gs.green};font-weight:700;text-decoration:none;">SMS</a>.
+      </p>
+      <p style="margin:0;font-family:${emailFonts.sans};font-size:14px;line-height:1.7;color:${gs.text};padding:12px 14px;background:#ffffff;border-radius:8px;border-left:4px solid ${gs.gold};">
+        <strong>First point of contact when you land:</strong> use this Spanish mobile as soon as you arrive at your Spanish airport. ${dn} will coordinate your pickup on this number.
+      </p>
+    </td>
+  </tr>
+</table>
+<p style="margin:0;font-family:${emailFonts.sans};font-size:14px;line-height:1.65;color:${gs.muted};"><strong>Irish operations (backup / 24/7):</strong> ${irishOpsDisplay} · <a href="tel:${irishOpsTel}" style="color:${gs.green};font-weight:700;text-decoration:none;">${irishOpsTel}</a></p>`
   } else if (event === 'driver_accepted') {
     subject = 'Your driver is preparing'
     heroTitle = 'Driver accepted'

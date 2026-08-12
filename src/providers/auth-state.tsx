@@ -20,6 +20,8 @@ export interface Profile {
   portal_proposals_enabled: boolean
   /** Admin enables the “Your PDF library” (terms / thank-you) block when access rows exist. */
   portal_pdf_library_enabled: boolean
+  /** Admin unlocks Club Concierge (hotel fitting desk) in Perks & deals. */
+  portal_club_concierge_enabled: boolean
   /** After client completes one-time “How we reach you” on the dashboard; blocks enquiry auto-overwrite of name/phone. */
   portal_contact_completed_at: string | null
   /** After admin clears portal — hide enquiry snapshots / form echo on the dashboard until re-enabled. */
@@ -64,6 +66,7 @@ const profilesEqual = (a: Profile | null, b: Profile | null): boolean => {
     a.account_reference_id === b.account_reference_id &&
     a.portal_proposals_enabled === b.portal_proposals_enabled &&
     a.portal_pdf_library_enabled === b.portal_pdf_library_enabled &&
+    a.portal_club_concierge_enabled === b.portal_club_concierge_enabled &&
     a.portal_contact_completed_at === b.portal_contact_completed_at &&
     a.created_at === b.created_at &&
     a.updated_at === b.updated_at
@@ -112,6 +115,7 @@ export function AuthProviderImpl({
         typeof row.portal_pdf_library_enabled === 'boolean'
           ? Boolean(row.portal_pdf_library_enabled)
           : Boolean(row.portal_proposals_enabled),
+      portal_club_concierge_enabled: Boolean(row.portal_club_concierge_enabled),
       portal_contact_completed_at:
         row.portal_contact_completed_at != null ? String(row.portal_contact_completed_at) : null,
       portal_enquiry_autofill_disabled:

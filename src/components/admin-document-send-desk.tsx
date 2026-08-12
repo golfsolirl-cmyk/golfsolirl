@@ -83,7 +83,7 @@ export function AdminDocumentSendDesk({ accessToken }: AdminDocumentSendDeskProp
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-forest-600">
             Pick a document from your house PDF list, add the client ID or email, write a message, and send. They get the
-            PDF by email and a note on their dashboard Messages.
+            PDF by email and it appears on their dashboard Documents tab.
           </p>
         </div>
       </div>

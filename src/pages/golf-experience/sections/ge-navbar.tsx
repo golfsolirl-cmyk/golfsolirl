@@ -279,11 +279,6 @@ function PortalNavActions({
           Admin dashboard
         </GeButton>
       ) : null}
-      {variant === 'admin' ? (
-        <GeButton className={btnSm} href="/dashboard" size="sm" variant="outline-gs-green">
-          Client dashboard
-        </GeButton>
-      ) : null}
       <GeButton className={btnGold} size="sm" variant="gs-green" type="button" onClick={() => void onSignOut()}>
         Sign out
       </GeButton>

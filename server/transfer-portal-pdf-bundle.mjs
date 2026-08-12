@@ -1,7 +1,7 @@
 /**
  * Branded transfer PDFs for the client portal (pdf-lib + same assets/palette as formal proposals / sample branded PDF).
  */
-import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
+import { PDFDocument, rgb } from 'pdf-lib'
 import { pdfEmailTheme } from './pdf-email-brand.mjs'
 import { sanitizeStandardFontText } from '../shared/pdf-winansi-sanitize.mjs'
 import { getGsolSiteUrl } from './site-url.mjs'
@@ -15,13 +15,17 @@ import {
   UNIFIED_PDF_LAYOUT,
   drawUnifiedDocumentFooter,
   drawUnifiedDocumentHeader,
+  drawUnifiedGoldRule,
+  drawUnifiedKeyValueTable,
   embedUnifiedLogo,
+  estimateUnifiedKeyValueTableHeight,
   loadUnifiedPdfFonts
 } from './gsol-unified-pdf-template.mjs'
 
-const W = 595.28
-const H = 841.89
-const m = 48
+const W = UNIFIED_PDF_LAYOUT.pageWidth
+const H = UNIFIED_PDF_LAYOUT.pageHeight
+const m = UNIFIED_PDF_LAYOUT.margin
+const FOOTER_SAFE = UNIFIED_PDF_LAYOUT.footerReserve + 28
 
 const IRISH_VAT_STANDARD = 0.23
 const IRISH_VAT_TOURISM = 0.135
@@ -79,21 +83,15 @@ const loadPdfShell = async (doc) => ({
   ...(await embedUnifiedLogo(doc))
 })
 
-const drawHeaderBand = (page, shell, title) => {
-  drawUnifiedDocumentHeader(page, shell, { title: sanitizeStandardFontText(title) })
-}
-
-const BODY_START_Y = H - UNIFIED_PDF_LAYOUT.headerBandHeight - UNIFIED_PDF_LAYOUT.margin - 52
+/** Always use the Y returned by the header — hardcoded offsets overlap the document title. */
+const drawHeaderBand = (page, shell, title, subtitle = '') =>
+  drawUnifiedDocumentHeader(page, shell, {
+    title: sanitizeStandardFontText(title),
+    ...(subtitle ? { subtitle: sanitizeStandardFontText(subtitle) } : {})
+  })
 
 const drawFooterLine = (page, shell, text, pageInfo = null) => {
   drawUnifiedDocumentFooter(page, 52, shell, text ? [text] : [], pageInfo)
-}
-
-const drawGoldRule = (page, y) => {
-  const contentW = W - m * 2
-  page.drawRectangle({ x: m, y: y - 1, width: contentW * 0.3, height: 2, color: pdfEmailTheme.gold })
-  page.drawRectangle({ x: m + contentW * 0.3 + 6, y: y - 0.5, width: contentW * 0.7 - 6, height: 0.5, color: pdfEmailTheme.sand })
-  return y - 20
 }
 
 /**
@@ -102,9 +100,6 @@ const drawGoldRule = (page, y) => {
 export const createTransferFormSubmissionPdf = async (ctx) => {
   const doc = await PDFDocument.create()
   const shell = await loadPdfShell(doc)
-  const font = shell.font
-  const fontBold = shell.fontBold
-  const t = pdfEmailTheme
   const b = ctx.booking
   const rows = []
 
@@ -131,52 +126,37 @@ export const createTransferFormSubmissionPdf = async (ctx) => {
     }
   }
 
+  const tableRows = rows.map(([label, value]) => ({
+    label: String(label),
+    value: String(value ?? '—')
+  }))
+
   let page = doc.addPage([W, H])
-  drawHeaderBand(page, shell, 'Your original request (snapshot)')
+  let y = drawHeaderBand(
+    page,
+    shell,
+    'Your original request (snapshot)',
+    'Submitted details as on file when Golf Sol Ireland quoted this transfer.'
+  )
+  y = drawUnifiedGoldRule(page, y)
 
-  let y = BODY_START_Y
-  page.drawText('Submitted details as on file when Golf Sol Ireland quoted this transfer.', {
-    x: m,
-    y,
-    size: 11,
-    font,
-    color: t.ink
-  })
-  y -= 22
-  y = drawGoldRule(page, y)
-
-  const colW = (W - 2 * m - 12) * 0.34
-  const valW = W - 2 * m - 12 - colW
-
-  for (const [label, value] of rows) {
-    const lab = sanitizeStandardFontText(label)
-    const valLines = wrapLines(value, font, 10, valW)
-    const blockH = Math.max(22, 12 + valLines.length * 12 + 10)
-    if (y < m + blockH + 40) {
+  for (let i = 0; i < tableRows.length; i += 1) {
+    const row = tableRows[i]
+    const rowH = estimateUnifiedKeyValueTableHeight(shell, [row])
+    if (y - rowH < FOOTER_SAFE) {
       drawFooterLine(page, shell, 'Golf Sol Ireland · Continued on next page.')
       page = doc.addPage([W, H])
-      drawHeaderBand(page, shell, 'Your original request (continued)')
-      y = BODY_START_Y
+      y = drawHeaderBand(page, shell, 'Your original request (continued)')
+      y = drawUnifiedGoldRule(page, y)
     }
-    page.drawRectangle({
-      x: m,
-      y: y - blockH,
-      width: W - 2 * m,
-      height: blockH,
-      color: t.paleGreen,
-      borderColor: t.sand,
-      borderWidth: 0.5
-    })
-    page.drawText(lab, { x: m + 10, y: y - 16, size: 9, font: fontBold, color: t.greenSoft })
-    let vy = y - 28
-    for (const ln of valLines) {
-      page.drawText(sanitizeStandardFontText(ln), { x: m + colW + 10, y: vy, size: 10, font, color: t.ink })
-      vy -= 12
-    }
-    y -= blockH + 8
+    y = drawUnifiedKeyValueTable(page, y, shell, [row])
   }
 
-  drawFooterLine(page, shell, 'Golf Sol Ireland · This snapshot reflects the information supplied for this transfer. It is not a contract or invoice by itself.')
+  drawFooterLine(
+    page,
+    shell,
+    'Golf Sol Ireland · This snapshot reflects the information supplied for this transfer. It is not a contract or invoice by itself.'
+  )
 
   return doc.save()
 }
@@ -210,9 +190,7 @@ export const createTransferVatQuotePdf = async (ctx) => {
   const fontBold = shell.fontBold
   const t = pdfEmailTheme
   const page = doc.addPage([W, H])
-  drawHeaderBand(page, shell, 'Transfer quote & VAT summary')
-
-  let y = BODY_START_Y
+  let y = drawHeaderBand(page, shell, 'Transfer quote & VAT summary')
   page.drawText(sanitizeStandardFontText(`Bill to: ${ctx.profileName}`), { x: m, y, size: 11, font: fontBold, color: t.ink })
   y -= 16
   if (ctx.profileEmail?.trim()) {
@@ -224,13 +202,19 @@ export const createTransferVatQuotePdf = async (ctx) => {
     y -= 14
   }
   y -= 6
-  y = drawGoldRule(page, y)
+  y = drawUnifiedGoldRule(page, y)
 
+  const innerW = W - 2 * m - 28
+  const route = `${String(ctx.booking.pickup_label)} → ${String(ctx.booking.dropoff_label)}`
+  const routeLines = wrapLines(route, font, 10, innerW)
+  const payLines = wrapLines(`Payment: ${payLine}`, font, 10, innerW)
+  const refLines = wrapLines(`Reference: ${String(ctx.booking.id)}`, font, 8, innerW)
+  const transferBoxH = 18 + 18 + routeLines.length * 12 + payLines.length * 12 + refLines.length * 11 + 20
   page.drawRectangle({
     x: m,
-    y: y - 118,
+    y: y - transferBoxH,
     width: W - 2 * m,
-    height: 118,
+    height: transferBoxH,
     color: t.white,
     borderColor: t.sand,
     borderWidth: 0.75
@@ -238,16 +222,43 @@ export const createTransferVatQuotePdf = async (ctx) => {
   let ty = y - 18
   page.drawText('TRANSFER DETAILS', { x: m + 14, y: ty, size: 8, font: fontBold, color: t.greenSoft })
   ty -= 18
-  const route = `${String(ctx.booking.pickup_label)} → ${String(ctx.booking.dropoff_label)}`
-  page.drawText(sanitizeStandardFontText(route), { x: m + 14, y: ty, size: 10, font, color: t.ink })
-  ty -= 14
-  page.drawText(sanitizeStandardFontText(`Payment: ${payLine}`), { x: m + 14, y: ty, size: 10, font, color: t.ink })
-  ty -= 14
-  page.drawText(sanitizeStandardFontText(`Reference: ${String(ctx.booking.id)}`), { x: m + 14, y: ty, size: 8, font, color: t.muted })
-  y -= 132
+  for (const ln of routeLines) {
+    page.drawText(sanitizeStandardFontText(ln), { x: m + 14, y: ty, size: 10, font, color: t.ink })
+    ty -= 12
+  }
+  for (const ln of payLines) {
+    page.drawText(sanitizeStandardFontText(ln), { x: m + 14, y: ty, size: 10, font, color: t.ink })
+    ty -= 12
+  }
+  for (const ln of refLines) {
+    page.drawText(sanitizeStandardFontText(ln), { x: m + 14, y: ty, size: 8, font, color: t.muted })
+    ty -= 11
+  }
+  y -= transferBoxH + 14
 
   const showDepositDue = pay === 'unpaid' && !fullUpfront
-  const vatBoxH = showDepositDue ? 128 : 112
+  const rateLabel =
+    treatment === 'services'
+      ? `Standard rate (${(IRISH_VAT_STANDARD * 100).toFixed(0)}%) — services`
+      : `Reduced tourism-related rate (${(IRISH_VAT_TOURISM * 100).toFixed(1)}%)`
+  const treatmentLines = wrapLines(`Treatment: ${rateLabel}`, font, 10, innerW)
+  const vatLines = [
+    { text: 'VAT summary (Irish VAT)', size: 11, bold: true, gap: 18 },
+    ...treatmentLines.map((ln) => ({ text: ln, size: 10, bold: false, gap: 12 })),
+    { text: 'Total quoted is VAT-inclusive (gross).', size: 10, bold: false, gap: 16 },
+    { text: `Net (ex VAT): ${formatEur(net)}`, size: 10, bold: false, gap: 14 },
+    {
+      text: `VAT @ ${(treatment === 'services' ? IRISH_VAT_STANDARD : IRISH_VAT_TOURISM) * 100}%: ${formatEur(vat)}`,
+      size: 10,
+      bold: false,
+      gap: 14
+    },
+    { text: `Total (incl. VAT): ${formatEur(gross)}`, size: 11, bold: true, gap: 14, color: t.goldDeep },
+    ...(showDepositDue
+      ? [{ text: `Due now (${pct}% deposit): ${formatEur(depositDue)}`, size: 10, bold: true, gap: 14 }]
+      : [])
+  ]
+  const vatBoxH = 18 + vatLines.reduce((sum, line) => sum + line.gap, 0) + 8
   page.drawRectangle({
     x: m,
     y: y - vatBoxH,
@@ -258,51 +269,33 @@ export const createTransferVatQuotePdf = async (ctx) => {
     borderWidth: 0.5
   })
   let vy = y - 18
-  page.drawText('VAT summary (Irish VAT)', { x: m + 14, y: vy, size: 11, font: fontBold, color: t.ink })
-  vy -= 18
-  const rateLabel =
-    treatment === 'services'
-      ? `Standard rate (${(IRISH_VAT_STANDARD * 100).toFixed(0)}%) — services`
-      : `Reduced tourism-related rate (${(IRISH_VAT_TOURISM * 100).toFixed(1)}%)`
-  page.drawText(sanitizeStandardFontText(`Treatment: ${rateLabel}`), { x: m + 14, y: vy, size: 10, font, color: t.ink })
-  vy -= 14
-  page.drawText('Total quoted is VAT-inclusive (gross).', { x: m + 14, y: vy, size: 10, font, color: t.ink })
-  vy -= 16
-  page.drawText(sanitizeStandardFontText(`Net (ex VAT): ${formatEur(net)}`), { x: m + 14, y: vy, size: 10, font, color: t.ink })
-  vy -= 14
-  page.drawText(
-    sanitizeStandardFontText(
-      `VAT @ ${(treatment === 'services' ? IRISH_VAT_STANDARD : IRISH_VAT_TOURISM) * 100}%: ${formatEur(vat)}`
-    ),
-    { x: m + 14, y: vy, size: 10, font, color: t.ink }
-  )
-  vy -= 14
-  page.drawText(sanitizeStandardFontText(`Total (incl. VAT): ${formatEur(gross)}`), {
-    x: m + 14,
-    y: vy,
-    size: 11,
-    font: fontBold,
-    color: t.goldDeep
-  })
-  if (showDepositDue) {
-    vy -= 14
-    page.drawText(sanitizeStandardFontText(`Due now (${pct}% deposit): ${formatEur(depositDue)}`), {
+  for (const line of vatLines) {
+    page.drawText(sanitizeStandardFontText(line.text), {
       x: m + 14,
       y: vy,
-      size: 10,
-      font: fontBold,
-      color: t.ink
+      size: line.size,
+      font: line.bold ? fontBold : font,
+      color: line.color ?? t.ink
     })
+    vy -= line.gap
   }
   y -= vatBoxH + 12
 
   if (pay === 'unpaid') {
     const dash = `${ctx.siteOrigin.replace(/\/+$/, '')}/dashboard`
+    const hint = wrapLines(
+      'Sign in to your client dashboard and use Pay now next to this transfer.',
+      font,
+      10,
+      innerW
+    )
+    const urlLines = wrapLines(dash, font, 10, innerW)
+    const payBoxH = 18 + 16 + hint.length * 12 + 4 + urlLines.length * 12 + 20
     page.drawRectangle({
       x: m,
-      y: y - 92,
+      y: y - payBoxH,
       width: W - 2 * m,
-      height: 92,
+      height: payBoxH,
       color: t.paleGold,
       borderColor: t.gold,
       borderWidth: 0.6
@@ -310,23 +303,16 @@ export const createTransferVatQuotePdf = async (ctx) => {
     let py = y - 18
     page.drawText('Pay online (secure card payment)', { x: m + 14, y: py, size: 11, font: fontBold, color: t.ink })
     py -= 16
-    const hint = wrapLines(
-      'Sign in to your client dashboard and use Pay now next to this transfer.',
-      font,
-      10,
-      W - 2 * m - 28
-    )
     for (const ln of hint) {
       page.drawText(sanitizeStandardFontText(ln), { x: m + 14, y: py, size: 10, font, color: t.ink })
       py -= 12
     }
     py -= 4
-    const urlLines = wrapLines(dash, font, 10, W - 2 * m - 28)
     for (const ln of urlLines) {
       page.drawText(sanitizeStandardFontText(ln), { x: m + 14, y: py, size: 10, font: fontBold, color: rgb(0, 0.4, 0.8) })
       py -= 12
     }
-    y -= 100
+    y -= payBoxH + 8
   }
 
   drawFooterLine(page, shell, 'Golf Sol Ireland · VAT-transparent quote for this transfer. After payment, download your paid invoice PDF from the same dashboard.')
@@ -359,9 +345,7 @@ export const createTransferPaymentReceiptPdf = async (ctx) => {
   const page = doc.addPage([W, H])
   const headerTitle =
     ctx.receiptType === 'deposit' ? 'Deposit payment confirmation' : 'Payment received in full'
-  drawHeaderBand(page, shell, headerTitle)
-
-  let y = BODY_START_Y
+  let y = drawHeaderBand(page, shell, headerTitle)
   page.drawText(sanitizeStandardFontText(`Bill to: ${ctx.profileName}`), { x: m, y, size: 11, font: fontBold, color: t.ink })
   y -= 16
   if (ctx.profileEmail?.trim()) {
@@ -374,12 +358,16 @@ export const createTransferPaymentReceiptPdf = async (ctx) => {
   }
   y -= 10
 
+  const innerW = W - 2 * m - 28
   const route = `${String(ctx.booking.pickup_label ?? '')} → ${String(ctx.booking.dropoff_label ?? '')}`
+  const routeLines = wrapLines(route, font, 10, innerW)
+  const refLines = wrapLines(`Booking reference: ${String(ctx.booking.id)}`, font, 9, innerW)
+  const transferBoxH = 18 + 18 + routeLines.length * 12 + refLines.length * 12 + 20
   page.drawRectangle({
     x: m,
-    y: y - 100,
+    y: y - transferBoxH,
     width: W - 2 * m,
-    height: 100,
+    height: transferBoxH,
     color: t.paleGreen,
     borderColor: t.sand,
     borderWidth: 0.5
@@ -387,55 +375,48 @@ export const createTransferPaymentReceiptPdf = async (ctx) => {
   let ty = y - 18
   page.drawText('Transfer', { x: m + 14, y: ty, size: 11, font: fontBold, color: t.ink })
   ty -= 18
-  page.drawText(sanitizeStandardFontText(route), { x: m + 14, y: ty, size: 10, font, color: t.ink })
-  ty -= 14
-  page.drawText(sanitizeStandardFontText(`Booking reference: ${String(ctx.booking.id)}`), {
-    x: m + 14,
-    y: ty,
-    size: 9,
-    font,
-    color: t.muted
-  })
-  y -= 112
+  for (const ln of routeLines) {
+    page.drawText(sanitizeStandardFontText(ln), { x: m + 14, y: ty, size: 10, font, color: t.ink })
+    ty -= 12
+  }
+  for (const ln of refLines) {
+    page.drawText(sanitizeStandardFontText(ln), { x: m + 14, y: ty, size: 9, font, color: t.muted })
+    ty -= 12
+  }
+  y -= transferBoxH + 14
 
-  page.drawText(sanitizeStandardFontText(`Amount paid (this card charge): ${formatEur(amt)}`), {
-    x: m,
-    y,
-    size: 14,
-    font: fontBold,
-    color: t.goldDeep
-  })
-  y -= 22
+  const amountLines = wrapLines(`Amount paid (this card charge): ${formatEur(amt)}`, fontBold, 14, W - 2 * m)
+  for (const ln of amountLines) {
+    page.drawText(sanitizeStandardFontText(ln), { x: m, y, size: 14, font: fontBold, color: t.goldDeep })
+    y -= 18
+  }
+  y -= 4
 
   if (Number.isFinite(gross) && gross > 0) {
-    page.drawText(sanitizeStandardFontText(`Quoted total (VAT incl.): ${formatEur(gross)}`), {
-      x: m,
-      y,
-      size: 11,
-      font,
-      color: t.ink
-    })
-    y -= 16
+    for (const ln of wrapLines(`Quoted total (VAT incl.): ${formatEur(gross)}`, font, 11, W - 2 * m)) {
+      page.drawText(sanitizeStandardFontText(ln), { x: m, y, size: 11, font, color: t.ink })
+      y -= 14
+    }
   }
 
   if (ctx.receiptType === 'deposit' && Number.isFinite(gross) && gross > 0) {
     const rem = balanceAmountEur(gross, pct)
-    page.drawText(
-      sanitizeStandardFontText(
-        `Outstanding balance after this deposit: ${formatEur(rem)} (${100 - pct}% of quoted total).`
-      ),
-      { x: m, y, size: 10, font, color: t.ink }
-    )
-    y -= 28
-  } else if (ctx.receiptType === 'paid_in_full' && Number.isFinite(gross) && gross > 0) {
-    page.drawText(sanitizeStandardFontText('This transfer is fully paid against the quoted total above.'), {
-      x: m,
-      y,
-      size: 10,
+    for (const ln of wrapLines(
+      `Outstanding balance after this deposit: ${formatEur(rem)} (${100 - pct}% of quoted total).`,
       font,
-      color: t.ink
-    })
-    y -= 28
+      10,
+      W - 2 * m
+    )) {
+      page.drawText(sanitizeStandardFontText(ln), { x: m, y, size: 10, font, color: t.ink })
+      y -= 13
+    }
+    y -= 12
+  } else if (ctx.receiptType === 'paid_in_full' && Number.isFinite(gross) && gross > 0) {
+    for (const ln of wrapLines('This transfer is fully paid against the quoted total above.', font, 10, W - 2 * m)) {
+      page.drawText(sanitizeStandardFontText(ln), { x: m, y, size: 10, font, color: t.ink })
+      y -= 13
+    }
+    y -= 12
   }
 
   const stripeBits = []
@@ -448,8 +429,11 @@ export const createTransferPaymentReceiptPdf = async (ctx) => {
     stripeBits.push(`PaymentIntent …${pi.slice(-12)}`)
   }
   if (stripeBits.length) {
-    page.drawText(sanitizeStandardFontText(stripeBits.join(' · ')), { x: m, y, size: 9, font, color: t.muted })
-    y -= 28
+    for (const ln of wrapLines(stripeBits.join(' · '), font, 9, W - 2 * m)) {
+      page.drawText(sanitizeStandardFontText(ln), { x: m, y, size: 9, font, color: t.muted })
+      y -= 12
+    }
+    y -= 12
   }
 
   const dash = `${getGsolSiteUrl().replace(/\/+$/, '')}/dashboard`
@@ -474,18 +458,17 @@ export const createTermsSummaryPdf = async () => {
   const font = shell.font
   const t = pdfEmailTheme
   let page = doc.addPage([W, H])
-  drawHeaderBand(page, shell, 'Terms & conditions (summary)')
-  let y = BODY_START_Y
-  y = drawGoldRule(page, y)
+  let y = drawHeaderBand(page, shell, 'Terms & conditions (summary)')
+  y = drawUnifiedGoldRule(page, y)
   const maxW = W - 2 * m
   for (const para of TERMS_SUMMARY_PARAS) {
     const lines = wrapLines(para, font, 11, maxW)
     for (const ln of lines) {
-      if (y < m + 60) {
+      if (y < FOOTER_SAFE) {
         drawFooterLine(page, shell, 'Golf Sol Ireland · Continued on next page.')
         page = doc.addPage([W, H])
-        drawHeaderBand(page, shell, 'Terms & conditions (continued)')
-        y = BODY_START_Y
+        y = drawHeaderBand(page, shell, 'Terms & conditions (continued)')
+        y = drawUnifiedGoldRule(page, y)
       }
       page.drawText(sanitizeStandardFontText(ln), { x: m, y, size: 11, font, color: t.ink })
       y -= 14

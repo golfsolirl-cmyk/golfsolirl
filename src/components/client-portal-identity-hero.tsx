@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Copy, Check, FileText, CreditCard, BadgeCheck } from 'lucide-react'
+import { Copy, Check, FileText, CreditCard, BadgeCheck, Mail, Hash } from 'lucide-react'
 import {
   balanceAmountEur,
   clientTransferOperationalStatusLabel,
@@ -40,6 +40,12 @@ export function ClientPortalIdentityHero(props: {
   readonly accountNumber: string | null
   readonly accountEmail: string | null
   readonly transfers: readonly ClientPortalTransferHeroRow[]
+  /** Quoted add-ons (golf / hotels / transfer requests) for trip total */
+  readonly tripAddOnQuotes?: readonly {
+    readonly id: string
+    readonly label: string
+    readonly quoteEur: number
+  }[]
   /** Stripe return — pulse ring on this booking row */
   readonly emphasizeTransferBookingId?: string | null
   readonly onDownloadTransferQuotePdf?: (transfer: ClientPortalTransferHeroRow) => void | Promise<void>
@@ -61,6 +67,14 @@ export function ClientPortalIdentityHero(props: {
   const ref = props.accountNumber?.trim() ?? ''
   const emailDisplay = (props.accountEmail ?? '').trim()
   const signedInLabel = props.signedInAs.trim() || emailDisplay || '—'
+  const tripAddOns = props.tripAddOnQuotes ?? []
+  const transferQuotedTotal = props.transfers.reduce((sum, t) => {
+    const g = typeof t.admin_price_eur === 'number' && Number.isFinite(t.admin_price_eur) ? t.admin_price_eur : 0
+    return sum + (g > 0 ? g : 0)
+  }, 0)
+  const addOnQuotedTotal = tripAddOns.reduce((sum, a) => sum + (a.quoteEur > 0 ? a.quoteEur : 0), 0)
+  const tripTotalEur = transferQuotedTotal + addOnQuotedTotal
+  const showTripPanel = props.transfers.length > 0 || tripAddOns.length > 0 || tripTotalEur > 0
 
   const copyRef = async () => {
     if (!ref) {
@@ -83,49 +97,82 @@ export function ClientPortalIdentityHero(props: {
       )}
     >
       <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
-        <div className="min-w-0 flex-1 space-y-5 xl:max-w-2xl">
+        <div className="min-w-0 flex-1 space-y-8 xl:max-w-2xl">
           <div>
             <p className="font-ge text-xs font-extrabold uppercase tracking-[0.22em] text-emerald-200/90 sm:text-sm">Your account</p>
             <h2 className="font-display mt-2 text-4xl font-bold tracking-tight text-white sm:text-5xl">
               {props.firstName.trim() ? <>Hello, {props.firstName.trim()}</> : <>Hello</>}
             </h2>
-            <p className="mt-2 font-ge text-base leading-relaxed text-fairway-50/90">
-              Signed in as{' '}
-              <span className="break-all font-semibold text-white">{signedInLabel}</span>
-            </p>
+            {!emailDisplay ? (
+              <p className="mt-3 font-ge text-base leading-relaxed text-fairway-50/90">
+                Signed in as <span className="break-all font-semibold text-white">{signedInLabel}</span>
+              </p>
+            ) : null}
           </div>
 
           {emailDisplay || ref ? (
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div className="w-full max-w-xl space-y-4">
+              <p className="font-ge text-sm font-semibold text-emerald-100/90">
+                Keep these details handy for your trip
+              </p>
+
               {emailDisplay ? (
-                <div className="min-w-0 rounded-2xl border border-white/20 bg-forest-900/40 px-4 py-4">
-                  <p className="font-ge text-xs font-extrabold uppercase tracking-[0.18em] text-emerald-200/85 sm:text-sm">Account email</p>
-                  <p className="mt-2 break-all font-ge text-sm font-semibold leading-relaxed text-white sm:text-base">{emailDisplay}</p>
+                <div className="rounded-[1.5rem] border border-white/25 bg-white/[0.09] px-6 py-6 sm:px-7 sm:py-7">
+                  <div className="flex items-center gap-3">
+                    <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/12 text-brand-100 ring-1 ring-white/25">
+                      <Mail className="h-5 w-5" aria-hidden />
+                    </span>
+                    <div>
+                      <p className="font-ge text-sm font-bold uppercase tracking-[0.14em] text-emerald-200">
+                        Account email
+                      </p>
+                      <p className="mt-1 font-ge text-base leading-relaxed text-emerald-100/75">
+                        Magic links and trip emails go here
+                      </p>
+                    </div>
+                  </div>
+                  <p className="mt-5 break-all font-ge text-2xl font-bold leading-snug tracking-tight text-white sm:text-3xl">
+                    {emailDisplay}
+                  </p>
                 </div>
               ) : null}
+
               {ref ? (
-                <div className="min-w-0 rounded-2xl border border-white/20 bg-forest-900/40 px-4 py-4">
-                  <p className="font-ge text-xs font-extrabold uppercase tracking-[0.18em] text-emerald-200/85 sm:text-sm">
-                    Account number
+                <div className="rounded-[1.5rem] border border-white/25 bg-white/[0.09] px-6 py-6 sm:px-7 sm:py-7">
+                  <div className="flex items-center gap-3">
+                    <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/12 text-brand-100 ring-1 ring-white/25">
+                      <Hash className="h-5 w-5" aria-hidden />
+                    </span>
+                    <div>
+                      <p className="font-ge text-sm font-bold uppercase tracking-[0.14em] text-emerald-200">
+                        Account number
+                      </p>
+                      <p className="mt-1 font-ge text-base leading-relaxed text-emerald-100/75">
+                        Quote this when you call, WhatsApp, or message us
+                      </p>
+                    </div>
+                  </div>
+                  <p className="mt-5 break-all font-mono text-2xl font-bold leading-snug tracking-[0.12em] text-brand-100 sm:text-3xl">
+                    {ref}
                   </p>
-                  <p className="mt-2 break-all font-mono text-lg font-bold leading-relaxed tracking-wide text-brand-100 sm:text-xl">{ref}</p>
                   <button
-                    className="mt-3 inline-flex items-center gap-2 rounded-xl border border-chrome-300/50 bg-chrome-400/15 px-3 py-2 font-ge text-xs font-bold uppercase tracking-[0.12em] text-brand-100 transition hover:bg-chrome-400/25 sm:text-sm"
+                    aria-label={copied ? 'Account number copied' : 'Copy account number'}
+                    className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl border border-chrome-300/60 bg-chrome-400/25 px-5 py-3 font-ge text-base font-bold text-white transition hover:bg-chrome-400/35 sm:w-auto"
                     onClick={() => void copyRef()}
                     type="button"
                   >
-                    {copied ? <Check className="h-3.5 w-3.5" aria-hidden /> : <Copy className="h-3.5 w-3.5" aria-hidden />}
-                    {copied ? 'Copied' : 'Copy'}
+                    {copied ? <Check className="h-5 w-5" aria-hidden /> : <Copy className="h-5 w-5" aria-hidden />}
+                    {copied ? 'Copied' : 'Copy account number'}
                   </button>
                 </div>
               ) : (
-                <div className="rounded-2xl border border-white/12 bg-black/15 px-4 py-3.5">
-                  <p className="font-ge text-xs font-extrabold uppercase tracking-[0.18em] text-emerald-200/85 sm:text-sm">
+                <div className="rounded-[1.5rem] border border-white/12 bg-black/15 px-6 py-6 sm:px-7 sm:py-7">
+                  <p className="font-ge text-sm font-bold uppercase tracking-[0.14em] text-emerald-200">
                     Account number
                   </p>
-                  <p className="mt-1.5 font-ge text-sm leading-relaxed text-emerald-100/85 sm:text-base">
-                    Your personal account number appears after you submit a website form with this login email — same ref as on your
-                    enquiry PDFs.
+                  <p className="mt-3 font-ge text-lg leading-relaxed text-emerald-100/90">
+                    Your personal account number appears after you submit a website form with this login email — same
+                    reference as on your enquiry PDFs.
                   </p>
                 </div>
               )}
@@ -138,10 +185,20 @@ export function ClientPortalIdentityHero(props: {
           )}
         </div>
 
-        {props.transfers.length > 0 ? (
+        {showTripPanel ? (
           <div className="w-full min-w-0 shrink-0 rounded-2xl border border-white/12 bg-black/20 p-5 xl:w-auto xl:max-w-lg xl:flex-1">
-            <p className="font-ge text-xs font-extrabold uppercase tracking-[0.14em] text-emerald-200/85 sm:text-sm">Your transfers</p>
-            <p className="mt-1 font-ge text-sm text-emerald-100/75 sm:text-base">Airport, hotel, and course runs — live status.</p>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="font-ge text-xs font-extrabold uppercase tracking-[0.14em] text-emerald-200/85 sm:text-sm">Your transfers</p>
+                <p className="mt-1 font-ge text-sm text-emerald-100/75 sm:text-base">Airport, hotel, and course runs — live status.</p>
+              </div>
+              {tripTotalEur > 0 ? (
+                <div className="rounded-xl border border-chrome-300/40 bg-chrome-400/15 px-3 py-2 text-right">
+                  <p className="font-ge text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-200">Trip total</p>
+                  <p className="mt-0.5 font-ge text-xl font-bold text-brand-100">{formatEurInline(tripTotalEur)}</p>
+                </div>
+              ) : null}
+            </div>
             <ul className="mt-4 space-y-3">
               {props.transfers.slice(0, 5).map((t) => {
                 const pay = (t.payment_status ?? 'unpaid').toLowerCase()
@@ -326,6 +383,22 @@ export function ClientPortalIdentityHero(props: {
                 )
               })}
             </ul>
+            {tripAddOns.length > 0 ? (
+              <div className="mt-4 border-t border-white/10 pt-4">
+                <p className="font-ge text-xs font-extrabold uppercase tracking-[0.14em] text-emerald-200/85">Trip add-ons</p>
+                <ul className="mt-2 space-y-2">
+                  {tripAddOns.map((a) => (
+                    <li
+                      className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-forest-900 px-3 py-2"
+                      key={a.id}
+                    >
+                      <span className="font-ge text-sm font-semibold text-white">{a.label}</span>
+                      <span className="shrink-0 font-ge text-sm font-bold text-brand-100">{formatEurInline(a.quoteEur)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
             {props.transfers.length > 5 ? (
               <p className="mt-3 font-ge text-sm text-emerald-200/80">+{props.transfers.length - 5} more in your full list below.</p>
             ) : null}

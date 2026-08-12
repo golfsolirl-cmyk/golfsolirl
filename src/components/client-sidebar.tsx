@@ -45,22 +45,23 @@ function NavButton({
   const Icon = item.icon
   return (
     <button
+      aria-current={active ? 'page' : undefined}
       className={cx(
-        'group relative flex w-full items-start gap-3 rounded-xl px-3 py-2.5 text-left transition',
+        'group relative flex w-full items-start gap-3 rounded-xl px-3 py-2.5 text-left transition duration-200',
         active
-          ? 'bg-fairway-50/90 ring-1 ring-fairway-200/80'
+          ? 'bg-fairway-100 shadow-sm ring-2 ring-fairway-600/70'
           : 'hover:bg-forest-50/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fairway-400'
       )}
       onClick={onSelect}
       type="button"
     >
       {active ? (
-        <span aria-hidden className="absolute bottom-2 left-0 top-2 w-1 rounded-full bg-fairway-700" />
+        <span aria-hidden className="absolute bottom-2 left-0 top-2 w-1.5 rounded-full bg-fairway-800" />
       ) : null}
       <span
         className={cx(
-          'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg',
-          active ? 'bg-fairway-800 text-white' : 'bg-forest-100/80 text-forest-700 group-hover:bg-fairway-100'
+          'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition',
+          active ? 'bg-fairway-800 text-white shadow-sm' : 'bg-forest-100/80 text-forest-700 group-hover:bg-fairway-100'
         )}
       >
         <Icon aria-hidden className="h-4 w-4" />
@@ -70,11 +71,18 @@ function NavButton({
           <span className={cx('block text-base font-semibold leading-snug', active ? 'text-forest-950' : 'text-forest-900')}>
             {item.label}
           </span>
+          {active ? (
+            <span className="rounded-full bg-forest-900 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.1em] text-white">
+              Viewing
+            </span>
+          ) : null}
           {badge ? (
             <span className="inline-flex h-2.5 w-2.5 rounded-full bg-brand-500 ring-2 ring-white" title="New reply" />
           ) : null}
         </span>
-        <span className="mt-0.5 block text-sm leading-snug text-ge-gray500">{item.description}</span>
+        <span className={cx('mt-0.5 block text-sm leading-snug', active ? 'text-forest-700' : 'text-ge-gray500')}>
+          {item.description}
+        </span>
       </span>
     </button>
   )
@@ -121,7 +129,7 @@ export function ClientSidebar({
             <p className="truncate text-base font-bold text-forest-950">Your trip desk</p>
           </div>
         </div>
-        <nav aria-label="Client portal sections" className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
+        <nav aria-label="Client portal sections" className="flex flex-1 flex-col gap-1 overflow-y-auto p-3" role="tablist">
           {CLIENT_SIDEBAR_ITEMS.map((item) => (
             <NavButton
               active={activeSection === item.id}

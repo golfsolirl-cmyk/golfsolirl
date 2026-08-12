@@ -15,6 +15,8 @@ export interface PortalInterestTicketRow {
   updated_at: string
   /** When the client last opened the thread (RPC); unread if latest admin message is newer. */
   client_last_read_at?: string | null
+  /** Admin-set EUR quote for this add-on request (optional). */
+  admin_quote_eur?: number | null
 }
 
 export interface PortalInterestTicketMessageRow {

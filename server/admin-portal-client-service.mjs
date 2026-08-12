@@ -287,6 +287,7 @@ export const handleAdminPortalClient = async (payload = {}, env = process.env, m
         portal_contact_completed_at: null,
         portal_enquiry_autofill_disabled: true,
         portal_pdf_library_enabled: false,
+        portal_club_concierge_enabled: false,
         updated_at: now
       })
       .eq('id', target.id)
@@ -375,6 +376,35 @@ export const handleAdminPortalClient = async (payload = {}, env = process.env, m
       throwStatus(docErr.message, 500)
     }
 
+    const { data: deskDocs } = await admin
+      .from('portal_client_documents')
+      .select('storage_path')
+      .eq('owner_id', ownerId)
+    const deskPaths = (deskDocs ?? []).map((r) => r.storage_path).filter(Boolean)
+    if (deskPaths.length > 0) {
+      await admin.storage.from('client-portal-pdfs').remove(deskPaths)
+    }
+    const { error: deskDocErr } = await admin.from('portal_client_documents').delete().eq('owner_id', ownerId)
+    if (deskDocErr) {
+      throwStatus(deskDocErr.message, 500)
+    }
+
+    const { data: transferDocs } = await admin
+      .from('portal_client_transfer_documents')
+      .select('storage_path')
+      .eq('owner_id', ownerId)
+    const transferPaths = (transferDocs ?? []).map((r) => r.storage_path).filter(Boolean)
+    if (transferPaths.length > 0) {
+      await admin.storage.from('client-portal-pdfs').remove(transferPaths)
+    }
+    const { error: transferDocErr } = await admin
+      .from('portal_client_transfer_documents')
+      .delete()
+      .eq('owner_id', ownerId)
+    if (transferDocErr) {
+      throwStatus(transferDocErr.message, 500)
+    }
+
     await deletePortalInvoicesTransfersAndEmailAnchor(admin, ownerId)
 
     const now = new Date().toISOString()
@@ -388,6 +418,7 @@ export const handleAdminPortalClient = async (payload = {}, env = process.env, m
         portal_enquiry_autofill_disabled: true,
         portal_proposals_enabled: false,
         portal_pdf_library_enabled: false,
+        portal_club_concierge_enabled: false,
         updated_at: now
       })
       .eq('id', ownerId)
@@ -543,6 +574,7 @@ export const handleAdminPortalClient = async (payload = {}, env = process.env, m
       account_reference_id: accountReferenceId,
       portal_contact_completed_at: now,
       portal_pdf_library_enabled: false,
+      portal_club_concierge_enabled: false,
       updated_at: now
     })
     .eq('id', userId)

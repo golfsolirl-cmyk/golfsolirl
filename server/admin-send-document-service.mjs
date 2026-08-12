@@ -349,7 +349,7 @@ export const handleAdminSendDocument = async (body, env = process.env, meta = {}
     filename: attachment.filename,
     clientEmail: client.email,
     clientRef: client.bookingRef,
-    message: `Sent ${catalogItem.label} to ${client.email} by email — also listed on their dashboard Messages.`,
+    message: `Sent ${catalogItem.label} to ${client.email} by email — also saved on their Documents tab.`,
     portal: result
   }
 }

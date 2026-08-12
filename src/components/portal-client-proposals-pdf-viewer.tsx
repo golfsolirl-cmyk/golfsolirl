@@ -14,16 +14,22 @@ export interface ProposalRowLite {
 
 export type TransferPortalDocumentRow = {
   readonly id: string
-  readonly transfer_booking_id: string
+  readonly transfer_booking_id?: string | null
   readonly document_kind:
     | 'form_submission'
     | 'vat_quote'
     | 'terms_summary'
     | 'deposit_receipt'
     | 'payment_confirmation'
+    | 'admin_sent'
+    | 'letter'
+    | 'quote'
+    | 'receipt'
+    | 'other'
   readonly title: string
   readonly storage_path: string
   readonly created_at: string
+  readonly source_label?: string | null
 }
 
 type DocumentAccess = { readonly terms: boolean; readonly welcome: boolean }
@@ -51,6 +57,9 @@ function selectionKey(s: Selection | null): string | null {
 }
 
 function transferDocKindOrder(k: TransferPortalDocumentRow['document_kind']): number {
+  if (k === 'admin_sent' || k === 'letter' || k === 'quote' || k === 'receipt' || k === 'other') {
+    return -1
+  }
   if (k === 'vat_quote') {
     return 0
   }
@@ -64,6 +73,19 @@ function transferDocKindOrder(k: TransferPortalDocumentRow['document_kind']): nu
     return 3
   }
   return 4
+}
+
+function friendlyDocKindLabel(k: TransferPortalDocumentRow['document_kind']): string {
+  if (k === 'admin_sent') return 'Sent by Golf Sol'
+  if (k === 'letter') return 'Letter'
+  if (k === 'quote') return 'Quote'
+  if (k === 'receipt') return 'Receipt'
+  if (k === 'vat_quote') return 'VAT quote'
+  if (k === 'form_submission') return 'Your request'
+  if (k === 'terms_summary') return 'Terms summary'
+  if (k === 'deposit_receipt') return 'Deposit receipt'
+  if (k === 'payment_confirmation') return 'Payment confirmation'
+  return k.replace(/_/g, ' ')
 }
 
 function parseSelectionKey(
@@ -257,13 +279,15 @@ export function PortalClientProposalsPdfViewer({
 
     void (async () => {
       try {
-        const blob =
+        const raw =
           selection.kind === 'proposal'
             ? await loadProposalPdf(selection.row)
             : await loadTransferPortalPdf!(selection.row)
         if (cancelled) {
           return
         }
+        const blob =
+          raw.type === 'application/pdf' ? raw : new Blob([await raw.arrayBuffer()], { type: 'application/pdf' })
         const url = URL.createObjectURL(blob)
         setProposalBlobUrl(url)
       } catch (e) {
@@ -445,34 +469,46 @@ export function PortalClientProposalsPdfViewer({
         <aside className="border-b border-forest-100/90 bg-white p-4 lg:border-b-0 lg:border-r lg:border-forest-100/90 lg:p-5">
           {hasTransferShelf ? (
             <>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-600">Your paper trail</p>
-              <p className="mt-1 text-sm leading-snug text-ge-gray500">
-                Snapshot of your request, VAT quote PDF, and a short terms summary when your price is saved; deposit and paid-in-full
-                card receipts appear here after successful online payment.
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-600">Your documents</p>
+              <p className="mt-1 text-sm leading-snug text-forest-600">
+                Tap a file to open it. Quotes, letters, and receipts we send you all appear here.
               </p>
-              <ul className="mt-3 max-h-[min(40vh,22rem)] space-y-1 overflow-y-auto pr-1">
+              <ul className="mt-3 max-h-[min(50vh,28rem)] space-y-1.5 overflow-y-auto pr-1">
                 {sortedTransferDocs.map((row) => {
                   const k = `transfer:${row.id}`
                   return (
                     <li key={row.id}>
                       <button
                         className={cx(
-                          'flex w-full flex-col rounded-xl px-3 py-2.5 text-left text-base font-semibold transition',
+                          'flex w-full flex-col rounded-xl px-3 py-3 text-left transition',
                           activeKey === k
                             ? 'ge-on-dark bg-gradient-to-r from-forest-950 to-forest-900 text-white shadow-md'
-                            : 'text-forest-800 hover:bg-forest-50'
+                            : 'border border-forest-100 bg-offwhite/70 text-forest-800 hover:border-fairway-300 hover:bg-white'
                         )}
                         onClick={() => pick(k)}
                         type="button"
                       >
-                        <span className="leading-snug">{row.title}</span>
+                        <span className="text-base font-semibold leading-snug">{row.title}</span>
                         <span
                           className={cx(
-                            'mt-0.5 text-sm font-normal capitalize',
-                            activeKey === k ? 'text-emerald-100/90' : 'text-ge-gray500'
+                            'mt-1 text-sm font-medium',
+                            activeKey === k ? 'text-emerald-100/90' : 'text-forest-600'
                           )}
                         >
-                          {row.document_kind.replace(/_/g, ' ')}
+                          {friendlyDocKindLabel(row.document_kind)}
+                          {row.source_label?.trim() ? ` · ${row.source_label.trim()}` : ''}
+                        </span>
+                        <span
+                          className={cx(
+                            'mt-0.5 text-xs',
+                            activeKey === k ? 'text-white/70' : 'text-ge-gray500'
+                          )}
+                        >
+                          {new Date(row.created_at).toLocaleString(undefined, {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric'
+                          })}
                         </span>
                       </button>
                     </li>
@@ -482,43 +518,47 @@ export function PortalClientProposalsPdfViewer({
             </>
           ) : null}
 
-          <p className={cx('text-xs font-bold uppercase tracking-[0.18em] text-brand-600', hasTransferShelf ? 'mt-6' : '')}>
-            Library
-          </p>
-          <ul className="mt-3 space-y-1.5">
-            {showPdfLibraryOnDashboard && documentAccess.terms ? (
-              <li>
-                <button
-                  className={cx(
-                    'flex w-full items-center rounded-xl px-3 py-2.5 text-left text-base font-semibold transition',
-                    activeKey === 'terms'
-                      ? 'ge-on-dark bg-gradient-to-r from-forest-950 to-forest-900 text-white shadow-md'
-                      : 'text-forest-800 hover:bg-forest-50'
-                  )}
-                  onClick={() => pick('terms')}
-                  type="button"
-                >
-                  Terms & conditions
-                </button>
-              </li>
-            ) : null}
-            {showPdfLibraryOnDashboard && documentAccess.welcome ? (
-              <li>
-                <button
-                  className={cx(
-                    'flex w-full items-center rounded-xl px-3 py-2.5 text-left text-base font-semibold transition',
-                    activeKey === 'welcome'
-                      ? 'ge-on-dark bg-gradient-to-r from-forest-950 to-forest-900 text-white shadow-md'
-                      : 'text-forest-800 hover:bg-forest-50'
-                  )}
-                  onClick={() => pick('welcome')}
-                  type="button"
-                >
-                  Thank you letter
-                </button>
-              </li>
-            ) : null}
-          </ul>
+          {showPdfLibraryOnDashboard && (documentAccess.terms || documentAccess.welcome) ? (
+            <>
+              <p className={cx('text-xs font-bold uppercase tracking-[0.18em] text-brand-600', hasTransferShelf ? 'mt-6' : '')}>
+                House documents
+              </p>
+              <ul className="mt-3 space-y-1.5">
+                {documentAccess.terms ? (
+                  <li>
+                    <button
+                      className={cx(
+                        'flex w-full items-center rounded-xl px-3 py-2.5 text-left text-base font-semibold transition',
+                        activeKey === 'terms'
+                          ? 'ge-on-dark bg-gradient-to-r from-forest-950 to-forest-900 text-white shadow-md'
+                          : 'text-forest-800 hover:bg-forest-50'
+                      )}
+                      onClick={() => pick('terms')}
+                      type="button"
+                    >
+                      Terms & conditions
+                    </button>
+                  </li>
+                ) : null}
+                {documentAccess.welcome ? (
+                  <li>
+                    <button
+                      className={cx(
+                        'flex w-full items-center rounded-xl px-3 py-2.5 text-left text-base font-semibold transition',
+                        activeKey === 'welcome'
+                          ? 'ge-on-dark bg-gradient-to-r from-forest-950 to-forest-900 text-white shadow-md'
+                          : 'text-forest-800 hover:bg-forest-50'
+                      )}
+                      onClick={() => pick('welcome')}
+                      type="button"
+                    >
+                      Thank you letter
+                    </button>
+                  </li>
+                ) : null}
+              </ul>
+            </>
+          ) : null}
 
           {showFormalProposalsList && proposals.length > 0 ? (
             <>
@@ -565,9 +605,13 @@ export function PortalClientProposalsPdfViewer({
         <div className="flex min-h-0 flex-col bg-offwhite">
           <div className="flex flex-col gap-3 border-b border-forest-100/90 px-4 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between md:px-6">
             <div className="min-w-0">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-600">Preview</p>
-              <h3 className="font-display mt-1 truncate text-xl font-semibold text-forest-950">{viewerTitle}</h3>
-              <p className="mt-1 text-sm text-ge-gray500">Read-only — use print or share below.</p>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-600">Now viewing</p>
+              <h3 className="font-display mt-1 truncate text-xl font-semibold text-forest-950 sm:text-2xl">
+                {viewerTitle}
+              </h3>
+              <p className="mt-1 text-sm text-forest-600">
+                Scroll the PDF below. Use Download or Print if you want a copy.
+              </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <LuxuryButton
@@ -636,18 +680,25 @@ export function PortalClientProposalsPdfViewer({
             ) : null}
 
             {iframeSrc && !proposalLoadError ? (
-              <div className="relative h-[min(72vh,52rem)] overflow-hidden rounded-2xl border-2 border-forest-200/80 bg-forest-950/5 shadow-inner ring-1 ring-brand-200/30">
+              <div className="relative h-[min(72vh,52rem)] overflow-hidden rounded-2xl border-2 border-forest-200/80 bg-white shadow-inner ring-1 ring-brand-200/30">
                 <iframe
                   ref={iframeRef}
                   className="h-full w-full bg-white"
-                  src={iframeSrc}
+                  src={
+                    iframeSrc.startsWith('blob:')
+                      ? `${iframeSrc}#toolbar=1&navpanes=0&scrollbar=1&view=FitH`
+                      : iframeSrc
+                  }
                   title={viewerTitle}
                   {...(iframeSandbox ? { sandbox: iframeSandbox } : {})}
                 />
               </div>
             ) : !proposalLoading && !proposalLoadError ? (
-              <div className="flex h-[min(40vh,24rem)] items-center justify-center rounded-2xl border border-dashed border-forest-200 bg-offwhite/80 px-6 text-center text-base text-forest-600">
-                Choose a document from the list.
+              <div className="flex h-[min(40vh,24rem)] flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-forest-200 bg-white px-6 text-center">
+                <p className="font-display text-lg font-semibold text-forest-950">Choose a document</p>
+                <p className="max-w-sm text-base text-forest-600">
+                  Select a file from the list on the left to read, download, or print it here.
+                </p>
               </div>
             ) : null}
           </div>

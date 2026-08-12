@@ -58,8 +58,8 @@ const assertMagicLinkRateLimit = (clientIp, email, env) => {
 }
 
 /**
- * Admin magic links always land on production (SITE_URL), even when requested from localhost.
- * Preserves `?next=` from the client (defaults to /dashboard/admin).
+ * Admin magic links: keep localhost/127.0.0.1 when requested (local testing).
+ * Otherwise land on production (SITE_URL). Preserves `?next=` (defaults to /dashboard/admin).
  *
  * @param {string} redirectTo
  * @param {'client' | 'admin' | 'driver'} portal
@@ -68,6 +68,22 @@ const assertMagicLinkRateLimit = (clientIp, email, env) => {
 const resolveMagicLinkRedirectTo = (redirectTo, portal, env) => {
   if (portal !== 'admin') {
     return redirectTo
+  }
+
+  try {
+    const requested = new URL(redirectTo)
+    const isLocalHost =
+      requested.hostname === 'localhost' ||
+      requested.hostname === '127.0.0.1' ||
+      requested.hostname === '[::1]'
+    if (isLocalHost) {
+      if (!requested.searchParams.has('next')) {
+        requested.searchParams.set('next', '/dashboard/admin')
+      }
+      return requested.toString()
+    }
+  } catch {
+    /* fall through to SITE_URL */
   }
 
   const siteRaw = env.SITE_URL?.trim() || 'https://golfsolirl.com'
@@ -183,7 +199,7 @@ export const handleMagicLinkRequest = async (payload, env = process.env, meta = 
     throw error
   }
 
-  // After allowlist check: admin emails always use production callback (not localhost).
+  // After allowlist check: admin keeps localhost when requested; otherwise SITE_URL.
   const effectiveRedirectTo = resolveMagicLinkRedirectTo(redirectTo, portal, env)
 
   if (portal === 'admin' && !isAllowedAdminLoginEmail(email, env)) {
@@ -244,8 +260,8 @@ export const handleMagicLinkRequest = async (payload, env = process.env, meta = 
 
   /**
    * Prefer a direct app callback with `token_hash`.
-   * Client/driver links keep the requested origin (localhost in local testing).
-   * Admin links use SITE_URL via effectiveRedirectTo (production).
+   * Client/driver keep the requested origin; admin keeps localhost when requested,
+   * otherwise SITE_URL via effectiveRedirectTo.
    * Falls back to rewriting `redirect_to` on the Supabase verify URL.
    */
   const buildMagicLinkHref = (properties, requestedRedirect) => {

@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import { CLIENT_SIDEBAR_ITEMS, type ClientPortalSectionId } from './client-sidebar'
 
 type SectionGuide = {
@@ -6,6 +7,8 @@ type SectionGuide = {
   readonly summary: string
   readonly steps: readonly string[]
 }
+
+const SECTION_ORDER = CLIENT_SIDEBAR_ITEMS.map((item) => item.id)
 
 const SECTION_GUIDES: Record<ClientPortalSectionId, SectionGuide> = {
   home: {
@@ -31,21 +34,22 @@ const SECTION_GUIDES: Record<ClientPortalSectionId, SectionGuide> = {
   perks: {
     kicker: 'Perks & deals',
     title: 'Extras on the Sol',
-    summary: 'Coupons and scan-to-win offers for your trip — separate from transfers and golf.',
+    summary:
+      'Open rewards for every guest — plus invite-only Club Concierge when Golf Sol unlocks it for your trip.',
     steps: [
-      'Browse what’s available.',
-      'Save or show a deal when you need it.',
-      'Come back anytime — new offers may appear.'
+      'Browse the open perks below anytime.',
+      'If Club Concierge is unlocked, book the hotel fitting desk from this tab.',
+      'Message us to activate any offer.'
     ]
   },
   trip: {
     kicker: 'Trip builder',
     title: 'Transfers · golf · stay',
-    summary: 'Build what you want in three stages, then send it to us for a price on this dashboard.',
+    summary: 'Add or remove private transfers, golf rounds, or accommodation — we price each request and show your trip total.',
     steps: [
-      'Turn on Transfers, Golf, and/or Accommodation.',
-      'Fill in the details for each stage you need.',
-      'Save & send for pricing — we reply with totals here.'
+      'Tap Transfers, Golf courses, or Accommodation to add a request.',
+      'Remove anything you no longer need.',
+      'When we quote each item, your trip total updates under Your transfers.'
     ]
   },
   payments: {
@@ -81,11 +85,11 @@ const SECTION_GUIDES: Record<ClientPortalSectionId, SectionGuide> = {
   documents: {
     kicker: 'Documents',
     title: 'Quotes & letters from us',
-    summary: 'PDFs we send for your trip — quotes, terms, and confirmations — open, print, or download here.',
+    summary: 'Every PDF we email you — quotes, letters, terms, receipts — opens here for read, download, or print.',
     steps: [
-      'Open a document when it appears.',
-      'Print or download if you want a copy.',
-      'Check Messages if you’re waiting on something new.'
+      'Pick a file from the list on the left.',
+      'Read it in the preview on the right.',
+      'Download or print if you want a copy for your trip.'
     ]
   }
 }
@@ -94,12 +98,28 @@ export function ClientPortalSectionGuide(props: { readonly activeSection: Client
   const guide = SECTION_GUIDES[props.activeSection]
   const navItem = CLIENT_SIDEBAR_ITEMS.find((item) => item.id === props.activeSection)
   const Icon = navItem?.icon
+  const sectionIndex = SECTION_ORDER.indexOf(props.activeSection)
+  const sectionNumber = sectionIndex >= 0 ? sectionIndex + 1 : 1
+  const sectionTotal = SECTION_ORDER.length
 
   return (
-    <section
+    <motion.section
+      animate={{ opacity: 1, y: 0 }}
       aria-label={`${guide.title} — how this page works`}
-      className="mb-8 overflow-hidden rounded-[1.75rem] border border-forest-100 bg-gradient-to-br from-white via-offwhite/90 to-fairway-50/40 px-5 py-5 shadow-soft sm:px-7 sm:py-6"
+      className="mb-8 scroll-mt-28 overflow-hidden rounded-[1.75rem] border border-forest-100 bg-gradient-to-br from-white via-offwhite/90 to-fairway-50/40 px-5 py-5 shadow-soft sm:px-7 sm:py-6"
+      id="client-trip-desk-active-section"
+      initial={{ opacity: 0, y: 10 }}
+      key={props.activeSection}
+      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
     >
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-forest-100/90 pb-3">
+        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-700">
+          Trip desk · section {sectionNumber} of {sectionTotal}
+        </p>
+        <p className="rounded-full bg-forest-900 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white">
+          Now viewing
+        </p>
+      </div>
       <div className="flex flex-wrap items-start gap-4">
         {Icon ? (
           <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-forest-900 text-white shadow-md">
@@ -108,7 +128,10 @@ export function ClientPortalSectionGuide(props: { readonly activeSection: Client
         ) : null}
         <div className="min-w-0 flex-1">
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-700">{guide.kicker}</p>
-          <h2 className="font-display mt-1 text-xl font-semibold tracking-tight text-forest-950 sm:text-2xl">
+          <h2
+            className="font-display mt-1 text-xl font-semibold tracking-tight text-forest-950 sm:text-2xl"
+            id={`client-section-heading-${props.activeSection}`}
+          >
             {guide.title}
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-forest-600 sm:text-base">{guide.summary}</p>
@@ -127,6 +150,6 @@ export function ClientPortalSectionGuide(props: { readonly activeSection: Client
           </ol>
         </div>
       </div>
-    </section>
+    </motion.section>
   )
 }

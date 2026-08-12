@@ -534,6 +534,7 @@ export function AdminDashboardPage() {
   const [portalAccountRef, setPortalAccountRef] = useState('')
   const [portalProposalsEnabled, setPortalProposalsEnabled] = useState(false)
   const [portalPdfLibraryEnabled, setPortalPdfLibraryEnabled] = useState(false)
+  const [portalClubConciergeEnabled, setPortalClubConciergeEnabled] = useState(false)
   const [portalSettingsBusy, setPortalSettingsBusy] = useState<'idle' | 'load' | 'save'>('idle')
   const [portalSettingsMessage, setPortalSettingsMessage] = useState<string | null>(null)
   const [manualPortalCreateName, setManualPortalCreateName] = useState('')
@@ -569,6 +570,8 @@ export function AdminDashboardPage() {
   const [adminTicketReply, setAdminTicketReply] = useState('')
   const [adminTicketReplyBusy, setAdminTicketReplyBusy] = useState(false)
   const [adminTicketReplyMessage, setAdminTicketReplyMessage] = useState<string | null>(null)
+  const [adminTicketQuoteDraft, setAdminTicketQuoteDraft] = useState('')
+  const [adminTicketQuoteBusy, setAdminTicketQuoteBusy] = useState(false)
   const [enquiries, setEnquiries] = useState<EnquiryRow[]>([])
   const [enquiriesSectionVisible, setEnquiriesSectionVisible] = useState(true)
   const [adminShowTransferBuilder, setAdminShowTransferBuilder] = useState(false)
@@ -730,7 +733,7 @@ export function AdminDashboardPage() {
           fetchPackageBuildsAdminList(supabase, 100),
           supabase
             .from('portal_interest_tickets')
-            .select('id, owner_id, category, status, created_at, updated_at')
+            .select('id, owner_id, category, status, created_at, updated_at, admin_quote_eur')
             .order('created_at', { ascending: false })
             .limit(100)
         ])
@@ -1148,7 +1151,7 @@ export function AdminDashboardPage() {
 
         const { data: prof, error: profileErr } = await supabase
           .from('profiles')
-          .select('id, account_reference_id, portal_proposals_enabled, portal_pdf_library_enabled')
+          .select('id, account_reference_id, portal_proposals_enabled, portal_pdf_library_enabled, portal_club_concierge_enabled')
           .ilike('email', email)
           .maybeSingle()
 
@@ -2062,7 +2065,7 @@ export function AdminDashboardPage() {
     setPortalSettingsBusy('load')
     const { data, error } = await supabase
       .from('profiles')
-      .select('account_reference_id, portal_proposals_enabled, portal_pdf_library_enabled, email')
+      .select('account_reference_id, portal_proposals_enabled, portal_pdf_library_enabled, portal_club_concierge_enabled, email')
       .eq('email', email)
       .maybeSingle()
 
@@ -2085,6 +2088,7 @@ export function AdminDashboardPage() {
         ? Boolean(data.portal_pdf_library_enabled)
         : Boolean(data.portal_proposals_enabled)
     )
+    setPortalClubConciergeEnabled(Boolean(data.portal_club_concierge_enabled))
     setPortalSettingsMessage('Loaded current portal settings for this email.')
   }
 
@@ -2124,6 +2128,7 @@ export function AdminDashboardPage() {
         account_reference_id: refTrim || null,
         portal_proposals_enabled: portalProposalsEnabled,
         portal_pdf_library_enabled: portalPdfLibraryEnabled,
+        portal_club_concierge_enabled: portalClubConciergeEnabled,
         ...(refTrim ? { portal_enquiry_autofill_disabled: false } : {}),
         updated_at: new Date().toISOString()
       })
@@ -2576,6 +2581,49 @@ export function AdminDashboardPage() {
     }
   }
 
+  const handleSaveAdminTicketQuote = async () => {
+    setAdminTicketReplyMessage(null)
+    if (!selectedAdminTicketId) {
+      return
+    }
+    const supabase = getSupabaseBrowserClient()
+    if (!supabase) {
+      setAdminTicketReplyMessage('Supabase is not configured.')
+      return
+    }
+    const raw = adminTicketQuoteDraft.trim().replace(',', '.')
+    const parsed = raw === '' ? null : Number(raw)
+    if (raw !== '' && (!Number.isFinite(parsed) || (parsed as number) < 0)) {
+      setAdminTicketReplyMessage('Enter a valid EUR amount (or leave blank to clear).')
+      return
+    }
+    setAdminTicketQuoteBusy(true)
+    try {
+      const { error } = await supabase
+        .from('portal_interest_tickets')
+        .update({
+          admin_quote_eur: parsed,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', selectedAdminTicketId)
+      if (error) {
+        throw new Error(error.message)
+      }
+      setInterestAdminTickets((prev) =>
+        prev.map((t) =>
+          t.id === selectedAdminTicketId ? { ...t, admin_quote_eur: parsed } : t
+        )
+      )
+      setAdminTicketReplyMessage(
+        parsed == null ? 'Price cleared for this request.' : `Saved quote €${parsed} — guest sees it on their trip desk.`
+      )
+    } catch (e) {
+      setAdminTicketReplyMessage(e instanceof Error ? e.message : 'Could not save price.')
+    } finally {
+      setAdminTicketQuoteBusy(false)
+    }
+  }
+
   const handleSendAdminTicketReply = async () => {
     setAdminTicketReplyMessage(null)
     if (!selectedAdminTicketId) {
@@ -2630,7 +2678,7 @@ export function AdminDashboardPage() {
 
       const { data: row } = await supabase
         .from('portal_interest_tickets')
-        .select('id, owner_id, category, status, created_at, updated_at')
+        .select('id, owner_id, category, status, created_at, updated_at, admin_quote_eur')
         .eq('id', selectedAdminTicketId)
         .maybeSingle()
 
@@ -2649,6 +2697,11 @@ export function AdminDashboardPage() {
                 }
               : t
           )
+        )
+        setAdminTicketQuoteDraft(
+          typeof updated.admin_quote_eur === 'number' && Number.isFinite(updated.admin_quote_eur)
+            ? String(updated.admin_quote_eur)
+            : ''
         )
       }
 
@@ -3801,6 +3854,11 @@ export function AdminDashboardPage() {
                             onClick={() => {
                               setSelectedAdminTicketId(t.id)
                               setAdminTicketReplyMessage(null)
+                              setAdminTicketQuoteDraft(
+                                typeof t.admin_quote_eur === 'number' && Number.isFinite(t.admin_quote_eur)
+                                  ? String(t.admin_quote_eur)
+                                  : ''
+                              )
                             }}
                             type="button"
                           >
@@ -3900,6 +3958,34 @@ export function AdminDashboardPage() {
                         </li>
                       ))}
                     </ul>
+                    <label className="mb-2 mt-4 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="admin-ticket-quote">
+                      Price this request (EUR)
+                    </label>
+                    <div className="mb-4 flex flex-wrap items-end gap-3">
+                      <input
+                        className="w-full max-w-[11rem] rounded-2xl border border-forest-200 bg-white px-4 py-3 font-mono text-sm text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
+                        id="admin-ticket-quote"
+                        inputMode="decimal"
+                        onChange={(e) => {
+                          setAdminTicketQuoteDraft(e.target.value)
+                          setAdminTicketReplyMessage(null)
+                        }}
+                        placeholder="e.g. 420"
+                        type="text"
+                        value={adminTicketQuoteDraft}
+                      />
+                      <button
+                        className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-forest-200 bg-white px-5 py-3 text-sm font-semibold text-forest-900 transition-colors hover:border-fairway-400 disabled:opacity-60"
+                        disabled={adminTicketQuoteBusy || !selectedAdminTicketId}
+                        onClick={() => void handleSaveAdminTicketQuote()}
+                        type="button"
+                      >
+                        {adminTicketQuoteBusy ? 'Saving…' : 'Save price'}
+                      </button>
+                    </div>
+                    <p className="mb-4 text-xs leading-relaxed text-forest-600">
+                      Guest sees this on Trip builder and in their trip total with transfer quotes.
+                    </p>
                     <label className="mb-2 mt-4 block text-xs font-semibold uppercase tracking-[0.12em] text-brand-600" htmlFor="admin-ticket-reply">
                       Your reply
                     </label>
@@ -6666,8 +6752,8 @@ export function AdminDashboardPage() {
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-700">2 · Account settings</p>
               <h3 className="font-display mt-1 text-xl font-semibold text-forest-950">What this guest sees</h3>
               <p className="mt-1 text-sm text-forest-600">
-                Load by login email, set their account number, then choose whether proposals and the PDF library show on their
-                dashboard.
+                Load by login email, set their account number, then choose whether proposals, the PDF library, and Club
+                Concierge show on their dashboard.
               </p>
 
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -6729,6 +6815,21 @@ export function AdminDashboardPage() {
                   <span>
                     <span className="block text-sm font-semibold text-forest-900">Show PDF library</span>
                     <span className="mt-0.5 block text-xs text-forest-600">Terms / thank-you pages when they have access.</span>
+                  </span>
+                </label>
+                <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-gs-gold/40 bg-[#fff9e8]/80 px-4 py-3">
+                  <input
+                    checked={portalClubConciergeEnabled}
+                    className="mt-1 h-4 w-4 rounded border-forest-300 text-fairway-600 focus:ring-fairway-400"
+                    onChange={(e) => setPortalClubConciergeEnabled(e.target.checked)}
+                    type="checkbox"
+                  />
+                  <span>
+                    <span className="block text-sm font-semibold text-forest-900">Show Club Concierge (Perks)</span>
+                    <span className="mt-0.5 block text-xs text-forest-600">
+                      Unlocks hotel-room fitting desk &amp; fly cabin-only club service on their Perks &amp; deals tab.
+                      Hidden until you tick this.
+                    </span>
                   </span>
                 </label>
               </div>

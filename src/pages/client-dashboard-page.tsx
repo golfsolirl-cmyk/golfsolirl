@@ -19,6 +19,7 @@ import {
   type TransferPortalDocumentRow
 } from '../components/portal-client-proposals-pdf-viewer'
 import { PortalAddToYourTripStrip } from '../components/portal-add-to-your-trip-strip'
+import { PortalTripBuilderRequests } from '../components/portal-trip-builder-requests'
 import { ClientPortalSectionGuide } from '../components/client-portal-section-guide'
 import { PortalInterestCategoryGlyph } from '../components/portal-interest-category-glyph'
 import { PortalClientDataCard } from '../components/portal-client-data-card'
@@ -287,7 +288,7 @@ export function ClientDashboardPage() {
       setListLoading(true)
     }
     try {
-    const [propRes, buildRes, docRes, enqRes, transferDocRes] = await Promise.all([
+    const [propRes, buildRes, docRes, enqRes, transferDocRes, deskDocRes] = await Promise.all([
       supabase.from('proposals').select('id, proposal_id, title, status, created_at, payload').order('created_at', { ascending: false }),
       fetchPackageBuildsClientList(supabase, 40),
       supabase.from('client_document_access').select('document_kind').eq('owner_id', session.user.id),
@@ -301,6 +302,12 @@ export function ClientDashboardPage() {
         .select('id, transfer_booking_id, document_kind, title, storage_path, created_at')
         .eq('owner_id', session.user.id)
         .order('created_at', { ascending: false })
+        .limit(80),
+      supabase
+        .from('portal_client_documents')
+        .select('id, title, document_kind, storage_path, source_label, created_at')
+        .eq('owner_id', session.user.id)
+        .order('created_at', { ascending: false })
         .limit(80)
     ])
 
@@ -311,11 +318,32 @@ export function ClientDashboardPage() {
       setDocumentAccess({ terms: kinds.has('terms'), welcome: kinds.has('welcome') })
     }
 
-    if (transferDocRes.error) {
-      setTransferPortalDocuments([])
-    } else {
-      setTransferPortalDocuments((transferDocRes.data ?? []) as TransferPortalDocumentRow[])
-    }
+    const transferRows = transferDocRes.error
+      ? []
+      : ((transferDocRes.data ?? []) as TransferPortalDocumentRow[])
+    const deskRows = deskDocRes.error
+      ? []
+      : ((deskDocRes.data ?? []) as Array<{
+          id: string
+          title: string
+          document_kind: string
+          storage_path: string
+          source_label: string | null
+          created_at: string
+        }>).map(
+          (r): TransferPortalDocumentRow => ({
+            id: r.id,
+            transfer_booking_id: null,
+            document_kind: (['admin_sent', 'letter', 'quote', 'receipt', 'other'].includes(r.document_kind)
+              ? r.document_kind
+              : 'admin_sent') as TransferPortalDocumentRow['document_kind'],
+            title: r.title,
+            storage_path: r.storage_path,
+            created_at: r.created_at,
+            source_label: r.source_label
+          })
+        )
+    setTransferPortalDocuments([...deskRows, ...transferRows])
 
     if (enqRes.error) {
       setEnquiries([])
@@ -565,6 +593,11 @@ export function ClientDashboardPage() {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'portal_client_transfer_documents', filter: `owner_id=eq.${uid}` },
+        refetchPortal
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'portal_client_documents', filter: `owner_id=eq.${uid}` },
         refetchPortal
       )
       .on(
@@ -1161,7 +1194,8 @@ export function ClientDashboardPage() {
     if (!res.ok) {
       throw new Error('Could not download PDF.')
     }
-    return res.blob()
+    const buf = await res.arrayBuffer()
+    return new Blob([buf], { type: 'application/pdf' })
   }, [])
 
   const loadProposalPdfBlob = useCallback(async (row: ProposalRowLite) => {
@@ -1200,7 +1234,8 @@ export function ClientDashboardPage() {
       throw new Error(msg)
     }
 
-    return res.blob()
+    const buf = await res.arrayBuffer()
+    return new Blob([buf], { type: 'application/pdf' })
   }, [session?.access_token])
 
   const flushTripDraftToProfile = useCallback(
@@ -1415,9 +1450,13 @@ export function ClientDashboardPage() {
     })
   }
 
-  const openInterestModal = (category: PortalInterestCategory) => {
-    setActiveClientSection('messages')
-    setTeamMessagingOpen(true)
+  const openInterestModal = (category: PortalInterestCategory, options?: { readonly stayOnTrip?: boolean }) => {
+    if (!options?.stayOnTrip) {
+      setActiveClientSection('messages')
+      setTeamMessagingOpen(true)
+    } else {
+      setActiveClientSection('trip')
+    }
     setInterestModalCategory(category)
     setInterestDraftBody('')
     setInterestSubmitError(null)
@@ -1639,6 +1678,36 @@ export function ClientDashboardPage() {
     }
   }, [transferBookingsPortal, enquiries.length])
 
+  const tripBuilderTransfers = useMemo(
+    () =>
+      transferBookingsPortal.map((t) => ({
+        id: t.id,
+        pickup_label: t.pickup_label,
+        dropoff_label: t.dropoff_label,
+        admin_price_eur: t.admin_price_eur ?? null,
+        deposit_percent: t.deposit_percent ?? null,
+        payment_status: t.payment_status ?? null,
+        next_available_driver: t.next_available_driver ?? null,
+        scheduled_at: t.scheduled_at
+      })),
+    [transferBookingsPortal]
+  )
+
+  const tripAddOnQuotes = useMemo(
+    () =>
+      interestTickets
+        .filter((t) => t.status !== 'closed')
+        .map((t) => {
+          const q = typeof t.admin_quote_eur === 'number' && Number.isFinite(t.admin_quote_eur) ? t.admin_quote_eur : 0
+          if (q <= 0) {
+            return null
+          }
+          return { id: t.id, label: PORTAL_INTEREST_LABELS[t.category], quoteEur: q }
+        })
+        .filter((row): row is { id: string; label: string; quoteEur: number } => row != null),
+    [interestTickets]
+  )
+
   if (isLoading || !session) {
     return <DashboardLoadingShell label="Loading your dashboard…" />
   }
@@ -1839,6 +1908,7 @@ export function ClientDashboardPage() {
             emphasizeTransferBookingId={stripePaidTransferBookingId}
             firstName={greetingFirst}
             signedInAs={signedInAsLine}
+            tripAddOnQuotes={tripAddOnQuotes}
             onDownloadTransferQuotePdf={handleTransferQuotePdf}
             onDownloadTransferPaidInvoicePdf={handleTransferPaidInvoicePdf}
             onPayTransfer={handlePayTransfer}
@@ -1957,7 +2027,7 @@ export function ClientDashboardPage() {
         </ClientPortalSection>
 
         <ClientPortalSection activeSection={activeClientSection} section="perks">
-          <PortalPerksPanel />
+          <PortalPerksPanel clubConciergeEnabled={profile?.portal_club_concierge_enabled === true} />
         </ClientPortalSection>
 
         <ClientPortalSection activeSection={activeClientSection} section="payments">
@@ -1991,8 +2061,32 @@ export function ClientDashboardPage() {
         </ClientPortalSection>
 
         <ClientPortalSection activeSection={activeClientSection} section="trip">
+      <div className="space-y-8">
+        <PortalTripBuilderRequests
+          onAdd={(category) => openInterestModal(category, { stayOnTrip: true })}
+          onOpenThread={(ticketId) => {
+            setInterestThreadTicketId(ticketId)
+            setInterestFollowUp('')
+            setInterestFollowUpError(null)
+          }}
+          onTicketsChange={(next) => setInterestTickets([...next])}
+          tickets={interestTickets}
+          transfers={tripBuilderTransfers}
+        />
+
       {tripDraft ? (
-        <section className="rounded-[2rem] border border-fairway-200/90 bg-gradient-to-br from-offwhite via-white to-[#f4faf6] p-6 shadow-soft md:p-9">
+        <details className="rounded-[2rem] border border-fairway-200/90 bg-gradient-to-br from-offwhite via-white to-[#f4faf6] p-6 shadow-soft open:pb-9 md:p-9">
+          <summary className="cursor-pointer list-none">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Optional detailed planner</p>
+            <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 sm:text-3xl">
+              Build a full route &amp; package draft
+            </h2>
+            <p className="mt-2 max-w-2xl text-base text-forest-600">
+              Booking <span className="font-mono font-semibold text-forest-900">{tripDraft.referenceId}</span> — open this if you
+              want a detailed transfer route, course list, and hotel notes in one send.
+            </p>
+          </summary>
+          <div className="mt-6 border-t border-forest-100 pt-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Trip builder</p>
@@ -2215,17 +2309,10 @@ export function ClientDashboardPage() {
               Save draft only
             </LuxuryButton>
           </div>
-        </section>
-      ) : (
-        <section className="rounded-2xl border border-forest-100 bg-white p-6 shadow-sm md:p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Trip builder</p>
-          <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Build your trip in 3 stages</h2>
-          <p className="mt-2 max-w-2xl text-base text-forest-700">
-            Submit a quote form on the website with this login email first — then you can add transfers, golf courses, and
-            accommodation here and send them for pricing.
-          </p>
-        </section>
-      )}
+          </div>
+        </details>
+      ) : null}
+      </div>
         </ClientPortalSection>
 
         <ClientPortalSection activeSection={activeClientSection} section="contact">
@@ -2661,20 +2748,37 @@ export function ClientDashboardPage() {
 
         <ClientPortalSection activeSection={activeClientSection} section="documents">
       {!listLoading ? (
-        <div className="space-y-14 md:space-y-16">
+        <div className="space-y-8">
+          <section className="rounded-[1.75rem] border border-forest-100 bg-white px-5 py-6 shadow-soft sm:px-7 sm:py-7">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Documents</p>
+            <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950 sm:text-3xl">
+              Quotes &amp; letters from us
+            </h2>
+            <p className="mt-3 max-w-2xl text-base leading-relaxed text-forest-600 md:text-lg">
+              Every PDF Golf Sol Ireland sends you — quotes, letters, terms, and receipts — opens here. Tap a file on the
+              left, then read, download, or print.
+            </p>
+            <ol className="mt-5 grid gap-3 sm:grid-cols-3">
+              <li className="rounded-2xl border border-forest-100 bg-offwhite/80 px-4 py-3">
+                <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-brand-700">1</p>
+                <p className="mt-1 text-sm font-semibold text-forest-950">Pick a file</p>
+                <p className="mt-0.5 text-sm text-forest-600">From the list below</p>
+              </li>
+              <li className="rounded-2xl border border-forest-100 bg-offwhite/80 px-4 py-3">
+                <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-brand-700">2</p>
+                <p className="mt-1 text-sm font-semibold text-forest-950">Read the preview</p>
+                <p className="mt-0.5 text-sm text-forest-600">Opens on the right</p>
+              </li>
+              <li className="rounded-2xl border border-forest-100 bg-offwhite/80 px-4 py-3">
+                <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-brand-700">3</p>
+                <p className="mt-1 text-sm font-semibold text-forest-950">Download or print</p>
+                <p className="mt-0.5 text-sm text-forest-600">Keep a copy for your trip</p>
+              </li>
+            </ol>
+          </section>
+
           {showProposalsPortal ? (
             <section>
-              <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-                <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">Documents</p>
-                  <h2 className="font-display mt-2 text-2xl font-semibold text-forest-950">Quotes &amp; letters from us</h2>
-                  <p className="mt-2 max-w-2xl text-base text-forest-600 md:text-lg">
-                    Open, print, or download PDFs we send for your trip — quotes, terms, and confirmations. Nothing here needs
-                    editing; it’s your copy of what we sent.
-                  </p>
-                </div>
-              </div>
-
               <PortalClientProposalsPdfViewer
                 documentAccess={documentAccess}
                 loadProposalPdf={loadProposalPdfBlob}
@@ -2689,33 +2793,26 @@ export function ClientDashboardPage() {
 
             {!showFormalProposalsList &&
             profile?.portal_proposals_enabled !== true &&
-            profile?.portal_pdf_library_enabled === true ? (
+            profile?.portal_pdf_library_enabled === true &&
+            transferPortalDocuments.length === 0 ? (
                 <div className="rounded-[2rem] border border-forest-100 bg-offwhite/90 px-6 py-8 text-sm text-forest-700 md:px-10">
-                  <p className="font-semibold text-forest-900">Proposal letters</p>
+                  <p className="font-semibold text-forest-900">Waiting for files</p>
                   <p className="mt-2 max-w-2xl">
-                    Terms and thank-you files can show here. Full proposal letters appear when we turn that on for your account.
+                    When we email you a quote or letter PDF, it will appear in the list above automatically.
                   </p>
                 </div>
               ) : null}
             </section>
           ) : (
             <section className="relative overflow-hidden rounded-[2rem] border border-forest-100/90 bg-gradient-to-br from-offwhite via-white to-[#eef6f0] px-6 py-9 text-sm text-forest-700 shadow-soft md:px-10 md:py-10">
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full bg-brand-200/25 blur-3xl"
-              />
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute -bottom-24 -left-12 h-40 w-40 rounded-full bg-fairway-400/15 blur-3xl"
-              />
               <div className="relative">
-                <p className="text-xs font-bold uppercase tracking-[0.22em] text-brand-600">Documents</p>
+                <p className="text-xs font-bold uppercase tracking-[0.22em] text-brand-600">Nothing here yet</p>
                 <h3 className="font-display mt-3 text-xl font-semibold tracking-tight text-forest-950 md:text-2xl">
-                  Nothing here yet
+                  Your document folder is empty
                 </h3>
                 <p className="mt-3 max-w-2xl leading-relaxed">
-                  When we send a quote PDF, terms, or confirmation for your trip, it will show up here automatically. No action
-                  needed until then.
+                  When Golf Sol Ireland emails you a quote, letter, or receipt PDF, it will show up here so you can open it
+                  again anytime — no need to dig through your inbox.
                 </p>
               </div>
             </section>

@@ -87,6 +87,9 @@ const GolfExperienceHomeTest = lazy(() =>
 const BrandIdentityMockupPage = lazy(() =>
   import('./pages/brand-mockup/brand-identity-mockup-page').then((m) => ({ default: m.BrandIdentityMockupPage }))
 )
+const BrandLogosPage = lazy(() =>
+  import('./pages/brand-logos-page').then((m) => ({ default: m.BrandLogosPage }))
+)
 
 const NotFoundPage = lazy(() => import('./pages/not-found-page').then((m) => ({ default: m.NotFoundPage })))
 
@@ -234,6 +237,10 @@ function resolvePage(): PageComponent {
 
   if (normalizedPath === '/brand-mockup') {
     return BrandIdentityMockupPage
+  }
+
+  if (normalizedPath === '/brand-logos' || normalizedPath === '/logos') {
+    return BrandLogosPage
   }
 
   if (

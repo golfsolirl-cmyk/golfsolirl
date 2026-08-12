@@ -1,4 +1,14 @@
-import { Flag, Gift, Percent, Sparkles, Sun } from 'lucide-react'
+import {
+  Droplets,
+  Flag,
+  Gift,
+  Luggage,
+  Moon,
+  Percent,
+  Sparkles,
+  Sun,
+  TabletSmartphone
+} from 'lucide-react'
 import { COURSES } from '../data/coastal-golf-data'
 
 const PERKS = [
@@ -34,7 +44,36 @@ const PERKS = [
 
 const FEATURED_COURSES = COURSES.slice(0, 3)
 
-export function PortalPerksPanel() {
+const CLUB_CONCIERGE_STEPS = [
+  {
+    icon: TabletSmartphone,
+    title: 'Hotel-room fitting desk',
+    detail:
+      'Evening you land, we bring three demo iron sets and a launch-monitor tablet to your hotel room. Pick the set that matches your swing — no pro-shop rush.'
+  },
+  {
+    icon: Luggage,
+    title: 'Fly cabin-only',
+    detail:
+      'Leave your own clubs at home. A handicap-matched rental set is waiting in your room before the first tee, then rides home with your final airport transfer.'
+  },
+  {
+    icon: Droplets,
+    title: 'Overnight club spa',
+    detail:
+      'After a wet round we collect clubs with your evening transfer, clean and dry them overnight, and return them with the morning hotel run.'
+  },
+  {
+    icon: Moon,
+    title: 'Bag-delay lifeboat',
+    detail:
+      'If Aer Lingus or Ryanair holds your bag, a spare full set meets you at Málaga arrivals — usually within about 90 minutes via our transfer desk.'
+  }
+] as const
+
+export function PortalPerksPanel(props: { readonly clubConciergeEnabled?: boolean }) {
+  const clubUnlocked = props.clubConciergeEnabled === true
+
   return (
     <div className="space-y-6">
       <div className="ge-on-dark rounded-[1.75rem] border border-forest-100 bg-gradient-to-br from-brand-800 via-forest-900 to-brand-950 p-5 text-white shadow-soft sm:p-7">
@@ -45,6 +84,58 @@ export function PortalPerksPanel() {
           credits. Activate offers by messaging us from your dashboard.
         </p>
       </div>
+
+      {clubUnlocked ? (
+        <section className="overflow-hidden rounded-[1.75rem] border-2 border-gs-gold/50 bg-gradient-to-br from-[#fff9e8] via-white to-fairway-50/60 shadow-[0_16px_40px_rgba(11,73,52,0.1)]">
+          <div className="border-b border-gs-gold/40 bg-gradient-to-r from-[#f5e6a8] to-[#e8c96a] px-5 py-4 sm:px-7">
+            <p className="font-ge text-xs font-extrabold uppercase tracking-[0.16em] text-forest-950">Unlocked for your trip</p>
+            <h3 className="mt-1 font-display text-2xl font-bold text-forest-950 sm:text-3xl">
+              Club Concierge — hotel fitting desk
+            </h3>
+            <p className="mt-2 max-w-2xl text-base leading-relaxed text-forest-800 sm:text-lg">
+              Skip checked golf bags. We turn our transfer fleet into a private club desk: fit in your room, play all week,
+              spa the sticks overnight, and fly home cabin-only.
+            </p>
+          </div>
+          <ul className="grid gap-4 p-5 sm:grid-cols-2 sm:p-7">
+            {CLUB_CONCIERGE_STEPS.map((step) => {
+              const Icon = step.icon
+              return (
+                <li className="rounded-2xl border border-forest-100 bg-white px-4 py-4 shadow-sm" key={step.title}>
+                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-forest-900 text-brand-100">
+                    <Icon aria-hidden className="h-5 w-5" />
+                  </span>
+                  <h4 className="mt-3 font-display text-lg font-bold text-forest-950">{step.title}</h4>
+                  <p className="mt-2 text-base leading-relaxed text-forest-700">{step.detail}</p>
+                </li>
+              )
+            })}
+          </ul>
+          <div className="border-t border-forest-100 px-5 py-5 sm:px-7">
+            <p className="text-sm leading-relaxed text-forest-600">
+              Handicap, preferred brands, and lefty / junior needs — tell us once and we stage the set before you land.
+            </p>
+            <button
+              className="mt-4 inline-flex min-h-[3rem] w-full items-center justify-center rounded-2xl bg-forest-900 px-5 py-3 text-base font-bold text-white transition hover:bg-forest-800 sm:w-auto"
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent('gsol-portal-open-messages'))
+              }}
+              type="button"
+            >
+              Message us to book Club Concierge
+            </button>
+          </div>
+        </section>
+      ) : (
+        <div className="rounded-[1.75rem] border border-dashed border-forest-200 bg-offwhite/80 px-5 py-6 text-center sm:px-7">
+          <p className="font-ge text-xs font-extrabold uppercase tracking-[0.16em] text-brand-700">Invite-only extras</p>
+          <p className="mt-2 font-display text-xl font-semibold text-forest-950">More Costa perks may unlock for your trip</p>
+          <p className="mx-auto mt-2 max-w-lg text-base leading-relaxed text-forest-600">
+            When Golf Sol Ireland unlocks a private offer for your account, it appears here. Standard rewards below stay
+            available anytime.
+          </p>
+        </div>
+      )}
 
       <ul className="grid gap-4 sm:grid-cols-2">
         {PERKS.map((perk) => {

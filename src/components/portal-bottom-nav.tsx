@@ -40,18 +40,21 @@ export function PortalBottomNav<T extends string>({
           return (
             <li key={item.id}>
               <button
+                aria-current={active ? 'page' : undefined}
                 className={cx(
-                  'relative flex w-full flex-col items-center gap-1 px-1 py-2.5 text-center transition',
-                  active ? 'text-brand-800' : 'text-forest-800 hover:text-forest-950'
+                  'relative flex w-full flex-col items-center gap-1 px-1 py-2.5 text-center transition duration-200',
+                  active
+                    ? 'bg-fairway-50 text-brand-800'
+                    : 'text-forest-800 hover:text-forest-950'
                 )}
                 onClick={() => onChange(item.id)}
                 type="button"
               >
                 {active ? (
-                  <span aria-hidden className="absolute left-1/2 top-0 h-1 w-8 -translate-x-1/2 rounded-full bg-brand-600" />
+                  <span aria-hidden className="absolute left-1/2 top-0 h-1 w-10 -translate-x-1/2 rounded-full bg-brand-600" />
                 ) : null}
                 <span className="relative inline-flex">
-                  <Icon aria-hidden className={cx('h-6 w-6', active && 'text-brand-700')} strokeWidth={active ? 2.25 : 2} />
+                  <Icon aria-hidden className={cx('h-6 w-6', active && 'text-brand-700')} strokeWidth={active ? 2.4 : 2} />
                   {item.badge ? (
                     <span className="absolute -right-1 -top-0.5 h-2.5 w-2.5 rounded-full bg-brand-500 ring-2 ring-white" />
                   ) : null}

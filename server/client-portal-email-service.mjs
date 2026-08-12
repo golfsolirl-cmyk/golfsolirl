@@ -82,7 +82,7 @@ export const handleSendClientPortalEmail = async (body, env = process.env, meta 
     throw err
   }
 
-  /** @type {{ filename: string; content: string; contentType: string }[]} */
+  /** @type {{ filename: string; content: string; contentType: string; bytes: Buffer }[]} */
   const pdfAttachments = []
   const namesForLog = []
 
@@ -124,7 +124,8 @@ export const handleSendClientPortalEmail = async (body, env = process.env, meta 
     pdfAttachments.push({
       filename,
       content: buf.toString('base64'),
-      contentType
+      contentType,
+      bytes: buf
     })
     namesForLog.push(filename)
   }
@@ -166,7 +167,15 @@ export const handleSendClientPortalEmail = async (body, env = process.env, meta 
     to: [clientEmail],
     subject,
     html,
-    ...(pdfAttachments.length ? { attachments: pdfAttachments } : {})
+    ...(pdfAttachments.length
+      ? {
+          attachments: pdfAttachments.map(({ filename, content, contentType }) => ({
+            filename,
+            content,
+            contentType
+          }))
+        }
+      : {})
   })
 
   if (sendError) {
@@ -188,9 +197,38 @@ export const handleSendClientPortalEmail = async (body, env = process.env, meta 
     console.error('[client-portal-email] portal_client_updates insert failed:', logErr.message)
   }
 
+  // Persist PDF bytes so Documents tab can open them (not only email / Messages filename list).
+  let documentsStored = 0
+  for (const att of pdfAttachments) {
+    const safeName = att.filename.replace(/[^\w.\-]+/g, '-').replace(/-+/g, '-').slice(0, 120) || 'document.pdf'
+    const storagePath = `${clientProfile.id}/desk/${Date.now()}-${safeName}`
+    const { error: upErr } = await supabase.storage.from('client-portal-pdfs').upload(storagePath, att.bytes, {
+      contentType: 'application/pdf',
+      upsert: false
+    })
+    if (upErr) {
+      console.error('[client-portal-email] storage upload failed:', upErr.message)
+      continue
+    }
+    const title = att.filename.replace(/\.pdf$/i, '').replace(/[-_]+/g, ' ').trim() || att.filename
+    const { error: docErr } = await supabase.from('portal_client_documents').insert({
+      owner_id: clientProfile.id,
+      title: title.slice(0, 160),
+      document_kind: 'admin_sent',
+      storage_path: storagePath,
+      source_label: subject.slice(0, 160)
+    })
+    if (docErr) {
+      console.error('[client-portal-email] portal_client_documents insert failed:', docErr.message)
+      continue
+    }
+    documentsStored += 1
+  }
+
   return {
     ok: true,
     logged: !logErr,
-    attachmentCount: namesForLog.length
+    attachmentCount: namesForLog.length,
+    documentsStored
   }
 }
