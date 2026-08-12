@@ -58,33 +58,16 @@ const assertMagicLinkRateLimit = (clientIp, email, env) => {
 }
 
 /**
- * Admin magic links: keep localhost/127.0.0.1 when requested (local testing).
- * Otherwise land on production (SITE_URL). Preserves `?next=` (defaults to /dashboard/admin).
+ * Always land magic links on production (SITE_URL) — never localhost.
+ * Preserves `?next=` from the request; defaults by portal when missing.
  *
  * @param {string} redirectTo
  * @param {'client' | 'admin' | 'driver'} portal
  * @param {NodeJS.ProcessEnv} env
  */
 const resolveMagicLinkRedirectTo = (redirectTo, portal, env) => {
-  if (portal !== 'admin') {
-    return redirectTo
-  }
-
-  try {
-    const requested = new URL(redirectTo)
-    const isLocalHost =
-      requested.hostname === 'localhost' ||
-      requested.hostname === '127.0.0.1' ||
-      requested.hostname === '[::1]'
-    if (isLocalHost) {
-      if (!requested.searchParams.has('next')) {
-        requested.searchParams.set('next', '/dashboard/admin')
-      }
-      return requested.toString()
-    }
-  } catch {
-    /* fall through to SITE_URL */
-  }
+  const defaultNext =
+    portal === 'admin' ? '/dashboard/admin' : portal === 'driver' ? '/driver' : '/dashboard'
 
   const siteRaw = env.SITE_URL?.trim() || 'https://golfsolirl.com'
   const siteUrl = siteRaw.startsWith('http') ? siteRaw : `https://${siteRaw}`
@@ -102,11 +85,11 @@ const resolveMagicLinkRedirectTo = (redirectTo, portal, env) => {
       out.searchParams.set(key, value)
     }
     if (!out.searchParams.has('next')) {
-      out.searchParams.set('next', '/dashboard/admin')
+      out.searchParams.set('next', defaultNext)
     }
     return out.toString()
   } catch {
-    return `${siteOrigin}/auth/callback?next=${encodeURIComponent('/dashboard/admin')}`
+    return `${siteOrigin}/auth/callback?next=${encodeURIComponent(defaultNext)}`
   }
 }
 
@@ -199,7 +182,7 @@ export const handleMagicLinkRequest = async (payload, env = process.env, meta = 
     throw error
   }
 
-  // After allowlist check: admin keeps localhost when requested; otherwise SITE_URL.
+  // After allowlist check: always rewrite to SITE_URL (production), never localhost.
   const effectiveRedirectTo = resolveMagicLinkRedirectTo(redirectTo, portal, env)
 
   if (portal === 'admin' && !isAllowedAdminLoginEmail(email, env)) {
@@ -259,9 +242,7 @@ export const handleMagicLinkRequest = async (payload, env = process.env, meta = 
   }
 
   /**
-   * Prefer a direct app callback with `token_hash`.
-   * Client/driver keep the requested origin; admin keeps localhost when requested,
-   * otherwise SITE_URL via effectiveRedirectTo.
+   * Prefer a direct app callback with `token_hash` on SITE_URL (production).
    * Falls back to rewriting `redirect_to` on the Supabase verify URL.
    */
   const buildMagicLinkHref = (properties, requestedRedirect) => {

@@ -176,7 +176,7 @@ export function LoginPage() {
     const emailNorm = email.trim().toLowerCase()
     const adminInbox = isAllowedAdminLoginEmail(emailNorm)
     const isAdminPortal = path === '/dashboard/admin/login'
-    // Localhost: admin + client both return here. Production admin still uses SITE_URL on the server.
+    // Server rewrites this to SITE_URL (production) so the email link never opens localhost.
     const callbackBase = `${window.location.origin}/auth/callback`
     let redirectTo = `${callbackBase}`
     if (safeReturnPath && !isAdminPortal) {
@@ -233,21 +233,11 @@ export function LoginPage() {
       : 'Saved trips · Quotes · Account access'
   const adminHeroBodyPublic =
     'Enter your operator code - we will send a secure sign-in link to your operator inbox.'
-  const adminHeroBodyDevSuffix = ' Restricted to info@golfsolirl.com.'
-  const isLocalDevHost =
-    typeof window !== 'undefined' &&
-    (window.location.hostname === 'localhost' ||
-      window.location.hostname === '127.0.0.1' ||
-      window.location.hostname === '[::1]')
   const heroBody = isAdminLoginPath
-    ? isLocalDevHost
-      ? `${adminHeroBodyPublic}${adminHeroBodyDevSuffix} The email link opens back on localhost for testing.`
-      : `${adminHeroBodyPublic} The email link opens the production admin desk.`
+    ? `${adminHeroBodyPublic} The email link opens the production admin desk on golfsolirl.com.`
     : isDriverLoginPage
       ? 'Same secure magic link as the client portal and admin — after sign-in, admins use the Irish Driver preview desk; linked drivers see live jobs.'
-      : isLocalDevHost
-        ? "We'll email you a secure magic link that opens back on localhost for testing. No password to remember."
-        : "We'll email you a secure magic link — the same GolfSol Ireland experience as the rest of the site. No password to remember."
+      : "We'll email you a secure magic link — it opens on golfsolirl.com. No password to remember."
 
   // —— Supabase-not-configured fallback ——
   if (!integrationRegistry.supabase.enabled || !isSupabaseConfigured) {
@@ -378,11 +368,9 @@ export function LoginPage() {
                 <Mail className="h-4 w-4 text-gs-green" aria-hidden /> Check your inbox
               </p>
               <p className="mt-2 text-ge-gray600">
-                {isAdminLoginPath && isLocalDevHost
-                  ? 'Open the link from Golf Sol Ireland — it signs you into the admin desk on localhost.'
-                  : isAdminLoginPath
-                    ? 'Open the link from Golf Sol Ireland — it signs you into the admin desk on golfsolirl.com.'
-                    : 'Open the link from GolfSol Ireland to finish signing in. You can close this tab — the link opens in your browser.'}
+                {isAdminLoginPath
+                  ? 'Open the link from Golf Sol Ireland — it signs you into the admin desk on golfsolirl.com.'
+                  : 'Open the link from Golf Sol Ireland to finish signing in on golfsolirl.com. You can close this tab — the link opens in your browser.'}
               </p>
             </div>
           ) : (
