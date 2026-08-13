@@ -96,28 +96,113 @@ ${paths
 
 fs.writeFileSync(outPath, xml)
 
-/** Representative images for key commercial URLs (existing assets only). */
+/** Representative images for key commercial URLs. */
 const imageEntries = [
   { path: '/', image: '/images/og-share-fleet.jpg', title: 'Costa del Sol golf holidays from Ireland' },
   {
     path: '/golf-holidays',
-    image: '/images/ge-premium-golf-fairway-coastal.webp',
+    image: '/images/destinations/golf-holidays-costa-del-sol-hub.webp',
     title: 'Costa del Sol golf holidays'
   },
   {
     path: '/golf-holidays/costa-del-sol',
-    image: '/images/ge-premium-golf-fairway-coastal.webp',
+    image: '/images/destinations/costa-del-sol-golf-holiday-overview.webp',
     title: 'Costa del Sol golf holidays'
   },
   {
     path: '/golf-holidays/marbella',
-    image: '/images/ge-premium-golf-fairway-coastal.webp',
+    image: '/images/destinations/marbella-golf-holiday-costa-del-sol.webp',
     title: 'Marbella golf holidays'
   },
   {
+    path: '/golf-holidays/mijas',
+    image: '/images/destinations/mijas-golf-holiday-costa-del-sol.webp',
+    title: 'Mijas golf holidays'
+  },
+  {
+    path: '/golf-holidays/estepona',
+    image: '/images/destinations/estepona-golf-holiday-costa-del-sol.webp',
+    title: 'Estepona golf holidays'
+  },
+  {
+    path: '/golf-holidays/malaga',
+    image: '/images/destinations/malaga-golf-holiday-costa-del-sol.webp',
+    title: 'Málaga golf holidays'
+  },
+  {
+    path: '/golf-holidays/fuengirola',
+    image: '/images/destinations/fuengirola-golf-holiday-costa-del-sol.webp',
+    title: 'Fuengirola golf holidays'
+  },
+  {
+    path: '/golf-holidays/benalmadena',
+    image: '/images/destinations/benalmadena-golf-holiday-costa-del-sol.webp',
+    title: 'Benalmádena golf holidays'
+  },
+  {
+    path: '/golf-holidays/torremolinos',
+    image: '/images/destinations/torremolinos-golf-holiday-costa-del-sol.webp',
+    title: 'Torremolinos golf holidays'
+  },
+  {
+    path: '/golf-holidays-spain-from-ireland',
+    image: '/images/departures/golf-holidays-spain-from-ireland.webp',
+    title: 'Golf holidays Spain from Ireland'
+  },
+  {
+    path: '/golf-holidays-spain-from-dublin',
+    image: '/images/departures/golf-holidays-spain-from-dublin.webp',
+    title: 'Golf holidays Spain from Dublin'
+  },
+  {
+    path: '/golf-holidays-spain-from-cork',
+    image: '/images/departures/golf-holidays-spain-from-cork.webp',
+    title: 'Golf holidays Spain from Cork'
+  },
+  {
+    path: '/golf-holidays-spain-from-shannon',
+    image: '/images/departures/golf-holidays-spain-from-shannon.webp',
+    title: 'Golf holidays Spain from Shannon'
+  },
+  {
+    path: '/golf-holidays-spain-from-belfast',
+    image: '/images/departures/golf-holidays-spain-from-belfast.webp',
+    title: 'Golf holidays Spain from Belfast'
+  },
+  {
+    path: '/golf-packages/3-night-golf-breaks',
+    image: '/images/packages/3-night-golf-break-costa-del-sol.webp',
+    title: '3-night Costa del Sol golf breaks'
+  },
+  {
+    path: '/golf-packages/golf-society-packages',
+    image: '/images/packages/golf-society-packages-costa-del-sol.webp',
+    title: 'Golf society packages Costa del Sol'
+  },
+  {
+    path: '/golf-courses/marbella-golf-valley',
+    image: '/images/courses/marbella-golf-valley-corridor.webp',
+    title: 'Marbella Golf Valley courses'
+  },
+  {
+    path: '/golf-courses/mijas-fuengirola',
+    image: '/images/courses/mijas-fuengirola-golf-corridor.webp',
+    title: 'Mijas and Fuengirola golf courses'
+  },
+  {
+    path: '/golf-courses/sotogrande',
+    image: '/images/courses/sotogrande-golf-corridor.webp',
+    title: 'Sotogrande golf courses'
+  },
+  {
     path: '/transfers/malaga-airport-golf-transfers',
-    image: '/images/hero-costa-del-sol-transfer-banner.webp',
+    image: '/images/transfers/malaga-airport-golf-transfers.webp',
     title: 'Málaga Airport golf transfers'
+  },
+  {
+    path: '/transfers/golf-group-transfers',
+    image: '/images/transfers/golf-group-transfers-costa-del-sol.webp',
+    title: 'Golf group transfers Costa del Sol'
   },
   {
     path: '/services/transport',
@@ -126,7 +211,7 @@ const imageEntries = [
   },
   {
     path: '/packages',
-    image: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
+    image: '/images/packages-hero-v3.webp',
     title: 'Costa del Sol golf packages'
   }
 ]

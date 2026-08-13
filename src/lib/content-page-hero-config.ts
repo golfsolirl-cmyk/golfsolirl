@@ -1,8 +1,17 @@
 import { CheckCircle2, Clock3, Flag, Hotel, PlaneLanding, Scale, ShieldCheck, type LucideIcon } from 'lucide-react'
 import { HERO_FORM_SCROLL_DEFAULT_SUBLABEL } from '../components/home/hero-form-scroll-cue'
 import { splitHeroTitle } from '../components/home/premium-page-hero'
+import { SEO_LANDING_PAGE_PATHS } from '../data/seo-landing-page-paths'
 import type { GeContentPageData } from '../pages/golf-experience/data/content-pages'
 import { NAMED_HERO_IMAGE_SETS, heroImageSetForContentPage, type HeroImageSet } from './page-hero-images'
+
+/** Course-corridor pages with dedicated heroes (must not fall back to generic fairway). */
+const PAGE_OWNED_HERO_PATHS = new Set<string>([
+  ...SEO_LANDING_PAGE_PATHS,
+  '/golf-courses/sotogrande',
+  '/golf-courses/marbella-golf-valley',
+  '/golf-courses/mijas-fuengirola'
+])
 
 type ContentPageKind =
   | 'twilight'
@@ -25,8 +34,17 @@ function inferPageKind(path: string, page: GeContentPageData): ContentPageKind {
   if (page.enquiryType === 'legal') return 'legal'
   if (page.enquiryType === 'newsletter') return 'newsletter'
   if (page.enquiryType === 'testimonial') return 'testimonial'
+  // Destination golf-holiday pages must not be classified as transport because of "malaga" in the path.
+  if (pathLower.startsWith('/golf-holidays')) return 'support'
   if (haystack.includes('tee-time') || haystack.includes('golf-courses') || haystack.includes('course')) return 'courses'
-  if (haystack.includes('transport') || haystack.includes('airport') || haystack.includes('malaga')) return 'transport'
+  if (
+    haystack.includes('transport') ||
+    pathLower.includes('airport') ||
+    pathLower.includes('/transfers/') ||
+    (pathLower.includes('malaga') && !pathLower.includes('/golf-holidays/'))
+  ) {
+    return 'transport'
+  }
   if (haystack.includes('accommodation') || haystack.includes('hotel')) return 'accommodation'
   if (haystack.includes('booking') || haystack.includes('quote')) return 'booking'
   if (haystack.includes('about')) return 'about'
@@ -35,6 +53,11 @@ function inferPageKind(path: string, page: GeContentPageData): ContentPageKind {
 }
 
 function imagesForKind(kind: ContentPageKind, path: string, page: GeContentPageData): HeroImageSet {
+  // SEO landings + corridor pages carry page-specific heroes — never replace with category generics.
+  if (PAGE_OWNED_HERO_PATHS.has(path)) {
+    return heroImageSetForContentPage(path, page)
+  }
+
   switch (kind) {
     case 'twilight':
       return NAMED_HERO_IMAGE_SETS.twilightGolf

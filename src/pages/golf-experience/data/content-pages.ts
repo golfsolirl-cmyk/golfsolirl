@@ -650,6 +650,8 @@ const coreGeContentPages: Record<string, GeContentPageData> = {
     title: 'Sotogrande golf cluster for premium trip planning',
     subtitle:
       'Plan around Sotogrande with practical routing, balanced challenge, and polished course options that suit Irish groups.',
+    heroImage: '/images/courses/sotogrande-golf-corridor.webp',
+    heroAlt: 'Championship coastal golf fairways in the Sotogrande corridor on the western Costa del Sol.',
     interestPreset: 'Sotogrande golf cluster'
   },
   '/golf-courses/marbella-golf-valley': {
@@ -659,6 +661,8 @@ const coreGeContentPages: Record<string, GeContentPageData> = {
     title: 'Marbella Golf Valley options with clear routing logic',
     subtitle:
       'Build a smarter week around Marbella Golf Valley with practical travel times, pace balance, and cleaner day flow.',
+    heroImage: '/images/courses/marbella-golf-valley-corridor.webp',
+    heroAlt: 'Marbella golf valley fairways between Mediterranean hills and resort ridges.',
     interestPreset: 'Marbella Golf Valley'
   },
   '/golf-courses/mijas-fuengirola': {
@@ -668,6 +672,8 @@ const coreGeContentPages: Record<string, GeContentPageData> = {
     title: 'Mijas and Fuengirola golf routes made straightforward',
     subtitle:
       'Compare Mijas and Fuengirola clusters with simple guidance on course mix, transfer rhythm, and group-friendly sequencing.',
+    heroImage: '/images/courses/mijas-fuengirola-golf-corridor.webp',
+    heroAlt: 'Rolling Mijas and Fuengirola golf corridor with mountain backdrop on the Costa del Sol.',
     interestPreset: 'Mijas and Fuengirola golf cluster'
   },
   '/accommodation': accommodationPage,

@@ -11,29 +11,148 @@
   <url>
     <loc>https://www.golfsolirl.com/golf-holidays</loc>
     <image:image>
-      <image:loc>https://www.golfsolirl.com/images/ge-premium-golf-fairway-coastal.webp</image:loc>
+      <image:loc>https://www.golfsolirl.com/images/destinations/golf-holidays-costa-del-sol-hub.webp</image:loc>
       <image:title>Costa del Sol golf holidays</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://www.golfsolirl.com/golf-holidays/costa-del-sol</loc>
     <image:image>
-      <image:loc>https://www.golfsolirl.com/images/ge-premium-golf-fairway-coastal.webp</image:loc>
+      <image:loc>https://www.golfsolirl.com/images/destinations/costa-del-sol-golf-holiday-overview.webp</image:loc>
       <image:title>Costa del Sol golf holidays</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://www.golfsolirl.com/golf-holidays/marbella</loc>
     <image:image>
-      <image:loc>https://www.golfsolirl.com/images/ge-premium-golf-fairway-coastal.webp</image:loc>
+      <image:loc>https://www.golfsolirl.com/images/destinations/marbella-golf-holiday-costa-del-sol.webp</image:loc>
       <image:title>Marbella golf holidays</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays/mijas</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/destinations/mijas-golf-holiday-costa-del-sol.webp</image:loc>
+      <image:title>Mijas golf holidays</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays/estepona</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/destinations/estepona-golf-holiday-costa-del-sol.webp</image:loc>
+      <image:title>Estepona golf holidays</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays/malaga</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/destinations/malaga-golf-holiday-costa-del-sol.webp</image:loc>
+      <image:title>Málaga golf holidays</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays/fuengirola</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/destinations/fuengirola-golf-holiday-costa-del-sol.webp</image:loc>
+      <image:title>Fuengirola golf holidays</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays/benalmadena</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/destinations/benalmadena-golf-holiday-costa-del-sol.webp</image:loc>
+      <image:title>Benalmádena golf holidays</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays/torremolinos</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/destinations/torremolinos-golf-holiday-costa-del-sol.webp</image:loc>
+      <image:title>Torremolinos golf holidays</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays-spain-from-ireland</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/departures/golf-holidays-spain-from-ireland.webp</image:loc>
+      <image:title>Golf holidays Spain from Ireland</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays-spain-from-dublin</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/departures/golf-holidays-spain-from-dublin.webp</image:loc>
+      <image:title>Golf holidays Spain from Dublin</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays-spain-from-cork</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/departures/golf-holidays-spain-from-cork.webp</image:loc>
+      <image:title>Golf holidays Spain from Cork</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays-spain-from-shannon</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/departures/golf-holidays-spain-from-shannon.webp</image:loc>
+      <image:title>Golf holidays Spain from Shannon</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-holidays-spain-from-belfast</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/departures/golf-holidays-spain-from-belfast.webp</image:loc>
+      <image:title>Golf holidays Spain from Belfast</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-packages/3-night-golf-breaks</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/packages/3-night-golf-break-costa-del-sol.webp</image:loc>
+      <image:title>3-night Costa del Sol golf breaks</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-packages/golf-society-packages</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/packages/golf-society-packages-costa-del-sol.webp</image:loc>
+      <image:title>Golf society packages Costa del Sol</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-courses/marbella-golf-valley</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/courses/marbella-golf-valley-corridor.webp</image:loc>
+      <image:title>Marbella Golf Valley courses</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-courses/mijas-fuengirola</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/courses/mijas-fuengirola-golf-corridor.webp</image:loc>
+      <image:title>Mijas and Fuengirola golf courses</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-courses/sotogrande</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/courses/sotogrande-golf-corridor.webp</image:loc>
+      <image:title>Sotogrande golf courses</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://www.golfsolirl.com/transfers/malaga-airport-golf-transfers</loc>
     <image:image>
-      <image:loc>https://www.golfsolirl.com/images/hero-costa-del-sol-transfer-banner.webp</image:loc>
+      <image:loc>https://www.golfsolirl.com/images/transfers/malaga-airport-golf-transfers.webp</image:loc>
       <image:title>Málaga Airport golf transfers</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/transfers/golf-group-transfers</loc>
+    <image:image>
+      <image:loc>https://www.golfsolirl.com/images/transfers/golf-group-transfers-costa-del-sol.webp</image:loc>
+      <image:title>Golf group transfers Costa del Sol</image:title>
     </image:image>
   </url>
   <url>
@@ -46,7 +165,7 @@
   <url>
     <loc>https://www.golfsolirl.com/packages</loc>
     <image:image>
-      <image:loc>https://www.golfsolirl.com/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp</image:loc>
+      <image:loc>https://www.golfsolirl.com/images/packages-hero-v3.webp</image:loc>
       <image:title>Costa del Sol golf packages</image:title>
     </image:image>
   </url>

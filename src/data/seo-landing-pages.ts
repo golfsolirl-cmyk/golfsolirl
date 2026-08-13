@@ -2,10 +2,32 @@ import type { GeContentPageData } from '../pages/golf-experience/data/content-pa
 import { SEO_CONTACT } from '../lib/seo/seo-contact'
 
 const imgFairway = '/images/ge-premium-golf-fairway-coastal.webp'
-const imgFleet = '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp'
-const imgHotel = '/images/ge-premium-resort-hotel-hero.webp'
-const imgTransfer = '/images/hero-costa-del-sol-transfer-banner.webp'
 const imgGroup = '/images/ge-premium-golf-group-testimonial.webp'
+
+/** Page-specific SEO heroes (new assets — do not overwrite shared library plates). */
+const imgGolfHolidaysHub = '/images/destinations/golf-holidays-costa-del-sol-hub.webp'
+const imgCostaDelSol = '/images/destinations/costa-del-sol-golf-holiday-overview.webp'
+const imgMalagaHoliday = '/images/destinations/malaga-golf-holiday-costa-del-sol.webp'
+const imgMarbella = '/images/destinations/marbella-golf-holiday-costa-del-sol.webp'
+const imgMijas = '/images/destinations/mijas-golf-holiday-costa-del-sol.webp'
+const imgEstepona = '/images/destinations/estepona-golf-holiday-costa-del-sol.webp'
+const imgFuengirola = '/images/destinations/fuengirola-golf-holiday-costa-del-sol.webp'
+const imgBenalmadena = '/images/destinations/benalmadena-golf-holiday-costa-del-sol.webp'
+const imgTorremolinos = '/images/destinations/torremolinos-golf-holiday-costa-del-sol.webp'
+const imgFromIreland = '/images/departures/golf-holidays-spain-from-ireland.webp'
+const imgFromDublin = '/images/departures/golf-holidays-spain-from-dublin.webp'
+const imgFromCork = '/images/departures/golf-holidays-spain-from-cork.webp'
+const imgFromShannon = '/images/departures/golf-holidays-spain-from-shannon.webp'
+const imgFromBelfast = '/images/departures/golf-holidays-spain-from-belfast.webp'
+const imgPkg3 = '/images/packages/3-night-golf-break-costa-del-sol.webp'
+const imgPkg4 = '/images/packages/4-night-golf-break-costa-del-sol.webp'
+const imgPkg5 = '/images/packages/5-night-golf-holiday-costa-del-sol.webp'
+const imgPkg7 = '/images/packages/7-night-golf-holiday-costa-del-sol.webp'
+const imgSocietyPkg = '/images/packages/golf-society-packages-costa-del-sol.webp'
+const imgGroupPkg = '/images/packages/group-golf-holidays-costa-del-sol.webp'
+const imgBespokePkg = '/images/packages/bespoke-golf-packages-costa-del-sol.webp'
+const imgAgpTransfers = '/images/transfers/malaga-airport-golf-transfers.webp'
+const imgGroupTransfers = '/images/transfers/golf-group-transfers-costa-del-sol.webp'
 
 const contactLine = `Irish support ${SEO_CONTACT.irishPhoneDisplay} · Spanish line ${SEO_CONTACT.spanishPhoneDisplay} · ${SEO_CONTACT.email}`
 
@@ -50,8 +72,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: 'Costa del Sol golf holidays from Ireland',
     subtitle:
       'Handpicked courses, hotels, tee times and Málaga airport transfers — planned for Irish golfers, societies, four-balls and groups.',
-    heroImage: imgFairway,
-    heroAlt: 'Costa del Sol golf fairway for Irish golf holiday travellers.',
+    heroImage: imgGolfHolidaysHub,
+    heroAlt: 'Championship Costa del Sol fairway at golden hour for Irish golf holiday travellers.',
     sections: [
       {
         title: 'Built for Irish golf travellers',
@@ -121,8 +143,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: 'Costa del Sol golf holidays',
     subtitle:
       'The main corridor for Irish golf trips to Spain — Málaga Airport arrivals, a dense course network, and bases from Torremolinos to Estepona.',
-    heroImage: imgFairway,
-    heroAlt: 'Costa del Sol golf holidays — coastal fairway scenery for Irish groups.',
+    heroImage: imgCostaDelSol,
+    heroAlt: 'Coastal Costa del Sol golf fairway overlooking the Mediterranean.',
     sections: [
       {
         title: 'Why Irish golfers choose the Costa del Sol',
@@ -170,8 +192,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: 'Málaga golf holidays',
     subtitle:
       'Arrive at AGP and base near the eastern Costa del Sol — practical for shorter trips and groups who want airport convenience with strong course access.',
-    heroImage: imgTransfer,
-    heroAlt: 'Málaga airport and Costa del Sol transfer planning for golf holidays.',
+    heroImage: imgMalagaHoliday,
+    heroAlt: 'Golf fairway near Málaga on the eastern Costa del Sol with Mediterranean views.',
     sections: [
       {
         title: 'Why base near Málaga',
@@ -212,8 +234,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: 'Marbella golf holidays',
     subtitle:
       'A classic Costa del Sol golf base for Irish societies and four-balls — resort energy, nearby golf valleys, and transfers from Málaga Airport.',
-    heroImage: imgFairway,
-    heroAlt: 'Marbella golf holiday planning for Irish golfers on the Costa del Sol.',
+    heroImage: imgMarbella,
+    heroAlt: 'Championship golf course near Marbella on the Costa del Sol.',
     sections: [
       {
         title: 'Why golfers choose Marbella',
@@ -250,8 +272,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: 'Mijas golf holidays',
     subtitle:
       'A practical Costa del Sol golf base between Fuengirola and the hills — popular with Irish groups who want course access without living on the busiest strip.',
-    heroImage: imgFairway,
-    heroAlt: 'Mijas area golf holiday planning on the Costa del Sol.',
+    heroImage: imgMijas,
+    heroAlt: 'Hillside golf fairway near Mijas overlooking the Costa del Sol coastline.',
     sections: [
       {
         title: 'Why Mijas works for Irish groups',
@@ -280,8 +302,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: 'Estepona golf holidays',
     subtitle:
       'A western Costa del Sol base for Irish golfers who want a slightly quieter town feel with access toward classic western corridor courses.',
-    heroImage: imgFairway,
-    heroAlt: 'Estepona Costa del Sol golf holiday base for Irish travellers.',
+    heroImage: imgEstepona,
+    heroAlt: 'Western Costa del Sol golf course near Estepona with mountain backdrop.',
     sections: [
       {
         title: 'Why consider Estepona',
@@ -310,8 +332,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: 'Fuengirola golf holidays',
     subtitle:
       'A practical eastern Costa del Sol base for Irish groups — strong hotel choice, nearby golf corridors, and a manageable transfer from Málaga Airport.',
-    heroImage: imgHotel,
-    heroAlt: 'Fuengirola hotels and golf holiday stays for Irish groups.',
+    heroImage: imgFuengirola,
+    heroAlt: 'Fuengirola Costa del Sol seafront promenade for Irish golf holiday stays.',
     sections: [
       {
         title: 'Why Fuengirola',
@@ -339,8 +361,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: 'Benalmádena golf holidays',
     subtitle:
       'An eastern Costa del Sol option close to Málaga Airport — useful for shorter Irish golf breaks and groups who value transfer efficiency.',
-    heroImage: imgHotel,
-    heroAlt: 'Benalmádena stay options for Costa del Sol golf holidays.',
+    heroImage: imgBenalmadena,
+    heroAlt: 'Benalmádena marina and hillside resort setting for Costa del Sol golf holidays.',
     sections: [
       {
         title: 'Why Benalmádena',
@@ -365,8 +387,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: 'Torremolinos golf holidays',
     subtitle:
       'Airport-convenient Costa del Sol stays for Irish golf groups who want a straightforward base with access to eastern corridor golf.',
-    heroImage: imgHotel,
-    heroAlt: 'Torremolinos hotels for Irish Costa del Sol golf travellers.',
+    heroImage: imgTorremolinos,
+    heroAlt: 'Torremolinos Mediterranean beach and resort coastline for airport-convenient golf trips.',
     sections: [
       {
         title: 'Why Torremolinos',
@@ -391,8 +413,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: 'Golf holidays in Spain from Ireland',
     subtitle:
       'Costa del Sol golf trips planned for Irish travellers — from first enquiry to Málaga Airport transfers, courses, hotels and tee times.',
-    heroImage: imgGroup,
-    heroAlt: 'Irish golfers planning Costa del Sol golf holidays from Ireland.',
+    heroImage: imgFromIreland,
+    heroAlt: 'Irish golfers walking a sunny Costa del Sol fairway with golf bags.',
     sections: [
       {
         title: 'Ireland to the Costa del Sol',
@@ -426,8 +448,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: 'Costa del Sol golf holidays from Dublin',
     subtitle:
       'Plan a Málaga-bound golf trip from Dublin with clear transfers, course shortlists, and Irish support before and after you fly.',
-    heroImage: imgGroup,
-    heroAlt: 'Golf holidays from Dublin to the Costa del Sol with Golf Sol Ireland.',
+    heroImage: imgFromDublin,
+    heroAlt: 'Irish golf travellers starting a Costa del Sol trip from Dublin.',
     sections: [
       {
         title: 'Dublin → Málaga planning',
@@ -455,8 +477,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: 'Costa del Sol golf holidays from Cork',
     subtitle:
       'Southern Irish groups heading to Málaga — we coordinate courses, hotels and golf-bag-friendly transfers once your flights are set.',
-    heroImage: imgGroup,
-    heroAlt: 'Golf holidays from Cork to Málaga and the Costa del Sol.',
+    heroImage: imgFromCork,
+    heroAlt: 'Golfers arriving for a Costa del Sol holiday from Cork.',
     sections: [
       {
         title: 'Cork groups on the Sol',
@@ -476,8 +498,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: 'Costa del Sol golf holidays from Shannon',
     subtitle:
       'West-of-Ireland golf groups travelling to Málaga — practical trip structures with Irish-led planning and Costa del Sol transfers.',
-    heroImage: imgGroup,
-    heroAlt: 'Golf holidays from Shannon Airport to the Costa del Sol.',
+    heroImage: imgFromShannon,
+    heroAlt: 'Calm Costa del Sol fairway morning for golf holidays from Shannon.',
     sections: [
       {
         title: 'Shannon → Costa del Sol',
@@ -497,8 +519,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: 'Costa del Sol golf holidays from Belfast',
     subtitle:
       'Plan a Spain golf trip from Belfast with Costa del Sol courses, hotels and Málaga Airport transfers coordinated in one place.',
-    heroImage: imgGroup,
-    heroAlt: 'Golf holidays from Belfast to the Costa del Sol for Irish golfers.',
+    heroImage: imgFromBelfast,
+    heroAlt: 'Coastal Costa del Sol golf for travellers from Belfast.',
     sections: [
       {
         title: 'Belfast travellers',
@@ -518,8 +540,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: '3-night Costa del Sol golf breaks',
     subtitle:
       'Short, efficient golf trips for Irish four-balls and small groups — built around arrival transfers, a compact base, and 2–3 rounds.',
-    heroImage: imgFleet,
-    heroAlt: '3-night Costa del Sol golf break planning for Irish travellers.',
+    heroImage: imgPkg3,
+    heroAlt: 'Short Costa del Sol golf break with Mediterranean tee views.',
     sections: [
       {
         title: 'Who 3 nights suits',
@@ -548,8 +570,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: '4-night Costa del Sol golf breaks',
     subtitle:
       'A balanced Irish golf break length — room for three rounds or two rounds plus a softer afternoon.',
-    heroImage: imgFleet,
-    heroAlt: '4-night golf breaks on the Costa del Sol for Irish groups.',
+    heroImage: imgPkg4,
+    heroAlt: 'Resort balcony view over Costa del Sol fairways for a 4-night golf break.',
     sections: [
       {
         title: 'Why 4 nights',
@@ -569,8 +591,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: '5-night Costa del Sol golf holidays',
     subtitle:
       'A popular length for Irish societies and friend groups — enough days for mixed courses without living on the first tee.',
-    heroImage: imgFleet,
-    heroAlt: '5-night Costa del Sol golf holidays for Irish societies.',
+    heroImage: imgPkg5,
+    heroAlt: 'Costa del Sol resort terrace at dusk for a 5-night golf holiday.',
     sections: [
       {
         title: 'Society-friendly pace',
@@ -594,8 +616,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: '7-night Costa del Sol golf holidays',
     subtitle:
       'Full-week structures for Irish societies and groups who want multiple courses, a rest day, and calmer logistics.',
-    heroImage: imgFleet,
-    heroAlt: '7-night golf holidays on the Costa del Sol.',
+    heroImage: imgPkg7,
+    heroAlt: 'Sunset twin fairways for a week-long Costa del Sol golf holiday.',
     sections: [
       {
         title: 'When a full week helps',
@@ -615,8 +637,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: 'Golf society packages — Costa del Sol',
     subtitle:
       'Irish golf society trips with clearer logistics: courses, accommodation areas, tee times, and Málaga Airport transfers.',
-    heroImage: imgGroup,
-    heroAlt: 'Golf society packages on the Costa del Sol for Irish clubs.',
+    heroImage: imgSocietyPkg,
+    heroAlt: 'Irish golf society celebrating after a round on the Costa del Sol.',
     sections: [
       {
         title: 'Built for organisers',
@@ -645,8 +667,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: 'Group golf holidays on the Costa del Sol',
     subtitle:
       'Four-balls, friends’ trips and larger parties — coordinated courses, stays and transfers for Irish groups.',
-    heroImage: imgGroup,
-    heroAlt: 'Group golf holidays on the Costa del Sol for Irish travellers.',
+    heroImage: imgGroupPkg,
+    heroAlt: 'Four-ball group on a Costa del Sol tee at sunrise.',
     sections: [
       {
         title: 'Groups of every size',
@@ -670,8 +692,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: 'Bespoke Costa del Sol golf packages',
     subtitle:
       'No fixed brochure price list — we build course, hotel and transfer combinations around your dates and group.',
-    heroImage: imgFleet,
-    heroAlt: 'Bespoke golf package planning for Costa del Sol trips.',
+    heroImage: imgBespokePkg,
+    heroAlt: 'Exclusive Costa del Sol fairway at blue hour for bespoke golf packages.',
     sections: [
       {
         title: 'Why bespoke',
@@ -840,8 +862,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: 'Málaga Airport golf transfers',
     subtitle:
       'Golf-bag-friendly private transfers from Málaga Airport (AGP) to Costa del Sol hotels — planned for Irish golf groups.',
-    heroImage: imgTransfer,
-    heroAlt: 'Málaga Airport golf transfers with golf-bag-friendly vehicles.',
+    heroImage: imgAgpTransfers,
+    heroAlt: 'Private transfer van loading golf bags at Málaga Airport.',
     formTitle: 'Request airport transfer help',
     sections: [
       {
@@ -867,8 +889,8 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     title: 'Golf group transfers on the Costa del Sol',
     subtitle:
       'Move societies and four-balls between hotel and course with vehicles that respect clubs, trolleys and group timing.',
-    heroImage: imgTransfer,
-    heroAlt: 'Golf group transfers on the Costa del Sol for Irish societies.',
+    heroImage: imgGroupTransfers,
+    heroAlt: 'Golf group private transfer at a Costa del Sol resort entrance',
     sections: [
       {
         title: 'Hotel ↔ course runs',

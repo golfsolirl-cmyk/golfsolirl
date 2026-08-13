@@ -1,6 +1,16 @@
+import { SEO_LANDING_PAGE_PATHS } from '../../data/seo-landing-page-paths'
 import { contactInfo } from './data/copy'
 import type { GeContentPageData } from './data/content-pages'
 import { golferGroupSizeSelectOptions, passengerCountSelectOptions } from './data/form-people-options'
+
+const SEO_LANDING_PATH_SET = new Set<string>(SEO_LANDING_PAGE_PATHS)
+
+const PAGE_OWNED_HERO_PATHS = new Set<string>([
+  ...SEO_LANDING_PAGE_PATHS,
+  '/golf-courses/sotogrande',
+  '/golf-courses/marbella-golf-valley',
+  '/golf-courses/mijas-fuengirola'
+])
 
 export interface ContentFormFieldOption {
   readonly label: string
@@ -89,8 +99,17 @@ function inferPageKind(path: string, page: GeContentPageData): ContentPageKind {
   if (page.enquiryType === 'legal') return 'legal'
   if (page.enquiryType === 'newsletter') return 'newsletter'
   if (page.enquiryType === 'testimonial') return 'testimonial'
+  // Destination golf-holiday pages must not be classified as transport because of "malaga" in the path.
+  if (pathLower.startsWith('/golf-holidays')) return 'support'
   if (haystack.includes('tee-time') || haystack.includes('golf-courses') || haystack.includes('course')) return 'courses'
-  if (haystack.includes('transport') || haystack.includes('airport') || haystack.includes('malaga')) return 'transport'
+  if (
+    haystack.includes('transport') ||
+    pathLower.includes('airport') ||
+    pathLower.includes('/transfers/') ||
+    (pathLower.includes('malaga') && !pathLower.includes('/golf-holidays/'))
+  ) {
+    return 'transport'
+  }
   if (haystack.includes('accommodation') || haystack.includes('hotel')) return 'accommodation'
   if (haystack.includes('booking') || haystack.includes('quote')) return 'booking'
   if (haystack.includes('about')) return 'about'
@@ -111,6 +130,15 @@ export function formatContentPageRouteLabel(path: string) {
 export function getContentPageHeroMedia(path: string, page: GeContentPageData): ContentHeroMedia {
   const kind = inferPageKind(path, page)
   const stripeLabel = formatContentPageRouteLabel(path)
+
+  // SEO landings + corridor pages declare topic-specific heroes — keep them (including OG alignment).
+  if (PAGE_OWNED_HERO_PATHS.has(path)) {
+    return {
+      image: page.heroImage,
+      alt: page.heroAlt,
+      stripeLabel
+    }
+  }
 
   switch (kind) {
     case 'twilight':
