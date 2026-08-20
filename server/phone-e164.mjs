@@ -22,8 +22,18 @@ export const computePhoneUniquenessKey = (raw) => {
   if (digits.startsWith('34') && digits.length >= 11) {
     return `+${digits}`
   }
+  // +44 (0) 7… — trunk zero included after country code
+  if (/^4407\d{9}$/.test(digits)) {
+    return `+44${digits.slice(3)}`
+  }
   if (digits.startsWith('44') && digits.length >= 10) {
     return `+${digits}`
+  }
+
+  // UK / Northern Ireland national mobile: 07xxxxxxxxx (11 digits).
+  // Must run before the Irish "leading 0 → +353" rule or 07… becomes +3537… and fails mobile checks.
+  if (/^07\d{9}$/.test(digits)) {
+    return `+44${digits.slice(1)}`
   }
 
   // Irish national: 0 + area/mobile (drop leading 0 → +353)
