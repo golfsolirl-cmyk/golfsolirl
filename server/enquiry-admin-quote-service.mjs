@@ -7,6 +7,7 @@ import { requireAdminFromBearer } from './auth-verify-admin.mjs'
 import { handlePortalInvoiceSend } from './portal-invoice-send-service.mjs'
 import { handleTransferPaymentAdmin } from './transfer-payment-service.mjs'
 import { handlePortalInterestTicketReply } from './portal-interest-ticket-reply-service.mjs'
+import { findProfileByEmailExact } from './email-exact-match.mjs'
 
 const throwStatus = (message, statusCode) => {
   const err = new Error(message)
@@ -94,7 +95,7 @@ const ensureTransferBookingForEnquiry = async (admin, enquiry) => {
   }
 
   let clientUserId = null
-  const { data: prof } = await admin.from('profiles').select('id').ilike('email', email).maybeSingle()
+  const { data: prof } = await findProfileByEmailExact(admin, email, 'id')
   clientUserId = prof?.id ?? null
 
   const route = routeLabelsFromEnquiry(enquiry)
@@ -296,11 +297,11 @@ export const handleEnquiryAdminMessage = async (body, env = process.env, meta = 
   }
 
   const email = enquiry.email.trim().toLowerCase()
-  const { data: profile, error: profErr } = await admin
-    .from('profiles')
-    .select('id, email, full_name')
-    .ilike('email', email)
-    .maybeSingle()
+  const { data: profile, error: profErr } = await findProfileByEmailExact(
+    admin,
+    email,
+    'id, email, full_name'
+  )
 
   if (profErr || !profile?.id) {
     throwStatus(
