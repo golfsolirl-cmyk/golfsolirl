@@ -1,6 +1,5 @@
 import { ChevronRight } from 'lucide-react'
 import { FaBluesky, FaFacebookF, FaLinkedinIn, FaWhatsapp } from 'react-icons/fa6'
-import { integrationRegistry } from '../config/integrations'
 import { FooterCompanyContact } from './footer-company-contact'
 import { FooterBrandLogoPicture } from './brand-logo-picture'
 import { BrandPlaneToFairwayTagline } from './brand-plane-to-fairway-tagline'
@@ -8,7 +7,6 @@ import { GsolGoldCornerAccents } from './gsol-gold-corner-accents'
 import { AmbientGolfBall } from './ui/ambient-golf-ball'
 import { footerGroups, footerSocialLinks } from '../data/site-content'
 import { GOLFSOL_BRAND_LOGO_FOOTER_SIZES, GOLFSOL_BRAND_LOGO_INTRINSIC } from '../lib/brand-logo-assets'
-import { useAuth } from '../providers/auth-provider'
 import type { RefObject } from 'react'
 
 const footerSocialIconMap = {
@@ -25,10 +23,6 @@ export type SiteFooterProps = {
 }
 
 export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps) {
-  const { session, profile, isLoading: authLoading } = useAuth()
-  const showAuthFooter = integrationRegistry.supabase.enabled
-  const dashboardHref = profile?.role === 'admin' ? '/dashboard/admin' : '/dashboard'
-
   return (
     <footer
       ref={footerRef}
@@ -49,33 +43,6 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
           />
           <BrandPlaneToFairwayTagline tone="dark" layout="footer" className="mt-4" />
           <p className="mt-4 text-[1.08rem] leading-8 text-white/76 md:mt-5 md:text-[1.14rem]">{intro}</p>
-          {showAuthFooter && !authLoading ? (
-            <div className="mt-6 border-t border-white/10 pt-6">
-              <p className="text-[0.96rem] font-semibold uppercase tracking-[0.14em] text-white/72">Account</p>
-              <ul className="mt-3 space-y-2">
-                <li className="flex items-center gap-2">
-                  <ChevronRight className="h-4 w-4 shrink-0 text-brand-400" aria-hidden="true" />
-                  <a
-                    className="text-[1.05rem] font-medium text-white transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
-                    href={session ? dashboardHref : '/dashboard/login'}
-                  >
-                    {session ? (profile?.role === 'admin' ? 'Admin dashboard' : 'Client dashboard') : 'Client sign-in'}
-                  </a>
-                </li>
-                {!session || profile?.role !== 'admin' ? (
-                  <li className="flex items-center gap-2">
-                    <ChevronRight className="h-4 w-4 shrink-0 text-brand-400" aria-hidden="true" />
-                    <a
-                      className="text-[1.05rem] font-medium text-white transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
-                      href="/dashboard/admin/login"
-                    >
-                      Admin sign-in
-                    </a>
-                  </li>
-                ) : null}
-              </ul>
-            </div>
-          ) : null}
           <div className="mt-6">
             <p className="text-[0.96rem] font-semibold uppercase tracking-[0.14em] text-white/72">Stay connected</p>
             <div className="mt-4 flex flex-wrap gap-3">

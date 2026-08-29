@@ -10,6 +10,7 @@ import { primaryNav, type GeNavLink } from '../data/nav'
 import { GeDualPhoneNavMobileButtons } from '../components/ge-dual-phone-contact'
 import { GeMobileGlintIconButton } from '../components/ge-mobile-glint-icon'
 import { GeTopBar } from './top-bar'
+import { HeaderSignInButtons } from '../../../components/header-sign-in-buttons'
 
 /** Logged-in client/admin area: extra nav actions alongside primary marketing links. */
 export interface GeNavbarPortalSlot {
@@ -94,9 +95,12 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
             ))}
             {portalSlot ? <PortalNavActions portalSlot={portalSlot} layout="desktop" /> : null}
             {!portalSlot ? (
-              <GeButton href="/contact" size="sm" variant={isOverlay ? 'outline-gs-white' : 'gs-gold'}>
-                Get Quote
-              </GeButton>
+              <>
+                <HeaderSignInButtons />
+                <GeButton href="/contact" size="sm" variant={isOverlay ? 'outline-gs-white' : 'gs-gold'}>
+                  Get Quote
+                </GeButton>
+              </>
             ) : null}
           </nav>
 
@@ -141,6 +145,11 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
         <div className="mx-auto flex w-full max-w-[1340px] justify-center px-2.5 py-1 sm:px-5 sm:py-1.5 lg:py-1.5">
           <BrandPlaneToFairwayTagline tone={isOverlay ? 'dark' : 'light'} layout="ribbon" className="max-w-full" />
         </div>
+        {!portalSlot ? (
+          <div className="mx-auto flex w-full max-w-[1340px] justify-center px-3 pb-2.5 lg:hidden">
+            <HeaderSignInButtons />
+          </div>
+        ) : null}
       </div>
 
       <AnimatePresence>
@@ -226,7 +235,7 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
               ) : null}
               {!portalSlot ? (
                 <div className="mt-4">
-                  <GeButton href="/contact" size="md" variant="gs-green" className="w-full">
+                  <GeButton href="/contact" size="md" variant="gs-green" className="w-full" onClick={() => setIsMenuOpen(false)}>
                     Get a Quote
                   </GeButton>
                 </div>

@@ -13,7 +13,7 @@ import {
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
 /** Strip whitespace and optional wrapping quotes from `.env` / Vercel values. */
-const normalizeOperatorPasscode = (value) => {
+export const normalizeOperatorPasscode = (value) => {
   let s = String(value ?? '').trim()
   if (
     (s.startsWith("'") && s.endsWith("'")) ||

@@ -165,20 +165,6 @@ export function GeFooter() {
           <p className="font-ge text-[0.98rem] leading-6 text-white sm:text-[0.88rem]">
             Copyright © {new Date().getFullYear()} – GolfSol Ireland – All Rights Reserved
           </p>
-          <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 font-ge text-[0.92rem] text-white sm:text-[0.88rem]">
-            <a className="underline decoration-white/35 underline-offset-4 transition-colors hover:text-silver-200" href="/dashboard/login">
-              Client sign-in
-            </a>
-            <span className="text-white/35" aria-hidden="true">
-              ·
-            </span>
-            <a
-              className="underline decoration-white/35 underline-offset-4 transition-colors hover:text-silver-200"
-              href="/dashboard/admin/login"
-            >
-              Admin sign-in
-            </a>
-          </p>
           <p className="font-ge text-[0.95rem] font-semibold uppercase tracking-[0.12em] text-[#fbe8b5] drop-shadow-[0_0_12px_rgba(217,190,122,0.25)] sm:text-[0.86rem]">
             Irish-owned · Costa del Sol golf specialists
           </p>

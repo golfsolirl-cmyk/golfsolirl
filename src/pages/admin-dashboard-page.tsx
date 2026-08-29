@@ -5,6 +5,7 @@ import { PortalInterestCategoryGlyph } from '../components/portal-interest-categ
 import { FocusTrapDialog } from '../components/focus-trap-dialog'
 import { AdminOperationsHubHero } from '../components/admin-operations-hub-hero'
 import { AdminPaidTripsRevenuePanel } from '../components/admin-paid-trips-revenue-panel'
+import { AdminOperatorCodePanel } from '../components/admin-operator-code-panel'
 import { AdminPortalShell, AdminPortalSection, type AdminPortalSectionId } from '../components/admin-portal-shell'
 import { AdminOperationsSectionShell } from '../components/admin-operations-section-shell'
 import {
@@ -3846,6 +3847,8 @@ export function AdminDashboardPage() {
           kicker="Desk"
           title="Inbox & payments"
         >
+          <AdminOperatorCodePanel accessToken={session?.access_token ?? null} />
+
           <AdminPaidTripsRevenuePanel />
 
           <div className="relative scroll-mt-28 rounded-[2rem] border border-forest-100 bg-white p-5 shadow-soft sm:p-7" id="admin-hub-tickets">
@@ -6742,6 +6745,8 @@ export function AdminDashboardPage() {
                 Website form rows are separate — deleting a form does not delete a login.
               </p>
             </header>
+
+            <AdminOperatorCodePanel accessToken={session?.access_token ?? null} />
 
             <section className="rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-700">1 · Create a login</p>

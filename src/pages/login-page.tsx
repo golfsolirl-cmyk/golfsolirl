@@ -22,6 +22,7 @@ export function LoginPage() {
   const [email, setEmail] = useState('')
   /** Shown on `/dashboard/admin/login` — sent only with that portal; verified server-side when `ADMIN_OPERATOR_PASSCODE` is set. */
   const [operatorCode, setOperatorCode] = useState('')
+  const [showOperatorCode, setShowOperatorCode] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [isSending, setIsSending] = useState(false)
   const [sent, setSent] = useState(false)
@@ -383,15 +384,24 @@ export function LoginPage() {
                   >
                     Operator code
                   </label>
-                  <input
-                    autoComplete="off"
-                    className="w-full rounded-xl border-2 border-ge-gray200 bg-white px-4 py-3.5 font-ge text-base text-gs-dark outline-none transition-[border-color,box-shadow] focus:border-forest-600 focus:ring-2 focus:ring-forest-600/20"
-                    id="login-operator-code"
-                    name="operatorCode"
-                    onChange={(event) => setOperatorCode(event.target.value)}
-                    type="password"
-                    value={operatorCode}
-                  />
+                  <div className="relative">
+                    <input
+                      autoComplete="off"
+                      className="w-full rounded-xl border-2 border-ge-gray200 bg-white px-4 py-3.5 pr-24 font-ge text-base text-gs-dark outline-none transition-[border-color,box-shadow] focus:border-forest-600 focus:ring-2 focus:ring-forest-600/20"
+                      id="login-operator-code"
+                      name="operatorCode"
+                      onChange={(event) => setOperatorCode(event.target.value)}
+                      type={showOperatorCode ? 'text' : 'password'}
+                      value={operatorCode}
+                    />
+                    <button
+                      className="absolute inset-y-0 right-2 my-auto inline-flex h-10 items-center rounded-lg px-3 font-ge text-sm font-bold text-forest-800 hover:bg-cream"
+                      onClick={() => setShowOperatorCode((open) => !open)}
+                      type="button"
+                    >
+                      {showOperatorCode ? 'Hide' : 'Show'}
+                    </button>
+                  </div>
                 </div>
               ) : null}
               <div>

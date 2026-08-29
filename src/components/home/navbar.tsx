@@ -3,6 +3,7 @@ import { Menu, X } from 'lucide-react'
 import { m,  AnimatePresence  } from 'framer-motion'
 import { LuxuryButton } from '../ui/button'
 import { Logo } from '../ui/logo'
+import { HeaderSignInButtons } from '../header-sign-in-buttons'
 import { integrationRegistry } from '../../config/integrations'
 import { cx } from '../../lib/utils'
 import { useAuth } from '../../providers/auth-provider'
@@ -13,11 +14,10 @@ interface NavbarProps {
 }
 
 export function Navbar({ links, primaryCta }: NavbarProps) {
-  const { session, profile, isLoading: authLoading } = useAuth()
+  const { isLoading: authLoading } = useAuth()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const showAuthNav = integrationRegistry.supabase.enabled
-  const dashboardHref = profile?.role === 'admin' ? '/dashboard/admin' : '/dashboard'
   const normalizedPath = window.location.pathname === '/' ? '/' : window.location.pathname.replace(/\/+$/, '')
   const isHome = normalizedPath === '/'
   const isPublicPackagePage = normalizedPath === '/packages' || normalizedPath === '/package'
@@ -102,17 +102,7 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
           </nav>
 
           <div className="hidden items-center gap-3 md:flex">
-            {showAuthNav && !authLoading ? (
-              session ? (
-                <LuxuryButton className="!px-5 !py-2.5 !text-base" href={dashboardHref} variant="outline">
-                  Dashboard
-                </LuxuryButton>
-              ) : (
-                <LuxuryButton className="!px-5 !py-2.5 !text-base" href="/dashboard/login" variant="outline">
-                  Sign in
-                </LuxuryButton>
-              )
-            ) : null}
+            {showAuthNav && !authLoading ? <HeaderSignInButtons tone="dark" /> : null}
             <LuxuryButton href={primaryHref}>{primaryCta}</LuxuryButton>
           </div>
 
@@ -150,15 +140,7 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
                 </a>
               ))}
               {showAuthNav && !authLoading ? (
-                session ? (
-                  <LuxuryButton className="w-full justify-center !py-3" href={dashboardHref} onClick={handleCloseMenu} variant="outline">
-                    Dashboard
-                  </LuxuryButton>
-                ) : (
-                  <LuxuryButton className="w-full justify-center !py-3" href="/dashboard/login" onClick={handleCloseMenu} variant="outline">
-                    Sign in
-                  </LuxuryButton>
-                )
+                <HeaderSignInButtons layout="menu" onNavigate={handleCloseMenu} tone="dark" />
               ) : null}
               <LuxuryButton href={primaryHref} onClick={handleCloseMenu}>
                 {primaryCta}

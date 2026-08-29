@@ -2,6 +2,7 @@ import { useRef, type ReactNode } from 'react'
 import { BrandFleetHeroPanel } from './brand-fleet-hero-panel'
 import { LuxuryButton } from './ui/button'
 import { Logo } from './ui/logo'
+import { HeaderSignInButtons } from './header-sign-in-buttons'
 import { SiteFooter } from './site-footer'
 import { navLinks } from '../data/site-content'
 
@@ -38,10 +39,8 @@ export function PdfSiteShell({ children }: PdfSiteShellProps) {
               </a>
             ))}
           </nav>
-          <div className="flex flex-wrap gap-3">
-            <LuxuryButton className="!border-white/25 !bg-forest-900 !text-white hover:!bg-forest-900" href="/dashboard/login" variant="outline">
-              Sign in
-            </LuxuryButton>
+          <div className="flex flex-wrap items-center gap-3">
+            <HeaderSignInButtons tone="dark" />
             <LuxuryButton className="!px-5 !py-2.5 !text-xs" href="/packages" variant="outline">
               View packages
             </LuxuryButton>

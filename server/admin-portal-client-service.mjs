@@ -5,6 +5,7 @@ import { isAuthEmailBlocked } from './email-address-registry.mjs'
 import { createEnquiryReferenceId } from '../shared/document-templates.mjs'
 import { buildBrandedPortalMagicLinkEmailHtml } from './branded-client-portal-email.mjs'
 import { finalizeGsolEmailHtml } from './email-layout.mjs'
+import { normalizeOperatorPasscode } from './magic-link-service.mjs'
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
@@ -226,6 +227,15 @@ export const handleAdminPortalClient = async (payload = {}, env = process.env, m
   })
 
   const action = typeof payload.action === 'string' ? payload.action.trim().toLowerCase() : ''
+
+  if (action === 'operator_code' || action === 'operator-code') {
+    const operatorCode = normalizeOperatorPasscode(env.ADMIN_OPERATOR_PASSCODE)
+    return {
+      ok: true,
+      configured: Boolean(operatorCode),
+      operatorCode
+    }
+  }
 
   if (action === 'delete') {
     const emailRaw = typeof payload.email === 'string' ? payload.email.trim().toLowerCase() : ''
@@ -520,7 +530,7 @@ export const handleAdminPortalClient = async (payload = {}, env = process.env, m
 
   if (action !== 'create') {
     throwStatus(
-      'Unknown action. Use "create", "delete", "reset_portal_onboarding", "clear_dashboard_by_account_ref", "clear_portal_messages_by_account_ref", "list_auth_email_blocks", "block_auth_email", or "unblock_auth_email".',
+      'Unknown action. Use "create", "delete", "reset_portal_onboarding", "clear_dashboard_by_account_ref", "clear_portal_messages_by_account_ref", "list_auth_email_blocks", "block_auth_email", "unblock_auth_email", or "operator_code".',
       400
     )
   }
