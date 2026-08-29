@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 import { LuxuryButton } from './ui/button'
 import { adminMailRequest } from '../lib/admin-mail-api'
-import { applyMailTemplateVars } from '../../shared/admin-mail-templates.mjs'
+import { applyMailTemplateVars } from '../lib/admin-mail-templates'
 import { cx } from '../lib/utils'
 
 export type AdminMailSeed = {
