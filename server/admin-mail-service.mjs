@@ -251,6 +251,11 @@ const composeContent = async (db, body) => {
   if (typeof body?.to === 'string' && body.to.trim()) {
     vars.email = vars.email || body.to.trim()
   }
+  if (typeof body?.phone === 'string' && body.phone.trim()) vars.phone = body.phone.trim()
+  if (typeof body?.reference === 'string' && body.reference.trim()) vars.reference = body.reference.trim()
+  if (typeof body?.interest === 'string' && body.interest.trim()) vars.interest = body.interest.trim()
+  if (typeof body?.travelDates === 'string' && body.travelDates.trim()) vars.travelDates = body.travelDates.trim()
+  if (typeof body?.numberOfGuests === 'string' && body.numberOfGuests.trim()) vars.numberOfGuests = body.numberOfGuests.trim()
   return { merged, vars, templateId: merged.id }
 }
 

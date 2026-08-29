@@ -14,7 +14,7 @@ export const UNIFIED_PDF_LAYOUT = {
   pageHeight: 841.89,
   margin: 48,
   headerBandHeight: 118,
-  footerReserve: 72
+  footerReserve: 88
 }
 
 const t = pdfEmailTheme
@@ -76,22 +76,26 @@ export const drawUnifiedDocumentHeader = (page, ctx, header = {}) => {
       })
     }
     const textX = ctx.logoImage ? margin + logoW + 16 : margin
+    const textMaxW = Math.max(160, pageWidth - margin - textX)
     let ty = y - 8
     page.drawText(ink(c.name), { x: textX, y: ty, font: ctx.fontBold, size: 13, color: t.green })
     ty -= 13
     page.drawText(ink(c.tagline), { x: textX, y: ty, font: ctx.font, size: 8, color: t.goldDeep })
     ty -= 12
     const detailLines = [
-      c.addressLines.join(', '),
+      ...c.addressLines,
       `Ireland ${c.irishPhone}  ·  Spain ${c.spanishPhone}`,
       `${c.email}  ·  ${c.websiteDisplay}`,
       `Registered in Ireland · Co. ${c.companyReg}`
     ]
     for (const line of detailLines) {
-      page.drawText(ink(line), { x: textX, y: ty, font: ctx.font, size: 8, color: t.muted })
-      ty -= 10
+      const wrapped = wrapPlainLinesWithFont(ctx.font, line, 8, textMaxW)
+      for (const part of wrapped) {
+        page.drawText(part, { x: textX, y: ty, font: ctx.font, size: 8, color: t.muted })
+        ty -= 10
+      }
     }
-    y = y - Math.max(logoH, y - ty) - 10
+    y = Math.min(y - logoH, ty + 4) - 12
   } else {
     page.drawText(ink(c.name), { x: margin, y: y - 4, font: ctx.fontBold, size: 10, color: t.green })
     y -= 18
@@ -157,13 +161,23 @@ export const drawUnifiedDocumentFooter = (page, _bottomY, ctx, extraLines = [], 
   }
 
   const c = CLIENT_DOCUMENT_COMPANY
-  const footerLines = [
-    `${c.name} · ${c.websiteDisplay} · ${c.email} · ${c.irishPhone}`,
-    ...extraLines
-  ]
+  const companyLine = `${c.name} · ${c.websiteDisplay} · ${c.email} · ${c.irishPhone}`
+  const seen = new Set()
+  const footerLines = []
+  for (const raw of [companyLine, ...extraLines]) {
+    const normalised = sanitizeStandardFontText(String(raw ?? ''))
+      .replace(/\s+/g, ' ')
+      .replace(/\s*·\s*/g, ' · ')
+      .trim()
+    if (!normalised) continue
+    const key = normalised.toLowerCase()
+    if (seen.has(key)) continue
+    seen.add(key)
+    footerLines.push(...wrapPlainLinesWithFont(ctx.font, normalised, TYPE.footer, contentW))
+  }
   let fy = baseY - 10
   for (const line of footerLines) {
-    page.drawText(sanitizeStandardFontText(line), {
+    page.drawText(line, {
       x: margin,
       y: fy,
       font: ctx.font,
@@ -394,7 +408,7 @@ export const drawUnifiedParagraphBlock = (page, topY, ctx, text, opts = {}) => {
 }
 
 /** Minimum Y before starting a new block (keeps content above footer). */
-export const unifiedPdfMinBodyY = () => UNIFIED_PDF_LAYOUT.footerReserve + 24
+export const unifiedPdfMinBodyY = () => UNIFIED_PDF_LAYOUT.footerReserve + 28
 
 /**
  * Paginate long body copy — returns updated y (and optional new page ref via callback).

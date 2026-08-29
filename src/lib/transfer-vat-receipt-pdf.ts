@@ -125,17 +125,33 @@ async function renderTransferPdf(opts: {
   page.drawText(sanitize(company.tagline), { x: textX, y: ty, font, size: 8, color: THEME.goldDeep })
   ty -= 12
   const detailLines = [
-    company.addressLines.join(', '),
+    ...company.addressLines,
     `Ireland ${company.irishPhone}  ·  Spain ${company.spanishPhone}`,
     `${company.email}  ·  ${company.websiteDisplay}`,
     `Registered in Ireland · Co. ${company.companyReg}`
   ]
+  const textMaxW = Math.max(160, PAGE_W - MARGIN - textX)
   for (const line of detailLines) {
-    page.drawText(sanitize(line), { x: textX, y: ty, font, size: 8, color: THEME.muted })
-    ty -= 10
+    const words = sanitize(line).split(/\s+/).filter(Boolean)
+    let current = words[0] || ''
+    const wrapped = []
+    for (let i = 1; i < words.length; i += 1) {
+      const next = `${current} ${words[i]}`
+      if (font.widthOfTextAtSize(next, 8) <= textMaxW) {
+        current = next
+      } else {
+        wrapped.push(current)
+        current = words[i]
+      }
+    }
+    if (current) wrapped.push(current)
+    for (const part of wrapped) {
+      page.drawText(part, { x: textX, y: ty, font, size: 8, color: THEME.muted })
+      ty -= 10
+    }
   }
 
-  const ruleY = headerY - Math.max(logoH, headerY - ty) - 10
+  const ruleY = Math.min(headerY - logoH, ty + 4) - 12
   page.drawRectangle({ x: MARGIN, y: ruleY, width: CONTENT_W, height: 0.9, color: THEME.gold })
 
   page.drawText(sanitize(opts.bannerTitle), { x: MARGIN, y: ruleY - 22, font: fontBold, size: 16, color: THEME.green })

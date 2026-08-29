@@ -8,7 +8,8 @@ import {
   UNIFIED_PDF_LAYOUT,
   drawUnifiedDocumentFooter,
   drawUnifiedDocumentHeader,
-  embedUnifiedLogo
+  embedUnifiedLogo,
+  unifiedPdfMinBodyY
 } from './gsol-unified-pdf-template.mjs'
 
 const fitAssetForPdf = (assetPath, width, height) =>
@@ -297,7 +298,7 @@ export const createProposalPdf = async (rawPayload = {}) => {
     title: 22,
     coverTitle: 26
   }
-  const bottomLimit = UNIFIED_PDF_LAYOUT.footerReserve + 8
+  const bottomLimit = unifiedPdfMinBodyY()
 
   const textHeight = (text, font, size, width, lineHeight) =>
     measureWrappedDrawHeight(wrapText({ text, font, fontSize: size, maxWidth: width }), lineHeight)

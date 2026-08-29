@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import { LuxuryButton } from './ui/button'
 import { adminMailRequest } from '../lib/admin-mail-api'
+import { applyMailTemplateVars } from '../../shared/admin-mail-templates.mjs'
 import { cx } from '../lib/utils'
 
 export type AdminMailSeed = {
@@ -133,6 +134,8 @@ type ComposeState = {
   reference: string
   phone: string
   interest: string
+  travelDates: string
+  numberOfGuests: string
   threadId: string
   inReplyTo: string
   references: string
@@ -155,6 +158,8 @@ const emptyCompose = (): ComposeState => ({
   reference: '',
   phone: '',
   interest: '',
+  travelDates: '',
+  numberOfGuests: '',
   threadId: '',
   inReplyTo: '',
   references: ''
@@ -176,11 +181,13 @@ const formatWhen = (value: string | number) => {
 const wrapReadableEmailHtml = (html: string) =>
   `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
     html,body{margin:0;padding:0;}
-    body{padding:8px 4px 24px;font-family:Georgia,"Times New Roman",serif;font-size:19px;line-height:1.75;color:#16231d;word-wrap:break-word;}
-    p{margin:0 0 12px;}
+    body{padding:16px 12px 28px;font-family:Georgia,"Times New Roman",serif;font-size:20px;line-height:1.75;color:#16231d;word-wrap:break-word;overflow-wrap:anywhere;}
+    p,td,th,li,div{font-size:18px !important;line-height:1.7 !important;color:#16231d;}
+    p{margin:0 0 14px;}
+    table{max-width:100% !important;}
     img{max-width:100%;height:auto;}
     a{color:#0f3d24;}
-    blockquote{margin:12px 0;padding:0 0 0 14px;border-left:3px solid #d4a843;color:#4b5c55;}
+    blockquote{margin:14px 0;padding:0 0 0 16px;border-left:3px solid #d4a843;color:#3d4f47;font-size:17px !important;}
   </style></head><body>${html}</body></html>`
 
 const formatBytes = (n: number) => {
@@ -322,29 +329,26 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
 
   const applyTemplateToCompose = (t: TemplateRow, next: ComposeState) => {
     const first = next.customerName.trim().split(/\s+/)[0] || ''
-    const filled = (value: string) =>
-      value
-        .replace(/\{\{customerName\}\}/g, next.customerName)
-        .replace(/\{\{firstName\}\}/g, first)
-        .replace(/\{\{email\}\}/g, next.to)
-        .replace(/\{\{phone\}\}/g, next.phone)
-        .replace(/\{\{reference\}\}/g, next.reference)
-        .replace(/\{\{interest\}\}/g, next.interest)
-        .replace(/\{\{companyName\}\}/g, 'Golf Sol Ireland')
-        .replace(/\{\{website\}\}/g, 'www.golfsolirl.com')
-        .replace(/\{\{companyPhone\}\}/g, '+353 87 446 4766')
-        .replace(/\{\{#\w+\}\}[\s\S]*?\{\{\/\w+\}\}/g, '')
-        .replace(/\{\{\w+\}\}/g, '')
+    const vars = {
+      customerName: next.customerName,
+      firstName: first,
+      email: next.to,
+      phone: next.phone,
+      reference: next.reference,
+      interest: next.interest,
+      travelDates: next.travelDates,
+      numberOfGuests: next.numberOfGuests
+    }
     return {
       ...next,
       templateId: t.id,
-      subject: filled(t.subject),
-      heading: t.heading,
-      introduction: t.introduction,
-      body: t.body,
-      ctaLabel: t.ctaLabel,
-      ctaUrl: t.ctaUrl,
-      closing: t.closing
+      subject: applyMailTemplateVars(t.subject, vars),
+      heading: applyMailTemplateVars(t.heading, vars),
+      introduction: applyMailTemplateVars(t.introduction, vars),
+      body: applyMailTemplateVars(t.body, vars),
+      ctaLabel: applyMailTemplateVars(t.ctaLabel, vars),
+      ctaUrl: applyMailTemplateVars(t.ctaUrl, vars),
+      closing: applyMailTemplateVars(t.closing, vars)
     }
   }
 
@@ -445,6 +449,8 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
       phone: compose.phone,
       reference: compose.reference,
       interest: compose.interest,
+      travelDates: compose.travelDates,
+      numberOfGuests: compose.numberOfGuests,
       companyName: 'Golf Sol Ireland',
       companyPhone: '+353 87 446 4766',
       website: 'www.golfsolirl.com'
@@ -606,6 +612,8 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
         reference: linked?.reference || '',
         phone: linked?.phone || '',
         interest: linked?.interest || '',
+        travelDates: linked?.travelDates || '',
+        numberOfGuests: linked?.numberOfGuests || '',
         threadId: selectedId || last.threadId,
         inReplyTo: last.messageIdHeader,
         references: [last.references, last.messageIdHeader].filter(Boolean).join(' '),
@@ -714,7 +722,7 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
   const filterBtn = (id: InboxFilter, label: string) => (
     <button
       className={cx(
-        'rounded-full px-4 py-2 text-sm font-semibold',
+        'rounded-full px-4 py-2 text-base font-semibold',
         inboxFilter === id ? 'bg-forest-900 text-white' : 'bg-forest-100 text-forest-800'
       )}
       onClick={() => setInboxFilter(id)}
@@ -726,12 +734,14 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
 
   return (
     <div className="space-y-4" id="admin-hub-mail">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-forest-100 bg-white px-4 py-3 shadow-soft sm:px-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-forest-100 bg-white px-4 py-4 shadow-soft sm:px-5">
         <div>
-          <h2 className="text-xl font-semibold text-forest-950 sm:text-2xl">
-            {connected ? status?.gmail.emailAddress : 'Gmail'}
+          <p className="font-ge text-xs font-extrabold uppercase tracking-[0.18em] text-brand-600">Gmail</p>
+          <h2 className="mt-1 text-xl font-semibold text-forest-950 sm:text-2xl">
+            {connected ? status?.gmail.emailAddress : 'Connect Gmail'}
           </h2>
-          {!connected ? <p className="text-sm text-forest-600">Connect once, then click a message to read it.</p> : null}
+          <p className="mt-1 text-lg font-medium leading-snug text-forest-700">Inbox · open · reply</p>
+          {!connected ? <p className="mt-1 text-base text-forest-600">Connect once, then click a name to open the email.</p> : null}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {!sendEnabled ? (
@@ -863,7 +873,7 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                             <span className={cx('mt-0.5 block truncate text-[15px] leading-snug', row.unread ? 'font-semibold text-forest-950' : 'text-forest-800')}>
                               {row.subject}
                             </span>
-                            <span className="mt-1 line-clamp-2 text-sm leading-relaxed text-forest-600">
+                            <span className="mt-1 line-clamp-2 text-base leading-relaxed text-forest-600">
                               {row.hasAttachments ? <Paperclip aria-hidden className="mr-1 inline h-4 w-4" /> : null}
                               {row.snippet}
                             </span>
@@ -1013,11 +1023,11 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                         </div>
                       </article>
                       <div className="rounded-2xl border border-forest-200 bg-[#f6fbf8] p-4">
-                        <label className="block text-sm font-semibold text-forest-800" htmlFor="mail-quick-reply">
+                        <label className="block text-base font-semibold text-forest-800" htmlFor="mail-quick-reply">
                           Reply
                         </label>
                         <textarea
-                          className="mt-2 min-h-[8rem] w-full rounded-xl border border-forest-200 bg-white px-3 py-3 text-base leading-relaxed text-forest-950"
+                          className="mt-2 min-h-[10rem] w-full rounded-xl border border-forest-200 bg-white px-4 py-3 text-lg leading-relaxed text-forest-950"
                           id="mail-quick-reply"
                           onChange={(e) => setQuickReply(e.target.value)}
                           placeholder={`Write a reply to ${latestMessage.fromName || latestMessage.fromEmail || 'them'}…`}
@@ -1058,23 +1068,23 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                 Reply keeps the Gmail thread. Branded email sends Golf Sol stationery.
               </p>
               <div className="mt-5 grid gap-4 md:grid-cols-2">
-                <label className="text-xs font-semibold uppercase tracking-wide text-forest-700">
+                <label className="text-sm font-bold uppercase tracking-wide text-forest-800">
                   From
-                  <input className="mt-1 w-full rounded-xl border border-forest-200 bg-forest-50 px-3 py-2 text-sm text-forest-800" readOnly value={status?.from || ''} />
+                  <input className="mt-1.5 w-full rounded-xl border border-forest-200 bg-forest-50 px-4 py-3 text-base text-forest-800" readOnly value={status?.from || ''} />
                 </label>
-                <label className="text-xs font-semibold uppercase tracking-wide text-forest-700">
+                <label className="text-sm font-bold uppercase tracking-wide text-forest-800">
                   To
                   <input
-                    className="mt-1 w-full rounded-xl border border-forest-200 px-3 py-2 text-sm"
+                    className="mt-1.5 w-full rounded-xl border border-forest-200 px-4 py-3 text-base"
                     onChange={(e) => setCompose((c) => ({ ...c, to: e.target.value }))}
                     type="email"
                     value={compose.to}
                   />
                 </label>
-                <label className="text-xs font-semibold uppercase tracking-wide text-forest-700">
+                <label className="text-sm font-bold uppercase tracking-wide text-forest-800">
                   Template
                   <select
-                    className="mt-1 w-full rounded-xl border border-forest-200 px-3 py-2 text-sm"
+                    className="mt-1.5 w-full rounded-xl border border-forest-200 px-4 py-3 text-base"
                     onChange={(e) => {
                       const t = templates.find((row) => row.id === e.target.value)
                       if (t) setCompose((c) => applyTemplateToCompose(t, { ...c, templateId: t.id }))
@@ -1088,59 +1098,59 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                     ))}
                   </select>
                 </label>
-                <label className="text-xs font-semibold uppercase tracking-wide text-forest-700">
+                <label className="text-sm font-bold uppercase tracking-wide text-forest-800">
                   Customer name
                   <input
-                    className="mt-1 w-full rounded-xl border border-forest-200 px-3 py-2 text-sm"
+                    className="mt-1.5 w-full rounded-xl border border-forest-200 px-4 py-3 text-base"
                     onChange={(e) => setCompose((c) => ({ ...c, customerName: e.target.value }))}
                     value={compose.customerName}
                   />
                 </label>
               </div>
-              <button className="mt-3 text-xs font-semibold text-forest-700 underline" onClick={() => setShowCc((v) => !v)} type="button">
+              <button className="mt-3 text-base font-semibold text-forest-700 underline" onClick={() => setShowCc((v) => !v)} type="button">
                 {showCc ? 'Hide CC / BCC' : 'Show CC / BCC'}
               </button>
               {showCc ? (
                 <div className="mt-3 grid gap-4 md:grid-cols-2">
-                  <label className="text-xs font-semibold uppercase tracking-wide text-forest-700">
+                  <label className="text-sm font-bold uppercase tracking-wide text-forest-800">
                     CC
-                    <input className="mt-1 w-full rounded-xl border border-forest-200 px-3 py-2 text-sm" onChange={(e) => setCompose((c) => ({ ...c, cc: e.target.value }))} value={compose.cc} />
+                    <input className="mt-1.5 w-full rounded-xl border border-forest-200 px-4 py-3 text-base" onChange={(e) => setCompose((c) => ({ ...c, cc: e.target.value }))} value={compose.cc} />
                   </label>
-                  <label className="text-xs font-semibold uppercase tracking-wide text-forest-700">
+                  <label className="text-sm font-bold uppercase tracking-wide text-forest-800">
                     BCC
-                    <input className="mt-1 w-full rounded-xl border border-forest-200 px-3 py-2 text-sm" onChange={(e) => setCompose((c) => ({ ...c, bcc: e.target.value }))} value={compose.bcc} />
+                    <input className="mt-1.5 w-full rounded-xl border border-forest-200 px-4 py-3 text-base" onChange={(e) => setCompose((c) => ({ ...c, bcc: e.target.value }))} value={compose.bcc} />
                   </label>
                 </div>
               ) : null}
-              <label className="mt-4 block text-xs font-semibold uppercase tracking-wide text-forest-700">
+              <label className="mt-4 block text-sm font-bold uppercase tracking-wide text-forest-800">
                 Subject
-                <input className="mt-1 w-full rounded-xl border border-forest-200 px-3 py-2 text-sm" onChange={(e) => setCompose((c) => ({ ...c, subject: e.target.value }))} value={compose.subject} />
+                <input className="mt-1.5 w-full rounded-xl border border-forest-200 px-4 py-3 text-base" onChange={(e) => setCompose((c) => ({ ...c, subject: e.target.value }))} value={compose.subject} />
               </label>
-              <label className="mt-4 block text-xs font-semibold uppercase tracking-wide text-forest-700">
+              <label className="mt-4 block text-sm font-bold uppercase tracking-wide text-forest-800">
                 Heading
-                <input className="mt-1 w-full rounded-xl border border-forest-200 px-3 py-2 text-sm" onChange={(e) => setCompose((c) => ({ ...c, heading: e.target.value }))} value={compose.heading} />
+                <input className="mt-1.5 w-full rounded-xl border border-forest-200 px-4 py-3 text-base" onChange={(e) => setCompose((c) => ({ ...c, heading: e.target.value }))} value={compose.heading} />
               </label>
-              <label className="mt-4 block text-xs font-semibold uppercase tracking-wide text-forest-700">
+              <label className="mt-4 block text-sm font-bold uppercase tracking-wide text-forest-800">
                 Introduction
-                <textarea className="mt-1 min-h-[70px] w-full rounded-xl border border-forest-200 px-3 py-2 text-sm" onChange={(e) => setCompose((c) => ({ ...c, introduction: e.target.value }))} value={compose.introduction} />
+                <textarea className="mt-1.5 min-h-[80px] w-full rounded-xl border border-forest-200 px-4 py-3 text-base leading-relaxed" onChange={(e) => setCompose((c) => ({ ...c, introduction: e.target.value }))} value={compose.introduction} />
               </label>
-              <label className="mt-4 block text-xs font-semibold uppercase tracking-wide text-forest-700">
+              <label className="mt-4 block text-sm font-bold uppercase tracking-wide text-forest-800">
                 Email body
-                <textarea className="mt-1 min-h-[160px] w-full rounded-xl border border-forest-200 px-3 py-2 text-sm" onChange={(e) => setCompose((c) => ({ ...c, body: e.target.value }))} value={compose.body} />
+                <textarea className="mt-1.5 min-h-[180px] w-full rounded-xl border border-forest-200 px-4 py-3 text-base leading-relaxed" onChange={(e) => setCompose((c) => ({ ...c, body: e.target.value }))} value={compose.body} />
               </label>
               <div className="mt-4 grid gap-4 md:grid-cols-2">
-                <label className="text-xs font-semibold uppercase tracking-wide text-forest-700">
+                <label className="text-sm font-bold uppercase tracking-wide text-forest-800">
                   CTA label
-                  <input className="mt-1 w-full rounded-xl border border-forest-200 px-3 py-2 text-sm" onChange={(e) => setCompose((c) => ({ ...c, ctaLabel: e.target.value }))} value={compose.ctaLabel} />
+                  <input className="mt-1.5 w-full rounded-xl border border-forest-200 px-4 py-3 text-base" onChange={(e) => setCompose((c) => ({ ...c, ctaLabel: e.target.value }))} value={compose.ctaLabel} />
                 </label>
-                <label className="text-xs font-semibold uppercase tracking-wide text-forest-700">
+                <label className="text-sm font-bold uppercase tracking-wide text-forest-800">
                   CTA URL
-                  <input className="mt-1 w-full rounded-xl border border-forest-200 px-3 py-2 text-sm" onChange={(e) => setCompose((c) => ({ ...c, ctaUrl: e.target.value }))} value={compose.ctaUrl} />
+                  <input className="mt-1.5 w-full rounded-xl border border-forest-200 px-4 py-3 text-base" onChange={(e) => setCompose((c) => ({ ...c, ctaUrl: e.target.value }))} value={compose.ctaUrl} />
                 </label>
               </div>
-              <label className="mt-4 block text-xs font-semibold uppercase tracking-wide text-forest-700">
+              <label className="mt-4 block text-sm font-bold uppercase tracking-wide text-forest-800">
                 Closing
-                <textarea className="mt-1 min-h-[70px] w-full rounded-xl border border-forest-200 px-3 py-2 text-sm" onChange={(e) => setCompose((c) => ({ ...c, closing: e.target.value }))} value={compose.closing} />
+                <textarea className="mt-1.5 min-h-[80px] w-full rounded-xl border border-forest-200 px-4 py-3 text-base leading-relaxed" onChange={(e) => setCompose((c) => ({ ...c, closing: e.target.value }))} value={compose.closing} />
               </label>
 
               <div
@@ -1221,8 +1231,8 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                 <p className="p-6 text-sm text-forest-600">Loading sent email…</p>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="min-w-full text-left text-sm">
-                    <thead className="bg-forest-950 text-xs font-semibold uppercase tracking-wide text-white">
+                  <table className="min-w-full text-left text-base">
+                    <thead className="bg-forest-950 text-sm font-semibold uppercase tracking-wide text-white">
                       <tr>
                         <th className="px-4 py-3">Recipient</th>
                         <th className="px-4 py-3">Subject</th>
@@ -1301,29 +1311,29 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                           .finally(() => setBusy(null))
                       }}
                     >
-                      <label className="block text-xs font-semibold uppercase text-forest-700">
+                      <label className="block text-sm font-bold uppercase tracking-wide text-forest-800">
                         Heading
-                        <input className="mt-1 w-full rounded-xl border px-3 py-2 text-sm" onChange={(e) => setTemplateEdit({ ...templateEdit, heading: e.target.value })} value={templateEdit.heading} />
+                        <input className="mt-1.5 w-full rounded-xl border px-4 py-3 text-base" onChange={(e) => setTemplateEdit({ ...templateEdit, heading: e.target.value })} value={templateEdit.heading} />
                       </label>
-                      <label className="block text-xs font-semibold uppercase text-forest-700">
+                      <label className="block text-sm font-bold uppercase tracking-wide text-forest-800">
                         Introduction
-                        <textarea className="mt-1 min-h-[70px] w-full rounded-xl border px-3 py-2 text-sm" onChange={(e) => setTemplateEdit({ ...templateEdit, introduction: e.target.value })} value={templateEdit.introduction} />
+                        <textarea className="mt-1.5 min-h-[80px] w-full rounded-xl border px-4 py-3 text-base leading-relaxed" onChange={(e) => setTemplateEdit({ ...templateEdit, introduction: e.target.value })} value={templateEdit.introduction} />
                       </label>
-                      <label className="block text-xs font-semibold uppercase text-forest-700">
+                      <label className="block text-sm font-bold uppercase tracking-wide text-forest-800">
                         Body
-                        <textarea className="mt-1 min-h-[140px] w-full rounded-xl border px-3 py-2 text-sm" onChange={(e) => setTemplateEdit({ ...templateEdit, body: e.target.value })} value={templateEdit.body} />
+                        <textarea className="mt-1.5 min-h-[160px] w-full rounded-xl border px-4 py-3 text-base leading-relaxed" onChange={(e) => setTemplateEdit({ ...templateEdit, body: e.target.value })} value={templateEdit.body} />
                       </label>
-                      <label className="block text-xs font-semibold uppercase text-forest-700">
+                      <label className="block text-sm font-bold uppercase tracking-wide text-forest-800">
                         CTA label
-                        <input className="mt-1 w-full rounded-xl border px-3 py-2 text-sm" onChange={(e) => setTemplateEdit({ ...templateEdit, ctaLabel: e.target.value })} value={templateEdit.ctaLabel} />
+                        <input className="mt-1.5 w-full rounded-xl border px-4 py-3 text-base" onChange={(e) => setTemplateEdit({ ...templateEdit, ctaLabel: e.target.value })} value={templateEdit.ctaLabel} />
                       </label>
-                      <label className="block text-xs font-semibold uppercase text-forest-700">
+                      <label className="block text-sm font-bold uppercase tracking-wide text-forest-800">
                         CTA URL
-                        <input className="mt-1 w-full rounded-xl border px-3 py-2 text-sm" onChange={(e) => setTemplateEdit({ ...templateEdit, ctaUrl: e.target.value })} value={templateEdit.ctaUrl} />
+                        <input className="mt-1.5 w-full rounded-xl border px-4 py-3 text-base" onChange={(e) => setTemplateEdit({ ...templateEdit, ctaUrl: e.target.value })} value={templateEdit.ctaUrl} />
                       </label>
-                      <label className="block text-xs font-semibold uppercase text-forest-700">
+                      <label className="block text-sm font-bold uppercase tracking-wide text-forest-800">
                         Closing
-                        <textarea className="mt-1 min-h-[70px] w-full rounded-xl border px-3 py-2 text-sm" onChange={(e) => setTemplateEdit({ ...templateEdit, closing: e.target.value })} value={templateEdit.closing} />
+                        <textarea className="mt-1.5 min-h-[80px] w-full rounded-xl border px-4 py-3 text-base leading-relaxed" onChange={(e) => setTemplateEdit({ ...templateEdit, closing: e.target.value })} value={templateEdit.closing} />
                       </label>
                       <div className="flex gap-2">
                         <LuxuryButton className="!px-4 !py-2 !text-sm" disabled={busy === 'template'} type="submit">
@@ -1335,7 +1345,7 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                       </div>
                     </form>
                   ) : (
-                    <p className="mt-3 whitespace-pre-wrap text-sm text-forest-700">{t.body}</p>
+                    <p className="mt-3 whitespace-pre-wrap text-base leading-relaxed text-forest-800">{t.body}</p>
                   )}
                 </article>
               ))}

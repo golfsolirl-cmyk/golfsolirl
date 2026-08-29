@@ -17,6 +17,7 @@ import {
   drawUnifiedDocumentHeader,
   embedUnifiedLogo,
   loadUnifiedPdfFonts,
+  unifiedPdfMinBodyY,
   wrapPlainLinesWithFont
 } from './gsol-unified-pdf-template.mjs'
 
@@ -25,7 +26,7 @@ const PAGE_W = UNIFIED_PDF_LAYOUT.pageWidth
 const PAGE_H = UNIFIED_PDF_LAYOUT.pageHeight
 const MARGIN = 48
 const CONTENT_W = PAGE_W - MARGIN * 2
-const MIN_Y = UNIFIED_PDF_LAYOUT.footerReserve + 8
+const MIN_Y = unifiedPdfMinBodyY()
 
 const S = {
   title: 18,
@@ -80,7 +81,7 @@ export const buildClientEnquiryDocumentPdf = async (draft) => {
   }
 
   const sectionHeading = (label) => {
-    ensure(28)
+    ensure(72)
     goldRule()
     state.page.drawText(ink(label.toUpperCase()), {
       x: MARGIN,
@@ -115,30 +116,39 @@ export const buildClientEnquiryDocumentPdf = async (draft) => {
   }
 
   ensure(48)
-  state.page.drawText(ink(view.title.toUpperCase()), {
-    x: MARGIN,
-    y: state.y,
-    font: ctx.fontBold,
-    size: S.title,
-    color: t.green
-  })
-  state.y -= 22
+  const titleLines = wrapPlainLinesWithFont(ctx.fontBold, view.title.toUpperCase(), S.title, CONTENT_W)
+  for (const line of titleLines) {
+    ensure(S.title + 6)
+    state.page.drawText(line, {
+      x: MARGIN,
+      y: state.y,
+      font: ctx.fontBold,
+      size: S.title,
+      color: t.green
+    })
+    state.y -= S.title + 6
+  }
   const meta = [`Reference: ${view.reference}`, `Date: ${view.dateLabel}`]
   if (view.validUntilLabel) meta.push(`Valid until: ${view.validUntilLabel}`)
   for (const line of meta) {
+    ensure(16)
     state.page.drawText(ink(line), { x: MARGIN, y: state.y, font: ctx.font, size: S.meta, color: t.muted })
     state.y -= 13
   }
   if (view.subject) {
     state.y -= 2
-    state.page.drawText(ink(`Subject: ${view.subject}`), {
-      x: MARGIN,
-      y: state.y,
-      font: ctx.font,
-      size: S.meta,
-      color: t.ink
-    })
-    state.y -= 14
+    const subjectLines = wrapPlainLinesWithFont(ctx.font, `Subject: ${view.subject}`, S.meta, CONTENT_W)
+    for (const line of subjectLines) {
+      ensure(16)
+      state.page.drawText(line, {
+        x: MARGIN,
+        y: state.y,
+        font: ctx.font,
+        size: S.meta,
+        color: t.ink
+      })
+      state.y -= 14
+    }
   }
   state.y -= 8
 
@@ -223,60 +233,78 @@ export const buildClientEnquiryDocumentPdf = async (draft) => {
 
   const totalPages = pages.length
   for (let i = 0; i < totalPages; i += 1) {
-    drawUnifiedDocumentFooter(pages[i], 52, ctx, [view.footerLine], { current: i + 1, total: totalPages })
+    drawUnifiedDocumentFooter(pages[i], 52, ctx, [], { current: i + 1, total: totalPages })
   }
 
   return { filename, bytes: await doc.save() }
 }
 
 const drawPricingTable = (state, ctx, pricing, ensure) => {
-  const cols = [
-    { w: CONTENT_W * 0.46, align: 'left' },
-    { w: CONTENT_W * 0.12, align: 'right' },
-    { w: CONTENT_W * 0.21, align: 'right' },
-    { w: CONTENT_W * 0.21, align: 'right' }
-  ]
-  const rowH = 18
+  const descColW = CONTENT_W * 0.46
+  const qtyColW = CONTENT_W * 0.12
+  const unitColW = CONTENT_W * 0.21
+  const totalColW = CONTENT_W * 0.21
+  const descMaxW = descColW - 14
+  const cellSize = 9
+  const lineH = 12
+  const padY = 6
+  const headerH = 18
 
-  const header = () => {
-    ensure(rowH + 4)
-    state.page.drawRectangle({ x: MARGIN, y: state.y - 4, width: CONTENT_W, height: rowH, color: t.green })
-    let x = MARGIN + 6
-    ;['Description', 'Qty', 'Unit price', 'Total'].forEach((label, i) => {
-      const col = cols[i]
-      const text = ink(label)
-      const tw = ctx.fontBold.widthOfTextAtSize(text, 8)
-      const tx = col.align === 'right' ? x + col.w - tw - 8 : x
-      state.page.drawText(text, { x: tx, y: state.y + 2, font: ctx.fontBold, size: 8, color: t.white })
-      x += col.w
-    })
-    state.y -= rowH + 2
-  }
-
-  header()
+  ensure(headerH + 6)
+  state.page.drawRectangle({
+    x: MARGIN,
+    y: state.y - headerH + 8,
+    width: CONTENT_W,
+    height: headerH,
+    color: t.green
+  })
+  let hx = MARGIN + 6
+  ;['Description', 'Qty', 'Unit price', 'Total'].forEach((label, i) => {
+    const col = [descColW, qtyColW, unitColW, totalColW][i]
+    const text = ink(label)
+    const tw = ctx.fontBold.widthOfTextAtSize(text, 8)
+    const tx = i === 0 ? hx : hx + col - tw - 8
+    state.page.drawText(text, { x: tx, y: state.y - 4, font: ctx.fontBold, size: 8, color: t.white })
+    hx += col
+  })
+  state.y -= headerH + 4
 
   const drawRow = (cells, opts = {}) => {
+    const font = opts.bold ? ctx.fontBold : ctx.font
+    const descLines = wrapPlainLinesWithFont(font, cells[0] || '—', cellSize, descMaxW)
+    const rowH = padY * 2 + Math.max(1, descLines.length) * lineH
     ensure(rowH + 2)
+    const bottom = state.y - rowH
     if (opts.band) {
       state.page.drawRectangle({
         x: MARGIN,
-        y: state.y - 4,
+        y: bottom,
         width: CONTENT_W,
         height: rowH,
         color: opts.band
       })
     }
-    let x = MARGIN + 6
-    cells.forEach((cell, i) => {
-      const col = cols[i]
-      const font = opts.bold ? ctx.fontBold : ctx.font
+    let descY = state.y - padY - cellSize
+    for (const line of descLines) {
+      state.page.drawText(line, { x: MARGIN + 6, y: descY, font, size: cellSize, color: t.ink })
+      descY -= lineH
+    }
+    const numY = state.y - padY - cellSize
+    let nx = MARGIN + descColW
+    ;[cells[1], cells[2], cells[3]].forEach((cell, i) => {
+      const col = [qtyColW, unitColW, totalColW][i]
       const text = ink(cell)
-      const tw = font.widthOfTextAtSize(text, 9)
-      const tx = col.align === 'right' ? x + col.w - tw - 8 : x
-      state.page.drawText(text, { x: tx, y: state.y + 1, font, size: 9, color: t.ink })
-      x += col.w
+      const tw = font.widthOfTextAtSize(text, cellSize)
+      state.page.drawText(text, {
+        x: nx + col - tw - 8,
+        y: numY,
+        font,
+        size: cellSize,
+        color: t.ink
+      })
+      nx += col
     })
-    state.y -= rowH
+    state.y = bottom
   }
 
   if (pricing.mode === 'single' && pricing.lines.length <= 1) {

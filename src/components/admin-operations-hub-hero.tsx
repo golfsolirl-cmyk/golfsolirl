@@ -138,7 +138,17 @@ export function AdminOperationsHubHero(props: {
   const Icon = navItem?.icon
 
   if (props.activeSection === 'mail') {
-    return null
+    return (
+      <div className="mb-5 rounded-2xl border border-forest-100 bg-white px-5 py-5 shadow-sm sm:px-7 sm:py-6" id="admin-hub-welcome">
+        <p className="font-ge text-sm font-extrabold uppercase tracking-[0.2em] text-brand-600">Gmail</p>
+        <h2 className="font-display mt-2 text-3xl font-bold tracking-tight text-forest-950 sm:text-4xl">
+          Inbox · open · reply
+        </h2>
+        <p className="mt-2 max-w-2xl text-lg leading-relaxed text-forest-700">
+          Click a name to read the email. Reply underneath, or send a branded Golf Sol message.
+        </p>
+      </div>
+    )
   }
 
   return (

@@ -8,7 +8,8 @@ import {
   drawUnifiedDocumentFooter,
   drawUnifiedDocumentHeader,
   embedUnifiedLogo,
-  loadUnifiedPdfFonts
+  loadUnifiedPdfFonts,
+  unifiedPdfMinBodyY
 } from './gsol-unified-pdf-template.mjs'
 
 const fmtEur = (n) => {
@@ -25,7 +26,7 @@ const pageWidth = UNIFIED_PDF_LAYOUT.pageWidth
 const pageHeight = UNIFIED_PDF_LAYOUT.pageHeight
 const margin = UNIFIED_PDF_LAYOUT.margin
 const contentW = pageWidth - margin * 2
-const bottomLimit = UNIFIED_PDF_LAYOUT.footerReserve + 16
+const bottomLimit = unifiedPdfMinBodyY()
 
 /**
  * @param {{ label: string | null; config: Record<string, unknown> }} row
