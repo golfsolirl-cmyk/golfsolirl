@@ -24,6 +24,7 @@ import {
 import { buildAdminBrandedMailHtml, brandedMailPlainText } from './admin-mail-html.mjs'
 import { buildClientEnquiryDocumentPdf } from './client-enquiry-document-pdf.mjs'
 import {
+  CLIENT_DOCUMENT_TYPES,
   defaultClientDocumentDraft,
   formatClientDocumentLongDate,
   readEnquiryFormFields
@@ -383,7 +384,10 @@ const handleGeneratePdf = async (user, body, env) => {
   const email = typeof body?.to === 'string' ? body.to.trim() : ''
   const message = typeof body?.message === 'string' ? body.message.trim() : typeof body?.body === 'string' ? body.body.trim() : ''
   const reference = typeof body?.reference === 'string' ? body.reference.trim() : ''
-  const documentType = body?.documentType === 'quotation' ? 'quotation' : 'enquiry_response'
+  const requestedType = typeof body?.documentType === 'string' ? body.documentType : ''
+  const documentType = CLIENT_DOCUMENT_TYPES.some((entry) => entry.id === requestedType)
+    ? requestedType
+    : 'enquiry_response'
   const draft = defaultClientDocumentDraft({
     documentType,
     enquiryId: typeof body?.enquiryId === 'string' ? body.enquiryId : null,
@@ -396,17 +400,12 @@ const handleGeneratePdf = async (user, body, env) => {
       phone: typeof body?.phone === 'string' ? body.phone : ''
     },
     message: message || 'Please see the attached Golf Sol Ireland document.',
-    sections: {
-      enquiry: Boolean(body?.enquirySummary),
-      message: true,
-      pricing: documentType === 'quotation',
-      notes: false,
-      terms: true,
-      payment: documentType === 'quotation',
-      signature: documentType === 'quotation'
-    },
     enquirySummary: typeof body?.enquirySummary === 'string' ? body.enquirySummary : ''
   })
+  draft.sections = {
+    ...draft.sections,
+    enquiry: Boolean(body?.enquirySummary) || draft.sections.enquiry
+  }
   const file = await buildClientEnquiryDocumentPdf(draft)
   const bytes = Buffer.from(file.bytes)
   assertPdfBuffer(bytes, file.filename)

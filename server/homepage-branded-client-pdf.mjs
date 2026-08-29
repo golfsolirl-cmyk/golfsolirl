@@ -7,23 +7,34 @@ import { PDFDocument } from 'pdf-lib'
 import sharp from 'sharp'
 import { sanitizeStandardFontText } from '../shared/pdf-winansi-sanitize.mjs'
 import { gsolCompanyLegal, gsolEmailBrand } from './email-constants.mjs'
-import { brandedPdfAssetPaths, heroDescriptionColor, pdfEmailTheme } from './pdf-email-brand.mjs'
+import { brandedPdfAssetPaths, pdfEmailTheme } from './pdf-email-brand.mjs'
 import {
   UNIFIED_PDF_LAYOUT,
   drawUnifiedBulletCard,
   drawUnifiedDocumentFooter,
+  drawUnifiedDocumentHeader,
   drawUnifiedGoldRule,
   drawUnifiedKeyValueTable,
   drawUnifiedSectionHeading,
+  embedUnifiedLogo,
   loadUnifiedPdfFonts,
   wrapPlainLinesWithFont
 } from './gsol-unified-pdf-template.mjs'
 
-/** Embed the homepage portrait crest at a target height (pt); width follows aspect ratio. */
-const embedHomepageCrest = async (doc, targetH) => {
-  const image = await doc.embedPng(readFileSync(brandedPdfAssetPaths.homepageCrest))
-  const ratio = image.width / image.height
-  return { image, height: targetH, width: Math.round(targetH * ratio) }
+/** Optional fleet photo under the shared letterhead. */
+const drawFleetStrip = async (page, doc, startY) => {
+  const { pageWidth, margin } = UNIFIED_PDF_LAYOUT
+  const contentW = pageWidth - margin * 2
+  const fleetH = 118
+  const fleetImage = await embedFleetHeroJpg(doc, Math.round(contentW * 2.2), Math.round(fleetH * 2.2))
+  if (!fleetImage) return startY
+  page.drawImage(fleetImage, {
+    x: margin,
+    y: startY - fleetH,
+    width: contentW,
+    height: fleetH
+  })
+  return startY - fleetH - 16
 }
 
 export const HOMEPAGE_CLIENT_PDF_SAMPLE_FILENAME = 'golfsol-homepage-client-document.pdf'
@@ -38,111 +49,6 @@ const embedFleetHeroJpg = async (pdfDocument, width, height) => {
     .jpeg({ quality: 88, mozjpeg: true })
     .toBuffer()
   return pdfDocument.embedJpg(jpeg)
-}
-
-/**
- * Homepage hero: fleet image + forest band + portrait crest + headline; text wraps with measured lines (no clipping).
- * @returns {number} body start Y
- */
-const drawHomepageHeroBand = async (page, doc, ctx) => {
-  const { pageWidth, pageHeight, margin } = UNIFIED_PDF_LAYOUT
-  const contentW = pageWidth - margin * 2
-  const fleetH = 138
-
-  page.drawRectangle({ x: 0, y: 0, width: pageWidth, height: pageHeight, color: pdfEmailTheme.cream })
-
-  const fleetTop = pageHeight - margin - fleetH
-  const fleetImage = await embedFleetHeroJpg(doc, Math.round(contentW * 2.2), Math.round(fleetH * 2.2))
-  if (fleetImage) {
-    page.drawImage(fleetImage, {
-      x: margin,
-      y: fleetTop,
-      width: contentW,
-      height: fleetH
-    })
-  } else {
-    page.drawRectangle({
-      x: margin,
-      y: fleetTop,
-      width: contentW,
-      height: fleetH,
-      color: pdfEmailTheme.green
-    })
-  }
-
-  const crest = await embedHomepageCrest(doc, 86)
-  const textLeftPad = 16
-  const textRightPad = 18
-  const textLeft = margin + 14 + crest.width + textLeftPad
-  const textW = pageWidth - margin - textRightPad - textLeft
-
-  const kicker = 'MALAGA → COSTA DEL SOL GOLF TRANSFERS'
-  const title = 'From plane to fairway.'
-  const description =
-    'Irish-owned golf travel — private transfers, hand-picked courses and golf-friendly stays in one trip desk.'
-
-  const kickerSize = 8.5
-  const kickerLH = 12
-  const titleSize = 22
-  const titleLH = 26
-  const descSize = 10.5
-  const descLH = 14
-  const innerPadV = 18
-
-  const titleLines = wrapPlainLinesWithFont(ctx.fontBold, title, titleSize, textW)
-  const descLines = wrapPlainLinesWithFont(ctx.font, description, descSize, textW)
-
-  const textBlockH =
-    kickerLH + 10 + titleLines.length * titleLH + 10 + descLines.length * descLH
-  const bandH = Math.max(112, Math.max(crest.height + 28, textBlockH + innerPadV * 2))
-  const bandBottom = fleetTop - bandH
-  const bandTop = bandBottom + bandH
-
-  page.drawRectangle({ x: margin, y: bandBottom, width: contentW, height: bandH, color: pdfEmailTheme.green })
-  page.drawRectangle({ x: margin, y: bandBottom + bandH - 4, width: contentW, height: 4, color: pdfEmailTheme.gold })
-
-  const crestBottom = bandBottom + (bandH - crest.height) / 2
-  page.drawImage(crest.image, {
-    x: margin + 14,
-    y: crestBottom,
-    width: crest.width,
-    height: crest.height
-  })
-
-  let textY = bandTop - innerPadV - kickerSize
-  page.drawText(sanitizeStandardFontText(kicker), {
-    x: textLeft,
-    y: textY,
-    font: ctx.fontBold,
-    size: kickerSize,
-    color: pdfEmailTheme.gold,
-    maxWidth: textW,
-    lineHeight: kickerLH
-  })
-  textY -= 10 + titleSize
-  for (const line of titleLines) {
-    page.drawText(line, {
-      x: textLeft,
-      y: textY,
-      font: ctx.fontBold,
-      size: titleSize,
-      color: pdfEmailTheme.white
-    })
-    textY -= titleLH
-  }
-  textY += titleLH - 10
-  for (const line of descLines) {
-    page.drawText(line, {
-      x: textLeft,
-      y: textY,
-      font: ctx.font,
-      size: descSize,
-      color: heroDescriptionColor
-    })
-    textY -= descLH
-  }
-
-  return bandBottom - 28
 }
 
 /** Three service pillars — Transfers · Golf · Hotels (homepage product story). Card height auto-fits wrapped copy. */
@@ -247,10 +153,15 @@ export const buildHomepageBrandedClientPdfBytes = async (input = {}) => {
   const doc = await PDFDocument.create()
   const { pageWidth, pageHeight, margin } = UNIFIED_PDF_LAYOUT
   const contentW = pageWidth - margin * 2
-  const ctx = await loadUnifiedPdfFonts(doc)
+  const ctx = { ...(await loadUnifiedPdfFonts(doc)), ...(await embedUnifiedLogo(doc)) }
 
   const page1 = doc.addPage([pageWidth, pageHeight])
-  let y = await drawHomepageHeroBand(page1, doc, ctx)
+  let y = drawUnifiedDocumentHeader(page1, ctx, {
+    kicker: 'Client document',
+    title: 'From plane to fairway.',
+    subtitle: 'Irish-owned golf travel — private transfers, hand-picked courses and golf-friendly stays in one trip desk.'
+  })
+  y = await drawFleetStrip(page1, doc, y)
 
   y = drawUnifiedSectionHeading(page1, y, ctx, 'YOUR TRIP DESK')
   y = drawUnifiedKeyValueTable(page1, y, ctx, [
@@ -273,17 +184,10 @@ export const buildHomepageBrandedClientPdfBytes = async (input = {}) => {
   ])
 
   const page2 = doc.addPage([pageWidth, pageHeight])
-  page2.drawRectangle({ x: 0, y: 0, width: pageWidth, height: pageHeight, color: pdfEmailTheme.cream })
-  page2.drawRectangle({ x: margin, y: pageHeight - 32, width: contentW, height: 3, color: pdfEmailTheme.gold })
-  page2.drawText(sanitizeStandardFontText('Golf Sol Ireland — your trip overview (continued)'), {
-    x: margin,
-    y: pageHeight - 48,
-    font: ctx.fontBold,
-    size: 10,
-    color: pdfEmailTheme.green
+  y = drawUnifiedDocumentHeader(page2, ctx, {
+    compact: true,
+    title: 'Your trip overview (continued)'
   })
-
-  y = pageHeight - 68
 
   y = drawUnifiedSectionHeading(page2, y, ctx, 'QUOTE SUMMARY (SAMPLE)')
   y = drawUnifiedKeyValueTable(page2, y, ctx, [
@@ -353,7 +257,7 @@ export const buildHomepageBrandedClientPdfBytes = async (input = {}) => {
       y: contactY,
       font: ctx.font,
       size: phoneSize,
-      color: heroDescriptionColor
+      color: pdfEmailTheme.gold
     })
     contactY -= phoneLH
   }

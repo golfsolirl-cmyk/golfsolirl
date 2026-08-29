@@ -6,6 +6,10 @@ export type ClientDocumentTypeId =
   | 'quotation'
   | 'proposal'
   | 'booking_confirmation'
+  | 'invoice'
+  | 'deposit_receipt'
+  | 'payment_receipt'
+  | 'paid_in_full'
   | 'customer_letter'
   | 'custom'
 

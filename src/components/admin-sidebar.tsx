@@ -39,7 +39,8 @@ export type AdminSidebarItem = {
 }
 
 export const ADMIN_SIDEBAR_ITEMS: readonly AdminSidebarItem[] = [
-  { id: 'desk', label: 'Desk & inbox', description: 'Payments · messages · publish', icon: Inbox },
+  { id: 'desk', label: 'Desk', description: 'Payments · portal messages · publish', icon: Inbox },
+  { id: 'mail', label: 'Gmail', description: 'Connect · inbox · reply · PDFs', icon: Mails },
   { id: 'scan', label: 'Scan trip pass', description: 'Verify guest payment barcode', icon: ScanLine },
   { id: 'forms', label: 'Website forms', description: 'New forms · trip · price', icon: FileText },
   { id: 'clientDocs', label: 'Client documents', description: 'Quotes · letters · Word & PDF', icon: ClipboardList },
@@ -49,7 +50,6 @@ export const ADMIN_SIDEBAR_ITEMS: readonly AdminSidebarItem[] = [
   { id: 'proposals', label: 'Documents & proposals', description: 'Send PDFs · CRM list', icon: PenLine },
   { id: 'portal', label: 'Client accounts', description: 'Create · settings · reset', icon: Users },
   { id: 'emails', label: 'Guest emails', description: 'Notes · templates · PDF keys', icon: Mail },
-  { id: 'mail', label: 'Inbox', description: 'Gmail · branded send · PDFs', icon: Mails },
   { id: 'drivers', label: 'Run calendar', description: 'Busy days · AGP sheets', icon: Calendar }
 ] as const
 

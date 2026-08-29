@@ -1,22 +1,20 @@
 /**
  * A4 stationery PDF for admin client letters / quotations (pdf-lib).
- * Letterhead: crest left, company details right — not a webpage screenshot.
+ * Uses the shared Golf Sol full-company letterhead.
  */
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { PDFDocument, rgb } from 'pdf-lib'
+import { PDFDocument } from 'pdf-lib'
 import { sanitizeStandardFontText } from '../shared/pdf-winansi-sanitize.mjs'
 import {
   buildClientDocumentFilename,
   buildClientDocumentView,
-  CLIENT_DOCUMENT_COMPANY,
   formatClientDocumentEuro,
   normalizeClientDocumentDraft
 } from '../shared/client-enquiry-document.mjs'
-import { brandedPdfAssetPaths, pdfEmailTheme } from './pdf-email-brand.mjs'
+import { pdfEmailTheme } from './pdf-email-brand.mjs'
 import {
   UNIFIED_PDF_LAYOUT,
+  drawUnifiedDocumentFooter,
+  drawUnifiedDocumentHeader,
   embedUnifiedLogo,
   loadUnifiedPdfFonts,
   wrapPlainLinesWithFont
@@ -27,8 +25,7 @@ const PAGE_W = UNIFIED_PDF_LAYOUT.pageWidth
 const PAGE_H = UNIFIED_PDF_LAYOUT.pageHeight
 const MARGIN = 48
 const CONTENT_W = PAGE_W - MARGIN * 2
-const FOOTER_Y = 36
-const MIN_Y = 58
+const MIN_Y = UNIFIED_PDF_LAYOUT.footerReserve + 8
 
 const S = {
   title: 18,
@@ -37,41 +34,7 @@ const S = {
   meta: 9.5
 }
 
-const currentDir = path.dirname(fileURLToPath(import.meta.url))
 const ink = (text) => sanitizeStandardFontText(String(text ?? ''))
-
-const loadLogoBytes = () => {
-  try {
-    return readFileSync(brandedPdfAssetPaths.homepageCrest)
-  } catch {
-    try {
-      return readFileSync(path.resolve(currentDir, '../public/images', CLIENT_DOCUMENT_COMPANY.logoFilename))
-    } catch {
-      return null
-    }
-  }
-}
-
-const embedLogo = async (doc) => {
-  const logoBytes = loadLogoBytes()
-  if (logoBytes) {
-    try {
-      const embedded = await doc.embedPng(logoBytes)
-      const h = 56
-      return { image: embedded, w: (embedded.width / embedded.height) * h, h }
-    } catch (error) {
-      console.error('[client-enquiry-document-pdf] logo embed failed', error)
-    }
-  }
-  try {
-    const unified = await embedUnifiedLogo(doc)
-    const h = 56
-    return { image: unified.logoImage, w: unified.logoW * (h / unified.logoH), h }
-  } catch (error) {
-    console.error('[client-enquiry-document-pdf] unified logo fallback failed', error)
-    return null
-  }
-}
 
 /**
  * @param {unknown} draft
@@ -84,8 +47,8 @@ export const buildClientEnquiryDocumentPdf = async (draft) => {
 
   const doc = await PDFDocument.create()
   const fonts = await loadUnifiedPdfFonts(doc)
-  const logo = await embedLogo(doc)
-  const ctx = { ...fonts, logo }
+  const logo = await embedUnifiedLogo(doc)
+  const ctx = { ...fonts, ...logo }
 
   /** @type {import('pdf-lib').PDFPage[]} */
   const pages = []
@@ -94,13 +57,13 @@ export const buildClientEnquiryDocumentPdf = async (draft) => {
     y: 0
   }
   pages.push(state.page)
-  state.y = drawLetterhead(state.page, ctx, true)
+  state.y = drawUnifiedDocumentHeader(state.page, ctx, {})
 
   const ensure = (needed) => {
     if (state.y - needed >= MIN_Y) return
     state.page = doc.addPage([PAGE_W, PAGE_H])
     pages.push(state.page)
-    state.y = drawLetterhead(state.page, ctx, false)
+    state.y = drawUnifiedDocumentHeader(state.page, ctx, { compact: true })
   }
 
   const goldRule = () => {
@@ -260,72 +223,10 @@ export const buildClientEnquiryDocumentPdf = async (draft) => {
 
   const totalPages = pages.length
   for (let i = 0; i < totalPages; i += 1) {
-    drawStationeryFooter(pages[i], ctx, view.footerLine, i + 1, totalPages)
+    drawUnifiedDocumentFooter(pages[i], 52, ctx, [view.footerLine], { current: i + 1, total: totalPages })
   }
 
   return { filename, bytes: await doc.save() }
-}
-
-const drawLetterhead = (page, ctx, full) => {
-  const c = CLIENT_DOCUMENT_COMPANY
-  page.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: rgb(1, 1, 1) })
-  page.drawRectangle({ x: 0, y: PAGE_H - 3.2, width: PAGE_W, height: 3.2, color: t.gold })
-
-  let y = PAGE_H - MARGIN
-  if (full) {
-    if (ctx.logo) {
-      page.drawImage(ctx.logo.image, {
-        x: MARGIN,
-        y: y - ctx.logo.h,
-        width: ctx.logo.w,
-        height: ctx.logo.h
-      })
-    }
-    const textX = ctx.logo ? MARGIN + ctx.logo.w + 16 : MARGIN
-    const logoH = ctx.logo?.h ?? 56
-    let ty = y - 8
-    page.drawText(ink(c.name), { x: textX, y: ty, font: ctx.fontBold, size: 13, color: t.green })
-    ty -= 13
-    page.drawText(ink(c.tagline), { x: textX, y: ty, font: ctx.font, size: 8, color: t.goldDeep })
-    ty -= 12
-    const detailLines = [
-      c.addressLines.join(', '),
-      `Ireland ${c.irishPhone}  ·  Spain ${c.spanishPhone}`,
-      `${c.email}  ·  ${c.websiteDisplay}`,
-      `Registered in Ireland · Co. ${c.companyReg}`
-    ]
-    for (const line of detailLines) {
-      page.drawText(ink(line), { x: textX, y: ty, font: ctx.font, size: 8, color: t.muted })
-      ty -= 10
-    }
-    y = y - Math.max(logoH, y - ty) - 10
-  } else {
-    page.drawText(ink(c.name), { x: MARGIN, y: y - 4, font: ctx.fontBold, size: 10, color: t.green })
-    y -= 18
-  }
-
-  page.drawRectangle({ x: MARGIN, y, width: CONTENT_W, height: 0.9, color: t.gold })
-  return y - 22
-}
-
-const drawStationeryFooter = (page, ctx, footerLine, current, total) => {
-  page.drawRectangle({ x: MARGIN, y: FOOTER_Y + 16, width: CONTENT_W, height: 0.6, color: t.sand })
-  page.drawText(ink(footerLine), {
-    x: MARGIN,
-    y: FOOTER_Y + 4,
-    font: ctx.font,
-    size: 7.5,
-    color: t.muted
-  })
-  const pageText = `Page ${current} of ${total}`
-  const pw = ctx.font.widthOfTextAtSize(pageText, 7.5)
-  page.drawText(pageText, {
-    x: PAGE_W - MARGIN - pw,
-    y: FOOTER_Y + 4,
-    font: ctx.font,
-    size: 7.5,
-    color: t.muted
-  })
 }
 
 const drawPricingTable = (state, ctx, pricing, ensure) => {

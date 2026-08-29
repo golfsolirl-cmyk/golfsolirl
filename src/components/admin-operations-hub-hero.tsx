@@ -11,7 +11,7 @@ type SectionGuide = {
 
 const SECTION_GUIDES: Record<AdminPortalSectionId, SectionGuide> = {
   desk: {
-    kicker: 'Desk & inbox',
+    kicker: 'Desk',
     title: 'Payments, messages & publish',
     summary: 'Start here for money in, guest replies, and adding a priced line to their trip.',
     steps: [
@@ -111,9 +111,9 @@ const SECTION_GUIDES: Record<AdminPortalSectionId, SectionGuide> = {
     ]
   },
   mail: {
-    kicker: 'Inbox',
-    title: 'Gmail and branded mail',
-    summary: 'Read customer Gmail here, then reply on the same thread or send a Golf Sol branded email with a PDF.',
+    kicker: 'Gmail',
+    title: 'Gmail inbox',
+    summary: 'Connect Gmail here. Read customer mail, reply on the same thread, or send a Golf Sol branded email with a PDF.',
     steps: [
       'Connect Gmail once (tokens stay on the server).',
       'Open a conversation, match it to a website form, then Reply via Gmail or Send branded email.',

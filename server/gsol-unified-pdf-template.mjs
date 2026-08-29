@@ -1,18 +1,19 @@
 /**
- * Golf Sol Ireland — master PDF shell (cream page, forest header, homepage crest).
- * All server-generated PDFs should use these helpers for consistent branding.
+ * Golf Sol Ireland — master PDF shell.
+ * Full company letterhead (crest left, address / phones / email / Co. no. right).
+ * Used for enquiries, quotes, booking confirmations, invoices, and receipts.
  */
 import { readFileSync } from 'node:fs'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import { sanitizeStandardFontText } from '../shared/pdf-winansi-sanitize.mjs'
 import { brandedPdfAssetPaths, pdfEmailTheme } from './pdf-email-brand.mjs'
-import { gsolCompanyLegal } from './email-constants.mjs'
+import { CLIENT_DOCUMENT_COMPANY } from '../shared/client-enquiry-document.mjs'
 
 export const UNIFIED_PDF_LAYOUT = {
   pageWidth: 595.28,
   pageHeight: 841.89,
   margin: 48,
-  headerBandHeight: 96,
+  headerBandHeight: 118,
   footerReserve: 72
 }
 
@@ -41,79 +42,96 @@ export const loadUnifiedPdfFonts = async (doc) => ({
 /** @param {import('pdf-lib').PDFDocument} doc */
 export const embedUnifiedLogo = async (doc) => {
   const logoImage = await doc.embedPng(readFileSync(brandedPdfAssetPaths.homepageCrest))
-  const logoH = 72
+  const logoH = 56
   const logoW = (logoImage.width / logoImage.height) * logoH
   return { logoImage, logoW, logoH }
 }
 
+const ink = (value) => sanitizeStandardFontText(String(value ?? ''))
+
 /**
- * Branded header: solid forest band + gold rule + homepage crest (left) + title on cream.
+ * Master letterhead: crest left, full company block right, gold rule, optional title.
+ * Continuation pages pass `{ compact: true }`.
  * @returns {number} Y to start body content
  */
-export const drawUnifiedDocumentHeader = (page, ctx, header) => {
-  const { pageWidth, pageHeight, margin, headerBandHeight } = UNIFIED_PDF_LAYOUT
+export const drawUnifiedDocumentHeader = (page, ctx, header = {}) => {
+  const { pageWidth, pageHeight, margin } = UNIFIED_PDF_LAYOUT
   const contentW = pageWidth - margin * 2
-  const bandBottom = pageHeight - margin - headerBandHeight
+  const c = CLIENT_DOCUMENT_COMPANY
+  const compact = Boolean(header.compact || header.continuation)
 
-  page.drawRectangle({ x: 0, y: 0, width: pageWidth, height: pageHeight, color: t.cream })
-  page.drawRectangle({ x: 0, y: pageHeight - 4, width: pageWidth, height: 4, color: t.gold })
-  page.drawRectangle({ x: 0, y: bandBottom, width: pageWidth, height: headerBandHeight + margin, color: t.green })
+  page.drawRectangle({ x: 0, y: 0, width: pageWidth, height: pageHeight, color: rgb(1, 1, 1) })
+  page.drawRectangle({ x: 0, y: pageHeight - 3.2, width: pageWidth, height: 3.2, color: t.gold })
 
-  const logoY = bandBottom + (headerBandHeight - ctx.logoH) / 2
-  page.drawImage(ctx.logoImage, {
-    x: margin,
-    y: logoY,
-    width: ctx.logoW,
-    height: ctx.logoH
-  })
+  let y = pageHeight - margin
+  if (!compact) {
+    const logoH = ctx.logoH || 56
+    const logoW = ctx.logoW || 56
+    if (ctx.logoImage) {
+      page.drawImage(ctx.logoImage, {
+        x: margin,
+        y: y - logoH,
+        width: logoW,
+        height: logoH
+      })
+    }
+    const textX = ctx.logoImage ? margin + logoW + 16 : margin
+    let ty = y - 8
+    page.drawText(ink(c.name), { x: textX, y: ty, font: ctx.fontBold, size: 13, color: t.green })
+    ty -= 13
+    page.drawText(ink(c.tagline), { x: textX, y: ty, font: ctx.font, size: 8, color: t.goldDeep })
+    ty -= 12
+    const detailLines = [
+      c.addressLines.join(', '),
+      `Ireland ${c.irishPhone}  ·  Spain ${c.spanishPhone}`,
+      `${c.email}  ·  ${c.websiteDisplay}`,
+      `Registered in Ireland · Co. ${c.companyReg}`
+    ]
+    for (const line of detailLines) {
+      page.drawText(ink(line), { x: textX, y: ty, font: ctx.font, size: 8, color: t.muted })
+      ty -= 10
+    }
+    y = y - Math.max(logoH, y - ty) - 10
+  } else {
+    page.drawText(ink(c.name), { x: margin, y: y - 4, font: ctx.fontBold, size: 10, color: t.green })
+    y -= 18
+  }
 
-  const textX = margin + ctx.logoW + 18
-  const textMaxW = pageWidth - margin - textX - 12
-  let metaY = bandBottom + headerBandHeight - 22
+  page.drawRectangle({ x: margin, y, width: contentW, height: 0.9, color: t.gold })
+  y -= 22
 
-  page.drawText('FROM PLANE TO FAIRWAY', {
-    x: textX,
-    y: metaY,
-    font: ctx.fontBold,
-    size: TYPE.headerKicker,
-    color: t.gold
-  })
-  metaY -= 14
-  const metaLines = [
-    'Golf Sol Ireland - Irish-owned Costa del Sol golf travel',
-    'www.golfsolirl.com - info@golfsolirl.com',
-    `Registered in Ireland - Co. ${gsolCompanyLegal.companyRegistrationNumber}`
-  ]
-  for (const line of metaLines) {
-    const wrapped = wrapPlainLinesWithFont(ctx.font, line, TYPE.headerMeta, textMaxW)
-    for (const w of wrapped) {
-      page.drawText(w, { x: textX, y: metaY, font: ctx.font, size: TYPE.headerMeta, color: t.white })
-      metaY -= 12
+  const kicker = typeof header.kicker === 'string' ? header.kicker.trim() : ''
+  if (kicker && !compact) {
+    page.drawText(ink(kicker.toUpperCase()), {
+      x: margin,
+      y,
+      font: ctx.fontBold,
+      size: TYPE.headerKicker,
+      color: t.goldDeep
+    })
+    y -= 14
+  }
+
+  const title = typeof header.title === 'string' ? header.title.trim() : ''
+  if (title) {
+    const titleLines = wrapPlainLinesWithFont(ctx.fontBold, title, TYPE.docTitle, contentW)
+    for (const line of titleLines) {
+      page.drawText(line, { x: margin, y, font: ctx.fontBold, size: TYPE.docTitle, color: t.green })
+      y -= TYPE.docTitle + 6
     }
   }
 
-  let y = bandBottom - 20
-  page.drawRectangle({ x: margin, y: y - 2, width: contentW * 0.42, height: 2.5, color: t.gold })
-  page.drawRectangle({ x: margin + contentW * 0.42 + 8, y: y - 1, width: contentW * 0.58 - 8, height: 0.6, color: t.sand })
-
-  y -= 26
-  const titleLines = wrapPlainLinesWithFont(ctx.fontBold, header.title, TYPE.docTitle, contentW)
-  for (const line of titleLines) {
-    page.drawText(line, { x: margin, y, font: ctx.fontBold, size: TYPE.docTitle, color: t.green })
-    y -= TYPE.docTitle + 6
-  }
-
-  let bodyStartY = y - 8
   if (header.subtitle?.trim()) {
+    y -= 2
     const subLines = wrapPlainLinesWithFont(ctx.font, header.subtitle, TYPE.docSubtitle, contentW)
     for (const line of subLines) {
-      page.drawText(line, { x: margin, y: bodyStartY, font: ctx.font, size: TYPE.docSubtitle, color: t.muted })
-      bodyStartY -= TYPE.docSubtitle + 5
+      page.drawText(line, { x: margin, y, font: ctx.font, size: TYPE.docSubtitle, color: t.muted })
+      y -= TYPE.docSubtitle + 5
     }
-    bodyStartY -= 6
+    y -= 6
   }
 
-  return bodyStartY
+  return y - 8
 }
 
 /**
@@ -138,8 +156,9 @@ export const drawUnifiedDocumentFooter = (page, _bottomY, ctx, extraLines = [], 
     })
   }
 
+  const c = CLIENT_DOCUMENT_COMPANY
   const footerLines = [
-    'Golf Sol Ireland - www.golfsolirl.com - info@golfsolirl.com',
+    `${c.name} · ${c.websiteDisplay} · ${c.email} · ${c.irishPhone}`,
     ...extraLines
   ]
   let fy = baseY - 10
@@ -435,9 +454,10 @@ export const buildGsolUnifiedPdfTemplateSampleBytes = async () => {
 
   const page1 = doc.addPage([pageWidth, pageHeight])
   let y = drawUnifiedDocumentHeader(page1, ctx, {
-    title: 'Golf Sol Ireland — Master Document Template',
+    kicker: 'Master stationery',
+    title: 'Golf Sol Ireland — company letterhead',
     subtitle:
-      'Cream page, forest header band, homepage crest, and readable type. Use this shell for enquiries, quotes, invoices, and terms.'
+      'Full company header for enquiries, quotations, booking confirmations, invoices, deposit receipts, payment receipts, and paid-in-full receipts.'
   })
 
   y = drawUnifiedSectionHeading(page1, y - 8, ctx, 'Trip details we received')
@@ -469,7 +489,7 @@ export const buildGsolUnifiedPdfTemplateSampleBytes = async () => {
   const body = [
     'This block shows how longer text wraps inside the master shell without clipping or overlap.',
     '',
-    'The same header and footer appear on enquiry packs, proposals, invoices, receipts, terms, and client portal documents.'
+    'The same header and footer appear on enquiries, quotations, booking confirmations, invoices, deposit receipts, payment receipts, and paid-in-full receipts.'
   ].join('\n')
 
   y = drawUnifiedParagraphBlock(page2, y - 10, ctx, body, { size: TYPE.body, lineHeight: 16, color: t.ink })

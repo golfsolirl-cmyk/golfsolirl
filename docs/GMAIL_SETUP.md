@@ -79,7 +79,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 `GOOGLE_REDIRECT_URI` local example: `http://localhost:5173/api/gmail-oauth-callback`  
 Production example: `https://www.golfsolirl.com/api/gmail-oauth-callback`
 
-Keep `EMAIL_SEND_ENABLED=false` until you are ready to send real customer email. Preview and PDF generation still work.
+Set `EMAIL_SEND_ENABLED=true` when you want Gmail replies and branded Resend sends from the admin Gmail desk. Preview and PDF generation work either way. Existing enquiry, portal, and Stripe emails are not gated by this flag.
 
 ## 7. Database
 
@@ -94,7 +94,7 @@ Restart `npm run dev` locally, or redeploy on Vercel so the new environment vari
 ## 9. Connect Gmail from admin
 
 1. Sign in at `/dashboard/admin`.
-2. Open **Inbox** in the sidebar.
+2. Open **Gmail** in the sidebar (second item, under Desk).
 3. Click **Connect Gmail**.
 4. Sign in with the Google account that receives customer mail.
 5. Grant readonly + send.
@@ -105,5 +105,5 @@ Reconnect or Disconnect from the same panel. Tokens are never shown in the brows
 ## Safety
 
 - Do not paste secrets into chat, tickets, or the repo.
-- Do not set `EMAIL_SEND_ENABLED=true` in local `.env` while testing against real customer addresses.
+- `EMAIL_SEND_ENABLED=true` sends real mail to whatever address you type. Check the To field before you click send.
 - If Google shows “app not verified”, add your Google account as a test user on the consent screen.

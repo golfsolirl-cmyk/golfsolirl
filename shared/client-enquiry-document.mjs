@@ -29,6 +29,10 @@ export const CLIENT_DOCUMENT_TYPES = [
   { id: 'quotation', label: 'Quotation' },
   { id: 'proposal', label: 'Proposal' },
   { id: 'booking_confirmation', label: 'Booking Confirmation' },
+  { id: 'invoice', label: 'Invoice' },
+  { id: 'deposit_receipt', label: 'Deposit Receipt' },
+  { id: 'payment_receipt', label: 'Payment Receipt' },
+  { id: 'paid_in_full', label: 'Paid in Full' },
   { id: 'customer_letter', label: 'Customer Letter' },
   { id: 'custom', label: 'Custom' }
 ]
@@ -53,6 +57,26 @@ const QUOTATION_SECTIONS = {
   terms: true,
   payment: true,
   signature: true
+}
+
+const BOOKING_SECTIONS = {
+  enquiry: true,
+  message: true,
+  pricing: true,
+  notes: false,
+  terms: true,
+  payment: true,
+  signature: false
+}
+
+const RECEIPT_SECTIONS = {
+  enquiry: false,
+  message: true,
+  pricing: true,
+  notes: false,
+  terms: false,
+  payment: true,
+  signature: false
 }
 
 /**
@@ -139,7 +163,11 @@ export const defaultClientDocumentDraft = (overrides = {}) => {
   const sections =
     type === 'quotation' || type === 'proposal'
       ? { ...QUOTATION_SECTIONS }
-      : { ...DEFAULT_CLIENT_DOCUMENT_SECTIONS }
+      : type === 'booking_confirmation'
+        ? { ...BOOKING_SECTIONS }
+        : type === 'invoice' || type === 'deposit_receipt' || type === 'payment_receipt' || type === 'paid_in_full'
+          ? { ...RECEIPT_SECTIONS }
+          : { ...DEFAULT_CLIENT_DOCUMENT_SECTIONS }
   return {
     id: null,
     enquiryId: null,

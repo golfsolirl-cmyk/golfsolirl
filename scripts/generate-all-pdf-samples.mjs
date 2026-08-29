@@ -21,6 +21,37 @@ const write = (folder, filename, bytes) => {
   console.log(`  ✓ ${folder}/${filename}`)
 }
 
+async function generateMasterStationery() {
+  console.log('\n📄 Category: Master stationery (letterhead kinds)')
+
+  const { buildGsolMasterDocumentPdf } = await import('../server/gsol-master-document-pdf.mjs')
+  const kinds = [
+    ['enquiry', 'Enquiry'],
+    ['quotation', 'Quotation'],
+    ['booking_confirmation', 'Booking confirmation'],
+    ['invoice', 'Invoice'],
+    ['deposit_receipt', 'Deposit receipt'],
+    ['payment_receipt', 'Payment receipt'],
+    ['paid_in_full', 'Paid in full']
+  ]
+  for (const [kind, title] of kinds) {
+    const { bytes } = await buildGsolMasterDocumentPdf({
+      kind,
+      subtitle: `Sample ${title.toLowerCase()} on Golf Sol Ireland master stationery.`,
+      reference: 'GSI-DEMO-0001',
+      dateLabel: '29 August 2026',
+      customerName: 'Sean Murphy',
+      customerEmail: 'sean.murphy@example.com',
+      customerPhone: '+353 87 123 4567',
+      accountRef: 'GSOL-SAMPLE-001',
+      amountLabel: kind.includes('receipt') || kind === 'invoice' || kind === 'paid_in_full' ? 'Amount' : null,
+      amountValue: kind.includes('receipt') || kind === 'invoice' || kind === 'paid_in_full' ? 'EUR 185.00' : null,
+      notes: 'This file is a layout sample. Live documents use the same letterhead with the customer trip details.'
+    })
+    write('0-master-stationery', `golfsol-${kind.replace(/_/g, '-')}.pdf`, bytes)
+  }
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. ENQUIRY ACKNOWLEDGEMENT PACK (email attachments)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -304,6 +335,7 @@ if (fs.existsSync(outRoot)) {
 ensureDir(outRoot)
 
 const runners = [
+  generateMasterStationery,
   generateEnquiryPack,
   generateProposal,
   generateTransferPortalBundle,
@@ -333,6 +365,10 @@ const indexContent = `# PDF Document Samples — Golf Sol Ireland
 Generated: ${new Date().toLocaleString('en-IE', { dateStyle: 'full', timeStyle: 'short' })}
 
 ## Folder Structure
+
+### 0-master-stationery/
+One letterhead for every customer document kind.
+- **golfsol-enquiry.pdf** through **golfsol-paid-in-full.pdf** — same crest, address, phones, Co. 814210
 
 ### 1-enquiry-pack/
 Email attachments sent when a customer submits an enquiry form.

@@ -5,6 +5,7 @@ import {
   IRISH_VAT_STANDARD_RATE
 } from './package-build'
 import { GOLFSOL_BRAND_LOGO_HOSTED } from './brand-logo-assets'
+import { CLIENT_DOCUMENT_COMPANY } from './client-enquiry-document'
 
 export type TransferReceiptVatTreatment = 'tourism' | 'services' | null | undefined
 
@@ -35,6 +36,8 @@ export type TransferReceiptPdfTransfer = {
 const THEME = {
   green: rgb(6 / 255, 59 / 255, 42 / 255),
   greenLight: rgb(15 / 255, 81 / 255, 60 / 255),
+  gold: rgb(212 / 255, 168 / 255, 67 / 255),
+  goldDeep: rgb(176 / 255, 132 / 255, 40 / 255),
   ink: rgb(22 / 255, 35 / 255, 29 / 255),
   muted: rgb(102 / 255, 115 / 255, 109 / 255),
   white: rgb(1, 1, 1),
@@ -94,42 +97,47 @@ async function renderTransferPdf(opts: {
 
   const page = doc.addPage([PAGE_W, PAGE_H])
 
-  // White page fill
+  // White page fill + gold top bar (same stationery as server PDFs)
   page.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: THEME.white })
+  page.drawRectangle({ x: 0, y: PAGE_H - 3.2, width: PAGE_W, height: 3.2, color: THEME.gold })
 
-  // Green top rule
-  page.drawRectangle({ x: 0, y: PAGE_H - 3, width: PAGE_W, height: 3, color: THEME.green })
-
-  const topY = PAGE_H - 24
-
-  // v5 header: "FROM PLANE TO FAIRWAY" + company info
-  page.drawText('FROM PLANE TO FAIRWAY', { x: MARGIN, y: topY, font: fontBold, size: 9, color: THEME.green })
-  page.drawText(sanitize('GolfSol Ireland - Irish-owned Costa del Sol Golf Travel'), {
-    x: MARGIN, y: topY - 16, font, size: 8, color: THEME.muted
-  })
-  page.drawText(sanitize('www.golfsolirl.com - info@golfsolirl.com'), {
-    x: MARGIN, y: topY - 28, font, size: 8, color: THEME.muted
-  })
-  page.drawText(sanitize('Registered in Ireland - Company No. 814210'), {
-    x: MARGIN, y: topY - 40, font, size: 8, color: THEME.muted
-  })
-
-  // Logo crest (top-right)
+  const company = CLIENT_DOCUMENT_COMPANY
+  let headerY = PAGE_H - MARGIN
+  const logoH = 56
+  let logoW = 56
   const logoBytes = await loadLogoPng()
   if (logoBytes) {
     try {
       const logoImage = await doc.embedPng(logoBytes)
-      const lh = 60
-      const lw = (logoImage.width / logoImage.height) * lh
-      page.drawImage(logoImage, { x: PAGE_W - MARGIN - lw, y: topY - lh + 10, width: lw, height: lh })
-    } catch { /* logo optional */ }
+      logoW = (logoImage.width / logoImage.height) * logoH
+      page.drawImage(logoImage, { x: MARGIN, y: headerY - logoH, width: logoW, height: logoH })
+    } catch {
+      logoW = 0
+    }
+  } else {
+    logoW = 0
   }
 
-  // Rule below header
-  const ruleY = topY - 52
-  page.drawRectangle({ x: MARGIN, y: ruleY, width: CONTENT_W, height: 0.75, color: THEME.rule })
+  const textX = logoW > 0 ? MARGIN + logoW + 16 : MARGIN
+  let ty = headerY - 8
+  page.drawText(sanitize(company.name), { x: textX, y: ty, font: fontBold, size: 13, color: THEME.green })
+  ty -= 13
+  page.drawText(sanitize(company.tagline), { x: textX, y: ty, font, size: 8, color: THEME.goldDeep })
+  ty -= 12
+  const detailLines = [
+    company.addressLines.join(', '),
+    `Ireland ${company.irishPhone}  ·  Spain ${company.spanishPhone}`,
+    `${company.email}  ·  ${company.websiteDisplay}`,
+    `Registered in Ireland · Co. ${company.companyReg}`
+  ]
+  for (const line of detailLines) {
+    page.drawText(sanitize(line), { x: textX, y: ty, font, size: 8, color: THEME.muted })
+    ty -= 10
+  }
 
-  // Document title
+  const ruleY = headerY - Math.max(logoH, headerY - ty) - 10
+  page.drawRectangle({ x: MARGIN, y: ruleY, width: CONTENT_W, height: 0.9, color: THEME.gold })
+
   page.drawText(sanitize(opts.bannerTitle), { x: MARGIN, y: ruleY - 22, font: fontBold, size: 16, color: THEME.green })
 
   let y = ruleY - 48

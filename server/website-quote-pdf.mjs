@@ -1,10 +1,15 @@
-import { existsSync, readFileSync } from 'node:fs'
-import { PDFDocument, StandardFonts } from 'pdf-lib'
-import sharp from 'sharp'
+import { PDFDocument } from 'pdf-lib'
 import { sanitizeStandardFontText } from '../shared/pdf-winansi-sanitize.mjs'
-import { brandedPdfAssetPaths, pdfEmailTheme } from './pdf-email-brand.mjs'
+import { pdfEmailTheme } from './pdf-email-brand.mjs'
 import { pdfFieldLabel, pdfFieldValueDisplay } from './website-form-field-labels-pdf.mjs'
 import { costaSolCourseNameById, costaSolCourseRegionById } from '../shared/costa-sol-course-names.mjs'
+import {
+  UNIFIED_PDF_LAYOUT,
+  drawUnifiedDocumentFooter,
+  drawUnifiedDocumentHeader,
+  embedUnifiedLogo,
+  loadUnifiedPdfFonts
+} from './gsol-unified-pdf-template.mjs'
 
 const fmtEur = (n) => {
   const num = new Intl.NumberFormat('en-IE', {
@@ -16,9 +21,11 @@ const fmtEur = (n) => {
 
 const vatPct = (rate) => `${Math.round(Number(rate) * 1000) / 10}%`
 
-const pageWidth = 595.28
-const pageHeight = 841.89
-const bottomLimit = 56
+const pageWidth = UNIFIED_PDF_LAYOUT.pageWidth
+const pageHeight = UNIFIED_PDF_LAYOUT.pageHeight
+const margin = UNIFIED_PDF_LAYOUT.margin
+const contentW = pageWidth - margin * 2
+const bottomLimit = UNIFIED_PDF_LAYOUT.footerReserve + 16
 
 /**
  * @param {{ label: string | null; config: Record<string, unknown> }} row
@@ -45,70 +52,34 @@ export const buildWebsiteQuotePdfBytes = async (row) => {
   const bal = Number(adminQuote.balance80Eur)
 
   const doc = await PDFDocument.create()
-  const font = await doc.embedFont(StandardFonts.Helvetica)
-  const fontBold = await doc.embedFont(StandardFonts.HelveticaBold)
-  const logoImage = await doc.embedPng(readFileSync(brandedPdfAssetPaths.homepageCrest))
-
-  const margin = 34
-  const contentW = pageWidth - margin * 2
-
-  const fleetPath = brandedPdfAssetPaths.fleetLineup
-  const fleetBandH = 132
-  let fleetImage = null
-  if (existsSync(fleetPath)) {
-    const fleetJpeg = await sharp(readFileSync(fleetPath))
-      .resize(1600, Math.round(fleetBandH * 3.2), { fit: 'cover', kernel: sharp.kernel.lanczos3 })
-      .jpeg({ quality: 86, mozjpeg: true })
-      .toBuffer()
-    fleetImage = await doc.embedJpg(fleetJpeg)
-  }
-
-  const fleetOffsetY = fleetImage ? fleetBandH : 0
+  const fonts = await loadUnifiedPdfFonts(doc)
+  const logo = await embedUnifiedLogo(doc)
+  const ctx = { ...fonts, ...logo }
+  const font = ctx.font
+  const fontBold = ctx.fontBold
+  const pages = []
 
   const openFirstPage = () => {
     const page = doc.addPage([pageWidth, pageHeight])
-    page.drawRectangle({ x: 0, y: 0, width: pageWidth, height: pageHeight, color: pdfEmailTheme.cream })
-    if (fleetImage) {
-      page.drawImage(fleetImage, {
-        x: margin,
-        y: pageHeight - 112 - fleetBandH,
-        width: contentW,
-        height: fleetBandH
-      })
-    }
-    page.drawRectangle({ x: margin, y: pageHeight - 112, width: contentW, height: 74, color: pdfEmailTheme.green })
-    page.drawRectangle({ x: margin, y: pageHeight - 112, width: contentW, height: 4, color: pdfEmailTheme.gold })
-    const logoDims = logoImage.scale(0.155)
-    page.drawImage(logoImage, { x: margin + 16, y: pageHeight - 98, width: logoDims.width, height: logoDims.height })
-    page.drawText(sanitizeStandardFontText('TRIP QUOTE'), {
-      x: margin + 150,
-      y: pageHeight - 64,
-      font: fontBold,
-      size: 9.5,
-      color: pdfEmailTheme.gold
+    pages.push(page)
+    const y = drawUnifiedDocumentHeader(page, ctx, {
+      kicker: 'Quotation',
+      title: row.label?.trim() || `Enquiry ${enquiryReferenceId || 'quote'}`,
+      subtitle: [enquiryReferenceId && `Reference ${enquiryReferenceId}`, formKey && `Form: ${formKey.replace(/_/g, ' ')}`]
+        .filter(Boolean)
+        .join('  ·  ')
     })
-    page.drawText(sanitizeStandardFontText('Golf Sol Ireland'), {
-      x: margin + 150,
-      y: pageHeight - 82,
-      font: fontBold,
-      size: 16,
-      color: pdfEmailTheme.white
-    })
-    return { page, y: pageHeight - 128 - fleetOffsetY }
+    return { page, y }
   }
 
   const openContinuationPage = () => {
     const page = doc.addPage([pageWidth, pageHeight])
-    page.drawRectangle({ x: 0, y: 0, width: pageWidth, height: pageHeight, color: pdfEmailTheme.cream })
-    page.drawRectangle({ x: margin, y: pageHeight - 28, width: contentW, height: 3, color: pdfEmailTheme.gold })
-    page.drawText(sanitizeStandardFontText('Golf Sol Ireland — trip quote (continued)'), {
-      x: margin,
-      y: pageHeight - 44,
-      font: fontBold,
-      size: 9,
-      color: pdfEmailTheme.green
+    pages.push(page)
+    const y = drawUnifiedDocumentHeader(page, ctx, {
+      compact: true,
+      title: 'Trip quote (continued)'
     })
-    return { page, y: pageHeight - 62 }
+    return { page, y }
   }
 
   let { page, y } = openFirstPage()
@@ -170,13 +141,7 @@ export const buildWebsiteQuotePdfBytes = async (row) => {
     }
   }
 
-  draw('IRISH-OWNED · COSTA DEL SOL GOLF SPECIALISTS', { size: 9.5, color: pdfEmailTheme.green })
-  y -= 4
-  draw(row.label?.trim() || `Enquiry ${enquiryReferenceId}`, { bold: true, size: 15, color: pdfEmailTheme.green })
   y -= 2
-  draw(`Reference: ${enquiryReferenceId}`, { size: 10.5, color: pdfEmailTheme.muted })
-  draw(`Form: ${formKey.replace(/_/g, ' ')}`, { size: 10.5, color: pdfEmailTheme.muted })
-  y -= 6
   draw('Your request', { bold: true, size: 13, color: pdfEmailTheme.greenSoft })
   y -= 2
 
@@ -242,17 +207,9 @@ export const buildWebsiteQuotePdfBytes = async (row) => {
   y -= 10
   draw('Subject to availability and written confirmation from Golf Sol Ireland.', { size: 9.5, color: pdfEmailTheme.muted })
 
-  y -= 10
-  if (y < bottomLimit + 52) {
-    const next = openContinuationPage()
-    page = next.page
-    y = next.y
-  }
-  drawLine(y + 8, 0.75, pdfEmailTheme.sand)
-  y -= 14
-  draw('GOLF SOL IRELAND', { bold: true, size: 10.5, color: pdfEmailTheme.green })
-  y -= 2
-  draw('golfsolirl.com  ·  +353 87 446 4766  ·  +34 641 81 53 66', { size: 9.5, color: pdfEmailTheme.muted })
+  pages.forEach((pdfPage, index) => {
+    drawUnifiedDocumentFooter(pdfPage, 52, ctx, [], { current: index + 1, total: pages.length })
+  })
 
   return doc.save()
 }

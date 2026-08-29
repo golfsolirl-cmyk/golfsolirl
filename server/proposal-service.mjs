@@ -3,7 +3,13 @@ import { PDFDocument, StandardFonts } from 'pdf-lib'
 import sharp from 'sharp'
 import { buildProposalDocument } from '../shared/document-templates.mjs'
 import { sanitizeStandardFontText } from '../shared/pdf-winansi-sanitize.mjs'
-import { brandedPdfAssetPaths, heroDescriptionColor, pdfEmailTheme } from './pdf-email-brand.mjs'
+import { brandedPdfAssetPaths, pdfEmailTheme } from './pdf-email-brand.mjs'
+import {
+  UNIFIED_PDF_LAYOUT,
+  drawUnifiedDocumentFooter,
+  drawUnifiedDocumentHeader,
+  embedUnifiedLogo
+} from './gsol-unified-pdf-template.mjs'
 
 const fitAssetForPdf = (assetPath, width, height) =>
   sharp(readFileSync(assetPath))
@@ -14,8 +20,8 @@ const fitAssetForPdf = (assetPath, width, height) =>
 const embedPdfJpg = async (pdfDocument, assetPath, width, height) =>
   pdfDocument.embedJpg(await fitAssetForPdf(assetPath, width, height))
 
-const pageWidth = 595.28
-const pageHeight = 841.89
+const pageWidth = UNIFIED_PDF_LAYOUT.pageWidth
+const pageHeight = UNIFIED_PDF_LAYOUT.pageHeight
 
 /** Minimum reading size (pt) on proposal PDFs — slightly roomier than legacy enquiry PDF for long copy. */
 const PDF_READING_PT = 16
@@ -275,10 +281,11 @@ export const createProposalPdf = async (rawPayload = {}) => {
   const pdfDocument = await PDFDocument.create()
   const regularFont = await pdfDocument.embedFont(StandardFonts.Helvetica)
   const boldFont = await pdfDocument.embedFont(StandardFonts.HelveticaBold)
-  const logoImage = await pdfDocument.embedPng(readFileSync(brandedPdfAssetPaths.homepageCrest))
+  const logo = await embedUnifiedLogo(pdfDocument)
   const fleetImage = await embedPdfJpg(pdfDocument, brandedPdfAssetPaths.fleetLineup, 1280, 390)
+  const ctx = { font: regularFont, fontBold: boldFont, ...logo }
 
-  const margin = 40
+  const margin = UNIFIED_PDF_LAYOUT.margin
   const contentW = pageWidth - margin * 2
   const type = {
     eyebrow: 8.5,
@@ -290,40 +297,15 @@ export const createProposalPdf = async (rawPayload = {}) => {
     title: 22,
     coverTitle: 26
   }
-  const topLimit = pageHeight - 64
-  const bottomLimit = 74
+  const bottomLimit = UNIFIED_PDF_LAYOUT.footerReserve + 8
 
   const textHeight = (text, font, size, width, lineHeight) =>
     measureWrappedDrawHeight(wrapText({ text, font, fontSize: size, maxWidth: width }), lineHeight)
 
   const addPage = (kicker = 'Proposal details', title = 'Your Costa del Sol golf proposal') => {
     const page = pdfDocument.addPage([pageWidth, pageHeight])
-    page.drawRectangle({ x: 0, y: 0, width: pageWidth, height: pageHeight, color: pdfEmailTheme.cream })
-    page.drawRectangle({ x: margin, y: pageHeight - 112, width: contentW, height: 74, color: pdfEmailTheme.green })
-    page.drawRectangle({ x: margin, y: pageHeight - 112, width: contentW, height: 4, color: pdfEmailTheme.gold })
-
-    const logoDims = logoImage.scale(0.13)
-    page.drawImage(logoImage, { x: margin + 16, y: pageHeight - 96, width: logoDims.width, height: logoDims.height })
-    page.drawText(sanitizeStandardFontText(kicker).toUpperCase(), {
-      x: margin + 142,
-      y: pageHeight - 66,
-      font: boldFont,
-      size: type.eyebrow,
-      color: pdfEmailTheme.gold
-    })
-    drawTextBlock({
-      page,
-      text: title,
-      x: margin + 142,
-      y: pageHeight - 82,
-      font: boldFont,
-      fontSize: 14,
-      color: pdfEmailTheme.white,
-      maxWidth: contentW - 160,
-      lineHeight: 18
-    })
-
-    return { page, y: pageHeight - 142 }
+    const y = drawUnifiedDocumentHeader(page, ctx, { kicker, title })
+    return { page, y }
   }
 
   const ensurePage = (state, needed, kicker, title) => {
@@ -428,133 +410,41 @@ export const createProposalPdf = async (rawPayload = {}) => {
     return state
   }
 
-  const cover = pdfDocument.addPage([pageWidth, pageHeight])
-  cover.drawRectangle({ x: 0, y: 0, width: pageWidth, height: pageHeight, color: pdfEmailTheme.cream })
-
-  const topBarY = pageHeight - 34
-  cover.drawText('IRISH-OWNED · COSTA DEL SOL GOLF SPECIALISTS', {
-    x: margin,
-    y: topBarY,
-    font: boldFont,
-    size: type.eyebrow,
-    color: pdfEmailTheme.green
+  let state = addPage(String(documentTemplate.hero.kicker || 'Proposal'), documentTemplate.hero.title)
+  state = drawParagraph(state, documentTemplate.hero.description, {
+    size: 11.5,
+    lineHeight: 16,
+    color: pdfEmailTheme.muted,
+    kicker: String(documentTemplate.hero.kicker || 'Proposal'),
+    title: documentTemplate.hero.title
   })
-  cover.drawText('GolfSol Ireland', {
-    x: pageWidth - margin - boldFont.widthOfTextAtSize('GolfSol Ireland', type.eyebrow),
-    y: topBarY,
-    font: boldFont,
-    size: type.eyebrow,
-    color: pdfEmailTheme.muted
+  state = drawParagraph(state, `Reference ${proposal.proposalId}  ·  ${proposal.proposalDate}`, {
+    size: 10.5,
+    lineHeight: 15,
+    color: pdfEmailTheme.green,
+    kicker: String(documentTemplate.hero.kicker || 'Proposal'),
+    title: documentTemplate.hero.title
   })
 
-  const heroY = 360
-  const heroH = 400
-  cover.drawRectangle({ x: margin, y: heroY, width: contentW, height: heroH, color: pdfEmailTheme.green })
-  cover.drawRectangle({ x: margin, y: heroY, width: contentW, height: 5, color: pdfEmailTheme.gold })
+  const fleetH = 118
+  state = ensurePage(state, fleetH + 40, 'Proposal', documentTemplate.hero.title)
+  if (fleetImage) {
+    state.page.drawImage(fleetImage, {
+      x: margin,
+      y: state.y - fleetH,
+      width: contentW,
+      height: fleetH
+    })
+    state.y -= fleetH + 8
+    state = drawParagraph(state, 'Golf-bag friendly Mercedes fleet — E-Class, V-Class and Sprinter options matched to your group.', {
+      size: 10,
+      lineHeight: 14,
+      color: pdfEmailTheme.muted,
+      kicker: 'Proposal',
+      title: documentTemplate.hero.title
+    })
+  }
 
-  const logoDims = logoImage.scale(0.19)
-  cover.drawImage(logoImage, {
-    x: margin + 22,
-    y: heroY + heroH - logoDims.height - 18,
-    width: logoDims.width,
-    height: logoDims.height
-  })
-
-  const pillLabel = sanitizeStandardFontText(String(documentTemplate.hero.kicker || 'Proposal'))
-    .toUpperCase()
-    .slice(0, 42)
-  cover.drawText(pillLabel, {
-    x: margin + 24,
-    y: heroY + 250,
-    font: boldFont,
-    size: type.eyebrow,
-    color: pdfEmailTheme.gold
-  })
-
-  let heroTextY = drawTextBlock({
-    page: cover,
-    text: documentTemplate.hero.title,
-    x: margin + 24,
-    y: heroY + 224,
-    font: boldFont,
-    fontSize: type.coverTitle,
-    color: pdfEmailTheme.white,
-    maxWidth: 305,
-    lineHeight: 32
-  })
-  heroTextY -= 18
-  drawTextBlock({
-    page: cover,
-    text: documentTemplate.hero.description,
-    x: margin + 24,
-    y: heroTextY,
-    font: regularFont,
-    fontSize: 12,
-    color: heroDescriptionColor,
-    maxWidth: 300,
-    lineHeight: 18
-  })
-
-  cover.drawRectangle({
-    x: margin + contentW - 158,
-    y: heroY + 176,
-    width: 130,
-    height: 106,
-    color: pdfEmailTheme.greenSoft,
-    borderColor: pdfEmailTheme.gold,
-    borderWidth: 0.7
-  })
-  cover.drawText('PROPOSAL', {
-    x: margin + contentW - 142,
-    y: heroY + 248,
-    font: boldFont,
-    size: type.eyebrow,
-    color: pdfEmailTheme.gold
-  })
-  drawTextBlock({
-    page: cover,
-    text: `${proposal.proposalId}\n${proposal.proposalDate}`,
-    x: margin + contentW - 142,
-    y: heroY + 222,
-    font: regularFont,
-    fontSize: type.small,
-    color: pdfEmailTheme.white,
-    maxWidth: 100,
-    lineHeight: 14
-  })
-
-  const fleetY = 82
-  cover.drawRectangle({
-    x: margin,
-    y: fleetY,
-    width: contentW,
-    height: 238,
-    color: pdfEmailTheme.white,
-    borderColor: pdfEmailTheme.sand,
-    borderWidth: 0.8
-  })
-  cover.drawImage(fleetImage, { x: margin, y: fleetY + 72, width: contentW, height: 166 })
-  cover.drawRectangle({ x: margin, y: fleetY, width: contentW, height: 72, color: pdfEmailTheme.paleGold })
-  cover.drawText('GOLF-BAG FRIENDLY MERCEDES FLEET', {
-    x: margin + 18,
-    y: fleetY + 48,
-    font: boldFont,
-    size: type.eyebrow,
-    color: pdfEmailTheme.goldDeep
-  })
-  drawTextBlock({
-    page: cover,
-    text: 'E-Class, V-Class and Sprinter options matched to your group.',
-    x: margin + 18,
-    y: fleetY + 28,
-    font: boldFont,
-    fontSize: 12,
-    color: pdfEmailTheme.ink,
-    maxWidth: contentW - 36,
-    lineHeight: 16
-  })
-
-  let state = null
   documentTemplate.infoCards.forEach((card, index) => {
     state = drawSection(state, {
       kicker: index === 0 ? 'Proposal details' : 'Proposal details continued',
@@ -620,26 +510,13 @@ export const createProposalPdf = async (rawPayload = {}) => {
 
   const pages = pdfDocument.getPages()
   pages.forEach((pdfPage, index) => {
-    pdfPage.drawLine({
-      start: { x: margin, y: 48 },
-      end: { x: margin + contentW, y: 48 },
-      color: pdfEmailTheme.sand,
-      thickness: 0.7
-    })
-    pdfPage.drawText(`Golf Sol Ireland · Proposal ${proposal.proposalId}`, {
-      x: margin,
-      y: 30,
-      font: regularFont,
-      size: type.small,
-      color: pdfEmailTheme.muted
-    })
-    pdfPage.drawText(`Page ${index + 1} of ${pages.length}`, {
-      x: pageWidth - margin - 56,
-      y: 30,
-      font: regularFont,
-      size: type.small,
-      color: pdfEmailTheme.muted
-    })
+    drawUnifiedDocumentFooter(
+      pdfPage,
+      52,
+      ctx,
+      [`Proposal ${proposal.proposalId}`],
+      { current: index + 1, total: pages.length }
+    )
   })
 
   return {

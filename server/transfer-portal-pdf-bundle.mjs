@@ -21,6 +21,7 @@ import {
   estimateUnifiedKeyValueTableHeight,
   loadUnifiedPdfFonts
 } from './gsol-unified-pdf-template.mjs'
+import { buildGsolMasterDocumentPdf } from './gsol-master-document-pdf.mjs'
 
 const W = UNIFIED_PDF_LAYOUT.pageWidth
 const H = UNIFIED_PDF_LAYOUT.pageHeight
@@ -337,109 +338,46 @@ export const createTransferPaymentReceiptPdf = async (ctx) => {
   const gross = Number(ctx.booking.admin_price_eur)
   const pct = normalizedDepositPercent(ctx.booking.deposit_percent)
   const amt = round2(Number(ctx.amountChargedEur))
-  const doc = await PDFDocument.create()
-  const shell = await loadPdfShell(doc)
-  const font = shell.font
-  const fontBold = shell.fontBold
-  const t = pdfEmailTheme
-  const page = doc.addPage([W, H])
-  const headerTitle =
-    ctx.receiptType === 'deposit' ? 'Deposit payment confirmation' : 'Payment received in full'
-  let y = drawHeaderBand(page, shell, headerTitle)
-  page.drawText(sanitizeStandardFontText(`Bill to: ${ctx.profileName}`), { x: m, y, size: 11, font: fontBold, color: t.ink })
-  y -= 16
-  if (ctx.profileEmail?.trim()) {
-    page.drawText(sanitizeStandardFontText(ctx.profileEmail.trim()), { x: m, y, size: 10, font, color: t.muted })
-    y -= 14
-  }
-  if (ctx.accountRef?.trim()) {
-    page.drawText(sanitizeStandardFontText(`Account: ${ctx.accountRef.trim()}`), { x: m, y, size: 10, font, color: t.muted })
-    y -= 14
-  }
-  y -= 10
-
-  const innerW = W - 2 * m - 28
+  const kind = ctx.receiptType === 'deposit' ? 'deposit_receipt' : 'paid_in_full'
   const route = `${String(ctx.booking.pickup_label ?? '')} → ${String(ctx.booking.dropoff_label ?? '')}`
-  const routeLines = wrapLines(route, font, 10, innerW)
-  const refLines = wrapLines(`Booking reference: ${String(ctx.booking.id)}`, font, 9, innerW)
-  const transferBoxH = 18 + 18 + routeLines.length * 12 + refLines.length * 12 + 20
-  page.drawRectangle({
-    x: m,
-    y: y - transferBoxH,
-    width: W - 2 * m,
-    height: transferBoxH,
-    color: t.paleGreen,
-    borderColor: t.sand,
-    borderWidth: 0.5
-  })
-  let ty = y - 18
-  page.drawText('Transfer', { x: m + 14, y: ty, size: 11, font: fontBold, color: t.ink })
-  ty -= 18
-  for (const ln of routeLines) {
-    page.drawText(sanitizeStandardFontText(ln), { x: m + 14, y: ty, size: 10, font, color: t.ink })
-    ty -= 12
-  }
-  for (const ln of refLines) {
-    page.drawText(sanitizeStandardFontText(ln), { x: m + 14, y: ty, size: 9, font, color: t.muted })
-    ty -= 12
-  }
-  y -= transferBoxH + 14
-
-  const amountLines = wrapLines(`Amount paid (this card charge): ${formatEur(amt)}`, fontBold, 14, W - 2 * m)
-  for (const ln of amountLines) {
-    page.drawText(sanitizeStandardFontText(ln), { x: m, y, size: 14, font: fontBold, color: t.goldDeep })
-    y -= 18
-  }
-  y -= 4
-
+  const dash = `${getGsolSiteUrl().replace(/\/+$/, '')}/dashboard`
+  const notes = []
   if (Number.isFinite(gross) && gross > 0) {
-    for (const ln of wrapLines(`Quoted total (VAT incl.): ${formatEur(gross)}`, font, 11, W - 2 * m)) {
-      page.drawText(sanitizeStandardFontText(ln), { x: m, y, size: 11, font, color: t.ink })
-      y -= 14
-    }
+    notes.push(`Quoted total (VAT incl.): ${formatEur(gross)}.`)
   }
-
   if (ctx.receiptType === 'deposit' && Number.isFinite(gross) && gross > 0) {
     const rem = balanceAmountEur(gross, pct)
-    for (const ln of wrapLines(
-      `Outstanding balance after this deposit: ${formatEur(rem)} (${100 - pct}% of quoted total).`,
-      font,
-      10,
-      W - 2 * m
-    )) {
-      page.drawText(sanitizeStandardFontText(ln), { x: m, y, size: 10, font, color: t.ink })
-      y -= 13
-    }
-    y -= 12
-  } else if (ctx.receiptType === 'paid_in_full' && Number.isFinite(gross) && gross > 0) {
-    for (const ln of wrapLines('This transfer is fully paid against the quoted total above.', font, 10, W - 2 * m)) {
-      page.drawText(sanitizeStandardFontText(ln), { x: m, y, size: 10, font, color: t.ink })
-      y -= 13
-    }
-    y -= 12
+    notes.push(`Outstanding balance after this deposit: ${formatEur(rem)} (${100 - pct}% of quoted total).`)
+  } else if (ctx.receiptType === 'paid_in_full') {
+    notes.push('This transfer is fully paid against the quoted total.')
   }
-
   const stripeBits = []
   const cs = ctx.stripeSessionId ? String(ctx.stripeSessionId).trim() : ''
   const pi = ctx.stripePaymentIntentId ? String(ctx.stripePaymentIntentId).trim() : ''
-  if (cs.startsWith('cs_')) {
-    stripeBits.push(`Stripe Checkout session …${cs.slice(-12)}`)
-  }
-  if (pi.startsWith('pi_')) {
-    stripeBits.push(`PaymentIntent …${pi.slice(-12)}`)
-  }
-  if (stripeBits.length) {
-    for (const ln of wrapLines(stripeBits.join(' · '), font, 9, W - 2 * m)) {
-      page.drawText(sanitizeStandardFontText(ln), { x: m, y, size: 9, font, color: t.muted })
-      y -= 12
-    }
-    y -= 12
-  }
+  if (cs.startsWith('cs_')) stripeBits.push(`Stripe Checkout session …${cs.slice(-12)}`)
+  if (pi.startsWith('pi_')) stripeBits.push(`PaymentIntent …${pi.slice(-12)}`)
+  if (stripeBits.length) notes.push(stripeBits.join(' · '))
+  notes.push(`Your dashboard: ${dash}`)
 
-  const dash = `${getGsolSiteUrl().replace(/\/+$/, '')}/dashboard`
-  drawFooterLine(page, shell, `Golf Sol Ireland · This document confirms the card payment recorded above. Your dashboard: ${dash}`)
-
-  return doc.save()
+  const { bytes } = await buildGsolMasterDocumentPdf({
+    kind,
+    subtitle:
+      ctx.receiptType === 'deposit'
+        ? 'Card payment recorded against your Golf Sol Ireland transfer.'
+        : 'Card payment received in full for your Golf Sol Ireland transfer.',
+    reference: String(ctx.booking.id),
+    customerName: ctx.profileName,
+    customerEmail: ctx.profileEmail,
+    accountRef: ctx.accountRef,
+    rows: [
+      { label: 'Transfer', value: route },
+      { label: 'Booking reference', value: String(ctx.booking.id) }
+    ],
+    amountLabel: 'Amount paid (this card charge)',
+    amountValue: formatEur(amt),
+    notes: notes.join('\n\n')
+  })
+  return bytes
 }
 
 const TERMS_SUMMARY_PARAS = [

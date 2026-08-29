@@ -6,6 +6,7 @@ import {
   CLIENT_DOCUMENT_TYPES,
   DEFAULT_CLIENT_DOCUMENT_PAYMENT,
   DEFAULT_CLIENT_DOCUMENT_TERMS,
+  defaultClientDocumentDraft,
   emptyPricingLine,
   formatClientDocumentEuro,
   calculateClientDocumentPricing,
@@ -209,16 +210,11 @@ export function ClientDocumentEditor({
                 className={fieldClass}
                 onChange={(e) => {
                   const documentType = e.target.value as ClientDocumentTypeId
-                  const pricingOn = documentType === 'quotation' || documentType === 'proposal'
+                  const next = defaultClientDocumentDraft({ documentType })
                   onChange({
                     ...draft,
                     documentType,
-                    sections: {
-                      ...draft.sections,
-                      pricing: pricingOn || draft.sections.pricing,
-                      payment: pricingOn || draft.sections.payment,
-                      signature: pricingOn || draft.sections.signature
-                    }
+                    sections: next.sections
                   })
                 }}
                 value={draft.documentType}
