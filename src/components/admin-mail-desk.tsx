@@ -12,8 +12,17 @@ import {
   ShieldOff
 } from 'lucide-react'
 import { LuxuryButton } from './ui/button'
+import { AdminMailQuotationForm } from './admin-mail-quotation-form'
 import { adminMailRequest } from '../lib/admin-mail-api'
 import { applyMailTemplateVars } from '../lib/admin-mail-templates'
+import {
+  buildQuotationMailBody,
+  emptyMailQuotationPackage,
+  prefillMailQuotationPackage,
+  quotationMailClosing,
+  quotationMailVarsFromPackage,
+  type MailQuotationPackage
+} from '../lib/admin-mail-quotation'
 import { cx } from '../lib/utils'
 
 export type AdminMailSeed = {
@@ -139,6 +148,7 @@ type ComposeState = {
   threadId: string
   inReplyTo: string
   references: string
+  quotation: MailQuotationPackage
 }
 
 const emptyCompose = (): ComposeState => ({
@@ -162,7 +172,8 @@ const emptyCompose = (): ComposeState => ({
   numberOfGuests: '',
   threadId: '',
   inReplyTo: '',
-  references: ''
+  references: '',
+  quotation: emptyMailQuotationPackage()
 })
 
 const formatWhen = (value: string | number) => {
@@ -329,6 +340,13 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
 
   const applyTemplateToCompose = (t: TemplateRow, next: ComposeState) => {
     const first = next.customerName.trim().split(/\s+/)[0] || ''
+    const quotation =
+      t.id === 'quotation'
+        ? prefillMailQuotationPackage(next.quotation, {
+            travelDates: next.travelDates,
+            golfers: next.numberOfGuests
+          })
+        : emptyMailQuotationPackage()
     const vars = {
       customerName: next.customerName,
       firstName: first,
@@ -336,19 +354,25 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
       phone: next.phone,
       reference: next.reference,
       interest: next.interest,
-      travelDates: next.travelDates,
-      numberOfGuests: next.numberOfGuests
+      travelDates: quotation.travelDates || next.travelDates,
+      numberOfGuests: quotation.golfers || next.numberOfGuests
     }
     return {
       ...next,
       templateId: t.id,
+      quotation,
+      travelDates: quotation.travelDates || next.travelDates,
+      numberOfGuests: quotation.golfers || next.numberOfGuests,
       subject: applyMailTemplateVars(t.subject, vars),
       heading: applyMailTemplateVars(t.heading, vars),
       introduction: applyMailTemplateVars(t.introduction, vars),
-      body: applyMailTemplateVars(t.body, vars),
+      body:
+        t.id === 'quotation'
+          ? buildQuotationMailBody(quotation, { reference: next.reference, firstName: first })
+          : applyMailTemplateVars(t.body, vars),
       ctaLabel: applyMailTemplateVars(t.ctaLabel, vars),
       ctaUrl: applyMailTemplateVars(t.ctaUrl, vars),
-      closing: applyMailTemplateVars(t.closing, vars)
+      closing: t.id === 'quotation' ? quotationMailClosing(quotation) : applyMailTemplateVars(t.closing, vars)
     }
   }
 
@@ -441,8 +465,10 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
     }
   }
 
-  const vars = useMemo(
-    () => ({
+  const vars = useMemo(() => {
+    const quoteVars =
+      compose.templateId === 'quotation' ? quotationMailVarsFromPackage(compose.quotation) : {}
+    return {
       customerName: compose.customerName,
       firstName: compose.customerName.trim().split(/\s+/)[0] || '',
       email: compose.to,
@@ -453,10 +479,10 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
       numberOfGuests: compose.numberOfGuests,
       companyName: 'Golf Sol Ireland',
       companyPhone: '+353 87 446 4766',
-      website: 'www.golfsolirl.com'
-    }),
-    [compose]
-  )
+      website: 'www.golfsolirl.com',
+      ...quoteVars
+    }
+  }, [compose])
 
   const preview = async () => {
     if (!accessToken) return
@@ -516,14 +542,19 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
     setBusy('pdf')
     setStatusError(null)
     try {
+      const isQuote = compose.templateId === 'quotation'
       const data = await adminMailRequest<{ filename: string; contentBase64: string; size: number }>(accessToken, {
         action: 'generate-pdf',
         ...compose,
         message: compose.body,
-        vars
+        vars,
+        documentType: isQuote ? 'quotation' : undefined,
+        quotation: isQuote ? compose.quotation : undefined
       })
       setAttachments((current) => {
-        const without = current.filter((a) => a.filename !== data.filename)
+        const without = current.filter((file) =>
+          isQuote ? !file.filename.startsWith('GolfSol-Quotation-') : file.filename !== data.filename
+        )
         return [...without, { filename: data.filename, contentBase64: data.contentBase64, size: data.size }]
       })
     } catch (error) {
@@ -1134,6 +1165,27 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                 Introduction
                 <textarea className="mt-1.5 min-h-[80px] w-full rounded-xl border border-forest-200 px-4 py-3 text-base leading-relaxed" onChange={(e) => setCompose((c) => ({ ...c, introduction: e.target.value }))} value={compose.introduction} />
               </label>
+              {compose.templateId === 'quotation' ? (
+                <AdminMailQuotationForm
+                  onChange={(quotation) => {
+                    setCompose((current) => {
+                      const first = current.customerName.trim().split(/\s+/)[0] || ''
+                      return {
+                        ...current,
+                        quotation,
+                        travelDates: quotation.travelDates || current.travelDates,
+                        numberOfGuests: quotation.golfers || current.numberOfGuests,
+                        body: buildQuotationMailBody(quotation, {
+                          reference: current.reference,
+                          firstName: first
+                        }),
+                        closing: quotationMailClosing(quotation)
+                      }
+                    })
+                  }}
+                  value={compose.quotation}
+                />
+              ) : null}
               <label className="mt-4 block text-sm font-bold uppercase tracking-wide text-forest-800">
                 Email body
                 <textarea className="mt-1.5 min-h-[180px] w-full rounded-xl border border-forest-200 px-4 py-3 text-base leading-relaxed" onChange={(e) => setCompose((c) => ({ ...c, body: e.target.value }))} value={compose.body} />
@@ -1196,7 +1248,11 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                   {busy === 'preview' ? 'Preparing preview…' : 'Preview'}
                 </LuxuryButton>
                 <LuxuryButton className="!px-4 !py-2 !text-sm" disabled={busy === 'pdf'} onClick={() => void generatePdf()} type="button" variant="outlineOnLight">
-                  {busy === 'pdf' ? 'Generating PDF…' : 'Generate PDF'}
+                  {busy === 'pdf'
+                    ? 'Generating PDF…'
+                    : compose.templateId === 'quotation'
+                      ? 'Generate quotation PDF'
+                      : 'Generate PDF'}
                 </LuxuryButton>
                 <LuxuryButton
                   className="!px-4 !py-2 !text-sm"

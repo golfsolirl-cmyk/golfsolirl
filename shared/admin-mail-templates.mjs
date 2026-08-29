@@ -54,9 +54,9 @@ export const ADMIN_MAIL_TEMPLATES = [
     label: 'Quotation',
     blurb: 'Priced trip outline',
     subject: 'Your Costa del Sol golf quote {{reference}}',
-    heading: 'Your golf trip quotation',
-    introduction: 'Hello {{firstName}},',
-    body: 'Please find your Golf Sol Ireland quotation.\n\nCustomer: {{customerName}}\nQuoted total: {{price}}\nDeposit: {{deposit}}\nBalance: {{balance}}\nTravel dates: {{travelDates}}\nGuests: {{numberOfGuests}}\nReference: {{reference}}\n\nA PDF is attached when one has been generated. Reply if you would like anything adjusted before we hold rooms or tee times.',
+    heading: 'Your golf holiday package',
+    introduction: 'Hi {{firstName}},',
+    body: 'Please find your Golf Sol Ireland golf holiday package quotation.\n\nYour package\nTravel dates: {{travelDates}}\nNumber of golfers: {{numberOfGuests}}\nReference: {{reference}}\n\nA PDF is attached when one has been generated. Reply if you would like anything adjusted.',
     ctaLabel: 'Review your quote',
     ctaUrl: defaultCtaUrl,
     closing: 'Kind regards,\nGolf Sol Ireland'

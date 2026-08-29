@@ -29,7 +29,14 @@ const emphasiseCopy = (escaped) =>
     .replace(/Your reference is ([A-Z0-9-]+)\./g, 'Your reference is <strong style="font-weight:800;">$1</strong>.')
     .replace(/\n/g, '<br />')
 
-const detailsTableHtml = (rows) => {
+const looksLikeSectionTitle = (line) => {
+  const text = String(line ?? '').trim()
+  if (!text || text.length > 48) return false
+  if (/[.!?]$/.test(text)) return false
+  return !DETAIL_LINE_RE.test(text)
+}
+
+const detailsTableHtml = (rows, title = 'Your trip details') => {
   const cells = rows
     .map((row, index) => {
       const bg = index % 2 === 0 ? gs.rowA : gs.rowB
@@ -41,7 +48,7 @@ const detailsTableHtml = (rows) => {
     .join('')
   return `<table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 26px 0;border-collapse:collapse;border:1px solid ${gs.cardBorder};border-radius:18px;overflow:hidden;">
     <tr>
-      <td colspan="2" style="padding:14px 16px 10px 16px;font-family:${emailFonts.sans};font-size:13px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:${gs.goldDeep};background:${gs.cream};">Your trip details</td>
+      <td colspan="2" style="padding:14px 16px 10px 16px;font-family:${emailFonts.sans};font-size:13px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:${gs.goldDeep};background:${gs.cream};">${escapeHtml(title)}</td>
     </tr>
     ${cells}
   </table>`
@@ -54,7 +61,7 @@ const blockToHtml = (block, kind) => {
     .filter(Boolean)
   if (lines.length === 0) return ''
 
-  if (kind === 'intro' && /^hello\b/i.test(lines[0])) {
+  if (kind === 'intro' && /^(hello|hi)\b/i.test(lines[0])) {
     return `<p style="${greetStyle}">${escapeHtml(lines.join(' '))}</p>`
   }
 
@@ -79,10 +86,12 @@ const blockToHtml = (block, kind) => {
   }
 
   if (detailRows.length >= 1) {
-    const intro = other
+    const tableTitle = other.length && looksLikeSectionTitle(other[0]) ? other[0] : 'Your trip details'
+    const introLines = other.length && looksLikeSectionTitle(other[0]) ? other.slice(1) : other
+    const intro = introLines
       .map((line) => `<p style="${pStyle}">${emphasiseCopy(escapeHtml(line))}</p>`)
       .join('')
-    return `${intro}${detailsTableHtml(detailRows)}`
+    return `${intro}${detailsTableHtml(detailRows, tableTitle)}`
   }
 
   return `<p style="${pStyle}">${emphasiseCopy(escapeHtml(lines.join('\n')))}</p>`

@@ -23,6 +23,7 @@ import {
 } from './gmail-api-service.mjs'
 import { buildAdminBrandedMailHtml, brandedMailPlainText } from './admin-mail-html.mjs'
 import { buildClientEnquiryDocumentPdf } from './client-enquiry-document-pdf.mjs'
+import { buildAdminMailQuotationPdf } from './admin-mail-quotation-pdf.mjs'
 import {
   CLIENT_DOCUMENT_TYPES,
   defaultClientDocumentDraft,
@@ -394,6 +395,28 @@ const handleGeneratePdf = async (user, body, env) => {
   const email = typeof body?.to === 'string' ? body.to.trim() : ''
   const message = typeof body?.message === 'string' ? body.message.trim() : typeof body?.body === 'string' ? body.body.trim() : ''
   const reference = typeof body?.reference === 'string' ? body.reference.trim() : ''
+  if (String(body?.templateId || '').trim() === 'quotation') {
+    const vars = body?.vars && typeof body.vars === 'object' ? body.vars : {}
+    const firstName =
+      typeof vars.firstName === 'string' && vars.firstName.trim()
+        ? vars.firstName.trim()
+        : firstNameFromFullName(name)
+    const file = await buildAdminMailQuotationPdf({
+      customerName: name,
+      firstName,
+      reference,
+      quotation: body?.quotation
+    })
+    const bytes = Buffer.from(file.bytes)
+    assertPdfBuffer(bytes, file.filename)
+    return {
+      ok: true,
+      filename: file.filename,
+      contentBase64: bytes.toString('base64'),
+      size: bytes.length,
+      contentType: 'application/pdf'
+    }
+  }
   const requestedType = typeof body?.documentType === 'string' ? body.documentType : ''
   const documentType = CLIENT_DOCUMENT_TYPES.some((entry) => entry.id === requestedType)
     ? requestedType
