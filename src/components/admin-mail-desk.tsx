@@ -299,15 +299,15 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
     const first = next.customerName.trim().split(/\s+/)[0] || ''
     const filled = (value: string) =>
       value
-        .replaceAll('{{customerName}}', next.customerName)
-        .replaceAll('{{firstName}}', first)
-        .replaceAll('{{email}}', next.to)
-        .replaceAll('{{phone}}', next.phone)
-        .replaceAll('{{reference}}', next.reference)
-        .replaceAll('{{interest}}', next.interest)
-        .replaceAll('{{companyName}}', 'Golf Sol Ireland')
-        .replaceAll('{{website}}', 'www.golfsolirl.com')
-        .replaceAll('{{companyPhone}}', '+353 87 446 4766')
+        .replace(/\{\{customerName\}\}/g, next.customerName)
+        .replace(/\{\{firstName\}\}/g, first)
+        .replace(/\{\{email\}\}/g, next.to)
+        .replace(/\{\{phone\}\}/g, next.phone)
+        .replace(/\{\{reference\}\}/g, next.reference)
+        .replace(/\{\{interest\}\}/g, next.interest)
+        .replace(/\{\{companyName\}\}/g, 'Golf Sol Ireland')
+        .replace(/\{\{website\}\}/g, 'www.golfsolirl.com')
+        .replace(/\{\{companyPhone\}\}/g, '+353 87 446 4766')
         .replace(/\{\{#\w+\}\}[\s\S]*?\{\{\/\w+\}\}/g, '')
         .replace(/\{\{\w+\}\}/g, '')
     return {
