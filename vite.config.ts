@@ -37,6 +37,13 @@ import {
 } from './server/enquiry-contact-verify-service.mjs'
 import { handleEnquiryAdminMessage, handleEnquiryAdminQuote } from './server/enquiry-admin-quote-service.mjs'
 import { handleAdminSendDocument } from './server/admin-send-document-service.mjs'
+import { handleClientEnquiryDocument } from './server/client-enquiry-document-service.mjs'
+import {
+  handleClientEnquiryDocumentDocx,
+  handleClientEnquiryDocumentEmail,
+  handleClientEnquiryDocumentPdf
+} from './server/client-enquiry-document-email.mjs'
+import { handleAdminMail, handleGmailOauthCallback } from './server/admin-mail-service.mjs'
 import { handleStripeWebhook } from './server/stripe-webhook-service.mjs'
 import { readIncomingMessageBodyBuffer } from './server/vercel-read-body.mjs'
 import { handlePortalLinkIssue, handlePortalLinkVerify } from './server/portal-link-context-service.mjs'
@@ -162,6 +169,39 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
         response.end(html)
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Bad request'
+        response.statusCode = 400
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/gmail-oauth-callback', async (request, response) => {
+      if (request.method !== 'GET') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+      try {
+        const host = (request.headers.host || 'localhost:5173').toString().split(',')[0]?.trim() || 'localhost:5173'
+        const url = new URL(request.url || '/', `http://${host}`)
+        const outcome = await handleGmailOauthCallback(
+          {
+            code: url.searchParams.get('code')?.trim() || '',
+            state: url.searchParams.get('state')?.trim() || '',
+            error: url.searchParams.get('error')?.trim() || '',
+            cookieHeader: typeof request.headers.cookie === 'string' ? request.headers.cookie : ''
+          },
+          { ...process.env, ...serverEnv }
+        )
+        if (outcome.setCookie) {
+          response.setHeader('Set-Cookie', outcome.setCookie)
+        }
+        response.statusCode = 302
+        response.setHeader('Location', outcome.redirectTo)
+        response.end()
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Gmail connection failed.'
         response.statusCode = 400
         response.setHeader('Content-Type', 'application/json')
         response.end(JSON.stringify({ message }))
@@ -1031,6 +1071,95 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
     jsonApi('/api/enquiry-admin-quote', handleEnquiryAdminQuote as never, { auth: true })
     jsonApi('/api/enquiry-admin-message', handleEnquiryAdminMessage as never, { auth: true })
     jsonApi('/api/admin-send-document', handleAdminSendDocument as never, { auth: true })
+    jsonApi('/api/client-enquiry-document', handleClientEnquiryDocument as never, { auth: true })
+    jsonApi('/api/client-enquiry-document-email', handleClientEnquiryDocumentEmail as never, { auth: true })
+
+    server.middlewares.use('/api/admin-mail', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+      try {
+        const rawBody = await readRequestBody(request)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const authHeader = typeof request.headers.authorization === 'string' ? request.headers.authorization : ''
+        const result = (await handleAdminMail(payload, { ...process.env, ...serverEnv }, { authHeader })) as {
+          setCookie?: string
+        } & Record<string, unknown>
+        if (result?.setCookie) {
+          response.setHeader('Set-Cookie', result.setCookie)
+          delete result.setCookie
+        }
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Request failed.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+        const code =
+          error && typeof error === 'object' && 'code' in error && typeof error.code === 'string' ? error.code : undefined
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(code ? { message, code } : { message }))
+      }
+    })
+
+    const binaryApi = (
+      path: string,
+      handler: (
+        payload: Record<string, unknown>,
+        env: Record<string, string>,
+        meta: Record<string, string>
+      ) => Promise<{ filename: string; bytes: Buffer | Uint8Array }>,
+      contentType: string,
+      failMessage: string
+    ) => {
+      server.middlewares.use(path, async (request, response) => {
+        if (request.method !== 'POST') {
+          response.statusCode = 405
+          response.setHeader('Content-Type', 'application/json')
+          response.end(JSON.stringify({ message: 'Method not allowed' }))
+          return
+        }
+        try {
+          const rawBody = await readRequestBody(request)
+          const payload = rawBody ? JSON.parse(rawBody) : {}
+          const authHeader = typeof request.headers.authorization === 'string' ? request.headers.authorization : ''
+          const file = await handler(payload, { ...process.env, ...serverEnv }, { authHeader })
+          response.statusCode = 200
+          response.setHeader('Content-Type', contentType)
+          response.setHeader('Content-Disposition', `attachment; filename="${file.filename}"`)
+          response.end(Buffer.from(file.bytes))
+        } catch (error) {
+          const message = error instanceof Error ? error.message : failMessage
+          const statusCode =
+            error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+              ? error.statusCode
+              : 500
+          response.statusCode = statusCode
+          response.setHeader('Content-Type', 'application/json')
+          response.end(JSON.stringify({ message }))
+        }
+      })
+    }
+
+    binaryApi(
+      '/api/client-enquiry-document-pdf',
+      handleClientEnquiryDocumentPdf as never,
+      'application/pdf',
+      'Unable to generate the PDF. Please try again.'
+    )
+    binaryApi(
+      '/api/client-enquiry-document-docx',
+      handleClientEnquiryDocumentDocx as never,
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'Unable to generate the Word document. Please try again.'
+    )
   }
 })
 

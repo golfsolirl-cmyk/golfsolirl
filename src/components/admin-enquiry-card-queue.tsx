@@ -156,6 +156,8 @@ type AdminEnquiryCardQueueProps = {
   readonly onOpen: (row: AdminEnquiryCardRow) => void
   readonly onRemove: (row: AdminEnquiryCardRow) => void
   readonly removingId: string | null
+  readonly onCreateDocument?: (row: AdminEnquiryCardRow) => void
+  readonly onEmailCustomer?: (row: AdminEnquiryCardRow) => void
 }
 
 const formatWhen = (iso: string) => {
@@ -178,7 +180,9 @@ export function AdminEnquiryCardQueue({
   emptyLabel,
   onOpen,
   onRemove,
-  removingId
+  removingId,
+  onCreateDocument,
+  onEmailCustomer
 }: AdminEnquiryCardQueueProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [priceById, setPriceById] = useState<Record<string, string>>({})
@@ -442,6 +446,26 @@ export function AdminEnquiryCardQueue({
                   >
                     {expanded ? 'Hide details' : 'Open card'}
                   </LuxuryButton>
+                  {onCreateDocument ? (
+                    <LuxuryButton
+                      className="!px-4 !py-2 !text-xs"
+                      onClick={() => onCreateDocument(row)}
+                      type="button"
+                      variant="outlineOnLight"
+                    >
+                      Create document
+                    </LuxuryButton>
+                  ) : null}
+                  {onEmailCustomer ? (
+                    <LuxuryButton
+                      className="!px-4 !py-2 !text-xs"
+                      onClick={() => onEmailCustomer(row)}
+                      type="button"
+                      variant="outlineOnLight"
+                    >
+                      Branded email
+                    </LuxuryButton>
+                  ) : null}
                   <LuxuryButton
                     className="!border-red-300 !px-4 !py-2 !text-xs !text-red-800 hover:!bg-red-50"
                     disabled={removingId === row.id}
@@ -468,6 +492,28 @@ export function AdminEnquiryCardQueue({
 
             {expanded ? (
               <div className="space-y-6 px-5 py-6 sm:px-7">
+                {onCreateDocument || onEmailCustomer ? (
+                  <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.5rem] border border-fairway-200 bg-fairway-50/80 px-4 py-4">
+                    <div>
+                      <p className="text-sm font-semibold text-forest-950">Reply with a branded letter or email</p>
+                      <p className="mt-0.5 text-xs text-forest-700">
+                        Open a Golf Sol document, or compose a branded email already filled with this guest’s details.
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {onCreateDocument ? (
+                        <LuxuryButton className="!px-5 !py-2.5" onClick={() => onCreateDocument(row)} type="button">
+                          Create document
+                        </LuxuryButton>
+                      ) : null}
+                      {onEmailCustomer ? (
+                        <LuxuryButton className="!px-5 !py-2.5" onClick={() => onEmailCustomer(row)} type="button" variant="outlineOnLight">
+                          Branded email
+                        </LuxuryButton>
+                      ) : null}
+                    </div>
+                  </div>
+                ) : null}
                 <section className="rounded-[1.5rem] border border-forest-200 bg-offwhite/90 px-4 py-5 sm:px-5">
                   <div className="flex items-start gap-3">
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-forest-900 text-white">

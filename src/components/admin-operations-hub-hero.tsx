@@ -30,6 +30,16 @@ const SECTION_GUIDES: Record<AdminPortalSectionId, SectionGuide> = {
       'Send a deposit or full price (portal + email + Stripe).'
     ]
   },
+  clientDocs: {
+    kicker: 'Client documents',
+    title: 'Letters, quotes and replies',
+    summary: 'Write a branded response or quotation, preview it on A4, then download Word or PDF — or print company stationery.',
+    steps: [
+      'Open a website form and choose Create document, or start a blank letter.',
+      'Add your message or prices. The A4 preview updates as you type.',
+      'Download Word or PDF, print, or email the customer.'
+    ]
+  },
   scan: {
     kicker: 'Scan trip pass',
     title: 'Check a guest pass',
@@ -98,6 +108,16 @@ const SECTION_GUIDES: Record<AdminPortalSectionId, SectionGuide> = {
       'Pick a quick-start template (or write your own).',
       'Send to their login email — it logs under Messages & files.',
       'When booked, unlock terms / thank-you on their dashboard.'
+    ]
+  },
+  mail: {
+    kicker: 'Inbox',
+    title: 'Gmail and branded mail',
+    summary: 'Read customer Gmail here, then reply on the same thread or send a Golf Sol branded email with a PDF.',
+    steps: [
+      'Connect Gmail once (tokens stay on the server).',
+      'Open a conversation, match it to a website form, then Reply via Gmail or Send branded email.',
+      'Keep EMAIL_SEND_ENABLED off while testing so nothing leaves the building.'
     ]
   },
   drivers: {

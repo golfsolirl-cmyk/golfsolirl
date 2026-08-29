@@ -154,6 +154,12 @@
     { "source": "/api/enquiry-admin-quote", "destination": "/api/gateway?r=enquiry-admin-quote" },
     { "source": "/api/enquiry-admin-message", "destination": "/api/gateway?r=enquiry-admin-message" },
     { "source": "/api/admin-send-document", "destination": "/api/gateway?r=admin-send-document" },
+    { "source": "/api/client-enquiry-document", "destination": "/api/gateway?r=client-enquiry-document" },
+    { "source": "/api/client-enquiry-document-email", "destination": "/api/gateway?r=client-enquiry-document-email" },
+    { "source": "/api/client-enquiry-document-pdf", "destination": "/api/gateway?r=client-enquiry-document-pdf" },
+    { "source": "/api/client-enquiry-document-docx", "destination": "/api/gateway?r=client-enquiry-document-docx" },
+    { "source": "/api/admin-mail", "destination": "/api/gateway?r=admin-mail" },
+    { "source": "/api/gmail-oauth-callback", "destination": "/api/gateway?r=gmail-oauth-callback" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

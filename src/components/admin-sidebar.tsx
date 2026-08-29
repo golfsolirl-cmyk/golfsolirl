@@ -1,9 +1,11 @@
 import {
   Calendar,
   Car,
+  ClipboardList,
   FileText,
   Inbox,
   Mail,
+  Mails,
   Package,
   PenLine,
   ScanLine,
@@ -18,12 +20,14 @@ import { cx } from '../lib/utils'
 export type AdminPortalSectionId =
   | 'desk'
   | 'forms'
+  | 'clientDocs'
   | 'testimonials'
   | 'transfers'
   | 'packages'
   | 'proposals'
   | 'portal'
   | 'emails'
+  | 'mail'
   | 'drivers'
   | 'scan'
 
@@ -38,12 +42,14 @@ export const ADMIN_SIDEBAR_ITEMS: readonly AdminSidebarItem[] = [
   { id: 'desk', label: 'Desk & inbox', description: 'Payments · messages · publish', icon: Inbox },
   { id: 'scan', label: 'Scan trip pass', description: 'Verify guest payment barcode', icon: ScanLine },
   { id: 'forms', label: 'Website forms', description: 'New forms · trip · price', icon: FileText },
+  { id: 'clientDocs', label: 'Client documents', description: 'Quotes · letters · Word & PDF', icon: ClipboardList },
   { id: 'testimonials', label: 'Guest reviews', description: 'Approve for homepage', icon: Star },
   { id: 'transfers', label: 'Transfers & drivers', description: 'Quoted · paid · dispatch', icon: Car },
   { id: 'packages', label: 'Packages', description: 'Client builds · needs price', icon: Package },
   { id: 'proposals', label: 'Documents & proposals', description: 'Send PDFs · CRM list', icon: PenLine },
   { id: 'portal', label: 'Client accounts', description: 'Create · settings · reset', icon: Users },
   { id: 'emails', label: 'Guest emails', description: 'Notes · templates · PDF keys', icon: Mail },
+  { id: 'mail', label: 'Inbox', description: 'Gmail · branded send · PDFs', icon: Mails },
   { id: 'drivers', label: 'Run calendar', description: 'Busy days · AGP sheets', icon: Calendar }
 ] as const
 

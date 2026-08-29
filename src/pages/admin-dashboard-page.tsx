@@ -17,7 +17,9 @@ import { AdminTransferPipeline } from '../components/admin-transfer-pipeline'
 import { AdminTestimonialsPanel } from '../components/admin-testimonials-panel'
 import { AdminDocumentSendDesk } from '../components/admin-document-send-desk'
 import { AdminEmailsCommsDesk } from '../components/admin-emails-comms-desk'
+import { AdminMailDesk, type AdminMailSeed } from '../components/admin-mail-desk'
 import { AdminEnquiryCardQueue } from '../components/admin-enquiry-card-queue'
+import { ClientDocumentDesk } from '../components/client-documents/client-document-desk'
 import { TransferPaymentStatusBadge } from '../components/transfer-payment-status-badge'
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
 import { formatDateTimeDdMmYy } from '../lib/date-format-ie'
@@ -3661,6 +3663,41 @@ export function AdminDashboardPage() {
   const adminGreetingFirst = 'Greg'
   const adminHeroTitle = `Hello, ${adminGreetingFirst}`
   const [activeAdminSection, setActiveAdminSection] = useState<AdminPortalSectionId>('desk')
+  const [clientDocSeedEnquiryId, setClientDocSeedEnquiryId] = useState<string | null>(null)
+  const [mailSeed, setMailSeed] = useState<AdminMailSeed | null>(null)
+
+  const openClientDocumentFromEnquiry = useCallback((row: { id: string }) => {
+    setClientDocSeedEnquiryId(row.id)
+    setActiveAdminSection('clientDocs')
+  }, [])
+
+  const openMailFromEnquiry = useCallback((row: { id: string; email: string; full_name: string; reference_id: string; phone_whatsapp?: string | null; interest?: string | null }) => {
+    setMailSeed({
+      view: 'compose',
+      to: row.email,
+      customerName: row.full_name,
+      enquiryId: row.id,
+      enquiryReference: row.reference_id,
+      phone: row.phone_whatsapp || '',
+      interest: row.interest || ''
+    })
+    setActiveAdminSection('mail')
+  }, [])
+
+  const clearMailSeed = useCallback(() => {
+    setMailSeed(null)
+  }, [])
+
+  const clearClientDocSeed = useCallback(() => {
+    setClientDocSeedEnquiryId(null)
+  }, [])
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('mail')) {
+      setActiveAdminSection('mail')
+    }
+  }, [])
 
   const renderEnquirySubmissionsTable = (rows: EnquiryRow[]) => (
     <div className="mt-6 overflow-x-auto rounded-[2rem] border border-forest-100 bg-white shadow-soft">
@@ -4277,6 +4314,8 @@ export function AdminDashboardPage() {
                 accessToken={session?.access_token ?? null}
                 buildDetailPairs={submissionDetailRows}
                 emptyLabel="No new forms waiting."
+                onCreateDocument={openClientDocumentFromEnquiry}
+                onEmailCustomer={openMailFromEnquiry}
                 onOpen={(row) => {
                   setSelectedEnquiryDetailRef(row.reference_id)
                   void markEnquiryViewed(row)
@@ -4301,6 +4340,8 @@ export function AdminDashboardPage() {
                   accessToken={session?.access_token ?? null}
                   buildDetailPairs={submissionDetailRows}
                   emptyLabel="No opened forms match your search."
+                  onCreateDocument={openClientDocumentFromEnquiry}
+                  onEmailCustomer={openMailFromEnquiry}
                   onOpen={(row) => {
                     setSelectedEnquiryDetailRef(row.reference_id)
                     void markEnquiryViewed(row)
@@ -4314,6 +4355,23 @@ export function AdminDashboardPage() {
 
           </>
         )}
+        </AdminPortalSection>
+
+        <AdminPortalSection activeSection={activeAdminSection} section="clientDocs">
+          <ClientDocumentDesk
+            accessToken={session?.access_token ?? null}
+            onSeedConsumed={clearClientDocSeed}
+            seedEnquiryId={clientDocSeedEnquiryId}
+          />
+        </AdminPortalSection>
+
+        <AdminPortalSection activeSection={activeAdminSection} section="mail">
+          <AdminMailDesk
+            accessToken={session?.access_token ?? null}
+            onCreateDocument={(enquiryId) => openClientDocumentFromEnquiry({ id: enquiryId })}
+            onSeedConsumed={clearMailSeed}
+            seed={mailSeed}
+          />
         </AdminPortalSection>
 
         <AdminPortalSection activeSection={activeAdminSection} section="testimonials">

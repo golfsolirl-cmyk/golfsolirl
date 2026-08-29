@@ -47,6 +47,13 @@ import {
 } from '../server/enquiry-contact-verify-service.mjs'
 import { handleEnquiryAdminMessage, handleEnquiryAdminQuote } from '../server/enquiry-admin-quote-service.mjs'
 import { handleAdminSendDocument } from '../server/admin-send-document-service.mjs'
+import { handleClientEnquiryDocument } from '../server/client-enquiry-document-service.mjs'
+import {
+  handleClientEnquiryDocumentDocx,
+  handleClientEnquiryDocumentEmail,
+  handleClientEnquiryDocumentPdf
+} from '../server/client-enquiry-document-email.mjs'
+import { handleAdminMail, handleGmailOauthCallback } from '../server/admin-mail-service.mjs'
 import { readIncomingMessageBodyUtf8, readIncomingMessageBodyBuffer } from '../server/vercel-read-body.mjs'
 
 const readStreamBody = (req) =>
@@ -676,6 +683,125 @@ export default async function handler(req, res) {
         const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
         const result = await handleAdminSendDocument(payload, process.env, { authHeader })
         jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'client-enquiry-document': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const result = await handleClientEnquiryDocument(payload, process.env, { authHeader })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'client-enquiry-document-email': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const result = await handleClientEnquiryDocumentEmail(payload, process.env, { authHeader })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'client-enquiry-document-pdf': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const file = await handleClientEnquiryDocumentPdf(payload, process.env, { authHeader })
+        applyApiSecurityHeaders(res)
+        res.statusCode = 200
+        res.setHeader('Content-Type', 'application/pdf')
+        res.setHeader('Content-Disposition', `attachment; filename="${file.filename}"`)
+        res.end(Buffer.from(file.bytes))
+        return
+      }
+
+      case 'client-enquiry-document-docx': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const file = await handleClientEnquiryDocumentDocx(payload, process.env, { authHeader })
+        applyApiSecurityHeaders(res)
+        res.statusCode = 200
+        res.setHeader(
+          'Content-Type',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        )
+        res.setHeader('Content-Disposition', `attachment; filename="${file.filename}"`)
+        res.end(Buffer.from(file.bytes))
+        return
+      }
+
+      case 'admin-mail': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const authHeader = req.headers.authorization ?? ''
+        const rawBody = await readStreamBody(req)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const result = await handleAdminMail(payload, process.env, { authHeader })
+        if (result && typeof result === 'object' && 'setCookie' in result && result.setCookie) {
+          res.setHeader('Set-Cookie', String(result.setCookie))
+          delete result.setCookie
+        }
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'gmail-oauth-callback': {
+        if (req.method !== 'GET') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const urlPath = typeof req.url === 'string' ? req.url : '/'
+        const host = String(req.headers['x-forwarded-host'] || req.headers.host || 'localhost')
+          .split(',')[0]
+          ?.trim()
+        const protoRaw = String(req.headers['x-forwarded-proto'] || 'https')
+          .split(',')[0]
+          ?.trim()
+        const safeProto = protoRaw === 'http' || protoRaw === 'https' ? protoRaw : 'https'
+        const u = new URL(urlPath, `${safeProto}://${host}`)
+        const pick = (key) => {
+          const q = req.query?.[key]
+          if (typeof q === 'string' && q.trim()) return q.trim()
+          if (Array.isArray(q) && typeof q[0] === 'string') return q[0].trim()
+          return u.searchParams.get(key)?.trim() || ''
+        }
+        const outcome = await handleGmailOauthCallback(
+          {
+            code: pick('code'),
+            state: pick('state'),
+            error: pick('error'),
+            cookieHeader: req.headers.cookie ?? ''
+          },
+          process.env
+        )
+        applyApiSecurityHeaders(res)
+        if (outcome.setCookie) {
+          res.setHeader('Set-Cookie', outcome.setCookie)
+        }
+        res.statusCode = 302
+        res.setHeader('Location', outcome.redirectTo)
+        res.end()
         return
       }
 

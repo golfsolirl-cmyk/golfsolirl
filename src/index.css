@@ -538,6 +538,250 @@
   }
 }
 
+.client-document-a4-stage {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.client-document-a4 {
+  box-sizing: border-box;
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  padding: 16mm 18mm 20mm;
+  background: #ffffff;
+  color: #16231d;
+  box-shadow: 0 18px 48px rgba(6, 32, 22, 0.12);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.client-document-a4__letterhead {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  gap: 16px;
+  align-items: start;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #d4a843;
+  margin-bottom: 18px;
+}
+
+.client-document-a4__logo {
+  width: 88px;
+  height: 88px;
+  object-fit: contain;
+}
+
+.client-document-a4__company {
+  font-size: 11px;
+  line-height: 1.45;
+  color: #66736d;
+}
+
+.client-document-a4__company-name {
+  margin: 0;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #063b2a;
+  line-height: 1.15;
+}
+
+.client-document-a4__tagline {
+  margin: 2px 0 8px;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #b8922e;
+}
+
+.client-document-a4__company p {
+  margin: 0;
+}
+
+.client-document-a4__title {
+  margin: 0 0 8px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #063b2a;
+}
+
+.client-document-a4__meta {
+  margin: 0 0 4px;
+  font-size: 12px;
+  color: #66736d;
+}
+
+.client-document-a4__section {
+  margin-top: 18px;
+  padding-top: 10px;
+  border-top: 1px solid #d4a843;
+}
+
+.client-document-a4__section h2 {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #063b2a;
+}
+
+.client-document-a4__section p,
+.client-document-a4__section li {
+  margin: 0 0 8px;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+.client-document-a4__pre {
+  white-space: pre-wrap;
+}
+
+.client-document-a4__terms {
+  font-size: 11px;
+  color: #4d5a54;
+}
+
+.client-document-a4__subhead {
+  font-weight: 700;
+  color: #063b2a;
+}
+
+.client-document-a4__section ul {
+  margin: 0 0 8px;
+  padding-left: 18px;
+}
+
+.client-document-a4 table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.client-document-a4 th {
+  background: #063b2a;
+  color: #ffffff;
+  font-weight: 600;
+  text-align: left;
+  padding: 7px 8px;
+}
+
+.client-document-a4 td {
+  border-bottom: 1px solid #d9e3de;
+  padding: 7px 8px;
+}
+
+.client-document-a4 th:nth-child(n + 2),
+.client-document-a4 td:nth-child(n + 2) {
+  text-align: right;
+}
+
+.client-document-a4__totals {
+  margin: 10px 0 0 auto;
+  width: min(100%, 240px);
+}
+
+.client-document-a4__totals > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.client-document-a4__grand {
+  font-weight: 700;
+  color: #063b2a;
+  border-top: 1px solid #d4a843;
+  padding-top: 6px;
+}
+
+.client-document-a4__single-price {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: baseline;
+}
+
+.client-document-a4__amount {
+  font-size: 20px;
+  font-weight: 700;
+  color: #063b2a;
+}
+
+.client-document-a4__sig {
+  margin: 0 0 14px;
+  font-size: 13px;
+}
+
+.client-document-a4__footer {
+  margin-top: 28px;
+  padding-top: 8px;
+  border-top: 1px solid #d9d9d9;
+  font-size: 10px;
+  color: #66736d;
+}
+
+@media (max-width: 1279px) {
+  .client-document-a4-stage {
+    transform: scale(0.72);
+    transform-origin: top left;
+    width: 138.9%;
+    margin-bottom: -80px;
+  }
+}
+
+@media (max-width: 639px) {
+  .client-document-a4-stage {
+    transform: scale(0.48);
+    transform-origin: top left;
+    width: 208%;
+    margin-bottom: -155px;
+  }
+}
+
+@media print {
+  html.client-document-printing .client-document-no-print,
+  html.client-document-printing .portal-ui-root > aside,
+  html.client-document-printing .portal-ui-root > nav,
+  html.client-document-printing header,
+  html.client-document-printing footer,
+  html.client-document-printing .sticky {
+    display: none !important;
+  }
+
+  html.client-document-printing body * {
+    visibility: hidden !important;
+  }
+
+  html.client-document-printing #client-document-print-root,
+  html.client-document-printing #client-document-print-root * {
+    visibility: visible !important;
+  }
+
+  html.client-document-printing #client-document-print-root {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0;
+    box-shadow: none;
+    transform: none;
+  }
+
+  html.client-document-printing .client-document-a4-stage {
+    transform: none;
+    width: auto;
+    margin: 0;
+    overflow: visible;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

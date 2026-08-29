@@ -26,11 +26,13 @@ export const CLIENT_MORE_SECTIONS: readonly ClientPortalSectionId[] = [
 ]
 
 export const ADMIN_MORE_SECTIONS: readonly AdminPortalSectionId[] = [
+  'clientDocs',
   'testimonials',
   'packages',
   'proposals',
   'portal',
   'emails',
+  'mail',
   'drivers'
 ]
 
