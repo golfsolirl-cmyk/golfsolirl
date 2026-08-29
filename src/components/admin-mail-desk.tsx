@@ -114,6 +114,7 @@ type SentRow = {
 }
 
 type MailView = 'inbox' | 'compose' | 'sent' | 'templates'
+type InboxFilter = 'customers' | 'all' | 'unread'
 
 type ComposeState = {
   to: string
@@ -162,8 +163,25 @@ const emptyCompose = (): ComposeState => ({
 const formatWhen = (value: string | number) => {
   const date = typeof value === 'number' ? new Date(value) : new Date(value)
   if (Number.isNaN(date.getTime())) return ''
-  return new Intl.DateTimeFormat('en-IE', { dateStyle: 'medium', timeStyle: 'short' }).format(date)
+  const now = new Date()
+  if (date.toDateString() === now.toDateString()) {
+    return new Intl.DateTimeFormat('en-IE', { hour: '2-digit', minute: '2-digit' }).format(date)
+  }
+  if (date.getFullYear() === now.getFullYear()) {
+    return new Intl.DateTimeFormat('en-IE', { day: 'numeric', month: 'short' }).format(date)
+  }
+  return new Intl.DateTimeFormat('en-IE', { day: 'numeric', month: 'short', year: 'numeric' }).format(date)
 }
+
+const wrapReadableEmailHtml = (html: string) =>
+  `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
+    html,body{margin:0;padding:0;}
+    body{padding:8px 4px 24px;font-family:Georgia,"Times New Roman",serif;font-size:19px;line-height:1.75;color:#16231d;word-wrap:break-word;}
+    p{margin:0 0 12px;}
+    img{max-width:100%;height:auto;}
+    a{color:#0f3d24;}
+    blockquote{margin:12px 0;padding:0 0 0 14px;border-left:3px solid #d4a843;color:#4b5c55;}
+  </style></head><body>${html}</body></html>`
 
 const formatBytes = (n: number) => {
   if (n < 1024) return `${n} B`
@@ -183,8 +201,7 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
   const [statusError, setStatusError] = useState<string | null>(null)
   const [oauthNotice, setOauthNotice] = useState<string | null>(null)
   const [busy, setBusy] = useState<string | null>(null)
-  const [folder, setFolder] = useState<'inbox' | 'sent'>('inbox')
-  const [unreadOnly, setUnreadOnly] = useState(false)
+  const [inboxFilter, setInboxFilter] = useState<InboxFilter>('customers')
   const [query, setQuery] = useState('')
   const [threads, setThreads] = useState<ThreadListItem[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -192,6 +209,9 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
   const [threadSubject, setThreadSubject] = useState('')
   const [linked, setLinked] = useState<LinkedEnquiry | null>(null)
   const [allowImages, setAllowImages] = useState(false)
+  const [showEarlier, setShowEarlier] = useState(false)
+  const [quickReply, setQuickReply] = useState('')
+  const replyBoxRef = useRef<HTMLTextAreaElement | null>(null)
   const [showCc, setShowCc] = useState(false)
   const [compose, setCompose] = useState<ComposeState>(emptyCompose)
   const [attachments, setAttachments] = useState<PdfAttachment[]>([])
@@ -259,8 +279,9 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
     try {
       const data = await adminMailRequest<{ threads: ThreadListItem[] }>(accessToken, {
         action: 'inbox',
-        folder,
-        unreadOnly,
+        folder: 'inbox',
+        unreadOnly: inboxFilter === 'unread',
+        focus: inboxFilter === 'customers' ? 'customers' : 'all',
         q: query
       })
       setThreads(data.threads ?? [])
@@ -269,7 +290,7 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
     } finally {
       setBusy(null)
     }
-  }, [accessToken, connected, folder, query, unreadOnly])
+  }, [accessToken, connected, inboxFilter, query])
 
   useEffect(() => {
     if (view === 'inbox' && connected) void loadInbox()
@@ -280,14 +301,18 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
     setSelectedId(threadId)
     setBusy('thread')
     setStatusError(null)
+    setShowEarlier(false)
     try {
       const data = await adminMailRequest<{
         thread: { threadId: string; subject: string; messages: ThreadMessage[] }
         linkedEnquiry: LinkedEnquiry | null
       }>(accessToken, { action: 'thread', threadId, allowImages: images })
-      setThreadMessages(data.thread.messages ?? [])
+      const messages = data.thread.messages ?? []
+      setThreadMessages(messages)
       setThreadSubject(data.thread.subject)
       setLinked(data.linkedEnquiry)
+      setThreads((rows) => rows.map((row) => (row.threadId === threadId ? { ...row, unread: false } : row)))
+      setQuickReply('')
     } catch (error) {
       setStatusError(errorMessage(error, 'Unable to load that conversation.'))
     } finally {
@@ -599,55 +624,135 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
     }
   }
 
+  const focusReplyBox = () => {
+    window.requestAnimationFrame(() => {
+      replyBoxRef.current?.focus()
+      replyBoxRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    })
+  }
+
+  const sendQuickReply = async () => {
+    if (!accessToken || !selectedId || sendLock.current) return
+    const last = threadMessages[threadMessages.length - 1]
+    const own = (status?.gmail.emailAddress || '').toLowerCase()
+    const inbound = threadMessages.filter((m) => m.fromEmail && m.fromEmail !== own)
+    const customer = inbound[inbound.length - 1] || last
+    const text = quickReply.trim()
+    if (!last || !customer?.fromEmail) {
+      setStatusError('This conversation has no address to reply to.')
+      return
+    }
+    if (!text) {
+      setStatusError('Write a short reply first.')
+      return
+    }
+    if (!sendEnabled) {
+      setStatusError('Sending is off. Replies cannot go out until sending is turned on.')
+      return
+    }
+    sendLock.current = true
+    setBusy('send')
+    setStatusError(null)
+    try {
+      await adminMailRequest(accessToken, {
+        action: 'send-gmail-reply',
+        branded: false,
+        to: customer.fromEmail,
+        subject: last.subject.startsWith('Re:') ? last.subject : `Re: ${last.subject}`,
+        body: text,
+        threadId: selectedId,
+        inReplyTo: last.messageIdHeader,
+        references: [last.references, last.messageIdHeader].filter(Boolean).join(' '),
+        customerName: customer.fromName || linked?.name || '',
+        enquiryId: linked?.id || '',
+        reference: linked?.reference || '',
+        phone: linked?.phone || '',
+        interest: linked?.interest || '',
+        idempotencyKey: crypto.randomUUID()
+      })
+      setQuickReply('')
+      setSentNotice(`Reply sent to ${customer.fromEmail}`)
+      await openThread(selectedId)
+    } catch (error) {
+      setStatusError(errorMessage(error, 'The reply could not be sent.'))
+    } finally {
+      sendLock.current = false
+      setBusy(null)
+    }
+  }
+
+  const sizeMailIframe = (el: HTMLIFrameElement | null) => {
+    if (!el) return
+    try {
+      const doc = el.contentDocument
+      const height = doc?.documentElement?.scrollHeight || doc?.body?.scrollHeight || 0
+      if (height > 80) el.style.height = `${Math.min(Math.max(height + 28, 320), 1600)}px`
+    } catch {
+      el.style.height = '32rem'
+    }
+  }
+
   const navBtn = (id: MailView, label: string, icon: typeof Inbox) => {
     const Icon = icon
     return (
       <button
         className={cx(
-          'flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-semibold transition',
-          view === id ? 'bg-fairway-50 text-forest-950 ring-1 ring-fairway-200' : 'text-forest-800 hover:bg-forest-50'
+          'inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl px-4 py-3 text-base font-semibold transition sm:flex-none sm:px-6',
+          view === id ? 'bg-fairway-800 text-white' : 'bg-white text-forest-800 ring-1 ring-forest-200 hover:bg-forest-50'
         )}
         onClick={() => setView(id)}
         type="button"
       >
-        <Icon aria-hidden className="h-4 w-4" />
+        <Icon aria-hidden className="h-5 w-5" />
         {label}
       </button>
     )
   }
 
+  const latestMessage = threadMessages[threadMessages.length - 1]
+  const earlierMessages = threadMessages.slice(0, -1)
+  const filterBtn = (id: InboxFilter, label: string) => (
+    <button
+      className={cx(
+        'rounded-full px-4 py-2 text-sm font-semibold',
+        inboxFilter === id ? 'bg-forest-900 text-white' : 'bg-forest-100 text-forest-800'
+      )}
+      onClick={() => setInboxFilter(id)}
+      type="button"
+    >
+      {label}
+    </button>
+  )
+
   return (
-    <div className="space-y-5" id="admin-hub-mail">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.5rem] border border-forest-100 bg-white px-5 py-4 shadow-soft">
+    <div className="space-y-4" id="admin-hub-mail">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-forest-100 bg-white px-4 py-3 shadow-soft sm:px-5">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-700">Gmail connection</p>
-          <p className="mt-1 text-sm font-semibold text-forest-950">
-            {connected ? `Connected · ${status?.gmail.emailAddress}` : 'Not connected'}
-          </p>
-          <p className="mt-0.5 text-xs text-forest-600">
-            Inbox uses Gmail. Branded quotations and documents send through Resend from {status?.from || 'the configured from address'}.
-          </p>
+          <h2 className="text-xl font-semibold text-forest-950 sm:text-2xl">
+            {connected ? status?.gmail.emailAddress : 'Gmail'}
+          </h2>
+          {!connected ? <p className="text-sm text-forest-600">Connect once, then click a message to read it.</p> : null}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {!sendEnabled ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-xs font-bold uppercase tracking-wide text-amber-950">
-              <ShieldOff aria-hidden className="h-3.5 w-3.5" />
-              Email sending disabled
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1.5 text-sm font-bold text-amber-950">
+              <ShieldOff aria-hidden className="h-4 w-4" />
+              Sending off
             </span>
           ) : null}
           {connected ? (
-            <>
-              <LuxuryButton className="!px-4 !py-2 !text-xs" onClick={() => void connectGmail()} type="button" variant="outlineOnLight">
+            <div className="flex flex-wrap items-center gap-2">
+              <button className="text-sm font-semibold text-forest-700 underline" onClick={() => void connectGmail()} type="button">
                 Reconnect
-              </LuxuryButton>
-              <LuxuryButton className="!px-4 !py-2 !text-xs" onClick={() => void disconnectGmail()} type="button" variant="outline">
+              </button>
+              <LuxuryButton className="!px-4 !py-2 !text-sm" onClick={() => void disconnectGmail()} type="button" variant="outline">
                 Disconnect
               </LuxuryButton>
-            </>
+            </div>
           ) : (
             <>
               <LuxuryButton
-                className="!px-5 !py-2.5"
+                className="!px-6 !py-3 !text-base"
                 disabled={busy === 'oauth' || !status || !status.gmail.googleConfigured}
                 onClick={() => void connectGmail()}
                 type="button"
@@ -655,10 +760,7 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                 {busy === 'oauth' ? 'Connecting…' : 'Connect Gmail'}
               </LuxuryButton>
               {status && !status.gmail.googleConfigured ? (
-                <p className="basis-full text-xs text-forest-600">
-                  Set GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI, and OAUTH_TOKEN_ENCRYPTION_KEY first. See
-                  docs/GMAIL_SETUP.md.
-                </p>
+                <p className="basis-full text-sm text-forest-600">Gmail is not configured on the server yet.</p>
               ) : null}
             </>
           )}
@@ -682,102 +784,87 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
         </div>
       ) : null}
 
-      <div className="grid gap-4 lg:grid-cols-[200px_minmax(0,1fr)]">
-        <nav aria-label="Email folders" className="flex gap-2 overflow-x-auto rounded-[1.5rem] border border-forest-100 bg-white p-3 shadow-soft lg:block lg:space-y-1">
+      <div className="space-y-5">
+        <nav aria-label="Email folders" className="flex gap-2 overflow-x-auto">
           {navBtn('inbox', 'Inbox', Inbox)}
-          {navBtn('compose', 'Compose', MailPlus)}
+          {navBtn('compose', 'Write', MailPlus)}
           {navBtn('sent', 'Sent', Send)}
           {navBtn('templates', 'Templates', FileText)}
         </nav>
 
         <div className="min-w-0">
           {view === 'inbox' ? (
-            <div className="grid gap-4 lg:grid-cols-[minmax(260px,340px)_minmax(0,1fr)]">
-              <section className={cx('rounded-[1.75rem] border border-forest-100 bg-white shadow-soft', selectedId ? 'hidden lg:block' : '')}>
+            <div className="grid gap-4 xl:grid-cols-[minmax(300px,0.85fr)_minmax(0,1.4fr)]">
+              <section className={cx('rounded-[1.5rem] border border-forest-100 bg-white shadow-soft', selectedId ? 'hidden xl:block' : '')}>
                 <div className="border-b border-forest-100 p-4">
                   <div className="flex gap-2">
-                    <label className="sr-only" htmlFor="mail-search">
-                      Search Gmail
-                    </label>
                     <div className="relative flex-1">
-                      <Search aria-hidden className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-forest-400" />
+                      <Search aria-hidden className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-forest-400" />
                       <input
-                        className="w-full rounded-xl border border-forest-200 bg-offwhite py-2 pl-9 pr-3 text-sm text-forest-950"
+                        aria-label="Search mail"
+                        className="w-full rounded-2xl border border-forest-200 bg-offwhite py-3 pl-11 pr-3 text-base text-forest-950"
                         id="mail-search"
                         onChange={(e) => setQuery(e.target.value)}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') void loadInbox()
                         }}
-                        placeholder="Search Gmail"
+                        placeholder="Search"
                         value={query}
                       />
                     </div>
                     <button
                       aria-label="Refresh inbox"
-                      className="rounded-xl border border-forest-200 p-2 text-forest-800 hover:bg-forest-50"
+                      className="rounded-2xl border border-forest-200 px-3 text-forest-800 hover:bg-forest-50"
                       onClick={() => void loadInbox()}
                       type="button"
                     >
-                      <RefreshCw className={cx('h-4 w-4', busy === 'inbox' && 'animate-spin')} />
+                      <RefreshCw className={cx('h-5 w-5', busy === 'inbox' && 'animate-spin')} />
                     </button>
                   </div>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    <button
-                      className={cx('rounded-full px-3 py-1 text-xs font-semibold', folder === 'inbox' ? 'bg-forest-900 text-white' : 'bg-forest-100 text-forest-800')}
-                      onClick={() => setFolder('inbox')}
-                      type="button"
-                    >
-                      Inbox
-                    </button>
-                    <button
-                      className={cx('rounded-full px-3 py-1 text-xs font-semibold', folder === 'sent' ? 'bg-forest-900 text-white' : 'bg-forest-100 text-forest-800')}
-                      onClick={() => setFolder('sent')}
-                      type="button"
-                    >
-                      Gmail sent
-                    </button>
-                    <button
-                      className={cx('rounded-full px-3 py-1 text-xs font-semibold', unreadOnly ? 'bg-amber-200 text-amber-950' : 'bg-forest-100 text-forest-800')}
-                      onClick={() => setUnreadOnly((v) => !v)}
-                      type="button"
-                    >
-                      Unread
-                    </button>
+                    {filterBtn('customers', 'Customers')}
+                    {filterBtn('all', 'Everything')}
+                    {filterBtn('unread', 'Unread')}
                   </div>
                 </div>
                 {!connected ? (
-                  <p className="p-5 text-sm text-forest-600">Connect Gmail to load the inbox.</p>
+                  <p className="p-6 text-lg text-forest-600">Connect Gmail to load mail.</p>
                 ) : busy === 'inbox' && threads.length === 0 ? (
-                  <p className="p-5 text-sm text-forest-600">Loading inbox…</p>
+                  <p className="p-6 text-lg text-forest-600">Loading…</p>
                 ) : threads.length === 0 ? (
-                  <p className="p-5 text-sm text-forest-600">No messages match this search.</p>
+                  <p className="p-6 text-lg text-forest-600">
+                    {inboxFilter === 'customers' ? 'No customer emails in this list. Try Everything.' : 'No messages match this search.'}
+                  </p>
                 ) : (
-                  <ul className="max-h-[70vh] divide-y divide-forest-100 overflow-y-auto">
+                  <ul className="max-h-[78vh] divide-y divide-forest-100 overflow-y-auto">
                     {threads.map((row) => (
                       <li key={row.threadId}>
                         <button
                           className={cx(
-                            'flex w-full gap-3 px-4 py-3 text-left hover:bg-fairway-50/70',
+                            'flex w-full gap-3 px-4 py-4 text-left hover:bg-fairway-50/80',
                             selectedId === row.threadId && 'bg-fairway-50'
                           )}
                           onClick={() => void openThread(row.threadId)}
                           type="button"
                         >
-                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-forest-900 text-xs font-bold text-white">
+                          <span className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-forest-900 text-sm font-bold text-white">
                             {row.initials}
+                            {row.unread ? (
+                              <span aria-hidden className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-[#d4a843]" />
+                            ) : null}
                           </span>
                           <span className="min-w-0 flex-1">
                             <span className="flex items-center justify-between gap-2">
-                              <span className={cx('truncate text-sm', row.unread ? 'font-bold text-forest-950' : 'font-medium text-forest-800')}>
+                              <span className={cx('truncate', row.unread ? 'font-bold text-forest-950' : 'font-semibold text-forest-800')}>
                                 {row.fromName || row.fromEmail || 'Unknown'}
                               </span>
-                              <span className="shrink-0 text-[11px] text-forest-500">{formatWhen(row.internalDate || row.date)}</span>
+                              <span className="shrink-0 text-sm text-forest-500">{formatWhen(row.internalDate || row.date)}</span>
                             </span>
-                            <span className={cx('block truncate text-sm', row.unread ? 'font-semibold text-forest-900' : 'text-forest-700')}>
+                            <span className={cx('mt-0.5 block truncate text-[15px] leading-snug', row.unread ? 'font-semibold text-forest-950' : 'text-forest-800')}>
                               {row.subject}
                             </span>
-                            <span className="mt-0.5 flex items-center gap-2 truncate text-xs text-forest-500">
-                              {row.hasAttachments ? <Paperclip aria-hidden className="h-3 w-3" /> : null}
+                            <span className="mt-1 line-clamp-2 text-sm leading-relaxed text-forest-600">
+                              {row.hasAttachments ? <Paperclip aria-hidden className="mr-1 inline h-4 w-4" /> : null}
                               {row.snippet}
                             </span>
                           </span>
@@ -788,132 +875,177 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                 )}
               </section>
 
-              <section className={cx('rounded-[1.75rem] border border-forest-100 bg-white shadow-soft', !selectedId ? 'hidden lg:block' : '')}>
+              <section className={cx('rounded-[1.5rem] border border-forest-100 bg-white shadow-soft', !selectedId ? 'hidden xl:block' : '')}>
                 {!selectedId ? (
-                  <p className="p-8 text-sm text-forest-600">Select a conversation.</p>
+                  <p className="p-10 text-xl text-forest-600">Click a name on the left to open the email.</p>
                 ) : busy === 'thread' && threadMessages.length === 0 ? (
-                  <p className="p-8 text-sm text-forest-600">Loading conversation…</p>
-                ) : (
-                  <div className="grid gap-0 xl:grid-cols-[minmax(0,1fr)_280px]">
-                    <div className="min-w-0">
-                      <div className="flex items-start gap-3 border-b border-forest-100 px-4 py-4">
+                  <p className="p-10 text-xl text-forest-600">Opening…</p>
+                ) : latestMessage ? (
+                  <div className="flex min-h-[75vh] flex-col">
+                    <div className="border-b border-forest-100 px-4 py-4 sm:px-6">
+                      <div className="flex items-start gap-2">
                         <button
-                          className="rounded-lg p-2 text-forest-800 hover:bg-forest-50 lg:hidden"
+                          className="rounded-xl p-2 text-forest-800 hover:bg-forest-50 xl:hidden"
                           onClick={() => setSelectedId(null)}
                           type="button"
                         >
-                          <ArrowLeft className="h-4 w-4" />
+                          <ArrowLeft className="h-5 w-5" />
                           <span className="sr-only">Back to inbox</span>
                         </button>
                         <div className="min-w-0 flex-1">
-                          <h3 className="font-display text-lg font-semibold text-forest-950">{threadSubject}</h3>
-                          <p className="text-xs text-forest-500">{threadMessages.length} messages</p>
-                        </div>
-                      </div>
-                      <div className="max-h-[70vh] space-y-4 overflow-y-auto p-4">
-                        {threadMessages.map((message) => (
-                          <article className="rounded-2xl border border-forest-100 bg-offwhite/80 p-4" key={message.id}>
-                            <header className="flex items-start justify-between gap-3">
-                              <div className="flex gap-3">
-                                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-forest-900 text-xs font-bold text-white">
-                                  {message.initials}
-                                </span>
-                                <div>
-                                  <p className="text-sm font-semibold text-forest-950">{message.fromName || message.fromEmail}</p>
-                                  <p className="text-xs text-forest-500">{message.fromEmail}</p>
-                                </div>
-                              </div>
-                              <time className="text-xs text-forest-500">{formatWhen(message.internalDate || message.date)}</time>
-                            </header>
-                            {message.html ? (
-                              <iframe
-                                className="mt-3 min-h-[180px] w-full rounded-xl bg-white"
-                                sandbox=""
-                                srcDoc={message.html}
-                                title={`Message from ${message.fromEmail}`}
-                              />
-                            ) : (
-                              <pre className="mt-3 whitespace-pre-wrap font-sans text-sm text-forest-800">{message.text}</pre>
-                            )}
-                            {message.attachments.length > 0 ? (
-                              <ul className="mt-3 space-y-1 text-xs text-forest-700">
-                                {message.attachments.map((file) => (
-                                  <li key={file.attachmentId}>
-                                    <Paperclip aria-hidden className="mr-1 inline h-3 w-3" />
-                                    {file.filename} ({formatBytes(file.size)})
-                                  </li>
-                                ))}
-                              </ul>
+                          <h3 className="font-display text-2xl font-semibold leading-snug text-forest-950 sm:text-3xl">
+                            {threadSubject}
+                          </h3>
+                          <p className="mt-1 text-base text-forest-700">
+                            {latestMessage.fromName || latestMessage.fromEmail}
+                            {latestMessage.fromEmail ? ` · ${latestMessage.fromEmail}` : ''}
+                            {latestMessage.fromEmail ? (
+                              <button
+                                className="ml-2 text-sm font-semibold text-forest-700 underline"
+                                onClick={() => void copyEmail(latestMessage.fromEmail)}
+                                type="button"
+                              >
+                                Copy
+                              </button>
                             ) : null}
-                          </article>
-                        ))}
-                        <div className="flex flex-wrap gap-2">
-                          <LuxuryButton className="!px-4 !py-2 !text-xs" disabled={!connected} onClick={() => replyFromThread(false)} type="button">
-                            Reply via Gmail
-                          </LuxuryButton>
-                          <LuxuryButton className="!px-4 !py-2 !text-xs" onClick={() => replyFromThread(true)} type="button" variant="outlineOnLight">
-                            Create branded response
-                          </LuxuryButton>
+                          </p>
                           {linked ? (
-                            <LuxuryButton
-                              className="!px-4 !py-2 !text-xs"
-                              onClick={() => onCreateDocument?.(linked.id)}
-                              type="button"
-                              variant="outline"
-                            >
-                              Create quote
-                            </LuxuryButton>
+                            <p className="mt-1 text-sm text-forest-600">
+                              Website form {linked.reference || linked.name}
+                            </p>
                           ) : null}
                         </div>
-                        {!allowImages ? (
-                          <button className="text-xs font-semibold text-forest-700 underline" onClick={() => {
-                            setAllowImages(true)
-                            if (selectedId) void openThread(selectedId, true)
-                          }} type="button">
-                            Load external images
-                          </button>
-                        ) : null}
                       </div>
-                    </div>
-                    <aside className="border-t border-forest-100 p-4 xl:border-l xl:border-t-0">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-700">Customer</p>
-                      {linked ? (
-                        <div className="mt-2 space-y-1 text-sm text-forest-800">
-                          <p className="font-semibold text-forest-950">{linked.name}</p>
-                          <p>{linked.email}</p>
-                          {linked.phone ? <p>{linked.phone}</p> : null}
-                          <p>Ref {linked.reference}</p>
-                          {linked.interest ? <p>{linked.interest}</p> : null}
-                          {linked.travelDates ? <p>{linked.travelDates}</p> : null}
-                          {linked.numberOfGuests ? <p>{linked.numberOfGuests} guests</p> : null}
-                        </div>
-                      ) : (
-                        <p className="mt-2 text-sm text-forest-600">No matching website form for this sender.</p>
-                      )}
-                      <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-700">Actions</p>
-                      <div className="mt-2 flex flex-col gap-2">
-                        <LuxuryButton className="!px-3 !py-2 !text-xs" onClick={() => replyFromThread(false)} type="button">
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        <LuxuryButton className="!px-5 !py-2.5 !text-base" disabled={!connected} onClick={focusReplyBox} type="button">
                           Reply
                         </LuxuryButton>
-                        <LuxuryButton className="!px-3 !py-2 !text-xs" onClick={() => replyFromThread(true)} type="button" variant="outlineOnLight">
+                        <LuxuryButton className="!px-5 !py-2.5 !text-base" onClick={() => replyFromThread(true)} type="button" variant="outlineOnLight">
                           Branded email
                         </LuxuryButton>
                         {linked ? (
-                          <LuxuryButton className="!px-3 !py-2 !text-xs" onClick={() => onCreateDocument?.(linked.id)} type="button" variant="outline">
-                            Generate document
+                          <LuxuryButton className="!px-5 !py-2.5 !text-base" onClick={() => onCreateDocument?.(linked.id)} type="button" variant="outline">
+                            Quote
                           </LuxuryButton>
                         ) : null}
-                        <LuxuryButton
-                          className="!px-3 !py-2 !text-xs"
-                          onClick={() => void copyEmail(linked?.email || threadMessages[0]?.fromEmail || '')}
-                          type="button"
-                          variant="outline"
-                        >
-                          Copy email
-                        </LuxuryButton>
                       </div>
-                    </aside>
+                    </div>
+                    <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4 sm:p-6">
+                      {earlierMessages.length > 0 ? (
+                        <button
+                          className="w-full rounded-xl border border-forest-200 bg-offwhite px-4 py-3 text-left text-base font-semibold text-forest-800 hover:bg-forest-50"
+                          onClick={() => setShowEarlier((open) => !open)}
+                          type="button"
+                        >
+                          {showEarlier ? 'Hide earlier messages' : `Show ${earlierMessages.length} earlier ${earlierMessages.length === 1 ? 'message' : 'messages'}`}
+                        </button>
+                      ) : null}
+                      {showEarlier
+                        ? earlierMessages.map((message) => (
+                            <article className="rounded-2xl border border-forest-100 bg-[#f6fbf8] p-4" key={message.id}>
+                              <p className="text-sm font-semibold text-forest-800">
+                                {message.fromName || message.fromEmail}
+                                <span className="ml-2 font-normal text-forest-500">{formatWhen(message.internalDate || message.date)}</span>
+                              </p>
+                              <div className="mt-3">
+                                {message.html ? (
+                                  <iframe
+                                    className="w-full rounded-xl bg-white"
+                                    onLoad={(e) => sizeMailIframe(e.currentTarget)}
+                                    sandbox="allow-same-origin"
+                                    srcDoc={wrapReadableEmailHtml(message.html)}
+                                    style={{ minHeight: '12rem' }}
+                                    title={`Earlier message from ${message.fromEmail}`}
+                                  />
+                                ) : (
+                                  <pre className="whitespace-pre-wrap font-sans text-base leading-relaxed text-forest-800">
+                                    {message.text || 'No readable text.'}
+                                  </pre>
+                                )}
+                              </div>
+                            </article>
+                          ))
+                        : null}
+                      <article className="rounded-2xl border border-forest-100 bg-white p-1 sm:p-2">
+                        <div className="flex items-center justify-between gap-3 px-3 pt-3">
+                          <p className="min-w-0 truncate text-base font-semibold text-forest-950">
+                            {latestMessage.fromName || latestMessage.fromEmail}
+                          </p>
+                          <time className="shrink-0 text-sm text-forest-500">{formatWhen(latestMessage.internalDate || latestMessage.date)}</time>
+                        </div>
+                        <div className="mt-3 px-1 pb-2 sm:px-2">
+                          {latestMessage.html ? (
+                            <iframe
+                              className="w-full rounded-xl bg-white"
+                              onLoad={(e) => sizeMailIframe(e.currentTarget)}
+                              sandbox="allow-same-origin"
+                              srcDoc={wrapReadableEmailHtml(latestMessage.html)}
+                              style={{ minHeight: '22rem' }}
+                              title={`Message from ${latestMessage.fromEmail}`}
+                            />
+                          ) : (
+                            <pre className="whitespace-pre-wrap px-3 font-sans text-lg leading-relaxed text-forest-800">
+                              {latestMessage.text || 'This message has no readable text.'}
+                            </pre>
+                          )}
+                          {latestMessage.attachments.length > 0 ? (
+                            <ul className="mt-3 space-y-2 px-3 text-base text-forest-700">
+                              {latestMessage.attachments.map((file) => (
+                                <li key={file.attachmentId}>
+                                  <Paperclip aria-hidden className="mr-2 inline h-4 w-4" />
+                                  {file.filename} ({formatBytes(file.size)})
+                                </li>
+                              ))}
+                            </ul>
+                          ) : null}
+                          {!allowImages && latestMessage.html.includes('[image blocked]') ? (
+                            <button
+                              className="mt-3 px-3 text-base font-semibold text-forest-800 underline"
+                              onClick={() => {
+                                setAllowImages(true)
+                                if (selectedId) void openThread(selectedId, true)
+                              }}
+                              type="button"
+                            >
+                              Show pictures
+                            </button>
+                          ) : null}
+                        </div>
+                      </article>
+                      <div className="rounded-2xl border border-forest-200 bg-[#f6fbf8] p-4">
+                        <label className="block text-sm font-semibold text-forest-800" htmlFor="mail-quick-reply">
+                          Reply
+                        </label>
+                        <textarea
+                          className="mt-2 min-h-[8rem] w-full rounded-xl border border-forest-200 bg-white px-3 py-3 text-base leading-relaxed text-forest-950"
+                          id="mail-quick-reply"
+                          onChange={(e) => setQuickReply(e.target.value)}
+                          placeholder={`Write a reply to ${latestMessage.fromName || latestMessage.fromEmail || 'them'}…`}
+                          ref={replyBoxRef}
+                          value={quickReply}
+                        />
+                        <div className="mt-3 flex flex-wrap items-center gap-2">
+                          <LuxuryButton
+                            className="!px-5 !py-2.5 !text-base"
+                            disabled={busy === 'send' || !sendEnabled || !quickReply.trim()}
+                            onClick={() => void sendQuickReply()}
+                            type="button"
+                          >
+                            {busy === 'send' ? 'Sending…' : 'Send reply'}
+                          </LuxuryButton>
+                          <button
+                            className="text-sm font-semibold text-forest-700 underline"
+                            onClick={() => replyFromThread(false)}
+                            type="button"
+                          >
+                            Open full write screen
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
+                ) : (
+                  <p className="p-10 text-xl text-forest-600">This conversation is empty.</p>
                 )}
               </section>
             </div>
@@ -921,9 +1053,9 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
 
           {view === 'compose' ? (
             <section className="rounded-[1.75rem] border border-forest-100 bg-white p-5 shadow-soft sm:p-7">
-              <h3 className="font-display text-xl font-semibold text-forest-950">Compose</h3>
-              <p className="mt-1 text-sm text-forest-600">
-                Reply via Gmail keeps the Gmail thread. Send branded email uses Resend and Golf Sol stationery.
+              <h3 className="font-display text-3xl font-semibold text-forest-950">Write</h3>
+              <p className="mt-2 text-lg text-forest-700">
+                Reply keeps the Gmail thread. Branded email sends Golf Sol stationery.
               </p>
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 <label className="text-xs font-semibold uppercase tracking-wide text-forest-700">
@@ -1062,7 +1194,7 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                   onClick={() => void send('gmail')}
                   type="button"
                 >
-                  {busy === 'send' ? 'Sending…' : 'Reply via Gmail'}
+                  {busy === 'send' ? 'Sending…' : 'Send reply'}
                 </LuxuryButton>
                 <LuxuryButton className="!px-4 !py-2 !text-sm" disabled={busy === 'send' || !sendEnabled} onClick={() => void send('resend')} type="button">
                   {busy === 'send' ? (
@@ -1075,7 +1207,7 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                 </LuxuryButton>
               </div>
               {!compose.threadId ? (
-                <p className="mt-2 text-xs text-forest-500">Reply via Gmail is available when you open a Gmail conversation first.</p>
+                <p className="mt-2 text-xs text-forest-500">Send reply is available after you open a conversation and use Reply.</p>
               ) : null}
               {!sendEnabled ? (
                 <p className="mt-2 text-xs font-semibold text-amber-900">Sending is locked. Preview and generate PDF still work.</p>

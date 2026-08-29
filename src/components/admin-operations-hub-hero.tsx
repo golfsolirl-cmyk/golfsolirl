@@ -112,13 +112,9 @@ const SECTION_GUIDES: Record<AdminPortalSectionId, SectionGuide> = {
   },
   mail: {
     kicker: 'Gmail',
-    title: 'Gmail inbox',
-    summary: 'Connect Gmail here. Read customer mail, reply on the same thread, or send a Golf Sol branded email with a PDF.',
-    steps: [
-      'Connect Gmail once (tokens stay on the server).',
-      'Open a conversation, match it to a website form, then Reply via Gmail or Send branded email.',
-      'Keep EMAIL_SEND_ENABLED off while testing so nothing leaves the building.'
-    ]
+    title: 'Gmail',
+    summary: 'Read customer emails here. Reply in Gmail, or send a Golf Sol email with a PDF.',
+    steps: ['Connect Gmail.', 'Open a conversation.', 'Reply, or send a branded email with a PDF.']
   },
   drivers: {
     kicker: 'Run calendar',
@@ -140,6 +136,10 @@ export function AdminOperationsHubHero(props: {
   const guide = SECTION_GUIDES[props.activeSection]
   const navItem = ADMIN_SIDEBAR_ITEMS.find((item) => item.id === props.activeSection)
   const Icon = navItem?.icon
+
+  if (props.activeSection === 'mail') {
+    return null
+  }
 
   return (
     <div

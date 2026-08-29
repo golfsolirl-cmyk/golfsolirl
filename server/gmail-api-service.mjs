@@ -2,7 +2,7 @@
  * Gmail REST helpers — list, search, thread, MIME parse, attachments, threaded send.
  * Google credentials stay on the server.
  */
-import { sanitizeEmailHtml } from './gmail-html-sanitize.mjs'
+import { decodeMailPreview, sanitizeEmailHtml } from './gmail-html-sanitize.mjs'
 
 const throwStatus = (message, statusCode, code) => {
   const err = new Error(message)
@@ -55,7 +55,7 @@ export const parseFromHeader = (raw) => {
   const angle = s.match(/^(.*)<([^>]+)>\s*$/)
   if (angle) {
     return {
-      name: angle[1].replaceAll('"', '').trim(),
+      name: angle[1].replace(/"/g, '').trim(),
       email: angle[2].trim().toLowerCase()
     }
   }
@@ -115,10 +115,10 @@ const summarizeMessage = (message, allowImages) => {
     initials: initialsFromName(from.name, from.email),
     to: headerValue(headers, 'To'),
     cc: headerValue(headers, 'Cc'),
-    subject: headerValue(headers, 'Subject') || '(no subject)',
+    subject: decodeMailPreview(headerValue(headers, 'Subject')) || '(no subject)',
     date: headerValue(headers, 'Date'),
     internalDate: message.internalDate ? Number(message.internalDate) : 0,
-    snippet: typeof message.snippet === 'string' ? message.snippet : '',
+    snippet: decodeMailPreview(typeof message.snippet === 'string' ? message.snippet : ''),
     unread: labelIds.includes('UNREAD'),
     labels: labelIds.filter((id) => !['INBOX', 'UNREAD', 'IMPORTANT', 'CATEGORY_PERSONAL'].includes(id)).slice(0, 6),
     hasAttachments: parsed.attachments.length > 0,
@@ -188,7 +188,7 @@ export const listGmailThreads = async (accessToken, { query, max = 25 } = {}) =>
           fromName: summary.fromName,
           fromEmail: summary.fromEmail,
           initials: summary.initials,
-          snippet: last.snippet || summary.snippet,
+          snippet: decodeMailPreview(last.snippet || summary.snippet),
           date: summary.date,
           internalDate: summary.internalDate,
           unread: messages.some((m) => Array.isArray(m.labelIds) && m.labelIds.includes('UNREAD')),

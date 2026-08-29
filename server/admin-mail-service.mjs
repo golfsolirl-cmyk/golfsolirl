@@ -309,15 +309,20 @@ const handleStatus = async (user, env) => {
   }
 }
 
+const CUSTOMER_INBOX_QUERY =
+  '-from:linkedin.com -from:facebookmail.com -from:instagram.com -from:mail.instagram.com -from:accounts.google.com -from:id.apple.com -from:appleid.apple.com -subject:"Operator sign-in"'
+
 const handleInbox = async (user, body, env) => {
   const { accessToken } = await requireGmailAccount(user.id, env)
   const unreadOnly = Boolean(body?.unreadOnly)
   const folder = typeof body?.folder === 'string' ? body.folder.trim() : 'inbox'
   const search = typeof body?.q === 'string' ? body.q.trim() : ''
+  const focus = typeof body?.focus === 'string' ? body.focus.trim() : 'customers'
   const parts = []
   if (folder === 'sent') parts.push('in:sent')
   else parts.push('in:inbox')
   if (unreadOnly) parts.push('is:unread')
+  if (focus !== 'all') parts.push(CUSTOMER_INBOX_QUERY)
   if (search) parts.push(search)
   const listed = await listGmailThreads(accessToken, { query: parts.join(' '), max: 25 })
   return { ok: true, ...listed }
@@ -532,7 +537,7 @@ const handleGmailReply = async (user, body, env) => {
   const threadId = typeof body?.threadId === 'string' ? body.threadId.trim() : ''
   const inReplyTo = typeof body?.inReplyTo === 'string' ? body.inReplyTo.trim() : ''
   if (!threadId || !inReplyTo) {
-    throwStatus('Gmail threading requires the original conversation. Open the thread and use Reply via Gmail.', 400)
+    throwStatus('Open the conversation first, then send the reply.', 400)
   }
   const subjectRaw = typeof body?.subject === 'string' ? body.subject.trim() : ''
   if (!subjectRaw) {

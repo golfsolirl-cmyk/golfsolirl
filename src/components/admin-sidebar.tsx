@@ -40,7 +40,7 @@ export type AdminSidebarItem = {
 
 export const ADMIN_SIDEBAR_ITEMS: readonly AdminSidebarItem[] = [
   { id: 'desk', label: 'Desk', description: 'Payments · portal messages · publish', icon: Inbox },
-  { id: 'mail', label: 'Gmail', description: 'Connect · inbox · reply · PDFs', icon: Mails },
+  { id: 'mail', label: 'Gmail', description: 'Inbox · open · reply', icon: Mails },
   { id: 'scan', label: 'Scan trip pass', description: 'Verify guest payment barcode', icon: ScanLine },
   { id: 'forms', label: 'Website forms', description: 'New forms · trip · price', icon: FileText },
   { id: 'clientDocs', label: 'Client documents', description: 'Quotes · letters · Word & PDF', icon: ClipboardList },
