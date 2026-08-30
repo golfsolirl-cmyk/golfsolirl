@@ -1,50 +1,35 @@
-export type MailQuotationPackage = {
-  destination: string
-  travelDates: string
-  duration: string
-  golfers: string
-  priceFiveStar: string
-  priceFourStar: string
-  hotels: string
-  golf: string
-  airportTransfers: string
-  golfTransfers: string
-  breakfast: string
-  assistance: string
-  extraNotes: string
-  transferTotal: string
-  nextSteps: string
-  signOffName: string
-  signOffPhone: string
+export function createMailQuotationReferenceId(): string
+export function emptyHotelOption(partial?: {
+  id?: string
+  name?: string
+  pricePerPerson?: string
+  golferCount?: string
+}): {
+  id: string
+  name: string
+  pricePerPerson: string
+  golferCount: string
 }
-
-export type MailQuotationField = {
-  readonly key: keyof MailQuotationPackage
+export function parseQuotationMoney(raw?: unknown): number
+export function formatQuotationEuro(value: number): string
+export function hotelOptionTotal(opt?: unknown): number
+export function hotelOptionSummary(opt?: unknown): string
+export const MAIL_QUOTATION_INCLUDE_FIELDS: readonly {
+  readonly key: string
   readonly label: string
   readonly placeholder: string
   readonly multiline?: boolean
-}
-
-export type MailQuotationFieldGroup = {
-  readonly id: string
-  readonly title: string
-  readonly fields: readonly MailQuotationField[]
-}
-
-export const MAIL_QUOTATION_FIELD_GROUPS: readonly MailQuotationFieldGroup[]
-export function emptyMailQuotationPackage(): MailQuotationPackage
-export function normalizeMailQuotationPackage(raw?: unknown): MailQuotationPackage
-export function prefillMailQuotationPackage(
-  raw?: unknown,
-  extras?: { travelDates?: string; golfers?: string; numberOfGuests?: string }
-): MailQuotationPackage
+}[]
+export const MAIL_QUOTATION_NOTE_FIELDS: readonly {
+  readonly key: string
+  readonly label: string
+  readonly placeholder: string
+  readonly multiline?: boolean
+}[]
+export function emptyMailQuotationPackage(): Record<string, unknown>
+export function normalizeMailQuotationPackage(raw?: unknown): Record<string, unknown>
+export function quotationComputed(pkg?: unknown): Record<string, unknown>
+export function prefillMailQuotationPackage(raw?: unknown, extras?: Record<string, string>): Record<string, unknown>
 export function quotationMailClosing(pkg?: unknown): string
-export function quotationPackageRows(
-  pkg?: unknown,
-  extras?: { reference?: string }
-): { label: string; value: string }[]
 export function buildQuotationMailBody(pkg?: unknown, extras?: { reference?: string; firstName?: string }): string
-export function quotationMailVarsFromPackage(
-  pkg?: unknown,
-  extras?: Record<string, string>
-): Record<string, string>
+export function quotationMailVarsFromPackage(pkg?: unknown): Record<string, string>

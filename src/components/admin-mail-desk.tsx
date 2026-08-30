@@ -17,6 +17,7 @@ import { adminMailRequest } from '../lib/admin-mail-api'
 import { applyMailTemplateVars } from '../lib/admin-mail-templates'
 import {
   buildQuotationMailBody,
+  createMailQuotationReferenceId,
   emptyMailQuotationPackage,
   prefillMailQuotationPackage,
   quotationMailClosing,
@@ -34,6 +35,9 @@ export type AdminMailSeed = {
   readonly phone?: string
   readonly interest?: string
   readonly threadId?: string
+  readonly templateId?: string
+  readonly travelDates?: string
+  readonly numberOfGuests?: string
 }
 
 type MailDeskProps = {
@@ -340,11 +344,14 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
 
   const applyTemplateToCompose = (t: TemplateRow, next: ComposeState) => {
     const first = next.customerName.trim().split(/\s+/)[0] || ''
+    const reference =
+      t.id === 'quotation' && !next.reference.trim() ? createMailQuotationReferenceId() : next.reference
     const quotation =
       t.id === 'quotation'
         ? prefillMailQuotationPackage(next.quotation, {
             travelDates: next.travelDates,
-            golfers: next.numberOfGuests
+            golfers: next.numberOfGuests,
+            destination: next.interest
           })
         : emptyMailQuotationPackage()
     const vars = {
@@ -352,7 +359,7 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
       firstName: first,
       email: next.to,
       phone: next.phone,
-      reference: next.reference,
+      reference,
       interest: next.interest,
       travelDates: quotation.travelDates || next.travelDates,
       numberOfGuests: quotation.golfers || next.numberOfGuests
@@ -360,6 +367,7 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
     return {
       ...next,
       templateId: t.id,
+      reference,
       quotation,
       travelDates: quotation.travelDates || next.travelDates,
       numberOfGuests: quotation.golfers || next.numberOfGuests,
@@ -368,7 +376,7 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
       introduction: applyMailTemplateVars(t.introduction, vars),
       body:
         t.id === 'quotation'
-          ? buildQuotationMailBody(quotation, { reference: next.reference, firstName: first })
+          ? buildQuotationMailBody(quotation, { reference, firstName: first })
           : applyMailTemplateVars(t.body, vars),
       ctaLabel: applyMailTemplateVars(t.ctaLabel, vars),
       ctaUrl: applyMailTemplateVars(t.ctaUrl, vars),
@@ -376,9 +384,25 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
     }
   }
 
+  const quotationFallbackTemplate = (): TemplateRow => ({
+    id: 'quotation',
+    label: 'Quotation',
+    blurb: 'Priced trip outline',
+    subject: 'Your Golf Sol Ireland Quotation - {{reference}}',
+    heading: 'Your golf holiday quotation',
+    introduction: 'Hi {{firstName}},',
+    body: '',
+    ctaLabel: 'Review your quote',
+    ctaUrl: '',
+    closing: 'Kind regards,\nGolf Sol Ireland'
+  })
+
   const startCompose = (partial: Partial<ComposeState>, template?: TemplateRow) => {
     const base = { ...emptyCompose(), ...partial }
-    const t = template || templates.find((row) => row.id === (partial.templateId || 'general_reply'))
+    const t =
+      template ||
+      templates.find((row) => row.id === (partial.templateId || 'general_reply')) ||
+      (partial.templateId === 'quotation' ? quotationFallbackTemplate() : undefined)
     setCompose(t ? applyTemplateToCompose(t, base) : base)
     setAttachments([])
     setPreviewHtml(null)
@@ -398,7 +422,10 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
         reference: seed.enquiryReference || '',
         phone: seed.phone || '',
         interest: seed.interest || '',
-        threadId: seed.threadId || ''
+        travelDates: seed.travelDates || '',
+        numberOfGuests: seed.numberOfGuests || '',
+        threadId: seed.threadId || '',
+        templateId: seed.templateId || 'general_reply'
       })
     }
     onSeedConsumed?.()
@@ -553,7 +580,9 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
       })
       setAttachments((current) => {
         const without = current.filter((file) =>
-          isQuote ? !file.filename.startsWith('GolfSol-Quotation-') : file.filename !== data.filename
+          isQuote
+            ? !file.filename.startsWith('GolfSol-Ireland-Quotation-') && !file.filename.startsWith('GolfSol-Quotation-')
+            : file.filename !== data.filename
         )
         return [...without, { filename: data.filename, contentBase64: data.contentBase64, size: data.size }]
       })

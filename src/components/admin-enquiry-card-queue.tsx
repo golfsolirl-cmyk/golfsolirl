@@ -157,6 +157,7 @@ type AdminEnquiryCardQueueProps = {
   readonly onRemove: (row: AdminEnquiryCardRow) => void
   readonly removingId: string | null
   readonly onCreateDocument?: (row: AdminEnquiryCardRow) => void
+  readonly onCreateQuotation?: (row: AdminEnquiryCardRow) => void
   readonly onEmailCustomer?: (row: AdminEnquiryCardRow) => void
 }
 
@@ -182,6 +183,7 @@ export function AdminEnquiryCardQueue({
   onRemove,
   removingId,
   onCreateDocument,
+  onCreateQuotation,
   onEmailCustomer
 }: AdminEnquiryCardQueueProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null)
@@ -456,6 +458,16 @@ export function AdminEnquiryCardQueue({
                       Create document
                     </LuxuryButton>
                   ) : null}
+                  {onCreateQuotation ? (
+                    <LuxuryButton
+                      className="!px-4 !py-2 !text-xs"
+                      onClick={() => onCreateQuotation(row)}
+                      type="button"
+                      variant="outlineOnLight"
+                    >
+                      Create quotation
+                    </LuxuryButton>
+                  ) : null}
                   {onEmailCustomer ? (
                     <LuxuryButton
                       className="!px-4 !py-2 !text-xs"
@@ -492,17 +504,22 @@ export function AdminEnquiryCardQueue({
 
             {expanded ? (
               <div className="space-y-6 px-5 py-6 sm:px-7">
-                {onCreateDocument || onEmailCustomer ? (
+                {onCreateDocument || onCreateQuotation || onEmailCustomer ? (
                   <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.5rem] border border-fairway-200 bg-fairway-50/80 px-4 py-4">
                     <div>
                       <p className="text-sm font-semibold text-forest-950">Reply with a branded letter or email</p>
                       <p className="mt-0.5 text-xs text-forest-700">
-                        Open a Golf Sol document, or compose a branded email already filled with this guest’s details.
+                        Create a golf holiday quotation, open a Golf Sol document, or compose a branded email.
                       </p>
                     </div>
                     <div className="flex flex-wrap gap-2">
+                      {onCreateQuotation ? (
+                        <LuxuryButton className="!px-5 !py-2.5" onClick={() => onCreateQuotation(row)} type="button">
+                          Create quotation
+                        </LuxuryButton>
+                      ) : null}
                       {onCreateDocument ? (
-                        <LuxuryButton className="!px-5 !py-2.5" onClick={() => onCreateDocument(row)} type="button">
+                        <LuxuryButton className="!px-5 !py-2.5" onClick={() => onCreateDocument(row)} type="button" variant="outlineOnLight">
                           Create document
                         </LuxuryButton>
                       ) : null}

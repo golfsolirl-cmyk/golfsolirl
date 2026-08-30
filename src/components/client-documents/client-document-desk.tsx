@@ -267,7 +267,7 @@ export function ClientDocumentDesk({ accessToken, seedEnquiryId, onSeedConsumed 
           <p className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.22em] text-brand-600">Client documents</p>
           <h2 className="font-display mt-1 text-2xl font-semibold text-forest-950">Quotes, letters and enquiry replies</h2>
           <p className="mt-2 max-w-2xl text-sm text-forest-600">
-            Open a website form and choose Create document, or start a blank letter here. Preview on A4, then download Word or PDF.
+            Open a website form and choose Create quotation or Create document. Blank Word and PDF quotation templates are below for offline use.
           </p>
         </div>
         <LuxuryButton className="!px-5 !py-2.5" disabled={Boolean(busy)} onClick={() => void createBlank()} type="button">
@@ -277,6 +277,30 @@ export function ClientDocumentDesk({ accessToken, seedEnquiryId, onSeedConsumed 
           </span>
         </LuxuryButton>
       </div>
+
+      <article className="rounded-[1.75rem] border border-forest-100 bg-white p-5 shadow-soft sm:p-6">
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-600">Blank templates</p>
+        <h3 className="font-display mt-1 text-xl font-semibold text-forest-950">Golf Sol Ireland quotation template</h3>
+        <p className="mt-2 max-w-2xl text-sm text-forest-700">
+          Branded fill-in letter for offline or manual quotes. Customer quotations sent from Gmail use this same layout.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <a
+            className="inline-flex items-center rounded-full bg-forest-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-forest-800"
+            href="/docs/GolfSol_Ireland_Blank_Quotation_Template.pdf"
+            rel="noopener"
+          >
+            Download PDF
+          </a>
+          <a
+            className="inline-flex items-center rounded-full border border-forest-200 bg-white px-5 py-2.5 text-sm font-semibold text-forest-900 hover:bg-forest-50"
+            href="/docs/GolfSol_Ireland_Blank_Quotation_Template.docx"
+            rel="noopener"
+          >
+            Download Word
+          </a>
+        </div>
+      </article>
 
       {error ? (
         <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900" role="alert">

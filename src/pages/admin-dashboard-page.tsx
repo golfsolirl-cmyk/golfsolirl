@@ -21,6 +21,7 @@ import { AdminEmailsCommsDesk } from '../components/admin-emails-comms-desk'
 import { AdminMailDesk, type AdminMailSeed } from '../components/admin-mail-desk'
 import { AdminEnquiryCardQueue } from '../components/admin-enquiry-card-queue'
 import { ClientDocumentDesk } from '../components/client-documents/client-document-desk'
+import { quotationSeedFromEnquiry } from '../lib/enquiry-quotation-seed'
 import { TransferPaymentStatusBadge } from '../components/transfer-payment-status-badge'
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
 import { formatDateTimeDdMmYy } from '../lib/date-format-ie'
@@ -3680,7 +3681,25 @@ export function AdminDashboardPage() {
       enquiryId: row.id,
       enquiryReference: row.reference_id,
       phone: row.phone_whatsapp || '',
-      interest: row.interest || ''
+      interest: row.interest || '',
+      threadId: ''
+    })
+    setActiveAdminSection('mail')
+  }, [])
+
+  const openQuotationFromEnquiry = useCallback((row: EnquiryRow) => {
+    const quote = quotationSeedFromEnquiry(row)
+    setMailSeed({
+      view: 'compose',
+      to: row.email,
+      customerName: row.full_name,
+      enquiryId: row.id,
+      enquiryReference: row.reference_id,
+      phone: row.phone_whatsapp || '',
+      interest: quote.destination || row.interest || '',
+      travelDates: quote.travelDates,
+      numberOfGuests: quote.numberOfGuests,
+      templateId: 'quotation'
     })
     setActiveAdminSection('mail')
   }, [])
@@ -4318,6 +4337,7 @@ export function AdminDashboardPage() {
                 buildDetailPairs={submissionDetailRows}
                 emptyLabel="No new forms waiting."
                 onCreateDocument={openClientDocumentFromEnquiry}
+                onCreateQuotation={openQuotationFromEnquiry}
                 onEmailCustomer={openMailFromEnquiry}
                 onOpen={(row) => {
                   setSelectedEnquiryDetailRef(row.reference_id)
@@ -4344,6 +4364,7 @@ export function AdminDashboardPage() {
                   buildDetailPairs={submissionDetailRows}
                   emptyLabel="No opened forms match your search."
                   onCreateDocument={openClientDocumentFromEnquiry}
+                  onCreateQuotation={openQuotationFromEnquiry}
                   onEmailCustomer={openMailFromEnquiry}
                   onOpen={(row) => {
                     setSelectedEnquiryDetailRef(row.reference_id)

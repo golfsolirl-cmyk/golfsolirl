@@ -43,7 +43,7 @@ export const ADMIN_SIDEBAR_ITEMS: readonly AdminSidebarItem[] = [
   { id: 'mail', label: 'Gmail', description: 'Inbox · open · reply', icon: Mails },
   { id: 'scan', label: 'Scan trip pass', description: 'Verify guest payment barcode', icon: ScanLine },
   { id: 'forms', label: 'Website forms', description: 'New forms · trip · price', icon: FileText },
-  { id: 'clientDocs', label: 'Client documents', description: 'Quotes · letters · Word & PDF', icon: ClipboardList },
+  { id: 'clientDocs', label: 'Client documents', description: 'Quotes · letters · blank templates', icon: ClipboardList },
   { id: 'testimonials', label: 'Guest reviews', description: 'Approve for homepage', icon: Star },
   { id: 'transfers', label: 'Transfers & drivers', description: 'Quoted · paid · dispatch', icon: Car },
   { id: 'packages', label: 'Packages', description: 'Client builds · needs price', icon: Package },
