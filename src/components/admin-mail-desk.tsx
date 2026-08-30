@@ -564,6 +564,46 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
     setAttachments(next)
   }
 
+  const attachTemplatePdf = async (href: string, filename: string) => {
+    setBusy('attach-template')
+    setStatusError(null)
+    try {
+      const res = await fetch(href)
+      if (!res.ok) throw new Error('Unable to load that quotation template PDF.')
+      const blob = await res.blob()
+      const file = new File([blob], filename, { type: 'application/pdf' })
+      const max = status?.maxAttachments ?? 3
+      const maxBytes = status?.maxAttachmentBytes ?? 2.5 * 1024 * 1024
+      if (file.size > maxBytes) {
+        setStatusError(`The PDF exceeds the maximum attachment size (${formatBytes(maxBytes)}).`)
+        return
+      }
+      const buf = await file.arrayBuffer()
+      const bytes = new Uint8Array(buf)
+      const sig = String.fromCharCode(bytes[0] ?? 0, bytes[1] ?? 0, bytes[2] ?? 0, bytes[3] ?? 0, bytes[4] ?? 0)
+      if (sig !== '%PDF-') {
+        setStatusError(`"${filename}" is not a valid PDF.`)
+        return
+      }
+      const binary = Array.from(bytes, (b) => String.fromCharCode(b)).join('')
+      const nextFile = { filename, contentBase64: btoa(binary), size: file.size }
+      let overflow = false
+      setAttachments((current) => {
+        const without = current.filter((entry) => entry.filename !== filename)
+        if (without.length >= max) {
+          overflow = true
+          return current
+        }
+        return [...without, nextFile]
+      })
+      if (overflow) setStatusError(`At most ${max} PDF attachments are allowed.`)
+    } catch (error) {
+      setStatusError(errorMessage(error, 'Unable to attach that quotation template PDF.'))
+    } finally {
+      setBusy(null)
+    }
+  }
+
   const generatePdf = async () => {
     if (!accessToken) return
     setBusy('pdf')
@@ -762,11 +802,15 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
 
   const navBtn = (id: MailView, label: string, icon: typeof Inbox) => {
     const Icon = icon
+    const active = view === id
     return (
       <button
+        aria-current={active ? 'page' : undefined}
         className={cx(
-          'inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl px-4 py-3 text-base font-semibold transition sm:flex-none sm:px-6',
-          view === id ? 'bg-fairway-800 text-white' : 'bg-white text-forest-800 ring-1 ring-forest-200 hover:bg-forest-50'
+          'inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl px-5 py-3 text-base font-semibold transition sm:flex-none sm:min-w-[8.75rem] sm:px-6',
+          active
+            ? 'bg-forest-950 text-white shadow-md ring-2 ring-[#d4a843]'
+            : 'bg-white text-forest-800 ring-1 ring-forest-200 hover:bg-forest-50'
         )}
         onClick={() => setView(id)}
         type="button"
@@ -781,9 +825,10 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
   const earlierMessages = threadMessages.slice(0, -1)
   const filterBtn = (id: InboxFilter, label: string) => (
     <button
+      aria-pressed={inboxFilter === id}
       className={cx(
-        'rounded-full px-4 py-2 text-base font-semibold',
-        inboxFilter === id ? 'bg-forest-900 text-white' : 'bg-forest-100 text-forest-800'
+        'rounded-full px-5 py-2.5 text-base font-semibold',
+        inboxFilter === id ? 'bg-forest-950 text-white shadow-sm' : 'bg-white text-forest-800 ring-1 ring-forest-200 hover:bg-forest-50'
       )}
       onClick={() => setInboxFilter(id)}
       type="button"
@@ -793,8 +838,8 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
   )
 
   return (
-    <div className="space-y-4" id="admin-hub-mail">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-forest-100 bg-white px-4 py-4 shadow-soft sm:px-5">
+    <div className="space-y-6" id="admin-hub-mail">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-[1.75rem] border border-forest-100 bg-white px-5 py-5 shadow-soft sm:px-7 sm:py-6">
         <div>
           <p className="font-ge text-xs font-extrabold uppercase tracking-[0.18em] text-brand-600">Gmail</p>
           <h2 className="mt-1 text-xl font-semibold text-forest-950 sm:text-2xl">
@@ -838,7 +883,7 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
       </div>
 
       {oauthNotice ? (
-        <p className="rounded-2xl border border-fairway-200 bg-fairway-50 px-4 py-3 text-sm text-forest-900">{oauthNotice}</p>
+        <p className="rounded-2xl border border-forest-200 bg-forest-50 px-4 py-3 text-sm text-forest-900">{oauthNotice}</p>
       ) : null}
       {statusError ? (
         <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
@@ -854,8 +899,8 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
         </div>
       ) : null}
 
-      <div className="space-y-5">
-        <nav aria-label="Email folders" className="flex gap-2 overflow-x-auto">
+      <div className="space-y-6">
+        <nav aria-label="Email folders" className="flex gap-2 overflow-x-auto rounded-[1.5rem] border border-forest-100 bg-offwhite/90 p-2 sm:gap-3 sm:p-3">
           {navBtn('inbox', 'Inbox', Inbox)}
           {navBtn('compose', 'Write', MailPlus)}
           {navBtn('sent', 'Sent', Send)}
@@ -864,15 +909,19 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
 
         <div className="min-w-0">
           {view === 'inbox' ? (
-            <div className="grid gap-4 xl:grid-cols-[minmax(300px,0.85fr)_minmax(0,1.4fr)]">
-              <section className={cx('rounded-[1.5rem] border border-forest-100 bg-white shadow-soft', selectedId ? 'hidden xl:block' : '')}>
-                <div className="border-b border-forest-100 p-4">
-                  <div className="flex gap-2">
+            <div className="grid gap-6 xl:grid-cols-[minmax(340px,0.9fr)_minmax(0,1.35fr)]">
+              <section className={cx('overflow-hidden rounded-[1.75rem] border border-forest-100 bg-white shadow-soft', selectedId ? 'hidden xl:block' : '')}>
+                <div className="border-b border-forest-100 bg-offwhite/60 p-5 sm:p-6">
+                  <div className="mb-4">
+                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-600">Mail list</p>
+                    <h3 className="mt-1 font-display text-xl font-semibold text-forest-950">Inbox</h3>
+                  </div>
+                  <div className="flex gap-3">
                     <div className="relative flex-1">
-                      <Search aria-hidden className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-forest-400" />
+                      <Search aria-hidden className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-forest-400" />
                       <input
                         aria-label="Search mail"
-                        className="w-full rounded-2xl border border-forest-200 bg-offwhite py-3 pl-11 pr-3 text-base text-forest-950"
+                        className="w-full rounded-2xl border border-forest-200 bg-white py-3.5 pl-12 pr-4 text-base text-forest-950"
                         id="mail-search"
                         onChange={(e) => setQuery(e.target.value)}
                         onKeyDown={(e) => {
@@ -884,25 +933,25 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                     </div>
                     <button
                       aria-label="Refresh inbox"
-                      className="rounded-2xl border border-forest-200 px-3 text-forest-800 hover:bg-forest-50"
+                      className="rounded-2xl border border-forest-200 bg-white px-4 text-forest-800 hover:bg-forest-50"
                       onClick={() => void loadInbox()}
                       type="button"
                     >
                       <RefreshCw className={cx('h-5 w-5', busy === 'inbox' && 'animate-spin')} />
                     </button>
                   </div>
-                  <div className="mt-3 flex flex-wrap gap-2">
+                  <div className="mt-4 flex flex-wrap gap-3">
                     {filterBtn('customers', 'Customers')}
                     {filterBtn('all', 'Everything')}
                     {filterBtn('unread', 'Unread')}
                   </div>
                 </div>
                 {!connected ? (
-                  <p className="p-6 text-lg text-forest-600">Connect Gmail to load mail.</p>
+                  <p className="p-8 text-lg leading-relaxed text-forest-600">Connect Gmail to load mail.</p>
                 ) : busy === 'inbox' && threads.length === 0 ? (
-                  <p className="p-6 text-lg text-forest-600">Loading…</p>
+                  <p className="p-8 text-lg leading-relaxed text-forest-600">Loading…</p>
                 ) : threads.length === 0 ? (
-                  <p className="p-6 text-lg text-forest-600">
+                  <p className="p-8 text-lg leading-relaxed text-forest-600">
                     {inboxFilter === 'customers' ? 'No customer emails in this list. Try Everything.' : 'No messages match this search.'}
                   </p>
                 ) : (
@@ -911,29 +960,29 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                       <li key={row.threadId}>
                         <button
                           className={cx(
-                            'flex w-full gap-3 px-4 py-4 text-left hover:bg-fairway-50/80',
-                            selectedId === row.threadId && 'bg-fairway-50'
+                            'flex w-full gap-4 px-5 py-5 text-left transition hover:bg-forest-50',
+                            selectedId === row.threadId && 'border-l-4 border-[#d4a843] bg-forest-50'
                           )}
                           onClick={() => void openThread(row.threadId)}
                           type="button"
                         >
-                          <span className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-forest-900 text-sm font-bold text-white">
+                          <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-forest-900 text-sm font-bold text-white">
                             {row.initials}
                             {row.unread ? (
                               <span aria-hidden className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-[#d4a843]" />
                             ) : null}
                           </span>
                           <span className="min-w-0 flex-1">
-                            <span className="flex items-center justify-between gap-2">
-                              <span className={cx('truncate', row.unread ? 'font-bold text-forest-950' : 'font-semibold text-forest-800')}>
+                            <span className="flex items-center justify-between gap-3">
+                              <span className={cx('truncate text-base', row.unread ? 'font-bold text-forest-950' : 'font-semibold text-forest-800')}>
                                 {row.fromName || row.fromEmail || 'Unknown'}
                               </span>
                               <span className="shrink-0 text-sm text-forest-500">{formatWhen(row.internalDate || row.date)}</span>
                             </span>
-                            <span className={cx('mt-0.5 block truncate text-[15px] leading-snug', row.unread ? 'font-semibold text-forest-950' : 'text-forest-800')}>
+                            <span className={cx('mt-1.5 block truncate text-base leading-snug', row.unread ? 'font-semibold text-forest-950' : 'text-forest-800')}>
                               {row.subject}
                             </span>
-                            <span className="mt-1 line-clamp-2 text-base leading-relaxed text-forest-600">
+                            <span className="mt-2 line-clamp-2 text-base leading-relaxed text-forest-600">
                               {row.hasAttachments ? <Paperclip aria-hidden className="mr-1 inline h-4 w-4" /> : null}
                               {row.snippet}
                             </span>
@@ -945,15 +994,18 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                 )}
               </section>
 
-              <section className={cx('rounded-[1.5rem] border border-forest-100 bg-white shadow-soft', !selectedId ? 'hidden xl:block' : '')}>
+              <section className={cx('overflow-hidden rounded-[1.75rem] border border-forest-100 bg-white shadow-soft', !selectedId ? 'hidden xl:block' : '')}>
                 {!selectedId ? (
-                  <p className="p-10 text-xl text-forest-600">Click a name on the left to open the email.</p>
+                  <div className="p-10 sm:p-12">
+                    <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-600">Reading pane</p>
+                    <p className="mt-3 text-xl leading-relaxed text-forest-700">Click a conversation on the left to open the email.</p>
+                  </div>
                 ) : busy === 'thread' && threadMessages.length === 0 ? (
                   <p className="p-10 text-xl text-forest-600">Opening…</p>
                 ) : latestMessage ? (
                   <div className="flex min-h-[75vh] flex-col">
-                    <div className="border-b border-forest-100 px-4 py-4 sm:px-6">
-                      <div className="flex items-start gap-2">
+                    <div className="border-b border-forest-100 bg-offwhite/40 px-5 py-6 sm:px-8 sm:py-7">
+                      <div className="flex items-start gap-3">
                         <button
                           className="rounded-xl p-2 text-forest-800 hover:bg-forest-50 xl:hidden"
                           onClick={() => setSelectedId(null)}
@@ -963,15 +1015,21 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                           <span className="sr-only">Back to inbox</span>
                         </button>
                         <div className="min-w-0 flex-1">
-                          <h3 className="font-display text-2xl font-semibold leading-snug text-forest-950 sm:text-3xl">
+                          <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-600">Open email</p>
+                          <h3 className="font-display mt-2 text-2xl font-semibold leading-snug text-forest-950 sm:text-[1.85rem]">
                             {threadSubject}
                           </h3>
-                          <p className="mt-1 text-base text-forest-700">
-                            {latestMessage.fromName || latestMessage.fromEmail}
-                            {latestMessage.fromEmail ? ` · ${latestMessage.fromEmail}` : ''}
+                          <p className="mt-3 text-base leading-relaxed text-forest-700">
+                            <span className="font-semibold text-forest-950">{latestMessage.fromName || latestMessage.fromEmail}</span>
+                            {latestMessage.fromEmail ? (
+                              <>
+                                <span className="mx-2 text-forest-400">·</span>
+                                <span className="break-all">{latestMessage.fromEmail}</span>
+                              </>
+                            ) : null}
                             {latestMessage.fromEmail ? (
                               <button
-                                className="ml-2 text-sm font-semibold text-forest-700 underline"
+                                className="ml-3 text-sm font-semibold text-forest-800 underline"
                                 onClick={() => void copyEmail(latestMessage.fromEmail)}
                                 type="button"
                               >
@@ -980,13 +1038,13 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                             ) : null}
                           </p>
                           {linked ? (
-                            <p className="mt-1 text-sm text-forest-600">
+                            <p className="mt-2 text-sm text-forest-600">
                               Website form {linked.reference || linked.name}
                             </p>
                           ) : null}
                         </div>
                       </div>
-                      <div className="mt-4 flex flex-wrap gap-2">
+                      <div className="mt-6 flex flex-wrap gap-3">
                         <LuxuryButton className="!px-5 !py-2.5 !text-base" disabled={!connected} onClick={focusReplyBox} type="button">
                           Reply
                         </LuxuryButton>
@@ -1000,7 +1058,7 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                         ) : null}
                       </div>
                     </div>
-                    <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4 sm:p-6">
+                    <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-5 sm:p-8">
                       {earlierMessages.length > 0 ? (
                         <button
                           className="w-full rounded-xl border border-forest-200 bg-offwhite px-4 py-3 text-left text-base font-semibold text-forest-800 hover:bg-forest-50"
@@ -1036,14 +1094,14 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                             </article>
                           ))
                         : null}
-                      <article className="rounded-2xl border border-forest-100 bg-white p-1 sm:p-2">
-                        <div className="flex items-center justify-between gap-3 px-3 pt-3">
+                      <article className="rounded-2xl border border-forest-100 bg-white p-4 sm:p-5">
+                        <div className="flex items-center justify-between gap-3">
                           <p className="min-w-0 truncate text-base font-semibold text-forest-950">
                             {latestMessage.fromName || latestMessage.fromEmail}
                           </p>
                           <time className="shrink-0 text-sm text-forest-500">{formatWhen(latestMessage.internalDate || latestMessage.date)}</time>
                         </div>
-                        <div className="mt-3 px-1 pb-2 sm:px-2">
+                        <div className="mt-4">
                           {latestMessage.html ? (
                             <iframe
                               className="w-full rounded-xl bg-white"
@@ -1082,19 +1140,19 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                           ) : null}
                         </div>
                       </article>
-                      <div className="rounded-2xl border border-forest-200 bg-[#f6fbf8] p-4">
+                      <div className="rounded-2xl border border-forest-200 bg-offwhite/80 p-5 sm:p-6">
                         <label className="block text-base font-semibold text-forest-800" htmlFor="mail-quick-reply">
                           Reply
                         </label>
                         <textarea
-                          className="mt-2 min-h-[10rem] w-full rounded-xl border border-forest-200 bg-white px-4 py-3 text-lg leading-relaxed text-forest-950"
+                          className="mt-3 min-h-[10rem] w-full rounded-xl border border-forest-200 bg-white px-4 py-3 text-lg leading-relaxed text-forest-950"
                           id="mail-quick-reply"
                           onChange={(e) => setQuickReply(e.target.value)}
                           placeholder={`Write a reply to ${latestMessage.fromName || latestMessage.fromEmail || 'them'}…`}
                           ref={replyBoxRef}
                           value={quickReply}
                         />
-                        <div className="mt-3 flex flex-wrap items-center gap-2">
+                        <div className="mt-4 flex flex-wrap items-center gap-3">
                           <LuxuryButton
                             className="!px-5 !py-2.5 !text-base"
                             disabled={busy === 'send' || !sendEnabled || !quickReply.trim()}
@@ -1196,6 +1254,10 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
               </label>
               {compose.templateId === 'quotation' ? (
                 <AdminMailQuotationForm
+                  attachBusy={busy === 'attach-template'}
+                  onAttachTemplatePdf={(href, filename) => {
+                    void attachTemplatePdf(href, filename)
+                  }}
                   onChange={(quotation) => {
                     setCompose((current) => {
                       const first = current.customerName.trim().split(/\s+/)[0] || ''
@@ -1334,7 +1396,7 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                           <td className="px-4 py-3">{row.to_email || '—'}</td>
                           <td className="px-4 py-3">{row.subject || '—'}</td>
                           <td className="px-4 py-3">
-                            <span className={cx('rounded-full px-2 py-0.5 text-xs font-bold', row.provider === 'gmail' ? 'bg-sky-100 text-sky-950' : 'bg-fairway-100 text-forest-900')}>
+                            <span className={cx('rounded-full px-2 py-0.5 text-xs font-bold', row.provider === 'gmail' ? 'bg-sky-100 text-sky-950' : 'bg-forest-100 text-forest-900')}>
                               {row.provider === 'gmail' ? 'Gmail' : 'Resend'}
                             </span>
                           </td>

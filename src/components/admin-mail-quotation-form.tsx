@@ -9,6 +9,7 @@ import {
   type MailQuotationPackage
 } from '../lib/admin-mail-quotation'
 import { cx } from '../lib/utils'
+import { QuotationTemplateDownloads } from './quotation-template-downloads'
 
 const fieldClass =
   'mt-1.5 w-full rounded-xl border border-forest-200 bg-white px-4 py-3 text-base text-forest-950 placeholder:text-forest-400'
@@ -18,6 +19,8 @@ const labelClass = 'text-sm font-bold uppercase tracking-wide text-forest-800'
 type Props = {
   readonly value: MailQuotationPackage
   readonly onChange: (next: MailQuotationPackage) => void
+  readonly attachBusy?: boolean
+  readonly onAttachTemplatePdf?: (href: string, filename: string) => void
 }
 
 function TextField({
@@ -57,7 +60,7 @@ function TextField({
   )
 }
 
-export function AdminMailQuotationForm({ value, onChange }: Props) {
+export function AdminMailQuotationForm({ value, onChange, attachBusy = false, onAttachTemplatePdf }: Props) {
   const computed = quotationComputed(value)
   const setField = (key: keyof MailQuotationPackage, text: string) => {
     if (key === 'hotelOptions') return
@@ -75,10 +78,11 @@ export function AdminMailQuotationForm({ value, onChange }: Props) {
       <div>
         <p className="text-sm font-bold uppercase tracking-wide text-forest-800">Golf holiday quotation</p>
         <p className="mt-1 text-base text-forest-700">
-          Same labelled sections as the Golf Sol Ireland quotation letter. Empty boxes are left off the PDF and email.
-          Hotel totals update as you type.
+          Generate quotation PDF fills this branded Golf Sol letter. Empty boxes are left off. Hotel totals update as you
+          type.
         </p>
       </div>
+      <QuotationTemplateDownloads attachBusy={attachBusy} compact onAttachPdf={onAttachTemplatePdf} />
 
       <fieldset className="space-y-3 rounded-2xl border border-forest-100 bg-white p-4">
         <legend className="px-1 font-display text-lg font-semibold text-forest-950">Your package</legend>
