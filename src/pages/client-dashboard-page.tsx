@@ -34,6 +34,7 @@ import {
   clientGreetingFirstName,
   type ClientEnquiryRowLite
 } from '../lib/client-data-card'
+import { parseAnyPackageBuildRowConfig } from '../lib/package-build'
 import { LuxuryButton } from '../components/ui/button'
 import { COURSES } from '../data/coastal-golf-data'
 import { fetchPackageBuildsClientList } from '../lib/fetch-package-builds'
@@ -394,8 +395,8 @@ export function ClientDashboardPage() {
     }
 
     const resetTripShellAndModals = () => {
-      clearTripWorkspaceDraft()
-      setTripDraft(null)
+      const savedDraft = loadTripWorkspaceDraft()
+      setTripDraft(savedDraft ? ensureTripWorkspaceDraftShape(savedDraft) : null)
       setTransferBuilderOpen(false)
       setTeamMessagingOpen(false)
       setInterestModalCategory(null)
@@ -441,6 +442,20 @@ export function ClientDashboardPage() {
       )
       if (rawBuilds.length === 0) {
         resetTripShellAndModals()
+      } else if (!loadTripWorkspaceDraft()) {
+        let persistedDraft: TripWorkspaceDraft | undefined
+        for (const build of rawBuilds) {
+          const parsed = parseAnyPackageBuildRowConfig(build.config)
+          if (parsed?.type === 'website_form' && parsed.config.portalTripWorkspace) {
+            persistedDraft = parsed.config.portalTripWorkspace
+            break
+          }
+        }
+        if (persistedDraft) {
+          const shaped = ensureTripWorkspaceDraftShape(persistedDraft)
+          saveTripWorkspaceDraft(shaped)
+          setTripDraft(shaped)
+        }
       }
     }
     } finally {

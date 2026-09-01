@@ -161,8 +161,7 @@ export const handlePortalTripWorkspaceSave = async (payload, env = process.env, 
       const cfg = row.config
       return cfg && typeof cfg === 'object' && cfg.enquiryReferenceId === ref
     })
-  }
-  if (!target) {
+  } else {
     target = list[0] ?? null
   }
 
