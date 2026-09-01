@@ -3,6 +3,7 @@ import { formatDateDdMmYy, formatDateTimeDdMmYy, looksLikeIsoOrYmdDate } from '.
 import { ENQUIRY_STRUCTURED_FIELD_KEYS, PICKUP_DROPOFF_TYPES } from './enquiry-form-registry'
 import {
   ensureTripWorkspaceDraftShape,
+  isLikelyEnquiryReferenceId,
   isUnsavedDefaultTripWorkspace,
   normalizeTransferStops,
   parsePersistedTripWorkspaceFromPackage,
@@ -670,7 +671,11 @@ export const mergePortalTripWorkspaceIntoWebsiteFormConfig = (
     throw new Error('Invalid package config')
   }
   const base = { ...(existingRaw as Record<string, unknown>) }
-  const aligned = ensureTripWorkspaceDraftShape({ ...draft, referenceId: enquiryReferenceId.trim() })
+  const ref = enquiryReferenceId.trim()
+  const aligned = ensureTripWorkspaceDraftShape({ ...draft, referenceId: ref })
+  if (ref && isLikelyEnquiryReferenceId(ref)) {
+    base.enquiryReferenceId = ref
+  }
   const stops = normalizeTransferStops(aligned.transferStops)
   const submittedAt = aligned.updatedAt || new Date().toISOString()
   base.portalTripWorkspace = {
