@@ -304,6 +304,17 @@ export function AdminEnquiryCardQueue({
       setNoteById((prev) => ({ ...prev, [row.id]: 'Sign in again as admin.' }))
       return
     }
+    const existingPay = String(transfersByRef[row.reference_id]?.payment_status ?? '').toLowerCase()
+    if (existingPay === 'paid' || existingPay === 'deposit') {
+      setNoteById((prev) => ({
+        ...prev,
+        [row.id]:
+          existingPay === 'paid'
+            ? 'This trip is already fully paid. Do not re-quote from this card — use Transfers & drivers.'
+            : 'A deposit is already on file. Do not re-quote from this card — collect the balance from Transfers & drivers.'
+      }))
+      return
+    }
     const parsed = Number(String(priceById[row.id] ?? '').replace(/,/g, '.').trim())
     if (!Number.isFinite(parsed) || parsed < 0.5) {
       setNoteById((prev) => ({ ...prev, [row.id]: 'Enter a valid total in euros (min €0.50).' }))
@@ -338,12 +349,6 @@ export function AdminEnquiryCardQueue({
           deposit_percent: 20
         }
       }))
-      if (mode === 'full') {
-        setInvoicesByEnquiry((prev) => ({
-          ...prev,
-          [row.id]: { status: 'sent', amount_cents: Math.round(parsed * 100) }
-        }))
-      }
     } catch (e) {
       setNoteById((prev) => ({ ...prev, [row.id]: e instanceof Error ? e.message : 'Request failed.' }))
     } finally {
@@ -407,6 +412,9 @@ export function AdminEnquiryCardQueue({
         const formAnswers = buildOpenCardFormAnswers(row)
         const thread = threadById[row.id] ?? []
         const busy = busyById[row.id]
+        const quoteLocked =
+          String(transfer?.payment_status ?? '').toLowerCase() === 'paid' ||
+          String(transfer?.payment_status ?? '').toLowerCase() === 'deposit'
 
         return (
           <article
@@ -599,6 +607,12 @@ export function AdminEnquiryCardQueue({
                           {transfer?.payment_status ? ` · ${transfer.payment_status}` : ''}
                         </p>
                       ) : null}
+                      {quoteLocked ? (
+                        <p className="mt-2 text-sm font-semibold text-forest-900">
+                          Payment is already on file ({transfer?.payment_status}). Use Transfers &amp; drivers to collect
+                          a balance or send receipts — sending a new quote from this card would reset the paid state.
+                        </p>
+                      ) : null}
                       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
                         <div className="min-w-[10rem] flex-1">
                           <label
@@ -608,7 +622,8 @@ export function AdminEnquiryCardQueue({
                             Total (EUR, inc. VAT as you intend)
                           </label>
                           <input
-                            className="w-full rounded-xl border border-forest-200 bg-white px-3 py-2.5 text-sm font-medium text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60"
+                            className="w-full rounded-xl border border-forest-200 bg-white px-3 py-2.5 text-sm font-medium text-forest-900 outline-none focus:border-fairway-500 focus:ring-2 focus:ring-fairway-200/60 disabled:cursor-not-allowed disabled:bg-offwhite disabled:text-forest-500"
+                            disabled={quoteLocked}
                             id={`price-${row.id}`}
                             inputMode="decimal"
                             onChange={(e) => setPriceById((prev) => ({ ...prev, [row.id]: e.target.value }))}
@@ -630,7 +645,7 @@ export function AdminEnquiryCardQueue({
                         </div>
                         <LuxuryButton
                           className="!px-5 !py-2.5"
-                          disabled={Boolean(busy)}
+                          disabled={Boolean(busy) || quoteLocked}
                           onClick={() => void sendPrice(row, 'deposit')}
                           type="button"
                           variant="primary"
@@ -639,7 +654,7 @@ export function AdminEnquiryCardQueue({
                         </LuxuryButton>
                         <LuxuryButton
                           className="!px-5 !py-2.5"
-                          disabled={Boolean(busy)}
+                          disabled={Boolean(busy) || quoteLocked}
                           onClick={() => void sendPrice(row, 'full')}
                           type="button"
                           variant="outline"

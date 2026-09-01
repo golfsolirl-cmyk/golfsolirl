@@ -1,12 +1,14 @@
 /**
- * Simplified admin path: price an enquiry → portal + email → Stripe pay (deposit or full).
- * Reuses transfer_bookings pricing / portal invoices — does not fork Stripe or Resend.
+ * Simplified admin path: price an enquiry → transfer quote + email → Stripe pay (deposit or full).
+ * Payment is collected on the transfer_bookings row (same checkout as Transfers).
+ * Do not also open a portal_invoices Stripe session for the same amount — the client
+ * dashboard lists both rails and the guest can pay twice.
  */
 import { createClient } from '@supabase/supabase-js'
 import { requireAdminFromBearer } from './auth-verify-admin.mjs'
-import { handlePortalInvoiceSend } from './portal-invoice-send-service.mjs'
 import { handleTransferPaymentAdmin } from './transfer-payment-service.mjs'
 import { handlePortalInterestTicketReply } from './portal-interest-ticket-reply-service.mjs'
+import { enquiryAdminQuoteCollectedPaymentLockMessage } from './enquiry-admin-quote-payment-lock.mjs'
 
 const throwStatus = (message, statusCode) => {
   const err = new Error(message)
@@ -179,13 +181,19 @@ export const handleEnquiryAdminQuote = async (body, env = process.env, meta = {}
   // Always create/update the transfer job first so it appears under Transfers & drivers
   const booking = await ensureTransferBookingForEnquiry(admin, enquiry)
 
+  const collectedLock = enquiryAdminQuoteCollectedPaymentLockMessage(booking.payment_status)
+  if (collectedLock) {
+    throwStatus(collectedLock, 409)
+  }
+
   const depositPercent =
     typeof body?.depositPercent === 'number' && Number.isFinite(body.depositPercent)
       ? Math.min(99, Math.max(1, Math.round(body.depositPercent)))
       : 20
 
   // Payment plan before pricing so the VAT quote PDF / portal see the right deposit vs full rules.
-  const { error: planErr } = await admin
+  // Only unpaid rows reach here — never reset deposit/paid back to unpaid (race-safe filter).
+  const { data: planRows, error: planErr } = await admin
     .from('transfer_bookings')
     .update({
       deposit_percent: depositPercent,
@@ -194,8 +202,16 @@ export const handleEnquiryAdminQuote = async (body, env = process.env, meta = {}
       updated_at: new Date().toISOString()
     })
     .eq('id', booking.id)
+    .eq('payment_status', 'unpaid')
+    .select('id')
   if (planErr) {
     throwStatus(planErr.message, 500)
+  }
+  if (!Array.isArray(planRows) || planRows.length === 0) {
+    throwStatus(
+      'This transfer was paid or a deposit was taken before the quote could be saved. Refresh and use Transfers & drivers.',
+      409
+    )
   }
 
   const priceResult = await handleTransferPaymentAdmin(
@@ -222,21 +238,12 @@ export const handleEnquiryAdminQuote = async (body, env = process.env, meta = {}
   }
 
   if (mode === 'full') {
-    let invoiceResult = null
-    try {
-      invoiceResult = await handlePortalInvoiceSend({ enquiryId, amountEur }, env, meta)
-    } catch (e) {
-      console.warn('[enquiry-admin-quote] portal invoice failed:', e instanceof Error ? e.message : e)
-      invoiceResult = { ok: false, message: e instanceof Error ? e.message : 'Invoice failed' }
-    }
-
     return {
       ok: true,
       mode: 'full',
       bookingId: booking.id,
       price: priceResult,
       email: emailResult,
-      invoice: invoiceResult,
       message:
         emailResult?.ok === false
           ? `Full amount €${amountEur.toFixed(2)} saved. Portal shows pay in full; email did not send — ${emailResult.message}.`
