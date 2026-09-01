@@ -1,6 +1,7 @@
 import { depositAmountEur, normalizedDepositPercent } from './transfer-payment-amounts.mjs'
 import { notifyClientPortalTransferPayment } from './portal-transfer-payment-notify.mjs'
 import { publishTransferPortalPaymentReceipt } from './transfer-portal-publish-payment-pdf.mjs'
+import { insertTransferBookingFromPaidInvoiceRow } from './transfer-booking-paid-invoice-insert.mjs'
 
 /**
  * When a portal invoice is paid, activate the client trip pass by marking the linked
@@ -253,7 +254,7 @@ const createTransferBookingFromPaidInvoice = async (supabase, invoice, amountEur
       typeof invoice.stripe_checkout_session_id === 'string' ? invoice.stripe_checkout_session_id : null
   }
 
-  const { data: inserted, error } = await supabase.from('transfer_bookings').insert(row).select('id, payment_status, admin_price_eur, deposit_percent').single()
+  const { data: inserted, error } = await insertTransferBookingFromPaidInvoiceRow(supabase, row)
   if (error || !inserted?.id) {
     console.error('[portal-invoice-transfer-sync] create booking', error?.message)
     return null
