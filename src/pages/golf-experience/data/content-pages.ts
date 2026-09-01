@@ -643,6 +643,7 @@ const coreGeContentPages: Record<string, GeContentPageData> = {
     interestPreset: 'Travel to Malaga AGP'
   },
   '/golf-courses': coursesPage,
+  '/twilight-golf': twilightGolfPage,
   '/golf-courses/sotogrande': {
     ...coursesPage,
     metaTitle: 'Sotogrande Golf Courses | GolfSol Ireland',
