@@ -68,6 +68,39 @@ export const tripWorkspaceWorthMirroringToTransferBooking = (draft: TripWorkspac
   return stops.some((s) => s.kind !== 'malaga_airport' || s.ref !== MALAGA_AIRPORT_REF)
 }
 
+/**
+ * Package-mirror deletes must never remove money/ops history.
+ * Matches `transfer_bookings_delete_client_package_mirror` RLS after
+ * migration `20260811120000_transfer_bookings_client_delete_unpaid_mirror_only.sql`.
+ */
+export const clientMayDeletePackageMirrorTransferBooking = (row: {
+  payment_status?: string | null
+  transfer_refund_status?: string | null
+  transfer_refund_total_eur?: number | null
+  stripe_payment_intent_id?: string | null
+  stripe_checkout_session_id?: string | null
+  assigned_driver_id?: string | null
+}): boolean => {
+  const pay = String(row.payment_status ?? 'unpaid').toLowerCase()
+  if (pay !== 'unpaid') {
+    return false
+  }
+  const refund = String(row.transfer_refund_status ?? 'none').toLowerCase()
+  if (refund !== 'none') {
+    return false
+  }
+  if (Number(row.transfer_refund_total_eur ?? 0) > 0) {
+    return false
+  }
+  if (row.stripe_payment_intent_id || row.stripe_checkout_session_id) {
+    return false
+  }
+  if (row.assigned_driver_id) {
+    return false
+  }
+  return true
+}
+
 const firstScheduledIso = (stops: PortalTransferStop[]): string | null => {
   for (const s of stops) {
     const raw = typeof s.pickupAtLocal === 'string' ? s.pickupAtLocal.trim() : ''
@@ -98,6 +131,26 @@ export const syncTripWorkspaceToTransferBooking = async (
   const { packageBuildId, clientUserId, enquiryReferenceId, tripDraft, clientDisplayName, clientPhone } = args
 
   if (!tripWorkspaceWorthMirroringToTransferBooking(tripDraft)) {
+    const { data: mirrorRow, error: mirrorSelErr } = await supabase
+      .from('transfer_bookings')
+      .select(
+        'id, payment_status, transfer_refund_status, transfer_refund_total_eur, stripe_payment_intent_id, stripe_checkout_session_id, assigned_driver_id'
+      )
+      .eq('package_build_id', packageBuildId)
+      .maybeSingle()
+
+    if (mirrorSelErr) {
+      if (mirrorSelErr.message.includes('package_build_id') || mirrorSelErr.code === '42703') {
+        return { ok: true, skipped: true }
+      }
+      return { ok: false, message: mirrorSelErr.message }
+    }
+
+    if (mirrorRow?.id && !clientMayDeletePackageMirrorTransferBooking(mirrorRow)) {
+      // Preserve deposit/paid/refunded/assigned mirrors — never wipe payment history.
+      return { ok: true, skipped: true }
+    }
+
     const { error: delErr } = await supabase.from('transfer_bookings').delete().eq('package_build_id', packageBuildId)
     if (delErr && !delErr.message.includes('does not exist') && delErr.code !== '42703') {
       return { ok: false, message: delErr.message }
