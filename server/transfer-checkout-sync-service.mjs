@@ -154,7 +154,7 @@ export const handleTransferCheckoutSync = async (body, env = process.env, meta =
 
   const { data: booking, error: bErr } = await admin
     .from('transfer_bookings')
-    .select('id, client_user_id, client_email, enquiry_reference_id, payment_status')
+    .select('id, client_user_id, client_email, enquiry_reference_id, payment_status, transfer_refund_status')
     .eq('id', bookingId)
     .maybeSingle()
 
@@ -168,6 +168,9 @@ export const handleTransferCheckoutSync = async (body, env = process.env, meta =
   const owns = await clientOwnsTransferBooking(admin, user.id, userEmail, booking)
   if (!owns) {
     throwStatus('You do not have access to this transfer.', 403)
+  }
+  if (String(booking.transfer_refund_status ?? 'none').toLowerCase() === 'full') {
+    throwStatus('This transfer has been fully refunded. Contact Golf Sol Ireland if you need a new booking.', 400)
   }
 
   const paymentIntent =
