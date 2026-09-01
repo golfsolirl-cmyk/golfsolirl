@@ -12,6 +12,7 @@
     "generate:unified-pdf-sample": "node scripts/generate-gsol-unified-pdf-sample.mjs",
     "generate:homepage-client-pdf": "node scripts/generate-homepage-branded-client-pdf.mjs",
     "verify:enquiry-pdf-exports": "node scripts/verify-enquiry-pdf-exports.mjs",
+    "verify:email-exact-match": "node scripts/verify-email-exact-match.mjs",
     "generate:business-card-pngs": "node scripts/regenerate-business-card-pngs.mjs",
     "generate:blank-business-cards": "node scripts/generate-blank-business-card-templates.mjs",
     "build:hero-malaga-composed": "node scripts/build-hero-malaga-composed.mjs",
