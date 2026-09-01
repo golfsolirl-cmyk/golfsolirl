@@ -1,6 +1,6 @@
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
-import { clientOwnsTransferBooking } from './transfer-checkout-service.mjs'
+import { clientOwnsTransferBooking } from './transfer-booking-ownership.mjs'
 import { markPortalInvoicePaid, markTransferBookingPaid } from './stripe-webhook-service.mjs'
 import { syncTransferBookingFromPaidPortalInvoice } from './portal-invoice-transfer-sync.mjs'
 
