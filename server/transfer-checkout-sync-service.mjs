@@ -1,7 +1,11 @@
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 import { clientOwnsTransferBooking } from './transfer-checkout-service.mjs'
-import { markPortalInvoicePaid, markTransferBookingPaid } from './stripe-webhook-service.mjs'
+import {
+  markPortalInvoicePaid,
+  markTransferBookingPaid,
+  portalInvoiceCheckoutMatchesCurrent
+} from './stripe-webhook-service.mjs'
 import { syncTransferBookingFromPaidPortalInvoice } from './portal-invoice-transfer-sync.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
@@ -89,7 +93,7 @@ export const handleTransferCheckoutSync = async (body, env = process.env, meta =
   if (portalInvoiceId) {
     const { data: invoice, error: invErr } = await admin
       .from('portal_invoices')
-      .select('id, profile_id, status')
+      .select('id, profile_id, status, amount_cents, currency, stripe_checkout_session_id')
       .eq('id', portalInvoiceId)
       .maybeSingle()
 
@@ -113,12 +117,21 @@ export const handleTransferCheckoutSync = async (body, env = process.env, meta =
         typeof session.amount_total === 'number' && Number.isFinite(session.amount_total)
           ? session.amount_total / 100
           : null
+      const currentCheckout = portalInvoiceCheckoutMatchesCurrent(invoice, {
+        stripeSessionId: session.id,
+        amountEur,
+        currency: session.currency ?? null
+      })
+      if (!currentCheckout) {
+        throwStatus('This invoice payment link is no longer current. Refresh your dashboard for the latest checkout link.', 409)
+      }
 
       let updated = alreadyPaid
       if (!alreadyPaid) {
         updated = await markPortalInvoicePaid(admin, String(invoice.id), paymentIntent, new Date().toISOString(), {
           stripeSessionId: session.id,
-          amountEur
+          amountEur,
+          currency: session.currency ?? null
         })
       } else {
         try {
