@@ -29,10 +29,10 @@ const CONTENT_W = PAGE_W - MARGIN * 2
 const MIN_Y = unifiedPdfMinBodyY()
 
 const S = {
-  title: 18,
-  section: 9,
-  body: 10.5,
-  meta: 9.5
+  title: 22,
+  section: 13,
+  body: 13,
+  meta: 12
 }
 
 const ink = (text) => sanitizeStandardFontText(String(text ?? ''))
@@ -90,7 +90,7 @@ export const buildClientEnquiryDocumentPdf = async (draft) => {
       size: S.section,
       color: t.green
     })
-    state.y -= 16
+    state.y -= S.section + 8
   }
 
   const drawParagraph = (text, opts = {}) => {
@@ -129,11 +129,12 @@ export const buildClientEnquiryDocumentPdf = async (draft) => {
     state.y -= S.title + 6
   }
   const meta = [`Reference: ${view.reference}`, `Date: ${view.dateLabel}`]
-  if (view.validUntilLabel) meta.push(`Valid until: ${view.validUntilLabel}`)
+  if (view.dateExtra) meta.push(view.dateExtra)
+  else if (view.validUntilLabel) meta.push(`Valid until: ${view.validUntilLabel}`)
   for (const line of meta) {
     ensure(16)
     state.page.drawText(ink(line), { x: MARGIN, y: state.y, font: ctx.font, size: S.meta, color: t.muted })
-    state.y -= 13
+    state.y -= S.meta + 5
   }
   if (view.subject) {
     state.y -= 2
@@ -147,7 +148,7 @@ export const buildClientEnquiryDocumentPdf = async (draft) => {
         size: S.meta,
         color: t.ink
       })
-      state.y -= 14
+      state.y -= S.meta + 4
     }
   }
   state.y -= 8
@@ -157,14 +158,14 @@ export const buildClientEnquiryDocumentPdf = async (draft) => {
     for (const line of view.preparedFor) {
       ensure(14)
       state.page.drawText(ink(line), { x: MARGIN, y: state.y, font: ctx.font, size: S.body, color: t.ink })
-      state.y -= 14
+      state.y -= S.body + 4
     }
     state.y -= 6
   }
 
   if (view.sections.enquiry) {
     sectionHeading('Customer enquiry')
-    drawParagraph(view.enquirySummary, { size: 10, color: t.ink })
+    drawParagraph(view.enquirySummary, { size: S.body, color: t.ink })
     state.y -= 4
   }
 
@@ -172,7 +173,7 @@ export const buildClientEnquiryDocumentPdf = async (draft) => {
     sectionHeading('Message / response')
     for (const block of view.messageBlocks) {
       if (block.type === 'heading') {
-        drawParagraph(block.text, { bold: true, size: 12, color: t.green })
+        drawParagraph(block.text, { bold: true, size: 15, color: t.green })
       } else if (block.type === 'bullets') {
         for (const item of block.items) {
           const lines = wrapPlainLinesWithFont(ctx.font, item, S.body, CONTENT_W - 16)
@@ -188,7 +189,7 @@ export const buildClientEnquiryDocumentPdf = async (draft) => {
               size: S.body,
               color: t.ink
             })
-            state.y -= 14
+            state.y -= S.body + 4
           }
         }
         state.y -= 4
@@ -199,7 +200,7 @@ export const buildClientEnquiryDocumentPdf = async (draft) => {
   }
 
   if (view.sections.pricing) {
-    sectionHeading(view.pricing.mode === 'single' ? 'Price' : 'Quotation')
+    sectionHeading(view.pricingTitle)
     drawPricingTable(state, ctx, view.pricing, ensure)
   }
 
@@ -210,7 +211,7 @@ export const buildClientEnquiryDocumentPdf = async (draft) => {
 
   if (view.sections.terms) {
     sectionHeading('Terms')
-    drawParagraph(view.terms, { size: 9, color: t.muted })
+    drawParagraph(view.terms, { size: 12, color: t.muted })
   }
 
   if (view.sections.payment) {
@@ -245,10 +246,10 @@ const drawPricingTable = (state, ctx, pricing, ensure) => {
   const unitColW = CONTENT_W * 0.21
   const totalColW = CONTENT_W * 0.21
   const descMaxW = descColW - 14
-  const cellSize = 9
-  const lineH = 12
-  const padY = 6
-  const headerH = 18
+  const cellSize = 12
+  const lineH = 16
+  const padY = 8
+  const headerH = 26
 
   ensure(headerH + 6)
   state.page.drawRectangle({
@@ -262,9 +263,9 @@ const drawPricingTable = (state, ctx, pricing, ensure) => {
   ;['Description', 'Qty', 'Unit price', 'Total'].forEach((label, i) => {
     const col = [descColW, qtyColW, unitColW, totalColW][i]
     const text = ink(label)
-    const tw = ctx.fontBold.widthOfTextAtSize(text, 8)
+    const tw = ctx.fontBold.widthOfTextAtSize(text, 11)
     const tx = i === 0 ? hx : hx + col - tw - 8
-    state.page.drawText(text, { x: tx, y: state.y - 4, font: ctx.fontBold, size: 8, color: t.white })
+    state.page.drawText(text, { x: tx, y: state.y - 8, font: ctx.fontBold, size: 11, color: t.white })
     hx += col
   })
   state.y -= headerH + 4
@@ -326,7 +327,7 @@ const drawPricingTable = (state, ctx, pricing, ensure) => {
     )
   })
 
-  state.y -= 4
+  state.y -= 16
   const totals = [
     ['Subtotal', formatClientDocumentEuro(pricing.subtotal)],
     pricing.vatEnabled ? [`VAT (${pricing.vatPercent}%)`, formatClientDocumentEuro(pricing.vatAmount)] : null,
@@ -342,18 +343,18 @@ const drawPricingTable = (state, ctx, pricing, ensure) => {
       x: MARGIN + CONTENT_W * 0.58 - lw,
       y: state.y,
       font,
-      size: 10,
+      size: 13,
       color: t.green
     })
-    const aw = font.widthOfTextAtSize(ink(amount), 10)
+    const aw = font.widthOfTextAtSize(ink(amount), 13)
     state.page.drawText(ink(amount), {
       x: MARGIN + CONTENT_W - aw,
       y: state.y,
       font,
-      size: 10,
+      size: 13,
       color: t.ink
     })
-    state.y -= 15
+    state.y -= 18
   }
   state.y -= 8
 }

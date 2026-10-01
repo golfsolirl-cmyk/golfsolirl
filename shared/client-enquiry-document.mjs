@@ -79,6 +79,18 @@ const RECEIPT_SECTIONS = {
   signature: false
 }
 
+const INVOICE_SECTIONS = {
+  enquiry: false,
+  message: true,
+  pricing: true,
+  notes: true,
+  terms: false,
+  payment: true,
+  signature: false
+}
+
+const BLANK_LINE = '________________'
+
 /**
  * Existing booking terms from the house terms PDF — not invented legal copy.
  */
@@ -159,6 +171,26 @@ export const documentTypeLabel = (type, customTitle) => {
   return scrubDocumentTitle(found?.label) || 'Document'
 }
 
+export const blankInvoicePricingLines = () => [
+  { ...emptyPricingLine(), description: 'Private transfers', qty: 1, unitPrice: 0 },
+  { ...emptyPricingLine(), description: 'Golf courses', qty: 1, unitPrice: 0 },
+  { ...emptyPricingLine(), description: 'Hotels and accommodation', qty: 1, unitPrice: 0 }
+]
+
+/** Blank customer invoice: bill-to lines, the three services, payment, and notes. VAT stays off. */
+export const blankInvoiceDraft = () =>
+  defaultClientDocumentDraft({
+    documentType: 'invoice',
+    vatEnabled: false,
+    subject: '',
+    message:
+      'Thank you for travelling with Golf Sol Ireland. This invoice covers the transfers, golf and accommodation on your trip.',
+    notes: 'Please pay by the due date. Card payment is available in your client portal.',
+    pricingMode: 'detailed',
+    pricingLines: blankInvoicePricingLines(),
+    sections: { ...INVOICE_SECTIONS }
+  })
+
 export const emptyPricingLine = () => ({
   id: `line-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
   description: '',
@@ -173,8 +205,10 @@ export const defaultClientDocumentDraft = (overrides = {}) => {
       ? { ...QUOTATION_SECTIONS }
       : type === 'booking_confirmation'
         ? { ...BOOKING_SECTIONS }
-        : type === 'invoice' || type === 'deposit_receipt' || type === 'payment_receipt' || type === 'paid_in_full'
-          ? { ...RECEIPT_SECTIONS }
+        : type === 'invoice'
+          ? { ...INVOICE_SECTIONS }
+          : type === 'deposit_receipt' || type === 'payment_receipt' || type === 'paid_in_full'
+            ? { ...RECEIPT_SECTIONS }
           : { ...DEFAULT_CLIENT_DOCUMENT_SECTIONS }
   return {
     id: null,
@@ -374,21 +408,42 @@ export const buildClientDocumentFilename = (draft, ext) => {
   return `${title}-${name}-${ref}.${safeExt}`
 }
 
+const invoiceBillToLines = (customer) => {
+  const rows = [
+    ['Name', customer?.name],
+    ['Company', customer?.company],
+    ['Contact', customer?.contactName],
+    ['Email', customer?.email],
+    ['Phone', customer?.phone],
+    ['Address', customer?.address]
+  ]
+  return rows.map(([label, value]) => `${label}: ${asText(value) || BLANK_LINE}`)
+}
+
 export const buildClientDocumentView = (draft) => {
   const d = draft && typeof draft === 'object' ? draft : defaultClientDocumentDraft()
+  const isInvoice = d.documentType === 'invoice'
   const title = scrubDocumentTitle(documentTypeLabel(d.documentType, d.customTitle)) || 'Document'
   const sections = { ...DEFAULT_CLIENT_DOCUMENT_SECTIONS, ...(d.sections && typeof d.sections === 'object' ? d.sections : {}) }
   const pricing = calculateClientDocumentPricing(d)
   const showPricing = Boolean(sections.pricing) && (pricing.lines.length > 0 || pricing.total > 0)
+  const validUntilLabel = asText(d.validUntil) ? formatClientDocumentLongDate(d.validUntil) : ''
+  const dateExtra = isInvoice
+    ? `Due date: ${validUntilLabel || BLANK_LINE}`
+    : validUntilLabel
+      ? `Valid until: ${validUntilLabel}`
+      : ''
   return {
     title,
     subject: scrubDocumentTitle(asText(d.subject)),
     reference: asText(d.reference),
     dateLabel: formatClientDocumentLongDate(d.documentDate) || formatClientDocumentLongDate(todayIsoDate()),
-    validUntilLabel: asText(d.validUntil) ? formatClientDocumentLongDate(d.validUntil) : '',
+    validUntilLabel,
+    dateExtra,
+    pricingTitle: isInvoice ? 'Charges' : pricing.mode === 'single' ? 'Price' : 'Quotation',
     company: CLIENT_DOCUMENT_COMPANY,
     companyLines: companyHeaderLines(),
-    preparedFor: preparedForLines(d.customer),
+    preparedFor: isInvoice ? invoiceBillToLines(d.customer) : preparedForLines(d.customer),
     enquirySummary: scrubDocumentTitle(asText(d.enquirySummary)),
     message: scrubDocumentTitle(asText(d.message)),
     messageBlocks: parseMessageBlocks(scrubDocumentTitle(asText(d.message))),

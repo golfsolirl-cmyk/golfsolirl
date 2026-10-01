@@ -4,6 +4,7 @@ import { LuxuryButton } from '../ui/button'
 import { ClientDocumentA4 } from './client-document-a4'
 import {
   CLIENT_DOCUMENT_TYPES,
+  blankInvoiceDraft,
   DEFAULT_CLIENT_DOCUMENT_PAYMENT,
   DEFAULT_CLIENT_DOCUMENT_TERMS,
   defaultClientDocumentDraft,
@@ -210,12 +211,27 @@ export function ClientDocumentEditor({
                 className={fieldClass}
                 onChange={(e) => {
                   const documentType = e.target.value as ClientDocumentTypeId
+                  if (documentType === 'invoice') {
+                    const invoice = blankInvoiceDraft()
+                    const hasLines = draft.pricingLines.some((line) => line.description.trim())
+                    onChange({
+                      ...draft,
+                      documentType,
+                      vatEnabled: false,
+                      sections: invoice.sections,
+                      pricingMode: 'detailed',
+                      pricingLines: hasLines ? draft.pricingLines : invoice.pricingLines,
+                      message: draft.message.trim() ? draft.message : invoice.message,
+                      notes: draft.notes.trim() ? draft.notes : invoice.notes,
+                      paymentDetails: draft.paymentDetails.trim() ? draft.paymentDetails : invoice.paymentDetails
+                    })
+                    return
+                  }
                   const next = defaultClientDocumentDraft({ documentType })
                   onChange({
                     ...draft,
                     documentType,
-                    sections: next.sections,
-                    ...(documentType === 'invoice' ? { vatEnabled: false } : {})
+                    sections: next.sections
                   })
                 }}
                 value={draft.documentType}
@@ -238,7 +254,7 @@ export function ClientDocumentEditor({
             <Field label="Date">
               <input className={fieldClass} onChange={(e) => set({ documentDate: e.target.value })} type="date" value={draft.documentDate} />
             </Field>
-            <Field label="Valid until (optional)">
+            <Field label={draft.documentType === 'invoice' ? 'Due date' : 'Valid until (optional)'}>
               <input className={fieldClass} onChange={(e) => set({ validUntil: e.target.value })} type="date" value={draft.validUntil} />
             </Field>
             <Field label="Subject">

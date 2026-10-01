@@ -64,7 +64,7 @@ const p = (text, opts = {}) =>
       new TextRun({
         text: String(text ?? ''),
         font: 'Calibri',
-        size: opts.size ?? 21,
+        size: opts.size ?? 26,
         bold: Boolean(opts.bold),
         italics: Boolean(opts.italics),
         color: opts.color ?? INK
@@ -80,7 +80,7 @@ const sectionLabel = (label) => [
       new TextRun({
         text: String(label ?? '').toUpperCase(),
         font: 'Calibri',
-        size: 18,
+        size: 26,
         bold: true,
         color: GREEN
       })
@@ -107,7 +107,7 @@ const cell = (text, opts = {}) =>
           new TextRun({
             text: String(text ?? ''),
             font: 'Calibri',
-            size: opts.size ?? 18,
+            size: opts.size ?? 24,
             bold: Boolean(opts.bold),
             color: opts.color ?? INK
           })
@@ -156,12 +156,12 @@ export const buildClientEnquiryDocumentDocx = async (draft) => {
               width: { size: 7500, type: WidthType.DXA },
               borders: noBorders,
               children: [
-                p(c.name, { bold: true, size: 26, color: GREEN, after: 40 }),
-                p(c.tagline, { size: 16, color: GOLD, after: 40, italics: true }),
-                p(c.addressLines.join(', '), { size: 16, color: MUTED, after: 20 }),
-                p(`Ireland ${c.irishPhone}  ·  Spain ${c.spanishPhone}`, { size: 16, color: MUTED, after: 20 }),
-                p(`${c.email}  ·  ${c.websiteDisplay}`, { size: 16, color: MUTED, after: 20 }),
-                p(`Registered in Ireland · Co. ${c.companyReg}`, { size: 16, color: MUTED, after: 0 })
+                p(c.name, { bold: true, size: 32, color: GREEN, after: 40 }),
+                p(c.tagline, { size: 22, color: GOLD, after: 40, italics: true }),
+                p(c.addressLines.join(', '), { size: 22, color: MUTED, after: 40 }),
+                p(`Ireland ${c.irishPhone}  ·  Spain ${c.spanishPhone}`, { size: 22, color: MUTED, after: 40 }),
+                p(`${c.email}  ·  ${c.websiteDisplay}`, { size: 22, color: MUTED, after: 40 }),
+                p(`Registered in Ireland · Co. ${c.companyReg}`, { size: 22, color: MUTED, after: 0 })
               ]
             })
           ]
@@ -176,20 +176,22 @@ export const buildClientEnquiryDocumentDocx = async (draft) => {
         new TextRun({
           text: view.title.toUpperCase(),
           font: 'Calibri',
-          size: 36,
+          size: 44,
           bold: true,
           color: GREEN
         })
       ]
     }),
-    p(`Reference: ${view.reference}`, { size: 20, color: MUTED, after: 40 }),
-    p(`Date: ${view.dateLabel}`, { size: 20, color: MUTED, after: 40 })
+    p(`Reference: ${view.reference}`, { size: 24, color: MUTED, after: 40 }),
+    p(`Date: ${view.dateLabel}`, { size: 24, color: MUTED, after: 40 })
   )
-  if (view.validUntilLabel) {
-    body.push(p(`Valid until: ${view.validUntilLabel}`, { size: 20, color: MUTED, after: 40 }))
+  if (view.dateExtra) {
+    body.push(p(view.dateExtra, { size: 24, color: MUTED, after: 40 }))
+  } else if (view.validUntilLabel) {
+    body.push(p(`Valid until: ${view.validUntilLabel}`, { size: 24, color: MUTED, after: 40 }))
   }
   if (view.subject) {
-    body.push(p(`Subject: ${view.subject}`, { size: 20, after: 80 }))
+    body.push(p(`Subject: ${view.subject}`, { size: 24, after: 80 }))
   }
 
   if (view.preparedFor.length) {
@@ -200,7 +202,7 @@ export const buildClientEnquiryDocumentDocx = async (draft) => {
   if (view.sections.enquiry) {
     body.push(...sectionLabel('Customer enquiry'))
     for (const line of view.enquirySummary.split('\n')) {
-      body.push(p(line, { after: 40, size: 20 }))
+      body.push(p(line, { after: 40, size: 26 }))
     }
   }
 
@@ -208,14 +210,14 @@ export const buildClientEnquiryDocumentDocx = async (draft) => {
     body.push(...sectionLabel('Message / response'))
     for (const block of view.messageBlocks) {
       if (block.type === 'heading') {
-        body.push(p(block.text, { bold: true, size: 24, color: GREEN, after: 80 }))
+        body.push(p(block.text, { bold: true, size: 28, color: GREEN, after: 80 }))
       } else if (block.type === 'bullets') {
         for (const item of block.items) {
           body.push(
             new Paragraph({
               spacing: { after: 60 },
               bullet: { level: 0 },
-              children: [new TextRun({ text: item, font: 'Calibri', size: 21, color: INK })]
+              children: [new TextRun({ text: item, font: 'Calibri', size: 26, color: INK })]
             })
           )
         }
@@ -226,11 +228,11 @@ export const buildClientEnquiryDocumentDocx = async (draft) => {
   }
 
   if (view.sections.pricing) {
-    body.push(...sectionLabel(view.pricing.mode === 'single' ? 'Price' : 'Quotation'))
+    body.push(...sectionLabel(view.pricingTitle))
     if (view.pricing.mode === 'single' && view.pricing.lines.length <= 1) {
       const line = view.pricing.lines[0]
       body.push(p(line?.description || 'Total', { after: 40 }))
-      body.push(p(formatClientDocumentEuro(view.pricing.total), { bold: true, size: 28, color: GREEN, after: 160 }))
+      body.push(p(formatClientDocumentEuro(view.pricing.total), { bold: true, size: 32, color: GREEN, after: 160 }))
     } else {
       const headerRow = new TableRow({
         children: [
@@ -277,7 +279,7 @@ export const buildClientEnquiryDocumentDocx = async (draft) => {
       body.push(
         p(`Total  ${formatClientDocumentEuro(view.pricing.total)}`, {
           bold: true,
-          size: 24,
+          size: 28,
           color: GREEN,
           after: 160,
           align: AlignmentType.RIGHT
@@ -294,7 +296,7 @@ export const buildClientEnquiryDocumentDocx = async (draft) => {
   if (view.sections.terms) {
     body.push(...sectionLabel('Terms'))
     for (const line of view.terms.split('\n')) {
-      body.push(p(line, { size: 18, color: MUTED, after: 60 }))
+      body.push(p(line, { size: 24, color: MUTED, after: 80 }))
     }
   }
 
@@ -337,11 +339,11 @@ export const buildClientEnquiryDocumentDocx = async (draft) => {
                 border: { top: { style: BorderStyle.SINGLE, size: 6, color: GOLD } },
                 spacing: { before: 80 },
                 children: [
-                  new TextRun({ text: `${view.footerLine}    `, font: 'Calibri', size: 14, color: MUTED }),
-                  new TextRun({ text: 'Page ', font: 'Calibri', size: 14, color: MUTED }),
-                  new TextRun({ children: [PageNumber.CURRENT], font: 'Calibri', size: 14, color: MUTED }),
-                  new TextRun({ text: ' of ', font: 'Calibri', size: 14, color: MUTED }),
-                  new TextRun({ children: [PageNumber.TOTAL_PAGES], font: 'Calibri', size: 14, color: MUTED })
+                  new TextRun({ text: `${view.footerLine}    `, font: 'Calibri', size: 20, color: MUTED }),
+                  new TextRun({ text: 'Page ', font: 'Calibri', size: 20, color: MUTED }),
+                  new TextRun({ children: [PageNumber.CURRENT], font: 'Calibri', size: 20, color: MUTED }),
+                  new TextRun({ text: ' of ', font: 'Calibri', size: 20, color: MUTED }),
+                  new TextRun({ children: [PageNumber.TOTAL_PAGES], font: 'Calibri', size: 20, color: MUTED })
                 ]
               })
             ]

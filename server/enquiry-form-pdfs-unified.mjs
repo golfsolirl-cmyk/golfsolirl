@@ -307,6 +307,13 @@ export const createBrandedEnquiryPdf = async ({
     return { page: nextPage, y: nextY - 12 }
   }
 
+  /** Paragraph pagination already decided the block will not fit. Always open a new page. */
+  const continueParagraphPage = (header) => {
+    const nextPage = doc.addPage([pageWidth, pageHeight])
+    const nextY = drawUnifiedDocumentHeader(nextPage, ctx, header)
+    return { page: nextPage, y: nextY - 12 }
+  }
+
   const fleetImage = await embedPdfJpg(doc, assets.fleetLineup, 1280, 390)
   const arrivalsImage = await embedPdfJpg(doc, assets.arrivals, 640, 408)
   const resortImage = await embedPdfJpg(doc, assets.resort, 640, 408)
@@ -335,8 +342,8 @@ export const createBrandedEnquiryPdf = async ({
     ].join('\n'),
     { size: 10.5, lineHeight: 15, color: pdfEmailTheme.ink, minY: MIN_BODY },
     {
-      ensureSpace: (needed) => {
-        const next = ensurePageSpace(page, y, needed, {
+      ensureSpace: () => {
+        const next = continueParagraphPage({
           ...page1Header,
           title: 'Your Costa del Sol golf trip brief (continued)',
           subtitle: ''
@@ -496,8 +503,8 @@ export const createBrandedEnquiryPdf = async ({
     'Tell us what to tune.\n\nReply with any dates, group changes or must-play courses. We will shape the quote around the group rather than forcing you into a fixed package.',
     { size: 10.5, lineHeight: 15, color: pdfEmailTheme.ink, minY: MIN_BODY },
     {
-      ensureSpace: (needed) => {
-        const next = ensurePageSpace(page, y, needed, {
+      ensureSpace: () => {
+        const next = continueParagraphPage({
           kicker: 'TRANSFER EXPERIENCE',
           title: 'Next step (continued)',
           subtitle: ''
@@ -522,10 +529,10 @@ export const createBrandedEnquiryPdf = async ({
     y,
     ctx,
     disclaimerParagraphsPdf.join('\n\n'),
-    { size: 10, lineHeight: 14, color: pdfEmailTheme.muted, minY: MIN_BODY },
+    { size: 10, lineHeight: 16, color: pdfEmailTheme.muted, minY: MIN_BODY },
     {
-      ensureSpace: (needed) => {
-        const next = ensurePageSpace(page, y, needed, {
+      ensureSpace: () => {
+        const next = continueParagraphPage({
           kicker: 'DISCLAIMER',
           title: 'Important notice (continued)',
           subtitle: ''

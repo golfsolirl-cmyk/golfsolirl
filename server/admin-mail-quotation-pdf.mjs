@@ -82,7 +82,7 @@ export const buildAdminMailQuotationPdf = async (input = {}) => {
   }
 
   const paragraph = (text, opts = {}) => {
-    const size = opts.size ?? 11.5
+    const size = opts.size ?? 13
     const font = opts.bold ? ctx.fontBold : ctx.font
     const color = opts.color ?? t.ink
     const gap = opts.gap ?? 4
@@ -143,9 +143,9 @@ export const buildAdminMailQuotationPdf = async (input = {}) => {
     const value = String(body ?? '').trim()
     if (!value && !blank) return
     const display = value || '________________________________'
-    const labelLines = wrapPlainLinesWithFont(ctx.fontBold, label.toUpperCase(), 8.5, 150)
-    const valueLines = wrapPlainLinesWithFont(ctx.font, ink(display), 12, CONTENT_W - 196)
-    const innerH = 28 + Math.max(labelLines.length * 12, valueLines.length * 15)
+    const labelLines = wrapPlainLinesWithFont(ctx.fontBold, label.toUpperCase(), 11, 150)
+    const valueLines = wrapPlainLinesWithFont(ctx.font, ink(display), 13, CONTENT_W - 196)
+    const innerH = 32 + Math.max(labelLines.length * 16, valueLines.length * 18)
     ensure(innerH + 8)
     const bottom = state.y - innerH
     state.page.drawRectangle({
@@ -166,13 +166,13 @@ export const buildAdminMailQuotationPdf = async (input = {}) => {
     })
     let ly = state.y - 20
     for (const line of labelLines) {
-      state.page.drawText(line, { x: MARGIN + 30, y: ly, font: ctx.fontBold, size: 8.5, color: t.greenSoft })
-      ly -= 12
+      state.page.drawText(line, { x: MARGIN + 30, y: ly, font: ctx.fontBold, size: 11, color: t.greenSoft })
+      ly -= 16
     }
     let vy = state.y - 22
     for (const line of valueLines) {
-      state.page.drawText(line, { x: MARGIN + 178, y: vy, font: ctx.font, size: 12, color: t.ink })
-      vy -= 15
+      state.page.drawText(line, { x: MARGIN + 178, y: vy, font: ctx.font, size: 13, color: t.ink })
+      vy -= 18
     }
     state.y = bottom - 4
   }
@@ -181,8 +181,8 @@ export const buildAdminMailQuotationPdf = async (input = {}) => {
     const value = String(text ?? '').trim()
     if (!value && !blank) return
     const display = value || 'Additional package notes / exclusions / buggy / trolley / room information.'
-    const lines = wrapPlainLinesWithFont(ctx.font, ink(display), 11.5, CONTENT_W - 36)
-    const h = 28 + lines.length * 16
+    const lines = wrapPlainLinesWithFont(ctx.font, ink(display), 13, CONTENT_W - 36)
+    const h = 32 + lines.length * 18
     ensure(h + 12)
     const bottom = state.y - h
     state.page.drawRectangle({
@@ -196,8 +196,8 @@ export const buildAdminMailQuotationPdf = async (input = {}) => {
     })
     let ty = state.y - 20
     for (const line of lines) {
-      state.page.drawText(line, { x: MARGIN + 16, y: ty, font: ctx.font, size: 11.5, color: t.ink })
-      ty -= 16
+      state.page.drawText(line, { x: MARGIN + 16, y: ty, font: ctx.font, size: 13, color: t.ink })
+      ty -= 18
     }
     state.y = bottom - 12
   }

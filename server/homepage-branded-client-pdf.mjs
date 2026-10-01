@@ -17,7 +17,9 @@ import {
   drawUnifiedKeyValueTable,
   drawUnifiedSectionHeading,
   embedUnifiedLogo,
+  estimateUnifiedKeyValueTableHeight,
   loadUnifiedPdfFonts,
+  unifiedPdfMinBodyY,
   wrapPlainLinesWithFont
 } from './gsol-unified-pdf-template.mjs'
 
@@ -155,16 +157,25 @@ export const buildHomepageBrandedClientPdfBytes = async (input = {}) => {
   const contentW = pageWidth - margin * 2
   const ctx = { ...(await loadUnifiedPdfFonts(doc)), ...(await embedUnifiedLogo(doc)) }
 
-  const page1 = doc.addPage([pageWidth, pageHeight])
-  let y = drawUnifiedDocumentHeader(page1, ctx, {
-    kicker: 'Client document',
-    title: 'From plane to fairway.',
-    subtitle: 'Irish-owned golf travel — private transfers, hand-picked courses and golf-friendly stays in one trip desk.'
-  })
-  y = await drawFleetStrip(page1, doc, y)
+  const minY = unifiedPdfMinBodyY()
+  const pages = []
+  const openPage = (continued) => {
+    const page = doc.addPage([pageWidth, pageHeight])
+    pages.push(page)
+    const nextY = drawUnifiedDocumentHeader(page, ctx, continued
+      ? { compact: true, title: 'Your trip overview (continued)' }
+      : {
+          kicker: 'Client document',
+          title: 'From plane to fairway.',
+          subtitle: 'Irish-owned golf travel — private transfers, hand-picked courses and golf-friendly stays in one trip desk.'
+        })
+    return { page, y: nextY }
+  }
 
-  y = drawUnifiedSectionHeading(page1, y, ctx, 'YOUR TRIP DESK')
-  y = drawUnifiedKeyValueTable(page1, y, ctx, [
+  let state = openPage(false)
+  state.y = await drawFleetStrip(state.page, doc, state.y)
+
+  const tripRows = [
     { label: 'Guest name', value: data.clientName },
     { label: 'Email', value: data.clientEmail },
     { label: 'Phone / WhatsApp', value: data.clientPhone },
@@ -172,19 +183,26 @@ export const buildHomepageBrandedClientPdfBytes = async (input = {}) => {
     { label: 'Travel dates', value: data.travelDates },
     { label: 'Party', value: data.partySize },
     { label: 'Trip summary', value: data.tripSummary }
-  ])
+  ]
 
-  y -= 8
-  y = drawUnifiedGoldRule(page1, y)
-  y = drawUnifiedSectionHeading(page1, y, ctx, 'THREE SERVICES · ONE DESK')
-  y = drawHomepageServicePillars(page1, y, ctx)
+  if (state.y - 70 < minY) state = openPage(true)
+  state.y = drawUnifiedSectionHeading(state.page, state.y, ctx, 'YOUR TRIP DESK')
+  for (const row of tripRows) {
+    const height = estimateUnifiedKeyValueTableHeight(ctx, [row])
+    if (state.y - height < minY) state = openPage(true)
+    state.y = drawUnifiedKeyValueTable(state.page, state.y, ctx, [row])
+  }
 
-  drawUnifiedDocumentFooter(page1, 52, ctx, [
-    'Page 1 of 2 · Sample client document — approve layout before live sends.'
-  ])
+  state.y -= 8
+  const servicesNeed = 220
+  if (state.y - servicesNeed < minY) state = openPage(true)
+  state.y = drawUnifiedGoldRule(state.page, state.y)
+  state.y = drawUnifiedSectionHeading(state.page, state.y, ctx, 'THREE SERVICES · ONE DESK')
+  state.y = drawHomepageServicePillars(state.page, state.y, ctx)
 
   const page2 = doc.addPage([pageWidth, pageHeight])
-  y = drawUnifiedDocumentHeader(page2, ctx, {
+  pages.push(page2)
+  let y = drawUnifiedDocumentHeader(page2, ctx, {
     compact: true,
     title: 'Your trip overview (continued)'
   })
@@ -262,10 +280,13 @@ export const buildHomepageBrandedClientPdfBytes = async (input = {}) => {
     contactY -= phoneLH
   }
 
-  drawUnifiedDocumentFooter(page2, 52, ctx, [
+  const footerNote = [
     `Company registration no. ${gsolCompanyLegal.companyRegistrationNumber} (Ireland)`,
     'This PDF is a branded layout sample — not a contract or booking confirmation.'
-  ])
+  ]
+  pages.forEach((pdfPage, index) => {
+    drawUnifiedDocumentFooter(pdfPage, 52, ctx, footerNote, { current: index + 1, total: pages.length })
+  })
 
   return doc.save()
 }

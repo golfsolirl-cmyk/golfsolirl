@@ -1,8 +1,12 @@
 # PDF Document Samples — Golf Sol Ireland
 
-Generated: Wednesday 27 May 2026 at 15:15
+Generated: Friday 2 October 2026 at 00:29
 
 ## Folder Structure
+
+### 0-master-stationery/
+One letterhead for every customer document kind.
+- **golfsol-enquiry.pdf** through **golfsol-paid-in-full.pdf** — same crest, address, phones, Co. 814210
 
 ### 1-enquiry-pack/
 Email attachments sent when a customer submits an enquiry form.

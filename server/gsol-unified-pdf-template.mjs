@@ -19,18 +19,18 @@ export const UNIFIED_PDF_LAYOUT = {
 
 const t = pdfEmailTheme
 
-/** Readable body sizes — no tiny type on cream backgrounds. */
+/** Readable body sizes — large enough to scan on a printed A4 page. */
 const TYPE = {
-  headerKicker: 8.5,
-  headerMeta: 9,
-  docTitle: 18,
-  docSubtitle: 11,
-  section: 13,
-  label: 8.5,
-  value: 12,
-  body: 11.5,
-  footer: 8.5,
-  pageNum: 9.5
+  headerKicker: 10,
+  headerMeta: 11,
+  docTitle: 20,
+  docSubtitle: 13,
+  section: 15,
+  label: 11,
+  value: 13,
+  body: 13,
+  footer: 10,
+  pageNum: 11
 }
 
 /** @param {import('pdf-lib').PDFDocument} doc */
@@ -77,11 +77,13 @@ export const drawUnifiedDocumentHeader = (page, ctx, header = {}) => {
     }
     const textX = ctx.logoImage ? margin + logoW + 16 : margin
     const textMaxW = Math.max(160, pageWidth - margin - textX)
-    let ty = y - 8
-    page.drawText(ink(c.name), { x: textX, y: ty, font: ctx.fontBold, size: 13, color: t.green })
-    ty -= 13
-    page.drawText(ink(c.tagline), { x: textX, y: ty, font: ctx.font, size: 8, color: t.goldDeep })
-    ty -= 12
+    const nameSize = 16
+    const detailSize = 11
+    let ty = y - 4
+    page.drawText(ink(c.name), { x: textX, y: ty, font: ctx.fontBold, size: nameSize, color: t.green })
+    ty -= ctx.fontBold.heightAtSize(nameSize) + 4
+    page.drawText(ink(c.tagline), { x: textX, y: ty, font: ctx.font, size: detailSize, color: t.goldDeep })
+    ty -= ctx.font.heightAtSize(detailSize) + 5
     const detailLines = [
       ...c.addressLines,
       `Ireland ${c.irishPhone}  ·  Spain ${c.spanishPhone}`,
@@ -89,22 +91,27 @@ export const drawUnifiedDocumentHeader = (page, ctx, header = {}) => {
       `Registered in Ireland · Co. ${c.companyReg}`
     ]
     for (const line of detailLines) {
-      const wrapped = wrapPlainLinesWithFont(ctx.font, line, 8, textMaxW)
+      const wrapped = wrapPlainLinesWithFont(ctx.font, line, detailSize, textMaxW)
       for (const part of wrapped) {
-        page.drawText(part, { x: textX, y: ty, font: ctx.font, size: 8, color: t.muted })
-        ty -= 10
+        page.drawText(part, { x: textX, y: ty, font: ctx.font, size: detailSize, color: t.muted })
+        ty -= ctx.font.heightAtSize(detailSize) + 3
       }
     }
     y = Math.min(y - logoH, ty + 4) - 12
   } else {
-    page.drawText(ink(c.name), { x: margin, y: y - 4, font: ctx.fontBold, size: 10, color: t.green })
-    y -= 18
+    page.drawText(ink(c.name), { x: margin, y: y - 4, font: ctx.fontBold, size: 12, color: t.green })
+    y -= 20
   }
 
   page.drawRectangle({ x: margin, y, width: contentW, height: 0.9, color: t.gold })
   y -= 22
 
   const kicker = typeof header.kicker === 'string' ? header.kicker.trim() : ''
+  const title = typeof header.title === 'string' ? header.title.trim() : ''
+  const subtitle = typeof header.subtitle === 'string' ? header.subtitle.trim() : ''
+  /** Next baseline must sit below the following line's full font box, not just a fixed step. */
+  const dropFor = (font, size, extra = 8) => font.heightAtSize(size) + extra
+
   if (kicker && !compact) {
     page.drawText(ink(kicker.toUpperCase()), {
       x: margin,
@@ -113,26 +120,28 @@ export const drawUnifiedDocumentHeader = (page, ctx, header = {}) => {
       size: TYPE.headerKicker,
       color: t.goldDeep
     })
-    y -= 14
+    if (title) y -= dropFor(ctx.fontBold, TYPE.docTitle, 10)
+    else if (subtitle) y -= dropFor(ctx.font, TYPE.docSubtitle, 10)
+    else y -= dropFor(ctx.fontBold, TYPE.headerKicker, 8)
   }
 
-  const title = typeof header.title === 'string' ? header.title.trim() : ''
   if (title) {
     const titleLines = wrapPlainLinesWithFont(ctx.fontBold, title, TYPE.docTitle, contentW)
-    for (const line of titleLines) {
+    titleLines.forEach((line, index) => {
       page.drawText(line, { x: margin, y, font: ctx.fontBold, size: TYPE.docTitle, color: t.green })
-      y -= TYPE.docTitle + 6
-    }
+      const anotherTitle = index < titleLines.length - 1
+      if (anotherTitle) y -= dropFor(ctx.fontBold, TYPE.docTitle, 6)
+      else if (subtitle) y -= dropFor(ctx.font, TYPE.docSubtitle, 8)
+      else y -= 10
+    })
   }
 
-  if (header.subtitle?.trim()) {
-    y -= 2
-    const subLines = wrapPlainLinesWithFont(ctx.font, header.subtitle, TYPE.docSubtitle, contentW)
-    for (const line of subLines) {
+  if (subtitle) {
+    const subLines = wrapPlainLinesWithFont(ctx.font, subtitle, TYPE.docSubtitle, contentW)
+    subLines.forEach((line, index) => {
       page.drawText(line, { x: margin, y, font: ctx.font, size: TYPE.docSubtitle, color: t.muted })
-      y -= TYPE.docSubtitle + 5
-    }
-    y -= 6
+      y -= index < subLines.length - 1 ? dropFor(ctx.font, TYPE.docSubtitle, 4) : 8
+    })
   }
 
   return y - 8
@@ -184,7 +193,7 @@ export const drawUnifiedDocumentFooter = (page, _bottomY, ctx, extraLines = [], 
       size: TYPE.footer,
       color: t.muted
     })
-    fy -= 11
+    fy -= ctx.font.heightAtSize(TYPE.footer) + 4
   }
 }
 
@@ -199,8 +208,8 @@ export const drawUnifiedKeyValueTable = (page, startY, ctx, rows) => {
   const valueX = margin + labelColW + 20
   const valueMaxW = contentW - labelColW - 40
   const labelMaxW = labelColW - 10
-  const labelLH = 12
-  const valueLH = 15
+  const labelLH = Math.round(TYPE.label * 1.5)
+  const valueLH = Math.round(TYPE.value * 1.45)
   const padV = 14
   let yTop = startY
 
@@ -254,8 +263,8 @@ export const estimateUnifiedKeyValueTableHeight = (ctx, rows) => {
   const labelColW = Math.min(172, Math.floor(contentW * 0.34))
   const valueMaxW = contentW - labelColW - 40
   const labelMaxW = labelColW - 10
-  const labelLH = 12
-  const valueLH = 15
+  const labelLH = Math.round(TYPE.label * 1.5)
+  const valueLH = Math.round(TYPE.value * 1.45)
   const padV = 14
   let total = 0
   for (const row of rows) {
@@ -271,7 +280,7 @@ export const estimateUnifiedKeyValueTableHeight = (ctx, rows) => {
 export const drawUnifiedSectionHeading = (page, y, ctx, title) => {
   const { pageWidth, margin } = UNIFIED_PDF_LAYOUT
   const contentW = pageWidth - margin * 2
-  page.drawRectangle({ x: margin, y: y - 16, width: 5, height: 18, color: t.gold })
+  page.drawRectangle({ x: margin, y: y - TYPE.section, width: 5, height: TYPE.section + 6, color: t.gold })
   const titleLines = wrapPlainLinesWithFont(ctx.fontBold, title, TYPE.section, contentW - 16)
   let ty = y
   for (const line of titleLines) {
@@ -288,9 +297,9 @@ export const drawUnifiedBulletCard = (page, startY, ctx, section) => {
   const pad = 18
   const innerLeft = margin + pad
   const innerW = contentW - pad * 2
-  const titleLH = 16
-  const bodyLH = 15
-  const bulletLH = 15
+  const titleLH = Math.round(TYPE.section * 1.25)
+  const bodyLH = Math.round(TYPE.body * 1.35)
+  const bulletLH = bodyLH
 
   const titleLines = wrapPlainLinesWithFont(ctx.fontBold, section.title, TYPE.section, innerW)
   const bodyLines = wrapPlainLinesWithFont(ctx.font, section.body, TYPE.body, innerW - 4)
@@ -345,9 +354,9 @@ export const drawUnifiedBulletCard = (page, startY, ctx, section) => {
 export const estimateUnifiedBulletCardHeight = (ctx, section, contentW) => {
   const pad = 18
   const innerW = contentW - pad * 2
-  const titleLH = 16
-  const bodyLH = 15
-  const bulletLH = 15
+  const titleLH = Math.round(TYPE.section * 1.25)
+  const bodyLH = Math.round(TYPE.body * 1.35)
+  const bulletLH = bodyLH
   const titleLines = wrapPlainLinesWithFont(ctx.fontBold, section.title, TYPE.section, innerW)
   const bodyLines = wrapPlainLinesWithFont(ctx.font, section.body, TYPE.body, innerW - 4)
   let bulletsH = 0
@@ -388,7 +397,7 @@ export const drawUnifiedParagraphBlock = (page, topY, ctx, text, opts = {}) => {
   const { pageWidth, margin } = UNIFIED_PDF_LAYOUT
   const contentW = pageWidth - margin * 2
   const size = opts.size ?? TYPE.body
-  const lineHeight = opts.lineHeight ?? 15
+  const lineHeight = opts.lineHeight ?? Math.round(size * 1.4)
   const color = opts.color ?? t.muted
   const paragraphs = String(text ?? '').split('\n')
   let y = topY
@@ -407,8 +416,8 @@ export const drawUnifiedParagraphBlock = (page, topY, ctx, text, opts = {}) => {
   return y
 }
 
-/** Minimum Y before starting a new block (keeps content above footer). */
-export const unifiedPdfMinBodyY = () => UNIFIED_PDF_LAYOUT.footerReserve + 28
+/** Minimum baseline before starting a new block. Clears the footer rule and page number. */
+export const unifiedPdfMinBodyY = () => UNIFIED_PDF_LAYOUT.footerReserve + 52
 
 /**
  * Paginate long body copy — returns updated y (and optional new page ref via callback).
@@ -423,7 +432,7 @@ export const drawUnifiedParagraphBlockPaginated = (page, y, ctx, text, opts = {}
   const { pageWidth, margin } = UNIFIED_PDF_LAYOUT
   const contentW = pageWidth - margin * 2
   const size = opts.size ?? TYPE.body
-  const lineHeight = opts.lineHeight ?? 15
+  const lineHeight = opts.lineHeight ?? Math.round(size * 1.4)
   const color = opts.color ?? t.muted
   const minY = opts.minY ?? unifiedPdfMinBodyY()
   let currentPage = page
@@ -434,6 +443,8 @@ export const drawUnifiedParagraphBlockPaginated = (page, y, ctx, text, opts = {}
       return
     }
     const next = paginate.ensureSpace(needed)
+    if (!next?.page) return
+    if (next.page === currentPage && next.y >= currentY) return
     currentPage = next.page
     currentY = next.y
   }

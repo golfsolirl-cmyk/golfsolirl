@@ -50,7 +50,11 @@ export function ClientDocumentA4({ draft, className }: ClientDocumentA4Props) {
       <h1 className="client-document-a4__title">{view.title}</h1>
       <p className="client-document-a4__meta">Reference: {view.reference}</p>
       <p className="client-document-a4__meta">Date: {view.dateLabel}</p>
-      {view.validUntilLabel ? <p className="client-document-a4__meta">Valid until: {view.validUntilLabel}</p> : null}
+      {view.dateExtra ? (
+        <p className="client-document-a4__meta">{view.dateExtra}</p>
+      ) : view.validUntilLabel ? (
+        <p className="client-document-a4__meta">Valid until: {view.validUntilLabel}</p>
+      ) : null}
       {view.subject ? <p className="client-document-a4__meta">Subject: {view.subject}</p> : null}
 
       {view.preparedFor.length > 0 ? (
@@ -98,7 +102,7 @@ export function ClientDocumentA4({ draft, className }: ClientDocumentA4Props) {
 
       {view.sections.pricing ? (
         <section className="client-document-a4__section">
-          <h2>{view.pricing.mode === 'single' ? 'Price' : 'Quotation'}</h2>
+          <h2>{view.pricingTitle}</h2>
           {view.pricing.mode === 'single' && view.pricing.lines.length <= 1 ? (
             <div className="client-document-a4__single-price">
               <p>{view.pricing.lines[0]?.description || 'Total'}</p>

@@ -5,6 +5,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { requireAdminFromBearer } from './auth-verify-admin.mjs'
 import {
+  blankInvoiceDraft,
   createClientDocumentReferenceId,
   dbRowToDraft,
   defaultClientDocumentDraft,
@@ -180,7 +181,7 @@ export const handleClientEnquiryDocument = async (body, env = process.env, meta 
       const requested = typeof body?.documentType === 'string' ? body.documentType : 'enquiry_response'
       const seed =
         requested === 'invoice'
-          ? defaultClientDocumentDraft({ documentType: 'invoice', vatEnabled: false, subject: '' })
+          ? blankInvoiceDraft()
           : defaultClientDocumentDraft({ documentType: requested })
       return { ok: true, draft: normalizeClientDocumentDraft(seed) }
     }

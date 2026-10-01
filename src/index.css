@@ -573,15 +573,15 @@
 }
 
 .client-document-a4__company {
-  font-size: 11px;
-  line-height: 1.45;
+  font-size: 13px;
+  line-height: 1.5;
   color: #66736d;
 }
 
 .client-document-a4__company-name {
   margin: 0;
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 20px;
+  font-size: 26px;
   font-weight: 700;
   color: #063b2a;
   line-height: 1.15;
@@ -589,7 +589,7 @@
 
 .client-document-a4__tagline {
   margin: 2px 0 8px;
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #b8922e;
@@ -602,7 +602,7 @@
 .client-document-a4__title {
   margin: 0 0 8px;
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 26px;
+  font-size: 30px;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -611,7 +611,7 @@
 
 .client-document-a4__meta {
   margin: 0 0 4px;
-  font-size: 12px;
+  font-size: 14px;
   color: #66736d;
 }
 
@@ -623,7 +623,7 @@
 
 .client-document-a4__section h2 {
   margin: 0 0 8px;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -633,8 +633,8 @@
 .client-document-a4__section p,
 .client-document-a4__section li {
   margin: 0 0 8px;
-  font-size: 12.5px;
-  line-height: 1.55;
+  font-size: 15px;
+  line-height: 1.5;
 }
 
 .client-document-a4__pre {
@@ -642,7 +642,7 @@
 }
 
 .client-document-a4__terms {
-  font-size: 11px;
+  font-size: 14px;
   color: #4d5a54;
 }
 
@@ -659,7 +659,7 @@
 .client-document-a4 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .client-document-a4 th {
@@ -722,7 +722,7 @@
   margin-top: 28px;
   padding-top: 8px;
   border-top: 1px solid #d9d9d9;
-  font-size: 10px;
+  font-size: 12px;
   color: #66736d;
 }
 

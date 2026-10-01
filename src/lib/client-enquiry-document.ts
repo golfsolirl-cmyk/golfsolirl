@@ -109,6 +109,8 @@ export type ClientDocumentView = {
   reference: string
   dateLabel: string
   validUntilLabel: string
+  dateExtra: string
+  pricingTitle: string
   company: ClientDocumentCompany
   companyLines: string[]
   preparedFor: string[]
@@ -147,6 +149,7 @@ const runtime = raw as unknown as {
   documentTypeLabel: (type: string, customTitle?: string) => string
   emptyPricingLine: () => ClientDocumentPricingLine
   defaultClientDocumentDraft: (overrides?: Partial<ClientDocumentDraft>) => ClientDocumentDraft
+  blankInvoiceDraft: () => ClientDocumentDraft
   calculateClientDocumentPricing: (draft: ClientDocumentDraft) => ClientDocumentView['pricing']
   companyHeaderLines: () => string[]
   companyFooterLine: () => string
@@ -172,6 +175,7 @@ export const formatClientDocumentEuro = runtime.formatClientDocumentEuro
 export const documentTypeLabel = runtime.documentTypeLabel
 export const emptyPricingLine = runtime.emptyPricingLine
 export const defaultClientDocumentDraft = runtime.defaultClientDocumentDraft
+export const blankInvoiceDraft = runtime.blankInvoiceDraft
 export const calculateClientDocumentPricing = runtime.calculateClientDocumentPricing
 export const companyHeaderLines = runtime.companyHeaderLines
 export const companyFooterLine = runtime.companyFooterLine
