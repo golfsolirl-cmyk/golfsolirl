@@ -8,12 +8,20 @@ export type MailQuotationHotelOption = {
   golferCount: string
 }
 
+export type MailQuotationGolfCourse = {
+  id: string
+  name: string
+  pricePerGolfer: string
+  golferCount: string
+}
+
 export type MailQuotationPackage = {
   destination: string
   travelDates: string
   duration: string
   golfers: string
   hotelOptions: MailQuotationHotelOption[]
+  golfCourses: MailQuotationGolfCourse[]
   hotels: string
   golf: string
   airportTransfers: string
@@ -49,7 +57,14 @@ export type MailQuotationComputed = {
     total: number
     summary: string
   }>
+  courses: Array<MailQuotationGolfCourse & {
+    pricePerGolferValue: number
+    golferCountValue: number
+    total: number
+  }>
+  golfTotal: number
   leadTotal: number
+  payableEuros: number
   fromPerPerson: number
   depositPercent: number
   depositAmount: number
@@ -67,6 +82,9 @@ const runtime = raw as unknown as {
     readonly fields: readonly MailQuotationField[]
   }[]
   readonly emptyHotelOption: (partial?: Partial<MailQuotationHotelOption>) => MailQuotationHotelOption
+  readonly emptyGolfCourseOption: (partial?: Partial<MailQuotationGolfCourse>) => MailQuotationGolfCourse
+  readonly buildGolfCourseMailBlock: (pkg?: unknown) => string
+  readonly quotePayableEuros: (pkg?: unknown) => number
   readonly emptyMailQuotationPackage: () => MailQuotationPackage
   readonly normalizeMailQuotationPackage: (raw?: unknown) => MailQuotationPackage
   readonly prefillMailQuotationPackage: (
@@ -88,6 +106,10 @@ export const MAIL_QUOTATION_NOTE_FIELDS = runtime.MAIL_QUOTATION_NOTE_FIELDS
 export const MAIL_QUOTATION_FIELD_GROUPS = runtime.MAIL_QUOTATION_FIELD_GROUPS
 export const emptyHotelOption = (partial?: Partial<MailQuotationHotelOption>): MailQuotationHotelOption =>
   runtime.emptyHotelOption(partial)
+export const emptyGolfCourseOption = (partial?: Partial<MailQuotationGolfCourse>): MailQuotationGolfCourse =>
+  runtime.emptyGolfCourseOption(partial)
+export const buildGolfCourseMailBlock = (pkg?: unknown): string => runtime.buildGolfCourseMailBlock(pkg)
+export const quotePayableEuros = (pkg?: unknown): number => runtime.quotePayableEuros(pkg)
 export const emptyMailQuotationPackage = (): MailQuotationPackage => runtime.emptyMailQuotationPackage()
 export const normalizeMailQuotationPackage = (value?: unknown): MailQuotationPackage =>
   runtime.normalizeMailQuotationPackage(value)

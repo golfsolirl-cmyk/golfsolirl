@@ -234,6 +234,21 @@ export const buildAdminMailQuotationPdf = async (input = {}) => {
     { label: 'Number of golfers', value: q.golfers || (blank ? '________________' : '') }
   ])
 
+  const golfRows = computed.courses
+    .filter((row) => row.total > 0 || row.pricePerGolferValue > 0)
+    .map((row) => ({
+      label: row.name.trim() || 'Golf course',
+      value: row.golferCountValue
+        ? `${formatQuotationEuro(row.pricePerGolferValue)} per golfer x ${row.golferCountValue} = ${formatQuotationEuro(row.total)}`
+        : `${formatQuotationEuro(row.pricePerGolferValue)} per golfer`
+    }))
+  if (golfRows.length) {
+    sectionTable('Golf courses', [
+      ...golfRows,
+      { label: 'Golf courses total', value: formatQuotationEuro(computed.golfTotal) }
+    ])
+  }
+
   if (priceRows.length || blank) {
     sectionTable(
       'Package price',

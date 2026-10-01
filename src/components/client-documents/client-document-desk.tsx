@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Copy, FilePlus, Pencil, Trash2 } from 'lucide-react'
+import { Copy, Eye, FilePlus, Pencil, Trash2 } from 'lucide-react'
+import { AdminPdfLibrary, type AdminPdfLivePreview } from '../admin-pdf-library'
 import { LuxuryButton } from '../ui/button'
 import { ClientDocumentEditor } from './client-document-editor'
 import { QuotationTemplateDownloads } from '../quotation-template-downloads'
+import { ADMIN_PDF_LIBRARY_DEFAULT_ID, adminPdfByHref } from '../../lib/admin-pdf-library'
 import {
   documentTypeLabel,
   formatClientDocumentEuro,
@@ -10,7 +12,7 @@ import {
   type ClientDocumentDraft,
   type ClientDocumentListRow
 } from '../../lib/client-enquiry-document'
-import { clientDocumentRequest, downloadClientDocumentFile } from '../../lib/client-enquiry-document-api'
+import { clientDocumentRequest, downloadClientDocumentFile, fetchClientDocumentFile } from '../../lib/client-enquiry-document-api'
 import { cx } from '../../lib/utils'
 
 type ClientDocumentDeskProps = {
@@ -34,6 +36,8 @@ export function ClientDocumentDesk({ accessToken, seedEnquiryId, onSeedConsumed 
   const [busy, setBusy] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
+  const [pdfSelection, setPdfSelection] = useState(ADMIN_PDF_LIBRARY_DEFAULT_ID)
+  const [livePdf, setLivePdf] = useState<AdminPdfLivePreview | null>(null)
 
   const loadList = useCallback(async () => {
     if (!accessToken) return
@@ -52,6 +56,21 @@ export function ClientDocumentDesk({ accessToken, seedEnquiryId, onSeedConsumed 
   useEffect(() => {
     void loadList()
   }, [loadList])
+
+  const focusPdfLibrary = () => {
+    document.getElementById('admin-pdf-library')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  const selectLibraryPdf = (id: string) => {
+    setPdfSelection(id)
+    focusPdfLibrary()
+  }
+
+  const viewQuotationPdf = (href: string) => {
+    const doc = adminPdfByHref(href)
+    if (!doc) return
+    selectLibraryPdf(doc.id)
+  }
 
   const openDraft = (next: ClientDocumentDraft) => {
     setDraft(next)
@@ -86,6 +105,26 @@ export function ClientDocumentDesk({ accessToken, seedEnquiryId, onSeedConsumed 
       cancelled = true
     }
   }, [seedEnquiryId, accessToken, onSeedConsumed])
+
+  const createInvoice = async () => {
+    if (!accessToken) {
+      setError('Sign in again as admin.')
+      return
+    }
+    setBusy('invoice')
+    setError(null)
+    try {
+      const data = await clientDocumentRequest<{ draft: ClientDocumentDraft }>(accessToken, {
+        action: 'blank',
+        documentType: 'invoice'
+      })
+      openDraft({ ...data.draft, documentType: 'invoice', vatEnabled: false })
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Unable to create an invoice.')
+    } finally {
+      setBusy(null)
+    }
+  }
 
   const createBlank = async () => {
     if (!accessToken) {
@@ -194,6 +233,36 @@ export function ClientDocumentDesk({ accessToken, seedEnquiryId, onSeedConsumed 
     }
   }
 
+  const viewSavedPdf = async (row: ClientDocumentListRow) => {
+    if (!accessToken) return
+    setBusy('view-pdf')
+    setError(null)
+    try {
+      const data = await clientDocumentRequest<{ draft: ClientDocumentDraft }>(accessToken, { action: 'get', id: row.id })
+      const { blob, filename } = await fetchClientDocumentFile(
+        '/api/client-enquiry-document-pdf',
+        accessToken,
+        data.draft,
+        'document.pdf',
+        'Unable to generate the PDF. Please try again.'
+      )
+      const href = URL.createObjectURL(blob)
+      setLivePdf((prev) => {
+        if (prev?.href.startsWith('blob:')) URL.revokeObjectURL(prev.href)
+        return {
+          title: row.reference || filename,
+          detail: `${row.customerName} · ${documentTypeLabel(row.documentType, row.documentTitle)}`,
+          href
+        }
+      })
+      selectLibraryPdf('live')
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Unable to open that PDF.')
+    } finally {
+      setBusy(null)
+    }
+  }
+
   const editRow = async (id: string) => {
     if (!accessToken) return
     setBusy('get')
@@ -268,7 +337,7 @@ export function ClientDocumentDesk({ accessToken, seedEnquiryId, onSeedConsumed 
           <p className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.22em] text-brand-600">Client documents</p>
           <h2 className="font-display mt-1 text-2xl font-semibold text-forest-950">Quotes, letters and enquiry replies</h2>
           <p className="mt-2 max-w-2xl text-sm text-forest-600">
-            Open a website form and choose Create quotation or Create document. Official quotation Word and PDF files are below.
+            Preview every house PDF in the browser, including the trip invoice. Saved letters can be opened in the same viewer.
           </p>
         </div>
         <LuxuryButton className="!px-5 !py-2.5" disabled={Boolean(busy)} onClick={() => void createBlank()} type="button">
@@ -279,14 +348,25 @@ export function ClientDocumentDesk({ accessToken, seedEnquiryId, onSeedConsumed 
         </LuxuryButton>
       </div>
 
+      <AdminPdfLibrary
+        livePreview={livePdf}
+        liveSelected={pdfSelection === 'live'}
+        onSelect={selectLibraryPdf}
+        selectedId={pdfSelection === 'live' ? ADMIN_PDF_LIBRARY_DEFAULT_ID : pdfSelection}
+      />
+
       <div>
         <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-600">Quotes · letters · blank templates</p>
-        <h3 className="font-display mt-1 text-xl font-semibold text-forest-950">Official quotation Word and PDF files</h3>
+        <h3 className="font-display mt-1 text-xl font-semibold text-forest-950">Official quotation and invoice files</h3>
         <p className="mt-2 max-w-2xl text-sm text-forest-700">
-          Blank fill-in letter and the branded Maura quotation letter. Gmail uses this same branded letter when you generate a quotation PDF.
+          Blank and branded quotation letters, plus a customer invoice you can download as Word or PDF. The invoice heading is Invoice.
         </p>
         <div className="mt-4">
-          <QuotationTemplateDownloads />
+          <QuotationTemplateDownloads
+            createInvoiceBusy={busy === 'invoice'}
+            onCreateInvoice={() => void createInvoice()}
+            onViewPdf={viewQuotationPdf}
+          />
         </div>
       </div>
 
@@ -341,6 +421,15 @@ export function ClientDocumentDesk({ accessToken, seedEnquiryId, onSeedConsumed 
                       <button className="inline-flex items-center gap-1 text-xs font-semibold text-forest-800" onClick={() => void editRow(row.id)} type="button">
                         <Pencil aria-hidden className="h-3.5 w-3.5" />
                         View / edit
+                      </button>
+                      <button
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-forest-800"
+                        disabled={busy === 'view-pdf'}
+                        onClick={() => void viewSavedPdf(row)}
+                        type="button"
+                      >
+                        <Eye aria-hidden className="h-3.5 w-3.5" />
+                        View PDF
                       </button>
                       <button
                         className="inline-flex items-center gap-1 text-xs font-semibold text-forest-800"

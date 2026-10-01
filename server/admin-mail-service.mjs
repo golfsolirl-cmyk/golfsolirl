@@ -24,6 +24,8 @@ import {
 import { buildAdminBrandedMailHtml, brandedMailPlainText } from './admin-mail-html.mjs'
 import { buildClientEnquiryDocumentPdf } from './client-enquiry-document-pdf.mjs'
 import { buildAdminMailQuotationPdf } from './admin-mail-quotation-pdf.mjs'
+import { assignBrandedMailPortal, brandedMailPortalCopy } from './branded-mail-portal-assign.mjs'
+import { buildGolfCourseMailBlock } from '../shared/admin-mail-quotation.mjs'
 import {
   CLIENT_DOCUMENT_TYPES,
   defaultClientDocumentDraft,
@@ -451,6 +453,36 @@ const handleGeneratePdf = async (user, body, env) => {
   }
 }
 
+const applyPortalToMerged = async (db, env, user, body, merged, templateId, subject) => {
+  const assignment = await assignBrandedMailPortal(db, env, {
+    email: body?.to,
+    fullName: typeof body?.customerName === 'string' ? body.customerName : '',
+    subject,
+    summary: String(merged.body || subject || '').slice(0, 400),
+    templateId,
+    enquiryId: optionalUuid(body?.enquiryId),
+    quotation: body?.quotation,
+    openPayment: body?.openPortalPayment !== false,
+    sentBy: user?.id
+  })
+  const currentBody = String(merged.body || '')
+  const golfBlock = currentBody.includes('Golf courses') ? '' : buildGolfCourseMailBlock(body?.quotation)
+  const extra = brandedMailPortalCopy({
+    accountReferenceId: assignment.accountReferenceId,
+    checkoutUrl: assignment.checkoutUrl,
+    golfBlock
+  })
+  return {
+    assignment,
+    merged: {
+      ...merged,
+      body: extra ? `${currentBody}\n\n${extra}`.trim() : currentBody,
+      ctaLabel: assignment.checkoutUrl ? merged.ctaLabel || 'Pay now' : merged.ctaLabel,
+      ctaUrl: assignment.checkoutUrl || merged.ctaUrl
+    }
+  }
+}
+
 const handleSendBranded = async (user, body, env) => {
   requireSendEnabled(env)
   const resendKey = env.RESEND_API_KEY?.trim()
@@ -467,8 +499,11 @@ const handleSendBranded = async (user, body, env) => {
   }
   const attachments = parseAttachments(body?.attachments)
   const db = getAdminDb(env)
-  const { merged, vars, templateId } = await composeContent(db, body)
-  const subject = applyMailTemplateVars(subjectRaw, vars)
+  const composed = await composeContent(db, body)
+  const subject = applyMailTemplateVars(subjectRaw, composed.vars)
+  const { merged, assignment } = await applyPortalToMerged(db, env, user, body, composed.merged, composed.templateId, subject)
+  const vars = composed.vars
+  const templateId = composed.templateId
   const html = buildAdminBrandedMailHtml({
     heading: merged.heading,
     introduction: merged.introduction,
@@ -552,7 +587,10 @@ const handleSendBranded = async (user, body, env) => {
     attachments: attachments.map((a) => a.filename),
     sentAt,
     activityId: activity?.id || null,
-    templateId
+    templateId,
+    accountReferenceId: assignment.accountReferenceId,
+    checkoutUrl: assignment.checkoutUrl,
+    portalNote: assignment.portalNote
   }
 }
 
@@ -574,8 +612,16 @@ const handleGmailReply = async (user, body, env) => {
   const attachments = parseAttachments(body?.attachments)
   const { account, accessToken } = await requireGmailAccount(user.id, env)
   const db = getAdminDb(env)
-  const { merged, vars, templateId } = await composeContent(db, body)
+  const composed = await composeContent(db, body)
   const useBranded = body?.branded !== false
+  const subjectForPortal = applyMailTemplateVars(subjectRaw, composed.vars)
+  const portalReady = useBranded
+    ? await applyPortalToMerged(db, env, user, body, composed.merged, composed.templateId, subjectForPortal)
+    : { merged: composed.merged, assignment: { accountReferenceId: null, checkoutUrl: null, portalNote: '' } }
+  const merged = portalReady.merged
+  const assignment = portalReady.assignment
+  const vars = composed.vars
+  const templateId = composed.templateId
   const html = useBranded
     ? buildAdminBrandedMailHtml({
         heading: merged.heading,
@@ -594,7 +640,7 @@ const handleGmailReply = async (user, body, env) => {
   const text = useBranded
     ? brandedMailPlainText({ ...merged, vars })
     : String(body?.body || '')
-  const subject = applyMailTemplateVars(subjectRaw, vars)
+  const subject = subjectForPortal
   const from = account.email_address || fromAddress(env)
   const references = [typeof body?.references === 'string' ? body.references.trim() : '', inReplyTo]
     .filter(Boolean)
@@ -657,7 +703,10 @@ const handleGmailReply = async (user, body, env) => {
       sentAt,
       activityId: activity?.id || null,
       threadId: sent.threadId || threadId,
-      templateId
+      templateId,
+      accountReferenceId: assignment.accountReferenceId,
+      checkoutUrl: assignment.checkoutUrl,
+      portalNote: assignment.portalNote
     }
   } catch (error) {
     if (activity?.id) {

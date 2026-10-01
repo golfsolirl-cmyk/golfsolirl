@@ -142,13 +142,21 @@ const roundMoney = (n) => Math.round((Number(n) || 0) * 100) / 100
 
 const asText = (value) => (typeof value === 'string' ? value.trim() : '')
 
+/** Customer-facing copy never uses the phrase "tax invoice". */
+export const scrubDocumentTitle = (title) =>
+  String(title ?? '')
+    .replace(/\btax\s+invoice\b/gi, 'Invoice')
+    .replace(/[ \t]{2,}/g, ' ')
+    .trim()
+
 export const documentTypeLabel = (type, customTitle) => {
+  if (type === 'invoice') return 'Invoice'
   if (type === 'custom') {
-    const custom = asText(customTitle)
+    const custom = scrubDocumentTitle(customTitle)
     return custom || 'Document'
   }
   const found = CLIENT_DOCUMENT_TYPES.find((t) => t.id === type)
-  return found?.label ?? 'Document'
+  return scrubDocumentTitle(found?.label) || 'Document'
 }
 
 export const emptyPricingLine = () => ({
@@ -368,25 +376,25 @@ export const buildClientDocumentFilename = (draft, ext) => {
 
 export const buildClientDocumentView = (draft) => {
   const d = draft && typeof draft === 'object' ? draft : defaultClientDocumentDraft()
-  const title = documentTypeLabel(d.documentType, d.customTitle)
+  const title = scrubDocumentTitle(documentTypeLabel(d.documentType, d.customTitle)) || 'Document'
   const sections = { ...DEFAULT_CLIENT_DOCUMENT_SECTIONS, ...(d.sections && typeof d.sections === 'object' ? d.sections : {}) }
   const pricing = calculateClientDocumentPricing(d)
   const showPricing = Boolean(sections.pricing) && (pricing.lines.length > 0 || pricing.total > 0)
   return {
     title,
-    subject: asText(d.subject),
+    subject: scrubDocumentTitle(asText(d.subject)),
     reference: asText(d.reference),
     dateLabel: formatClientDocumentLongDate(d.documentDate) || formatClientDocumentLongDate(todayIsoDate()),
     validUntilLabel: asText(d.validUntil) ? formatClientDocumentLongDate(d.validUntil) : '',
     company: CLIENT_DOCUMENT_COMPANY,
     companyLines: companyHeaderLines(),
     preparedFor: preparedForLines(d.customer),
-    enquirySummary: asText(d.enquirySummary),
-    message: asText(d.message),
-    messageBlocks: parseMessageBlocks(d.message),
-    notes: asText(d.notes),
-    terms: asText(d.terms),
-    paymentDetails: asText(d.paymentDetails),
+    enquirySummary: scrubDocumentTitle(asText(d.enquirySummary)),
+    message: scrubDocumentTitle(asText(d.message)),
+    messageBlocks: parseMessageBlocks(scrubDocumentTitle(asText(d.message))),
+    notes: scrubDocumentTitle(asText(d.notes)),
+    terms: scrubDocumentTitle(asText(d.terms)),
+    paymentDetails: scrubDocumentTitle(asText(d.paymentDetails)),
     sections: {
       enquiry: Boolean(sections.enquiry) && Boolean(asText(d.enquirySummary)),
       message: Boolean(sections.message) && Boolean(asText(d.message)),

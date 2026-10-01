@@ -38,13 +38,13 @@ export async function clientDocumentRequest<T>(
   return postJson<T>(url, token, body)
 }
 
-export async function downloadClientDocumentFile(
+export async function fetchClientDocumentFile(
   url: string,
   token: string,
   draft: unknown,
   fallbackName: string,
   failMessage: string
-): Promise<void> {
+): Promise<{ blob: Blob; filename: string }> {
   const res = await fetch(url, {
     method: 'POST',
     headers: {
@@ -60,6 +60,17 @@ export async function downloadClientDocumentFile(
   const header = res.headers.get('Content-Disposition') ?? ''
   const match = header.match(/filename="([^"]+)"/)
   const filename = match?.[1] || fallbackName
+  return { blob, filename }
+}
+
+export async function downloadClientDocumentFile(
+  url: string,
+  token: string,
+  draft: unknown,
+  fallbackName: string,
+  failMessage: string
+): Promise<void> {
+  const { blob, filename } = await fetchClientDocumentFile(url, token, draft, fallbackName, failMessage)
   const objectUrl = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = objectUrl

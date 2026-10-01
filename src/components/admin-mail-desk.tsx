@@ -12,6 +12,7 @@ import {
   ShieldOff
 } from 'lucide-react'
 import { LuxuryButton } from './ui/button'
+import { AdminMailGolfPrices } from './admin-mail-golf-prices'
 import { AdminMailQuotationForm } from './admin-mail-quotation-form'
 import { adminMailRequest } from '../lib/admin-mail-api'
 import { applyMailTemplateVars } from '../lib/admin-mail-templates'
@@ -153,6 +154,7 @@ type ComposeState = {
   inReplyTo: string
   references: string
   quotation: MailQuotationPackage
+  openPortalPayment: boolean
 }
 
 const emptyCompose = (): ComposeState => ({
@@ -177,7 +179,8 @@ const emptyCompose = (): ComposeState => ({
   threadId: '',
   inReplyTo: '',
   references: '',
-  quotation: emptyMailQuotationPackage()
+  quotation: emptyMailQuotationPackage(),
+  openPortalPayment: true
 })
 
 const formatWhen = (value: string | number) => {
@@ -346,14 +349,15 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
     const first = next.customerName.trim().split(/\s+/)[0] || ''
     const reference =
       t.id === 'quotation' && !next.reference.trim() ? createMailQuotationReferenceId() : next.reference
+    const prefilled = prefillMailQuotationPackage(next.quotation, {
+      travelDates: next.travelDates,
+      golfers: next.numberOfGuests,
+      destination: next.interest
+    })
     const quotation =
       t.id === 'quotation'
-        ? prefillMailQuotationPackage(next.quotation, {
-            travelDates: next.travelDates,
-            golfers: next.numberOfGuests,
-            destination: next.interest
-          })
-        : emptyMailQuotationPackage()
+        ? prefilled
+        : { ...emptyMailQuotationPackage(), golfCourses: prefilled.golfCourses }
     const vars = {
       customerName: next.customerName,
       firstName: first,
@@ -653,6 +657,9 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
         sentAt: string
         provider: string
         activityId: string | null
+        accountReferenceId?: string | null
+        checkoutUrl?: string | null
+        portalNote?: string | null
       }>(accessToken, {
         action,
         ...compose,
@@ -660,10 +667,15 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
         attachments: attachments.map((a) => ({ filename: a.filename, contentBase64: a.contentBase64 })),
         idempotencyKey: idempotencyRef.current
       })
+      const portalBits = [
+        data.accountReferenceId ? `Account ${data.accountReferenceId}` : '',
+        data.checkoutUrl ? 'Payment link is on their portal' : '',
+        data.portalNote || ''
+      ].filter(Boolean)
       setSentNotice(
         `Email sent successfully to ${data.to} · ${data.subject} · ${data.provider === 'gmail' ? 'Gmail' : 'Resend'}${
           data.attachments?.length ? ` · ${data.attachments.join(', ')}` : ''
-        }`
+        }${portalBits.length ? ` · ${portalBits.join(' · ')}` : ''}`
       )
       setPreviewHtml(null)
       idempotencyRef.current = crypto.randomUUID()
@@ -1277,6 +1289,29 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                   value={compose.quotation}
                 />
               ) : null}
+              <div className="mt-5">
+                <AdminMailGolfPrices
+                  onChange={(quotation) => {
+                    setCompose((current) => {
+                      if (current.templateId !== 'quotation') {
+                        return { ...current, quotation }
+                      }
+                      const first = current.customerName.trim().split(/\s+/)[0] || ''
+                      return {
+                        ...current,
+                        quotation,
+                        body: buildQuotationMailBody(quotation, {
+                          reference: current.reference,
+                          firstName: first
+                        })
+                      }
+                    })
+                  }}
+                  onOpenPaymentChange={(openPortalPayment) => setCompose((current) => ({ ...current, openPortalPayment }))}
+                  openPayment={compose.openPortalPayment}
+                  value={compose.quotation}
+                />
+              </div>
               <label className="mt-4 block text-sm font-bold uppercase tracking-wide text-forest-800">
                 Email body
                 <textarea className="mt-1.5 min-h-[180px] w-full rounded-xl border border-forest-200 px-4 py-3 text-base leading-relaxed" onChange={(e) => setCompose((c) => ({ ...c, body: e.target.value }))} value={compose.body} />

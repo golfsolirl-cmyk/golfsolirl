@@ -3829,7 +3829,7 @@ export function AdminDashboardPage() {
   return (
     <DashboardLayout
       kicker="Operations"
-      subtitle="Forms, packages, payments, and drivers — one desk. Use the left menu to open each area."
+      subtitle="Use the left menu. Today is the live desk. Write, Trips, and Guests are the other areas."
       title={adminHeroTitle}
       variant="admin"
     >

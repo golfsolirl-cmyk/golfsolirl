@@ -22,11 +22,12 @@ export function AdminPortalShell({
   packagesNeedsReviewCount = 0
 }: AdminPortalShellProps) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
-  const activeLabel = ADMIN_SIDEBAR_ITEMS.find((i) => i.id === activeSection)?.label ?? 'Section'
+  const activeItem = ADMIN_SIDEBAR_ITEMS.find((i) => i.id === activeSection)
+  const activeLabel = activeItem?.label ?? 'Section'
   const needsReview = packagesNeedsReviewCount > 0
 
   return (
-    <div className="portal-ui-root flex min-h-[min(70vh,900px)] gap-5 pb-[calc(4.75rem+env(safe-area-inset-bottom))] lg:gap-10 lg:pb-0">
+    <div className="portal-ui-root flex min-h-[min(70vh,900px)] gap-6 pb-[calc(4.75rem+env(safe-area-inset-bottom))] lg:items-start lg:gap-8 lg:pb-4 xl:gap-10">
       <AdminSidebar
         activeSection={activeSection}
         mobileOpen={mobileNavOpen}
@@ -36,7 +37,7 @@ export function AdminPortalShell({
       />
 
       <div className="min-w-0 flex-1 lg:pl-1">
-        <div className="sticky top-0 z-30 mb-4 flex items-center gap-3 border-b border-forest-200 bg-white px-1 py-3">
+        <div className="sticky top-0 z-30 mb-6 flex items-center gap-4 rounded-2xl border border-forest-100 bg-white px-4 py-4 shadow-soft lg:px-6">
           <button
             aria-expanded={mobileNavOpen}
             className={cx(
@@ -48,7 +49,12 @@ export function AdminPortalShell({
           >
             <Menu aria-hidden className="h-5 w-5" />
           </button>
-          <p className="min-w-0 flex-1 truncate text-base font-semibold text-forest-950 lg:pl-1">{activeLabel}</p>
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-display text-xl font-semibold text-forest-950 lg:text-2xl">{activeLabel}</p>
+            {activeItem?.description ? (
+              <p className="mt-0.5 hidden truncate text-sm text-forest-700 sm:block">{activeItem.description}</p>
+            ) : null}
+          </div>
           <button
             aria-label={
               needsReview
@@ -99,5 +105,5 @@ export function AdminPortalSection({
   if (activeSection !== section) {
     return null
   }
-  return <div className="space-y-8 md:space-y-10">{children}</div>
+  return <div className="space-y-10 lg:space-y-14">{children}</div>
 }

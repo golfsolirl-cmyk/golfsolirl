@@ -17,6 +17,13 @@ export const emptyHotelOption = (partial = {}) => ({
   golferCount: String(partial.golferCount ?? '')
 })
 
+export const emptyGolfCourseOption = (partial = {}) => ({
+  id: String(partial.id ?? `course-${Math.random().toString(36).slice(2, 8)}`),
+  name: String(partial.name ?? ''),
+  pricePerGolfer: String(partial.pricePerGolfer ?? ''),
+  golferCount: String(partial.golferCount ?? '')
+})
+
 const STRING_KEYS = [
   'destination',
   'travelDates',
@@ -108,6 +115,7 @@ export const emptyMailQuotationPackage = () => ({
     emptyHotelOption({ id: 'opt-1', name: '5-star hotel' }),
     emptyHotelOption({ id: 'opt-2', name: '4-star hotel' })
   ],
+  golfCourses: [emptyGolfCourseOption({ id: 'course-1' })],
   hotels: '',
   golf: '',
   airportTransfers: '',
@@ -155,6 +163,21 @@ const normalizeHotelOptions = (raw, golfers) => {
   ]
 }
 
+const normalizeGolfCourses = (raw, golfers) => {
+  const src = raw && typeof raw === 'object' ? raw : {}
+  if (Array.isArray(src.golfCourses) && src.golfCourses.length) {
+    return src.golfCourses.slice(0, 8).map((row, index) =>
+      emptyGolfCourseOption({
+        id: row?.id || `course-${index + 1}`,
+        name: row?.name,
+        pricePerGolfer: row?.pricePerGolfer,
+        golferCount: row?.golferCount || golfers
+      })
+    )
+  }
+  return [emptyGolfCourseOption({ id: 'course-1', golferCount: golfers })]
+}
+
 export const normalizeMailQuotationPackage = (raw) => {
   const base = emptyMailQuotationPackage()
   const src = raw && typeof raw === 'object' ? raw : {}
@@ -162,7 +185,14 @@ export const normalizeMailQuotationPackage = (raw) => {
     if (typeof src[key] === 'string') base[key] = src[key]
   }
   base.hotelOptions = normalizeHotelOptions(src, base.golfers)
+  base.golfCourses = normalizeGolfCourses(src, base.golfers)
   return base
+}
+
+export const golfCourseLineTotal = (row) => {
+  const each = parseQuotationMoney(row?.pricePerGolfer)
+  const golfers = Math.max(0, Math.round(parseQuotationMoney(row?.golferCount)))
+  return Math.round(each * golfers)
 }
 
 export const quotationComputed = (pkg) => {
@@ -192,17 +222,49 @@ export const quotationComputed = (pkg) => {
   const balanceDue = Math.max(0, leadTotal - depositAmount)
   const transferTotal = parseQuotationMoney(q.transferTotal)
   const transferPerPerson = golfers > 0 && transferTotal > 0 ? Math.round(transferTotal / golfers) : parseQuotationMoney(q.transferPerPerson)
+  const courses = q.golfCourses.map((row) => {
+    const count = Math.max(0, Math.round(parseQuotationMoney(row.golferCount))) || golfers
+    const pricePerGolfer = parseQuotationMoney(row.pricePerGolfer)
+    const total = Math.round(pricePerGolfer * count)
+    return {
+      ...row,
+      golferCount: count ? String(count) : row.golferCount,
+      pricePerGolferValue: pricePerGolfer,
+      golferCountValue: count,
+      total
+    }
+  })
+  const golfTotal = courses.reduce((sum, row) => sum + (row.total > 0 ? row.total : 0), 0)
   return {
     golfers,
     options,
+    courses,
+    golfTotal,
     leadTotal,
     fromPerPerson,
     depositPercent: percent,
     depositAmount,
     balanceDue,
     transferTotal,
-    transferPerPerson
+    transferPerPerson,
+    payableEuros: Math.round(golfTotal + leadTotal)
   }
+}
+
+/** Amount that should open a portal payment: golf rounds plus the first priced hotel package. */
+export const quotePayableEuros = (pkg) => quotationComputed(pkg).payableEuros
+
+export const buildGolfCourseMailBlock = (pkg) => {
+  const computed = quotationComputed(pkg)
+  const lines = computed.courses
+    .filter((row) => row.total > 0 || row.pricePerGolferValue > 0)
+    .map((row) => {
+      const name = row.name.trim() || 'Golf course'
+      if (!row.golferCountValue) return `${name}: ${formatQuotationEuro(row.pricePerGolferValue)} per golfer`
+      return `${name}: ${formatQuotationEuro(row.pricePerGolferValue)} per golfer × ${row.golferCountValue} = ${formatQuotationEuro(row.total)}`
+    })
+  if (!lines.length) return ''
+  return `Golf courses\n${lines.join('\n')}\nGolf courses total: ${formatQuotationEuro(computed.golfTotal)}`
 }
 
 const labelled = (label, value) => {
@@ -221,6 +283,9 @@ export const prefillMailQuotationPackage = (raw, extras = {}) => {
   if (base.golfers.trim()) {
     base.hotelOptions = base.hotelOptions.map((opt) =>
       opt.golferCount.trim() ? opt : { ...opt, golferCount: base.golfers }
+    )
+    base.golfCourses = base.golfCourses.map((row) =>
+      row.golferCount.trim() ? row : { ...row, golferCount: base.golfers }
     )
   }
   return base
@@ -278,6 +343,7 @@ export const buildQuotationMailBody = (pkg, extras = {}) => {
     packageLines.length ? `Your package\n${packageLines.join('\n')}` : '',
     priceLines.length ? `Package price\n${priceLines.join('\n')}` : '',
     includeLines.length ? `Your package includes\n${includeLines.join('\n')}` : '',
+    buildGolfCourseMailBlock(q),
     String(q.extraNotes ?? '').trim(),
     paymentLines.length ? `Transfer and payment\n${paymentLines.join('\n')}` : '',
     String(q.nextSteps ?? '').trim()

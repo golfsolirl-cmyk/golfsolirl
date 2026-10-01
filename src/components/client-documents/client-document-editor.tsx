@@ -214,7 +214,8 @@ export function ClientDocumentEditor({
                   onChange({
                     ...draft,
                     documentType,
-                    sections: next.sections
+                    sections: next.sections,
+                    ...(documentType === 'invoice' ? { vatEnabled: false } : {})
                   })
                 }}
                 value={draft.documentType}

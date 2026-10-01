@@ -33,9 +33,9 @@ const SECTION_GUIDES: Record<AdminPortalSectionId, SectionGuide> = {
   clientDocs: {
     kicker: 'Client documents',
     title: 'Letters, quotes and replies',
-    summary: 'Write a branded response or quotation, preview it on A4, then download Word or PDF — or print company stationery.',
+    summary: 'Preview every house PDF in the browser, then write a branded letter or quotation.',
     steps: [
-      'Open a website form and choose Create document, or start a blank letter.',
+      'Open All PDF documents and pick an invoice, quote, receipt, or trip pack.',
       'Add your message or prices. The A4 preview updates as you type.',
       'Download Word or PDF, print, or email the customer.'
     ]
@@ -153,48 +153,42 @@ export function AdminOperationsHubHero(props: {
 
   return (
     <div
-      className="mb-8 overflow-hidden rounded-2xl border border-forest-100/90 bg-white shadow-sm ring-1 ring-forest-900/[0.04]"
+      className="mb-10 overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-soft"
       id="admin-hub-welcome"
     >
-      <div className="grid gap-0 lg:grid-cols-[minmax(0,1.1fr)_minmax(220px,0.9fr)]">
-        <div className="flex flex-col justify-center px-6 py-6 sm:px-8 sm:py-7">
-          <div className="flex flex-wrap items-center gap-2">
+      <div className="grid gap-0 xl:grid-cols-[minmax(0,1fr)_16rem]">
+        <div className="px-6 py-7 sm:px-8 sm:py-8 lg:px-10 lg:py-10">
+          <div className="flex flex-wrap items-center gap-3">
             {Icon ? (
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-fairway-800 text-white">
-                <Icon aria-hidden className="h-4 w-4" />
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-forest-900 text-white">
+                <Icon aria-hidden className="h-5 w-5" />
               </span>
             ) : null}
             <p className="font-ge text-xs font-extrabold uppercase tracking-[0.2em] text-brand-600">{guide.kicker}</p>
           </div>
-          <h2 className="font-display mt-2 text-2xl font-bold tracking-tight text-forest-950 sm:text-3xl">
+          <h2 className="font-display mt-4 text-3xl font-bold tracking-tight text-forest-950 sm:text-4xl">
             {guide.title}
           </h2>
-          {name ? (
-            <p className="mt-1 text-sm font-medium text-forest-600">Signed in as {name}</p>
-          ) : null}
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-forest-700 md:text-base">{guide.summary}</p>
-          <ol className="mt-4 space-y-2 text-sm text-forest-800">
+          {name ? <p className="mt-2 text-base font-medium text-forest-700">Signed in as {name}</p> : null}
+          <p className="mt-4 max-w-3xl text-base leading-relaxed text-forest-800 lg:text-lg">{guide.summary}</p>
+          <ol className="mt-6 grid gap-3 lg:grid-cols-3">
             {guide.steps.map((step, index) => (
-              <li className="flex gap-2" key={step}>
-                <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-fairway-100 text-[11px] font-bold text-fairway-900">
+              <li className="flex gap-3 rounded-2xl border border-forest-100 bg-offwhite px-4 py-4 text-base leading-snug text-forest-900" key={step}>
+                <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-forest-900 text-sm font-bold text-white">
                   {index + 1}
                 </span>
-                <span>{step}</span>
+                <span className="pt-1">{step}</span>
               </li>
             ))}
           </ol>
         </div>
-        <div className="relative min-h-[140px] bg-gradient-to-br from-[#0f3d24]/95 via-[#143d28] to-[#0a2416] lg:min-h-0">
+        <div className="relative hidden min-h-[220px] bg-forest-900 xl:block">
           <img
             alt=""
-            className="h-full min-h-[140px] w-full object-cover object-center opacity-95 lg:min-h-full"
+            className="h-full w-full object-cover object-center"
             decoding="async"
             loading="eager"
             src={ADMIN_OPERATIONS_HERO_SRC}
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a2416]/90 via-transparent to-transparent lg:bg-gradient-to-l"
           />
         </div>
       </div>

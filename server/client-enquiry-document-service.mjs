@@ -7,6 +7,7 @@ import { requireAdminFromBearer } from './auth-verify-admin.mjs'
 import {
   createClientDocumentReferenceId,
   dbRowToDraft,
+  defaultClientDocumentDraft,
   draftFromEnquiryRow,
   draftToDbRow,
   listRowFromDb,
@@ -175,8 +176,14 @@ export const handleClientEnquiryDocument = async (body, env = process.env, meta 
       return { ok: true, documents: await listDocuments(admin) }
     case 'get':
       return { ok: true, draft: await getDocument(admin, body?.id) }
-    case 'blank':
-      return { ok: true, draft: normalizeClientDocumentDraft({ documentType: body?.documentType || 'enquiry_response' }) }
+    case 'blank': {
+      const requested = typeof body?.documentType === 'string' ? body.documentType : 'enquiry_response'
+      const seed =
+        requested === 'invoice'
+          ? defaultClientDocumentDraft({ documentType: 'invoice', vatEnabled: false, subject: '' })
+          : defaultClientDocumentDraft({ documentType: requested })
+      return { ok: true, draft: normalizeClientDocumentDraft(seed) }
+    }
     case 'from-enquiry': {
       const enquiry = await fetchEnquiry(admin, body?.enquiryId)
       const draft = draftFromEnquiryRow(enquiry)
