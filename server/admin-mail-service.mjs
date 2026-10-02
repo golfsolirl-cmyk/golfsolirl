@@ -25,6 +25,7 @@ import { buildAdminBrandedMailHtml, brandedMailPlainText } from './admin-mail-ht
 import { buildClientEnquiryDocumentPdf } from './client-enquiry-document-pdf.mjs'
 import { buildAdminMailQuotationPdf } from './admin-mail-quotation-pdf.mjs'
 import { assignBrandedMailPortal, brandedMailPortalCopy } from './branded-mail-portal-assign.mjs'
+import { discardUnsentPortalInvoice, inFlightSendBlocksRetry, runOncePortalSideEffect } from './branded-mail-send-guard.mjs'
 import { buildGolfCourseMailBlock } from '../shared/admin-mail-quotation.mjs'
 import {
   CLIENT_DOCUMENT_TYPES,
@@ -296,6 +297,54 @@ const updateActivity = async (db, id, patch) => {
   await db.from('email_activity').update(patch).eq('id', id)
 }
 
+const ACTIVITY_IDEMPOTENCY_COLUMNS =
+  'id, status, sent_at, created_at, provider, to_email, subject, template_id, attachment_names, provider_message_id, gmail_thread_id'
+
+const findActivityByIdempotency = async (db, key) => {
+  if (!key) return null
+  const { data, error } = await db
+    .from('email_activity')
+    .select(ACTIVITY_IDEMPOTENCY_COLUMNS)
+    .eq('idempotency_key', key)
+    .maybeSingle()
+  if (error) {
+    if (isMissingTable(error, 'email_activity')) {
+      throwStatus(activityTableMissing, 500)
+    }
+    console.error('[admin-mail] idempotency lookup', error.message)
+    return null
+  }
+  return data
+}
+
+const discardPortalInvoice = (db, invoiceId) => discardUnsentPortalInvoice(db, invoiceId)
+
+const alreadySentPayload = (activity) => ({
+  ok: true,
+  duplicate: true,
+  provider: activity?.provider || 'resend',
+  to: activity?.to_email || '',
+  subject: activity?.subject || '',
+  attachments: Array.isArray(activity?.attachment_names) ? activity.attachment_names : [],
+  sentAt: activity?.sent_at || null,
+  activityId: activity?.id || null,
+  templateId: activity?.template_id || null,
+  threadId: activity?.gmail_thread_id || null,
+  accountReferenceId: null,
+  checkoutUrl: null,
+  portalNote: 'This email was already sent. No second portal payment was opened.'
+})
+
+const idempotencyKeyFrom = (body) =>
+  typeof body?.idempotencyKey === 'string' && body.idempotencyKey.trim()
+    ? body.idempotencyKey.trim().slice(0, 80)
+    : undefined
+
+const assertSendNotInFlight = (prior) => {
+  if (!inFlightSendBlocksRetry(prior)) return
+  throwStatus('This email is already being sent. Wait a moment, then check Sent before trying again.', 409)
+}
+
 const handleStatus = async (user, env) => {
   const account = await loadGmailAccount(user.id, env).catch((error) => {
     if (error?.statusCode === 500 && /not installed/i.test(error.message)) {
@@ -473,6 +522,7 @@ const applyPortalToMerged = async (db, env, user, body, merged, templateId, subj
     golfBlock
   })
   return {
+    invoiceId: assignment.invoiceId || null,
     assignment,
     merged: {
       ...merged,
@@ -499,99 +549,113 @@ const handleSendBranded = async (user, body, env) => {
   }
   const attachments = parseAttachments(body?.attachments)
   const db = getAdminDb(env)
+  const idempotencyKey = idempotencyKeyFrom(body)
+  const prior = await findActivityByIdempotency(db, idempotencyKey)
+  assertSendNotInFlight(prior)
   const composed = await composeContent(db, body)
   const subject = applyMailTemplateVars(subjectRaw, composed.vars)
-  const { merged, assignment } = await applyPortalToMerged(db, env, user, body, composed.merged, composed.templateId, subject)
   const vars = composed.vars
   const templateId = composed.templateId
-  const html = buildAdminBrandedMailHtml({
-    heading: merged.heading,
-    introduction: merged.introduction,
-    body: merged.body,
-    closing: merged.closing,
-    ctaLabel: merged.ctaLabel,
-    ctaUrl: merged.ctaUrl,
-    customerName: vars.customerName,
-    vars
-  })
-  const text = brandedMailPlainText({ ...merged, vars })
   const from = fromAddress(env)
   const cc = splitAddresses(body?.cc)
   const bcc = splitAddresses(body?.bcc)
-  const idempotencyKey =
-    typeof body?.idempotencyKey === 'string' && body.idempotencyKey.trim()
-      ? body.idempotencyKey.trim().slice(0, 80)
-      : undefined
 
-  const activity = await insertActivity(db, {
-    created_by: user.id,
-    enquiry_id: optionalUuid(body?.enquiryId),
-    gmail_thread_id: typeof body?.gmailThreadId === 'string' ? body.gmailThreadId : null,
-    provider: 'resend',
-    to_email: to,
-    cc_email: cc.join(', '),
-    bcc_email: bcc.join(', '),
-    from_email: from,
-    subject,
-    template_id: templateId,
-    status: 'sending',
-    attachment_names: attachments.map((a) => a.filename),
-    idempotency_key: idempotencyKey || null
-  })
-  if (activity?.duplicate && activity.status === 'sent') {
-    return { ok: true, duplicate: true, activity }
-  }
+  const outcome = await runOncePortalSideEffect({
+    priorStatus: prior?.status,
+    openInvoice: () => applyPortalToMerged(db, env, user, body, composed.merged, templateId, subject),
+    discardInvoice: (invoiceId) => discardPortalInvoice(db, invoiceId),
+    work: async (opened) => {
+      const { merged, assignment } = opened
+      const html = buildAdminBrandedMailHtml({
+        heading: merged.heading,
+        introduction: merged.introduction,
+        body: merged.body,
+        closing: merged.closing,
+        ctaLabel: merged.ctaLabel,
+        ctaUrl: merged.ctaUrl,
+        customerName: vars.customerName,
+        vars
+      })
+      const text = brandedMailPlainText({ ...merged, vars })
+      const activity = await insertActivity(db, {
+        created_by: user.id,
+        enquiry_id: optionalUuid(body?.enquiryId),
+        gmail_thread_id: typeof body?.gmailThreadId === 'string' ? body.gmailThreadId : null,
+        provider: 'resend',
+        to_email: to,
+        cc_email: cc.join(', '),
+        bcc_email: bcc.join(', '),
+        from_email: from,
+        subject,
+        template_id: templateId,
+        status: 'sending',
+        attachment_names: attachments.map((a) => a.filename),
+        idempotency_key: idempotencyKey || null
+      })
+      if (activity?.duplicate && activity.status === 'sent') {
+        return { duplicateCompleted: true, activity }
+      }
 
-  const deliverTo = resolveResendToAddress(to, env)
-  const payload = {
-    from,
-    to: deliverTo,
-    subject,
-    html,
-    text,
-    attachments: attachments.map((a) => ({
-      filename: a.filename,
-      content: a.bytes.toString('base64')
-    }))
-  }
-  if (cc.length) payload.cc = cc
-  if (bcc.length) payload.bcc = bcc
-  const replyTo = replyToAddress(env)
-  if (replyTo) payload.replyTo = replyTo
+      const deliverTo = resolveResendToAddress(to, env)
+      const payload = {
+        from,
+        to: deliverTo,
+        subject,
+        html,
+        text,
+        attachments: attachments.map((a) => ({
+          filename: a.filename,
+          content: a.bytes.toString('base64')
+        }))
+      }
+      if (cc.length) payload.cc = cc
+      if (bcc.length) payload.bcc = bcc
+      const replyTo = replyToAddress(env)
+      if (replyTo) payload.replyTo = replyTo
 
-  const resend = new Resend(resendKey)
-  const { data, error } = await resend.emails.send(payload)
-  if (error) {
-    console.error('[admin-mail] resend failed', error)
-    if (activity?.id) {
-      await updateActivity(db, activity.id, { status: 'failed', error_message: 'provider_rejected' })
+      const resend = new Resend(resendKey)
+      const { data, error } = await resend.emails.send(payload)
+      if (error) {
+        console.error('[admin-mail] resend failed', error)
+        if (activity?.id) {
+          await updateActivity(db, activity.id, { status: 'failed', error_message: 'provider_rejected' })
+        }
+        throwStatus('The email could not be sent. No message was delivered.', 502)
+      }
+
+      const sentAt = new Date().toISOString()
+      if (activity?.id) {
+        await updateActivity(db, activity.id, {
+          status: 'sent',
+          provider_message_id: data?.id || null,
+          sent_at: sentAt,
+          error_message: null
+        })
+      }
+
+      return {
+        duplicateCompleted: false,
+        response: {
+          ok: true,
+          provider: 'resend',
+          to: deliverTo,
+          subject,
+          attachments: attachments.map((a) => a.filename),
+          sentAt,
+          activityId: activity?.id || null,
+          templateId,
+          accountReferenceId: assignment.accountReferenceId,
+          checkoutUrl: assignment.checkoutUrl,
+          portalNote: assignment.portalNote
+        }
+      }
     }
-    throwStatus('The email could not be sent. No message was delivered.', 502)
-  }
+  })
 
-  const sentAt = new Date().toISOString()
-  if (activity?.id) {
-    await updateActivity(db, activity.id, {
-      status: 'sent',
-      provider_message_id: data?.id || null,
-      sent_at: sentAt,
-      error_message: null
-    })
+  if (outcome.skipped) {
+    return alreadySentPayload(outcome.result?.activity || prior)
   }
-
-  return {
-    ok: true,
-    provider: 'resend',
-    to: deliverTo,
-    subject,
-    attachments: attachments.map((a) => a.filename),
-    sentAt,
-    activityId: activity?.id || null,
-    templateId,
-    accountReferenceId: assignment.accountReferenceId,
-    checkoutUrl: assignment.checkoutUrl,
-    portalNote: assignment.portalNote
-  }
+  return outcome.result.response
 }
 
 const handleGmailReply = async (user, body, env) => {
@@ -612,108 +676,122 @@ const handleGmailReply = async (user, body, env) => {
   const attachments = parseAttachments(body?.attachments)
   const { account, accessToken } = await requireGmailAccount(user.id, env)
   const db = getAdminDb(env)
+  const idempotencyKey = idempotencyKeyFrom(body)
+  const prior = await findActivityByIdempotency(db, idempotencyKey)
+  assertSendNotInFlight(prior)
   const composed = await composeContent(db, body)
   const useBranded = body?.branded !== false
-  const subjectForPortal = applyMailTemplateVars(subjectRaw, composed.vars)
-  const portalReady = useBranded
-    ? await applyPortalToMerged(db, env, user, body, composed.merged, composed.templateId, subjectForPortal)
-    : { merged: composed.merged, assignment: { accountReferenceId: null, checkoutUrl: null, portalNote: '' } }
-  const merged = portalReady.merged
-  const assignment = portalReady.assignment
+  const subject = applyMailTemplateVars(subjectRaw, composed.vars)
   const vars = composed.vars
   const templateId = composed.templateId
-  const html = useBranded
-    ? buildAdminBrandedMailHtml({
-        heading: merged.heading,
-        introduction: merged.introduction,
-        body: merged.body,
-        closing: merged.closing,
-        ctaLabel: merged.ctaLabel,
-        ctaUrl: merged.ctaUrl,
-        customerName: vars.customerName,
-        vars
-      })
-    : `<div>${String(body?.body || '')
-        .split('\n')
-        .map((line) => line.replace(/&/g, '&amp;').replace(/</g, '&lt;'))
-        .join('<br/>')}</div>`
-  const text = useBranded
-    ? brandedMailPlainText({ ...merged, vars })
-    : String(body?.body || '')
-  const subject = subjectForPortal
   const from = account.email_address || fromAddress(env)
   const references = [typeof body?.references === 'string' ? body.references.trim() : '', inReplyTo]
     .filter(Boolean)
     .join(' ')
-  const idempotencyKey =
-    typeof body?.idempotencyKey === 'string' && body.idempotencyKey.trim()
-      ? body.idempotencyKey.trim().slice(0, 80)
-      : undefined
 
-  const activity = await insertActivity(db, {
-    created_by: user.id,
-    enquiry_id: optionalUuid(body?.enquiryId),
-    gmail_thread_id: threadId,
-    provider: 'gmail',
-    to_email: to,
-    cc_email: splitAddresses(body?.cc).join(', '),
-    bcc_email: splitAddresses(body?.bcc).join(', '),
-    from_email: from,
-    subject,
-    template_id: templateId,
-    status: 'sending',
-    attachment_names: attachments.map((a) => a.filename),
-    idempotency_key: idempotencyKey || null
-  })
-  if (activity?.duplicate && activity.status === 'sent') {
-    return { ok: true, duplicate: true, activity }
-  }
-
-  try {
-    const sent = await sendGmailThreadedReply(accessToken, {
-      from,
-      to,
-      cc: splitAddresses(body?.cc).join(', '),
-      bcc: splitAddresses(body?.bcc).join(', '),
-      subject,
-      html,
-      text,
-      threadId,
-      inReplyTo,
-      references,
-      attachments
-    })
-    const sentAt = new Date().toISOString()
-    if (activity?.id) {
-      await updateActivity(db, activity.id, {
-        status: 'sent',
-        provider_message_id: sent.id || null,
-        gmail_message_id: sent.id || null,
-        gmail_thread_id: sent.threadId || threadId,
-        sent_at: sentAt,
-        error_message: null
+  const outcome = await runOncePortalSideEffect({
+    priorStatus: prior?.status,
+    openInvoice: () =>
+      useBranded
+        ? applyPortalToMerged(db, env, user, body, composed.merged, templateId, subject)
+        : Promise.resolve({
+            invoiceId: null,
+            merged: composed.merged,
+            assignment: { accountReferenceId: null, checkoutUrl: null, portalNote: '', invoiceId: null }
+          }),
+    discardInvoice: (invoiceId) => discardPortalInvoice(db, invoiceId),
+    work: async (opened) => {
+      const { merged, assignment } = opened
+      const html = useBranded
+        ? buildAdminBrandedMailHtml({
+            heading: merged.heading,
+            introduction: merged.introduction,
+            body: merged.body,
+            closing: merged.closing,
+            ctaLabel: merged.ctaLabel,
+            ctaUrl: merged.ctaUrl,
+            customerName: vars.customerName,
+            vars
+          })
+        : `<div>${String(body?.body || '')
+            .split('\n')
+            .map((line) => line.replace(/&/g, '&amp;').replace(/</g, '&lt;'))
+            .join('<br/>')}</div>`
+      const text = useBranded ? brandedMailPlainText({ ...merged, vars }) : String(body?.body || '')
+      const activity = await insertActivity(db, {
+        created_by: user.id,
+        enquiry_id: optionalUuid(body?.enquiryId),
+        gmail_thread_id: threadId,
+        provider: 'gmail',
+        to_email: to,
+        cc_email: splitAddresses(body?.cc).join(', '),
+        bcc_email: splitAddresses(body?.bcc).join(', '),
+        from_email: from,
+        subject,
+        template_id: templateId,
+        status: 'sending',
+        attachment_names: attachments.map((a) => a.filename),
+        idempotency_key: idempotencyKey || null
       })
+      if (activity?.duplicate && activity.status === 'sent') {
+        return { duplicateCompleted: true, activity }
+      }
+
+      try {
+        const sent = await sendGmailThreadedReply(accessToken, {
+          from,
+          to,
+          cc: splitAddresses(body?.cc).join(', '),
+          bcc: splitAddresses(body?.bcc).join(', '),
+          subject,
+          html,
+          text,
+          threadId,
+          inReplyTo,
+          references,
+          attachments
+        })
+        const sentAt = new Date().toISOString()
+        if (activity?.id) {
+          await updateActivity(db, activity.id, {
+            status: 'sent',
+            provider_message_id: sent.id || null,
+            gmail_message_id: sent.id || null,
+            gmail_thread_id: sent.threadId || threadId,
+            sent_at: sentAt,
+            error_message: null
+          })
+        }
+        return {
+          duplicateCompleted: false,
+          response: {
+            ok: true,
+            provider: 'gmail',
+            to,
+            subject,
+            attachments: attachments.map((a) => a.filename),
+            sentAt,
+            activityId: activity?.id || null,
+            threadId: sent.threadId || threadId,
+            templateId,
+            accountReferenceId: assignment.accountReferenceId,
+            checkoutUrl: assignment.checkoutUrl,
+            portalNote: assignment.portalNote
+          }
+        }
+      } catch (error) {
+        if (activity?.id) {
+          await updateActivity(db, activity.id, { status: 'failed', error_message: 'provider_rejected' })
+        }
+        throw error
+      }
     }
-    return {
-      ok: true,
-      provider: 'gmail',
-      to,
-      subject,
-      attachments: attachments.map((a) => a.filename),
-      sentAt,
-      activityId: activity?.id || null,
-      threadId: sent.threadId || threadId,
-      templateId,
-      accountReferenceId: assignment.accountReferenceId,
-      checkoutUrl: assignment.checkoutUrl,
-      portalNote: assignment.portalNote
-    }
-  } catch (error) {
-    if (activity?.id) {
-      await updateActivity(db, activity.id, { status: 'failed', error_message: 'provider_rejected' })
-    }
-    throw error
+  })
+
+  if (outcome.skipped) {
+    return alreadySentPayload(outcome.result?.activity || prior)
   }
+  return outcome.result.response
 }
 
 const handleSentList = async (user, body, env) => {
