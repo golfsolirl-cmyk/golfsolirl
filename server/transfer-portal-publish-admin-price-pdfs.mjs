@@ -139,6 +139,7 @@ export const publishTransferAdminPricePortalPdfs = async (admin, env, bookingId)
     .delete()
     .eq('owner_id', ownerId)
     .eq('transfer_booking_id', bookingId)
+    .in('document_kind', ['form_submission', 'vat_quote', 'terms_summary'])
   if (delAllErr) {
     console.error('[transfer-portal-pdfs] clear old docs', delAllErr.message)
   }

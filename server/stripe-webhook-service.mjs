@@ -16,6 +16,71 @@ import {
   sendTransferPaymentCustomerEmails
 } from './transfer-payment-customer-email.mjs'
 
+const centsFromEur = (value) => {
+  const n = Number(value)
+  return Number.isFinite(n) && n > 0 ? Math.round(n * 100) : null
+}
+
+const checkoutSessionAmountCents = (session) => {
+  const cents = Number(session?.amount_total)
+  return Number.isFinite(cents) && cents > 0 ? Math.round(cents) : null
+}
+
+const checkoutSessionCurrency = (session) =>
+  typeof session?.currency === 'string' ? session.currency.trim().toLowerCase() : ''
+
+export const portalInvoiceCheckoutMatchesCurrent = (invoice, opts = {}) => {
+  const paidSessionId = typeof opts.stripeSessionId === 'string' ? opts.stripeSessionId.trim() : ''
+  const currentSessionId =
+    typeof invoice?.stripe_checkout_session_id === 'string' ? invoice.stripe_checkout_session_id.trim() : ''
+  if (!paidSessionId || !currentSessionId || paidSessionId !== currentSessionId) {
+    return false
+  }
+
+  const paidAmountCents = centsFromEur(opts.amountEur)
+  const invoiceAmountCents = Number(invoice?.amount_cents)
+  if (paidAmountCents == null || !Number.isFinite(invoiceAmountCents) || paidAmountCents !== Math.round(invoiceAmountCents)) {
+    return false
+  }
+
+  const paidCurrency = typeof opts.currency === 'string' ? opts.currency.trim().toLowerCase() : ''
+  const invoiceCurrency = typeof invoice?.currency === 'string' ? invoice.currency.trim().toLowerCase() : 'eur'
+  return paidCurrency === invoiceCurrency
+}
+
+export const transferCheckoutSessionMatchesCurrent = (booking, session, paymentKind) => {
+  const paidSessionId = typeof session?.id === 'string' ? session.id.trim() : ''
+  const currentSessionId =
+    typeof booking?.stripe_checkout_session_id === 'string' ? booking.stripe_checkout_session_id.trim() : ''
+  if (!paidSessionId || (currentSessionId && paidSessionId !== currentSessionId)) {
+    return false
+  }
+  if (checkoutSessionCurrency(session) !== 'eur') {
+    return false
+  }
+
+  const gross = Number(booking?.admin_price_eur)
+  if (!Number.isFinite(gross) || gross <= 0) {
+    return false
+  }
+
+  const pct = normalizedDepositPercent(booking?.deposit_percent)
+  const kind = String(paymentKind ?? 'full').toLowerCase()
+  let expectedEur = gross
+  if (kind === 'deposit') {
+    if (isTransferFullUpfront(booking)) {
+      return false
+    }
+    expectedEur = depositAmountEur(gross, pct)
+  } else if (kind === 'balance') {
+    expectedEur = balanceAmountEur(gross, pct)
+  }
+
+  const paidAmountCents = checkoutSessionAmountCents(session)
+  const expectedCents = centsFromEur(expectedEur)
+  return paidAmountCents != null && expectedCents != null && paidAmountCents === expectedCents
+}
+
 
 
 /**
@@ -28,13 +93,38 @@ import {
 
  * @param {string} paidAt
 
- * @param {{ stripeSessionId?: string | null, amountEur?: number | null }} [syncOpts]
+ * @param {{ stripeSessionId?: string | null, amountEur?: number | null, currency?: string | null }} [syncOpts]
 
  * @returns {Promise<boolean>}
 
  */
 
 export const markPortalInvoicePaid = async (supabase, invoiceId, paymentIntent, paidAt, syncOpts = {}) => {
+  const { data: current, error: loadErr } = await supabase
+    .from('portal_invoices')
+    .select('id, amount_cents, currency, stripe_checkout_session_id')
+    .eq('id', invoiceId)
+    .maybeSingle()
+
+  if (loadErr) {
+    const err = new Error(loadErr.message)
+    err.statusCode = 500
+    throw err
+  }
+
+  if (!current?.id) {
+    return false
+  }
+
+  if (!portalInvoiceCheckoutMatchesCurrent(current, syncOpts)) {
+    console.warn('[stripe-webhook] stale or mismatched portal invoice checkout ignored', {
+      invoiceId,
+      stripeSessionId: syncOpts.stripeSessionId ?? null,
+      amountEur: syncOpts.amountEur ?? null,
+      currency: syncOpts.currency ?? null
+    })
+    return false
+  }
 
   const { error, data } = await supabase
 
@@ -51,6 +141,8 @@ export const markPortalInvoicePaid = async (supabase, invoiceId, paymentIntent, 
     })
 
     .eq('id', invoiceId)
+    .eq('stripe_checkout_session_id', current.stripe_checkout_session_id)
+    .eq('amount_cents', current.amount_cents)
 
     .select('id')
 
@@ -150,6 +242,13 @@ export const markTransferBookingPaid = async (supabase, bookingId, session, paym
       console.warn('[stripe-webhook] deposit checkout for full-upfront transfer', bookingId)
       return true
     }
+    if (!transferCheckoutSessionMatchesCurrent(row, session, kind)) {
+      console.warn('[stripe-webhook] stale or mismatched transfer deposit checkout ignored', {
+        bookingId,
+        checkoutSessionId: sessionId
+      })
+      return false
+    }
     const remindAt = balanceDueReminderIso(row.scheduled_at)
     const { error, data } = await supabase
       .from('transfer_bookings')
@@ -218,6 +317,15 @@ export const markTransferBookingPaid = async (supabase, bookingId, session, paym
 
   if (kind === 'balance' && st !== 'deposit') {
     console.warn('[stripe-webhook] balance checkout but booking not on deposit', bookingId, st)
+    return false
+  }
+
+  if (!transferCheckoutSessionMatchesCurrent(row, session, kind)) {
+    console.warn('[stripe-webhook] stale or mismatched transfer checkout ignored', {
+      bookingId,
+      checkoutSessionId: sessionId,
+      paymentKind: kind
+    })
     return false
   }
 
@@ -441,7 +549,8 @@ export const handleStripeWebhook = async (rawBody, signatureHeader, env = proces
         amountEur:
           typeof session.amount_total === 'number' && Number.isFinite(session.amount_total)
             ? session.amount_total / 100
-            : null
+            : null,
+        currency: session.currency ?? null
       })
 
     } else if (metaTransfer) {
@@ -455,7 +564,8 @@ export const handleStripeWebhook = async (rawBody, signatureHeader, env = proces
         amountEur:
           typeof session.amount_total === 'number' && Number.isFinite(session.amount_total)
             ? session.amount_total / 100
-            : null
+            : null,
+        currency: session.currency ?? null
       })
 
       if (!invOk) {
