@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { requireAdminFromBearer } from './auth-verify-admin.mjs'
 import { handleSendClientPortalEmail } from './client-portal-email-service.mjs'
 import { buildPortalInvoicePdfBytes } from './portal-invoice-pdf.mjs'
+import { findProfileByEmailExact } from './email-exact-match.mjs'
 
 const throwStatus = (message, statusCode) => {
   const err = new Error(message)
@@ -101,11 +102,11 @@ export const handlePortalInvoiceSend = async (body, env = process.env, meta = {}
   const referenceId = typeof enquiry.reference_id === 'string' ? enquiry.reference_id.trim() : ''
   const fullName = typeof enquiry.full_name === 'string' ? enquiry.full_name.trim() : ''
 
-  const { data: clientProfile, error: profErr } = await supabase
-    .from('profiles')
-    .select('id, email, account_reference_id, full_name')
-    .ilike('email', enquiryEmail)
-    .maybeSingle()
+  const { data: clientProfile, error: profErr } = await findProfileByEmailExact(
+    supabase,
+    enquiryEmail,
+    'id, email, account_reference_id, full_name'
+  )
 
   if (profErr || !clientProfile?.id) {
     throwStatus(

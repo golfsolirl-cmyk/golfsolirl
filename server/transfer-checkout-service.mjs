@@ -6,6 +6,7 @@ import {
   isTransferFullUpfront,
   normalizedDepositPercent
 } from './transfer-payment-amounts.mjs'
+import { normalizeEmailExact } from './email-exact-match.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
   const e = new Error(message)
@@ -56,10 +57,8 @@ export const clientOwnsTransferBooking = async (admin, userId, userEmail, bookin
   if (booking.client_user_id === userId) {
     return true
   }
-  const uEmail = (userEmail ?? '').trim().toLowerCase()
-  const rowEmail = String(booking.client_email ?? '')
-    .trim()
-    .toLowerCase()
+  const uEmail = normalizeEmailExact(userEmail)
+  const rowEmail = normalizeEmailExact(booking.client_email)
   if (uEmail && rowEmail === uEmail) {
     return true
   }
@@ -87,7 +86,7 @@ export const clientOwnsTransferBooking = async (admin, userId, userEmail, bookin
       .from('enquiries')
       .select('id')
       .eq('reference_id', enqRef)
-      .ilike('email', uEmail)
+      .eq('email', uEmail)
       .maybeSingle()
     if (enqMatch?.id) {
       return true

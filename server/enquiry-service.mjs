@@ -17,6 +17,7 @@ import { assertApiRateLimit, parsePositiveInt } from './api-rate-limit.mjs'
 import { computePhoneUniquenessKey, validateMobilePhoneInput } from './phone-e164.mjs'
 import { assertEnquiryContactVerified } from './enquiry-contact-verify-service.mjs'
 import { resolveResendToAddress, resendSandboxRecipientHint } from './resend-delivery-email.mjs'
+import { findProfileByEmailExact } from './email-exact-match.mjs'
 /** Real imports (not `export { … } from './…'` only): handlers call these by name in module scope. */
 import {
   createBrandedEnquiryPdf,
@@ -860,7 +861,7 @@ const insertWebsiteFormPackageBuildIfProfileExists = async (enquiry, enquiryId, 
       auth: { persistSession: false, autoRefreshToken: false }
     })
 
-    const { data: prof, error: pErr } = await sb.from('profiles').select('id').ilike('email', email).maybeSingle()
+    const { data: prof, error: pErr } = await findProfileByEmailExact(sb, email, 'id')
     if (pErr || !prof?.id) {
       return
     }

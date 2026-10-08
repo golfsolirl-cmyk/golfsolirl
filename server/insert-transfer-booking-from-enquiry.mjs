@@ -7,6 +7,8 @@
  * @param {import('node:process').ProcessEnv} env
  */
 
+import { findProfileByEmailExact } from './email-exact-match.mjs'
+
 const FORM_TRANSPORT = 'transport_service_page'
 const FORM_QUICK = 'content_quick_enquiry'
 
@@ -140,7 +142,7 @@ export const insertTransferBookingFromWebsiteEnquiry = async (enquiry, enquiryId
   }
 
   let clientUserId = null
-  const { data: prof } = await sb.from('profiles').select('id').ilike('email', email).maybeSingle()
+  const { data: prof } = await findProfileByEmailExact(sb, email, 'id')
   if (prof?.id) {
     clientUserId = prof.id
   }

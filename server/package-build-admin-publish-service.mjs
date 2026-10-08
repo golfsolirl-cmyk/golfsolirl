@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { requireAdminFromBearer } from './auth-verify-admin.mjs'
 import { publishTransferAdminPricePortalPdfs } from './transfer-portal-publish-admin-price-pdfs.mjs'
+import { findProfileByEmailExact } from './email-exact-match.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
   const e = new Error(message)
@@ -78,7 +79,7 @@ export const handlePackageBuildAdminPublish = async (body, env = process.env, me
     throwStatus('kind must be transfer, golf, or hotel.', 400)
   }
 
-  const { data: prof, error: pErr } = await admin.from('profiles').select('id, email, full_name').ilike('email', email).maybeSingle()
+  const { data: prof, error: pErr } = await findProfileByEmailExact(admin, email, 'id, email, full_name')
   if (pErr) {
     throwStatus(pErr.message, 500)
   }
