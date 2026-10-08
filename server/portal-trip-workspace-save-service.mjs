@@ -162,9 +162,6 @@ export const handlePortalTripWorkspaceSave = async (payload, env = process.env, 
       return cfg && typeof cfg === 'object' && cfg.enquiryReferenceId === ref
     })
   }
-  if (!target) {
-    target = list[0] ?? null
-  }
 
   const now = new Date().toISOString()
 
