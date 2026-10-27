@@ -44,6 +44,7 @@ import {
   handleClientEnquiryDocumentPdf
 } from './server/client-enquiry-document-email.mjs'
 import { handleAdminMail, handleGmailOauthCallback } from './server/admin-mail-service.mjs'
+import { handleNewsletterSubscribe } from './server/newsletter-subscribe-service.mjs'
 import { handleStripeWebhook } from './server/stripe-webhook-service.mjs'
 import { readIncomingMessageBodyBuffer } from './server/vercel-read-body.mjs'
 import { handlePortalLinkIssue, handlePortalLinkVerify } from './server/portal-link-context-service.mjs'
@@ -1066,6 +1067,7 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
       })
     }
 
+    jsonApi('/api/newsletter-subscribe', handleNewsletterSubscribe as never, { ip: true })
     jsonApi('/api/enquiry-contact-verify-send', handleEnquiryContactVerifySend as never, { ip: true })
     jsonApi('/api/enquiry-contact-verify-check', handleEnquiryContactVerifyCheck as never, { ip: true })
     jsonApi('/api/enquiry-admin-quote', handleEnquiryAdminQuote as never, { auth: true })

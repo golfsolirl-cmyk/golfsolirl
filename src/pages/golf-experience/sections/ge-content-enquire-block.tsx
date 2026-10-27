@@ -2,6 +2,7 @@ import { m, type Variants } from 'framer-motion'
 import { CheckCircle2, MessageCircle, Sparkles } from 'lucide-react'
 import { GeDualPhoneEnquiryCallRow } from '../components/ge-dual-phone-contact'
 import { GeSection } from '../components/ge-section'
+import { NewsletterSubscribeForm } from '../../../components/newsletter-subscribe-form'
 import { GeQuickEnquiryForm } from '../components/ge-quick-enquiry-form'
 import { contactInfo } from '../data/copy'
 import type { ContentFormConfig } from '../content-page-context'
@@ -39,6 +40,7 @@ export type GeContentEnquireBlockProps = {
   readonly interestPreset: string
   readonly routeLabel: string
   readonly formConfig: ContentFormConfig
+  readonly variant?: 'enquiry' | 'newsletter'
 }
 
 export function GeContentEnquireBlock({
@@ -50,8 +52,10 @@ export function GeContentEnquireBlock({
   formLead,
   interestPreset,
   routeLabel,
-  formConfig
+  formConfig,
+  variant = 'enquiry'
 }: GeContentEnquireBlockProps) {
+  const isNewsletter = variant === 'newsletter'
   const whatsappHref = `https://wa.me/${contactInfo.phoneTel.replace('+', '')}?text=${encodeURIComponent(
     'Hi GolfSol — I am on your website and would like help planning a Costa del Sol golf trip.'
   )}`
@@ -70,7 +74,7 @@ export function GeContentEnquireBlock({
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-brand-700/[0.1] blur-[90px]"
-      />
+      />
 
       <div className="grid gap-10 lg:grid-cols-[1fr_1.05fr] lg:items-start lg:gap-14">
         <m.div
@@ -107,6 +111,7 @@ export function GeContentEnquireBlock({
             {body}
           </m.p>
 
+          {isNewsletter ? null : (
           <m.div variants={heroItemVariants} className="mt-7 flex flex-col gap-3">
             <GeDualPhoneEnquiryCallRow />
             <a
@@ -119,6 +124,7 @@ export function GeContentEnquireBlock({
               WhatsApp us (Irish number)
             </a>
           </m.div>
+          )}
 
           <m.div variants={heroItemVariants} className="relative mt-9">
             <span
@@ -147,13 +153,17 @@ export function GeContentEnquireBlock({
             className="pointer-events-none absolute -inset-2 rounded-[2.15rem] bg-gradient-to-br from-brand-700/10 via-transparent to-[#d9be7a]/10"
           />
           <div className="relative">
-            <GeQuickEnquiryForm
-              title={formTitle}
-              lead={formLead}
-              interestPreset={interestPreset}
-              routeLabel={routeLabel}
-              formConfig={formConfig}
-            />
+            {isNewsletter ? (
+              <NewsletterSubscribeForm title={formTitle} lead={formLead} />
+            ) : (
+              <GeQuickEnquiryForm
+                title={formTitle}
+                lead={formLead}
+                interestPreset={interestPreset}
+                routeLabel={routeLabel}
+                formConfig={formConfig}
+              />
+            )}
           </div>
         </m.div>
       </div>

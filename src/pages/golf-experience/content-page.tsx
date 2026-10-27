@@ -162,6 +162,7 @@ export function GeContentPage() {
     )
   }
 
+  const isNewsletter = page.enquiryType === 'newsletter'
   const extraSections = page.sections.length > 3 ? page.sections.slice(3) : []
   const promiseBody = page.sections[0]?.body ?? page.subtitle
   const isTermsPage = path.includes('terms')
@@ -194,9 +195,15 @@ export function GeContentPage() {
           floatingBadges={heroConfig.floatingBadges}
           formScrollTarget={heroConfig.formScrollTarget}
           formScrollLabel={heroConfig.formScrollLabel}
-          formScrollSublabel={showCourseCorridorMap ? 'See every course on the map' : heroConfig.formScrollSublabel}
+          formScrollSublabel={
+            showCourseCorridorMap
+              ? 'See every course on the map'
+              : isNewsletter
+                ? 'Your email is enough'
+                : heroConfig.formScrollSublabel
+          }
           primaryCta={{
-            label: showCourseCorridorMap ? 'Explore the course map' : heroConfig.primaryCtaLabel,
+            label: showCourseCorridorMap ? 'Explore the course map' : isNewsletter ? 'Subscribe' : heroConfig.primaryCtaLabel,
             href: formTarget,
             variant: 'gs-gold'
           }}
@@ -220,6 +227,23 @@ export function GeContentPage() {
           </Suspense>
         ) : null}
 
+        {isNewsletter && formConfig ? (
+          <GeContentEnquireBlock
+            variant="newsletter"
+            eyebrow="Subscribe"
+            title={page.formTitle}
+            body={page.formLead}
+            formTitle={page.formTitle}
+            formLead={page.formLead}
+            interestPreset={page.interestPreset}
+            routeLabel={routeLabel}
+            formConfig={formConfig}
+            reassurances={['Your email is enough', 'A few notes a year, not a weekly blast', 'Unsubscribe any time']}
+          />
+        ) : null}
+
+        {isNewsletter ? null : (
+        <>
         <GeContentPromiseBand
           eyebrow="The promise"
           title="Plain guidance. One Irish team. Zero guesswork."
@@ -284,6 +308,8 @@ export function GeContentPage() {
             formConfig={formConfig}
           />
         ) : null}
+        </>
+        )}
 
         <GeFinalCta />
       </main>

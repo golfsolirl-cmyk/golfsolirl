@@ -569,29 +569,24 @@ const newsPage: GeContentPageData = {
 
 const newsletterPage: GeContentPageData = {
   metaTitle: 'Newsletter | GolfSol Ireland',
-  eyebrow: 'Stay Updated',
-  title: 'Join our newsletter for useful golf travel updates',
-  subtitle:
-    'Get concise updates when they are relevant: no constant emails, just practical insights for Irish golfers planning the Sol.',
+  eyebrow: 'Stay updated',
+  title: 'Costa del Sol golf notes for Irish travellers',
+  subtitle: 'A short email when there is something useful. No weekly blast, and you can leave the list any time.',
   heroImage: '/images/about-golfsol-hero.webp',
   heroAlt: 'Costa del Sol golf travel newsletter and planning updates.',
-  highlights: trustHighlights,
+  highlights: ['A few emails a year', 'Tee times, travel, and seasonal notes', 'Unsubscribe in one reply'],
   sections: [
     {
       title: 'What you get',
-      body:
-        'Course timing notes, travel reminders, and occasional offers that make planning easier for captains and repeat groups.',
-      bullets: ['Low-volume, high-signal emails', 'Practical travel and routing guidance', 'Seasonal golf planning tips']
+      body: 'Course timing notes, travel reminders, and the occasional offer that helps a captain plan the next Costa del Sol week.'
     },
     {
-      title: 'Easy to control',
-      body:
-        'You can update preferences or stop updates anytime. We keep communication respectful and useful.',
-      bullets: ['Simple opt-out', 'No aggressive marketing', 'Focused on Irish golfer needs']
+      title: 'Easy to leave',
+      body: 'Reply to any email and we take you off. We do not pass the list to anyone else.'
     }
   ],
-  formTitle: 'Join the newsletter',
-  formLead: 'Drop your details and we will include you in relevant updates.',
+  formTitle: 'Subscribe',
+  formLead: 'Add your email. That is the whole signup.',
   interestPreset: 'Newsletter signup',
   enquiryType: 'newsletter'
 }

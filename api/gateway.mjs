@@ -36,6 +36,7 @@ import { handleRegeneratePortalPdfs } from '../server/transfer-portal-regenerate
 import { guardHomepageClientPdfRequest, guardProposalPdfRequest } from '../server/pdf-route-guards.mjs'
 import { handleTripReviewSubmit } from '../server/trip-review-submit-service.mjs'
 import { handleWebsiteTestimonialSubmit } from '../server/website-testimonial-service.mjs'
+import { handleNewsletterSubscribe } from '../server/newsletter-subscribe-service.mjs'
 import { handlePortalInvoiceSend } from '../server/portal-invoice-send-service.mjs'
 import { handlePortalLinkIssue, handlePortalLinkVerify } from '../server/portal-link-context-service.mjs'
 import { handleStripeWebhook } from '../server/stripe-webhook-service.mjs'
@@ -587,6 +588,20 @@ export default async function handler(req, res) {
         const raw = await readIncomingMessageBodyUtf8(req)
         const payload = raw ? JSON.parse(raw) : {}
         const result = await handleTripReviewSubmit(process.env, { payload })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'newsletter-subscribe': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const result = await handleNewsletterSubscribe(payload, process.env, {
+          clientIp: getClientIp(req)
+        })
         jsonEnd(res, 200, result)
         return
       }

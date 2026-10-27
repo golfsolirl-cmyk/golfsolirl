@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence,  m  } from 'framer-motion'
 import { ChevronDown, Menu, X } from 'lucide-react'
 import { prefetchRouteChunk } from '../../../lib/prefetch-route-chunk'
@@ -32,19 +32,60 @@ interface GeNavbarProps {
 export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {}) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null)
+  const [ribbonHidden, setRibbonHidden] = useState(false)
+  const [menuMaxPx, setMenuMaxPx] = useState<number | null>(null)
+  const chromeRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    let hideTimer = 0
+    const onScroll = () => {
+      window.clearTimeout(hideTimer)
+      if (window.scrollY < 16) {
+        setRibbonHidden(false)
+        return
+      }
+      hideTimer = window.setTimeout(() => {
+        setRibbonHidden(window.scrollY > 16)
+      }, 320)
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      window.clearTimeout(hideTimer)
+      window.removeEventListener('scroll', onScroll)
+    }
+  }, [])
 
   useEffect(() => {
     if (!isMenuOpen) return
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setIsMenuOpen(false)
     }
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const measure = () => {
+      const bottom = chromeRef.current?.getBoundingClientRect().bottom ?? 0
+      const next = Math.max(180, Math.round(window.innerHeight - bottom))
+      setMenuMaxPx((current) => (current === next ? current : next))
+    }
+    measure()
+    const chrome = chromeRef.current
+    const observer = chrome ? new ResizeObserver(measure) : null
+    if (chrome && observer) observer.observe(chrome)
     window.addEventListener('keydown', handleEscape)
-    return () => window.removeEventListener('keydown', handleEscape)
+    window.addEventListener('resize', measure)
+    return () => {
+      observer?.disconnect()
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handleEscape)
+      window.removeEventListener('resize', measure)
+    }
   }, [isMenuOpen])
 
   // Always render the solid white sticky bar. The hero image is now its own
   // self-contained brand creative below the navbar.
   const isOverlay = false
+  const ribbonCollapsed = ribbonHidden || isMenuOpen
   const linkColor = 'text-gs-dark hover:text-gs-primary'
 
   return (
@@ -57,6 +98,7 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
       )}
     >
       {isOverlay ? <GeTopBar /> : null}
+      <div ref={chromeRef}>
       <div
         className={cx(
           // Mobile (< lg): 3-column grid — phone | crest | menu share one vertical
@@ -125,26 +167,38 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
         </div>
       </div>
 
-      {/* Brand ribbon — own row so crest + nav keep their layout; never pushes menu sideways */}
+      {/* Brand ribbon fades away after a short scroll so the crest row stays. */}
       <div
         className={cx(
-          'border-t',
-          isOverlay
-            ? 'border-white/10 bg-forest-950/40'
-            : 'border-brand-700/12 bg-gradient-to-r from-cream via-white to-cream'
+          'grid motion-safe:transition-[grid-template-rows,opacity] motion-safe:duration-500 motion-safe:ease-out',
+          ribbonCollapsed ? 'pointer-events-none grid-rows-[0fr] opacity-0' : 'grid-rows-[1fr] opacity-100'
         )}
+        inert={ribbonCollapsed ? true : undefined}
+        aria-hidden={ribbonCollapsed}
       >
-        <div className="mx-auto flex w-full max-w-[1340px] justify-center px-2.5 py-1 sm:px-5 sm:py-1.5 lg:py-1.5">
-          <BrandPlaneToFairwayTagline tone={isOverlay ? 'dark' : 'light'} layout="ribbon" className="max-w-full" />
-        </div>
-        {!portalSlot ? (
-          <div className="mx-auto flex w-full max-w-[1340px] flex-wrap items-center justify-center gap-2 px-3 pb-2.5">
-            <HeaderSignInButtons />
-            <a href="/contact" className="header-quote-btn inline-flex min-h-10 items-center justify-center rounded-full bg-[#d4a843] px-4 py-2 font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.12em] text-[#062016] shadow-[0_6px_16px_rgba(8,46,35,0.16)]">
-              Get Quote
-            </a>
+        <div className="overflow-hidden">
+          <div
+            className={cx(
+              'border-t',
+              isOverlay
+                ? 'border-white/10 bg-forest-950/40'
+                : 'border-brand-700/12 bg-gradient-to-r from-cream via-white to-cream'
+            )}
+          >
+            <div className="mx-auto flex w-full max-w-[1340px] justify-center px-2.5 py-1 sm:px-5 sm:py-1.5 lg:py-1.5">
+              <BrandPlaneToFairwayTagline tone={isOverlay ? 'dark' : 'light'} layout="ribbon" className="max-w-full" />
+            </div>
+            {!portalSlot ? (
+              <div className="mx-auto flex w-full max-w-[1340px] flex-wrap items-center justify-center gap-2 px-3 pb-2.5">
+                <HeaderSignInButtons />
+                <a href="/contact" className="header-quote-btn inline-flex min-h-10 items-center justify-center rounded-full bg-[#d4a843] px-4 py-2 font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.12em] text-[#062016] shadow-[0_6px_16px_rgba(8,46,35,0.16)]">
+                  Get Quote
+                </a>
+              </div>
+            ) : null}
           </div>
-        ) : null}
+        </div>
+      </div>
       </div>
 
       <AnimatePresence>
@@ -155,7 +209,8 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.18, ease: 'easeOut' }}
-            className="border-t border-ge-gray100 bg-white lg:hidden"
+            style={menuMaxPx ? { maxHeight: menuMaxPx } : undefined}
+            className="overflow-y-auto overscroll-contain border-t border-ge-gray100 bg-white lg:hidden"
           >
             <nav aria-label="Mobile navigation" className="mx-auto max-w-[1280px] px-5 py-4">
               <ul className="flex flex-col divide-y divide-ge-gray100">
