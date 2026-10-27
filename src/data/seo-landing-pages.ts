@@ -110,7 +110,11 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
           'Fuengirola — /golf-holidays/fuengirola',
           'Torremolinos — /golf-holidays/torremolinos',
           'Benalmádena — /golf-holidays/benalmadena',
-          'Estepona — /golf-holidays/estepona'
+          'Estepona — /golf-holidays/estepona',
+          'Sotogrande — /golf-holidays/sotogrande',
+          'La Cala — /golf-holidays/la-cala',
+          'Nueva Andalucía — /golf-holidays/nueva-andalucia',
+          'Holiday with airport transfers — /golf-holidays/with-airport-transfers'
         ]
       },
       {
@@ -129,6 +133,7 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
         body: 'How many nights should we stay? How many rounds? Where should a society base itself? Start with our guides and FAQ, then send an enquiry with your dates.',
         bullets: [
           'Trip guide — /guides/costa-del-sol-golf-trip-guide',
+          'Transfer times from Málaga Airport — /guides/malaga-airport-golf-transfer-times',
           'Best time of year — /guides/best-time-golf-costa-del-sol',
           'Society planning — /guides/how-to-organise-golf-society-trip-spain',
           'FAQ — /faq'
@@ -422,17 +427,37 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
       },
       {
         title: 'Departure airports we commonly plan around',
-        body: 'Flight schedules change by season and airline. We do not publish live timetables here — check current flights for your dates — then use our departure pages for planning context.',
-        bullets: [
-          'Dublin — /golf-holidays-spain-from-dublin',
-          'Cork — /golf-holidays-spain-from-cork',
-          'Shannon — /golf-holidays-spain-from-shannon',
-          'Belfast — /golf-holidays-spain-from-belfast'
-        ]
+        body: 'Flight schedules change by season and airline. We do not publish live timetables here. Check current flights for your dates, then use the county and airport pages below for the ground plan.'
       },
       {
         title: 'Golf luggage from Ireland',
         body: 'Travelling with clubs usually means airline golf-bag policies and weight limits. Rules vary by carrier and fare. Confirm with your airline before travel; we handle meet-and-greet and golf-bag-friendly vehicles after you land.'
+      },
+      {
+        title: 'Irish counties and airports',
+        body: 'Start with the airport you will actually use. County pages explain the road to Dublin, Shannon, Cork, Knock, or Belfast when there is no local Málaga flight.',
+        bullets: [
+          'Dublin — /golf-holidays-spain-from-dublin',
+          'Cork — /golf-holidays-spain-from-cork',
+          'Shannon — /golf-holidays-spain-from-shannon',
+          'Belfast — /golf-holidays-spain-from-belfast',
+          'Galway — /golf-holidays-spain-from-galway',
+          'Limerick — /golf-holidays-spain-from-limerick',
+          'Knock — /golf-holidays-spain-from-knock',
+          'Kerry — /golf-holidays-spain-from-kerry',
+          'Clare — /golf-holidays-spain-from-clare',
+          'Mayo — /golf-holidays-spain-from-mayo',
+          'Sligo — /golf-holidays-spain-from-sligo',
+          'Donegal — /golf-holidays-spain-from-donegal',
+          'Derry — /golf-holidays-spain-from-derry',
+          'Waterford — /golf-holidays-spain-from-waterford',
+          'Wexford — /golf-holidays-spain-from-wexford',
+          'Kilkenny — /golf-holidays-spain-from-kilkenny',
+          'Tipperary — /golf-holidays-spain-from-tipperary',
+          'Athlone — /golf-holidays-spain-from-athlone',
+          'Westmeath — /golf-holidays-spain-from-westmeath',
+          'Dundalk — /golf-holidays-spain-from-dundalk'
+        ]
       },
       {
         title: 'How booking works with us',
@@ -734,6 +759,26 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
       {
         title: 'Society tip',
         body: 'Mixed-ability societies often need a blend of more forgiving and more demanding days. Tell us the spread of handicaps when you enquire.'
+      },
+      {
+        title: 'Course notes Irish groups ask for',
+        body: 'These are planning notes, not a ranking and not a promise of a tee time. Open the course, then tell us the dates.',
+        bullets: [
+          'Valderrama — /golf-courses/valderrama',
+          'Finca Cortesin — /golf-courses/finca-cortesin',
+          'La Reserva — /golf-courses/la-reserva-club',
+          'Las Brisas — /golf-courses/las-brisas',
+          'Aloha — /golf-courses/aloha',
+          'Los Naranjos — /golf-courses/los-naranjos',
+          'La Cala America — /golf-courses/la-cala-campo-america',
+          'La Cala Asia — /golf-courses/la-cala-campo-asia',
+          'La Cala Europa — /golf-courses/la-cala-campo-europa',
+          'El Chaparral — /golf-courses/el-chaparral',
+          'Mijas Golf — /golf-courses/mijas-golf',
+          'Cabopino — /golf-courses/cabopino',
+          'Doña Julia — /golf-courses/dona-julia',
+          'Lauro — /golf-courses/lauro'
+        ]
       }
     ]
   }),
@@ -838,7 +883,7 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
       },
       {
         title: 'How do Málaga Airport golf transfers work?',
-        body: 'Private vehicles meet you at AGP and run to your hotel with golf bags in mind. Details depend on flight times and group size — start at /transfers/malaga-airport-golf-transfers.'
+        body: 'Private vehicles meet you at AGP and run to your hotel with golf bags in mind. Details depend on flight times and group size. Start at /transfers/malaga-airport-golf-transfers or compare towns on /guides/malaga-airport-golf-transfer-times.'
       },
       {
         title: 'Can golf clubs travel on flights from Ireland?',
@@ -872,8 +917,19 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
       },
       {
         title: 'Typical routes',
-        body: 'AGP to Torremolinos, Benalmádena, Fuengirola, Mijas corridor, Marbella, Estepona and other Sol bases — timing depends on traffic and exact hotel location.',
-        bullets: ['Transport desk — /services/transport', 'Airport transfers article — /airport-transfers']
+        body: 'Each base has its own drive from Málaga Airport. Times move with traffic and the exact hotel, so use the route pages for the range, then send the flight and address.',
+        bullets: [
+          'Transfer time guide — /guides/malaga-airport-golf-transfer-times',
+          'Torremolinos — /transfers/malaga-airport-to-torremolinos',
+          'Benalmádena — /transfers/malaga-airport-to-benalmadena',
+          'Fuengirola — /transfers/malaga-airport-to-fuengirola',
+          'Mijas — /transfers/malaga-airport-to-mijas',
+          'Marbella — /transfers/malaga-airport-to-marbella',
+          'Estepona — /transfers/malaga-airport-to-estepona',
+          'Sotogrande — /transfers/malaga-airport-to-sotogrande',
+          'Back to the airport — /transfers/return-to-malaga-airport',
+          'Meet and greet — /transfers/malaga-airport-meet-and-greet'
+        ]
       },
       {
         title: 'How to brief us',

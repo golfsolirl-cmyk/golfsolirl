@@ -11,6 +11,7 @@ import { brandedPdfAssetPaths, pdfEmailTheme } from './pdf-email-brand.mjs'
 import {
   UNIFIED_PDF_LAYOUT,
   drawUnifiedBulletCard,
+  appendUnifiedHowToPay,
   drawUnifiedDocumentFooter,
   drawUnifiedDocumentHeader,
   drawUnifiedGoldRule,
@@ -279,6 +280,11 @@ export const buildHomepageBrandedClientPdfBytes = async (input = {}) => {
     })
     contactY -= phoneLH
   }
+
+  const payPage = doc.addPage([pageWidth, pageHeight])
+  pages.push(payPage)
+  const payStart = drawUnifiedDocumentHeader(payPage, ctx, { compact: true, kicker: 'Payment', title: 'How to pay' })
+  appendUnifiedHowToPay(payPage, payStart, ctx, () => ({ page: payPage, y: payStart }))
 
   const footerNote = [
     `Company registration no. ${gsolCompanyLegal.companyRegistrationNumber} (Ireland)`,

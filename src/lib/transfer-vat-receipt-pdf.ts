@@ -5,7 +5,7 @@ import {
   IRISH_VAT_STANDARD_RATE
 } from './package-build'
 import { GOLFSOL_BRAND_LOGO_HOSTED } from './brand-logo-assets'
-import { CLIENT_DOCUMENT_COMPANY } from './client-enquiry-document'
+import { CLIENT_BANK_HOW_TO_PAY_INTRO, CLIENT_BANK_PAYMENT, CLIENT_DOCUMENT_COMPANY } from './client-enquiry-document'
 
 export type TransferReceiptVatTreatment = 'tourism' | 'services' | null | undefined
 
@@ -241,6 +241,30 @@ async function renderTransferPdf(opts: {
     y -= 16
     page.drawText(sanitize(opts.paySection.dashboardPayUrl), { x: MARGIN + 14, y, font: fontBold, size: 9.5, color: THEME.payLink })
     y = py - payCardH - 18
+  }
+
+  const bankLines = [
+    'HOW TO PAY — BANK TRANSFER (EUR)',
+    CLIENT_BANK_HOW_TO_PAY_INTRO,
+    `Account name: ${CLIENT_BANK_PAYMENT.accountName}`,
+    `Bank: ${CLIENT_BANK_PAYMENT.bankName}`,
+    `IBAN: ${CLIENT_BANK_PAYMENT.ibanDisplay}`,
+    `BIC: ${CLIENT_BANK_PAYMENT.bic}`
+  ]
+  if (y < 168) {
+    y = 168
+  }
+  y -= 8
+  for (const [index, line] of bankLines.entries()) {
+    page.drawText(sanitize(line), {
+      x: MARGIN,
+      y,
+      font: index === 0 ? fontBold : font,
+      size: index === 0 ? 10 : 9.5,
+      color: index === 0 ? THEME.green : THEME.ink,
+      maxWidth: CONTENT_W
+    })
+    y -= index === 1 ? 22 : 13
   }
 
   // v5 footer

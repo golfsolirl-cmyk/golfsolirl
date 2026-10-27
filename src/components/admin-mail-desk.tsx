@@ -509,7 +509,7 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
       travelDates: compose.travelDates,
       numberOfGuests: compose.numberOfGuests,
       companyName: 'Golf Sol Ireland',
-      companyPhone: '+353 87 446 4766',
+      companyPhone: '+353 86 851 5000',
       website: 'www.golfsolirl.com',
       ...quoteVars
     }

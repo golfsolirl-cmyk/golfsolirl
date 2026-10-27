@@ -1,6 +1,8 @@
 import { GOLFSOL_BRAND_LOGO_SOURCE } from '../../lib/brand-logo-assets'
 import {
   buildClientDocumentView,
+  CLIENT_BANK_PAYMENT,
+  clientBankHowToPayPlainText,
   formatClientDocumentEuro,
   type ClientDocumentDraft
 } from '../../lib/client-enquiry-document'
@@ -171,6 +173,15 @@ export function ClientDocumentA4({ draft, className }: ClientDocumentA4Props) {
           <p className="client-document-a4__pre">{view.paymentDetails}</p>
         </section>
       ) : null}
+
+      {view.sections.payment &&
+      (String(view.paymentDetails).includes(CLIENT_BANK_PAYMENT.iban) ||
+        String(view.paymentDetails).includes(CLIENT_BANK_PAYMENT.ibanDisplay)) ? null : (
+        <section className="client-document-a4__section">
+          <h2>How to pay</h2>
+          <p className="client-document-a4__pre">{clientBankHowToPayPlainText()}</p>
+        </section>
+      )}
 
       {view.sections.signature ? (
         <section className="client-document-a4__section">

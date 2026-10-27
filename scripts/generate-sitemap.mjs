@@ -73,8 +73,10 @@ const priorityFor = (p) => {
   if (p.startsWith('/golf-holidays')) return '0.9'
   if (p.startsWith('/golf-holidays-spain-from')) return '0.88'
   if (p.startsWith('/golf-packages/')) return '0.85'
+  if (p === '/guides/malaga-airport-golf-transfer-times') return '0.9'
   if (p.startsWith('/guides/')) return '0.8'
   if (p.startsWith('/transfers/')) return '0.85'
+  if (p.startsWith('/golf-courses/')) return '0.82'
   if (['/packages', '/golf-courses', '/contact', '/booking', '/services/transport'].includes(p)) return '0.85'
   return '0.7'
 }
@@ -198,6 +200,31 @@ const imageEntries = [
     path: '/transfers/malaga-airport-golf-transfers',
     image: '/images/transfers/malaga-airport-golf-transfers.webp',
     title: 'Málaga Airport golf transfers'
+  },
+  {
+    path: '/guides/malaga-airport-golf-transfer-times',
+    image: '/images/transfers/malaga-airport-golf-transfers.webp',
+    title: 'Málaga Airport golf transfer times'
+  },
+  {
+    path: '/transfers/malaga-airport-to-marbella',
+    image: '/images/customer-trips/van-doors-open.jpg',
+    title: 'Málaga Airport to Marbella golf transfer'
+  },
+  {
+    path: '/transfers/malaga-airport-to-sotogrande',
+    image: '/images/customer-trips/van-at-la-reserva.jpg',
+    title: 'Málaga Airport to Sotogrande golf transfer'
+  },
+  {
+    path: '/golf-holidays/sotogrande',
+    image: '/images/customer-trips/sotogrande.jpg',
+    title: 'Sotogrande golf holidays'
+  },
+  {
+    path: '/golf-holidays/with-airport-transfers',
+    image: '/images/customer-trips/van-doors-open.jpg',
+    title: 'Costa del Sol golf holidays with airport transfers'
   },
   {
     path: '/transfers/golf-group-transfers',

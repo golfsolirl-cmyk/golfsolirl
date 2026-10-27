@@ -113,13 +113,13 @@ export interface CompanyContact {
 export const companyContact = {
   addressLines: ['6 Richmond Road', 'Drumcondra', 'Dublin 3'],
   eircode: 'D03 C434',
-  phoneDisplay: '087 446 4766',
-  phoneTel: '+353874464766',
+  phoneDisplay: '086 851 5000',
+  phoneTel: '+353868515000',
   spanishPhoneDisplay: '+34 641 81 53 66',
   spanishPhoneTel: '+34641815366',
   phoneIrishLineLabel: 'Irish support (WhatsApp)',
   phoneSpanishLineLabel: 'Spanish line',
-  whatsappHref: 'https://wa.me/353874464766',
+  whatsappHref: 'https://wa.me/353868515000',
   mapsQuery: '6 Richmond Road, Drumcondra, Dublin 3, D03 C434, Ireland'
 } as const satisfies CompanyContact
 

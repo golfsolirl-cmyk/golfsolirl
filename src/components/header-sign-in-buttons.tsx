@@ -38,7 +38,7 @@ export function HeaderSignInButtons({
 
   const size = isMenu
     ? 'min-h-12 flex-1 px-4 text-[0.78rem]'
-    : 'min-h-0 px-3.5 py-2 text-[0.62rem] xl:px-4 xl:text-[0.68rem]'
+    : 'min-h-10 px-3 py-1.5 text-[0.68rem] sm:px-3.5'
 
   const clientClass = cx(
     baseBtn,

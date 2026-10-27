@@ -142,6 +142,16 @@ const runtime = raw as unknown as {
   DEFAULT_CLIENT_DOCUMENT_SECTIONS: ClientDocumentSections
   DEFAULT_CLIENT_DOCUMENT_TERMS: string
   DEFAULT_CLIENT_DOCUMENT_PAYMENT: string
+  CLIENT_BANK_PAYMENT: {
+    readonly accountName: string
+    readonly bankName: string
+    readonly iban: string
+    readonly ibanDisplay: string
+    readonly bic: string
+    readonly currency: string
+  }
+  CLIENT_BANK_HOW_TO_PAY_INTRO: string
+  clientBankHowToPayPlainText: () => string
   createClientDocumentReferenceId: () => string
   formatClientDocumentLongDate: (value: string) => string
   todayIsoDate: () => string
@@ -168,6 +178,9 @@ export const CLIENT_DOCUMENT_STATUSES = runtime.CLIENT_DOCUMENT_STATUSES
 export const DEFAULT_CLIENT_DOCUMENT_SECTIONS = runtime.DEFAULT_CLIENT_DOCUMENT_SECTIONS
 export const DEFAULT_CLIENT_DOCUMENT_TERMS = runtime.DEFAULT_CLIENT_DOCUMENT_TERMS
 export const DEFAULT_CLIENT_DOCUMENT_PAYMENT = runtime.DEFAULT_CLIENT_DOCUMENT_PAYMENT
+export const CLIENT_BANK_PAYMENT = runtime.CLIENT_BANK_PAYMENT
+export const CLIENT_BANK_HOW_TO_PAY_INTRO = runtime.CLIENT_BANK_HOW_TO_PAY_INTRO
+export const clientBankHowToPayPlainText = runtime.clientBankHowToPayPlainText
 export const createClientDocumentReferenceId = runtime.createClientDocumentReferenceId
 export const formatClientDocumentLongDate = runtime.formatClientDocumentLongDate
 export const todayIsoDate = runtime.todayIsoDate

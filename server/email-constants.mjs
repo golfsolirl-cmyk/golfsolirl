@@ -15,13 +15,13 @@ export const gsolCompanyLegal = {
 
 /** Brand lines — align with `src/data/site-content.ts` companyContact + footer. */
 export const gsolEmailBrand = {
-  phoneDisplay: '087 446 4766',
-  phoneTel: '+353874464766',
+  phoneDisplay: '086 851 5000',
+  phoneTel: '+353868515000',
   spanishPhoneDisplay: '+34 641 81 53 66',
   spanishPhoneTel: '+34641815366',
   phoneIrishLineLabel: 'Ireland',
   phoneSpanishLineLabel: 'Spain',
-  whatsappHref: 'https://wa.me/353874464766',
+  whatsappHref: 'https://wa.me/353868515000',
   email: 'info@golfsolirl.com',
   addressLines: ['6 Richmond Road', 'Drumcondra, Dublin 3'],
   eircode: 'D03 C434'

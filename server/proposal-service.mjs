@@ -6,6 +6,7 @@ import { sanitizeStandardFontText } from '../shared/pdf-winansi-sanitize.mjs'
 import { brandedPdfAssetPaths, pdfEmailTheme } from './pdf-email-brand.mjs'
 import {
   UNIFIED_PDF_LAYOUT,
+  appendUnifiedHowToPay,
   drawUnifiedDocumentFooter,
   drawUnifiedDocumentHeader,
   embedUnifiedLogo,
@@ -507,6 +508,12 @@ export const createProposalPdf = async (rawPayload = {}) => {
     sectionTitle: documentTemplate.disclaimer.title,
     items: documentTemplate.disclaimer.paragraphs,
     fill: pdfEmailTheme.white
+  })
+
+  state = appendUnifiedHowToPay(state.page, state.y, ctx, () => {
+    const page = pdfDocument.addPage([pageWidth, pageHeight])
+    const y = drawUnifiedDocumentHeader(page, ctx, { compact: true, kicker: 'Payment', title: 'How to pay' })
+    return { page, y }
   })
 
   const pages = pdfDocument.getPages()

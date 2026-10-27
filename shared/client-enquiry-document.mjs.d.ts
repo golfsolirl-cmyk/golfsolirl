@@ -18,6 +18,16 @@ export const CLIENT_DOCUMENT_STATUSES: readonly string[]
 export const DEFAULT_CLIENT_DOCUMENT_SECTIONS: Record<string, boolean>
 export const DEFAULT_CLIENT_DOCUMENT_TERMS: string
 export const DEFAULT_CLIENT_DOCUMENT_PAYMENT: string
+export const CLIENT_BANK_PAYMENT: {
+  readonly accountName: string
+  readonly bankName: string
+  readonly iban: string
+  readonly ibanDisplay: string
+  readonly bic: string
+  readonly currency: string
+}
+export const CLIENT_BANK_HOW_TO_PAY_INTRO: string
+export function clientBankHowToPayPlainText(): string
 
 export function createClientDocumentReferenceId(): string
 export function formatClientDocumentLongDate(value: string): string

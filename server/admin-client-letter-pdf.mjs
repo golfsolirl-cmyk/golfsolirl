@@ -5,6 +5,7 @@ import { PDFDocument } from 'pdf-lib'
 import { sanitizeStandardFontText } from '../shared/pdf-winansi-sanitize.mjs'
 import {
   UNIFIED_PDF_LAYOUT,
+  appendUnifiedHowToPay,
   drawUnifiedDocumentFooter,
   drawUnifiedDocumentHeader,
   drawUnifiedKeyValueTable,
@@ -66,7 +67,19 @@ export const buildAdminClientLetterPdfBytes = async (input) => {
     y = drawUnifiedParagraphBlock(page, y, ctx, 'Please see the attached documents for full details.')
   }
 
-  drawUnifiedDocumentFooter(page, 52, ctx, ['Admin desk send — Golf Sol Ireland'], { current: 1, total: 1 })
+  const pay = appendUnifiedHowToPay(page, y, ctx, () => {
+    const next = pdf.addPage([UNIFIED_PDF_LAYOUT.pageWidth, UNIFIED_PDF_LAYOUT.pageHeight])
+    const nextY = drawUnifiedDocumentHeader(next, ctx, { compact: true, title: 'How to pay' })
+    return { page: next, y: nextY }
+  })
+  const letterPages = pdf.getPages()
+  letterPages.forEach((letterPage, index) => {
+    drawUnifiedDocumentFooter(letterPage, 52, ctx, ['Admin desk send — Golf Sol Ireland'], {
+      current: index + 1,
+      total: letterPages.length
+    })
+  })
+  void pay
 
   return Buffer.from(await pdf.save())
 }

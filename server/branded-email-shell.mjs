@@ -90,8 +90,8 @@ export const emailResponsiveCss = `
         .mobile-pad a { word-break: break-word !important; overflow-wrap: break-word !important; }
       }`
 
-export const phoneIrelandHref = 'tel:+353874464766'
-export const phoneIrelandDisplay = '+353 87 446 4766'
+export const phoneIrelandHref = 'tel:+353868515000'
+export const phoneIrelandDisplay = '+353 86 851 5000'
 
 export const ctaGold =
   `display:inline-block;border-radius:16px;background-color:#0b4d3b;background-image:linear-gradient(135deg,#0b4d3b 0%,#136047 100%);color:#FFFFFF;font-family:${emailFonts.sans};font-size:15px;line-height:1.45;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:20px 38px;box-shadow:0 8px 22px rgba(11,77,59,0.32);text-decoration:none;text-align:center;`

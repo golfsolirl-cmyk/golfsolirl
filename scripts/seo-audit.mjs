@@ -18,7 +18,11 @@ const sitemap = read('public/sitemap.xml')
 const robots = read('public/robots.txt')
 const indexHtml = read('index.html')
 const seoPathsSrc = read('src/data/seo-landing-page-paths.ts')
-const seoPagesSrc = read('src/data/seo-landing-pages.ts')
+const seoPagesSrc = [
+  read('src/data/seo-landing-pages.ts'),
+  read('src/data/seo-search-cluster-pages.ts'),
+  read('src/data/seo-ireland-search-pages.ts')
+].join('\n')
 
 const sitemapLocs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1])
 const seoPaths = [...seoPathsSrc.matchAll(/['"](\/[^'"]+)['"]/g)].map((m) => m[1])

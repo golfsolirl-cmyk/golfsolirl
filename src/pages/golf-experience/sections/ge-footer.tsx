@@ -1,4 +1,5 @@
 import type { SVGProps } from 'react'
+import { CustomerTripReel } from '../../../components/customer-trip-reel'
 import { ChevronRight, Mail } from 'lucide-react'
 import { FooterBrandLogoPicture } from '../../../components/brand-logo-picture'
 import { BrandPlaneToFairwayTagline } from '../../../components/brand-plane-to-fairway-tagline'
@@ -52,6 +53,8 @@ const socials = [
 
 export function GeFooter() {
   return (
+    <>
+    <CustomerTripReel placement="band" />
     <footer className="relative overflow-hidden bg-gs-dark text-white">
       <GsolGoldCornerAccents preset="footer" />
       <div className="relative z-[1] mx-auto max-w-[1180px] px-5 py-14">
@@ -171,5 +174,6 @@ export function GeFooter() {
         </div>
       </div>
     </footer>
+    </>
   )
 }

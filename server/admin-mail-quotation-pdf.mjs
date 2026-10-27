@@ -9,6 +9,7 @@ import {
 import { pdfEmailTheme } from './pdf-email-brand.mjs'
 import {
   UNIFIED_PDF_LAYOUT,
+  appendUnifiedHowToPay,
   drawUnifiedDocumentFooter,
   drawUnifiedDocumentHeader,
   drawUnifiedKeyValueTable,
@@ -314,6 +315,15 @@ export const buildAdminMailQuotationPdf = async (input = {}) => {
   paragraph(q.signOffName || CLIENT_DOCUMENT_COMPANY.name, { bold: true, size: 13 })
   if (q.signOffPhone.trim() || blank) paragraph(q.signOffPhone || '________________', { size: 11.5, color: t.green })
   if (q.signOffEmail.trim()) paragraph(q.signOffEmail, { size: 11.5, color: t.green })
+
+  const pay = appendUnifiedHowToPay(state.page, state.y, ctx, () => {
+    state.page = doc.addPage([PAGE_W, PAGE_H])
+    pages.push(state.page)
+    state.y = drawUnifiedDocumentHeader(state.page, ctx, { compact: true, title: 'How to pay' })
+    return { page: state.page, y: state.y }
+  })
+  state.page = pay.page
+  state.y = pay.y
 
   const totalPages = pages.length
   const footerExtra = reference ? [`Quotation Ref: ${reference}`] : []

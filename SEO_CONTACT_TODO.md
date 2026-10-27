@@ -4,10 +4,10 @@ Do not invent missing facts. Confirm before publishing more widely.
 
 ## Verified in repo (already used)
 
-- Irish phone: `+353 87 446 4766` (`tel:+353874464766`)
+- Irish phone: `+353 86 851 5000` (`tel:+353868515000`)
 - Spanish phone: `+34 641 81 53 66` (`tel:+34641815366`)
 - Email: `info@golfsolirl.com`
-- WhatsApp: `https://wa.me/353874464766` (Irish number)
+- WhatsApp: `https://wa.me/353868515000` (Irish number)
 - Address: 6 Richmond Road, Drumcondra, Dublin 3, D03 C434
 - Instagram: `https://www.instagram.com/golfsolireland/`
 - LinkedIn: `https://www.linkedin.com/in/gregory-mcdonald-44a537415/`

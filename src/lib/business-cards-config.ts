@@ -48,8 +48,8 @@ export const businessCardContact = {
 /** Greg McDonald — Irish 087 line; WhatsApp on card backs uses same Irish mobile. */
 export const businessCardContactGreg = {
   ...businessCardSharedContact,
-  phoneIe: '+353 87 446 4766',
-  whatsappHref: 'https://wa.me/353874464766'
+  phoneIe: '+353 86 851 5000',
+  whatsappHref: 'https://wa.me/353868515000'
 } as const
 
 export type BusinessCardContactPack =
@@ -107,8 +107,8 @@ export const businessCardTommy = {
   name: "Tommy O'Shea",
   roleTitle: 'Founder & Golf Travel Specialist',
   email: 'info@golfsolirl.com',
-  phone: '+353 87 446 4766',
-  phoneTel: '+353874464766',
+  phone: '+353 86 851 5000',
+  phoneTel: '+353868515000',
   websiteDisplay: 'www.golfsolirl.com',
   websiteUrl: 'https://golfsolirl.com',
   qrUrl: 'https://golfsolirl.com',

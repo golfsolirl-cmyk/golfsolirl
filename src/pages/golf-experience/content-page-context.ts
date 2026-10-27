@@ -120,7 +120,10 @@ function inferPageKind(path: string, page: GeContentPageData): ContentPageKind {
 export function formatContentPageRouteLabel(path: string) {
   const parts = path.replace(/^\/+|\/+$/g, '').split('/').filter(Boolean)
   const leaf =
-    parts.length > 1 && ['golf-courses', 'accommodation', 'services', 'guides', 'links-and-information', 'contact'].includes(parts[0])
+    parts.length > 1 &&
+    ['golf-courses', 'golf-holidays', 'golf-packages', 'transfers', 'accommodation', 'services', 'guides', 'links-and-information', 'contact'].includes(
+      parts[0]
+    )
       ? parts[parts.length - 1]
       : parts[0] ?? 'golfsol-ireland'
 

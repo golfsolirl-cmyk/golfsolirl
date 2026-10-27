@@ -7,7 +7,11 @@ import { readFileSync } from 'node:fs'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import { sanitizeStandardFontText } from '../shared/pdf-winansi-sanitize.mjs'
 import { brandedPdfAssetPaths, pdfEmailTheme } from './pdf-email-brand.mjs'
-import { CLIENT_DOCUMENT_COMPANY } from '../shared/client-enquiry-document.mjs'
+import {
+  CLIENT_BANK_HOW_TO_PAY_INTRO,
+  CLIENT_BANK_PAYMENT,
+  CLIENT_DOCUMENT_COMPANY
+} from '../shared/client-enquiry-document.mjs'
 
 export const UNIFIED_PDF_LAYOUT = {
   pageWidth: 595.28,
@@ -367,6 +371,47 @@ export const estimateUnifiedBulletCardHeight = (ctx, section, contentW) => {
   return pad + titleLines.length * titleLH + 14 + bodyLines.length * bodyLH + 14 + bulletsH + pad + 20
 }
 
+export const UNIFIED_HOW_TO_PAY_ROWS = [
+  { label: 'Account name', value: CLIENT_BANK_PAYMENT.accountName },
+  { label: 'Bank', value: CLIENT_BANK_PAYMENT.bankName },
+  { label: 'IBAN', value: CLIENT_BANK_PAYMENT.ibanDisplay },
+  { label: 'BIC', value: CLIENT_BANK_PAYMENT.bic }
+]
+
+export const estimateUnifiedHowToPayHeight = (ctx) => {
+  const introLines = wrapPlainLinesWithFont(ctx.font, CLIENT_BANK_HOW_TO_PAY_INTRO, 12, UNIFIED_PDF_LAYOUT.pageWidth - UNIFIED_PDF_LAYOUT.margin * 2)
+  const introH = introLines.length * 17 + 10
+  return 28 + introH + estimateUnifiedKeyValueTableHeight(ctx, UNIFIED_HOW_TO_PAY_ROWS) + 8
+}
+
+/**
+ * Draw the standing "How to pay" bank block. Opens a continuation page when the block would hit the footer.
+ * @param {import('pdf-lib').PDFPage} page
+ * @param {number} y
+ * @param {object} ctx
+ * @param {() => { page: import('pdf-lib').PDFPage, y: number }} openContinuedPage
+ */
+export const appendUnifiedHowToPay = (page, y, ctx, openContinuedPage) => {
+  let currentPage = page
+  let currentY = y
+  const needed = estimateUnifiedHowToPayHeight(ctx)
+  if (currentY - needed < unifiedPdfMinBodyY()) {
+    const next = openContinuedPage()
+    currentPage = next.page
+    currentY = next.y
+  }
+  currentY = drawUnifiedGoldRule(currentPage, currentY)
+  currentY = drawUnifiedSectionHeading(currentPage, currentY, ctx, 'How to pay')
+  currentY = drawUnifiedParagraphBlock(currentPage, currentY, ctx, CLIENT_BANK_HOW_TO_PAY_INTRO, {
+    size: 12,
+    lineHeight: 17,
+    color: t.ink
+  })
+  currentY -= 4
+  currentY = drawUnifiedKeyValueTable(currentPage, currentY, ctx, UNIFIED_HOW_TO_PAY_ROWS)
+  return { page: currentPage, y: currentY }
+}
+
 export const drawUnifiedGoldRule = (page, y) => {
   const { pageWidth, margin } = UNIFIED_PDF_LAYOUT
   const contentW = pageWidth - margin * 2
@@ -489,7 +534,7 @@ export const buildGsolUnifiedPdfTemplateSampleBytes = async () => {
   y = drawUnifiedKeyValueTable(page1, y, ctx, [
     { label: 'Full name', value: 'Patrick McSample' },
     { label: 'Email', value: 'patrick.example@golfsolirl.com' },
-    { label: 'Phone / WhatsApp', value: '+353 87 446 4766' },
+    { label: 'Phone / WhatsApp', value: '+353 86 851 5000' },
     { label: 'Trip interest', value: 'Costa del Sol — 4 golfers — April 2026' },
     { label: 'Reference', value: 'GSI-DEMO-0001' }
   ])

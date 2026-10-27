@@ -2,6 +2,7 @@ import { PDFDocument } from 'pdf-lib'
 import { pdfEmailTheme } from './pdf-email-brand.mjs'
 import {
   UNIFIED_PDF_LAYOUT,
+  appendUnifiedHowToPay,
   drawUnifiedDocumentFooter,
   drawUnifiedDocumentHeader,
   drawUnifiedKeyValueTable,
@@ -75,8 +76,18 @@ export const buildTransferRefundPdfBytes = async (opts) => {
     size: 11,
     color: pdfEmailTheme.muted
   })
+  y -= 36
 
-  drawUnifiedDocumentFooter(page, 52, ctx, [], { current: 1, total: 1 })
+  const pay = appendUnifiedHowToPay(page, y, ctx, () => {
+    const next = doc.addPage([UNIFIED_PDF_LAYOUT.pageWidth, UNIFIED_PDF_LAYOUT.pageHeight])
+    const nextY = drawUnifiedDocumentHeader(next, ctx, { compact: true, title: 'How to pay' })
+    return { page: next, y: nextY }
+  })
+  const refundPages = doc.getPages()
+  refundPages.forEach((refundPage, index) => {
+    drawUnifiedDocumentFooter(refundPage, 52, ctx, [], { current: index + 1, total: refundPages.length })
+  })
+  void pay
 
   return Buffer.from(await doc.save())
 }

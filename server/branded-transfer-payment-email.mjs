@@ -142,7 +142,7 @@ export const buildTransferBalancePayNowEmail = (booking, depositPercent, amounts
         </td>
       </tr>
     </table>
-    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Questions? <a href="tel:+353874464766" style="color:${gs.green};font-weight:600;">+353 87 446 4766</a> · <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">Client dashboard</a></p>`
+    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Questions? <a href="tel:+353868515000" style="color:${gs.green};font-weight:600;">+353 86 851 5000</a> · <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">Client dashboard</a></p>`
 
   const htmlRaw = buildGsolTransactionalEmail({
     documentTitle: subject,
@@ -178,7 +178,7 @@ export const buildPortalInvoicePaidThankYouEmail = (detail) => {
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 22px 0;border-collapse:collapse;">
       <tr><td style="padding:0;"><a href="${site}/dashboard" style="${ctaGold}">Open your dashboard</a></td></tr>
     </table>
-    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Questions? <a href="tel:+353874464766" style="color:${gs.green};font-weight:600;">+353 87 446 4766</a></p>`
+    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Questions? <a href="tel:+353868515000" style="color:${gs.green};font-weight:600;">+353 86 851 5000</a></p>`
 
   const htmlRaw = buildGsolTransactionalEmail({
     documentTitle: subject,
@@ -226,7 +226,7 @@ export const buildTransferPaymentRequestEmail = (booking) => {
       </tr>
     </table>
     <p style="margin:0 0 12px 0;font-family:${emailFonts.sans};font-size:12px;line-height:1.6;color:#6b7280;">Preview URL (placeholder): <a href="${payHref}" style="color:#2d6a4a;word-break:break-all;">${esc(payHref)}</a></p>
-    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Questions? <a href="tel:+353874464766" style="color:${gs.green};font-weight:600;">+353 87 446 4766</a> · <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">Client dashboard</a></p>`
+    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Questions? <a href="tel:+353868515000" style="color:${gs.green};font-weight:600;">+353 86 851 5000</a> · <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">Client dashboard</a></p>`
 
   const htmlRaw = buildGsolTransactionalEmail({
     documentTitle: subject,
@@ -248,7 +248,7 @@ export const buildTransferBalanceReminderEmail = (booking, depositPercent) => {
   const heroTitle = 'Balance due — please pay to keep your booking'
   const heroLead = `Your ${depositPercent}% deposit for (${route}) is on file. The remaining ${remainder}% is now due (48 hours before your scheduled pickup). Please pay the balance from your client dashboard without delay.`
   const bodyHtml = `<p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};"><strong style="color:${gs.green};">Important:</strong> if the balance is not received by the due time, we may treat the booking as cancelled and <strong>the deposit may be forfeited</strong> under our payment terms. If you need help, reply to this email or WhatsApp us straight away.</p>
-    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Pay securely on your <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">client dashboard</a> (Pay balance) · <a href="tel:+353874464766" style="color:${gs.green};font-weight:600;">+353 87 446 4766</a></p>`
+    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Pay securely on your <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">client dashboard</a> (Pay balance) · <a href="tel:+353868515000" style="color:${gs.green};font-weight:600;">+353 86 851 5000</a></p>`
 
   const htmlRaw = buildGsolTransactionalEmail({
     documentTitle: subject,
@@ -293,7 +293,7 @@ export const buildTransferRefundEmail = (booking, detail) => {
 
   const bodyHtml = `<p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Total refunded to your card for this transfer (including any earlier steps): <strong style="color:${gs.green};">${cum}</strong>.</p>
     <p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">A <strong>PDF confirmation</strong> is attached for your records. Timing on your bank statement can vary — typically a few business days.</p>
-    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Questions? <a href="tel:+353874464766" style="color:${gs.green};font-weight:600;">+353 87 446 4766</a> · <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">Your dashboard</a></p>`
+    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Questions? <a href="tel:+353868515000" style="color:${gs.green};font-weight:600;">+353 86 851 5000</a> · <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">Your dashboard</a></p>`
 
   const htmlRaw = buildGsolTransactionalEmail({
     documentTitle: subject,

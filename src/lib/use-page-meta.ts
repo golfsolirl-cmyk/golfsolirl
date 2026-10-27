@@ -95,8 +95,12 @@ export function usePageMeta(meta: PageMeta) {
 
 export { SITE_ORIGIN, DEFAULT_OG_IMAGE_PATH, OG_IMAGE_CREST_PATH, absoluteOgImageUrl } from './site-seo'
 
-export function useJsonLd(id: string, data: Record<string, unknown>) {
+export function useJsonLd(id: string, data: Record<string, unknown> | null) {
   useEffect(() => {
+    if (!data) {
+      document.getElementById(id)?.remove()
+      return
+    }
     let el = document.getElementById(id) as HTMLScriptElement | null
     if (!el) {
       el = document.createElement('script')

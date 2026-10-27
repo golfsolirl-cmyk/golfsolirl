@@ -47,7 +47,7 @@
     --header-bg: #f7f4ec;
 
     /** Fixed header (nav row + tagline ribbon) — hero spacers match this exactly. */
-    --ge-fixed-header-h: 178px;
+    --ge-fixed-header-h: 340px;
 
     /* ========= TEXT ========= */
     --text-primary: #08120d;
@@ -142,25 +142,25 @@
 
   @media (min-width: 640px) {
     :root {
-      --ge-fixed-header-h: 180px;
+      --ge-fixed-header-h: 300px;
     }
   }
 
   @media (min-width: 768px) {
     :root {
-      --ge-fixed-header-h: 182px;
+      --ge-fixed-header-h: 280px;
     }
   }
 
   @media (min-width: 1024px) {
     :root {
-      --ge-fixed-header-h: 166px;
+      --ge-fixed-header-h: 280px;
     }
   }
 
   @media (min-width: 1280px) {
     :root {
-      --ge-fixed-header-h: 168px;
+      --ge-fixed-header-h: 276px;
     }
   }
 

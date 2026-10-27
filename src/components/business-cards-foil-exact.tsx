@@ -1176,13 +1176,13 @@ export function foilPersonTommy(): FoilCardPerson {
   return {
     name: "TOMMY O'SHEA",
     roleTitle: 'FOUNDER & GOLF TRAVEL SPECIALIST',
-    phone: '+353 87 446 4766',
-    phoneTel: '+353874464766',
+    phone: '+353 86 851 5000',
+    phoneTel: '+353868515000',
     email: 'info@golfsolirl.com',
     websiteDisplay: 'www.golfsolirl.com',
     websiteUrl: 'https://golfsolirl.com',
     location: 'Costa del Sol, Spain',
     qrUrl: 'https://golfsolirl.com',
-    whatsappHref: 'https://wa.me/353874464766'
+    whatsappHref: 'https://wa.me/353868515000'
   }
 }

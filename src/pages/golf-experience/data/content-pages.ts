@@ -1,5 +1,7 @@
 import { footerArticlePages, type FooterArticleContent } from '../../../data/footer-article-pages'
 import { seoLandingPages } from '../../../data/seo-landing-pages'
+import { seoSearchClusterPages } from '../../../data/seo-search-cluster-pages'
+import { seoIrelandSearchPages } from '../../../data/seo-ireland-search-pages'
 
 export interface GeContentPageSection {
   readonly title: string
@@ -754,7 +756,9 @@ const coreGeContentPages: Record<string, GeContentPageData> = {
 const geContentPages: Record<string, GeContentPageData> = {
   ...convertedFooterArticlePages,
   ...coreGeContentPages,
-  ...seoLandingPages
+  ...seoLandingPages,
+  ...seoSearchClusterPages,
+  ...seoIrelandSearchPages
 }
 
 export { geContentPages }

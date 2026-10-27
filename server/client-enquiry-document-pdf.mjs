@@ -7,12 +7,14 @@ import { sanitizeStandardFontText } from '../shared/pdf-winansi-sanitize.mjs'
 import {
   buildClientDocumentFilename,
   buildClientDocumentView,
+  CLIENT_BANK_PAYMENT,
   formatClientDocumentEuro,
   normalizeClientDocumentDraft
 } from '../shared/client-enquiry-document.mjs'
 import { pdfEmailTheme } from './pdf-email-brand.mjs'
 import {
   UNIFIED_PDF_LAYOUT,
+  appendUnifiedHowToPay,
   drawUnifiedDocumentFooter,
   drawUnifiedDocumentHeader,
   embedUnifiedLogo,
@@ -217,6 +219,21 @@ export const buildClientEnquiryDocumentPdf = async (draft) => {
   if (view.sections.payment) {
     sectionHeading('Payment information')
     drawParagraph(view.paymentDetails)
+  }
+
+  const paymentText = String(view.paymentDetails ?? '')
+  const paymentAlreadyShowsBank =
+    view.sections.payment &&
+    (paymentText.includes(CLIENT_BANK_PAYMENT.iban) || paymentText.includes(CLIENT_BANK_PAYMENT.ibanDisplay))
+  if (!paymentAlreadyShowsBank) {
+    const pay = appendUnifiedHowToPay(state.page, state.y, ctx, () => {
+      state.page = doc.addPage([PAGE_W, PAGE_H])
+      pages.push(state.page)
+      state.y = drawUnifiedDocumentHeader(state.page, ctx, { compact: true, title: 'How to pay' })
+      return { page: state.page, y: state.y }
+    })
+    state.page = pay.page
+    state.y = pay.y
   }
 
   if (view.sections.signature) {

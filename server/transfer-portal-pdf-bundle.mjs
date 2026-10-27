@@ -13,6 +13,7 @@ import {
 } from './transfer-payment-amounts.mjs'
 import {
   UNIFIED_PDF_LAYOUT,
+  appendUnifiedHowToPay,
   drawUnifiedDocumentFooter,
   drawUnifiedDocumentHeader,
   drawUnifiedGoldRule,
@@ -153,6 +154,12 @@ export const createTransferFormSubmissionPdf = async (ctx) => {
     y = drawUnifiedKeyValueTable(page, y, shell, [row])
   }
 
+  ;({ page, y } = appendUnifiedHowToPay(page, y, shell, () => {
+    page = doc.addPage([W, H])
+    y = drawHeaderBand(page, shell, 'How to pay')
+    return { page, y }
+  }))
+
   drawFooterLine(
     page,
     shell,
@@ -190,7 +197,7 @@ export const createTransferVatQuotePdf = async (ctx) => {
   const font = shell.font
   const fontBold = shell.fontBold
   const t = pdfEmailTheme
-  const page = doc.addPage([W, H])
+  let page = doc.addPage([W, H])
   let y = drawHeaderBand(page, shell, 'Transfer quote & VAT summary')
   page.drawText(sanitizeStandardFontText(`Bill to: ${ctx.profileName}`), { x: m, y, size: 11, font: fontBold, color: t.ink })
   y -= 16
@@ -316,6 +323,12 @@ export const createTransferVatQuotePdf = async (ctx) => {
     y -= payBoxH + 8
   }
 
+  ;({ page, y } = appendUnifiedHowToPay(page, y, shell, () => {
+    page = doc.addPage([W, H])
+    y = drawHeaderBand(page, shell, 'How to pay')
+    return { page, y }
+  }))
+
   drawFooterLine(page, shell, 'Golf Sol Ireland · VAT-transparent quote for this transfer. After payment, download your paid invoice PDF from the same dashboard.')
 
   return doc.save()
@@ -413,6 +426,11 @@ export const createTermsSummaryPdf = async () => {
     }
     y -= 8
   }
+  ;({ page, y } = appendUnifiedHowToPay(page, y, shell, () => {
+    page = doc.addPage([W, H])
+    y = drawHeaderBand(page, shell, 'How to pay')
+    return { page, y }
+  }))
   drawFooterLine(page, shell, `Golf Sol Ireland · Full terms: ${getGsolSiteUrl()}/documents/terms`)
   return doc.save()
 }

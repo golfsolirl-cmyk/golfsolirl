@@ -3,6 +3,7 @@ import { ChevronDown, MessageCircle, UserRound } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { FocusTrapDialog } from '../components/focus-trap-dialog'
 import { ClientPortalIdentityHero, type ClientPortalTransferHeroRow } from '../components/client-portal-identity-hero'
+import { BankTransferPayCard } from '../components/bank-transfer-pay-card'
 import { ClientPortalPaymentsDue } from '../components/client-portal-payments-due'
 import { ClientTransferPassPanel } from '../components/client-transfer-pass-panel'
 import { PortalPerksPanel } from '../components/portal-perks-panel'
@@ -1965,6 +1966,10 @@ export function ClientDashboardPage() {
           </p>
         </div>
 
+        <div className="mb-8">
+          <BankTransferPayCard audience="client" />
+        </div>
+
         <ClientPortalPaymentsDue
           anchorId="client-pay-now"
           className="mb-10"
@@ -2032,6 +2037,7 @@ export function ClientDashboardPage() {
 
         <ClientPortalSection activeSection={activeClientSection} section="payments">
           <div className="space-y-10">
+            <BankTransferPayCard audience="client" />
             <ClientPortalPaymentsDue
               historyAnchorId="client-all-payments"
               onDownloadTransferReceipt={handleTransferPaidInvoicePdf}

@@ -57,7 +57,7 @@ const trustPills: ReadonlyArray<{
   readonly title: string
   readonly subtitle: string
 }> = [
-  { icon: MapPin, title: 'Irish IBAN', subtitle: 'AIB / BOI account' },
+  { icon: MapPin, title: 'Irish IBAN', subtitle: 'Monzo Bank transfer' },
   { icon: Euro, title: 'Priced in EUR', subtitle: 'No FX surprises' },
   { icon: ShieldCheck, title: 'SEPA Protected', subtitle: 'Standard EU bank transfer' },
   { icon: Lock, title: '256-bit SSL', subtitle: 'Encrypted card payments' }

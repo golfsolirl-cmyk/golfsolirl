@@ -78,7 +78,7 @@ export const handleClientEnquiryDocumentEmail = async (body, env = process.env, 
     <p style="margin:0 0 14px 0;">${greeting}</p>
     <p style="margin:0 0 14px 0;white-space:pre-wrap;">${escapeHtml(message)}</p>
     <p style="margin:0 0 14px 0;">Reference: <strong>${escapeHtml(draft.reference)}</strong></p>
-    <p style="margin:0;">Golf Sol Ireland · info@golfsolirl.com · +353 87 446 4766</p>
+    <p style="margin:0;">Golf Sol Ireland · info@golfsolirl.com · +353 86 851 5000</p>
   `
 
   const rawHtml = buildGsolTransactionalEmail({

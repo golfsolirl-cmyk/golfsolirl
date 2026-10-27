@@ -407,7 +407,7 @@ export function BusinessCardsLuxuryShowcase() {
                   Web
                 </a>
                 <a
-                  href="tel:+353874464766"
+                  href="tel:+353868515000"
                   className="flex flex-col items-center gap-1 rounded-lg py-2 font-bc-body text-[0.55rem] font-bold uppercase text-[#F7F3EA]"
                 >
                   <Phone className="size-4 text-[#C8A75D]" aria-hidden />

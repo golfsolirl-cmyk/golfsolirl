@@ -11,7 +11,7 @@ export const CLIENT_DOCUMENT_COMPANY = {
   name: 'Golf Sol Ireland',
   tagline: 'Irish-owned Costa del Sol golf travel',
   addressLines: ['6 Richmond Road', 'Drumcondra, Dublin 3', 'D03 C434'],
-  irishPhone: '+353 87 446 4766',
+  irishPhone: '+353 86 851 5000',
   spanishPhone: '+34 641 81 53 66',
   email: 'info@golfsolirl.com',
   websiteDisplay: 'www.golfsolirl.com',
@@ -20,6 +20,28 @@ export const CLIENT_DOCUMENT_COMPANY = {
   logoPublicPath: '/images/newbf9f08a4-8fac-496b-8181-6f6b680d19c3.png',
   logoFilename: 'newbf9f08a4-8fac-496b-8181-6f6b680d19c3.png'
 }
+
+/** Euro bank transfer customers use to pay Golf Sol Ireland. */
+export const CLIENT_BANK_PAYMENT = {
+  accountName: 'Gregory Mc Donald',
+  bankName: 'Monzo Bank',
+  iban: 'IE07MONZ91004078972387',
+  ibanDisplay: 'IE07 MONZ 9100 4078 9723 87',
+  bic: 'MONZIE22',
+  currency: 'EUR'
+}
+
+export const CLIENT_BANK_HOW_TO_PAY_INTRO =
+  'Pay by bank transfer in euro (EUR). Use your invoice, quote, or booking reference as the payment reference so we can match your payment.'
+
+export const clientBankHowToPayPlainText = () =>
+  [
+    CLIENT_BANK_HOW_TO_PAY_INTRO,
+    `Account name: ${CLIENT_BANK_PAYMENT.accountName}`,
+    `Bank: ${CLIENT_BANK_PAYMENT.bankName}`,
+    `IBAN: ${CLIENT_BANK_PAYMENT.ibanDisplay}`,
+    `BIC: ${CLIENT_BANK_PAYMENT.bic}`
+  ].join('\n')
 
 /** Irish standard VAT rate already used for package / quote pricing (not a VAT registration number). */
 export const CLIENT_DOCUMENT_VAT_PERCENT = 23
@@ -109,14 +131,15 @@ export const DEFAULT_CLIENT_DOCUMENT_TERMS = [
 ].join('\n\n')
 
 /**
- * Payment wording from existing site/terms (Irish-handled EUR payments, deposit split).
- * No bank account / IBAN is stored in the application, so none is printed.
+ * Payment wording from existing site/terms (Irish-handled EUR payments, deposit split)
+ * plus the standing Monzo bank-transfer details.
  */
 export const DEFAULT_CLIENT_DOCUMENT_PAYMENT = [
   'Payments are handled in Ireland and priced in euro (EUR).',
   'Unless this document states otherwise, a 20% deposit is payable to proceed. The remaining balance is due as set out in our terms.',
-  'Card payment can be arranged through your Golf Sol Ireland client portal when a quote is issued.',
-  'For payment questions, contact info@golfsolirl.com or +353 87 446 4766.'
+  clientBankHowToPayPlainText(),
+  'Card payment can also be arranged through your Golf Sol Ireland client portal when a quote is issued.',
+  'For payment questions, contact info@golfsolirl.com or +353 86 851 5000.'
 ].join('\n\n')
 
 export const createClientDocumentReferenceId = () =>

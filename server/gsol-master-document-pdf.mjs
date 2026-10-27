@@ -7,6 +7,7 @@ import { sanitizeStandardFontText } from '../shared/pdf-winansi-sanitize.mjs'
 import { pdfEmailTheme } from './pdf-email-brand.mjs'
 import {
   UNIFIED_PDF_LAYOUT,
+  appendUnifiedHowToPay,
   drawUnifiedDocumentFooter,
   drawUnifiedDocumentHeader,
   drawUnifiedGoldRule,
@@ -140,6 +141,10 @@ export const buildGsolMasterDocumentPdf = async (input) => {
     state.page = drawn.page
     state.y = drawn.y
   }
+
+  const pay = appendUnifiedHowToPay(state.page, state.y, ctx, () => openPage(true))
+  state.page = pay.page
+  state.y = pay.y
 
   pages.forEach((pdfPage, index) => {
     drawUnifiedDocumentFooter(pdfPage, 52, ctx, [], { current: index + 1, total: pages.length })

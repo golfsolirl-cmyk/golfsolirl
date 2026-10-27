@@ -24,7 +24,9 @@ import {
 import {
   buildClientDocumentFilename,
   buildClientDocumentView,
+  CLIENT_BANK_PAYMENT,
   CLIENT_DOCUMENT_COMPANY,
+  clientBankHowToPayPlainText,
   formatClientDocumentEuro,
   normalizeClientDocumentDraft
 } from '../shared/client-enquiry-document.mjs'
@@ -303,6 +305,15 @@ export const buildClientEnquiryDocumentDocx = async (draft) => {
   if (view.sections.payment) {
     body.push(...sectionLabel('Payment information'))
     for (const line of view.paymentDetails.split('\n')) body.push(p(line, { after: 60 }))
+  }
+
+  const paymentText = String(view.paymentDetails ?? '')
+  const paymentAlreadyShowsBank =
+    view.sections.payment &&
+    (paymentText.includes(CLIENT_BANK_PAYMENT.iban) || paymentText.includes(CLIENT_BANK_PAYMENT.ibanDisplay))
+  if (!paymentAlreadyShowsBank) {
+    body.push(...sectionLabel('How to pay'))
+    for (const line of clientBankHowToPayPlainText().split('\n')) body.push(p(line, { after: 60 }))
   }
 
   if (view.sections.signature) {

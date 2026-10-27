@@ -5,6 +5,7 @@ import { pdfFieldLabel, pdfFieldValueDisplay } from './website-form-field-labels
 import { costaSolCourseNameById, costaSolCourseRegionById } from '../shared/costa-sol-course-names.mjs'
 import {
   UNIFIED_PDF_LAYOUT,
+  appendUnifiedHowToPay,
   drawUnifiedDocumentFooter,
   drawUnifiedDocumentHeader,
   embedUnifiedLogo,
@@ -207,6 +208,8 @@ export const buildWebsiteQuotePdfBytes = async (row) => {
   draw(`Balance: ${fmtEur(bal)}`, { size: 11.5, color: pdfEmailTheme.ink })
   y -= 10
   draw('Subject to availability and written confirmation from Golf Sol Ireland.', { size: 9.5, color: pdfEmailTheme.muted })
+
+  ;({ page, y } = appendUnifiedHowToPay(page, y, ctx, openContinuationPage))
 
   pages.forEach((pdfPage, index) => {
     drawUnifiedDocumentFooter(pdfPage, 52, ctx, [], { current: index + 1, total: pages.length })

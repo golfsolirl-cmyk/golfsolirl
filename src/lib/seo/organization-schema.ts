@@ -95,6 +95,23 @@ export function buildWebPageSchema(input: {
   }
 }
 
+export function buildFaqSchema(
+  faqs: readonly { readonly question: string; readonly answer: string }[]
+): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer
+      }
+    }))
+  }
+}
+
 export function buildBreadcrumbListSchema(
   items: readonly { readonly name: string; readonly path: string }[],
   origin: string = SITE_ORIGIN

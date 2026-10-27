@@ -4,6 +4,7 @@ import { isAllowedAdminLoginEmail } from '../lib/admin-login-email'
 import { PortalInterestCategoryGlyph } from '../components/portal-interest-category-glyph'
 import { FocusTrapDialog } from '../components/focus-trap-dialog'
 import { AdminOperationsHubHero } from '../components/admin-operations-hub-hero'
+import { BankTransferPayCard } from '../components/bank-transfer-pay-card'
 import { AdminPaidTripsRevenuePanel } from '../components/admin-paid-trips-revenue-panel'
 import { AdminOperatorCodePanel } from '../components/admin-operator-code-panel'
 import { AdminPortalShell, AdminPortalSection, type AdminPortalSectionId } from '../components/admin-portal-shell'
@@ -3866,6 +3867,8 @@ export function AdminDashboardPage() {
           kicker="Desk"
           title="Inbox & payments"
         >
+          <BankTransferPayCard audience="admin" />
+
           <AdminOperatorCodePanel accessToken={session?.access_token ?? null} />
 
           <AdminPaidTripsRevenuePanel />

@@ -1134,3 +1134,180 @@
   color: #9a7618 !important;
 }
 
+/* Homepage airport hero: light type on the forest panel, dark type only on gold. */
+.ge-page .airport-poster-hero :is(h1, h2, h3, p, li, span, a, small, strong) {
+  color: #f7f3ea !important;
+  -webkit-text-fill-color: #f7f3ea !important;
+}
+
+.ge-page .airport-poster-hero :is(h1, p, span, a, svg).airport-poster-gold-type,
+.ge-page .airport-poster-hero h1 span.airport-poster-gold-type {
+  color: #e4c56a !important;
+  -webkit-text-fill-color: #e4c56a !important;
+}
+
+.ge-page .airport-poster-hero .airport-poster-on-gold,
+.ge-page .airport-poster-hero .airport-poster-on-gold :is(span, a, small, strong) {
+  color: #062016 !important;
+  -webkit-text-fill-color: #062016 !important;
+}
+
+.ge-page .airport-poster-hero .airport-poster-on-gold .airport-poster-on-dark-chip,
+.ge-page .airport-poster-hero .airport-poster-on-gold .airport-poster-on-dark-chip :is(span, svg) {
+  color: #f3e6c4 !important;
+  -webkit-text-fill-color: #f3e6c4 !important;
+}
+
+/* Keep the airport hero poster compact enough to sit inside one screen. */
+body.site-readable .ge-page section.airport-poster-hero h1.airport-poster-title {
+  font-size: clamp(2.35rem, 4.6vw, 3.55rem) !important;
+  line-height: 0.88 !important;
+  letter-spacing: 0.02em;
+}
+
+body.site-readable .ge-page section.airport-poster-hero h1.airport-poster-title.airport-poster-title-page {
+  font-size: clamp(1.65rem, 3.1vw, 2.7rem) !important;
+  line-height: 0.96 !important;
+  letter-spacing: 0.01em;
+}
+
+body.site-readable .ge-page section.airport-poster-hero .airport-poster-kicker {
+  font-size: 0.78rem !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.26em;
+}
+
+body.site-readable .ge-page section.airport-poster-hero .airport-poster-place {
+  font-size: 1rem !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.18em;
+}
+
+body.site-readable .ge-page section.airport-poster-hero .airport-poster-lead {
+  font-size: 1rem !important;
+  line-height: 1.35 !important;
+}
+
+body.site-readable .ge-page section.airport-poster-hero .airport-poster-call-kicker,
+body.site-readable .ge-page section.airport-poster-hero .airport-poster-mark-detail,
+body.site-readable .ge-page section.airport-poster-hero .airport-poster-price-sub,
+body.site-readable .ge-page section.airport-poster-hero .airport-poster-more,
+body.site-readable .ge-page section.airport-poster-hero .airport-poster-crumb {
+  font-size: 0.78rem !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.08em;
+}
+
+body.site-readable .ge-page section.airport-poster-hero .airport-poster-call-number {
+  font-size: 1.2rem !important;
+  line-height: 1.1 !important;
+}
+
+body.site-readable .ge-page section.airport-poster-hero .airport-poster-mark-title {
+  font-size: 0.72rem !important;
+  line-height: 1.15 !important;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 767px) {
+  body.site-readable .ge-page section.airport-poster-hero .airport-poster-copy {
+    background-color: rgba(4, 21, 16, 0.94);
+    border-radius: 1.35rem;
+    padding: 1rem 0.9rem 1.05rem;
+    box-shadow: 0 0 0 1px rgba(228, 197, 106, 0.35);
+  }
+}
+
+body.site-readable .ge-page section.airport-poster-hero .airport-poster-price-title {
+  font-size: 1.2rem !important;
+  line-height: 1 !important;
+  letter-spacing: 0.06em;
+}
+
+/* Recent-trip film: dark type on cream, cream type only on the photo captions. */
+.customer-trip-reel .customer-trip-kicker {
+  font-size: 0.78rem !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.22em;
+  color: #0b4d3b !important;
+  -webkit-text-fill-color: #0b4d3b !important;
+}
+
+.customer-trip-reel h2.customer-trip-title {
+  font-size: clamp(1.7rem, 3vw, 2.6rem) !important;
+  line-height: 0.98 !important;
+  letter-spacing: 0.03em;
+  color: #062016 !important;
+  -webkit-text-fill-color: #062016 !important;
+}
+
+.customer-trip-reel .customer-trip-lead {
+  font-size: 1.05rem !important;
+  line-height: 1.45 !important;
+  color: #24362e !important;
+  -webkit-text-fill-color: #24362e !important;
+}
+
+.customer-trip-reel .customer-trip-caption {
+  font-size: 0.72rem !important;
+  line-height: 1.15 !important;
+  letter-spacing: 0.12em;
+  color: #f7f3ea !important;
+  -webkit-text-fill-color: #f7f3ea !important;
+}
+
+.customer-trip-reel .customer-trip-pause {
+  font-size: 0.75rem !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.12em;
+  color: #062016 !important;
+  -webkit-text-fill-color: #062016 !important;
+  background-color: #ffffff;
+  border: 1px solid rgba(6, 32, 22, 0.22);
+  box-shadow: 0 8px 18px rgba(6, 32, 22, 0.08);
+}
+
+.customer-trip-reel .customer-trip-fade {
+  background: linear-gradient(90deg, #faf8f3 0%, rgba(250, 248, 243, 0) 100%);
+}
+
+.customer-trip-reel .customer-trip-fade.is-right {
+  background: linear-gradient(270deg, #faf8f3 0%, rgba(250, 248, 243, 0) 100%);
+}
+
+.customer-trip-track {
+  animation: customer-trip-reel 56s linear infinite;
+}
+
+.customer-trip-track.is-reverse {
+  animation-duration: 68s;
+  animation-direction: reverse;
+}
+
+.customer-trip-track.is-paused,
+.customer-trip-reel:hover .customer-trip-track {
+  animation-play-state: paused;
+}
+
+@keyframes customer-trip-reel {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .customer-trip-track {
+    animation: none !important;
+  }
+}
+
+/* Header quote stays dark type on gold, even when global CTA rules force white. */
+.ge-page header .header-quote-btn {
+  background-color: #d4a843 !important;
+  color: #062016 !important;
+  -webkit-text-fill-color: #062016 !important;
+}
+

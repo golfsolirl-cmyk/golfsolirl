@@ -1,21 +1,11 @@
 import { useReducedMotion } from 'framer-motion'
 import { m } from 'framer-motion'
-import { ArrowRight, MapPin, type LucideIcon } from 'lucide-react'
-import { GeButton } from '../../pages/golf-experience/components/ge-button'
+import { ArrowRight, ChevronRight, Phone, Sun, type LucideIcon } from 'lucide-react'
+import { companyContact } from '../../data/site-content'
 import { cx } from '../../lib/utils'
 import type { HeroImageSet } from '../../lib/page-hero-images'
-import {
-  HERO_FORM_SCROLL_DEFAULT_LABEL,
-  HERO_FORM_SCROLL_DEFAULT_SUBLABEL,
-  HeroFormScrollCue
-} from './hero-form-scroll-cue'
 
-const COPY_PANEL_CLASS =
-  'premium-golf-hero-copy-panel box-border w-full min-w-0 overflow-visible rounded-2xl border border-forest-800/15 bg-[#faf8f3] shadow-[0_16px_48px_rgba(6,32,22,0.14)]'
-
-const TRUST_BAND_CLASS =
-  'premium-golf-hero-trust-band relative z-20 overflow-hidden border-t border-forest-800/12 bg-gradient-to-b from-[#f3efe6] via-[#faf8f3] to-cream'
-
+const HERO_CALL_DISPLAY = '086 8515000'
 const HERO_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
 function heroAsset(publicPath: string): string {
@@ -25,13 +15,21 @@ function heroAsset(publicPath: string): string {
   return `${prefix}${path}`
 }
 
+function sourceType(src: string): string | undefined {
+  const lower = src.toLowerCase()
+  if (lower.endsWith('.webp')) return 'image/webp'
+  if (lower.endsWith('.png')) return 'image/png'
+  if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) return 'image/jpeg'
+  return undefined
+}
+
 const fadeUp = (delay = 0, reduceMotion: boolean) =>
   reduceMotion
     ? {}
     : {
-        initial: { opacity: 0, y: 18 },
+        initial: { opacity: 0, y: 14 },
         animate: { opacity: 1, y: 0 },
-        transition: { duration: 0.55, ease: HERO_EASE, delay }
+        transition: { duration: 0.5, ease: HERO_EASE, delay }
       }
 
 export type PremiumPageHeroTrustBadge = {
@@ -44,6 +42,11 @@ export type PremiumPageHeroFloatingBadge = {
   readonly title: string
   readonly panelClass?: string
   readonly offsetClass?: string
+}
+
+export type PremiumPageHeroCrumb = {
+  readonly name: string
+  readonly path: string
 }
 
 type GeButtonVariant =
@@ -74,460 +77,250 @@ export type PremiumPageHeroProps = {
   readonly trustBadges?: readonly PremiumPageHeroTrustBadge[]
   readonly trustSectionTitle?: string
   readonly floatingBadges?: readonly PremiumPageHeroFloatingBadge[]
+  readonly breadcrumbs?: readonly PremiumPageHeroCrumb[]
   readonly formScrollTarget?: string
   readonly formScrollLabel?: string
   readonly formScrollSublabel?: string
   readonly formScrollShellTone?: 'solid-dark' | 'solid-light'
+  /** Dark green call bubble with the Irish desk number. On for every page hero. */
+  readonly showCallBubble?: boolean
   readonly mobileImageObjectPosition?: string
-  /** When true, skip cream fade overlays so baked-in hero footer art stays visible. */
+  /** When true, skip the cream wave so baked-in hero footer art stays visible. */
   readonly preserveFooterArt?: boolean
   readonly className?: string
   readonly srTitle?: string
 }
 
+function splitMarkLabel(label: string): { readonly title: string; readonly detail: string } {
+  const words = label.trim().split(/\s+/).filter(Boolean)
+  if (words.length <= 1) return { title: label.trim(), detail: 'Costa del Sol' }
+  if (words.length === 2) return { title: words[0] ?? label, detail: words[1] ?? '' }
+  const cut = Math.min(3, Math.ceil(words.length / 2))
+  return {
+    title: words.slice(0, cut).join(' '),
+    detail: words.slice(cut).join(' ')
+  }
+}
+
+function CallBubble({ reduceMotion }: { readonly reduceMotion: boolean }) {
+  return (
+    <m.a
+      href={`tel:${companyContact.phoneTel}`}
+      aria-label={`Call Golf Sol Ireland on ${HERO_CALL_DISPLAY}`}
+      className="airport-poster-call inline-flex w-fit items-center gap-2.5 rounded-full bg-[#063b2a] py-1 pl-1 pr-4 text-white shadow-[0_12px_28px_rgba(0,0,0,0.35)] ring-1 ring-[#e4c56a]/80"
+      {...fadeUp(0.16, reduceMotion)}
+    >
+      <span className="airport-poster-on-gold flex h-9 w-9 items-center justify-center rounded-full bg-[#d4a843]">
+        <Phone className="h-4 w-4" aria-hidden strokeWidth={2.4} />
+      </span>
+      <span className="flex flex-col leading-none">
+        <span className="airport-poster-gold-type airport-poster-call-kicker font-ge font-extrabold uppercase">Call Ireland</span>
+        <span className="airport-poster-call-number font-ge font-extrabold text-white">{HERO_CALL_DISPLAY}</span>
+      </span>
+    </m.a>
+  )
+}
+
+function ServiceMarks({ badges }: { readonly badges: readonly PremiumPageHeroTrustBadge[] }) {
+  const columns = badges.length >= 4 ? 'sm:grid-cols-4' : badges.length === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2'
+  return (
+    <ul className={cx('grid grid-cols-2 gap-x-3 gap-y-3 sm:gap-x-4', columns)}>
+      {badges.slice(0, 4).map((mark) => {
+        const Icon = mark.icon
+        const lines = splitMarkLabel(mark.label)
+        return (
+          <li key={mark.label} className="flex min-w-0 flex-col items-center text-center">
+            <span className="airport-poster-on-gold flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-b from-[#f3e6c4] to-[#c9962e] shadow-[0_8px_16px_rgba(0,0,0,0.28)] ring-2 ring-[#f3e6c4]/70">
+              <Icon className="h-5 w-5" aria-hidden strokeWidth={2.1} />
+            </span>
+            <span className="airport-poster-mark-title mt-1.5 font-ge font-extrabold uppercase text-[#f7f3ea]">{lines.title}</span>
+            <span className="airport-poster-gold-type airport-poster-mark-detail mt-0.5 font-ge">{lines.detail}</span>
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
+function ActionPill({
+  href,
+  title,
+  subtitle,
+  icon: Icon
+}: {
+  readonly href: string
+  readonly title: string
+  readonly subtitle: string
+  readonly icon: LucideIcon
+}) {
+  return (
+    <a
+      href={href}
+      className="airport-poster-on-gold group relative isolate inline-flex min-h-12 w-full max-w-[28rem] items-center gap-3 overflow-hidden rounded-full bg-[#d4a843] px-3 py-1.5 shadow-[0_14px_30px_rgba(0,0,0,0.28)] ring-1 ring-[#f3e6c4]/80 sm:w-auto sm:pr-6"
+    >
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,#f6e7b8_0%,#d4a843_55%,#b8862b_100%)]"
+      />
+      <span className="airport-poster-on-dark-chip relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#062016]">
+        <Icon className="h-4 w-4" aria-hidden strokeWidth={2.3} />
+      </span>
+      <span className="relative min-w-0 text-left">
+        <span className="airport-poster-price-title block font-ge font-extrabold uppercase leading-none">{title}</span>
+        <span className="airport-poster-price-sub mt-1 block font-ge font-bold uppercase leading-tight">{subtitle}</span>
+      </span>
+    </a>
+  )
+}
+
+function HeroBreadcrumbs({ crumbs }: { readonly crumbs: readonly PremiumPageHeroCrumb[] }) {
+  return (
+    <nav aria-label="Breadcrumb" className="mb-3">
+      <ol className="flex flex-wrap items-center gap-1.5">
+        {crumbs.map((crumb, index) => {
+          const isLast = index === crumbs.length - 1
+          return (
+            <li key={`${crumb.path}-${crumb.name}`} className="flex items-center gap-1.5">
+              {index > 0 ? <ChevronRight className="airport-poster-gold-type h-3 w-3 shrink-0" aria-hidden /> : null}
+              {isLast ? (
+                <span aria-current="page" className="airport-poster-gold-type airport-poster-crumb font-ge font-extrabold">
+                  {crumb.name}
+                </span>
+              ) : (
+                <a href={crumb.path} className="airport-poster-crumb font-ge font-bold underline decoration-[#d4a843]/70 underline-offset-4">
+                  {crumb.name}
+                </a>
+              )}
+            </li>
+          )
+        })}
+      </ol>
+    </nav>
+  )
+}
+
+/** Inner-page hero in the same poster layout as the homepage, with this page’s photo and copy. */
 export function PremiumPageHero({
   id = 'top',
   titleId = 'premium-hero-title',
   images,
   kicker,
-  kickerIcon: KickerIcon = MapPin,
   titleLine1,
   titleLine2,
   lead,
   primaryCta,
   secondaryCta,
   trustBadges,
-  trustSectionTitle = 'What we handle',
   floatingBadges,
+  breadcrumbs,
   formScrollTarget,
   formScrollLabel,
   formScrollSublabel,
-  formScrollShellTone,
-  mobileImageObjectPosition = 'center 72%',
+  showCallBubble = true,
+  mobileImageObjectPosition = 'center 42%',
   preserveFooterArt = false,
   className,
   srTitle
 }: PremiumPageHeroProps) {
-  const reduceMotion = useReducedMotion()
+  const reduceMotion = Boolean(useReducedMotion())
   const desktopSrc = heroAsset(images.desktop)
   const tabletSrc = heroAsset(images.tablet)
   const mobileSrc = heroAsset(images.mobile)
-  const PrimaryIcon = primaryCta.icon ?? ArrowRight
-  const SecondaryIcon = secondaryCta?.icon ?? ArrowRight
-  const showTrust = trustBadges && trustBadges.length > 0
-  const scrollLabel = formScrollLabel ?? HERO_FORM_SCROLL_DEFAULT_LABEL
-  const scrollSublabel = formScrollSublabel ?? HERO_FORM_SCROLL_DEFAULT_SUBLABEL
+  const desktopType = sourceType(images.desktop)
+  const tabletType = sourceType(images.tablet)
+  const PillIcon = primaryCta.icon ?? ArrowRight
+  const marks = trustBadges?.slice(0, 4) ?? []
+  const place = floatingBadges?.[0]
+  const customSublabel = formScrollSublabel && formScrollSublabel !== 'Quick quote form below' ? formScrollSublabel : undefined
+  const pointsAtForm = Boolean(formScrollTarget) && primaryCta.href === formScrollTarget
+  const rawSubtitle = customSublabel ?? (pointsAtForm ? formScrollLabel : undefined) ?? 'We reply from Ireland'
+  const pillSubtitle =
+    rawSubtitle.trim().toLowerCase() === primaryCta.label.trim().toLowerCase()
+      ? 'Tell us your dates and group size'
+      : rawSubtitle
 
   return (
     <section
       id={id}
       aria-labelledby={titleId}
-      className={cx('relative isolate overflow-visible bg-cream', className)}
+      className={cx('airport-poster-hero ge-on-dark relative isolate overflow-hidden bg-[#041510] text-[#f7f3ea]', className)}
     >
-      {srTitle ? <h1 className="sr-only">{srTitle}</h1> : null}
-
+      <picture className="absolute inset-0 block h-full w-full">
+        {desktopSrc !== mobileSrc ? (
+          <source media="(min-width: 1024px)" srcSet={desktopSrc} {...(desktopType ? { type: desktopType } : {})} />
+        ) : null}
+        {tabletSrc !== mobileSrc ? (
+          <source media="(min-width: 768px)" srcSet={tabletSrc} {...(tabletType ? { type: tabletType } : {})} />
+        ) : null}
+        <img
+          src={mobileSrc}
+          alt={images.alt}
+          decoding="async"
+          fetchPriority="high"
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ objectPosition: mobileImageObjectPosition }}
+        />
+      </picture>
       <div
-        aria-hidden="true"
-        className="ge-fixed-header-spacer relative z-20 w-full shrink-0 bg-cream"
-        style={{ height: 'var(--ge-fixed-header-h)' }}
+        aria-hidden
+        className="absolute inset-0 bg-gradient-to-t from-[#041510] via-[#041510]/88 via-[58%] to-[#041510]/25 md:bg-gradient-to-r md:from-[#041510] md:from-[8%] md:via-[#041510]/80 md:via-[42%] md:to-transparent md:to-[70%]"
       />
 
-      <div className="relative overflow-visible">
-        <div className="relative md:hidden">
-          <div className="relative h-[min(52vh,400px)] min-h-[260px] w-full overflow-hidden">
-            <img
-              src={mobileSrc}
-              alt={images.alt}
-              decoding="async"
-              fetchPriority="high"
-              className="absolute inset-0 h-full w-full object-cover"
-              style={{ objectPosition: mobileImageObjectPosition }}
-            />
-            {!preserveFooterArt ? (
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-b from-transparent via-cream/40 to-cream"
-              />
+      <div aria-hidden className="ge-fixed-header-spacer relative z-20 w-full shrink-0" style={{ height: 'var(--ge-fixed-header-h)' }} />
+
+      <div className="relative z-10 mx-auto flex w-full max-w-[1340px] flex-col justify-end px-4 pb-8 pt-3 sm:px-6 md:min-h-[calc(100svh-var(--ge-fixed-header-h))] md:justify-center md:px-10 md:pb-10 md:pt-4 lg:px-12">
+        <div className="airport-poster-copy w-full max-w-[40rem]">
+          {breadcrumbs && breadcrumbs.length > 0 ? <HeroBreadcrumbs crumbs={breadcrumbs} /> : null}
+          <m.p className="airport-poster-kicker font-ge font-extrabold uppercase text-[#f3e6c4]" {...fadeUp(0.04, reduceMotion)}>
+            {kicker}
+          </m.p>
+          <h1 id={titleId} aria-label={srTitle} className="airport-poster-title airport-poster-title-page mt-1 font-ge font-extrabold uppercase">
+            <m.span className="block text-[#f7f3ea]" {...fadeUp(0.08, reduceMotion)}>
+              {titleLine1}
+            </m.span>
+            {titleLine2 ? (
+              <m.span className="airport-poster-gold-type block" {...fadeUp(0.12, reduceMotion)}>
+                {titleLine2}
+              </m.span>
             ) : null}
-          </div>
-
-          {formScrollTarget ? (
-            <HeroFormScrollCue
-              href={formScrollTarget}
-              label={scrollLabel}
-              sublabel={scrollSublabel}
-              placement="inline"
-              shellTone={formScrollShellTone}
-              className="bg-cream pb-2 pt-3"
-            />
-          ) : null}
-
-          <div className="premium-golf-hero-mobile-copy border-t border-forest-800/10 bg-cream px-5 py-7 sm:px-6 sm:py-8">
-            <HeroCopyPanel
-              titleId={titleId}
-              kicker={kicker}
-              kickerIcon={KickerIcon}
-              titleLine1={titleLine1}
-              titleLine2={titleLine2}
-              lead={lead}
-              primaryCta={primaryCta}
-              secondaryCta={secondaryCta}
-              PrimaryIcon={PrimaryIcon}
-              SecondaryIcon={SecondaryIcon}
-              reduceMotion={Boolean(reduceMotion)}
-              layout="mobile"
-            />
-          </div>
-
-          {showTrust ? (
-            <HeroTrustSection
-              badges={trustBadges}
-              title={trustSectionTitle}
-              reduceMotion={Boolean(reduceMotion)}
-              layout="scroll"
-            />
-          ) : null}
-        </div>
-
-        <div className="relative hidden md:block">
-          <div className="relative">
-            <picture className="block w-full">
-              <source media="(min-width: 1024px)" srcSet={desktopSrc} type="image/webp" />
-              <source media="(min-width: 768px)" srcSet={tabletSrc} type="image/webp" />
-              <img
-                src={tabletSrc}
-                alt={images.alt}
-                decoding="async"
-                fetchPriority="high"
-                className="block h-auto w-full max-w-full select-none object-cover object-top"
-              />
-            </picture>
-
-            <div className="pointer-events-none absolute inset-0 z-20 flex items-start justify-start pt-4 md:pt-5 lg:pt-7 xl:pt-8">
-              <div className="pointer-events-auto ml-5 w-full max-w-[22.5rem] md:ml-6 md:max-w-[24rem] lg:ml-10 lg:max-w-[26.5rem] xl:max-w-[28rem]">
-                <div className={cx(COPY_PANEL_CLASS, 'p-5 md:p-5 lg:p-6')}>
-                  <HeroCopyPanel
-                    titleId={titleId}
-                    kicker={kicker}
-                    kickerIcon={KickerIcon}
-                    titleLine1={titleLine1}
-                    titleLine2={titleLine2}
-                    lead={lead}
-                    primaryCta={primaryCta}
-                    secondaryCta={secondaryCta}
-                    PrimaryIcon={PrimaryIcon}
-                    SecondaryIcon={SecondaryIcon}
-                    reduceMotion={Boolean(reduceMotion)}
-                    layout="desktop"
-                  />
-                </div>
-              </div>
+          </h1>
+          <m.p className="airport-poster-place mt-2 inline-flex items-center gap-2 font-ge font-extrabold uppercase text-white" {...fadeUp(0.14, reduceMotion)}>
+            {place ? `${place.kicker} · ${place.title}` : 'Costa del Sol'}
+            <Sun className="airport-poster-gold-type h-4 w-4 shrink-0" aria-hidden />
+          </m.p>
+          <m.p className="airport-poster-lead mt-1.5 max-w-[34rem] font-ge text-[#f7f3ea]" {...fadeUp(0.16, reduceMotion)}>
+            {lead}
+          </m.p>
+          {showCallBubble ? (
+            <div className="mt-3">
+              <CallBubble reduceMotion={reduceMotion} />
             </div>
-
-            {formScrollTarget ? (
-              <HeroFormScrollCue
-                href={formScrollTarget}
-                label={scrollLabel}
-                sublabel={scrollSublabel}
-                placement="overlay"
-                shellTone={formScrollShellTone}
-                className="bottom-[18%] left-1/2 right-auto max-md:max-w-[min(100%,18.5rem)] md:bottom-[14%] lg:bottom-10"
-              />
-            ) : null}
-
-            {!preserveFooterArt ? (
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-14 bg-gradient-to-b from-transparent to-cream/90 lg:h-16"
-              />
-            ) : null}
-          </div>
-
-          {showTrust ? (
-            <HeroTrustSection
-              badges={trustBadges}
-              title={trustSectionTitle}
-              reduceMotion={Boolean(reduceMotion)}
-              layout="grid"
-            />
           ) : null}
+          <m.div className="mt-4 w-full max-w-[40rem]" {...fadeUp(0.22, reduceMotion)}>
+            {marks.length > 0 ? <ServiceMarks badges={marks} /> : null}
+            <div className={cx('flex flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:items-center', marks.length > 0 && 'mt-4')}>
+              <ActionPill href={primaryCta.href} title={primaryCta.label} subtitle={pillSubtitle} icon={PillIcon} />
+              {secondaryCta ? (
+                <a
+                  href={secondaryCta.href}
+                  className="airport-poster-more font-ge font-extrabold uppercase text-[#f3e6c4] underline decoration-[#d4a843] underline-offset-4"
+                >
+                  {secondaryCta.label}
+                </a>
+              ) : null}
+            </div>
+          </m.div>
         </div>
-
-        {floatingBadges && floatingBadges.length > 0 ? (
-          <HeroFloatingBadges badges={floatingBadges} reduceMotion={Boolean(reduceMotion)} />
-        ) : null}
       </div>
+
+      {preserveFooterArt ? null : (
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-7 text-[#faf8f3]">
+          <svg viewBox="0 0 1440 48" preserveAspectRatio="none" className="h-full w-full">
+            <path fill="currentColor" d="M0 26c220 22 380 22 560 6s340-28 520-12 240 22 360 10v18H0Z" />
+          </svg>
+        </div>
+      )}
     </section>
-  )
-}
-
-function HeroCopyPanel({
-  titleId,
-  kicker,
-  kickerIcon: KickerIcon,
-  titleLine1,
-  titleLine2,
-  lead,
-  primaryCta,
-  secondaryCta,
-  PrimaryIcon,
-  SecondaryIcon,
-  reduceMotion,
-  layout
-}: {
-  readonly titleId: string
-  readonly kicker: string
-  readonly kickerIcon: LucideIcon
-  readonly titleLine1: string
-  readonly titleLine2?: string
-  readonly lead: string
-  readonly primaryCta: PremiumPageHeroCta
-  readonly secondaryCta?: PremiumPageHeroCta
-  readonly PrimaryIcon: LucideIcon
-  readonly SecondaryIcon: LucideIcon
-  readonly reduceMotion: boolean
-  readonly layout: 'mobile' | 'desktop'
-}) {
-  const isMobile = layout === 'mobile'
-
-  return (
-    <div className={cx('flex flex-col', isMobile ? 'gap-5' : 'gap-4 md:gap-5')}>
-      {isMobile ? (
-        <m.p
-          data-keep-color
-          className="font-ge text-[0.8rem] font-extrabold uppercase leading-snug tracking-[0.16em] text-forest-800/85"
-          {...fadeUp(0, reduceMotion)}
-        >
-          {kicker}
-        </m.p>
-      ) : (
-        <m.p
-          data-keep-color
-          className="inline-flex w-fit max-w-full items-center gap-2 rounded-full border border-forest-800/25 bg-white px-3.5 py-1.5 font-ge text-[0.7rem] font-extrabold uppercase leading-snug tracking-[0.11em] text-[#062016] sm:px-4 sm:py-1.5 sm:text-[0.8rem] sm:tracking-[0.14em]"
-          {...fadeUp(0, reduceMotion)}
-        >
-          <KickerIcon className="h-3.5 w-3.5 shrink-0 text-forest-800 sm:h-4 sm:w-4" aria-hidden />
-          {kicker}
-        </m.p>
-      )}
-
-      <m.h2
-        id={titleId}
-        data-keep-color
-        className={cx(
-          'max-w-full font-ge font-extrabold tracking-[-0.02em] text-[#062016]',
-          isMobile
-            ? 'text-[1.78rem] leading-[1.15] sm:text-[1.95rem] sm:leading-[1.13]'
-            : 'text-[1.55rem] leading-[1.16] sm:text-[1.78rem] sm:leading-[1.12] md:text-[2.55rem] md:leading-[1.08] lg:text-[3rem] lg:leading-[1.06] xl:text-[3.25rem]'
-        )}
-        {...fadeUp(0.06, reduceMotion)}
-      >
-        <span className="block text-balance" style={{ color: '#062016' }}>
-          {titleLine1}
-        </span>
-        {titleLine2 ? (
-          <span className={cx('block text-balance', isMobile ? 'mt-2' : 'mt-1.5 md:mt-2')} style={{ color: '#062016' }}>
-            {titleLine2}
-          </span>
-        ) : null}
-      </m.h2>
-
-      <m.p
-        data-keep-color
-        className={cx(
-          'premium-golf-hero-lead max-w-full text-pretty font-ge text-[#0b4d3b]',
-          isMobile
-            ? 'text-[1.08rem] leading-[1.68]'
-            : 'text-[0.98rem] leading-[1.66] sm:text-[1.06rem] sm:leading-[1.7] md:text-[1.12rem] md:leading-[1.72] lg:text-[1.16rem] lg:leading-[1.74]'
-        )}
-        {...fadeUp(0.12, reduceMotion)}
-      >
-        {lead}
-      </m.p>
-
-      <m.div
-        className={cx(
-          'flex flex-col',
-          isMobile ? 'gap-3 pt-1' : 'gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3'
-        )}
-        {...fadeUp(0.18, reduceMotion)}
-      >
-        <GeButton
-          href={primaryCta.href}
-          variant={primaryCta.variant ?? 'gs-gold'}
-          size={isMobile ? 'md' : 'lg'}
-          className="w-full min-w-0 !text-[1.06rem] !leading-snug !tracking-[0.1em] sm:w-auto sm:!text-[1.03rem] md:!text-[1.06rem] lg:!text-[1.1rem]"
-        >
-          {primaryCta.label}
-          <PrimaryIcon className="h-4 w-4 shrink-0 sm:h-[1.05rem] sm:w-[1.05rem]" aria-hidden />
-        </GeButton>
-        {secondaryCta ? (
-          <GeButton
-            href={secondaryCta.href}
-            variant={secondaryCta.variant ?? 'outline-gs-green'}
-            size={isMobile ? 'md' : 'lg'}
-            className="w-full min-w-0 !text-[1.06rem] !leading-snug !tracking-[0.1em] sm:w-auto sm:!text-[1.03rem] md:!text-[1.06rem] lg:!text-[1.1rem]"
-          >
-            {secondaryCta.label}
-            <SecondaryIcon className="h-4 w-4 shrink-0 sm:h-[1.05rem] sm:w-[1.05rem]" aria-hidden />
-          </GeButton>
-        ) : null}
-      </m.div>
-    </div>
-  )
-}
-
-function HeroTrustSection({
-  badges,
-  title,
-  reduceMotion,
-  layout,
-  className
-}: {
-  readonly badges: readonly PremiumPageHeroTrustBadge[]
-  readonly title: string
-  readonly reduceMotion: boolean
-  readonly layout: 'scroll' | 'grid'
-  readonly className?: string
-}) {
-  const isScroll = layout === 'scroll'
-
-  return (
-    <m.section
-      aria-label={title}
-      className={cx(TRUST_BAND_CLASS, isScroll ? 'px-5 pb-6 pt-5 sm:px-6' : 'px-5 py-6 md:px-6 lg:px-10 lg:py-8', className)}
-      {...fadeUp(0.2, reduceMotion)}
-    >
-      <div
-        aria-hidden
-        className="mx-auto h-px w-[min(100%,14rem)] bg-gradient-to-r from-transparent via-[#d9be7a]/60 to-transparent"
-      />
-      <div className={cx('relative', isScroll ? '' : 'mx-auto max-w-[1240px]')}>
-        <div className="mb-4 flex items-center gap-3 md:mb-5">
-          <span
-            aria-hidden
-            className="h-px w-10 shrink-0 bg-gradient-to-r from-[#d4a843] to-forest-800/50 sm:w-12"
-          />
-          <h2 className="font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.2em] text-forest-950 sm:text-[0.72rem]">
-            {title}
-          </h2>
-          <span
-            aria-hidden
-            className="h-px min-w-[2rem] flex-1 bg-gradient-to-r from-forest-800/25 to-transparent"
-          />
-        </div>
-
-        <ul
-          className={cx(
-            'premium-golf-hero-trust',
-            isScroll
-              ? '-mx-0.5 flex gap-3 overflow-x-auto overscroll-x-contain scroll-smooth pb-1 pt-0.5 [scrollbar-width:none] snap-x snap-mandatory [&::-webkit-scrollbar]:hidden'
-              : 'grid grid-cols-2 gap-3 md:gap-3.5 lg:grid-cols-4 lg:gap-4'
-          )}
-        >
-          {badges.map((badge, index) => (
-            <HeroTrustCard key={badge.label} {...badge} layout={layout} index={index} />
-          ))}
-        </ul>
-      </div>
-    </m.section>
-  )
-}
-
-function HeroTrustCard({
-  icon: Icon,
-  label,
-  layout,
-  index
-}: PremiumPageHeroTrustBadge & { readonly layout: 'scroll' | 'grid'; readonly index: number }) {
-  const isScroll = layout === 'scroll'
-
-  return (
-    <li
-      data-keep-color
-      className={cx(
-        'premium-golf-hero-trust-item group relative overflow-hidden rounded-2xl border border-forest-800/15',
-        'bg-gradient-to-b from-white to-[#f5f1e8] shadow-[0_10px_28px_rgba(6,32,22,0.09),inset_0_1px_0_rgba(255,255,255,0.95)]',
-        'transition-transform duration-300 md:hover:-translate-y-0.5 md:hover:shadow-[0_14px_36px_rgba(6,32,22,0.14)]',
-        isScroll ? 'w-[10.25rem] shrink-0 snap-start p-3.5 sm:w-[11rem] sm:p-4' : 'flex min-h-[5.75rem] flex-col p-3.5 sm:min-h-[6.25rem] sm:p-4'
-      )}
-    >
-      <span
-        aria-hidden
-        className="absolute inset-x-3 top-0 h-[2px] rounded-full bg-gradient-to-r from-transparent via-[#d4a843] to-transparent opacity-90"
-      />
-      <span
-        aria-hidden
-        className={cx(
-          'pointer-events-none absolute -right-3 -top-3 h-14 w-14 rounded-full opacity-[0.07]',
-          index % 2 === 0 ? 'bg-forest-800' : 'bg-[#d4a843]'
-        )}
-      />
-      <span className="relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-forest-800 to-brand-700 text-white shadow-[0_6px_18px_rgba(11,77,59,0.32)] ring-2 ring-white/80 sm:h-10 sm:w-10">
-        <Icon className="h-4 w-4 sm:h-[1.05rem] sm:w-[1.05rem]" aria-hidden strokeWidth={2.25} />
-      </span>
-      <span
-        data-keep-color
-        className={cx(
-          'premium-golf-hero-trust-label relative mt-3 font-ge font-bold leading-snug text-[#0b4d3b]',
-          isScroll ? 'text-[0.8rem] leading-[1.38] sm:text-[0.84rem]' : 'text-[0.84rem] leading-[1.38] sm:text-[0.9rem]'
-        )}
-      >
-        {label}
-      </span>
-    </li>
-  )
-}
-
-function HeroFloatingBadges({
-  badges,
-  reduceMotion
-}: {
-  readonly badges: readonly PremiumPageHeroFloatingBadge[]
-  readonly reduceMotion: boolean
-}) {
-  return (
-    <div className="ge-on-dark pointer-events-none absolute right-6 top-[38%] z-30 hidden flex-col gap-3 lg:flex xl:right-10">
-      {badges.map((badge, index) => (
-        <HeroFloatingBadge key={badge.kicker} {...badge} reduceMotion={reduceMotion} entranceDelay={0.32 + index * 0.12} />
-      ))}
-    </div>
-  )
-}
-
-function HeroFloatingBadge({
-  kicker,
-  title,
-  panelClass = 'border-forest-700 bg-forest-900 shadow-[0_12px_32px_rgba(6,32,22,0.35)]',
-  offsetClass = '',
-  reduceMotion,
-  entranceDelay
-}: PremiumPageHeroFloatingBadge & { readonly reduceMotion: boolean; readonly entranceDelay: number }) {
-  const panel = (
-    <div className={cx('relative overflow-hidden rounded-xl border px-4 py-3', panelClass)}>
-      <p className="relative font-ge text-[0.62rem] font-extrabold uppercase tracking-[0.18em] text-white/85">{kicker}</p>
-      <p className="relative mt-1 font-ge text-sm font-bold text-white">{title}</p>
-    </div>
-  )
-
-  if (reduceMotion) {
-    return <div className={offsetClass}>{panel}</div>
-  }
-
-  return (
-    <m.div
-      className={offsetClass}
-      initial={{ opacity: 0, x: 32, scale: 0.94 }}
-      animate={{ opacity: 1, x: 0, scale: 1 }}
-      transition={{ duration: 0.62, delay: entranceDelay, ease: HERO_EASE }}
-    >
-      <m.div
-        animate={{ y: [0, -8, 0] }}
-        transition={{ duration: 3.6 + entranceDelay, repeat: Infinity, ease: 'easeInOut', delay: entranceDelay + 0.5 }}
-      >
-        {panel}
-      </m.div>
-    </m.div>
   )
 }
 

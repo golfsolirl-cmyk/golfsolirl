@@ -3,8 +3,8 @@ export const MARTIN_KELLY_DRIVER = {
   id: 'c0ffee00-0000-4000-8000-000000000001',
   displayName: 'Martin Kelly',
   email: 'info@golfsolirl.com',
-  phone: '+353 87 446 4766',
-  phoneTel: '+353874464766'
+  phone: '+353 86 851 5000',
+  phoneTel: '+353868515000'
 } as const
 
 export const isMartinKellyDriverId = (id: string | null | undefined) =>

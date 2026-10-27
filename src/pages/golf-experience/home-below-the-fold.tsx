@@ -1,3 +1,4 @@
+import { CustomerTripReel } from '../../components/customer-trip-reel'
 import { SectionShadowBridge } from '../../components/ui/SectionShadowBridge'
 import { GeAboutBlock } from './sections/about-block'
 import { GeAccommodationIntro } from './sections/accommodation-intro'
@@ -24,6 +25,7 @@ import { WhatsappFab } from './components/whatsapp-fab'
 export default function HomeBelowTheFold() {
   return (
     <>
+      <CustomerTripReel placement="feature" />
       <GeHomeWhatWeDo />
       <div className="bg-cream px-3 py-6 sm:px-8 sm:py-10">
         <div className="mx-auto max-w-[1180px]">

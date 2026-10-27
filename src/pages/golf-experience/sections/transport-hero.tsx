@@ -6,7 +6,7 @@ import { transportHeroCopy } from '../data/transport-service'
 const { line1, line2 } = splitHeroTitle(transportHeroCopy.title)
 
 /**
- * Transport service hero — same cream-panel layout as the homepage, with coastal drive imagery.
+ * Transport service hero — same poster layout as the homepage, with the coastal drive photo.
  */
 export function TransportHero() {
   return (
@@ -20,7 +20,7 @@ export function TransportHero() {
       titleLine2={line2}
       lead={transportHeroCopy.subtitle}
       primaryCta={{ label: transportHeroCopy.primaryCta, href: '#transport-enquire', variant: 'gs-gold' }}
-      secondaryCta={{ label: 'Call Ireland or Spain', href: 'tel:+353874464766', variant: 'outline-gs-green' }}
+      secondaryCta={{ label: 'Call Ireland or Spain', href: 'tel:+353868515000', variant: 'outline-gs-green' }}
       trustBadges={[
         { icon: PlaneLanding, label: 'Flight tracking from Ireland' },
         { icon: ShieldCheck, label: 'Golf-bag friendly fleet' },

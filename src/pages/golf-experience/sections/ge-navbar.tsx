@@ -94,14 +94,6 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
               <DesktopNavItem key={link.label} link={link} colorClass={linkColor} />
             ))}
             {portalSlot ? <PortalNavActions portalSlot={portalSlot} layout="desktop" /> : null}
-            {!portalSlot ? (
-              <>
-                <HeaderSignInButtons />
-                <GeButton href="/contact" size="sm" variant={isOverlay ? 'outline-gs-white' : 'gs-gold'}>
-                  Get Quote
-                </GeButton>
-              </>
-            ) : null}
           </nav>
 
           {isOverlay ? (
@@ -146,8 +138,11 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
           <BrandPlaneToFairwayTagline tone={isOverlay ? 'dark' : 'light'} layout="ribbon" className="max-w-full" />
         </div>
         {!portalSlot ? (
-          <div className="mx-auto flex w-full max-w-[1340px] justify-center px-3 pb-2.5 lg:hidden">
+          <div className="mx-auto flex w-full max-w-[1340px] flex-wrap items-center justify-center gap-2 px-3 pb-2.5">
             <HeaderSignInButtons />
+            <a href="/contact" className="header-quote-btn inline-flex min-h-10 items-center justify-center rounded-full bg-[#d4a843] px-4 py-2 font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.12em] text-[#062016] shadow-[0_6px_16px_rgba(8,46,35,0.16)]">
+              Get Quote
+            </a>
           </div>
         ) : null}
       </div>

@@ -1,7 +1,7 @@
 import { lazy, Suspense, useMemo } from 'react'
 import { ChevronRight } from 'lucide-react'
 import { useJsonLd, usePageMeta } from '../../lib/use-page-meta'
-import { buildBreadcrumbListSchema, buildWebPageSchema } from '../../lib/seo/organization-schema'
+import { buildBreadcrumbListSchema, buildFaqSchema, buildWebPageSchema } from '../../lib/seo/organization-schema'
 import { absoluteOgImageUrl } from '../../lib/site-seo'
 import { GeFooter } from './sections/ge-footer'
 import { GeNavbar } from './sections/ge-navbar'
@@ -133,6 +133,18 @@ export function GeContentPage() {
     )
   )
 
+  useJsonLd(
+    'gsol-content-faq',
+    useMemo(() => {
+      if (!page) return null
+      const faqs = page.sections
+        .filter((section) => section.title.trim().endsWith('?'))
+        .map((section) => ({ question: section.title.trim(), answer: section.body }))
+      if (faqs.length < 2) return null
+      return buildFaqSchema(faqs)
+    }, [page])
+  )
+
   if (!page) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-ge-gray50 px-5 text-center">
@@ -169,27 +181,9 @@ export function GeContentPage() {
       <GeNavbar />
 
       <main id="main">
-        <nav aria-label="Breadcrumb" className="border-b border-ge-gray100 bg-white px-5 py-3 sm:px-8">
-          <ol className="mx-auto flex max-w-[1180px] flex-wrap items-center gap-1.5 font-ge text-sm text-ge-gray500">
-            {crumbs.map((crumb, index) => (
-              <li key={crumb.path} className="flex items-center gap-1.5">
-                {index > 0 ? <ChevronRight className="h-3.5 w-3.5 shrink-0 opacity-60" aria-hidden /> : null}
-                {index === crumbs.length - 1 ? (
-                  <span aria-current="page" className="font-semibold text-gs-dark">
-                    {crumb.name}
-                  </span>
-                ) : (
-                  <a className="hover:text-gs-green" href={crumb.path}>
-                    {crumb.name}
-                  </a>
-                )}
-              </li>
-            ))}
-          </ol>
-        </nav>
-
         <PremiumPageHero
           srTitle={page.title}
+          breadcrumbs={crumbs}
           images={heroConfig.images}
           kicker={heroConfig.kicker}
           titleLine1={heroConfig.titleLine1}
@@ -200,7 +194,7 @@ export function GeContentPage() {
           floatingBadges={heroConfig.floatingBadges}
           formScrollTarget={heroConfig.formScrollTarget}
           formScrollLabel={heroConfig.formScrollLabel}
-          formScrollSublabel={heroConfig.formScrollSublabel}
+          formScrollSublabel={showCourseCorridorMap ? 'See every course on the map' : heroConfig.formScrollSublabel}
           primaryCta={{
             label: showCourseCorridorMap ? 'Explore the course map' : heroConfig.primaryCtaLabel,
             href: formTarget,

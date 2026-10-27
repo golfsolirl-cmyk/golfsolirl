@@ -11,6 +11,7 @@ import { sanitizeStandardFontText } from '../shared/pdf-winansi-sanitize.mjs'
 import { brandedPdfAssetPaths as sharedBrandedPaths, pdfEmailTheme } from './pdf-email-brand.mjs'
 import {
   UNIFIED_PDF_LAYOUT,
+  appendUnifiedHowToPay,
   loadUnifiedPdfFonts,
   embedUnifiedLogo,
   drawUnifiedDocumentHeader,
@@ -167,7 +168,7 @@ const travellerContactSections = [
     body:
       'For transfers, tee-time coordination, hotel notes or trip questions connected to your GolfSol Ireland enquiry, contact us directly.',
     points: [
-      'GolfSol Ireland phone / WhatsApp (Ireland): +353 87 446 4766',
+      'GolfSol Ireland phone / WhatsApp (Ireland): +353 86 851 5000',
       'GolfSol Ireland phone (Spain): +34 641 81 53 66',
       'GolfSol Ireland email: info@golfsolirl.com',
       'This guide is not an emergency service. In danger, call 112 first.'
@@ -546,6 +547,12 @@ export const createBrandedEnquiryPdf = async ({
   page = disclaimerBlock.page
   y = disclaimerBlock.y
 
+  ;({ page, y } = appendUnifiedHowToPay(page, y, ctx, () => {
+    page = doc.addPage([pageWidth, pageHeight])
+    y = drawUnifiedDocumentHeader(page, ctx, { compact: true, title: 'How to pay' })
+    return { page, y }
+  }))
+
   applyFooters(doc, ctx, [
     `© ${new Date().getFullYear()} GolfSol Ireland · Irish-owned Costa del Sol golf travel · Transfers, accommodation and tee times in one place.`
   ])
@@ -580,6 +587,12 @@ const renderBulletSectionsPdf = async ({ title, kicker, subtitle, sections, foot
     }
     y = drawUnifiedBulletCard(page, y, ctx, section)
   }
+
+  ;({ page, y } = appendUnifiedHowToPay(page, y, ctx, () => {
+    page = doc.addPage([pageWidth, pageHeight])
+    y = drawUnifiedDocumentHeader(page, ctx, { compact: true, title: 'How to pay' })
+    return { page, y }
+  }))
 
   applyFooters(doc, ctx, [footerTag])
   return doc.save()
@@ -745,6 +758,12 @@ export const createPackingChecklistPdf = async () => {
     }
     y = drawPackingSectionCard(page, y, ctx, section)
   }
+
+  ;({ page, y } = appendUnifiedHowToPay(page, y, ctx, () => {
+    page = doc.addPage([pageWidth, pageHeight])
+    y = drawUnifiedDocumentHeader(page, ctx, { compact: true, title: 'How to pay' })
+    return { page, y }
+  }))
 
   applyFooters(doc, ctx, [
     `© ${new Date().getFullYear()} Golf Sol Ireland · Packing checklist · Tick boxes before departure.`
