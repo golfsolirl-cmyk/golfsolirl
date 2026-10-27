@@ -245,8 +245,8 @@ export function GeContentPage() {
         {isNewsletter ? null : (
         <>
         <GeContentPromiseBand
-          eyebrow="The promise"
-          title="Plain guidance. One Irish team. Zero guesswork."
+          eyebrow="Why us"
+          title="One Irish team. A clear plan."
           body={promiseBody}
           bullets={page.highlights}
         />
@@ -261,7 +261,7 @@ export function GeContentPage() {
 
         <GeContentStoryGrid
           eyebrow="The detail"
-          title="How we support your week."
+          title="The short version."
           lead={page.subtitle}
           cards={storyCards}
         />
@@ -298,7 +298,7 @@ export function GeContentPage() {
 
         {formConfig ? (
           <GeContentEnquireBlock
-            eyebrow="Get in touch"
+            eyebrow={page.enquiryType === 'testimonial' ? 'Your trip' : page.enquiryType === 'legal' ? 'The terms' : 'Get a quote'}
             title={page.formTitle}
             body={page.formLead}
             formTitle={page.formTitle}

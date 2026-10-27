@@ -66,10 +66,10 @@ export const homeAirportTransferSignals = [
 ] as const
 
 export const designYourPackage = {
-  kicker: 'Concierge-built trip design',
+  kicker: 'Plan the week',
   title: 'Design your Costa del Sol golf trip',
-  lead: 'Choose your base · tee times · stay — we handle transfers and the full week',
-  bodyEmphasis: 'One Irish-led desk shapes the entire Sol itinerary around your group.',
+  lead: 'Pick the base, the courses and the hotel. We sort the transfers.',
+  bodyEmphasis: 'One Irish desk builds the week around your group.',
   stepCardEyebrow: 'Your itinerary',
   stepCta: 'Get a quote',
   step1Tag: 'Pick Your Costa del Sol Base',
@@ -80,33 +80,37 @@ export const designYourPackage = {
     eyebrow: 'STEP 1',
     title: 'Pick your Costa del Sol base.',
     body:
-      'Fuengirola, Torremolinos, Marbella or Sotogrande — every Sol resort town is within a short, golf-bag-friendly Mercedes transfer of the best courses in southern Spain.',
+      'Fuengirola, Torremolinos, Marbella or Sotogrande. Each one is a short drive from the courses, with room for the clubs.',
     image: '/images/ge-premium-golf-fairway-coastal.webp',
-    link: '/#golf-courses-spain'
+    link: '/accommodation',
+    cta: 'See the hotels'
   },
   step2: {
     eyebrow: 'STEP 2',
     title: 'Pick your Costa del Sol tee times.',
     body:
-      'Over seventy 18-hole courses sit between Málaga and Sotogrande — the highest density of golf anywhere in Europe. We hold preferential green-fee rates and live tee-sheet access on all of them, so we slot your group into the right course at the right time of day.',
+      'More than seventy courses sit between Málaga and Sotogrande. Tell us the ones you want and we request the tee times.',
     image: '/images/twilight-golf-hero.webp',
-    link: '/#golf-courses-spain'
+    link: '/golf-courses',
+    cta: 'See the courses'
   },
   step3: {
     eyebrow: 'STEP 3',
     title: 'Pick the hotel Irish groups already love.',
     body:
-      'We work directly with the Costa del Sol hotels Irish societies return to year after year — Hotel Angela, Yaramar, Ilunion Fuengirola, Riu, Don Pablo, Sol Timor and Ocean House. Better rates, friendlier cancellation terms, no surprises.',
+      'Hotel Angela, Yaramar, Ilunion Fuengirola, Riu, Don Pablo, Sol Timor and Ocean House. Irish groups stay in these again and again. Already booked somewhere else? We work around that.',
     image: '/images/ge-premium-resort-hotel-hero.webp',
-    link: '/#accommodation-spain'
+    link: '/accommodation',
+    cta: 'See the hotels'
   },
   step4: {
     eyebrow: 'STEP 4',
     title: 'Leave the rest to us.',
     body:
-      'We design the itinerary, book the tees, lock in golf-bag-friendly Mercedes transfers and meet you at AGP arrivals — every detail from arrivals hall to final putt.',
+      'We plan the rounds, book the transfers and meet you at Málaga arrivals.',
     image: '/images/transport-moment-arrivals.webp',
-    link: '/#enquire'
+    link: '/contact',
+    cta: 'Get a quote'
   }
 } as const
 
@@ -120,9 +124,9 @@ export const homeTripSnapshotBand = {
 /** Quick path for guests who already have a hotel — flight snapshot → continue page. */
 export const alreadyBookedHotelCopy = {
   badge: 'Hotel already booked?',
-  title: 'Send us your flight snapshot first',
+  title: 'Hotel booked? Send the flight',
   subtitle:
-    'If your stay is already locked in, skip the hotel hunt — drop your arrival details here. On the next screen you can add Costa del Sol golf courses, choose prime tee times or twilight slots, transfers and the rest of your week.',
+    'If the stay is already sorted, send your arrival details. On the next screen you add courses, tee times and transfers.',
   flightLabel: 'Flight number',
   flightPlaceholder: 'e.g. FR 7044',
   arrivalLabel: 'Arrival time (local)',
@@ -153,22 +157,22 @@ export const factsCopy = {
     {
       title: 'Irish-owned, on the ground',
       body:
-        'We are Irish, we live on the Costa del Sol, and we know how Irish golf societies travel. Every itinerary, transfer and tee time is built around what works for an Irish group — not a generic European package.'
+        'We are Irish and we live on the Costa del Sol. The plan is built for an Irish group, not a generic package.'
     },
     {
       title: 'Costa del Sol specialists',
       body:
-        'We do one thing: golf trips on the Costa del Sol. That focus means we know every course, every hotel and every transfer route between Málaga airport and Sotogrande. No guesswork — just the right course at the right time.'
+        'Golf trips on the Costa del Sol are the whole job. Courses, hotels and the drive from Málaga Airport to Sotogrande.'
     },
     {
       title: 'Plane to fairway · 24/7 care',
       body:
-        'From the moment you land at Málaga AGP to your final putt at Sotogrande, an Irish point of contact is one phone call (or WhatsApp) away — flight delays, late tee changes, lost clubs, we handle it. No call centres, no language barriers, no being passed around.'
+        'From landing at Málaga to the last round, you have one Irish number. Flight delays, tee changes and lost clubs come to us, not a call centre.'
     }
   ],
-  ctaKicker: 'Concierge-built · Irish desk',
-  ctaTitle: 'Let us design your perfect Costa del Sol golf trip.',
-  ctaLead: 'Tell us your dates and group size — we come back with the full route.',
+  ctaKicker: 'Irish desk',
+  ctaTitle: 'Tell us the dates. We’ll send the plan.',
+  ctaLead: 'Group size, rough dates, and the courses you have in mind.',
   ctaSignals: [
     {
       label: 'Reply inside 24h',
@@ -194,7 +198,7 @@ export const aboutCopy = {
   kicker: 'About GolfSol Ireland',
   eyebrow: 'About Us',
   title: 'About GolfSol Ireland',
-  lead: 'One Irish team. One Costa del Sol corridor. Every detail planned.',
+  lead: 'One Irish team. Costa del Sol only. The week planned before you fly.',
   /** Short line under the logo on the photo plate. */
   imageTagline: 'Irish-owned · Costa del Sol golf specialists',
   /** Three small chips under the logo plate. */
@@ -202,9 +206,9 @@ export const aboutCopy = {
   /** Small brand line beside the CTA on desktop. */
   ctaAside: 'Málaga to Sotogrande · One crew',
   paragraphs: [
-    'GolfSol Ireland is an Irish-owned, Costa del Sol-based golf travel specialist built for Irish societies, four-balls and family groups travelling out of Dublin, Cork, Shannon and Belfast.',
-    'We are licensed and bonded as a tour operator in full compliance with Spanish and EU travel law, with airport meet-and-greet, golf-bag-friendly Mercedes transfers and pre-booked tee times wrapped into every package.',
-    'Our promise is simple — take care of every Irish group from the moment they land in Málaga to the moment we drop them back at the AGP terminal. Same crew, same standard, every single trip.'
+    'GolfSol Ireland plans Costa del Sol golf trips for Irish societies, four-balls and families flying from Dublin, Cork, Shannon and Belfast.',
+    'We are a licensed and bonded tour operator. The usual week includes a meet-and-greet at Málaga, a transfer with room for the clubs, and tee times requested before you fly.',
+    'Same crew from the moment you land until we drop you back at the airport.'
   ],
   bodyEmphasis: 'Same crew. Same standard. Every single trip.',
   cta: 'READ OUR FULL STORY',
@@ -213,8 +217,8 @@ export const aboutCopy = {
 } as const
 
 export const finalCtaCopy = {
-  title: 'LET US DESIGN YOUR COSTA DEL SOL GOLF TRIP.',
-  cta: 'GET A QUOTE'
+  title: 'Tell us your dates. We’ll plan the rest.',
+  cta: 'Get a quote'
 } as const
 
 export const accommodationIntroCopy = {
@@ -223,7 +227,7 @@ export const accommodationIntroCopy = {
   title: 'The Costa del Sol hotels Irish groups love',
   lead: 'Beachfront, resort & apartment bases · Fuengirola → Sotogrande',
   body:
-    'These are hand-picked Costa del Sol bases Irish societies and four-balls book again and again — beachfront in Fuengirola, classic Torremolinos resorts and apartment-style stays for big groups. Better rates, friendlier cancellation terms, every detail looked after by our team on the ground.',
+    'Beachfront Fuengirola, Torremolinos resorts, and apartments for bigger groups. If you already have a hotel, we plan the golf and the transfers around it.',
   bodyEmphasis: 'Pick the base. We line up the rounds, the routes and the rates.',
   heroImage: '/images/ge-premium-resort-hotel-hero.webp',
   heroImageAlt:
@@ -258,24 +262,24 @@ export const accommodationIntroCopy = {
 } as const
 
 export const courseListsCopy = {
-  kicker: 'Costa del Sol tee sheet',
+  kicker: 'The courses',
   spainHeading: 'Costa del Sol Golf Courses',
-  lead: 'Málaga to Sotogrande · 70+ championship layouts',
+  lead: 'Málaga to Sotogrande · 70+ courses',
   body:
-    'Europe’s densest stretch of golf — from Ryder Cup hosts in Sotogrande to coast-line classics above Fuengirola. We hold preferential green-fee rates and live tee-sheet access, so your group plays the right course, at the right time of day, every day.',
+    'From Sotogrande to the courses above Fuengirola. Tell us who is playing and which days, and we request the tee times.',
   bodyEmphasis: 'Pick the courses, we lock the times.',
   signals: [
     {
       label: '70+ courses',
-      detail: 'Across the Málaga – Sotogrande corridor'
+      detail: 'Málaga to Sotogrande'
     },
     {
-      label: 'Live tee-sheet access',
-      detail: 'Direct to course operators, not third-party brokers'
+      label: 'Tee times requested',
+      detail: 'We ask the course, then confirm with you'
     },
     {
-      label: 'Preferential green-fee rates',
-      detail: 'Negotiated for Irish societies and four-balls'
+      label: 'Irish groups',
+      detail: 'Societies, four-balls and families'
     }
   ],
   cardCta: 'Quote this round',
@@ -302,7 +306,7 @@ export const extrasCopy = {
   title: 'The full Costa del Sol package.',
   lead: 'Tee sheet, transfers, hotel — one team, one itinerary.',
   body:
-    'Stop juggling four bookings and three WhatsApp groups. Tell us your dates, course wishlist and group size — we plan the round, route the Mercedes and lock the rates with our team on the ground in southern Spain.',
+    'Send the dates, the courses you want and how many are travelling. We come back with the rounds, the transfers and the price.',
   subtitle: 'And we also handle',
   /** First tile — tee times & course planning (extras strip). */
   teeTimesStripTitle: 'Tee times & courses',
@@ -320,7 +324,7 @@ export const extrasCopy = {
     'Every airport pickup and on-course transfer fully insured — drivers vetted, vehicles maintained on the Costa del Sol.',
   transferInsuredBadge: 'Fully insured on all transfers',
   /** Closer panel under the cards. */
-  closerTitle: 'One quote. One team. One Costa del Sol itinerary.',
+  closerTitle: 'One quote. One team. One week.',
   closerBody:
     'Send us your dates and we come back with prices, options, and a clean breakdown — usually inside 24 hours.',
   primaryCta: 'GET MY FULL PACKAGE QUOTE',

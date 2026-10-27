@@ -7,20 +7,23 @@ const services = [
   {
     icon: CarFront,
     title: 'Private transfers',
-    body: 'Meet-and-greet at Málaga AGP, golf-bag friendly Mercedes, live flight tracking.',
-    href: '/services/transport'
+    body: 'We meet you at Málaga Airport and drive you to the hotel, clubs included.',
+    href: '/services/transport',
+    cta: 'See transfers'
   },
   {
     icon: Flag,
     title: 'Golf courses',
-    body: 'Preferential tee times across the Sol corridor — Málaga to Sotogrande.',
-    href: '/#golf-courses-spain'
+    body: 'Tell us the courses you want. We request the tee times between Málaga and Sotogrande.',
+    href: '/golf-courses',
+    cta: 'See the courses'
   },
   {
     icon: BedDouble,
     title: 'Hotels & stays',
-    body: 'The Fuengirola and Torremolinos bases Irish groups book year after year.',
-    href: '/#accommodation-spain'
+    body: 'Fuengirola and Torremolinos bases Irish groups book again and again.',
+    href: '/accommodation',
+    cta: 'See the hotels'
   }
 ] as const
 
@@ -43,7 +46,7 @@ export function GeHomeWhatWeDo() {
           Everything your golf trip needs — in one place
         </h2>
         <p className="mx-auto mt-4 max-w-2xl font-ge text-[1.02rem] leading-7 text-ge-gray500">
-          One Irish desk plans transfers, tee times and hotel — so your group lands calm and plays the Sol properly.
+          Transfers, tee times and the hotel. One Irish desk, one quote.
         </p>
       </m.div>
 
@@ -64,7 +67,7 @@ export function GeHomeWhatWeDo() {
               <h3 className="mt-4 font-ge text-[1.05rem] font-extrabold text-gs-dark">{service.title}</h3>
               <p className="mt-2 flex-1 font-ge text-[0.92rem] leading-6 text-ge-gray500">{service.body}</p>
               <span className="mt-4 inline-flex items-center gap-1 font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.14em] text-brand-700 transition-colors group-hover:text-gs-dark">
-                Learn more
+                {service.cta}
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
               </span>
             </m.a>
@@ -73,8 +76,8 @@ export function GeHomeWhatWeDo() {
       </div>
 
       <m.div className="mt-10 flex justify-center sm:mt-12" {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.2 }}>
-        <GeButton href="/packages" variant="gs-green" size="lg">
-          Plan my golf trip
+        <GeButton href="/contact" variant="gs-green" size="lg">
+          Get a quote
           <ArrowRight className="h-4 w-4" aria-hidden />
         </GeButton>
       </m.div>

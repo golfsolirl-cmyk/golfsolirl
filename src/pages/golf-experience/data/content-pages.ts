@@ -78,34 +78,34 @@ function getFooterArticleHeroAlt(path: string, content: FooterArticleContent) {
 
 function getFooterArticleFormTitle(path: string) {
   if (path.includes('airport') || path.includes('transfer') || path.includes('routing')) {
-    return 'Request transport guidance'
+    return 'Get a transfer quote'
   }
   if (path.includes('hotel') || path.includes('accommodation')) {
-    return 'Get matched hotel options'
+    return 'Get a hotel quote'
   }
   if (path.includes('course')) {
-    return 'Build your course shortlist'
+    return 'Ask about these courses'
   }
   if (path.includes('terms')) {
     return 'Ask about terms'
   }
-  return 'Talk this through with us'
+  return 'Get a quote'
 }
 
 function getFooterArticleFormLead(path: string) {
   if (path.includes('airport') || path.includes('transfer') || path.includes('routing')) {
-    return 'Share your dates, airport, or route questions and we will map the cleanest next step.'
+    return 'Send the flight date, the hotel and how many are travelling.'
   }
   if (path.includes('hotel') || path.includes('accommodation')) {
-    return 'Tell us the trip dates and preferred location and we will come back with the right stay options.'
+    return 'Send the dates and the town you want. We’ll reply with stay options.'
   }
   if (path.includes('course')) {
-    return 'Send your dates and group details and we will point you toward the right rounds quickly.'
+    return 'Send the dates and how many are playing. We’ll suggest the rounds.'
   }
   if (path.includes('terms')) {
     return 'Send the clause or question you want clarified and we will answer directly.'
   }
-  return 'Send a short brief and we will come back with a practical next step.'
+  return 'Send the dates and the group size. We’ll come back with a plan.'
 }
 
 function convertFooterArticlePage(path: string, content: FooterArticleContent): GeContentPageData {

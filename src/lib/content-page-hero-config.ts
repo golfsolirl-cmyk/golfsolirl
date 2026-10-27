@@ -117,7 +117,7 @@ export function buildContentPageHeroConfig(path: string, page: GeContentPageData
     formScrollTarget: formTarget,
     formScrollLabel: scrollLabels[kind],
     formScrollSublabel: HERO_FORM_SCROLL_DEFAULT_SUBLABEL,
-    primaryCtaLabel: kind === 'testimonial' ? 'Leave a testimonial' : 'Start your enquiry',
+    primaryCtaLabel: scrollLabels[kind],
     floatingBadges:
       kind === 'transport'
         ? [

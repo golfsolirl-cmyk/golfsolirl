@@ -10,6 +10,7 @@ interface StepCard {
   readonly body: string
   readonly image: string
   readonly link: string
+  readonly cta: string
 }
 
 const heroContainerVariants: Variants = {
@@ -35,28 +36,32 @@ export function GeDesignYourPackage() {
       title: designYourPackage.step1.title,
       body: designYourPackage.step1.body,
       image: designYourPackage.step1.image,
-      link: designYourPackage.step1.link
+      link: designYourPackage.step1.link,
+      cta: designYourPackage.step1.cta
     },
     {
       badge: designYourPackage.step2.eyebrow,
       title: designYourPackage.step2.title,
       body: designYourPackage.step2.body,
       image: designYourPackage.step2.image,
-      link: designYourPackage.step2.link
+      link: designYourPackage.step2.link,
+      cta: designYourPackage.step2.cta
     },
     {
       badge: designYourPackage.step3.eyebrow,
       title: designYourPackage.step3.title,
       body: designYourPackage.step3.body,
       image: designYourPackage.step3.image,
-      link: designYourPackage.step3.link
+      link: designYourPackage.step3.link,
+      cta: designYourPackage.step3.cta
     },
     {
       badge: designYourPackage.step4.eyebrow,
       title: designYourPackage.step4.title,
       body: designYourPackage.step4.body,
       image: designYourPackage.step4.image,
-      link: designYourPackage.step4.link
+      link: designYourPackage.step4.link,
+      cta: designYourPackage.step4.cta
     }
   ]
 
@@ -181,7 +186,7 @@ export function GeDesignYourPackage() {
                       href={step.link}
                       className="mt-5 inline-flex min-h-[48px] items-center gap-2 self-start rounded-full border border-gs-dark/10 bg-gs-dark px-4 py-2.5 font-ge text-[0.88rem] font-bold uppercase tracking-[0.1em] text-white transition-all duration-300 hover:border-brand-700/50 hover:bg-brand-700 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-700 sm:min-h-[44px] sm:py-2 sm:text-[0.8rem]"
                     >
-                      {designYourPackage.stepCta}
+                      {step.cta}
                       <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
                     </a>
                   </div>

@@ -15,7 +15,7 @@ export const primaryNav: readonly GeNavLink[] = [
     href: '/services/transport',
     children: [
       { label: 'Transport', href: '/services/transport' },
-      { label: 'Tee Time Bookings only', href: '/services/tee-time-bookings' },
+      { label: 'Tee times only', href: '/services/tee-time-bookings' },
       { label: 'Twilight Golf', href: '/services/twilight-golf' }
     ]
   },
@@ -54,7 +54,7 @@ export const footerColumns = [
   {
     title: 'Quick Links',
     links: [
-      { label: 'Tee Time Bookings Only', href: '/services/tee-time-bookings' },
+      { label: 'Tee times only', href: '/services/tee-time-bookings' },
       { label: 'Twilight Golf — Costa del Sol', href: '/services/twilight-golf' },
       { label: 'Society & Group Trips', href: '/booking' },
       { label: 'Dress Code on the Costa del Sol', href: '/guides/dress-code-costa-del-sol' },
@@ -85,8 +85,7 @@ export const footerColumns = [
       { label: 'Málaga Airport Transfers', href: '/transport' },
       { label: 'Hotels Irish Groups Love', href: '/accommodation' },
       { label: 'Get a Quote', href: '/contact' },
-      { label: 'Sol Insider News', href: '/news' },
-      { label: 'Terms & Conditions', href: '/terms-conditions' },
+      { label: 'News', href: '/news' },
       { label: 'Join our newsletter', href: '/newsletter' },
       { label: 'Give a Testimonial', href: '/contact/give-a-testimonial' }
     ]
