@@ -118,7 +118,7 @@ export function TransportRouteStory() {
           className="mx-auto mt-5 max-w-2xl font-ge text-[0.96rem] font-semibold uppercase tracking-[0.16em] drop-shadow-[0_1px_8px_rgba(0,0,0,0.45)] sm:text-[1rem]"
           style={{ color: '#ffffff' }}
         >
-          One Irish crew · One Mercedes fleet · One choreography
+          One Irish crew · One set of vehicles · One plan
         </m.p>
 
         <m.p

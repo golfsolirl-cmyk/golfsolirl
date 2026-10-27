@@ -27,7 +27,7 @@ export const transportPromiseCopy = {
     'You book through Ireland, you’re met at AGP arrivals by name, your bags ride in a vehicle that actually fits clubs, and the same crew handles every run that week — courses, dinners, the late one back to the hotel.',
   bullets: [
     'Flights tracked from Dublin, Cork, Shannon, Belfast.',
-    'Mercedes V-Class, E-Class and Sprinter — sized to your group.',
+    'A car, people carrier or minibus — sized to your group.',
     'No anonymous rank queue. No surprise charges. No language barrier.'
   ]
 } as const
@@ -52,7 +52,7 @@ export const transportRouteStory = [
     bullet: 'Direct route · Bag drop · Week-long itinerary in hand',
     image: '/images/transport-moment-resort.webp',
     alt:
-      'Black Mercedes V-Class parked at the entrance of a luxury Costa del Sol golf resort, bellhop carrying a golf bag toward the door.'
+      'People carrier parked at the entrance of a Costa del Sol golf resort, with a golf bag being carried to the door.'
   },
   {
     badge: 'Step 03',
@@ -62,7 +62,7 @@ export const transportRouteStory = [
     bullet: 'Course transfers · Dinner runs · One Irish coordinator',
     image: '/images/transport-hero-coastal-drive.webp',
     alt:
-      'Black Mercedes V-Class on the AP-7 coastal motorway above Marbella at golden hour with the Mediterranean glittering on the right.'
+      'Private transfer on the coastal motorway above Marbella at golden hour, with the Mediterranean on the right.'
   }
 ] as const
 
@@ -70,7 +70,7 @@ export const transportFleetIntroCopy = {
   eyebrow: 'The fleet',
   title: 'All vehicles. Sized to the group.',
   body:
-    'Every transfer is matched to the four-ball, society or family travelling. Premium Mercedes only — leather, aircon, and proper room for travel covers, trolleys and shoe bags.'
+    'Every transfer is matched to the four-ball, society or family travelling. Air conditioning, and proper room for travel covers, trolleys and shoe bags.'
 } as const
 
 /** Homepage fleet image — banner sits below the photo, not overlaid. */
@@ -82,21 +82,21 @@ export const transportFleetInsuranceBannerCopy = {
 
 export const transportFleetTiers = [
   {
-    name: 'Mercedes E-Class',
+    name: 'Executive car',
     seats: '1 – 3 passengers',
     bagsLine: 'Up to 3 golf travel bags',
     bullets: ['Executive saloon', 'Quiet cabin · leather', 'Best for couples & solos'],
     accent: 'Discreet'
   },
   {
-    name: 'Mercedes V-Class',
+    name: 'People carrier',
     seats: '4 – 7 passengers',
     bagsLine: 'Up to 7 travel bags + cabin luggage',
     bullets: ['Premium people carrier', 'Captain seats · panoramic glass', 'The Sol corridor classic'],
     accent: 'Most chosen'
   },
   {
-    name: 'Mercedes Sprinter',
+    name: 'Group minibus',
     seats: 'Up to 8 passengers',
     bagsLine: 'Society-sized luggage hold',
     bullets: ['Full minibus comfort', 'Reclining seats · onboard usb', 'Built for societies & corporates'],

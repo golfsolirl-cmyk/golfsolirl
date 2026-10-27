@@ -107,7 +107,7 @@ function overlaySvg(outW, outH) {
   </g>
 
   <text x="60" y="${titleY + 175}" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="800" fill="#ffffff">
-    <tspan x="60" dy="0">Meet-and-greet at Malaga, golf-bag friendly Mercedes</tspan>
+    <tspan x="60" dy="0">Meet-and-greet at Malaga, golf-bag friendly private</tspan>
     <tspan x="60" dy="42">transfers, tee times pre-booked. Your group is taken care</tspan>
     <tspan x="60" dy="42">of from the carousel to the first cut.</tspan>
   </text>
@@ -125,7 +125,7 @@ function overlaySvg(outW, outH) {
 
     <circle cx="655" cy="650" r="24" fill="${CHECK_CIRCLE}"/>
     <text x="647" y="660" font-size="24" fill="${CHECK_MARK_ON}">✓</text>
-    <text x="693" y="660" font-size="23">Golf-bag friendly Mercedes V-Class</text>
+    <text x="693" y="660" font-size="23">Golf-bag friendly people carrier</text>
     <circle cx="655" cy="710" r="24" fill="${CHECK_CIRCLE}"/>
     <text x="647" y="720" font-size="24" fill="${CHECK_MARK_ON}">✓</text>
     <text x="693" y="720" font-size="23">Pre-booked tee times &amp; resort transfers</text>
@@ -205,7 +205,7 @@ function overlaySvgMobile(outW, outH) {
     </text>
     <text x="${cx}" y="520" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="800" fill="#ffffff">
       <tspan x="${cx}" dy="0">Meet-and-greet at Málaga.</tspan>
-      <tspan x="${cx}" dy="52">Mercedes transfers · tee times booked.</tspan>
+      <tspan x="${cx}" dy="52">Private transfers · tee times requested.</tspan>
       <tspan x="${cx}" dy="52">Your group looked after, gate to fairway.</tspan>
     </text>
   </g>

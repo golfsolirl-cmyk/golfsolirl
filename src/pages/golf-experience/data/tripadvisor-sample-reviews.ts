@@ -20,7 +20,7 @@ export interface TripadvisorSampleReview {
 export const tripadvisorSampleReviews: readonly TripadvisorSampleReview[] = [
   {
     quote:
-      'Met at Málaga exactly when promised, clubs in the back of a spotless V-Class, and tee times that actually matched what we were sold in Dublin. Captain’s job was easy for once.',
+      'Met at Málaga exactly when promised, clubs in the back of a spotless people carrier, and tee times that actually matched what we were sold in Dublin. Captain’s job was easy for once.',
     name: 'Liam O’C.',
     context: 'Cork · 12-handicap society',
     tripType: 'Sample review'

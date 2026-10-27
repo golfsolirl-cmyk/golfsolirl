@@ -174,7 +174,7 @@ function specsForPerson(
 
       title: `Portrait front — ${short}`,
 
-      subtitle: 'Foil luxury — centred crest, GOLF SOL IRELAND, taglines, Mercedes + shamrock.',
+      subtitle: 'Foil luxury — centred crest, GOLF SOL IRELAND, taglines, transfers + shamrock.',
 
       orientation: 'portrait',
 

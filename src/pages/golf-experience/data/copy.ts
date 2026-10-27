@@ -21,11 +21,11 @@ export const contactInfo = {
 
 /** Alt text for the brand-composed Malaga hero raster (homepage). */
 export const malagaHeroImageAlt =
-  'GolfSol Ireland — From plane to fairway. Meet-and-greet at Malaga, golf-bag friendly Mercedes transfers, tee times pre-booked. Irish and Spanish phone lines: +353 86 851 5000 and +34 641 81 53 66.' as const
+  'GolfSol Ireland — From plane to fairway. Meet-and-greet at Malaga, golf-bag friendly private transfers, tee times pre-booked. Irish and Spanish phone lines: +353 86 851 5000 and +34 641 81 53 66.' as const
 
 /** Alt for the transport-page hero variant (premium van, chauffeur, golf bags at airport). */
 export const transportHeroImageAlt =
-  'GolfSol Ireland transport hero — premium black Mercedes van at a Mediterranean airport arrivals curb, chauffeur beside the vehicle, golf bags and clubs being loaded, warm golden-hour light, forest green and gold brand atmosphere.' as const
+  'GolfSol Ireland transport hero — premium people carrier at a Mediterranean airport arrivals curb, chauffeur beside the vehicle, golf bags and clubs being loaded, warm golden-hour light, forest green and gold brand atmosphere.' as const
 
 export const heroCopy = {
   title: 'YOUR COSTA DEL SOL GOLF TRIP STARTS RIGHT HERE.',
@@ -39,14 +39,14 @@ export const homeAirportTransfersCopy = {
   titleLine1: 'Arrive in Málaga.',
   titleLine2: 'Let us do the rest.',
   body:
-    'Meet and greet at AGP, live flight tracking, golf-bag-ready Mercedes, and a straight run to your hotel — no taxi queue, no guesswork.',
-  fleetImageBadge: 'Golf-bag friendly Mercedes fleet',
+    'Meet and greet at AGP, live flight tracking, golf-bag-ready vehicle, and a straight run to your hotel — no taxi queue, no guesswork.',
+  fleetImageBadge: 'Golf-bag friendly vehicles',
   fleetImageSrc: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
   fleetImageAlt:
-    'Premium Mercedes transfer vehicles on the Costa del Sol — golf-bag friendly fleet for Irish groups.',
-  fleetCardLabel: 'Mercedes fleet',
+    'Private transfer vehicles on the Costa del Sol — room for clubs, for Irish groups.',
+  fleetCardLabel: 'The vehicles',
   fleetCardBody:
-    'E-Class, V-Class and Sprinter — matched to your group, clubs and trolley count.',
+    'Car, people carrier or minibus — matched to your group, clubs and trolley count.',
   ctaLabel: 'Explore airport transfers',
   boardingEyebrow: 'Now boarding',
   boardingTitle: 'Airport transfers',
@@ -202,7 +202,7 @@ export const aboutCopy = {
   /** Short line under the logo on the photo plate. */
   imageTagline: 'Irish-owned · Costa del Sol golf specialists',
   /** Three small chips under the logo plate. */
-  imageStats: ['Málaga → Sotogrande', 'Mercedes-only fleet', 'One Irish crew'],
+  imageStats: ['Málaga → Sotogrande', 'Private vehicles', 'One Irish crew'],
   /** Small brand line beside the CTA on desktop. */
   ctaAside: 'Málaga to Sotogrande · One crew',
   paragraphs: [
@@ -316,7 +316,7 @@ export const extrasCopy = {
   /** Second tile — transfers capacity (extras strip). */
   transfersCapacityTitle: 'Transfers',
   transfersCapacityBody:
-    'Most vehicles seat 1–8 with golf bags. Larger group? Tell us in advance and we line up the right Mercedes capacity.',
+    'Most vehicles seat 1–8 with golf bags. Larger group? Tell us in advance and we line up the right vehicle.',
   transfersCapacityBadge: '1–8 people per vehicle',
   /** Third tile in the extras strip. */
   transferInsuredTitle: 'Airport & course transfers',

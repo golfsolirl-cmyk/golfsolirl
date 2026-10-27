@@ -278,7 +278,7 @@ export function ClientQuotePreviewPage() {
             </div>
             <div className="relative min-h-[14rem] border-t-2 border-[#d9d9d9] bg-[#0a2008] lg:min-h-0 lg:border-l-2 lg:border-t-0">
               <img
-                alt="Mercedes transfer fleet on the Costa del Sol"
+                alt="Private transfer vehicles on the Costa del Sol"
                 className="h-full min-h-[14rem] w-full object-cover object-center lg:absolute lg:inset-0 lg:min-h-full"
                 height={640}
                 src="/images/hero-sample-sunny-mercedes-01.webp"

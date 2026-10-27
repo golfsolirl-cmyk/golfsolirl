@@ -69,7 +69,7 @@ export const PAGE_HERO_REGISTRY = {
     mobile: '/images/hero-malaga-transfer-mobile.webp',
     desktopWebp: '/images/hero-malaga-transfer-desktop.webp',
     mobileWebp: '/images/hero-malaga-transfer-mobile.webp',
-    alt: 'Mercedes airport-to-course transfer along the Costa del Sol corridor.',
+    alt: 'Airport-to-course transfer along the Costa del Sol corridor.',
     badge: 'Costa del Sol transfers',
     tintHue: 'cool'
   } satisfies PageHeroSource,
@@ -90,7 +90,7 @@ export const PAGE_HERO_REGISTRY = {
     desktop: '/images/hero-costa-del-sol-transfer-banner.webp',
     mobile: '/images/hero-malaga-transfer-mobile.webp',
     mobileWebp: '/images/hero-malaga-transfer-mobile.webp',
-    alt: 'Costa del Sol transfer banner — your Mercedes is being lined up.',
+    alt: 'Costa del Sol transfer banner — your vehicle is being lined up.',
     badge: 'Trip continues',
     tintHue: 'cool'
   } satisfies PageHeroSource,

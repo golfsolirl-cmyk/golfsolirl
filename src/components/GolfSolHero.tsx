@@ -70,7 +70,7 @@ const TRUST = [
 ] as const
 
 const DEFAULT_SUB =
-  'Private Málaga airport transfers, golf-bag ready Mercedes fleet, hand-picked accommodation and tee times — Irish-owned specialists for the Costa del Sol corridor.'
+  'Private Málaga airport transfers, golf-bag ready vehicles, hand-picked accommodation and tee times — Irish-owned specialists for the Costa del Sol corridor.'
 
 export function GolfSolHero({
   className,
@@ -79,7 +79,7 @@ export function GolfSolHero({
   headlineLine2 = 'From Touchdown.',
   subheading = DEFAULT_SUB,
   fleetImageSrc = '/images/himage.webp',
-  fleetImageAlt = 'Mercedes executive cars and vans on a sunlit Costa del Sol golf course — GolfSol Ireland luxury transfer fleet.',
+  fleetImageAlt = 'Executive cars and people carriers on a sunlit Costa del Sol golf course — GolfSol Ireland private transfers.',
   bookHref = '#design-package',
   servicesHref = '/services/transport',
   bookLabel = 'Book your transfer',
@@ -248,7 +248,7 @@ export function GolfSolHero({
                 className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/10"
               />
               <p className="pointer-events-none absolute bottom-6 left-6 right-6 font-ge text-[0.65rem] font-black uppercase leading-relaxed tracking-[0.32em] text-white drop-shadow-[0_2px_14px_rgba(0,0,0,0.75)] sm:bottom-7 sm:left-8 sm:right-8 sm:text-xs sm:tracking-[0.38em]">
-                Mercedes fleet · Golf bags · Irish crew
+                Private vehicles · Golf bags · Irish crew
               </p>
             </m.div>
 

@@ -220,13 +220,13 @@ ${emailResponsiveCss}
                   <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:${gs.dark}; border-radius:36px; overflow:hidden; box-shadow:${cardShadowLift}; border:1px solid ${emailAccentBorderOnDarkMuted};">
                     <tr>
                       <td style="padding:0;line-height:0;font-size:0;">
-                        <img src="${assetUrl(assets.fleetLineup)}" width="640" height="359" alt="GolfSol Ireland Mercedes fleet lineup for Costa del Sol golf transfers." style="display:block; width:100%; max-width:640px; height:auto; border:0;">
+                        <img src="${assetUrl(assets.fleetLineup)}" width="640" height="359" alt="GolfSol Ireland transfer vehicles for Costa del Sol golf trips." style="display:block; width:100%; max-width:640px; height:auto; border:0;">
                       </td>
                     </tr>
                     <tr>
                       <td class="mobile-pad" style="padding:28px 36px 32px 36px; background:${gs.dark}; border-top:1px solid ${emailAccentBorderOnDarkMuted};">
                         <p style="margin:0;font-family:${emailFonts.sans};color:${emailAccentTextOnDark};font-size:11px;font-weight:800;letter-spacing:0.24em;text-transform:uppercase;">Fleet</p>
-                        <p style="margin:12px 0 0 0;font-family:${emailFonts.sans};color:${gs.white};font-size:26px;line-height:1.2;font-weight:800;letter-spacing:-0.025em;">Mercedes E-Class, V-Class &amp; Sprinter — sized to your group and bags.</p>
+                        <p style="margin:12px 0 0 0;font-family:${emailFonts.sans};color:${gs.white};font-size:26px;line-height:1.2;font-weight:800;letter-spacing:-0.025em;">Car, people carrier and minibus — sized to your group and bags.</p>
                       </td>
                     </tr>
                   </table>

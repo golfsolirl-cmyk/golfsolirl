@@ -22,7 +22,7 @@ interface GeMarketingHeroPictureProps {
  * — Desktop / tablet (≥768px): banner with the "MALAGA → COSTA DEL SOL GOLF
  *   TRANSFERS" headline baked into the artwork (top of the image must remain
  *   visible — never cropped from the top).
- * — Mobile (<768px): fleet lineup that shows the three black Mercedes vehicles
+ * — Mobile (<768px): lineup that shows the transfer vehicles
  *   with the GolfSol crest and the "FROM PLANE TO FAIRWAY" circle text visible
  *   on each car.
  */

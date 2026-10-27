@@ -39,7 +39,7 @@ export const CARD_SERVICES = [
   'Premium Concierge Service'
 ] as const
 
-export const CARD_BADGES = ['Irish Drivers', 'Costa del Sol Specialists', 'Luxury Mercedes Fleet'] as const
+export const CARD_BADGES = ['Irish Drivers', 'Costa del Sol Specialists', 'Private Transfers'] as const
 
 const SHAMROCK = '/shamrock-from-logo.webp'
 

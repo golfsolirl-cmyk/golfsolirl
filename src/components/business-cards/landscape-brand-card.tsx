@@ -104,7 +104,7 @@ export function LandscapeBrandCardFront({ mode }: { readonly mode: BusinessCardR
       >
         {[
           { Icon: PlaneLanding, label: 'Malaga AGP' },
-          { Icon: CarFront, label: 'Mercedes Fleet' },
+          { Icon: CarFront, label: 'Private Transfers' },
           { Icon: Flag, label: 'Golf & Hotels' }
         ].map(({ Icon, label }) => (
           <span

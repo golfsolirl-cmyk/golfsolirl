@@ -67,7 +67,7 @@ export function BrandFleetHeroPanel({
           isPdf && 'py-2.5 text-xs sm:text-sm'
         )}
       >
-        Mercedes fleet: E-Class, V-Class and Sprinter — matched to your group and bag count.
+        Private vehicles: car, people carrier and minibus — matched to your group and bag count.
       </p>
     </div>
   )

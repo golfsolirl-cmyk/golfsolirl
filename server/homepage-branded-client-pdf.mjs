@@ -73,7 +73,7 @@ const drawHomepageServicePillars = (page, startY, ctx) => {
   const pillars = [
     {
       title: 'Transfers',
-      body: 'Meet-and-greet at Málaga AGP. Golf-bag friendly Mercedes V-Class and Sprinter.'
+      body: 'Meet-and-greet at Málaga AGP. Golf-bag friendly people carriers and minibuses.'
     },
     {
       title: 'Golf courses',
@@ -219,7 +219,7 @@ export const buildHomepageBrandedClientPdfBytes = async (input = {}) => {
   y = drawUnifiedGoldRule(page2, y)
   y = drawUnifiedBulletCard(page2, y, ctx, {
     title: 'Fully insured transfers',
-    body: 'Private Mercedes transfers with full passenger insurance and meet-and-greet at Málaga AGP.',
+    body: 'Private transfers with full passenger insurance and meet-and-greet at Málaga AGP.',
     points: [
       'Professional chauffeurs — named drivers, flight-tracked pickups',
       'Full passenger insurance on every leg',

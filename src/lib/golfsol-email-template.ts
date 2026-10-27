@@ -162,7 +162,7 @@ export function getGolfSolBrandedEmailHtml() {
                   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${brand.white}; border:1px solid ${brand.sand}; border-radius:26px; overflow:hidden;">
                     <tr>
                       <td style="padding:0;">
-                        <img src="${assets.fleetLineup}" width="640" height="359" alt="GolfSol Ireland Mercedes fleet lineup for Costa del Sol golf transfers." style="display:block; width:100%; max-width:640px; height:auto; border:0;">
+                        <img src="${assets.fleetLineup}" width="640" height="359" alt="GolfSol Ireland transfer vehicles for Costa del Sol golf trips." style="display:block; width:100%; max-width:640px; height:auto; border:0;">
                       </td>
                     </tr>
                     <tr>
@@ -170,8 +170,8 @@ export function getGolfSolBrandedEmailHtml() {
                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                           <tr>
                             <td class="mobile-stack" style="vertical-align:top;">
-                              <p style="margin:0; font-family:Arial, Helvetica, sans-serif; color:${brand.green}; font-size:11px; line-height:15px; font-weight:900; letter-spacing:1.7px; text-transform:uppercase;">Golf-bag friendly Mercedes fleet</p>
-                              <p style="margin:8px 0 0 0; font-family:Georgia, 'Times New Roman', serif; color:${brand.ink}; font-size:24px; line-height:30px; font-weight:700;">E-Class, V-Class and Sprinter options matched to your group.</p>
+                              <p style="margin:0; font-family:Arial, Helvetica, sans-serif; color:${brand.green}; font-size:11px; line-height:15px; font-weight:900; letter-spacing:1.7px; text-transform:uppercase;">Golf-bag friendly vehicles</p>
+                              <p style="margin:8px 0 0 0; font-family:Georgia, 'Times New Roman', serif; color:${brand.ink}; font-size:24px; line-height:30px; font-weight:700;">Car, people carrier and minibus options matched to your group.</p>
                             </td>
                             <td class="mobile-stack" align="right" style="vertical-align:top; padding-left:18px;">
                               <p style="margin:3px 0 0 0; font-family:Arial, Helvetica, sans-serif; color:${brand.muted}; font-size:14px; line-height:22px;">Private transfers from Malaga Airport to resort, tee times and return departures.</p>

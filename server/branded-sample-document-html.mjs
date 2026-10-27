@@ -23,7 +23,7 @@ export const getBrandedSampleDocumentPreviewHtml = () => {
         ${row('Bill to', 'Sample Society · Dublin')}
       </tr>
       <tr style="background:${gs.rowA};">
-        ${row('Service', 'Private Malaga Airport transfer (V-Class) — golf bags')}
+        ${row('Service', 'Private Malaga Airport transfer (people carrier) — golf bags')}
       </tr>
       <tr style="background:#fff;">
         ${row('Amount (sample)', '€180.00')}

@@ -251,7 +251,7 @@ export function BusinessCardsDualShowcase() {
           </h1>
           <p className="mt-5 max-w-2xl font-ge text-base font-medium leading-relaxed text-[#eef2ef]/85 sm:text-lg">
             Portrait and landscape layouts built from the same Golf Sol Ireland identity — forest green, cream,
-            gold chrome, Mercedes fleet photography, and a scannable QR to{' '}
+            gold chrome, transfer photography, and a scannable QR to{' '}
             <span className="text-[#d9be7a]">{businessCardContact.websiteDisplay}</span>.
           </p>
 

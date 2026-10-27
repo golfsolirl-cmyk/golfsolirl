@@ -29,7 +29,7 @@ export function GeHomeFleetHighlight() {
           >
             <img
               src="/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp"
-              alt="GolfSol Ireland Mercedes V-Class, E-Class and Sprinter lined up on a Costa del Sol fairway with La Concha mountain in the background."
+              alt="GolfSol Ireland transfer vehicles lined up on a Costa del Sol fairway with La Concha mountain in the background."
               className="absolute inset-0 h-full w-full object-cover"
               loading="lazy"
               decoding="async"
@@ -65,7 +65,7 @@ export function GeHomeFleetHighlight() {
             {transportFleetIntroCopy.title}
           </h2>
           <p className="relative z-[1] mt-5 max-w-2xl font-ge text-[1.02rem] leading-8 text-ge-gray500 sm:text-[1.06rem]">
-            Premium Mercedes only, always matched to the group, with proper room for travel covers, trolleys and shoe bags.
+            Matched to the group, with proper room for travel covers, trolleys and shoe bags.
           </p>
 
           <div className="relative z-[1] mt-8 space-y-3">
@@ -80,7 +80,7 @@ export function GeHomeFleetHighlight() {
                 <div className="min-w-0 flex-1 sm:grid sm:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] sm:items-center sm:gap-4">
                   <div className="min-w-0">
                     <p className="font-ge text-[0.98rem] font-extrabold leading-5 text-gs-dark sm:text-[1rem]">{tier.name}</p>
-                    <p className="mt-1 font-ge text-[0.86rem] leading-6 text-ge-gray500">Premium Mercedes comfort for the Sol corridor.</p>
+                    <p className="mt-1 font-ge text-[0.86rem] leading-6 text-ge-gray500">Room for clubs on the Sol corridor.</p>
                   </div>
                   <div className="mt-2 min-w-0 sm:mt-0 sm:text-right">
                     <p className="font-ge text-[0.88rem] font-semibold leading-6 text-gs-dark">{tier.seats}</p>

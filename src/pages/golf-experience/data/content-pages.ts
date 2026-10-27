@@ -165,7 +165,7 @@ const termsPage: GeContentPageData = {
   subtitle:
     'Clear booking terms for deposits, supplier changes, golf course issues, accommodation problems, cancellations and liability before your group commits.',
   heroImage: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
-  heroAlt: 'GolfSol Ireland Mercedes fleet on the Costa del Sol — terms and conditions.',
+  heroAlt: 'GolfSol Ireland private transfers on the Costa del Sol — terms and conditions.',
   highlights: trustHighlights,
   sections: [
     {
@@ -261,7 +261,7 @@ const teeTimeOnlyPage: GeContentPageData = {
   subtitle:
     'Need golf only? We can shortlist and secure the right rounds without repackaging your whole trip. Fast, clear, and suited to Irish groups.',
   heroImage: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
-  heroAlt: 'GolfSol Ireland Mercedes fleet on the Costa del Sol — tee-time booking service.',
+  heroAlt: 'GolfSol Ireland private transfers on the Costa del Sol — tee-time booking service.',
   highlights: trustHighlights,
   sections: [
     {
@@ -303,7 +303,7 @@ const twilightGolfPage: GeContentPageData = {
     'Late-afternoon tee times pair softer green fees with forgiving light and an easier run to dinner in Marbella, Fuengirola or Puerto Banús. We shortlist courses that run twilight sheets well for Irish groups.',
   heroImage: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
   heroAlt:
-    'GolfSol Ireland Mercedes fleet on the Costa del Sol — twilight golf service.',
+    'GolfSol Ireland private transfers on the Costa del Sol — twilight golf service.',
   highlights: trustHighlights,
   sections: [
     {
@@ -371,7 +371,7 @@ const bookingPage: GeContentPageData = {
   subtitle:
     'We keep bookings simple: clear options, clear pricing, clear next actions, and one Irish team handling the details.',
   heroImage: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
-  heroAlt: 'GolfSol Ireland Mercedes fleet on the Costa del Sol — booking service.',
+  heroAlt: 'GolfSol Ireland private transfers on the Costa del Sol — booking service.',
   highlights: trustHighlights,
   sections: [
     {
@@ -400,7 +400,7 @@ const transportOverviewPage: GeContentPageData = {
   subtitle:
     'Airport runs, hotel shuttles, and golf-day transfers handled by one coordinated team that understands group golf travel.',
   heroImage: '/images/transport-hero-coastal-drive.webp',
-  heroAlt: 'Mercedes transfer vehicle on Costa del Sol motorway route.',
+  heroAlt: 'Private transfer on the Costa del Sol motorway.',
   highlights: trustHighlights,
   sections: [
     {

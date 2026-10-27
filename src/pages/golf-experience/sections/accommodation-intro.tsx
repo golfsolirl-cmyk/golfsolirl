@@ -167,7 +167,7 @@ export function GeAccommodationIntro() {
                 Stay-and-play corridor
               </p>
               <p className="mt-1 font-ge text-[0.88rem] leading-snug sm:text-[0.94rem]">
-                One Mercedes route from Málaga AGP to your base — then out to the fairways each morning.
+                One private run from Málaga Airport to your base — then out to the fairways each morning.
               </p>
             </div>
           </div>

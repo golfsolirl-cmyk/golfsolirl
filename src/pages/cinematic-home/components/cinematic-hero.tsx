@@ -124,7 +124,7 @@ export function CinematicHero({ reduceMotion }: { readonly reduceMotion: boolean
             From Dublin to the fairways of the Costa del Sol.
           </h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-cream/85 sm:text-lg md:text-xl">
-            Land in Málaga. Private Mercedes transfers, hand-picked courses, and Irish coordinators who treat your
+            Land in Málaga. Private transfers, hand-picked courses, and Irish coordinators who treat your
             week like their own — so the trip starts the moment you touch down.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-4">

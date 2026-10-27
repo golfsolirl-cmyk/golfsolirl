@@ -4,7 +4,7 @@ const BLOCKS = [
   {
     kicker: 'Arrival',
     title: 'Málaga met. Luggage handled. Tee times waiting.',
-    body: 'Your driver meets you in arrivals with a name board, golf bags stowed with care, and a quiet Mercedes cabin to decompress after the flight. No queues, no guesswork — just the start of a proper week.',
+    body: 'Your driver meets you in arrivals with a name board, golf bags stowed with care, and a quiet cabin to decompress after the flight. No queues, no guesswork — just the start of a proper week.',
     imageKey: 'transfers' as const,
     imageRight: false
   },
@@ -24,7 +24,7 @@ const BLOCKS = [
   },
   {
     kicker: 'Fleet',
-    title: 'Mercedes throughout — E-Class, V-Class, Sprinter when the group grows.',
+    title: 'A car, a people carrier, or a minibus when the group grows.',
     body: 'Air-conditioned, professionally presented, and sized for clubs plus luggage. The fleet is the physical promise of how seriously we take the service.',
     imageKey: 'fleet' as const,
     imageRight: true

@@ -920,7 +920,7 @@ export function FoilPrintCardFigure({
   )
 }
 
-/** Mercedes fleet photo with deep forest gradient — white type reads clearly on top. */
+/** Transfer photo with deep forest gradient — white type reads clearly on top. */
 function FoilFleetGradientBackground({ variant = 'front' }: { readonly variant?: 'back' | 'front' }) {
   const src = foilAssetUrl(BRAND_BUSINESS_CARD_HERO_BG_SRC)
   const isFront = variant === 'front'
@@ -1092,7 +1092,7 @@ function FoilFrontBrandLockup({
             block
             className={`${type.subToTag} font-ge font-semibold uppercase ${FOIL_TYPE.shadowSoft} ${type.tag}`}
           >
-            Irish Drivers • Mercedes Fleet • Costa del Sol
+            Irish Drivers • Private Transfers • Costa del Sol
           </FoilWhiteText>
         </div>
       </div>

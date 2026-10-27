@@ -171,7 +171,7 @@ export function getContentPageHeroMedia(path: string, page: GeContentPageData): 
     case 'booking':
       return {
         image: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
-        alt: 'GolfSol Ireland Mercedes fleet on the Costa del Sol — booking service.',
+        alt: 'GolfSol Ireland private transfers on the Costa del Sol — booking service.',
         stripeLabel
       }
     case 'testimonial':
@@ -228,7 +228,7 @@ export function getContentStorySectionMedia(
     },
     {
       image: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
-      alt: 'GolfSol Ireland Mercedes fleet on the Costa del Sol.'
+      alt: 'GolfSol Ireland private transfers on the Costa del Sol.'
     },
     {
       image: '/images/transport-hero-coastal-drive.webp',

@@ -21,7 +21,7 @@ const SITE = 'https://www.golfsolirl.com'
 
 const FEATURES = [
   'Meet & Greet at Malaga AGP',
-  'Golf-Bag Friendly Mercedes V-Class',
+  'Golf-bag friendly people carrier',
   'Irish-Owned Operator Support',
   'Pre-Booked Tee Times & Resort Transfers'
 ] as const
@@ -103,7 +103,7 @@ function PhoneHeroMockup() {
             </div>
 
             <p className="mx-3 mt-3 rounded-xl border border-white/30 bg-cream px-3 py-2.5 text-[0.7rem] leading-relaxed text-forest-950/90 shadow-inner">
-              Meet-and-greet at Malaga, golf-bag friendly Mercedes transfers, tee times pre-booked. Your group is taken
+              Meet-and-greet at Malaga, golf-bag friendly private transfers, tee times pre-booked. Your group is taken
               care of from the carousel to the first cut.
             </p>
 

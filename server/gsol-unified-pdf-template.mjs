@@ -553,7 +553,7 @@ export const buildGsolUnifiedPdfTemplateSampleBytes = async () => {
   const page2 = doc.addPage([pageWidth, pageHeight])
   y = drawUnifiedDocumentHeader(page2, ctx, {
     title: 'Transfer experience',
-    subtitle: 'Private meet-and-greet at Malaga Airport (AGP), golf-bag-friendly Mercedes fleet.'
+    subtitle: 'Private meet-and-greet at Malaga Airport (AGP), golf-bag-friendly vehicles.'
   })
 
   const body = [

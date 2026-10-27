@@ -10,7 +10,7 @@ You are a senior Vite + React + Tailwind engineer and luxury travel UI designer.
 - Homepage, admin dashboard, client dashboard, pricing, enquiry forms, transport pages, accommodation pages, golf course pages, testimonials, business cards, and email previews must all share this same cream/green/yellow luxury identity.
 
 ## Target feeling
-The app must feel like a premium Irish-to-Costa-del-Sol golf concierge and executive Mercedes transfer platform: cinematic, clean, warm, trustworthy, mobile-first, luxury, and conversion-focused.
+The app must feel like a premium Irish-to-Costa-del-Sol golf concierge and private transfer platform: cinematic, clean, warm, trustworthy, mobile-first, luxury, and conversion-focused.
 
 ## Design target from the mockup
 - Cream page background.
@@ -19,7 +19,7 @@ The app must feel like a premium Irish-to-Costa-del-Sol golf concierge and execu
 - Rounded cards with subtle borders and shadows.
 - Crest logo in header.
 - Large uppercase hero: “FROM PLANE TO FAIRWAY.”
-- Hero uses golf-course + mountain + Mercedes transfer imagery.
+- Hero uses golf-course + mountain + private transfer imagery.
 - Floating “24/7 Support” badge.
 - Floating feature strip under hero.
 - Country flags trust strip.
@@ -50,7 +50,7 @@ Search the codebase for these and restyle them if present:
 ## Exact content style
 Use direct, strong conversion copy:
 - FROM PLANE TO FAIRWAY.
-- Mercedes transfers. Golf-bag friendly.
+- Private transfers. Golf-bag friendly.
 - Your group looked after, gate to fairway.
 - Irish-owned. Golf-bag friendly.
 - All transfers fully insured.
@@ -113,7 +113,7 @@ Use:
 2. Hero
 - Height: desktop around 620px; mobile around 520px minimum.
 - Background: golf course, mountains, Costa del Sol light.
-- Add Mercedes van image layered on right or integrated background.
+- Add a transfer vehicle image layered on the right or integrated into the background.
 - Overlay: left-to-right dark green gradient.
 - Badge: “Malaga Airport Specialist”.
 - Main title: FROM PLANE TO FAIRWAY.
@@ -130,7 +130,7 @@ Four dark green cards/icons:
 - Irish & Spanish Support
 
 4. Flags strip
-EU, UK, Ireland, Spain, Germany, Sweden, Denmark style flags plus text about EU/Scandinavian visitors and Malaga meet-and-greet Mercedes transfers.
+EU, UK, Ireland, Spain, Germany, Sweden, Denmark style flags plus text about EU/Scandinavian visitors and Malaga meet-and-greet private transfers.
 
 5. Airport card section
 Two-column desktop.
@@ -178,7 +178,7 @@ Create landscape and portrait designs matching the site:
 - Crest logo.
 - Malaga · Costa del Sol Golf Transfers.
 - QR area.
-- Mercedes/golf background texture.
+- Transfer and golf background texture.
 - Premium contact layout.
 
 ## Quality checks

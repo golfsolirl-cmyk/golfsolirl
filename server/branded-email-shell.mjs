@@ -199,7 +199,7 @@ export const buildBrandedTrustBandHtml = () => `
                           </tr>
                           <tr>
                             <td align="center" style="padding:0 0 28px 0;">
-                              <p class="email-lead" style="margin:0 auto;max-width:500px;font-family:${emailFonts.sans};color:rgba(245,240,230,0.9);font-size:18px;line-height:1.72;font-weight:500;text-align:center;">Private Mercedes transfers, full passenger insurance, and meet-and-greet at Málaga AGP — from arrivals hall to first tee and back.</p>
+                              <p class="email-lead" style="margin:0 auto;max-width:500px;font-family:${emailFonts.sans};color:rgba(245,240,230,0.9);font-size:18px;line-height:1.72;font-weight:500;text-align:center;">Private transfers, full passenger insurance, and meet-and-greet at Málaga AGP — from arrivals hall to first tee and back.</p>
                             </td>
                           </tr>
                         </table>
@@ -228,7 +228,7 @@ export const buildBrandedTrustBandHtml = () => `
                                 <tr><td style="padding:18px 16px 20px 16px;text-align:center;">
                                   <p style="margin:0;font-family:${emailFonts.sans};font-size:22px;line-height:1.25;color:${emailAccentTextOnDark};font-weight:800;">&#10003;</p>
                                   <p class="email-trust-chip-title" style="margin:12px 0 0 0;font-family:${emailFonts.sans};color:${gs.white};font-size:15px;line-height:1.38;font-weight:800;letter-spacing:-0.01em;">AGP meet &amp; greet</p>
-                                  <p class="email-trust-chip-sub" style="margin:8px 0 0 0;font-family:${emailFonts.sans};color:rgba(255,255,255,0.72);font-size:14px;line-height:1.58;font-weight:500;">Golf-bag friendly Mercedes fleet</p>
+                                  <p class="email-trust-chip-sub" style="margin:8px 0 0 0;font-family:${emailFonts.sans};color:rgba(255,255,255,0.72);font-size:14px;line-height:1.58;font-weight:500;">Golf-bag friendly vehicles</p>
                                 </td></tr>
                               </table>
                             </td>
@@ -310,13 +310,13 @@ export const buildBrandedMarketingTailHtml = () => {
                   <table role="presentation" border="0" width="100%" cellpadding="0" cellspacing="0" style="background:${gs.dark}; border-radius:36px; overflow:hidden; box-shadow:${cardShadowLift}; border:1px solid ${emailAccentBorderOnDarkMuted};">
                     <tr>
                       <td style="padding:0;line-height:0;font-size:0;">
-                        <img src="${assetUrl(assets.fleetLineup)}" width="640" height="359" alt="GolfSol Ireland Mercedes fleet lineup for Costa del Sol golf transfers." style="display:block; width:100%; max-width:640px; height:auto; border:0;">
+                        <img src="${assetUrl(assets.fleetLineup)}" width="640" height="359" alt="GolfSol Ireland transfer vehicles for Costa del Sol golf trips." style="display:block; width:100%; max-width:640px; height:auto; border:0;">
                       </td>
                     </tr>
                     <tr>
                       <td class="mobile-pad" style="padding:28px 36px 32px 36px; background:${gs.dark}; border-top:1px solid ${emailAccentBorderOnDarkMuted};">
                         <p style="margin:0;font-family:${emailFonts.sans};color:${emailAccentTextOnDark};font-size:12px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;">Fleet</p>
-                        <p style="margin:14px 0 0 0;font-family:${emailFonts.sans};color:${gs.white};font-size:28px;line-height:1.22;font-weight:800;letter-spacing:-0.025em;">Mercedes E-Class, V-Class &amp; Sprinter — sized to your group and bags.</p>
+                        <p style="margin:14px 0 0 0;font-family:${emailFonts.sans};color:${gs.white};font-size:28px;line-height:1.22;font-weight:800;letter-spacing:-0.025em;">Car, people carrier and minibus — sized to your group and bags.</p>
                       </td>
                     </tr>
                   </table>

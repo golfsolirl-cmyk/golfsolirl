@@ -46,7 +46,7 @@ const run = async () => {
   y -= 4
   line('This PDF uses the same green and gold palette as Golf Sol Ireland emails and formal PDFs.', 11, t.muted, font)
   y -= 18
-  line('Service: Malaga Airport private transfer (V-Class, golf bags)', 12, t.ink, font)
+  line('Service: Malaga Airport private transfer (people carrier, golf bags)', 12, t.ink, font)
   line('Amount (sample): €180.00', 12, t.ink, fontBold)
   y -= 12
   line('Use the HTML route /api/sample-branded-document-html for a pixel match to the Resend email shell.', 10, t.muted, font)

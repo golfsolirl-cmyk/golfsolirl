@@ -38,8 +38,8 @@ const cardItem: Variants = {
 
 /**
  * Fleet showcase — solid premium pattern. Magazine-style intro + the real
- * GolfSol fleet image + three vehicle tier cards (E-Class / V-Class /
- * Sprinter) with the V-Class flagged as "Most chosen" in a gold ribbon.
+ * GolfSol vehicle image + three tier cards (car / people carrier /
+ * minibus) with the people carrier flagged as "Most chosen" in a gold ribbon.
  */
 export function TransportFleet() {
   return (
@@ -101,7 +101,7 @@ export function TransportFleet() {
             variants={heroItem}
             className="mt-5 max-w-xl font-ge text-[0.96rem] font-semibold uppercase tracking-[0.16em] text-gs-green sm:text-[1rem]"
           >
-            Mercedes only · 1 → 8 passengers · Golf-bag friendly
+            Private vehicles · 1 → 8 passengers · Golf-bag friendly
           </m.p>
 
           <m.p
@@ -121,7 +121,7 @@ export function TransportFleet() {
           <GeGoldDividerLineAbsoluteTop className="z-[2]" />
           <img
             src="/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp"
-            alt="GolfSol Ireland Mercedes V-Class, E-Class and Sprinter parked on a Costa del Sol forecourt beside a manicured fairway with the Sierra Blanca mountains behind."
+            alt="GolfSol Ireland transfer vehicles parked on a Costa del Sol forecourt beside a manicured fairway with the Sierra Blanca mountains behind."
             className="block aspect-[16/10] h-full w-full object-cover object-[center_54%] sm:aspect-[16/9]"
             loading="lazy"
             decoding="async"
@@ -141,7 +141,7 @@ export function TransportFleet() {
               Fleet matched to the bag count
             </p>
             <p className="mt-1.5 font-ge text-[0.94rem] font-semibold leading-relaxed sm:text-[1rem]" style={{ color: 'rgba(255,255,255,0.94)' }}>
-              V-Class, E-Class and Sprinter options, briefed for airport arrivals, resort runs and golf-day shuttles.
+              Car, people carrier and minibus options, briefed for airport arrivals, resort runs and golf-day shuttles.
             </p>
           </div>
           <div

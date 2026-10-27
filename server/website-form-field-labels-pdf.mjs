@@ -11,7 +11,7 @@ export const pdfFieldValueDisplay = (key, raw) => {
     .trim()
   const v = String(raw ?? '').trim()
   if (k === '_pickupType' && v === PICKUP_FREE_TEXT) {
-    return 'Mercedes fleet: E-Class, V-Class and Sprinter — matched to your group and bag count.'
+    return 'Private vehicles: car, people carrier and minibus — matched to your group and bag count.'
   }
   return String(raw ?? '')
 }

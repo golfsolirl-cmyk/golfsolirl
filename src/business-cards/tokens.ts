@@ -76,7 +76,7 @@ export const CARD_COPY = {
     'Corporate & Society Travel',
     'Premium Concierge Service'
   ],
-  badges: ['Irish Drivers', 'Costa del Sol Specialists', 'Mercedes Fleet'],
+  badges: ['Irish Drivers', 'Costa del Sol Specialists', 'Private Transfers'],
   ribbon: 'Málaga → Costa del Sol',
   fairwayLine: 'From plane to fairway',
   corridor: CARD_PERSON.corridor,

@@ -374,12 +374,12 @@ export const createBrandedEnquiryPdf = async ({
     title: 'Your Costa del Sol golf trip brief (continued)',
     subtitle: ''
   }))
-  y = drawUnifiedSectionHeading(page, y, ctx, 'Golf-bag friendly Mercedes fleet')
+  y = drawUnifiedSectionHeading(page, y, ctx, 'Golf-bag friendly vehicles')
   y = drawUnifiedParagraphBlock(
     page,
     y,
     ctx,
-    'E-Class, V-Class and Sprinter options matched to your group.',
+    'Car, people carrier and minibus options matched to your group.',
     { size: 10.5, lineHeight: 14, color: pdfEmailTheme.muted }
   )
 

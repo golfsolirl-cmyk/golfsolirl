@@ -438,7 +438,7 @@ export const createProposalPdf = async (rawPayload = {}) => {
       height: fleetH
     })
     state.y -= fleetH + 8
-    state = drawParagraph(state, 'Golf-bag friendly Mercedes fleet — E-Class, V-Class and Sprinter options matched to your group.', {
+    state = drawParagraph(state, 'Golf-bag friendly vehicles — car, people carrier and minibus options matched to your group.', {
       size: 10,
       lineHeight: 14,
       color: pdfEmailTheme.muted,

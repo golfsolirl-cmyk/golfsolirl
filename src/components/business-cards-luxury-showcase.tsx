@@ -170,7 +170,7 @@ export function BusinessCardsLuxuryShowcase() {
             <span className="mt-2 block text-2xl font-semibold text-[#C8A75D] sm:text-3xl">Business Cards</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl font-bc-body text-base leading-relaxed text-[#F7F3EA]/85 sm:text-lg">
-            Premium golf travel and private airport transfers for Irish golfers. Cards built to feel like Mercedes-Benz
+            Premium golf travel and private airport transfers for Irish golfers. Cards built to feel like a private club
             hospitality, Ryder Cup lounges, and private aviation — not generic print.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -242,7 +242,7 @@ export function BusinessCardsLuxuryShowcase() {
         dark
         eyebrow="Front face"
         title="Arrival energy — fleet, fairway, instant book"
-        description="Aerial Costa del Sol golf course and Mercedes fleet, shamrock watermark, centred crest, large headline, email, and scannable QR."
+        description="Aerial Costa del Sol golf course and private transfers, shamrock watermark, centred crest, large headline, email, and scannable QR."
       >
         <div className="mx-auto max-w-3xl">
           <PremiumCardFace mode="preview" side="front" />

@@ -18,7 +18,7 @@ const EASE_M: [number, number, number, number] = [0.16, 1, 0.3, 1]
 
 const CHECKS = [
   'Meet & greet at Malaga AGP',
-  'Golf-bag friendly Mercedes V-Class',
+  'Golf-bag friendly people carrier',
   'Irish-owned operator support',
   'Pre-booked tee times & resort transfers'
 ] as const
@@ -169,7 +169,7 @@ export function MarketingHeroSection() {
               )}
               style={{ textShadow: '0 4px 18px rgba(0,0,0,0.35)' }}
             >
-              Meet-and-greet at Malaga, golf-bag friendly Mercedes transfers, tee times sorted in advance — your crew goes
+              Meet-and-greet at Malaga, golf-bag friendly private transfers, tee times sorted in advance — your crew goes
               from carousel to calm in one tidy move.
             </p>
           </m.div>

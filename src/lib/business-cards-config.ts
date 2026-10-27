@@ -115,7 +115,7 @@ export const businessCardTommy = {
   location: 'Costa del Sol, Spain',
   headline: 'GOLF SOL IRELAND',
   subheading: 'Luxury Golf Transfers & Experiences',
-  tagline: 'Irish Drivers • Mercedes Fleet • Costa del Sol'
+  tagline: 'Irish Drivers • Private Transfers • Costa del Sol'
 } as const
 
 /** Luxury palette — executive Tommy O'Shea card */

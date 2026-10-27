@@ -1,6 +1,6 @@
 /** Public-path hero used on dashboards, login, PDF preview shell, and transactional email HTML. */
 export const BRAND_FLEET_HERO_IMAGE_SRC = '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp'
-/** Generated editorial plate — black Mercedes fleet (V-Class, sedan, Sprinter) on Costa del Sol fairway, golden hour. */
+/** Generated editorial plate — private vehicles on a Costa del Sol fairway, golden hour. */
 export const BRAND_MARKETING_HERO_FLEET_ON_FAIRWAY_SRC = '/images/hero-fleet-golf-golden-hour.webp'
 export const BRAND_MARKETING_HERO_FLEET_ON_FAIRWAY_DESKTOP_SRC =
   '/images/hero-fleet-golf-golden-hour-desktop.webp'
@@ -9,7 +9,7 @@ export const BRAND_MARKETING_HERO_FLEET_ON_FAIRWAY_TABLET_SRC =
 export const BRAND_MARKETING_HERO_FLEET_ON_FAIRWAY_MOBILE_SRC =
   '/images/hero-fleet-golf-golden-hour-mobile.webp'
 export const BRAND_MARKETING_HERO_FLEET_ON_FAIRWAY_ALT =
-  'Mercedes-Benz V-Class, executive saloon and van at a sunlit Costa del Sol golf course — GolfSol Ireland private golf transfers from Málaga Airport.'
+  'Executive car, people carrier and van at a sunlit Costa del Sol golf course — GolfSol Ireland private golf transfers from Málaga Airport.'
 
 /** Source banner — run `node scripts/build-hero-plane-to-fairway.mjs` after edits. */
 export const BRAND_MARKETING_HERO_COMPOSITE_REFERENCE_SRC =
@@ -35,19 +35,19 @@ export const BRAND_MARKETING_HERO_MOBILE = {
 /** Legacy alias (still imported by some pages). Points at the desktop banner above. */
 export const BRAND_MARKETING_HERO_COMPOSITE_SRC = BRAND_MARKETING_HERO_DESKTOP.webp
 export const BRAND_MARKETING_HERO_COMPOSITE_ALT =
-  'Málaga to Costa del Sol golf transfers — from plane to fairway, meet-and-greet at Málaga, golf-bag friendly Mercedes transfers, and book-your-transfer call to action.'
+  'Málaga to Costa del Sol golf transfers — from plane to fairway, meet-and-greet at Málaga, golf-bag friendly private transfers, and book-your-transfer call to action.'
 
-/** Scenic split-hero photographic plate (golf resort + Mercedes) — legacy composite. */
+/** Scenic split-hero photographic plate (golf resort and transfers) — legacy composite. */
 export const BRAND_MARKETING_SCENIC_HERO_SPLIT_SRC = '/images/hero-image-p.webp'
 export const BRAND_MARKETING_SCENIC_HERO_SPLIT_ALT =
-  'Premium Costa del Sol golf landscape with lake and palms — Mercedes E-Class and V-Class transfers in the foreground for Golf Sol Ireland.'
+  'Premium Costa del Sol golf landscape with lake and palms — private transfer vehicles in the foreground for Golf Sol Ireland.'
 
 /** Full fleet lineup (vans & cars) — transport pages, business cards, print mockups. */
 export const BRAND_FLEET_LINEUP_IMAGE_SRC = '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp'
 export const BRAND_FLEET_LINEUP_ALT =
-  'Golf Sol Ireland private transfer fleet — Mercedes E-Class, V-Class and Sprinter vehicles on the Costa del Sol.'
+  'Golf Sol Ireland private transfer vehicles — car, people carrier and minibus on the Costa del Sol.'
 
-/** Golden-hour Mercedes fleet on fairway — business card blurred background. */
+/** Golden-hour transfer vehicles on the fairway — business card blurred background. */
 export const BRAND_BUSINESS_CARD_HERO_BG_SRC = BRAND_FLEET_LINEUP_IMAGE_SRC
 
 /** Marketing golf twilight — legacy backdrop; admin/driver portals may still reference elsewhere. */
@@ -70,4 +70,4 @@ export const BRAND_CLIENT_PORTAL_HERO_ILLUSTRATION_ALT =
   'Stylised Costa del Sol golf travel scene — luxury transfer van, golf bags, and coastal golden hour for your Golf Sol Ireland client area.'
 
 export const BRAND_FLEET_HERO_ALT =
-  'GolfSol Ireland Mercedes fleet — E-Class, V-Class and Sprinter options for Malaga airport transfers and Costa del Sol golf trips.'
+  'GolfSol Ireland private vehicles — car, people carrier and minibus options for Malaga airport transfers and Costa del Sol golf trips.'

@@ -263,7 +263,7 @@ export const packageBuildNeedsAdminReview = (configRaw: unknown): boolean => {
 
 /** Human copy when pickup type is “match fleet to group” (stored as `free_text`). */
 export const WEBSITE_FORM_PICKUP_FREE_TEXT_DISPLAY =
-  'Mercedes fleet: E-Class, V-Class and Sprinter — matched to your group and bag count.'
+  'Private vehicles: car, people carrier and minibus — matched to your group and bag count.'
 
 export type ParsedPackageBuildConfig =
   | { readonly type: 'calculator'; readonly config: PackageBuildConfig }
@@ -334,7 +334,7 @@ export const getWebsiteFormFieldLabel = (key: string): string => {
 export const humanizePickupDropoffTypeForDisplay = (raw: string): string => {
   const v = raw.trim().toLowerCase()
   if (v === PICKUP_DROPOFF_TYPES.malagaAirport) {
-    return 'Private Mercedes van (Málaga AGP)'
+    return 'Private transfer (Málaga AGP)'
   }
   if (v === PICKUP_DROPOFF_TYPES.golfCourse) {
     return 'Golf course'

@@ -171,7 +171,7 @@ export function TransportPromise() {
             className="col-span-2 mt-2 flex items-center justify-center gap-2 rounded-full border border-gs-green/20 bg-gs-green/[0.04] px-4 py-3 font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.18em] text-gs-green sm:text-[0.78rem]"
           >
             <ShieldCheck className="h-3.5 w-3.5 shrink-0" aria-hidden />
-            Fully insured · Mercedes only · Replies inside 2 hours
+            Fully insured · Private vehicles · Replies inside 2 hours
           </m.div>
         </m.div>
       </m.div>

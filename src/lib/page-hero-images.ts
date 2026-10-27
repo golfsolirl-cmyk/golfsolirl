@@ -105,7 +105,7 @@ export const NAMED_HERO_IMAGE_SETS = {
     desktop: '/images/816cf7dc-e8c0-46fe-bce3-6d0c1f7005b2-desktop.webp',
     tablet: '/images/816cf7dc-e8c0-46fe-bce3-6d0c1f7005b2-tablet.webp',
     mobile: '/images/816cf7dc-e8c0-46fe-bce3-6d0c1f7005b2-mobile.webp',
-    alt: 'GolfSol Ireland Mercedes fleet at a golden-hour Costa del Sol golf resort — private transfers from Málaga Airport to the fairway.'
+    alt: 'GolfSol Ireland vehicles at a golden-hour Costa del Sol golf resort — private transfers from Málaga Airport to the fairway.'
   },
   transportCoastal: {
     desktop: '/images/transport-hero-coastal-drive-desktop.webp',
