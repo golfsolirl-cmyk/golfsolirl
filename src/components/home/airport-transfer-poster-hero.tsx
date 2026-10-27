@@ -50,26 +50,30 @@ function CallBubble({ reduceMotion }: { readonly reduceMotion: boolean }) {
   )
 }
 
-function ServiceMarks() {
+function ServiceMarks({ reduceMotion }: { readonly reduceMotion: boolean }) {
   return (
     <ul className="grid grid-cols-2 gap-x-3 gap-y-3 sm:grid-cols-4 sm:gap-x-4">
-      {MARKS.map((mark) => {
+      {MARKS.map((mark, index) => {
         const Icon = mark.icon
         return (
-          <li key={mark.title} className="flex min-w-0 flex-col items-center text-center">
+          <m.li
+            key={mark.title}
+            className="flex min-w-0 flex-col items-center text-center"
+            {...fadeUp(0.28 + index * 0.08, reduceMotion)}
+          >
             <span className="airport-poster-on-gold flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-b from-[#f3e6c4] to-[#c9962e] shadow-[0_8px_16px_rgba(0,0,0,0.28)] ring-2 ring-[#f3e6c4]/70">
               <Icon className="h-5 w-5" aria-hidden strokeWidth={2.1} />
             </span>
             <span className="airport-poster-mark-title mt-1.5 font-ge font-extrabold uppercase text-[#f7f3ea]">{mark.title}</span>
             <span className="airport-poster-gold-type airport-poster-mark-detail mt-0.5 font-ge">{mark.detail}</span>
-          </li>
+          </m.li>
         )
       })}
     </ul>
   )
 }
 
-function PriceBanner() {
+function PriceBanner({ reduceMotion }: { readonly reduceMotion: boolean }) {
   return (
     <a
       href="#enquire"
@@ -82,6 +86,9 @@ function PriceBanner() {
       <span className="airport-poster-on-dark-chip relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#062016]">
         <Phone className="h-4 w-4" aria-hidden strokeWidth={2.3} />
       </span>
+      {reduceMotion ? null : (
+        <span aria-hidden className="gsol-pill-sheen pointer-events-none absolute inset-y-0 left-0 w-1/3" />
+      )}
       <span className="relative min-w-0 text-left">
         <span className="airport-poster-price-title block font-ge font-extrabold uppercase leading-none">Get a price</span>
         <span className="airport-poster-price-sub mt-1 block font-ge font-bold uppercase leading-tight">
@@ -107,7 +114,10 @@ export function AirportTransferPosterHero({ className }: { readonly className?: 
         alt="White people-carrier with the Golf Sol crest on the door, waiting at Málaga airport arrivals, with an airliner overhead and palm trees."
         decoding="async"
         fetchPriority="high"
-        className="absolute inset-0 h-full w-full object-cover object-[76%_62%]"
+        className={cx(
+          'absolute inset-0 h-full w-full object-cover object-[76%_62%]',
+          !reduceMotion && 'gsol-hero-drift'
+        )}
       />
       <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-[#041510] via-[#041510]/88 via-[58%] to-[#041510]/25 md:bg-gradient-to-r md:from-[#041510] md:from-[8%] md:via-[#041510]/80 md:via-[42%] md:to-transparent md:to-[70%]" />
 
@@ -126,9 +136,16 @@ export function AirportTransferPosterHero({ className }: { readonly className?: 
               Transfers
             </m.span>
           </h1>
+          <m.span
+            aria-hidden
+            className="mt-2 block h-[3px] w-28 origin-left rounded-full bg-gradient-to-r from-[#f3e6c4] via-[#d4a843] to-transparent"
+            initial={reduceMotion ? false : { scaleX: 0, opacity: 0 }}
+            animate={{ scaleX: 1, opacity: 1 }}
+            transition={{ duration: 0.7, delay: 0.4, ease: EASE }}
+          />
           <m.p className="airport-poster-place mt-2 inline-flex items-center gap-2 font-ge font-extrabold uppercase text-white" {...fadeUp(0.14, reduceMotion)}>
             Costa del Sol
-            <Sun className="airport-poster-gold-type h-4 w-4" aria-hidden />
+            <Sun className={cx('airport-poster-gold-type h-4 w-4', !reduceMotion && 'gsol-sun-rock')} aria-hidden />
           </m.p>
           <m.p className="airport-poster-lead mt-1.5 max-w-[34rem] font-ge text-[#f7f3ea]" {...fadeUp(0.16, reduceMotion)}>
             Private Málaga airport runs for Irish golf groups. Golf bags in, door to door, price agreed before you fly.
@@ -137,9 +154,9 @@ export function AirportTransferPosterHero({ className }: { readonly className?: 
             <CallBubble reduceMotion={reduceMotion} />
           </div>
           <m.div className="mt-4 w-full max-w-[40rem]" {...fadeUp(0.22, reduceMotion)}>
-            <ServiceMarks />
+            <ServiceMarks reduceMotion={reduceMotion} />
             <div className="mt-4 flex flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-              <PriceBanner />
+              <PriceBanner reduceMotion={reduceMotion} />
               <a href="/services/transport" className="airport-poster-more font-ge font-extrabold uppercase text-[#f3e6c4] underline decoration-[#d4a843] underline-offset-4">
                 View transfer options
               </a>

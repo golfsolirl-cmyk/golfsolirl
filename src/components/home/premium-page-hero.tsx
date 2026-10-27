@@ -121,21 +121,31 @@ function CallBubble({ reduceMotion }: { readonly reduceMotion: boolean }) {
   )
 }
 
-function ServiceMarks({ badges }: { readonly badges: readonly PremiumPageHeroTrustBadge[] }) {
+function ServiceMarks({
+  badges,
+  reduceMotion
+}: {
+  readonly badges: readonly PremiumPageHeroTrustBadge[]
+  readonly reduceMotion: boolean
+}) {
   const columns = badges.length >= 4 ? 'sm:grid-cols-4' : badges.length === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2'
   return (
     <ul className={cx('grid grid-cols-2 gap-x-3 gap-y-3 sm:gap-x-4', columns)}>
-      {badges.slice(0, 4).map((mark) => {
+      {badges.slice(0, 4).map((mark, index) => {
         const Icon = mark.icon
         const lines = splitMarkLabel(mark.label)
         return (
-          <li key={mark.label} className="flex min-w-0 flex-col items-center text-center">
+          <m.li
+            key={mark.label}
+            className="flex min-w-0 flex-col items-center text-center"
+            {...fadeUp(0.28 + index * 0.08, reduceMotion)}
+          >
             <span className="airport-poster-on-gold flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-b from-[#f3e6c4] to-[#c9962e] shadow-[0_8px_16px_rgba(0,0,0,0.28)] ring-2 ring-[#f3e6c4]/70">
               <Icon className="h-5 w-5" aria-hidden strokeWidth={2.1} />
             </span>
             <span className="airport-poster-mark-title mt-1.5 font-ge font-extrabold uppercase text-[#f7f3ea]">{lines.title}</span>
             <span className="airport-poster-gold-type airport-poster-mark-detail mt-0.5 font-ge">{lines.detail}</span>
-          </li>
+          </m.li>
         )
       })}
     </ul>
@@ -146,12 +156,14 @@ function ActionPill({
   href,
   title,
   subtitle,
-  icon: Icon
+  icon: Icon,
+  reduceMotion
 }: {
   readonly href: string
   readonly title: string
   readonly subtitle: string
   readonly icon: LucideIcon
+  readonly reduceMotion: boolean
 }) {
   return (
     <a
@@ -165,6 +177,9 @@ function ActionPill({
       <span className="airport-poster-on-dark-chip relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#062016]">
         <Icon className="h-4 w-4" aria-hidden strokeWidth={2.3} />
       </span>
+      {reduceMotion ? null : (
+        <span aria-hidden className="gsol-pill-sheen pointer-events-none absolute inset-y-0 left-0 w-1/3" />
+      )}
       <span className="relative min-w-0 text-left">
         <span className="airport-poster-price-title block font-ge font-extrabold uppercase leading-none">{title}</span>
         <span className="airport-poster-price-sub mt-1 block font-ge font-bold uppercase leading-tight">{subtitle}</span>
@@ -257,7 +272,7 @@ export function PremiumPageHero({
           alt={images.alt}
           decoding="async"
           fetchPriority="high"
-          className="absolute inset-0 h-full w-full object-cover"
+          className={cx('absolute inset-0 h-full w-full object-cover', !reduceMotion && 'gsol-hero-drift')}
           style={{ objectPosition: mobileImageObjectPosition }}
         />
       </picture>
@@ -284,9 +299,16 @@ export function PremiumPageHero({
               </m.span>
             ) : null}
           </h1>
+          <m.span
+            aria-hidden
+            className="mt-2 block h-[3px] w-28 origin-left rounded-full bg-gradient-to-r from-[#f3e6c4] via-[#d4a843] to-transparent"
+            initial={reduceMotion ? false : { scaleX: 0, opacity: 0 }}
+            animate={{ scaleX: 1, opacity: 1 }}
+            transition={{ duration: 0.7, delay: 0.4, ease: HERO_EASE }}
+          />
           <m.p className="airport-poster-place mt-2 inline-flex items-center gap-2 font-ge font-extrabold uppercase text-white" {...fadeUp(0.14, reduceMotion)}>
             {place ? `${place.kicker} · ${place.title}` : 'Costa del Sol'}
-            <Sun className="airport-poster-gold-type h-4 w-4 shrink-0" aria-hidden />
+            <Sun className={cx('airport-poster-gold-type h-4 w-4 shrink-0', !reduceMotion && 'gsol-sun-rock')} aria-hidden />
           </m.p>
           <m.p className="airport-poster-lead mt-1.5 max-w-[34rem] font-ge text-[#f7f3ea]" {...fadeUp(0.16, reduceMotion)}>
             {lead}
@@ -297,9 +319,9 @@ export function PremiumPageHero({
             </div>
           ) : null}
           <m.div className="mt-4 w-full max-w-[40rem]" {...fadeUp(0.22, reduceMotion)}>
-            {marks.length > 0 ? <ServiceMarks badges={marks} /> : null}
+            {marks.length > 0 ? <ServiceMarks badges={marks} reduceMotion={reduceMotion} /> : null}
             <div className={cx('flex flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:items-center', marks.length > 0 && 'mt-4')}>
-              <ActionPill href={primaryCta.href} title={primaryCta.label} subtitle={pillSubtitle} icon={PillIcon} />
+              <ActionPill href={primaryCta.href} title={primaryCta.label} subtitle={pillSubtitle} icon={PillIcon} reduceMotion={reduceMotion} />
               {secondaryCta ? (
                 <a
                   href={secondaryCta.href}
