@@ -129,6 +129,17 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
         ]
       },
       {
+        title: 'Match the week to the question',
+        body: 'These pages answer one search each. They all come back to the same enquiry.',
+        bullets: [
+          'All inclusive, and what that means — /golf-holidays/spain-all-inclusive',
+          'Flights, booked by you — /golf-holidays/spain-including-flights',
+          'Affordable weeks — /golf-holidays/good-value',
+          'Comparing the right week — /golf-holidays/best-spain',
+          '2027 and late 2026 — /golf-holidays/spain-2027'
+        ]
+      },
+      {
         title: 'Popular questions',
         body: 'How many nights should we stay? How many rounds? Where should a society base itself? Start with our guides and FAQ, then send an enquiry with your dates.',
         bullets: [
@@ -417,21 +428,28 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
     eyebrow: 'From Ireland',
     title: 'Golf holidays in Spain from Ireland',
     subtitle:
-      'Costa del Sol golf trips planned for Irish travellers — from first enquiry to Málaga Airport transfers, courses, hotels and tee times.',
+      'Golf holidays in Spain for people in Ireland: Costa del Sol courses, hotels, and Málaga transfers in one plan. Not a tour of Irish courses.',
     heroImage: imgFromIreland,
     heroAlt: 'Irish golfers walking a sunny Costa del Sol fairway with golf bags.',
+    formTitle: 'Request a golf holiday quote',
+    formLead:
+      'Send dates, how many of you, where you want to stay, and which Irish airport you expect to leave from.',
     sections: [
       {
         title: 'Ireland to the Costa del Sol',
-        body: 'Most Irish golf holidays to this region arrive at Málaga Airport (AGP). Golf Sol Ireland coordinates the ground side: private transfers, course shortlists, accommodation areas, and tee-time planning — so the organiser is not juggling five suppliers alone.'
+        body: 'GolfSol Ireland is an Irish team for golf holidays in Spain. The golf is on the Costa del Sol, not in Ireland. Most groups land at Málaga Airport. We then hold the ground side in one place: a hotel area, the rounds you want requested, and a private transfer that can take the covers.'
       },
       {
         title: 'Departure airports we commonly plan around',
-        body: 'Flight schedules change by season and airline. We do not publish live timetables here. Check current flights for your dates, then use the county and airport pages below for the ground plan.'
+        body: 'Dublin, Cork, Shannon, and Belfast are the usual starts. Other counties often drive to one of those airports. Flight schedules change by season and airline. We do not publish live timetables, and we do not sell the ticket. Check the flight, then use the county pages below for the ground plan.'
       },
       {
         title: 'Golf luggage from Ireland',
-        body: 'Travelling with clubs usually means airline golf-bag policies and weight limits. Rules vary by carrier and fare. Confirm with your airline before travel; we handle meet-and-greet and golf-bag-friendly vehicles after you land.'
+        body: 'Travelling with clubs usually means airline golf-bag policies and weight limits. Rules vary by carrier and fare. Confirm with your airline before you pay. We handle the meet at Málaga and a golf-bag-friendly vehicle after you land.'
+      },
+      {
+        title: 'What we arrange, and what we do not',
+        body: 'We help societies, four-balls, couples, and groups of friends who are going to Spain. The quote covers the stay, the golf requests, and the transfers. It does not include flights, and it is not a golf holiday inside Ireland. If you wanted a links week in Kerry or Dublin, this is the wrong page.'
       },
       {
         title: 'Irish counties and airports',
@@ -460,9 +478,29 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
         ]
       },
       {
+        title: 'Why groups keep coming back to this coast',
+        body: 'One airport, a lot of courses, and a hotel you can actually stay in between them. The weather is milder than an Irish winter and it is still not a promise of sun. Societies like it because one organiser can hold the hotel, the golf, and the van in one conversation.',
+        bullets: [
+          'Affordable weeks — /golf-holidays/good-value',
+          'Luxury weeks — /golf-holidays/luxury',
+          'Group holidays — /golf-packages/group-golf-holidays',
+          '5-night holidays — /golf-packages/5-night-golf-holidays',
+          'Course guide — /guides/best-golf-courses-costa-del-sol'
+        ]
+      },
+      {
         title: 'How booking works with us',
-        body: 'Send dates, headcount, preferred area, and how many rounds you want. We reply with a practical structure and next steps — courses, stay area, and transfers.',
+        body: 'Send dates, headcount, preferred area, and how many rounds you want. We reply with a practical structure: courses, stay area, and transfers. The form on this page is the quote.',
         bullets: ['Booking overview — /booking', 'Enquiry — /contact', contactLine]
+      },
+      {
+        title: 'Do you offer golf holidays in Ireland?',
+        body: 'No. We are based in Ireland and the holidays we plan are in Spain, on the Costa del Sol. We do not book Irish courses as a holiday product.'
+      },
+      {
+        title: 'Do the packages include flights?',
+        body: 'No. You book the flight. Tell us the arrival into Málaga and we plan the rest. There is a separate page on how that split works.',
+        bullets: ['Flights, booked by you — /golf-holidays/spain-including-flights']
       }
     ]
   }),
@@ -733,32 +771,38 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
   }),
 
   '/guides/best-golf-courses-costa-del-sol': page({
-    metaTitle: 'Best Golf Courses Costa del Sol | GolfSol Ireland',
+    metaTitle: 'Best Golf in Spain | Costa del Sol Course Guide',
     eyebrow: 'Guide',
-    title: 'Best golf courses in the Costa del Sol',
+    title: 'Best golf on the Costa del Sol',
     subtitle:
-      'A practical shortlist framework for Irish golfers — how we choose courses by area, ability mix and trip length (not a paid ranking).',
+      'Irish golfers searching for the best golf in Spain usually mean this coast. A practical Costa del Sol shortlist, not a ranking of every course in the country.',
     heroImage: imgFairway,
     heroAlt: 'Guide to choosing golf courses on the Costa del Sol.',
-    formTitle: 'Get a course shortlist',
+    formTitle: 'Request a course shortlist',
+    formLead: 'Dates, group size, and the mix of handicaps. We will shortlist this coast, not a map of all of Spain.',
     sections: [
       {
         title: 'How to use this guide',
-        body: '“Best” depends on handicap range, preferred scenery, buggy needs, and how far you will travel from the hotel each morning. We do not invent rankings or claim exclusive partnerships here.'
+        body: 'People searching for the best golf in Spain from Ireland are usually asking about the Costa del Sol. This page is that coast. It is not a ranking of every course in the country, and it is not a claim that we are the best operator. Best depends on handicap, buggies, and how far you will travel from the hotel each morning.'
       },
       {
         title: 'Start by corridor',
-        body: 'Use our course hubs, then ask us to shortlist for your dates.',
-        bullets: [
-          'All courses — /golf-courses',
-          'Marbella Golf Valley — /golf-courses/marbella-golf-valley',
-          'Mijas & Fuengirola — /golf-courses/mijas-fuengirola',
-          'Sotogrande corridor — /golf-courses/sotogrande'
-        ]
+        body: 'Marbella Golf Valley packs several strong courses into a short drive. Mijas and Fuengirola sit closer to the airport. Sotogrande is the long western run, and it is where Valderrama and the quieter resort courses live. Pick the corridor before you pick a single name.'
       },
       {
         title: 'Society tip',
-        body: 'Mixed-ability societies often need a blend of more forgiving and more demanding days. Tell us the spread of handicaps when you enquire.'
+        body: 'Mixed-ability societies need a forgiving day and a harder day, not five copies of the same test. Tell us the spread of handicaps when you enquire. A marquee name is one request in the week, not the whole card.'
+      },
+      {
+        title: 'Open a corridor',
+        body: 'Use the hubs, then ask us to shortlist for your dates.',
+        bullets: [
+          'All courses — /golf-courses',
+          'Marbella Golf Valley — /golf-courses/marbella-golf-valley',
+          'Mijas and Fuengirola — /golf-courses/mijas-fuengirola',
+          'Sotogrande corridor — /golf-courses/sotogrande',
+          'Compare holiday types — /golf-holidays/best-spain'
+        ]
       },
       {
         title: 'Course notes Irish groups ask for',
@@ -802,8 +846,16 @@ export const seoLandingPages: Record<string, GeContentPageData> = {
       },
       {
         title: 'Practical advice',
-        body: 'If your group dislikes heat, avoid peak midday summer tee times. If you need maximum daylight for societies, shoulder seasons often feel easier. Send preferred months and we will advise.',
-        bullets: ['Trip guide — /guides/costa-del-sol-golf-trip-guide', 'Enquire — /contact']
+        body: 'If your group dislikes heat, avoid peak midday summer tee times. If you need maximum daylight for societies, shoulder seasons often feel easier. Send preferred months and we will advise.'
+      },
+      {
+        title: 'Late 2026 and the 2027 diary',
+        body: 'November and December 2026 can still be planned. Easter and autumn 2027 should be asked for while the group is real, not the month before travel. One page holds both years so we are not publishing two copies of the same advice.',
+        bullets: [
+          '2027 and late 2026 — /golf-holidays/spain-2027',
+          'Trip guide — /guides/costa-del-sol-golf-trip-guide',
+          'Enquire — /contact'
+        ]
       }
     ]
   }),

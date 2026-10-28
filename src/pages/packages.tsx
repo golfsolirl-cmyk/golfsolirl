@@ -10,7 +10,6 @@ import {
   CheckCircle2,
   ShieldCheck
 } from 'lucide-react'
-import { CookieBanner } from '../components/cookie-banner'
 import { Navbar } from '../components/home/navbar'
 import { PageIdentityBar } from '../components/page-identity-bar'
 import { LuxuryButton } from '../components/ui/button'
@@ -126,7 +125,6 @@ function PackageAdminPage() {
   const [transferExtrasTotal, setTransferExtrasTotal] = useState(120)
   const [adminBufferTotal, setAdminBufferTotal] = useState(90)
   const [profitPerPerson, setProfitPerPerson] = useState(125)
-  const [hasAcceptedCookies, setHasAcceptedCookies] = useState(true)
   const [isFooterInView, setIsFooterInView] = useState(false)
   const [isUnlocked, setIsUnlocked] = useState(false)
   const [adminAccessCode, setAdminAccessCode] = useState('')
@@ -177,11 +175,6 @@ function PackageAdminPage() {
     transferExtrasTotal
   ])
 
-  const handleAcceptCookies = () => {
-    localStorage.setItem('gsol-cookie-banner-dismissed', 'true')
-    setHasAcceptedCookies(true)
-  }
-
   const handleSelectAccommodation = (name: string) => {
     setSelectedAccommodationName(name)
   }
@@ -203,11 +196,6 @@ function PackageAdminPage() {
     setLoginError('')
     setIsUnlocked(true)
   }
-
-  useEffect(() => {
-    const dismissed = localStorage.getItem('gsol-cookie-banner-dismissed')
-    setHasAcceptedCookies(dismissed === 'true')
-  }, [])
 
   useEffect(() => {
     if (!adminStudioConfigured) {
@@ -336,7 +324,6 @@ function PackageAdminPage() {
     <div className="ge-page overflow-x-hidden bg-offwhite">
       <Navbar links={packagePageLinks} primaryCta="Make Enquiry" />
       <FloatingWhatsAppButton hidden={isFooterInView} href={whatsAppHref} />
-      <CookieBanner hidden={hasAcceptedCookies} onAccept={handleAcceptCookies} />
       <PageIdentityBar
         label="Admin Package Studio"
         eyebrow="Internal page"

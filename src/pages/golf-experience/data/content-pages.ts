@@ -246,11 +246,62 @@ const privacyPage: GeContentPageData = {
       body:
         'We use submitted information to respond, prepare quotes, and manage booking communication when requested.',
       bullets: ['No unrelated spam campaigns', 'Data used for travel planning context', 'Ask us if you want details updated or removed']
+    },
+    {
+      title: 'How long we keep enquiry details',
+      body: 'We keep what you send for as long as we need it to answer you and to run the trip you asked about. Ask us if you want it updated or deleted.'
+    },
+    {
+      title: 'Cookies',
+      body: 'Essential cookies remember your cookie choice, and a sign-in session only after you log in. We do not use analytics or advertising cookies. The cookie policy has the full list.',
+      bullets: ['Cookie policy — /cookie-policy']
     }
   ],
   formTitle: 'Ask a privacy question',
   formLead: 'If you need clarification on data handling, send a quick request here.',
   interestPreset: 'Privacy policy enquiry',
+  enquiryType: 'legal'
+}
+
+const cookiePolicyPage: GeContentPageData = {
+  metaTitle: 'Cookie Policy | GolfSol Ireland',
+  eyebrow: 'Legal',
+  title: 'How we use cookies',
+  subtitle:
+    'GolfSol Ireland uses an essential cookie to remember your choice. We do not use analytics or advertising cookies on this site.',
+  heroImage: '/images/about-golfsol-hero.webp',
+  heroAlt: 'GolfSol Ireland crest, used on the cookie policy page.',
+  highlights: trustHighlights,
+  sections: [
+    {
+      title: 'What this page covers',
+      body: 'This is a plain-English list of the cookies and browser storage the public site uses today. It is not a formal legal opinion. If we add a new tool, this page will be updated before that tool is switched on.'
+    },
+    {
+      title: 'Strictly necessary',
+      body: 'A first-party cookie named gsol_consent stores your cookie choice for six months. The same choice is kept in this browser under the name gsol-cookie-consent, so the banner does not ask on every page. If you sign in to the trip desk or the admin desk, the sign-in session is stored in this browser so you stay logged in. That session is not used for advertising.'
+    },
+    {
+      title: 'What we do not use',
+      body: 'This site does not load Google Analytics, Google Tag Manager, Google Ads, or a Meta pixel. There is no advertising cookie and no analytics cookie to accept. Accept all and reject optional currently record the same thing: essential cookies only.'
+    },
+    {
+      title: 'How to change your choice',
+      body: 'Use Cookie settings in the footer on any page. We ask again after six months, or sooner if the cookies on the site change. You can also clear cookies in your browser, which removes the saved choice.',
+      bullets: ['Privacy policy — /privacy-policy']
+    },
+    {
+      title: 'How do I change my mind?',
+      body: 'Open Cookie settings in the footer and save again. Clearing the site cookies in your browser also brings the banner back on your next visit.'
+    },
+    {
+      title: 'Do you use Google Analytics?',
+      body: 'No. Not on this website, and not through Tag Manager, Google Ads, or a Meta pixel. If that changes, the banner will ask before any optional cookie is set.'
+    }
+  ],
+  formTitle: 'Ask about this policy',
+  formLead: 'If something here is unclear, send a short note and we will explain it.',
+  interestPreset: 'Cookie policy enquiry',
   enquiryType: 'legal'
 }
 
@@ -606,6 +657,7 @@ const coreGeContentPages: Record<string, GeContentPageData> = {
   '/contact/privacy-policy': privacyPage,
   '/terms-conditions': termsPage,
   '/privacy-policy': privacyPage,
+  '/cookie-policy': cookiePolicyPage,
   '/terms-and-conditions': termsPage,
   '/links-and-information/dress-code-for-golf-in-spain': {
     ...faqPage,

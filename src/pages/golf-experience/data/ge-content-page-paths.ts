@@ -14,6 +14,7 @@ const GE_CONTENT_PAGE_PATH_SET = new Set<string>([
   '/contact/give-a-testimonial',
   '/contact/golf-holiday-enquiry-form',
   '/contact/privacy-policy',
+  '/cookie-policy',
   '/costa-del-sol-routing',
   '/course-shortlist',
   '/deposit-upfront',

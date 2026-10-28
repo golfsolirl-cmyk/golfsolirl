@@ -66,6 +66,8 @@ export const footerColumns = [
     title: 'Legal',
     links: [
       { label: 'Privacy Policy', href: '/privacy-policy' },
+      { label: 'Cookie Policy', href: '/cookie-policy' },
+      { label: 'Cookie settings', href: '/cookie-policy#settings' },
       { label: 'Terms & Conditions', href: '/terms-and-conditions' }
     ]
   },

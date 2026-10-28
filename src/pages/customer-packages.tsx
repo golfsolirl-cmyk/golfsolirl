@@ -34,7 +34,6 @@ import { buildPackageConfig, defaultLabelForBuild } from '../lib/package-build'
 import { usePackageCalculatorPricing } from '../lib/use-package-calculator-pricing'
 import { cx } from '../lib/utils'
 import { useAuth } from '../providers/auth-provider'
-import { CookieBanner } from '../components/cookie-banner'
 import { formatEuro } from '../lib/format-euro'
 
 const CourseHotelMapPicker = lazy(async () => {
@@ -266,7 +265,6 @@ function CustomerPackagePage() {
   const [courseHotelPick, setCourseHotelPick] = useState<CourseHotelPickerValue>(() =>
     parseCourseHotelSearch(window.location.search)
   )
-  const [hasAcceptedCookies, setHasAcceptedCookies] = useState(true)
   const [isSavingBuild, setIsSavingBuild] = useState(false)
   const [saveBuildError, setSaveBuildError] = useState<string | null>(null)
   const [saveBuildOk, setSaveBuildOk] = useState(false)
@@ -659,16 +657,6 @@ function CustomerPackagePage() {
     void handleSavePackageToAccount()
   }, [authLoading, handleSavePackageToAccount, isSavingBuild, pendingAutoSave, session?.user])
 
-  const handleAcceptCookies = () => {
-    localStorage.setItem('gsol-cookie-banner-dismissed', 'true')
-    setHasAcceptedCookies(true)
-  }
-
-  useEffect(() => {
-    const dismissed = localStorage.getItem('gsol-cookie-banner-dismissed')
-    setHasAcceptedCookies(dismissed === 'true')
-  }, [])
-
   useEffect(() => {
     if (enquiryStatus === 'success') {
       enquiryConfirmationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -684,7 +672,6 @@ function CustomerPackagePage() {
         Skip to content
       </a>
       <GeNavbar />
-      <CookieBanner hidden={hasAcceptedCookies} onAccept={handleAcceptCookies} />
 
       <main id="main">
         <PremiumPageHero

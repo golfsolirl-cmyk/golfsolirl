@@ -2,6 +2,7 @@ import ReactDOM from 'react-dom/client'
 import { lazy, Suspense, type LazyExoticComponent, type ComponentType } from 'react'
 import { AppErrorBoundary } from './components/app-error-boundary'
 import { pathnameNeedsImmediateSupabaseHydration } from './lib/auth-bootstrap-path'
+import { CookieConsent } from './components/cookie-consent'
 import { MotionRoot } from './providers/motion-root'
 import { isGeContentPagePath } from './pages/golf-experience/data/ge-content-page-paths'
 /** Homepage only is eager — keeps LCP path short; other marketing pages load as route chunks. */
@@ -273,6 +274,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <AuthProviderShell>
         <MotionRoot>
           <ActivePage />
+          <CookieConsent />
         </MotionRoot>
       </AuthProviderShell>
     </Suspense>

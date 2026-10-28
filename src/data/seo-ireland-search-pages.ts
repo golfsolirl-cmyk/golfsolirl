@@ -1119,22 +1119,23 @@ const stylePages = [
   }),
   style({
     path: '/golf-holidays/good-value',
-    metaTitle: 'Good Value Costa del Sol Golf Holidays | GolfSol Ireland',
+    metaTitle: 'Affordable Golf Holidays Spain | Great Value Golf Breaks',
     eyebrow: 'Good value',
-    title: 'Good value Costa del Sol golf holidays',
-    subtitle: 'Irish groups who want real courses and a private transfer without paying marquee green fees all week.',
+    title: 'Affordable golf holidays in Spain',
+    subtitle:
+      'Good-value Costa del Sol golf holidays for Irish groups: a sensible hotel, real courses, and a private transfer, without a fake cheap famous club.',
     image: fairway,
     alt: 'A Costa del Sol course suited to a good-value Irish golf week.',
-    formTitle: 'Plan a value week',
+    formTitle: 'Request a golf holiday quote',
     lead: 'Send dates, headcount, and a rough budget per person if you have one. We will not invent a cheap famous club.',
-    first: 'Value is a shorter airport run, a hotel that is fine rather than famous, and courses such as El Chaparral, Doña Julia, Campo Europa, or Lauro. It is not Valderrama at a made-up price.',
-    second: 'Torremolinos, Benalmádena, and Fuengirola keep the transfer shorter so more of the money stays in the golf. Estepona can still be good value if Doña Julia and Valle Romano are the card and the hotel is sensible.',
-    third: 'Say what you refuse to cut. Some groups will drop a course. Some will not drop a buggy. Those are different weeks.',
+    first: 'Cheap, on this coast, means a shorter airport run, a hotel that is comfortable rather than famous, and courses such as El Chaparral, Doña Julia, Campo Europa, or Lauro. It does not mean Valderrama at a made-up price, and it does not mean a shared shuttle with a pile of travel covers.',
+    second: 'Torremolinos, Benalmádena, and Fuengirola keep the transfer shorter, so more of the money stays in the golf and the hotel. A three-night break with two or three rounds is a different bill from a seven-night week of marquee names. Estepona can still be good value when Doña Julia and Valle Romano are the card and the hotel is sensible.',
+    third: 'Say what you refuse to cut. Some groups will drop a course. Some will not drop a buggy. A larger group can share one private vehicle. That is the saving. It is not an automatic half-price society rate.',
     links: [
-      'El Chaparral — /golf-courses/el-chaparral',
-      'Doña Julia — /golf-courses/dona-julia',
-      'Lauro — /golf-courses/lauro',
-      '3-night breaks — /golf-packages/3-night-golf-breaks'
+      '3-night breaks — /golf-packages/3-night-golf-breaks',
+      'Group holidays — /golf-packages/group-golf-holidays',
+      'Costa del Sol — /golf-holidays/costa-del-sol',
+      'All inclusive, explained — /golf-holidays/spain-all-inclusive'
     ],
     q1: 'What is a realistic way to spend less?',
     a1: 'Fewer marquee names, a base closer to the airport, and three or four rounds instead of five. The private transfer is rarely the line to delete if you have a pile of covers.',
@@ -1260,6 +1261,106 @@ const stylePages = [
     a1: 'No. Four covers are exactly why a normal taxi is the wrong tool. It is one of the cleanest trips we run.',
     q2: 'How many rounds should four people play?',
     a2: 'Three or four. Leave an afternoon free. You will use it, even if the group chat says you will not.'
+  }),
+  style({
+    path: '/golf-holidays/spain-all-inclusive',
+    metaTitle: 'All Inclusive Golf Holidays Spain | GolfSol Ireland',
+    eyebrow: 'All inclusive',
+    title: 'All inclusive golf holidays in Spain',
+    subtitle:
+      'What all inclusive means for an Irish golf trip to Spain, and what GolfSol Ireland actually arranges: hotels, requested tee times, and Málaga transfers.',
+    image: resort,
+    alt: 'A Costa del Sol hotel used when planning a golf stay with breakfast and transfers.',
+    formTitle: 'Request a golf holiday quote',
+    lead: 'Dates, how many of you, and whether you want breakfast with the golf and the transfer. We will say what is in the quote and what is not.',
+    first: 'We do not sell a resort wristband holiday with unlimited meals, drinks, and flights. That is a different product. What we build is a golf package: a place to stay, the rounds you want requested, and a private transfer from Málaga Airport that can take the covers. If a hotel includes breakfast, we say breakfast. If dinner is on you, we say that too.',
+    second: 'Torremolinos, Benalmádena, Fuengirola, and La Cala are the bases where a hotel breakfast and a shorter transfer keep the week simple. Marbella and Sotogrande can still include golf and a transfer, but that bill is not an all-inclusive rate. Drinks, buggies, and the flight stay out of the package unless a hotel rate we have actually checked includes them.',
+    third: 'Send the dates and the headcount, and say if breakfast matters. We would rather send a clear stay-and-play quote than dress a normal week up as all inclusive.',
+    links: [
+      'Affordable weeks — /golf-holidays/good-value',
+      'Holiday with transfers — /golf-holidays/with-airport-transfers',
+      'Costa del Sol — /golf-holidays/costa-del-sol',
+      'Flights, booked by you — /golf-holidays/spain-including-flights'
+    ],
+    q1: 'Does all inclusive include flights?',
+    a1: 'No. You book the flight. We meet you at Málaga and run the hotel, the golf requests, and the transfer.',
+    q2: 'Are meals included?',
+    a2: 'Only when the hotel rate in the quote includes them, usually breakfast. We do not sell unlimited food and drink. If you want dinner included, say so, and we will only promise it when the hotel offers it.'
+  }),
+  style({
+    path: '/golf-holidays/spain-including-flights',
+    metaTitle: 'Golf Holidays Spain Including Flights | Options for Irish Golfers',
+    eyebrow: 'Flights',
+    title: 'Golf holidays in Spain, with flights booked by you',
+    subtitle:
+      'GolfSol Ireland does not sell flights. Irish golfers book the airline ticket, then we arrange the Costa del Sol hotel, golf, and airport transfer.',
+    image: fromIreland,
+    alt: 'Irish golfers planning a Costa del Sol trip after they have booked their own flights.',
+    formTitle: 'Request a golf holiday quote',
+    lead: 'Send your dates, group size, and the airport you expect to leave from. Do not send us a fare to book. We plan the Costa del Sol side.',
+    first: 'Flights are not included. We are not an airline and we do not sell tickets. A golf holiday from Ireland still starts with a seat into Málaga. You buy that ticket. We plan what happens after you land: the meet, the hotel, the courses, and the vehicle that takes the bags.',
+    second: 'Dublin, Cork, Shannon, and Belfast are the usual departures. Galway, Limerick, and Clare often use Shannon. Knock, Kerry, and several other counties do not have a local Málaga flight every week, so the Ireland pages say which airport is real. We do not publish fares, timetables, or airline partnerships. Check the golf-bag rule before you pay for a fare that will not take a travel cover.',
+    third: 'When the flight is real, send the landing time, the group size, and how many rounds. We build the ground package around that arrival. If two of you fly from Dublin and two from Cork, say so at the start.',
+    links: [
+      'From Ireland — /golf-holidays-spain-from-ireland',
+      'From Dublin — /golf-holidays-spain-from-dublin',
+      'Málaga transfers — /transfers/malaga-airport-golf-transfers',
+      'Enquire — /contact'
+    ],
+    q1: 'Can you add flights to the package?',
+    a1: 'No. Book the flight yourself. Tell us the arrival time and we will be at Málaga with a vehicle that takes the covers.',
+    q2: 'Which airport do we fly into?',
+    a2: 'Málaga, AGP, for a Costa del Sol golf week. We will not route you through a different Spanish airport and call it the same trip.'
+  }),
+  style({
+    path: '/golf-holidays/best-spain',
+    metaTitle: 'Best Golf Holidays Spain | Costa del Sol Golf Breaks',
+    eyebrow: 'Compare',
+    title: 'The best golf holiday in Spain is the week that fits',
+    subtitle:
+      'How Irish golfers compare a Spain golf holiday: base, courses, group size, and trip length, on the Costa del Sol coast we actually plan.',
+    image: fairway,
+    alt: 'A Costa del Sol fairway used to compare different kinds of golf holiday.',
+    formTitle: 'Request a golf holiday quote',
+    lead: 'Tell us who is travelling, how many nights you have, and whether the priority is the courses, the hotel, or a short airport run.',
+    first: 'Best is the week the people going will still enjoy on day four. It is not a league table, and it is not a claim that we are the best operator in Spain. A four-ball that wants Nueva Andalucía is a different trip from a society that wants La Cala, or a couple that wants one serious round and a quiet hotel.',
+    second: 'Marbella and the golf valley suit several courses close together. Fuengirola, Benalmádena, and Torremolinos suit a shorter run from Málaga Airport. Estepona and Sotogrande suit a quieter week if you accept the longer transfer. Luxury and a good-value week are different bills, not different slogans.',
+    third: 'Pick the length before the course names. Three nights for a long weekend, five for most societies, seven if you want rest days. Then send dates and numbers. We shortlist a hotel area and request the tee times. A request is not a confirmed tee.',
+    links: [
+      'Marbella — /golf-holidays/marbella',
+      'Fuengirola — /golf-holidays/fuengirola',
+      'Course guide — /guides/best-golf-courses-costa-del-sol',
+      'Packages — /golf-packages'
+    ],
+    q1: 'Are you the best golf holiday company in Spain?',
+    a1: 'We will not say that. We are an Irish team for Costa del Sol trips. The useful question is whether the week we propose fits your group.',
+    q2: 'Is the Costa del Sol the only good golf in Spain?',
+    a2: 'No. It is the coast we know, and the one most Irish groups mean when they ask for Spain. If you want a different region, we are the wrong desk.'
+  }),
+  style({
+    path: '/golf-holidays/spain-2027',
+    metaTitle: 'Golf Holidays Spain 2027 | Late 2026 Dates Still Open',
+    eyebrow: '2027',
+    title: 'Golf holidays in Spain for 2027, and what is left of 2026',
+    subtitle:
+      'Plan a Costa del Sol golf holiday for 2027, or a November and December 2026 trip. Dates, courses, and transfers for Irish groups. No invented fares.',
+    image: fairway,
+    alt: 'Costa del Sol golf country in the kind of light Irish groups plan a winter or spring trip around.',
+    formTitle: 'Request a golf holiday quote',
+    lead: 'Send the month and the year, the group size, and whether the dates are fixed or still a hope.',
+    first: '2026 is nearly done. What is still worth planning is November and December: shorter days, a real chance of rain, and often a quieter sheet than Easter. That can be a sound winter trip if the group will not demand sunshine. 2027 is the year to plan properly. Easter, early summer, and September and October are the weeks Irish societies actually fill.',
+    second: 'Do not wait until the month of travel for a named course in a busy 2027 week. For late 2026, a base closer to Málaga Airport is kinder than a long Sotogrande run after dark. La Cala, Mijas, and the valley still make sense. We request tee times. We do not guarantee them, and we do not publish flight prices.',
+    third: 'One page covers both years on purpose. A separate 2026 copy would repeat the winter and autumn pages with a different title. Use this page to pick the year, then the season page if you need the detail.',
+    links: [
+      'Winter sun — /golf-holidays/winter-sun',
+      'Easter — /golf-holidays/easter',
+      'Autumn — /golf-holidays/autumn',
+      'Best time of year — /guides/best-time-golf-costa-del-sol'
+    ],
+    q1: 'Is it too late for 2026?',
+    a1: 'For a famous course at Easter 2026, that week has gone. For November or December 2026, send the dates. Some weeks still work. Some do not. We will say which.',
+    q2: 'Should we book 2027 now?',
+    a2: 'If the group has dates, yes, especially Easter and September or October. If you only have a wish, send the month and the size and we will tell you what is realistic.'
   })
 ] as const
 

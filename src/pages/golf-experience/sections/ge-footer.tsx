@@ -8,6 +8,7 @@ import { GeButton } from '../components/ge-button'
 import { GeDualPhoneFooterLines } from '../components/ge-dual-phone-contact'
 import { aboutFooterCopy, contactInfo } from '../data/copy'
 import { GsolGoldCornerAccents } from '../../../components/gsol-gold-corner-accents'
+import { openCookieSettings } from '../../../lib/cookie-consent'
 import { footerColumns } from '../data/nav'
 
 type IconProps = SVGProps<SVGSVGElement>
@@ -85,12 +86,22 @@ export function GeFooter() {
                 {column.links.map((link) => (
                   <li key={`${column.title}-${link.label}`} className="flex items-start gap-2">
                     <ChevronRight className="mt-1 h-3.5 w-3.5 shrink-0 text-gs-electric" aria-hidden="true" />
-                    <a
-                      href={link.href}
-                      className="font-ge text-[1.05rem] leading-7 text-white transition-colors hover:text-[#fbe8b5] sm:text-[0.98rem]"
-                    >
-                      {link.label}
-                    </a>
+                    {link.href === '/cookie-policy#settings' ? (
+                      <button
+                        className="text-left font-ge text-[1.05rem] leading-7 text-white transition-colors hover:text-[#fbe8b5] sm:text-[0.98rem]"
+                        onClick={openCookieSettings}
+                        type="button"
+                      >
+                        {link.label}
+                      </button>
+                    ) : (
+                      <a
+                        href={link.href}
+                        className="font-ge text-[1.05rem] leading-7 text-white transition-colors hover:text-[#fbe8b5] sm:text-[0.98rem]"
+                      >
+                        {link.label}
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>

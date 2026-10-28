@@ -67,6 +67,30 @@ const paths = [...new Set([...staticPaths, ...contentPaths, ...footerPaths, ...s
 
 const today = new Date().toISOString().slice(0, 10)
 
+/** Pages whose copy changed in this generation. Everything else keeps its previous lastmod. */
+const bumpedLastmod = new Set([
+  '/golf-holidays',
+  '/golf-holidays/good-value',
+  '/golf-holidays-spain-from-ireland',
+  '/guides/best-golf-courses-costa-del-sol',
+  '/guides/best-time-golf-costa-del-sol',
+  '/privacy-policy'
+])
+
+const previousLastmod = new Map()
+if (fs.existsSync(outPath)) {
+  const previous = fs.readFileSync(outPath, 'utf8')
+  for (const match of previous.matchAll(/<loc>([^<]+)<\/loc>\s*<lastmod>([^<]+)<\/lastmod>/g)) {
+    const pathOnly = match[1].replace(siteBase, '') || '/'
+    previousLastmod.set(pathOnly, match[2])
+  }
+}
+
+const lastmodFor = (p) => {
+  if (bumpedLastmod.has(p) || !previousLastmod.has(p)) return today
+  return previousLastmod.get(p)
+}
+
 const priorityFor = (p) => {
   if (p === '/') return '1.0'
   if (p === '/golf-holidays' || p === '/golf-holidays/costa-del-sol') return '0.95'
@@ -87,7 +111,7 @@ ${paths
   .map(
     (p) => `  <url>
     <loc>${siteBase}${p === '/' ? '' : p}</loc>
-    <lastmod>${today}</lastmod>
+    <lastmod>${lastmodFor(p)}</lastmod>
     <changefreq>${p === '/' ? 'weekly' : 'monthly'}</changefreq>
     <priority>${priorityFor(p)}</priority>
   </url>`
