@@ -17,13 +17,21 @@ function currentPath() {
   return path === '' ? '/' : path
 }
 
+function cookieBannerOpen() {
+  const banner = document.querySelector<HTMLElement>('.gsol-cookie-banner')
+  if (!banner) return false
+  const rect = banner.getBoundingClientRect()
+  return rect.width > 8 && rect.height > 8 && rect.bottom > 0 && rect.top < window.innerHeight
+}
+
+/** Raise the button above a short bottom bar. Never use this to jump over a full-height banner. */
 function obstacleLift() {
   const zoneLeft = window.innerWidth - 300
   let lift = 0
-  const nodes = document.querySelectorAll<HTMLElement>('.gsol-cookie-banner, .portal-bottom-nav')
+  const nodes = document.querySelectorAll<HTMLElement>('.portal-bottom-nav')
   nodes.forEach((node) => {
     const rect = node.getBoundingClientRect()
-    if (rect.width < 8 || rect.height < 8) return
+    if (rect.width < 8 || rect.height < 8 || rect.height > window.innerHeight * 0.45) return
     const reachesButton = rect.right > zoneLeft && rect.left < window.innerWidth - 8
     const pinnedToBottom = rect.bottom >= window.innerHeight - 12 && rect.top < window.innerHeight
     if (!reachesButton || !pinnedToBottom) return
@@ -50,8 +58,11 @@ export function FloatingWhatsApp() {
       cancelAnimationFrame(frame)
       frame = requestAnimationFrame(() => {
         const mobile = window.innerWidth < 768
-        const nextHidden = mobile && fieldIsFocused()
-        const nextBottom = Math.max(20, obstacleLift())
+        const headerBottom = document.querySelector('header')?.getBoundingClientRect().bottom ?? 0
+        const buttonBlock = mobile ? 88 : 72
+        const maxBottom = Math.max(16, Math.floor(window.innerHeight - Math.max(0, headerBottom) - buttonBlock - 8))
+        const nextHidden = (mobile && fieldIsFocused()) || (mobile && cookieBannerOpen())
+        const nextBottom = Math.min(maxBottom, Math.max(16, obstacleLift()))
         setHidden((current) => (current === nextHidden ? current : nextHidden))
         setBottom((current) => (current === nextBottom ? current : nextBottom))
         setReady(true)
@@ -60,7 +71,18 @@ export function FloatingWhatsApp() {
 
     measure()
     const root = document.getElementById('root') ?? document.body
-    const observer = new MutationObserver(measure)
+    const observer = new MutationObserver((mutations) => {
+      const relevant = mutations.some((mutation) =>
+        [...mutation.addedNodes, ...mutation.removedNodes].some((node) => {
+          if (!(node instanceof HTMLElement)) return false
+          return (
+            node.matches('.gsol-cookie-banner, .portal-bottom-nav, header') ||
+            Boolean(node.querySelector('.gsol-cookie-banner, .portal-bottom-nav, header'))
+          )
+        })
+      )
+      if (relevant) measure()
+    })
     observer.observe(root, { childList: true, subtree: true })
     window.addEventListener('resize', measure)
     window.addEventListener('scroll', measure, { passive: true })
@@ -92,13 +114,11 @@ export function FloatingWhatsApp() {
           enquiryType: 'booking_help'
         })
       }
-      style={{
-        bottom: `max(${bottom}px, env(safe-area-inset-bottom))`,
-        right: 'max(0.75rem, env(safe-area-inset-right))'
-      }}
+      style={{ bottom: `max(${bottom}px, env(safe-area-inset-bottom))` }}
       className={cx(
-        'group fixed z-[54] inline-flex min-h-14 max-w-[calc(100vw-1.5rem)] items-center gap-2.5 rounded-[1.8rem_1.15rem_1.7rem_1.05rem] border border-[#d9be7a] bg-[#062016] py-2 pl-2.5 pr-4 text-white shadow-[0_12px_30px_rgba(6,32,22,0.28)]',
+        'group fixed right-3 z-[30] inline-flex min-h-14 max-w-[min(16rem,calc(100vw-1.5rem))] items-center gap-2.5 rounded-[1.8rem_1.15rem_1.7rem_1.05rem] border border-[#d9be7a] bg-[#062016] py-2 pl-2.5 pr-4 text-white shadow-[0_12px_30px_rgba(6,32,22,0.28)]',
         'hover:bg-[#0b3d2e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f4dfa6] focus-visible:ring-offset-2 focus-visible:ring-offset-white',
+        'md:z-[54]',
         hidden && 'pointer-events-none invisible'
       )}
       initial={reduceMotion ? false : { opacity: 0, y: 12 }}

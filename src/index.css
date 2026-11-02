@@ -467,8 +467,9 @@
     color: inherit;
   }
 
-  /* WhatsApp concierge sits on forest. Beat the marketing heading/body colour so type stays white. */
-  .ge-page .gsol-wa-panel :is(h1, h2, h3, p, li, dt, dd, button, a, span) {
+  /* WhatsApp concierge sits on forest. Beat the marketing heading/body colour so type stays white.
+     Leave the crest graphic alone — its cream plate needs dark type, and a white fill on the link inherits into the SVG. */
+  .ge-page .gsol-wa-panel :is(h1, h2, h3, p, li, dt, dd, button, .gsol-wa-cta, .gsol-wa-cta span) {
     color: #ffffff !important;
     -webkit-text-fill-color: #ffffff;
   }

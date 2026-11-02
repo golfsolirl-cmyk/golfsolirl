@@ -33,7 +33,7 @@ export function WhatsAppButton({ message, children, context, className, fullWidt
       className={cx(
         'group inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#075E54] px-6 py-3 text-center font-ge text-[1.05rem] font-bold leading-tight text-white shadow-[0_12px_28px_rgba(7,94,84,0.35)] transition duration-200',
         'hover:bg-[#064e46] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2 focus-visible:ring-offset-[#062016]',
-        'motion-safe:hover:-translate-y-0.5',
+        'gsol-wa-cta motion-safe:hover:-translate-y-0.5',
         fullWidth ? 'w-full sm:w-auto' : '',
         className
       )}

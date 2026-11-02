@@ -34,7 +34,7 @@ export function WhatsAppVisual({ message, context, className }: WhatsAppVisualPr
       onClick={onClick}
       aria-label="Not tech savvy? WhatsApp GolfSol Ireland on 086 600 6202. Opens WhatsApp."
       className={cx(
-        'group relative mx-auto block w-full max-w-[28rem] rounded-[2.5rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f4dfa6] focus-visible:ring-offset-4 focus-visible:ring-offset-[#062016]',
+        'gsol-wa-visual group relative mx-auto block w-full max-w-[28rem] rounded-[2.5rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f4dfa6] focus-visible:ring-offset-4 focus-visible:ring-offset-[#062016]',
         className
       )}
     >
