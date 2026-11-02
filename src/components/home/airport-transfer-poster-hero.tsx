@@ -4,7 +4,8 @@ import { CarFront, Phone, Plane, ShieldCheck, Sun, Users, type LucideIcon } from
 import { companyContact } from '../../data/site-content'
 import { cx } from '../../lib/utils'
 
-const HERO_SRC = '/images/hero-image.png'
+const HERO_MOBILE_SRC = '/images/hero-airport-mobile.webp'
+const HERO_DESKTOP_SRC = '/images/hero-airport-desktop.webp'
 const HERO_CALL_DISPLAY = '086 8515000'
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
@@ -109,16 +110,21 @@ export function AirportTransferPosterHero({ className }: { readonly className?: 
       aria-labelledby="premium-hero-title"
       className={cx('airport-poster-hero ge-on-dark relative isolate overflow-hidden bg-[#041510] text-[#f7f3ea]', className)}
     >
-      <img
-        src={asset(HERO_SRC)}
-        alt="White people-carrier with the Golf Sol crest on the door, waiting at Málaga airport arrivals, with an airliner overhead and palm trees."
-        decoding="async"
-        fetchPriority="high"
-        className={cx(
-          'absolute inset-0 h-full w-full object-cover object-[76%_62%]',
-          !reduceMotion && 'gsol-hero-drift'
-        )}
-      />
+      <picture className="absolute inset-0 block h-full w-full">
+        <source media="(min-width: 768px)" srcSet={asset(HERO_DESKTOP_SRC)} type="image/webp" />
+        <img
+          src={asset(HERO_MOBILE_SRC)}
+          alt="White people-carrier with the Golf Sol crest on the door, waiting at Málaga airport arrivals, with an airliner overhead and palm trees."
+          decoding="async"
+          fetchPriority="high"
+          width={828}
+          height={466}
+          className={cx(
+            'absolute inset-0 h-full w-full object-cover object-[76%_62%]',
+            !reduceMotion && 'gsol-hero-drift'
+          )}
+        />
+      </picture>
       <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-[#041510] via-[#041510]/88 via-[58%] to-[#041510]/25 md:bg-gradient-to-r md:from-[#041510] md:from-[8%] md:via-[#041510]/80 md:via-[42%] md:to-transparent md:to-[70%]" />
 
       <div aria-hidden className="ge-fixed-header-spacer relative z-20 w-full shrink-0" style={{ height: 'var(--ge-fixed-header-h)' }} />

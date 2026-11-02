@@ -15,7 +15,25 @@
         href="https://fonts.bunny.net/css?family=manrope:600,700,800|rubik:400,500,600,700,800|cormorant-garamond:600,700|dancing-script:700|open-sans:400,600,700,800&display=swap"
       />
     </noscript>
-    <link rel="preload" as="image" href="/images/hero-golfsol-composite-mobile.webp" fetchpriority="high" />
+    <script>
+      ;(function () {
+        var path = location.pathname.replace(/\/+$/, '') || '/'
+        if (path !== '/') return
+        ;[
+          ['/images/hero-airport-mobile.webp', '(max-width: 767px)'],
+          ['/images/hero-airport-desktop.webp', '(min-width: 768px)']
+        ].forEach(function (pair) {
+          var link = document.createElement('link')
+          link.rel = 'preload'
+          link.as = 'image'
+          link.fetchPriority = 'high'
+          link.type = 'image/webp'
+          link.href = pair[0]
+          link.media = pair[1]
+          document.head.appendChild(link)
+        })
+      })()
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
