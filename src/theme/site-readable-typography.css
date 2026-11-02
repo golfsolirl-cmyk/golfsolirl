@@ -66,12 +66,23 @@ body.site-readable:not(.site-readable-off)
   :is(.ge-page, #root)
   main
   :is(p, li, dd, dt, h1, h2, h3, h4, h5, h6, label, figcaption, blockquote):not(
+    .sr-only,
+    .sr-only *,
     .portal-bottom-nav *,
     nav[aria-label] *
   ) {
   overflow: visible;
   text-overflow: unset;
   max-height: none;
+}
+
+/*
+ * Screen-reader-only labels are 1px wide and nowrap. Forcing overflow:visible
+ * lets that invisible line widen the document on phones and tablets.
+ */
+body.site-readable:not(.site-readable-off) .sr-only {
+  overflow: hidden !important;
+  white-space: nowrap !important;
 }
 
 body.site-readable:not(.site-readable-off)
