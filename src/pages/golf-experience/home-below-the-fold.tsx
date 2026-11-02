@@ -15,6 +15,7 @@ import { GeHomeEnquiry } from './sections/home-enquiry'
 import { GeHomeEuNordicWelcome } from './sections/home-eu-nordic-welcome'
 import { GeHomeFleetHighlight } from './sections/home-fleet-highlight'
 import { TripServiceBookingCta } from '../../components/trip-service-booking-cta'
+import { WhatsAppConcierge } from '../../components/whatsapp/WhatsAppConcierge'
 import { GeHomeWhatWeDo } from './sections/home-what-we-do'
 import { WhatsappFab } from './components/whatsapp-fab'
 
@@ -49,6 +50,12 @@ export default function HomeBelowTheFold() {
 
       <SectionShadowBridge variant="soft-lift" />
       <GeHomeEnquiry />
+
+      <div className="bg-[#faf8f4] px-5 pb-16 pt-2 sm:px-8 sm:pb-20">
+        <div className="mx-auto max-w-[1180px]">
+          <WhatsAppConcierge sourcePage="/" />
+        </div>
+      </div>
 
       <GeFinalCta />
       <GeFooter />

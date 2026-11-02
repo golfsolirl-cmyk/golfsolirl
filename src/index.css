@@ -467,6 +467,17 @@
     color: inherit;
   }
 
+  /* WhatsApp concierge sits on forest. Beat the marketing heading/body colour so type stays white. */
+  .ge-page .gsol-wa-panel :is(h1, h2, h3, p, li, dt, dd, button, a, span) {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff;
+  }
+
+  .ge-page .gsol-wa-panel .gsol-wa-gold {
+    color: #fff6d8 !important;
+    -webkit-text-fill-color: #fff6d8;
+  }
+
   .ge-page input,
   .ge-page textarea,
   .ge-page select {

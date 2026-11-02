@@ -16,6 +16,7 @@ import { TripServiceBookingCta } from '../components/trip-service-booking-cta'
 import { GeButton } from './golf-experience/components/ge-button'
 import { GeSection } from './golf-experience/components/ge-section'
 import { WhatsappFab } from './golf-experience/components/whatsapp-fab'
+import { WhatsAppBookingHelp } from '../components/whatsapp/WhatsAppBookingHelp'
 import { GeFooter } from './golf-experience/sections/ge-footer'
 import { GeNavbar } from './golf-experience/sections/ge-navbar'
 import { integrationRegistry } from '../config/integrations'
@@ -1062,6 +1063,24 @@ function CustomerPackagePage() {
             sectionLead="Need transfers, tee times, or a hotel as well? Book any combination — saved to your profile when you sign in."
           />
         </GeSection>
+
+        <div className="bg-[#faf8f4] px-5 pb-2 pt-4 sm:px-8">
+          <div className="mx-auto max-w-[1180px]">
+            <WhatsAppBookingHelp
+              sourcePage="/packages"
+              packageName={selectedPackage.name}
+              golfers={`${groupSize} ${groupSize === 1 ? 'golfer' : 'golfers'}`}
+              nights={nights}
+              rounds={rounds}
+              stay={[selectedStay.name, courseHotelPick.selectedHotel?.name].filter(Boolean).join(', ')}
+              course={
+                courseHotelPick.selectedCourse
+                  ? COURSES.find((course) => course.id === courseHotelPick.selectedCourse)?.name
+                  : undefined
+              }
+            />
+          </div>
+        </div>
 
         <GeSection
           id="enquire"

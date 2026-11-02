@@ -10,6 +10,7 @@ import { TransportRouteStory } from './sections/transport-route-story'
 import { GeTransfersInsuranceBanner } from './components/ge-transfers-insurance-banner'
 import { TripServiceBookingCta } from '../../components/trip-service-booking-cta'
 import { WhatsappFab } from './components/whatsapp-fab'
+import { WhatsAppBookingHelp } from '../../components/whatsapp/WhatsAppBookingHelp'
 import { usePageMeta } from '../../lib/use-page-meta'
 
 /**
@@ -55,6 +56,11 @@ export function TransportServicePage() {
               pageLabel="Transport"
               sectionLead="Book Málaga airport transfers for your group — optionally add golf rounds or accommodation in the same request."
             />
+          </div>
+        </div>
+        <div className="bg-[#faf8f4] px-5 pb-2 pt-12 sm:px-8 sm:pt-16">
+          <div className="mx-auto max-w-[1180px]">
+            <WhatsAppBookingHelp sourcePage="/services/transport" packageName="Málaga airport golf transfers" />
           </div>
         </div>
         <TransportEnquireBlock />

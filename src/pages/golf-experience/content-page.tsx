@@ -18,6 +18,9 @@ import { getGeContentPage } from './data/content-pages'
 import { formatContentPageRouteLabel, getContentPageFormConfig, getContentStorySectionMedia } from './content-page-context'
 import { GeTransfersInsuranceBanner } from './components/ge-transfers-insurance-banner'
 import { WhatsappFab } from './components/whatsapp-fab'
+import { WhatsAppBookingHelp } from '../../components/whatsapp/WhatsAppBookingHelp'
+import { WhatsAppConcierge } from '../../components/whatsapp/WhatsAppConcierge'
+import { nightsFromRoute, resolveWhatsAppPanel } from '../../lib/whatsapp'
 import { GeSection } from './components/ge-section'
 import {
   GOLF_COURSES_MAP_SECTION_ID,
@@ -294,6 +297,26 @@ export function GeContentPage() {
             <TermsSolicitorNotice />
             <TermsEmailRequest />
           </>
+        ) : null}
+
+        {formConfig && resolveWhatsAppPanel(path, page.enquiryType) === 'contact' ? (
+          <div className="bg-[#faf8f4] px-5 pb-2 pt-12 sm:px-8 sm:pt-16">
+            <div className="mx-auto max-w-[1180px]">
+              <WhatsAppConcierge variant="contact" sourcePage={path} />
+            </div>
+          </div>
+        ) : null}
+
+        {formConfig && resolveWhatsAppPanel(path, page.enquiryType) === 'booking' ? (
+          <div className="bg-[#faf8f4] px-5 pb-2 pt-12 sm:px-8 sm:pt-16">
+            <div className="mx-auto max-w-[1180px]">
+              <WhatsAppBookingHelp
+                sourcePage={path}
+                packageName={page.title}
+                nights={nightsFromRoute(path)}
+              />
+            </div>
+          </div>
         ) : null}
 
         {formConfig ? (
