@@ -6,7 +6,7 @@ import { cx } from '../../lib/utils'
 
 const HERO_MOBILE_SRC = '/images/hero-airport-mobile.webp'
 const HERO_DESKTOP_SRC = '/images/hero-airport-desktop.webp'
-const HERO_CALL_DISPLAY = '086 8515000'
+const HERO_CALL_DISPLAY = '087 4464766'
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
 const MARKS: readonly { readonly icon: LucideIcon; readonly title: string; readonly detail: string }[] = [

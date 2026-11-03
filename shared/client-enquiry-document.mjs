@@ -11,7 +11,7 @@ export const CLIENT_DOCUMENT_COMPANY = {
   name: 'Golf Sol Ireland',
   tagline: 'Irish-owned Costa del Sol golf travel',
   addressLines: ['6 Richmond Road', 'Drumcondra, Dublin 3', 'D03 C434'],
-  irishPhone: '+353 86 851 5000',
+  irishPhone: '+353 87 446 4766',
   spanishPhone: '+34 641 81 53 66',
   email: 'info@golfsolirl.com',
   websiteDisplay: 'www.golfsolirl.com',
@@ -139,7 +139,7 @@ export const DEFAULT_CLIENT_DOCUMENT_PAYMENT = [
   'Unless this document states otherwise, a 20% deposit is payable to proceed. The remaining balance is due as set out in our terms.',
   clientBankHowToPayPlainText(),
   'Card payment can also be arranged through your Golf Sol Ireland client portal when a quote is issued.',
-  'For payment questions, contact info@golfsolirl.com or +353 86 851 5000.'
+  'For payment questions, contact info@golfsolirl.com or +353 87 446 4766.'
 ].join('\n\n')
 
 export const createClientDocumentReferenceId = () =>

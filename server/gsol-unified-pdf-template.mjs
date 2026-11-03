@@ -534,7 +534,7 @@ export const buildGsolUnifiedPdfTemplateSampleBytes = async () => {
   y = drawUnifiedKeyValueTable(page1, y, ctx, [
     { label: 'Full name', value: 'Patrick McSample' },
     { label: 'Email', value: 'patrick.example@golfsolirl.com' },
-    { label: 'Phone / WhatsApp', value: '+353 86 851 5000' },
+    { label: 'Phone / WhatsApp', value: '+353 87 446 4766' },
     { label: 'Trip interest', value: 'Costa del Sol — 4 golfers — April 2026' },
     { label: 'Reference', value: 'GSI-DEMO-0001' }
   ])

@@ -342,7 +342,7 @@ export function ClientQuotePreviewPage() {
               </dl>
             </div>
             <p className="mt-5 text-center text-xs font-bold uppercase tracking-[0.14em] text-forest-600 sm:text-sm">
-              golfsolirl.com · +353 86 851 5000 · +34 641 81 53 66
+              golfsolirl.com · +353 87 446 4766 · +34 641 81 53 66
             </p>
           </div>
         </div>

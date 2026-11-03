@@ -5,7 +5,7 @@ import { companyContact } from '../../data/site-content'
 import { cx } from '../../lib/utils'
 import type { HeroImageSet } from '../../lib/page-hero-images'
 
-const HERO_CALL_DISPLAY = '086 8515000'
+const HERO_CALL_DISPLAY = '087 4464766'
 const HERO_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
 function heroAsset(publicPath: string): string {

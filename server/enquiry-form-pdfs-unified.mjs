@@ -168,7 +168,7 @@ const travellerContactSections = [
     body:
       'For transfers, tee-time coordination, hotel notes or trip questions connected to your GolfSol Ireland enquiry, contact us directly.',
     points: [
-      'GolfSol Ireland phone / WhatsApp (Ireland): +353 86 851 5000',
+      'GolfSol Ireland phone / WhatsApp (Ireland): +353 87 446 4766',
       'GolfSol Ireland phone (Spain): +34 641 81 53 66',
       'GolfSol Ireland email: info@golfsolirl.com',
       'This guide is not an emergency service. In danger, call 112 first.'
