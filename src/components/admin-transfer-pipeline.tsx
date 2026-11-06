@@ -263,7 +263,7 @@ export function AdminTransferPipeline() {
         const ctx: Record<string, TripContext> = {}
         const [pRes, eRes] = await Promise.all([
           packageIds.length
-            ? supabase.from('package_builds').select('id, config, enquiry_reference_id').in('id', packageIds)
+            ? supabase.from('package_builds').select('id, config').in('id', packageIds)
             : Promise.resolve({ data: [] as { id: string; config: unknown; enquiry_reference_id?: string | null }[] }),
           refs.length
             ? supabase.from('enquiries').select('reference_id, form_payload').in('reference_id', refs)

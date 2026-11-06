@@ -181,7 +181,7 @@ const findTransferBookingForInvoice = async (supabase, { ref, profileId, enquiry
   if (enquiryId) {
     const { data: enquiry } = await supabase
       .from('enquiries')
-      .select('reference_id, email, full_name, phone, interest')
+      .select('reference_id, email, full_name, phone_whatsapp, phone_e164, interest')
       .eq('id', enquiryId)
       .maybeSingle()
     const enquiryRef = typeof enquiry?.reference_id === 'string' ? enquiry.reference_id.trim() : ''
@@ -223,7 +223,7 @@ const createTransferBookingFromPaidInvoice = async (supabase, invoice, amountEur
   if (invoice.enquiry_id) {
     const { data } = await supabase
       .from('enquiries')
-      .select('reference_id, email, full_name, phone, interest')
+      .select('reference_id, email, full_name, phone_whatsapp, phone_e164, interest')
       .eq('id', invoice.enquiry_id)
       .maybeSingle()
     enquiry = data
@@ -238,7 +238,7 @@ const createTransferBookingFromPaidInvoice = async (supabase, invoice, amountEur
     client_user_id: profileId,
     client_email: (profile?.email ?? enquiry?.email ?? '').trim().toLowerCase() || null,
     client_display_name: (profile?.full_name ?? enquiry?.full_name ?? '').trim() || null,
-    client_phone: (profile?.phone ?? profile?.phone_e164 ?? enquiry?.phone ?? '').trim() || null,
+    client_phone: (profile?.phone ?? profile?.phone_e164 ?? enquiry?.phone_whatsapp ?? enquiry?.phone_e164 ?? '').trim() || null,
     pickup_label: 'Trip — confirm pickup with guest',
     dropoff_label: 'Trip — confirm destination with guest',
     status: 'pending',

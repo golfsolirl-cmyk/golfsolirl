@@ -3,6 +3,7 @@ import { ChevronDown, MessageCircle, UserRound } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { FocusTrapDialog } from '../components/focus-trap-dialog'
 import { ClientPortalIdentityHero, type ClientPortalTransferHeroRow } from '../components/client-portal-identity-hero'
+import { LockedContactValue } from '../components/locked-contact-value'
 import { BankTransferPayCard } from '../components/bank-transfer-pay-card'
 import { ClientPortalPaymentsDue } from '../components/client-portal-payments-due'
 import { ClientTransferPassPanel } from '../components/client-transfer-pass-panel'
@@ -102,11 +103,6 @@ const inputClass =
   'w-full rounded-2xl border-2 border-orange-400 bg-white px-4 py-3.5 text-base text-forest-900 placeholder:text-forest-400 outline-none transition-[border-color,box-shadow] focus:border-orange-500 focus:ring-2 focus:ring-orange-300/70'
 
 const labelClass = 'mb-1.5 block text-sm font-semibold uppercase tracking-[0.12em] text-brand-600'
-
-const readOnlyCalcClass =
-  'w-full rounded-2xl border-2 border-forest-200/90 bg-offwhite px-4 py-3.5 text-base text-forest-900'
-
-const readOnlyCalcHintClass = 'mt-1 text-sm text-ge-gray500'
 
 /** Full name for portal copy: profile row first, then auth user_metadata from signup/OAuth. */
 const resolveClientDisplayFullName = (session: Session, profile: Profile | null): string => {
@@ -219,6 +215,7 @@ type ClientPortalTransferBookingRow = {
   admin_price_vat_treatment?: string | null
   deposit_percent?: number | null
   payment_status?: string | null
+  amount_received_eur?: number | null
   next_available_driver?: boolean | null
   booking_source?: string | null
   package_build_id?: string | null
@@ -368,14 +365,19 @@ export function ClientDashboardPage() {
         orTransfer.push(`enquiry_reference_id.eq.${rid}`)
       }
     }
-    const tbRes = await supabase
-      .from('transfer_bookings')
-      .select(
-        'id, pickup_label, dropoff_label, status, scheduled_at, admin_price_eur, admin_price_vat_treatment, deposit_percent, payment_status, next_available_driver, booking_source, package_build_id, enquiry_reference_id, created_at, updated_at'
-      )
-      .or(orTransfer.join(','))
-      .order('created_at', { ascending: false })
-      .limit(80)
+    const transferSelect =
+      'id, pickup_label, dropoff_label, status, scheduled_at, admin_price_eur, admin_price_vat_treatment, deposit_percent, payment_status, amount_received_eur, next_available_driver, booking_source, package_build_id, enquiry_reference_id, created_at, updated_at'
+    let tbRes = await supabase.from('transfer_bookings').select(transferSelect).or(orTransfer.join(',')).order('created_at', { ascending: false }).limit(80)
+    if (tbRes.error && /amount_received_eur/i.test(tbRes.error.message)) {
+      tbRes = await supabase
+        .from('transfer_bookings')
+        .select(
+          'id, pickup_label, dropoff_label, status, scheduled_at, admin_price_eur, admin_price_vat_treatment, deposit_percent, payment_status, next_available_driver, booking_source, package_build_id, enquiry_reference_id, created_at, updated_at'
+        )
+        .or(orTransfer.join(','))
+        .order('created_at', { ascending: false })
+        .limit(80)
+    }
     if (!tbRes.error && tbRes.data) {
       const dedupTb = new Map<string, ClientPortalTransferBookingRow>()
       for (const r of tbRes.data as ClientPortalTransferBookingRow[]) {
@@ -1828,6 +1830,19 @@ export function ClientDashboardPage() {
 
   const handleTransferPaidInvoicePdf = async (t: ClientPortalTransferHeroRow) => {
     try {
+      const matches = transferPortalDocuments.filter(
+        (doc) =>
+          doc.transfer_booking_id === t.id &&
+          (doc.document_kind === 'deposit_receipt' || doc.document_kind === 'payment_confirmation')
+      )
+      const stored = matches.find((doc) => doc.document_kind === 'payment_confirmation') ?? matches[0]
+      if (stored) {
+        const blob = await loadTransferPortalPdfBlob(stored)
+        const url = URL.createObjectURL(blob)
+        window.open(url, '_blank', 'noopener,noreferrer')
+        window.setTimeout(() => URL.revokeObjectURL(url), 60_000)
+        return
+      }
       const { downloadTransferPaidInvoicePdf } = await import('../lib/transfer-vat-receipt-pdf')
       const row = transferBookingsPortal.find((r) => r.id === t.id)
       const paymentRecordedHint =
@@ -1905,6 +1920,7 @@ export function ClientDashboardPage() {
           {activeClientSection === 'home' ? (
           <ClientPortalIdentityHero
             accountEmail={session.user.email ?? null}
+            accountPhone={clientDisplayPhone || null}
             accountNumber={accountRefForUi.trim() ? accountRefForUi : null}
             className={dashboardPaymentBanner ? '!mb-0' : undefined}
             emphasizeTransferBookingId={stripePaidTransferBookingId}
@@ -1913,6 +1929,7 @@ export function ClientDashboardPage() {
             tripAddOnQuotes={tripAddOnQuotes}
             onDownloadTransferQuotePdf={handleTransferQuotePdf}
             onDownloadTransferPaidInvoicePdf={handleTransferPaidInvoicePdf}
+            paymentInvoices={transferPortalDocuments}
             onPayTransfer={handlePayTransfer}
             onViewTransferCard={(t) => setTransferServiceCardBookingId(t.id)}
             transfers={transferBookingsPortal}
@@ -2349,15 +2366,15 @@ export function ClientDashboardPage() {
                 />
               </div>
               <div>
-                <label className={labelClass} htmlFor="portal-onboarding-email">
+                <p className={labelClass} id="portal-onboarding-email">
                   Email
-                </label>
-                <input
-                  className={readOnlyCalcClass}
-                  id="portal-onboarding-email"
-                  readOnly
+                </p>
+                <LockedContactValue
+                  kind="email"
+                  tone="onLight"
                   value={profile?.email ?? session.user.email ?? ''}
                 />
+                <p className="mt-2 text-xs text-forest-600">Your login email stays locked. It cannot be edited here.</p>
               </div>
               <div>
                 <label className={labelClass} htmlFor="portal-onboarding-phone">
@@ -2412,11 +2429,15 @@ export function ClientDashboardPage() {
               </div>
               <div>
                 <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-ge-gray500">Email</dt>
-                <dd className="mt-1 font-medium text-forest-950">{profile?.email ?? session.user.email ?? '—'}</dd>
+                <dd>
+                  <LockedContactValue kind="email" tone="onLight" value={profile?.email ?? session.user.email ?? ''} />
+                </dd>
               </div>
               <div>
                 <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-ge-gray500">Phone</dt>
-                <dd className="mt-1 font-medium text-forest-950">{profile?.phone?.trim() || '—'}</dd>
+                <dd>
+                  <LockedContactValue kind="phone" tone="onLight" value={profile?.phone?.trim() || ''} />
+                </dd>
               </div>
               <div className="sm:col-span-2">
                 <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-ge-gray500">Account number</dt>
@@ -2456,11 +2477,19 @@ export function ClientDashboardPage() {
             </div>
             <div>
               <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-ge-gray500">Email</dt>
-              <dd className="mt-1 font-medium text-forest-950">{profile?.email ?? session.user.email ?? '—'}</dd>
+              <dd>
+                <LockedContactValue kind="email" tone="onLight" value={profile?.email ?? session.user.email ?? ''} />
+              </dd>
             </div>
             <div>
               <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-ge-gray500">Phone</dt>
-              <dd className="mt-1 font-medium text-forest-950">{clientDisplayPhone || '—'}</dd>
+              <dd>
+                {clientDisplayPhone ? (
+                  <LockedContactValue kind="phone" tone="onLight" value={clientDisplayPhone} />
+                ) : (
+                  <span className="mt-1 block font-medium text-forest-950">—</span>
+                )}
+              </dd>
             </div>
             <div className="sm:col-span-2">
               <dt className="text-sm font-semibold uppercase tracking-[0.12em] text-ge-gray500">Account number</dt>

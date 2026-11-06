@@ -80,7 +80,7 @@ export const resolveTransferPaymentBadgeStatus = (t: {
   return 'unpaid'
 }
 
-/** Short label for badges in client + admin dashboards (e.g. "20% deposit paid", "Paid in full"). */
+/** Short label for badges in client + admin dashboards: Unpaid, Deposit paid, or Paid in full. */
 export const transferPaymentBadgeLabel = (t: {
   readonly payment_status?: string | null
   readonly deposit_percent?: number | null
@@ -90,9 +90,59 @@ export const transferPaymentBadgeLabel = (t: {
     return 'Paid in full'
   }
   if (status === 'deposit_paid') {
-    return `${normalizedDepositPercent(t.deposit_percent)}% deposit paid`
+    return 'Deposit paid'
   }
-  return 'Awaiting payment'
+  return 'Unpaid'
+}
+
+const formatTripMoney = (n: number) =>
+  new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n)
+
+/** Euros already received. Uses the stored amount when the desk or Stripe recorded one. */
+export const transferAmountReceivedEur = (t: {
+  readonly payment_status?: string | null
+  readonly admin_price_eur?: number | null
+  readonly deposit_percent?: number | null
+  readonly amount_received_eur?: number | null
+}): number => {
+  const pay = String(t.payment_status ?? 'unpaid').toLowerCase()
+  const recorded = Number(t.amount_received_eur)
+  if ((pay === 'paid' || pay === 'deposit') && Number.isFinite(recorded) && recorded > 0) {
+    return Math.round(recorded * 100) / 100
+  }
+  const gross = typeof t.admin_price_eur === 'number' && Number.isFinite(t.admin_price_eur) ? t.admin_price_eur : 0
+  if (pay === 'paid' && gross > 0) {
+    return gross
+  }
+  if (pay === 'deposit' && gross > 0) {
+    return depositAmountEur(gross, normalizedDepositPercent(t.deposit_percent))
+  }
+  return 0
+}
+
+/** One line for the client: unpaid, deposit paid, or paid in full, with the amount received. */
+export const transferPaymentStory = (t: {
+  readonly payment_status?: string | null
+  readonly admin_price_eur?: number | null
+  readonly deposit_percent?: number | null
+  readonly amount_received_eur?: number | null
+}): string => {
+  const status = resolveTransferPaymentBadgeStatus(t)
+  const gross = typeof t.admin_price_eur === 'number' && Number.isFinite(t.admin_price_eur) && t.admin_price_eur > 0 ? t.admin_price_eur : null
+  const received = transferAmountReceivedEur(t)
+  if (status === 'unpaid') {
+    return gross != null ? `Unpaid. Nothing received yet. Trip total ${formatTripMoney(gross)}.` : 'Unpaid. Nothing received yet.'
+  }
+  if (status === 'deposit_paid') {
+    if (gross != null) {
+      const balance = Math.max(0, Math.round((gross - received) * 100) / 100)
+      return `Deposit paid. You have paid ${formatTripMoney(received)} of ${formatTripMoney(gross)}. Balance ${formatTripMoney(balance)}.`
+    }
+    return `Deposit paid. You have paid ${formatTripMoney(received)}.`
+  }
+  return gross != null
+    ? `Paid in full. You have paid ${formatTripMoney(received || gross)}.`
+    : 'Paid in full.'
 }
 
 export const clientTransferPaymentBadgeKind = (t: {

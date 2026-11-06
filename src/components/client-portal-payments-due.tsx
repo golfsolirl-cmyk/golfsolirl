@@ -7,7 +7,9 @@ import {
   depositAmountEur,
   formatBalanceDueLine,
   normalizedDepositPercent,
-  transferPaymentFullUpfront
+  transferAmountReceivedEur,
+  transferPaymentFullUpfront,
+  transferPaymentStory
 } from '../lib/transfer-payment-breakdown'
 import { TransferPaymentStatusBadge } from './transfer-payment-status-badge'
 import { LuxuryButton } from './ui/button'
@@ -70,12 +72,8 @@ const transferCollectedDisplay = (t: ClientPortalTransferHeroRow) => {
   if (gross === null) {
     return null
   }
-  const pct = normalizedDepositPercent(t.deposit_percent)
-  if (pay === 'paid') {
-    return gross
-  }
-  if (pay === 'deposit') {
-    return depositAmountEur(gross, pct)
+  if (pay === 'paid' || pay === 'deposit') {
+    return transferAmountReceivedEur(t)
   }
   return null
 }
@@ -280,6 +278,7 @@ export function ClientPortalPaymentsDue(props: {
                         ? ` · ${new Date(t.scheduled_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}`
                         : ' · ASAP'}
                     </p>
+                    <p className="mt-2 text-sm font-semibold text-forest-950">{transferPaymentStory(t)}</p>
                     <p className="mt-2 text-sm text-forest-800">
                       Total <span className="font-semibold">{formatEurInline(gross)}</span> (VAT incl.)
                       {!fullUpfront ? (
@@ -436,6 +435,11 @@ export function ClientPortalPaymentsDue(props: {
                     <p className="mt-1 text-sm text-forest-600">{item.subtitle}</p>
                     <p className="mt-2 font-display text-xl font-bold text-brand-800">{item.amountDisplay}</p>
                     {item.kind === 'transfer' ? (
+                      <p className="mt-1 text-sm font-semibold text-forest-950">{transferPaymentStory(item.transfer)}</p>
+                    ) : (
+                      <p className="mt-1 text-sm font-semibold text-forest-950">Paid in full.</p>
+                    )}
+                    {item.kind === 'transfer' ? (
                       <p className="mt-2">
                         <TransferPaymentStatusBadge
                           deposit_percent={item.depositPercent}
@@ -458,7 +462,7 @@ export function ClientPortalPaymentsDue(props: {
                         variant="outlineOnLight"
                       >
                         <FileText className="mr-2 h-4 w-4" aria-hidden />
-                        Receipt PDF
+                        Your invoice
                       </LuxuryButton>
                     ) : null}
                     {item.kind === 'invoice' && props.onViewInvoice ? (

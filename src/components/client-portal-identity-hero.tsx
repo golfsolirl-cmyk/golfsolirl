@@ -1,13 +1,15 @@
 import { useState } from 'react'
-import { Copy, Check, FileText, CreditCard, BadgeCheck, Mail, Hash } from 'lucide-react'
+import { Copy, Check, FileText, CreditCard, BadgeCheck, Mail, Hash, Phone } from 'lucide-react'
 import {
   balanceAmountEur,
   clientTransferOperationalStatusLabel,
   depositAmountEur,
   formatBalanceDueLine,
   normalizedDepositPercent,
-  transferPaymentFullUpfront
+  transferPaymentFullUpfront,
+  transferPaymentStory
 } from '../lib/transfer-payment-breakdown'
+import { LockedContactValue } from './locked-contact-value'
 import { TransferPaymentStatusBadge } from './transfer-payment-status-badge'
 import { cx } from '../lib/utils'
 
@@ -24,6 +26,7 @@ export type ClientPortalTransferHeroRow = {
   readonly admin_price_vat_treatment?: string | null
   readonly deposit_percent?: number | null
   readonly payment_status?: string | null
+  readonly amount_received_eur?: number | null
   readonly next_available_driver?: boolean | null
   readonly booking_source?: string | null
   readonly package_build_id?: string | null
@@ -39,6 +42,7 @@ export function ClientPortalIdentityHero(props: {
   readonly signedInAs: string
   readonly accountNumber: string | null
   readonly accountEmail: string | null
+  readonly accountPhone?: string | null
   readonly transfers: readonly ClientPortalTransferHeroRow[]
   /** Quoted add-ons (golf / hotels / transfer requests) for trip total */
   readonly tripAddOnQuotes?: readonly {
@@ -50,6 +54,11 @@ export function ClientPortalIdentityHero(props: {
   readonly emphasizeTransferBookingId?: string | null
   readonly onDownloadTransferQuotePdf?: (transfer: ClientPortalTransferHeroRow) => void | Promise<void>
   readonly onDownloadTransferPaidInvoicePdf?: (transfer: ClientPortalTransferHeroRow) => void | Promise<void>
+  /** Stored deposit or paid-in-full invoice already on this guest’s account. */
+  readonly paymentInvoices?: readonly {
+    readonly transfer_booking_id?: string | null
+    readonly document_kind: string
+  }[]
   readonly onPayTransfer?: (
     transfer: ClientPortalTransferHeroRow,
     phase: 'deposit' | 'balance' | 'full'
@@ -66,6 +75,7 @@ export function ClientPortalIdentityHero(props: {
   const [payBusyPhase, setPayBusyPhase] = useState<'deposit' | 'balance' | 'full' | null>(null)
   const ref = props.accountNumber?.trim() ?? ''
   const emailDisplay = (props.accountEmail ?? '').trim()
+  const phoneDisplay = (props.accountPhone ?? '').trim()
   const signedInLabel = props.signedInAs.trim() || emailDisplay || '—'
   const tripAddOns = props.tripAddOnQuotes ?? []
   const transferQuotedTotal = props.transfers.reduce((sum, t) => {
@@ -110,7 +120,7 @@ export function ClientPortalIdentityHero(props: {
             ) : null}
           </div>
 
-          {emailDisplay || ref ? (
+          {emailDisplay || phoneDisplay || ref ? (
             <div className="w-full max-w-xl space-y-4">
               <p className="font-ge text-sm font-semibold text-white">
                 Keep these details handy for your trip
@@ -131,9 +141,24 @@ export function ClientPortalIdentityHero(props: {
                       </p>
                     </div>
                   </div>
-                  <p className="mt-5 break-all font-ge text-2xl font-bold leading-snug tracking-tight text-white sm:text-3xl">
-                    {emailDisplay}
-                  </p>
+                  <LockedContactValue kind="email" size="lg" tone="onDark" value={emailDisplay} />
+                </div>
+              ) : null}
+
+              {phoneDisplay ? (
+                <div className="rounded-[1.5rem] border border-white/25 bg-white/[0.09] px-6 py-6 sm:px-7 sm:py-7">
+                  <div className="flex items-center gap-3">
+                    <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/12 text-white ring-1 ring-white/25">
+                      <Phone className="h-5 w-5" aria-hidden />
+                    </span>
+                    <div>
+                      <p className="font-ge text-sm font-bold uppercase tracking-[0.14em] text-emerald-200">Phone</p>
+                      <p className="mt-1 font-ge text-base leading-relaxed text-white/90">
+                        Used for pickup calls and WhatsApp
+                      </p>
+                    </div>
+                  </div>
+                  <LockedContactValue kind="phone" size="lg" tone="onDark" value={phoneDisplay} />
                 </div>
               ) : null}
 
@@ -237,6 +262,7 @@ export function ClientPortalIdentityHero(props: {
                     <p className="mt-1 font-ge text-sm text-white/90">
                       {src} · {clientTransferOperationalStatusLabel(t)} · {when}
                     </p>
+                    <p className="mt-2 font-ge text-sm font-semibold leading-snug text-white">{transferPaymentStory(t)}</p>
                     {gross !== null ? (
                       <div className="mt-2 space-y-0.5 font-ge text-xs leading-snug text-fairway-50/95 sm:text-sm">
                         <p>
@@ -350,10 +376,14 @@ export function ClientPortalIdentityHero(props: {
                           {quotePdfBusyId === t.id ? 'PDF…' : 'Quote PDF'}
                         </button>
                       ) : null}
-                      {typeof t.admin_price_eur === 'number' &&
-                      Number.isFinite(t.admin_price_eur) &&
-                      isPaid &&
-                      props.onDownloadTransferPaidInvoicePdf ? (
+                      {(pay === 'deposit' || isPaid) &&
+                      props.onDownloadTransferPaidInvoicePdf &&
+                      (props.paymentInvoices?.some(
+                        (doc) =>
+                          doc.transfer_booking_id === t.id &&
+                          (doc.document_kind === 'deposit_receipt' || doc.document_kind === 'payment_confirmation')
+                      ) ||
+                        isPaid) ? (
                         <button
                           className="inline-flex items-center gap-1 rounded-lg border border-emerald-300/55 bg-fairway-500/25 px-2 py-1 font-ge text-xs font-bold uppercase tracking-[0.12em] text-fairway-50 transition hover:bg-fairway-500/40 disabled:opacity-50"
                           disabled={paidInvoiceBusyId === t.id}
@@ -366,7 +396,7 @@ export function ClientPortalIdentityHero(props: {
                           type="button"
                         >
                           <BadgeCheck className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                          {paidInvoiceBusyId === t.id ? 'PDF…' : 'Paid invoice'}
+                          {paidInvoiceBusyId === t.id ? 'PDF…' : 'Your invoice'}
                         </button>
                       ) : null}
                     </p>

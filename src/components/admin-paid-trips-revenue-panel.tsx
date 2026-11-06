@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import { RefreshCw } from 'lucide-react'
 import { adminMailRequest } from '../lib/admin-mail-api'
-import { buildEnquiryFormDetailRows, buildPackageBuildDetailRows, type ClientDataCardRow } from '../lib/client-data-card'
+import {
+  buildEnquiryFormDetailRows,
+  buildPackageBuildDetailRows,
+  type ClientDataCardRow,
+  type ClientEnquiryRowLite
+} from '../lib/client-data-card'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { cx } from '../lib/utils'
 
@@ -336,7 +341,7 @@ export function AdminPaidTripsRevenuePanel({
           reference
             ? sb
                 .from('enquiries')
-                .select('id, reference_id, created_at, form_payload, full_name, phone, email')
+                .select('id, reference_id, created_at, form_payload, full_name, phone_whatsapp, phone_e164, email')
                 .eq('reference_id', reference)
                 .order('created_at', { ascending: false })
                 .limit(1)
@@ -378,20 +383,14 @@ export function AdminPaidTripsRevenuePanel({
           if (!packageRes.error) {
             packageRow = packageRes.data
           }
-        } else if (reference) {
-          const packageRes = await sb
-            .from('package_builds')
-            .select('id, label, source, config, client_details, created_at')
-            .eq('enquiry_reference_id', reference)
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .maybeSingle()
-          if (!packageRes.error) {
-            packageRow = packageRes.data
-          }
         }
 
-        const enquiry = enquiryRes.data
+        const enquiry = enquiryRes.data as
+          | (ClientEnquiryRowLite & {
+              phone_whatsapp?: string | null
+              phone_e164?: string | null
+            })
+          | null
         const packageAnswers = packageRow ? buildPackageBuildDetailRows(packageRow) : []
         const enquiryAnswers = enquiry ? buildEnquiryFormDetailRows(enquiry) : []
         const answers = (packageAnswers.length > 0 ? packageAnswers : enquiryAnswers).filter(
@@ -443,7 +442,11 @@ export function AdminPaidTripsRevenuePanel({
           ''
         const detail: PaidTripDetail = {
           email: resolvedEmail || null,
-          phone: booking?.client_phone?.trim() || enquiry?.phone?.trim() || null,
+          phone:
+            booking?.client_phone?.trim() ||
+            enquiry?.phone_whatsapp?.trim() ||
+            enquiry?.phone_e164?.trim() ||
+            null,
           dates: pickAnswer(answers, ['travel', 'date', 'arrival']),
           party: pickAnswer(answers, ['group', 'party', 'passenger', 'golfer', 'pax']),
           golf: pickAnswer(answers, ['golf', 'course', 'tee']),

@@ -83,8 +83,8 @@ function friendlyDocKindLabel(k: TransferPortalDocumentRow['document_kind']): st
   if (k === 'vat_quote') return 'VAT quote'
   if (k === 'form_submission') return 'Your request'
   if (k === 'terms_summary') return 'Terms summary'
-  if (k === 'deposit_receipt') return 'Deposit receipt'
-  if (k === 'payment_confirmation') return 'Payment confirmation'
+  if (k === 'deposit_receipt') return 'Deposit invoice'
+  if (k === 'payment_confirmation') return 'Paid in full invoice'
   return k.replace(/_/g, ' ')
 }
 
