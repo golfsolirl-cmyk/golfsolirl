@@ -8,17 +8,15 @@ type SectionGuide = {
   readonly steps: readonly string[]
 }
 
-const SECTION_ORDER = CLIENT_SIDEBAR_ITEMS.map((item) => item.id)
-
 const SECTION_GUIDES: Record<ClientPortalSectionId, SectionGuide> = {
   home: {
     kicker: 'Your trip',
-    title: 'Everything in one place',
-    summary: 'Your Costa del Sol trip desk — details, add-ons, and what’s already on file with Golf Sol Ireland.',
+    title: 'This is your trip',
+    summary: 'Your account, what is booked, and anything still to pay.',
     steps: [
-      'Check your name, account number, and transfer status above.',
-      'Add transfers, golf, or accommodation when you need more.',
-      'Pay anything due, or open Messages to talk to us.'
+      'Check your account number and transfers above.',
+      'Add transfers, golf, or a hotel if you need more.',
+      'Use Pay or Messages when you are ready.'
     ]
   },
   pass: {
@@ -98,9 +96,6 @@ export function ClientPortalSectionGuide(props: { readonly activeSection: Client
   const guide = SECTION_GUIDES[props.activeSection]
   const navItem = CLIENT_SIDEBAR_ITEMS.find((item) => item.id === props.activeSection)
   const Icon = navItem?.icon
-  const sectionIndex = SECTION_ORDER.indexOf(props.activeSection)
-  const sectionNumber = sectionIndex >= 0 ? sectionIndex + 1 : 1
-  const sectionTotal = SECTION_ORDER.length
 
   return (
     <motion.section
@@ -114,7 +109,7 @@ export function ClientPortalSectionGuide(props: { readonly activeSection: Client
     >
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-forest-100/90 pb-3">
         <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-700">
-          Trip desk · section {sectionNumber} of {sectionTotal}
+          {navItem?.description ?? 'Your trip desk'}
         </p>
         <p className="rounded-full bg-forest-900 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white">
           Now viewing
@@ -134,7 +129,7 @@ export function ClientPortalSectionGuide(props: { readonly activeSection: Client
           >
             {guide.title}
           </h2>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-forest-600 sm:text-base">{guide.summary}</p>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-forest-800 sm:text-base">{guide.summary}</p>
           <ol className="mt-4 grid gap-2 sm:grid-cols-3">
             {guide.steps.map((step, i) => (
               <li

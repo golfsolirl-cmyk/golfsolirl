@@ -1885,7 +1885,7 @@ export function ClientDashboardPage() {
   return (
     <DashboardLayout
       kicker="Your trip desk"
-      subtitle="Transfers, golf, and stay for the Costa — one menu item at a time."
+      subtitle="Your trip is the home page. Pay, message us, or show your pass from the menu."
       title={dashboardTitle}
       titleAdornment={interestHeroAdornment}
       variant="client"
@@ -1902,6 +1902,7 @@ export function ClientDashboardPage() {
         unreadMessages={hasUnreadInterestReplies}
       >
         <div className={dashboardPaymentBanner ? 'mb-8 space-y-3' : 'mb-8'}>
+          {activeClientSection === 'home' ? (
           <ClientPortalIdentityHero
             accountEmail={session.user.email ?? null}
             accountNumber={accountRefForUi.trim() ? accountRefForUi : null}
@@ -1916,6 +1917,7 @@ export function ClientDashboardPage() {
             onViewTransferCard={(t) => setTransferServiceCardBookingId(t.id)}
             transfers={transferBookingsPortal}
           />
+          ) : null}
           {dashboardPaymentBanner ? (
                 <div
                   className="flex flex-col gap-3 rounded-2xl border border-emerald-300/80 bg-fairway-50/95 px-4 py-3.5 text-forest-950 shadow-sm sm:flex-row sm:items-start sm:justify-between sm:gap-4"
@@ -1959,17 +1961,16 @@ export function ClientDashboardPage() {
               ) : null}
         </div>
 
+        {activeClientSection === 'home' ? (
         <div className="mb-8 rounded-[2rem] border border-forest-100 bg-white px-5 py-5 shadow-soft sm:px-7">
           <EnquiryTripStageStrip input={clientTripStageInput} variant="client" />
-          <p className="mt-3 font-ge text-sm leading-relaxed text-ge-gray500">
-            Where your trip is: form in → we send a price → you pay → ready to travel.
+          <p className="mt-3 font-ge text-sm leading-relaxed text-forest-800">
+            Form sent, then we price it, then you pay, then you travel.
           </p>
         </div>
+        ) : null}
 
-        <div className="mb-8">
-          <BankTransferPayCard audience="client" />
-        </div>
-
+        {activeClientSection === 'home' ? (
         <ClientPortalPaymentsDue
           anchorId="client-pay-now"
           className="mb-10"
@@ -1993,6 +1994,7 @@ export function ClientDashboardPage() {
           transfers={transferBookingsPortal}
           userId={session.user.id}
         />
+        ) : null}
 
         <ClientPortalSectionGuide activeSection={activeClientSection} />
 
@@ -2500,7 +2502,7 @@ export function ClientDashboardPage() {
                 aria-hidden
                 className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.12)_45%,transparent_90%)] opacity-0 transition group-hover:translate-x-full group-hover:opacity-100 group-hover:duration-700"
               />
-              <MessageCircle className="relative h-4 w-4 shrink-0 text-brand-300" strokeWidth={2.25} aria-hidden />
+              <MessageCircle className="relative h-4 w-4 shrink-0 text-white" strokeWidth={2.25} aria-hidden />
               <span className="relative">{teamMessagingOpen ? 'Hide messages' : 'Write a message'}</span>
               <ChevronDown
                 aria-hidden

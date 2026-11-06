@@ -40,7 +40,7 @@ export function ClientPortalShell({
   }, [activeSection])
 
   const mobileTabs = CLIENT_MOBILE_TAB_ITEMS.map((item) =>
-    item.id === 'home' && unreadMessages ? { ...item, badge: true } : item
+    item.id === 'messages' && unreadMessages ? { ...item, badge: true } : item
   )
 
   return (

@@ -64,7 +64,8 @@ export function EnquiryContactVerifyFields({
         setError(data.message ?? 'Could not send the code.')
         return
       }
-      setMessage(data.message ?? 'Code sent — check your email.')
+      const sentTo = email.trim()
+      setMessage(data.message ?? `Code sent to ${sentTo}. Check that inbox and your spam folder.`)
     } catch {
       setError('Could not send the code (network error).')
     } finally {
@@ -108,13 +109,25 @@ export function EnquiryContactVerifyFields({
     }
   }
 
+  const emailShown = email.trim()
+  const emailReady = emailShown.includes('@')
+
   return (
     <div className={cx('space-y-3 rounded-2xl border border-ge-gray200 bg-ge-gray50/50 p-4', className)}>
       <div>
-        <p className={labelClass}>Confirm mobile by email code</p>
+        <p className={labelClass}>Confirm with a code sent to your email</p>
         <p className="mt-1 font-ge text-sm leading-relaxed text-ge-gray500">
-          We email a 6-digit code to prove this contact is real (SMS OTP needs a separate SMS provider later).
+          We email a 6-digit code to the address on this form. Check that inbox and your spam folder. The code is not sent by text to your mobile.
         </p>
+        {emailReady ? (
+          <p className="mt-3 rounded-xl border border-[#d9be7a]/80 bg-[#fbf6ea] px-3 py-2.5 font-ge text-sm leading-relaxed text-gs-dark">
+            This code is sent to <span className="font-bold break-all">{emailShown}</span>
+          </p>
+        ) : (
+          <p className="mt-2 font-ge text-sm font-semibold text-gs-dark">
+            Enter your email above first. That is the only place the code is sent.
+          </p>
+        )}
       </div>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
         <button
@@ -123,14 +136,14 @@ export function EnquiryContactVerifyFields({
           onClick={() => void sendCode()}
           type="button"
         >
-          {busy === 'send' ? 'Sending…' : contactVerifyToken ? 'Code confirmed' : 'Email me a code'}
+          {busy === 'send' ? 'Sending to your email…' : contactVerifyToken ? 'Code confirmed' : 'Send code to my email'}
         </button>
       </div>
       {!contactVerifyToken ? (
         <div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
           <div>
             <label className={labelClass} htmlFor="enquiry-verify-code">
-              6-digit code
+              6-digit code from your email
             </label>
             <input
               autoComplete="one-time-code"

@@ -90,7 +90,7 @@ export function PortalTransferServiceCard(props: { readonly transfer: PortalTran
               <p className="font-ge text-[0.62rem] font-bold uppercase tracking-[0.18em] text-emerald-200/90">
                 Quoted total (VAT incl.)
               </p>
-              <p className="font-display text-2xl font-bold tracking-tight text-brand-100 md:text-3xl">{formatEur(gross)}</p>
+              <p className="font-display text-2xl font-bold tracking-tight text-white md:text-3xl">{formatEur(gross)}</p>
               {!fullUp && pay === 'deposit' && depEur !== null ? (
                 <p className="mt-1 font-ge text-[0.7rem] text-emerald-100/90">
                   Your card deposit recorded: <span className="font-semibold text-white">{formatEur(depEur)}</span> ({pct}% of

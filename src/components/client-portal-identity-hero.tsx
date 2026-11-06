@@ -99,7 +99,7 @@ export function ClientPortalIdentityHero(props: {
       <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
         <div className="min-w-0 flex-1 space-y-8 xl:max-w-2xl">
           <div>
-            <p className="font-ge text-xs font-extrabold uppercase tracking-[0.22em] text-emerald-200/90 sm:text-sm">Your account</p>
+            <p className="font-ge text-xs font-extrabold uppercase tracking-[0.22em] text-white sm:text-sm">Your account</p>
             <h2 className="font-display mt-2 text-4xl font-bold tracking-tight text-white sm:text-5xl">
               {props.firstName.trim() ? <>Hello, {props.firstName.trim()}</> : <>Hello</>}
             </h2>
@@ -112,21 +112,21 @@ export function ClientPortalIdentityHero(props: {
 
           {emailDisplay || ref ? (
             <div className="w-full max-w-xl space-y-4">
-              <p className="font-ge text-sm font-semibold text-emerald-100/90">
+              <p className="font-ge text-sm font-semibold text-white">
                 Keep these details handy for your trip
               </p>
 
               {emailDisplay ? (
                 <div className="rounded-[1.5rem] border border-white/25 bg-white/[0.09] px-6 py-6 sm:px-7 sm:py-7">
                   <div className="flex items-center gap-3">
-                    <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/12 text-brand-100 ring-1 ring-white/25">
+                    <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/12 text-white ring-1 ring-white/25">
                       <Mail className="h-5 w-5" aria-hidden />
                     </span>
                     <div>
                       <p className="font-ge text-sm font-bold uppercase tracking-[0.14em] text-emerald-200">
                         Account email
                       </p>
-                      <p className="mt-1 font-ge text-base leading-relaxed text-emerald-100/75">
+                      <p className="mt-1 font-ge text-base leading-relaxed text-white/90">
                         Magic links and trip emails go here
                       </p>
                     </div>
@@ -140,19 +140,19 @@ export function ClientPortalIdentityHero(props: {
               {ref ? (
                 <div className="rounded-[1.5rem] border border-white/25 bg-white/[0.09] px-6 py-6 sm:px-7 sm:py-7">
                   <div className="flex items-center gap-3">
-                    <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/12 text-brand-100 ring-1 ring-white/25">
+                    <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/12 text-white ring-1 ring-white/25">
                       <Hash className="h-5 w-5" aria-hidden />
                     </span>
                     <div>
                       <p className="font-ge text-sm font-bold uppercase tracking-[0.14em] text-emerald-200">
                         Account number
                       </p>
-                      <p className="mt-1 font-ge text-base leading-relaxed text-emerald-100/75">
+                      <p className="mt-1 font-ge text-base leading-relaxed text-white/90">
                         Quote this when you call, WhatsApp, or message us
                       </p>
                     </div>
                   </div>
-                  <p className="mt-5 break-all font-mono text-2xl font-bold leading-snug tracking-[0.12em] text-brand-100 sm:text-3xl">
+                  <p className="mt-5 break-all font-mono text-2xl font-bold leading-snug tracking-[0.12em] text-white sm:text-3xl">
                     {ref}
                   </p>
                   <button
@@ -170,7 +170,7 @@ export function ClientPortalIdentityHero(props: {
                   <p className="font-ge text-sm font-bold uppercase tracking-[0.14em] text-emerald-200">
                     Account number
                   </p>
-                  <p className="mt-3 font-ge text-lg leading-relaxed text-emerald-100/90">
+                  <p className="mt-3 font-ge text-lg leading-relaxed text-white">
                     Your personal account number appears after you submit a website form with this login email — same
                     reference as on your enquiry PDFs.
                   </p>
@@ -178,7 +178,7 @@ export function ClientPortalIdentityHero(props: {
               )}
             </div>
           ) : (
-            <p className="max-w-xl font-ge text-base leading-relaxed text-emerald-100/85 sm:text-lg">
+            <p className="max-w-xl font-ge text-base leading-relaxed text-white/95 sm:text-lg">
               Your personal <strong className="font-semibold text-white">account email</strong> and{' '}
               <strong className="font-semibold text-white">account number</strong> show here once your profile is linked.
             </p>
@@ -189,13 +189,13 @@ export function ClientPortalIdentityHero(props: {
           <div className="w-full min-w-0 shrink-0 rounded-2xl border border-white/12 bg-black/20 p-5 xl:w-auto xl:max-w-lg xl:flex-1">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="font-ge text-xs font-extrabold uppercase tracking-[0.14em] text-emerald-200/85 sm:text-sm">Your transfers</p>
-                <p className="mt-1 font-ge text-sm text-emerald-100/75 sm:text-base">Airport, hotel, and course runs — live status.</p>
+                <p className="font-ge text-xs font-extrabold uppercase tracking-[0.14em] text-white/90 sm:text-sm">Your transfers</p>
+                <p className="mt-1 font-ge text-sm text-white/90 sm:text-base">Airport, hotel, and course runs — live status.</p>
               </div>
               {tripTotalEur > 0 ? (
                 <div className="rounded-xl border border-chrome-300/40 bg-chrome-400/15 px-3 py-2 text-right">
                   <p className="font-ge text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-200">Trip total</p>
-                  <p className="mt-0.5 font-ge text-xl font-bold text-brand-100">{formatEurInline(tripTotalEur)}</p>
+                  <p className="mt-0.5 font-ge text-xl font-bold text-white">{formatEurInline(tripTotalEur)}</p>
                 </div>
               ) : null}
             </div>
@@ -234,28 +234,28 @@ export function ClientPortalIdentityHero(props: {
                     <p className="font-ge text-base font-semibold leading-snug text-white">
                       {t.pickup_label} → {t.dropoff_label}
                     </p>
-                    <p className="mt-1 font-ge text-sm text-emerald-100/80">
+                    <p className="mt-1 font-ge text-sm text-white/90">
                       {src} · {clientTransferOperationalStatusLabel(t)} · {when}
                     </p>
                     {gross !== null ? (
                       <div className="mt-2 space-y-0.5 font-ge text-xs leading-snug text-fairway-50/95 sm:text-sm">
                         <p>
-                          <span className="text-emerald-200/80">Total (VAT incl.):</span>{' '}
-                          <span className="font-semibold text-brand-100">{formatEurInline(gross)}</span>
+                          <span className="text-white/90">Total (VAT incl.):</span>{' '}
+                          <span className="font-semibold text-white">{formatEurInline(gross)}</span>
                         </p>
                         {fullUpfront ? (
-                          <p className="text-emerald-100/85">Full payment — no split deposit (ASAP / next available).</p>
+                          <p className="text-white/95">Full payment — no split deposit (ASAP / next available).</p>
                         ) : (
                           <>
                             <p>
-                              <span className="text-emerald-200/80">{pct}% deposit:</span>{' '}
-                              <span className="font-semibold text-brand-100">{formatEurInline(depEur!)}</span>
+                              <span className="text-white/90">{pct}% deposit:</span>{' '}
+                              <span className="font-semibold text-white">{formatEurInline(depEur!)}</span>
                             </p>
                             <p>
-                              <span className="text-emerald-200/80">Balance:</span>{' '}
-                              <span className="font-semibold text-brand-100">{formatEurInline(balEur!)}</span>
+                              <span className="text-white/90">Balance:</span>{' '}
+                              <span className="font-semibold text-white">{formatEurInline(balEur!)}</span>
                             </p>
-                            {dueLine ? <p className="text-emerald-100/85">{dueLine}</p> : null}
+                            {dueLine ? <p className="text-white/95">{dueLine}</p> : null}
                           </>
                         )}
                       </div>
@@ -304,7 +304,7 @@ export function ClientPortalIdentityHero(props: {
                             {payBusy && payBusyPhase === 'deposit' ? 'Redirecting…' : `Pay deposit ${formatEurInline(depEur!)}`}
                           </button>
                           <button
-                            className="inline-flex items-center gap-1 rounded-lg border border-white/25 bg-forest-900 px-2 py-1 font-ge text-xs font-bold uppercase tracking-[0.1em] text-emerald-100/80"
+                            className="inline-flex items-center gap-1 rounded-lg border border-white/25 bg-forest-900 px-2 py-1 font-ge text-xs font-bold uppercase tracking-[0.1em] text-white/90"
                             disabled
                             title="Pay the deposit first. Balance opens after your deposit is received."
                             type="button"
@@ -336,7 +336,7 @@ export function ClientPortalIdentityHero(props: {
                       !isPaid &&
                       props.onDownloadTransferQuotePdf ? (
                         <button
-                          className="inline-flex items-center gap-1 rounded-lg border border-chrome-300/40 bg-chrome-400/10 px-2 py-1 font-ge text-xs font-bold uppercase tracking-[0.12em] text-brand-100 transition hover:bg-chrome-400/20 disabled:opacity-50"
+                          className="inline-flex items-center gap-1 rounded-lg border border-chrome-300/40 bg-chrome-400/10 px-2 py-1 font-ge text-xs font-bold uppercase tracking-[0.12em] text-white transition hover:bg-chrome-400/20 disabled:opacity-50"
                           disabled={quotePdfBusyId === t.id}
                           onClick={() => {
                             setQuotePdfBusyId(t.id)
@@ -385,7 +385,7 @@ export function ClientPortalIdentityHero(props: {
             </ul>
             {tripAddOns.length > 0 ? (
               <div className="mt-4 border-t border-white/10 pt-4">
-                <p className="font-ge text-xs font-extrabold uppercase tracking-[0.14em] text-emerald-200/85">Trip add-ons</p>
+                <p className="font-ge text-xs font-extrabold uppercase tracking-[0.14em] text-white/90">Trip add-ons</p>
                 <ul className="mt-2 space-y-2">
                   {tripAddOns.map((a) => (
                     <li
@@ -393,14 +393,14 @@ export function ClientPortalIdentityHero(props: {
                       key={a.id}
                     >
                       <span className="font-ge text-sm font-semibold text-white">{a.label}</span>
-                      <span className="shrink-0 font-ge text-sm font-bold text-brand-100">{formatEurInline(a.quoteEur)}</span>
+                      <span className="shrink-0 font-ge text-sm font-bold text-white">{formatEurInline(a.quoteEur)}</span>
                     </li>
                   ))}
                 </ul>
               </div>
             ) : null}
             {props.transfers.length > 5 ? (
-              <p className="mt-3 font-ge text-sm text-emerald-200/80">+{props.transfers.length - 5} more in your full list below.</p>
+              <p className="mt-3 font-ge text-sm text-white/90">+{props.transfers.length - 5} more in your full list below.</p>
             ) : null}
           </div>
         ) : null}

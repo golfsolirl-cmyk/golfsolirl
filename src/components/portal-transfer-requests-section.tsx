@@ -287,7 +287,7 @@ export function PortalTransferRequestsSection(props: {
                 >
                   <div className="overflow-hidden rounded-2xl border border-brand-500/30 shadow-[0_12px_40px_rgba(0,0,0,0.35)] ring-1 ring-white/10">
                     <div className="border-b border-white/10 bg-gradient-to-r from-forest-950/90 to-[#0c2810] px-4 py-3 sm:px-5">
-                      <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand-300/90">First submitted form</p>
+                      <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-white">First submitted form</p>
                       <p className="mt-1 font-display text-sm font-semibold text-white sm:text-base">
                         {cardKicker(kickerBuild, ref || undefined, kickerEnquiry)}
                       </p>
@@ -297,7 +297,7 @@ export function PortalTransferRequestsSection(props: {
                         </p>
                       ) : null}
                       {linkedPackageDiffers ? (
-                        <p className="mt-2 rounded-lg border border-brand-400/25 bg-brand-charcoal/80 px-3 py-2 text-sm font-medium leading-snug text-brand-100/95">
+                        <p className="mt-2 rounded-lg border border-white/25 bg-black/25 px-3 py-2 text-sm font-medium leading-snug text-white">
                           Showing the earliest saved website snapshot for this reference. A newer package revision may exist in
                           &ldquo;Your packages&rdquo; — fields below match what you first sent.
                         </p>
@@ -316,7 +316,7 @@ export function PortalTransferRequestsSection(props: {
                     <div className="border-t border-white/10 bg-[#071910]/90 px-4 py-4 sm:px-5">
                       {siblingTransfers.length > 0 ? (
                         <div>
-                          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-300/90">
+                          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-white">
                             <MapPin className="h-3.5 w-3.5" aria-hidden />
                             More transfers (same trip ref)
                           </p>
@@ -345,7 +345,7 @@ export function PortalTransferRequestsSection(props: {
                         )}
                       >
                         <a
-                          className="font-semibold text-brand-200/95 underline decoration-gold-400/50 underline-offset-2 hover:text-brand-100"
+                          className="font-semibold text-white underline decoration-white/70 underline-offset-2 hover:text-white"
                           href="#portal-linked-interest-tickets"
                         >
                           Your messages

@@ -39,25 +39,24 @@ export type AdminSidebarItem = {
 }
 
 export const ADMIN_SIDEBAR_ITEMS: readonly AdminSidebarItem[] = [
-  { id: 'desk', label: 'Desk', description: 'Payments, messages, and publish', icon: Inbox },
-  { id: 'mail', label: 'Gmail', description: 'Inbox, open, and reply', icon: Mails },
-  { id: 'forms', label: 'Website forms', description: 'New quotes to price', icon: FileText },
-  { id: 'clientDocs', label: 'Client documents', description: 'PDFs, quotes, and letters', icon: ClipboardList },
-  { id: 'proposals', label: 'Proposals', description: 'Send a PDF to a guest', icon: PenLine },
-  { id: 'emails', label: 'Guest emails', description: 'Branded trip messages', icon: Mail },
-  { id: 'transfers', label: 'Transfers', description: 'Quotes, paid trips, drivers', icon: Car },
-  { id: 'packages', label: 'Packages', description: 'Trip builds that need a price', icon: Package },
-  { id: 'drivers', label: 'Run calendar', description: 'Busy days and day sheets', icon: Calendar },
-  { id: 'scan', label: 'Scan trip pass', description: 'Check a guest barcode', icon: ScanLine },
-  { id: 'portal', label: 'Client accounts', description: 'Logins and account numbers', icon: Users },
-  { id: 'testimonials', label: 'Guest reviews', description: 'Approve homepage reviews', icon: Star }
+  { id: 'forms', label: 'New quotes', description: 'Website forms waiting for a price', icon: FileText },
+  { id: 'desk', label: 'Pay & replies', description: 'Money in, guest messages, add a price', icon: Inbox },
+  { id: 'mail', label: 'Email inbox', description: 'Read and reply to customer email', icon: Mails },
+  { id: 'proposals', label: 'Send a PDF', description: 'Email a quote or document', icon: PenLine },
+  { id: 'transfers', label: 'Transfers', description: 'Paid trips and sending a driver', icon: Car },
+  { id: 'packages', label: 'Trip prices', description: 'Guest builds that need a price', icon: Package },
+  { id: 'drivers', label: 'Driver diary', description: 'Busy days and the printed day sheet', icon: Calendar },
+  { id: 'scan', label: 'Check a pass', description: 'Scan a guest barcode before travel', icon: ScanLine },
+  { id: 'clientDocs', label: 'Letters', description: 'Preview a PDF and write a letter', icon: ClipboardList },
+  { id: 'emails', label: 'Trip emails', description: 'Short branded notes to a guest', icon: Mail },
+  { id: 'portal', label: 'Guest logins', description: 'Create a dashboard login', icon: Users },
+  { id: 'testimonials', label: 'Reviews', description: 'Choose what shows on the homepage', icon: Star }
 ] as const
 
 const ADMIN_NAV_GROUPS: readonly { readonly label: string; readonly ids: readonly AdminPortalSectionId[] }[] = [
-  { label: 'Today', ids: ['desk', 'mail', 'forms'] },
-  { label: 'Write', ids: ['clientDocs', 'proposals', 'emails'] },
-  { label: 'Trips', ids: ['transfers', 'packages', 'drivers', 'scan'] },
-  { label: 'Guests', ids: ['portal', 'testimonials'] }
+  { label: 'Start here', ids: ['forms', 'desk', 'mail', 'proposals'] },
+  { label: 'On the day', ids: ['transfers', 'packages', 'drivers', 'scan'] },
+  { label: 'Now and then', ids: ['clientDocs', 'emails', 'portal', 'testimonials'] }
 ]
 
 type AdminSidebarProps = {
@@ -113,9 +112,9 @@ function NavButton({
         <span className={cx('block text-base font-semibold leading-tight', active ? 'text-forest-950' : 'text-forest-900')}>
           {item.label}
         </span>
-        {active ? (
-          <span className="mt-1 block text-sm font-medium leading-snug text-forest-700">{item.description}</span>
-        ) : null}
+        <span className={cx('mt-1 block text-sm leading-snug', active ? 'font-medium text-forest-800' : 'text-forest-600')}>
+          {item.description}
+        </span>
       </span>
     </button>
   )

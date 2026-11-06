@@ -1083,13 +1083,32 @@
   .portal-ui-root
   :is(.ge-on-dark, .bg-forest-950, .bg-forest-900, [class*='from-brand-8'], [class*='from-forest-9'], [class*='#0f3d24'], [class*='#0c3d2c'], [class*='#0a2416'])
   :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, strong, a, button):not(
-    [class*='bg-white'] *,
+    [class~='bg-white'] *,
+    [class*='bg-white/8'] *,
+    [class*='bg-white/9'] *,
     [class*='bg-offwhite'] *,
     [class*='from-white'] *,
     [class*='via-white'] *,
-    [class*='to-white'] *
+    [class*='to-white'] *,
+    [class*='from-brand-400'] *,
+    [class*='bg-chrome'] *
   ) {
-  color: rgba(255, 255, 255, 0.96) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
+}
+
+/* brand-100/200/300 are not in the theme, so they fell back to dark body text on forest panels. */
+.ge-page:is([data-dashboard-variant='client'], [data-dashboard-variant='admin'], [data-dashboard-variant='driver'])
+  :is(.ge-on-dark, .bg-forest-900, .bg-forest-950, [class*='from-[#0f3d24'], [class*='#0a2416'], [class*='from-forest-9'])
+  :is([class*='text-brand-50'], [class*='text-brand-100'], [class*='text-brand-200'], [class*='text-brand-300']):not(
+    [class~='bg-white'] *,
+    [class*='bg-white/8'] *,
+    [class*='bg-white/9'] *,
+    [class*='bg-offwhite'] *,
+    [class*='from-white'] *
+  ) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff;
 }
 
 /* Admin revenue desk — light body must stay forest-on-white (beats dashboard on-dark inheritance) */

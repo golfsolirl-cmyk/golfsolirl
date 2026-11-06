@@ -363,10 +363,10 @@ function TermsBody({ kicker, title }: { readonly kicker: string; readonly title:
 function WelcomeBody({ kicker, title }: { readonly kicker: string; readonly title: string }) {
   return (
     <article className="overflow-hidden rounded-[2rem] border border-forest-100 bg-white shadow-soft">
-      <div className="bg-gradient-to-br from-forest-950 via-forest-900 to-[#0f2a0c] px-8 py-10 text-white md:px-12 md:py-12">
-        <p className="text-sm font-semibold uppercase tracking-[0.22em] text-brand-300">{kicker}</p>
+      <div className="ge-on-dark bg-gradient-to-br from-forest-950 via-forest-900 to-[#0f2a0c] px-8 py-10 text-white md:px-12 md:py-12">
+        <p className="text-sm font-semibold uppercase tracking-[0.22em] text-white">{kicker}</p>
         <h1 className="font-display mt-4 max-w-xl text-[2.35rem] font-bold leading-[1.02] tracking-[-0.03em] md:text-[3rem]">{title}</h1>
-        <p className="mt-5 max-w-lg text-base leading-8 text-white/78">
+        <p className="mt-5 max-w-lg text-base leading-8 text-white">
           You did not choose the nearest brochure — you chose a crew who lose sleep over tee sheets so you do not have to.
         </p>
       </div>

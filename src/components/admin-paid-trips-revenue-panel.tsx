@@ -210,7 +210,7 @@ export function AdminPaidTripsRevenuePanel() {
       <header className="border-b border-forest-100 bg-offwhite/80 px-5 py-6 sm:px-7 sm:py-7">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="max-w-2xl">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-700">1 · Money in</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-700">2 · Payments</p>
             <h3 className="font-display mt-1 text-xl font-semibold text-forest-950 sm:text-2xl" id="admin-paid-trips-heading">
               Payments received
             </h3>

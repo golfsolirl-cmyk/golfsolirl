@@ -13,15 +13,21 @@ export type ClientSidebarItem = {
 }
 
 export const CLIENT_SIDEBAR_ITEMS: readonly ClientSidebarItem[] = [
-  { id: 'home', label: 'Your trip', description: 'Overview · add-ons', icon: LayoutDashboard },
-  { id: 'pass', label: 'Trip pass', description: 'Show the driver', icon: Barcode },
-  { id: 'perks', label: 'Perks & deals', description: 'Costa extras', icon: Gift },
-  { id: 'trip', label: 'Trip builder', description: 'Transfers · golf · stay', icon: MapPin },
-  { id: 'payments', label: 'Pay', description: 'Transfers & invoices', icon: CreditCard },
-  { id: 'messages', label: 'Messages', description: 'Ask us · replies', icon: MessageCircle },
-  { id: 'contact', label: 'Your details', description: 'Name · phone · account', icon: UserRound },
-  { id: 'documents', label: 'Documents', description: 'Quotes & letters', icon: FileText }
+  { id: 'home', label: 'Your trip', description: 'What is booked and what you can add', icon: LayoutDashboard },
+  { id: 'payments', label: 'Pay', description: 'Pay by card or bank transfer', icon: CreditCard },
+  { id: 'messages', label: 'Messages', description: 'Ask us about the trip', icon: MessageCircle },
+  { id: 'trip', label: 'Add to trip', description: 'Transfers, golf, and hotel', icon: MapPin },
+  { id: 'pass', label: 'Trip pass', description: 'Show this to the driver', icon: Barcode },
+  { id: 'documents', label: 'Documents', description: 'Quotes and letters', icon: FileText },
+  { id: 'contact', label: 'Your details', description: 'Name, phone, and account number', icon: UserRound },
+  { id: 'perks', label: 'Extras', description: 'Deals on the Costa', icon: Gift }
 ] as const
+
+const CLIENT_NAV_GROUPS: readonly { readonly label: string; readonly ids: readonly ClientPortalSectionId[] }[] = [
+  { label: 'Start here', ids: ['home', 'payments', 'messages'] },
+  { label: 'The trip', ids: ['trip', 'pass', 'documents'] },
+  { label: 'Account', ids: ['contact', 'perks'] }
+]
 
 type ClientSidebarProps = {
   readonly activeSection: ClientPortalSectionId
@@ -129,15 +135,26 @@ export function ClientSidebar({
             <p className="truncate text-base font-bold text-forest-950">Your trip desk</p>
           </div>
         </div>
-        <nav aria-label="Client portal sections" className="flex flex-1 flex-col gap-1 overflow-y-auto p-3" role="tablist">
-          {CLIENT_SIDEBAR_ITEMS.map((item) => (
-            <NavButton
-              active={activeSection === item.id}
-              badge={item.id === 'messages' && unreadMessages}
-              item={item}
-              key={item.id}
-              onSelect={() => select(item.id)}
-            />
+        <nav aria-label="Client portal sections" className="flex flex-1 flex-col gap-4 overflow-y-auto p-3" role="tablist">
+          {CLIENT_NAV_GROUPS.map((group) => (
+            <div key={group.label}>
+              <p className="px-3 pb-1.5 text-[0.7rem] font-bold uppercase tracking-[0.16em] text-forest-700">{group.label}</p>
+              <div className="flex flex-col gap-1">
+                {group.ids.map((id) => {
+                  const item = CLIENT_SIDEBAR_ITEMS.find((row) => row.id === id)
+                  if (!item) return null
+                  return (
+                    <NavButton
+                      active={activeSection === item.id}
+                      badge={item.id === 'messages' && unreadMessages}
+                      item={item}
+                      key={item.id}
+                      onSelect={() => select(item.id)}
+                    />
+                  )
+                })}
+              </div>
+            </div>
           ))}
         </nav>
       </aside>

@@ -105,7 +105,7 @@ export const handleEnquiryContactVerifySend = async (body, env = process.env, ru
     preheader: `Your Golf Sol verification code is ${code}`,
     heroKicker: 'Contact check',
     heroTitle: 'Your verification code',
-    heroLead: 'Enter this code on the website form to confirm your email and mobile. It expires in 15 minutes.',
+    heroLead: `This code was sent to ${email}. Enter it on the website form. It expires in 15 minutes and is not sent by text message.`,
     bodyHtml: `<p style="margin:0 0 12px 0;font-size:28px;font-weight:800;letter-spacing:0.28em;color:#063B2A;">${code}</p>
       <p style="margin:0;font-size:14px;color:#4a5c54;">Mobile on file: ${phoneCheck.phoneE164}</p>`
   })
@@ -124,7 +124,7 @@ export const handleEnquiryContactVerifySend = async (body, env = process.env, ru
 
   return {
     ok: true,
-    message: 'We emailed a 6-digit code to confirm your contact details. Enter it below.',
+    message: `Code sent to ${email}. Check that inbox and your spam folder, then enter it below. It is not sent by text message.`,
     phoneE164: phoneCheck.phoneE164,
     expiresInMinutes: 15
   }

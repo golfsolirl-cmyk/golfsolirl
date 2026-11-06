@@ -79,7 +79,7 @@ export function PortalAccountLoadingState({ compact = false }: PortalAccountLoad
               animate={{ rotate: [0, 8, -8, 0] }}
               transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
             >
-              <Sparkles className="h-9 w-9 text-brand-300" strokeWidth={1.75} aria-hidden />
+              <Sparkles className="h-9 w-9 text-white" strokeWidth={1.75} aria-hidden />
             </m.div>
           </m.div>
         </div>

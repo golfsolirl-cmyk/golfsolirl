@@ -192,7 +192,7 @@ export function GeHero({
                   ) : null}
                   {portalSubtitle ? (
                     <m.p
-                      className="mt-4 max-w-2xl border-l-2 border-brand-700/50 pl-4 text-base leading-relaxed text-fairway-50/[0.96] [text-shadow:0_1px_14px_rgba(0,0,0,0.45)] md:text-lg md:leading-8"
+                      className="mt-4 max-w-2xl border-l-2 border-white/70 pl-4 text-base font-medium leading-relaxed text-white [text-shadow:0_1px_14px_rgba(0,0,0,0.55)] md:text-lg md:leading-8"
                       initial={{ opacity: 0, y: 6 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.18, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}

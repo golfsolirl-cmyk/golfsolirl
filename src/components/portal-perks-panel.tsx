@@ -102,7 +102,7 @@ export function PortalPerksPanel(props: { readonly clubConciergeEnabled?: boolea
               const Icon = step.icon
               return (
                 <li className="rounded-2xl border border-forest-100 bg-white px-4 py-4 shadow-sm" key={step.title}>
-                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-forest-900 text-brand-100">
+                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-forest-900 text-white">
                     <Icon aria-hidden className="h-5 w-5" />
                   </span>
                   <h4 className="mt-3 font-display text-lg font-bold text-forest-950">{step.title}</h4>

@@ -1,28 +1,28 @@
-import { Barcode, CreditCard, Gift, Home, Car, ScanLine, Inbox, LayoutDashboard, type LucideIcon } from 'lucide-react'
+import { Barcode, CreditCard, Home, Car, ScanLine, Inbox, LayoutDashboard, MessageCircle, type LucideIcon } from 'lucide-react'
 import type { ClientPortalSectionId } from '../components/client-sidebar'
 import type { AdminPortalSectionId } from '../components/admin-sidebar'
 import type { PortalBottomNavItem } from '../components/portal-bottom-nav'
 
 export const CLIENT_MOBILE_TAB_ITEMS: readonly PortalBottomNavItem<ClientPortalSectionId>[] = [
-  { id: 'home', label: 'Home', icon: Home },
-  { id: 'pass', label: 'Trip pass', icon: Barcode },
-  { id: 'perks', label: 'Perks', icon: Gift },
-  { id: 'payments', label: 'Pay', icon: CreditCard }
+  { id: 'home', label: 'Trip', icon: Home },
+  { id: 'payments', label: 'Pay', icon: CreditCard },
+  { id: 'messages', label: 'Messages', icon: MessageCircle },
+  { id: 'pass', label: 'Pass', icon: Barcode }
 ] as const
 
 export const ADMIN_MOBILE_TAB_ITEMS: readonly PortalBottomNavItem<AdminPortalSectionId>[] = [
-  { id: 'desk', label: 'Home', icon: LayoutDashboard },
-  { id: 'transfers', label: 'Transfers', icon: Car },
-  { id: 'scan', label: 'Scan', icon: ScanLine },
-  { id: 'forms', label: 'Forms', icon: Inbox }
+  { id: 'forms', label: 'Quotes', icon: Inbox },
+  { id: 'desk', label: 'Pay', icon: LayoutDashboard },
+  { id: 'transfers', label: 'Trips', icon: Car },
+  { id: 'scan', label: 'Scan', icon: ScanLine }
 ] as const
 
 /** Sidebar-only sections reachable from mobile “More” menu. */
 export const CLIENT_MORE_SECTIONS: readonly ClientPortalSectionId[] = [
   'trip',
-  'messages',
+  'documents',
   'contact',
-  'documents'
+  'perks'
 ]
 
 export const ADMIN_MORE_SECTIONS: readonly AdminPortalSectionId[] = [

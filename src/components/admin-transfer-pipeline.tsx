@@ -748,10 +748,10 @@ export function AdminTransferPipeline() {
             Quotes &amp; dispatch
           </p>
           <h2 className="font-display mt-1 text-xl font-bold tracking-tight text-forest-950 sm:text-2xl">
-            Transfers from website forms
+            Transfers from new quotes
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-forest-600">
-            When you send a deposit or full price from <strong className="font-semibold text-forest-800">Website forms</strong>,
+            When you send a deposit or full price from <strong className="font-semibold text-forest-800">New quotes</strong>,
             the job appears here. After the guest pays in full, dispatch a driver — email goes to{' '}
             <strong className="font-semibold text-forest-800">{MARTIN_KELLY_DRIVER.email}</strong>.
           </p>
@@ -801,7 +801,7 @@ export function AdminTransferPipeline() {
         <div className="mt-6 rounded-2xl border border-dashed border-forest-200 bg-offwhite px-5 py-10 text-center">
           <p className="font-display text-lg font-semibold text-forest-950">No transfer jobs yet</p>
           <p className="mx-auto mt-2 max-w-md text-sm text-forest-600">
-            Open a Website forms card, send a deposit or full price — the guest’s job will show up here under Quoted.
+            Open a New quotes card, send a deposit or full price — the guest’s job will show up here under Quoted.
           </p>
         </div>
       ) : visibleRows.length === 0 ? (
@@ -817,7 +817,7 @@ export function AdminTransferPipeline() {
           </p>
           <p className="mt-2 text-sm text-forest-700">
             {listMode === 'ready' || listMode === 'desk'
-              ? 'Send a price from Website forms to create a job, or wait for a guest to pay in full.'
+              ? 'Send a price from New quotes to create a job, or wait for a guest to pay in full.'
               : 'Switch tabs to see other jobs.'}
           </p>
         </div>

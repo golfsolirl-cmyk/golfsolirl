@@ -3665,7 +3665,7 @@ export function AdminDashboardPage() {
   /** Operations hero uses a fixed desk identity (not the Supabase profile row). */
   const adminGreetingFirst = 'Greg'
   const adminHeroTitle = `Hello, ${adminGreetingFirst}`
-  const [activeAdminSection, setActiveAdminSection] = useState<AdminPortalSectionId>('desk')
+  const [activeAdminSection, setActiveAdminSection] = useState<AdminPortalSectionId>('forms')
   const [clientDocSeedEnquiryId, setClientDocSeedEnquiryId] = useState<string | null>(null)
   const [mailSeed, setMailSeed] = useState<AdminMailSeed | null>(null)
 
@@ -3829,8 +3829,8 @@ export function AdminDashboardPage() {
 
   return (
     <DashboardLayout
-      kicker="Operations"
-      subtitle="Use the left menu. Today is the live desk. Write, Trips, and Guests are the other areas."
+      kicker="Admin"
+      subtitle="Start with New quotes. Price the trip, then the guest can pay from their dashboard."
       title={adminHeroTitle}
       variant="admin"
     >
@@ -3862,20 +3862,14 @@ export function AdminDashboardPage() {
         <AdminPortalSection activeSection={activeAdminSection} section="desk">
         <AdminOperationsSectionShell
           bodyClassName="space-y-8 sm:space-y-10 sm:py-8"
-          description="Three simple jobs: see money in, reply to guests, add a priced line to their trip."
+          description="Reply first, then check what has been paid, then add a priced line to their trip."
           id="admin-hub-payments"
-          kicker="Desk"
-          title="Inbox & payments"
+          kicker="Pay & replies"
+          title="Messages, payments, and a price"
         >
-          <BankTransferPayCard audience="admin" />
-
-          <AdminOperatorCodePanel accessToken={session?.access_token ?? null} />
-
-          <AdminPaidTripsRevenuePanel />
-
           <div className="relative scroll-mt-28 rounded-[2rem] border border-forest-100 bg-white p-5 shadow-soft sm:p-7" id="admin-hub-tickets">
             <div className="mb-5 max-w-2xl">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-700">2 · Messages</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-700">1 · Reply</p>
               <h3 className="font-display mt-1 text-xl font-semibold text-forest-950 sm:text-2xl">
                 Guest messages
               </h3>
@@ -4080,9 +4074,11 @@ export function AdminDashboardPage() {
             </div>
           </div>
 
+          <AdminPaidTripsRevenuePanel />
+
           <section className="scroll-mt-28 rounded-[2rem] border border-forest-100 bg-white p-5 shadow-soft sm:p-7" id="admin-hub-publish">
             <div className="max-w-2xl">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-700">3 · Add to their trip</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-700">3 · Add a price</p>
               <h3 className="font-display mt-1 text-xl font-semibold text-forest-950 sm:text-2xl">
                 Publish a priced line
               </h3>
@@ -4211,6 +4207,19 @@ export function AdminDashboardPage() {
               ) : null}
             </form>
           </section>
+
+          <details className="rounded-[2rem] border border-forest-100 bg-white p-5 shadow-soft sm:p-7">
+            <summary className="cursor-pointer font-display text-xl font-semibold text-forest-950">
+              Bank details and staff login code
+            </summary>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-forest-600">
+              Open this when a guest wants to pay by bank transfer, or when you need the code for the admin login page.
+            </p>
+            <div className="mt-5 space-y-5">
+              <BankTransferPayCard audience="admin" />
+              <AdminOperatorCodePanel accessToken={session?.access_token ?? null} />
+            </div>
+          </details>
         </AdminOperationsSectionShell>
         </AdminPortalSection>
 
@@ -4236,8 +4245,8 @@ export function AdminDashboardPage() {
           <AdminOperationsSectionShell
             className="scroll-mt-28"
             id="admin-hub-forms"
-            kicker="Website forms"
-            title="New forms"
+            kicker="New quotes"
+            title="Waiting for a price"
             description="Loading guest forms…"
           >
             <p className="text-sm font-medium text-forest-600">Loading…</p>
@@ -4247,7 +4256,7 @@ export function AdminDashboardPage() {
             <AdminOperationsSectionShell
               bodyClassName="space-y-5 sm:py-8"
               className="scroll-mt-28"
-              description="New website forms land here first. Open a card → build the trip → set a price → message the guest."
+              description="Each card is one website form. Open it, set the trip, then send a price."
               headerAside={
                 enquiries.length > 0 ? (
                   <button
@@ -4260,11 +4269,11 @@ export function AdminDashboardPage() {
                 ) : undefined
               }
               id="admin-hub-forms"
-              kicker="Website forms"
+              kicker="New quotes"
               title={
                 unviewedEnquiries.length > 0
-                  ? `New forms (${unviewedEnquiries.length})`
-                  : 'New forms'
+                  ? `Waiting for a price (${unviewedEnquiries.length})`
+                  : 'Waiting for a price'
               }
             >
               {enquiriesSectionVisible && enquiries.length > 0 ? (
@@ -4338,7 +4347,7 @@ export function AdminDashboardPage() {
               <AdminEnquiryCardQueue
                 accessToken={session?.access_token ?? null}
                 buildDetailPairs={submissionDetailRows}
-                emptyLabel="No new forms waiting."
+                emptyLabel="No new quotes waiting."
                 onCreateDocument={openClientDocumentFromEnquiry}
                 onCreateQuotation={openQuotationFromEnquiry}
                 onEmailCustomer={openMailFromEnquiry}
@@ -4357,10 +4366,10 @@ export function AdminDashboardPage() {
               <AdminOperationsSectionShell
                 bodyClassName="space-y-6 sm:py-8"
                 className="scroll-mt-28"
-                description="Forms you’ve already opened. Build the trip, set a price, or send a message."
+                description="Quotes you have already opened. Set a price or send a message from the card."
                 id="admin-hub-forms-viewed"
-                kicker="Website forms"
-                title={`Opened forms${viewedEnquiries.length > 0 ? ` (${viewedEnquiries.length})` : ''}`}
+                kicker="Already opened"
+                title={`Opened quotes${viewedEnquiries.length > 0 ? ` (${viewedEnquiries.length})` : ''}`}
               >
                 <AdminEnquiryCardQueue
                   accessToken={session?.access_token ?? null}

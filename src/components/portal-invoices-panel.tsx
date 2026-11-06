@@ -249,18 +249,18 @@ export function PortalInvoicesPanel(props: {
           </div>
 
           <div className="ge-on-dark rounded-2xl border border-forest-900/15 bg-forest-950 p-5 text-white shadow-lg md:p-6">
-            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-300 sm:text-base">Card 2 — Invoice summary</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-white sm:text-base">Card 2 — Invoice summary</p>
             <h3 className="font-display mt-2 text-xl font-semibold text-white sm:text-2xl">{selected.invoice_number}</h3>
             <p className="mt-3 text-base text-white/80 md:text-lg">
               Account reference:{' '}
-              <span className="font-mono font-semibold text-brand-200">
+              <span className="font-mono font-semibold text-white">
                 {props.accountReferenceLabel?.trim() || '— assign in portal / ask admin'}
               </span>
             </p>
             <p className="mt-2 text-base text-white/80 md:text-lg">
               Trip reference: <span className="font-mono text-white">{selected.enquiry_reference_id}</span>
             </p>
-            <p className="mt-4 font-display text-3xl font-bold text-brand-300">{formatEurFromCents(selected.amount_cents)}</p>
+            <p className="mt-4 font-display text-3xl font-bold text-white">{formatEurFromCents(selected.amount_cents)}</p>
             <p className="mt-1 text-sm uppercase tracking-[0.14em] text-emerald-100/90">
               {selected.status.toLowerCase() === 'paid' ? 'Paid — thank you' : 'Payment due'}
             </p>
@@ -275,7 +275,7 @@ export function PortalInvoicesPanel(props: {
                 Pay now
               </LuxuryButton>
             ) : selected.status.toLowerCase() !== 'paid' ? (
-              <p className="mt-4 text-base text-brand-200/90 md:text-lg">Checkout link is not ready — refresh the page or contact Golf Sol.</p>
+              <p className="mt-4 text-base text-white md:text-lg">Checkout link is not ready — refresh the page or contact Golf Sol.</p>
             ) : (
               <p className="mt-4 text-base text-emerald-200/90 md:text-lg">
                 Paid

@@ -448,12 +448,20 @@ export function GeQuickEnquiryForm({
             <input
               className={inputClass}
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value)
+                setContactVerifyToken(null)
+              }}
               autoComplete="email"
               type="email"
               required
               placeholder="you@example.com"
             />
+            {!isTestimonialForm ? (
+              <span className="mt-1.5 block font-ge text-xs leading-relaxed text-ge-gray500">
+                Your 6-digit confirmation code is sent to this email address, not by text message.
+              </span>
+            ) : null}
           </label>
           <label className="block">
             <span className={labelClass}>Mobile (WhatsApp)</span>

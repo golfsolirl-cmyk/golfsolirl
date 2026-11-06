@@ -68,7 +68,7 @@ export function AdminPortalShell({
                 : 'border-forest-200 bg-white text-forest-600'
             )}
             onClick={() => onSectionChange('packages')}
-            title="Client package builds"
+            title="Trip prices waiting"
             type="button"
           >
             <Bell aria-hidden className="h-5 w-5" />
