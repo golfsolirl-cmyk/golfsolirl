@@ -369,14 +369,14 @@ export function ClientDashboardPage() {
       'id, pickup_label, dropoff_label, status, scheduled_at, admin_price_eur, admin_price_vat_treatment, deposit_percent, payment_status, amount_received_eur, next_available_driver, booking_source, package_build_id, enquiry_reference_id, created_at, updated_at'
     let tbRes = await supabase.from('transfer_bookings').select(transferSelect).or(orTransfer.join(',')).order('created_at', { ascending: false }).limit(80)
     if (tbRes.error && /amount_received_eur/i.test(tbRes.error.message)) {
-      tbRes = await supabase
+      tbRes = (await supabase
         .from('transfer_bookings')
         .select(
           'id, pickup_label, dropoff_label, status, scheduled_at, admin_price_eur, admin_price_vat_treatment, deposit_percent, payment_status, next_available_driver, booking_source, package_build_id, enquiry_reference_id, created_at, updated_at'
         )
         .or(orTransfer.join(','))
         .order('created_at', { ascending: false })
-        .limit(80)
+        .limit(80)) as typeof tbRes
     }
     if (!tbRes.error && tbRes.data) {
       const dedupTb = new Map<string, ClientPortalTransferBookingRow>()
