@@ -42,6 +42,22 @@ const amountSummaryHtml = ({ amountPaidEur, grossEur, balanceEur, labelPaid = 'A
   </table>`
 }
 
+const tripRowsHtml = (rows) => {
+  const list = Array.isArray(rows) ? rows.filter((row) => row?.label && String(row.value ?? '').trim()) : []
+  if (!list.length) return ''
+  const lines = list
+    .map(
+      (row) =>
+        `<tr><td style="padding:6px 0;font-family:${emailFonts.sans};font-size:14px;color:#6b7280;">${esc(row.label)}</td><td style="padding:6px 0;font-family:${emailFonts.sans};font-size:14px;font-weight:600;color:${gs.text};text-align:right;">${esc(row.value)}</td></tr>`
+    )
+    .join('')
+  return `<p style="margin:0 0 8px 0;font-family:${emailFonts.sans};font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#6b7280;">Your trip</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0 0 18px 0;border-collapse:collapse;">${lines}</table>`
+}
+
+const invoiceNoteHtml = (marked) =>
+  `<p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Your invoice is attached. It shows the trip and that this payment is marked <strong>${esc(marked)}</strong>.</p>`
+
 const refLineHtml = (booking) => {
   const ref = String(booking.enquiry_reference_id ?? '').trim()
   if (!ref) {
@@ -53,19 +69,21 @@ const refLineHtml = (booking) => {
 /**
  * @param {Record<string, unknown>} booking
  * @param {number} depositPercent
- * @param {{ amountPaidEur?: number, grossEur?: number, balanceEur?: number }} [amounts]
+ * @param {{ amountPaidEur?: number, grossEur?: number, balanceEur?: number, tripRows?: { label: string, value: string }[] }} [amounts]
  */
 export const buildTransferDepositThankYouEmail = (booking, depositPercent, amounts = {}) => {
   const site = getGsolSiteUrl()
   const route = `${esc(booking.pickup_label)} → ${esc(booking.dropoff_label)}`
   const paidTxt = amounts.amountPaidEur != null ? fmtEur(amounts.amountPaidEur) : `${depositPercent}% deposit`
-  const subject = `Golf Sol Ireland — payment received (${paidTxt})`
-  const heroTitle = 'Deposit received — thank you'
-  const heroLead = `We have recorded your ${depositPercent}% deposit (${paidTxt}) for your Costa transfer. Your route: ${route}.`
+  const subject = `Golf Sol Ireland — deposit received (${paidTxt})`
+  const heroTitle = 'Deposit received'
+  const heroLead = `We have marked your payment as a deposit (${paidTxt}) for your Costa del Sol trip. Your route: ${route}.`
   const bodyHtml = `${refLineHtml(booking)}
-    ${amountSummaryHtml({ ...amounts, labelPaid: 'Deposit paid today' })}
-    <p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">If anything changes on your side, just reply to this email or WhatsApp us — we are happy to adjust timings where we can.</p>
-    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">You will receive a <strong>separate email</strong> with a link to pay the remaining balance from your dashboard.</p>`
+    ${invoiceNoteHtml('Deposit received')}
+    ${tripRowsHtml(amounts.tripRows)}
+    ${amountSummaryHtml({ ...amounts, labelPaid: 'Deposit received' })}
+    <p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">The balance is still due. You will get a separate note with a link to pay it from your dashboard.</p>
+    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};"><a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">Open your dashboard</a></p>`
 
   const htmlRaw = buildGsolTransactionalEmail({
     documentTitle: subject,
@@ -81,7 +99,7 @@ export const buildTransferDepositThankYouEmail = (booking, depositPercent, amoun
 
 /**
  * @param {Record<string, unknown>} booking
- * @param {{ amountPaidEur?: number, grossEur?: number }} [amounts]
+ * @param {{ amountPaidEur?: number, grossEur?: number, tripRows?: { label: string, value: string }[] }} [amounts]
  */
 export const buildTransferFullPaymentThankYouEmail = (booking, amounts = {}) => {
   const site = getGsolSiteUrl()
@@ -89,14 +107,16 @@ export const buildTransferFullPaymentThankYouEmail = (booking, amounts = {}) => 
   const paidTxt = amounts.amountPaidEur != null ? fmtEur(amounts.amountPaidEur) : 'your payment'
   const subject =
     amounts.amountPaidEur != null
-      ? `Golf Sol Ireland — payment received (${paidTxt})`
-      : 'Golf Sol Ireland — thank you, your transfer is fully paid'
-  const heroTitle = 'Payment received in full'
-  const heroLead = `Thank you — we have recorded payment of ${paidTxt} for your Costa transfer (${route}). That is one less thing for you to think about before you travel.`
+      ? `Golf Sol Ireland — paid in full (${paidTxt})`
+      : 'Golf Sol Ireland — your trip is paid in full'
+  const heroTitle = 'Paid in full'
+  const heroLead = `Thank you — we have marked your trip paid in full (${paidTxt}). Your route: ${route}.`
   const bodyHtml = `${refLineHtml(booking)}
-    ${amountSummaryHtml({ ...amounts, balanceEur: 0, labelPaid: 'Amount paid' })}
-    <p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">We will confirm pick-up details closer to travel. If you need to tweak times or passenger numbers, message the team any time.</p>
-    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Warm regards from the Golf Sol Ireland desk · <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">Your dashboard</a> · Trip pass barcode available after payment.</p>`
+    ${invoiceNoteHtml('Paid in full')}
+    ${tripRowsHtml(amounts.tripRows)}
+    ${amountSummaryHtml({ ...amounts, balanceEur: 0, labelPaid: 'Amount received' })}
+    <p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Nothing further is due on this total. We will confirm pick-up details closer to travel.</p>
+    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};"><a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">Open your dashboard</a></p>`
 
   const htmlRaw = buildGsolTransactionalEmail({
     documentTitle: subject,

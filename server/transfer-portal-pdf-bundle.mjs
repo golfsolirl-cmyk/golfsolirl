@@ -343,6 +343,8 @@ export const createTransferVatQuotePdf = async (ctx) => {
  *   accountRef: string | null
  *   receiptType: 'deposit' | 'paid_in_full'
  *   amountChargedEur: number
+ *   channel?: 'stripe' | 'manual'
+ *   tripRows?: { label: string, value: string }[]
  *   stripeSessionId?: string | null
  *   stripePaymentIntentId?: string | null
  * }} ctx
@@ -352,17 +354,21 @@ export const createTransferPaymentReceiptPdf = async (ctx) => {
   const pct = normalizedDepositPercent(ctx.booking.deposit_percent)
   const amt = round2(Number(ctx.amountChargedEur))
   const kind = ctx.receiptType === 'deposit' ? 'deposit_receipt' : 'paid_in_full'
+  const manual = ctx.channel === 'manual'
+  const marked = ctx.receiptType === 'deposit' ? 'Deposit received' : 'Paid in full'
   const route = `${String(ctx.booking.pickup_label ?? '')} → ${String(ctx.booking.dropoff_label ?? '')}`
   const dash = `${getGsolSiteUrl().replace(/\/+$/, '')}/dashboard`
   const notes = []
+  notes.push(`Payment marked: ${marked}.`)
+  notes.push(manual ? 'Recorded by Golf Sol Ireland.' : 'Paid by card through Stripe.')
   if (Number.isFinite(gross) && gross > 0) {
-    notes.push(`Quoted total (VAT incl.): ${formatEur(gross)}.`)
+    notes.push(`Trip total: ${formatEur(gross)}.`)
   }
   if (ctx.receiptType === 'deposit' && Number.isFinite(gross) && gross > 0) {
     const rem = balanceAmountEur(gross, pct)
-    notes.push(`Outstanding balance after this deposit: ${formatEur(rem)} (${100 - pct}% of quoted total).`)
+    notes.push(`Balance still due: ${formatEur(rem)}.`)
   } else if (ctx.receiptType === 'paid_in_full') {
-    notes.push('This transfer is fully paid against the quoted total.')
+    notes.push('Nothing further is due on this trip total.')
   }
   const stripeBits = []
   const cs = ctx.stripeSessionId ? String(ctx.stripeSessionId).trim() : ''
@@ -372,21 +378,23 @@ export const createTransferPaymentReceiptPdf = async (ctx) => {
   if (stripeBits.length) notes.push(stripeBits.join(' · '))
   notes.push(`Your dashboard: ${dash}`)
 
+  const tripRows = Array.isArray(ctx.tripRows) ? ctx.tripRows : []
   const { bytes } = await buildGsolMasterDocumentPdf({
     kind,
-    subtitle:
-      ctx.receiptType === 'deposit'
-        ? 'Card payment recorded against your Golf Sol Ireland transfer.'
-        : 'Card payment received in full for your Golf Sol Ireland transfer.',
-    reference: String(ctx.booking.id),
+    subtitle: manual
+      ? `Invoice for your Costa del Sol trip. Payment marked: ${marked}.`
+      : `Invoice for your Costa del Sol trip. Card payment marked: ${marked}.`,
+    reference: String(ctx.booking.enquiry_reference_id || ctx.booking.id),
     customerName: ctx.profileName,
     customerEmail: ctx.profileEmail,
     accountRef: ctx.accountRef,
     rows: [
+      { label: 'Payment', value: marked },
       { label: 'Transfer', value: route },
-      { label: 'Booking reference', value: String(ctx.booking.id) }
+      ...tripRows,
+      { label: 'Booking reference', value: String(ctx.booking.enquiry_reference_id || ctx.booking.id) }
     ],
-    amountLabel: 'Amount paid (this card charge)',
+    amountLabel: 'Amount received',
     amountValue: formatEur(amt),
     notes: notes.join('\n\n')
   })

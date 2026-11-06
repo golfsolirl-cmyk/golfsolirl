@@ -64,7 +64,7 @@ export const handleAdminRevenueStats = async (body, env = process.env, meta = {}
       supabase
         .from('transfer_bookings')
         .select(
-          'id, pickup_label, dropoff_label, payment_status, admin_price_eur, deposit_percent, enquiry_reference_id, client_email, client_display_name, updated_at, created_at, stripe_payment_intent_id'
+          'id, pickup_label, dropoff_label, payment_status, payment_source, amount_received_eur, admin_price_eur, deposit_percent, enquiry_reference_id, client_email, client_display_name, updated_at, created_at, stripe_payment_intent_id'
         )
         .in('payment_status', ['deposit', 'paid'])
         .order('updated_at', { ascending: false })
@@ -72,7 +72,7 @@ export const handleAdminRevenueStats = async (body, env = process.env, meta = {}
       supabase
         .from('transfer_bookings')
         .select(
-          'id, pickup_label, dropoff_label, payment_status, admin_price_eur, deposit_percent, enquiry_reference_id, client_email, client_display_name, updated_at, created_at, stripe_payment_intent_id'
+          'id, pickup_label, dropoff_label, payment_status, payment_source, amount_received_eur, admin_price_eur, deposit_percent, enquiry_reference_id, client_email, client_display_name, updated_at, created_at, stripe_payment_intent_id'
         )
         .eq('payment_status', 'unpaid')
         .not('stripe_payment_intent_id', 'is', null)
@@ -115,6 +115,10 @@ export const handleAdminRevenueStats = async (body, env = process.env, meta = {}
       Boolean(String(row.stripe_payment_intent_id ?? '').trim())
     const bookingForEstimate = stripePaidButUnmarked ? { ...row, payment_status: 'paid' } : row
     const collected = estimateCollectedEurForBooking(bookingForEstimate)
+    const stripeId = String(row.stripe_payment_intent_id ?? '').trim()
+    const storedSource = String(row.payment_source ?? '').trim().toLowerCase()
+    const paymentSource =
+      storedSource === 'manual' || storedSource === 'stripe' ? storedSource : stripeId ? 'stripe' : 'manual'
     return {
       id: row.id,
       kind: 'transfer',
@@ -123,7 +127,9 @@ export const handleAdminRevenueStats = async (body, env = process.env, meta = {}
       email: row.client_email ?? null,
       route: `${row.pickup_label ?? 'Pickup'} → ${row.dropoff_label ?? 'Dropoff'}`,
       paymentStatus: stripePaidButUnmarked ? 'paid (sync pending)' : row.payment_status,
+      paymentSource: stripePaidButUnmarked ? 'stripe' : paymentSource,
       quotedEur: Number(row.admin_price_eur) || 0,
+      amountReceivedEur: Number(row.amount_received_eur) || collected,
       collectedEur: collected,
       collectedDisplay: fmtEur(collected),
       updatedAt: row.updated_at ?? row.created_at,

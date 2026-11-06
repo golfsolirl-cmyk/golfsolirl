@@ -151,10 +151,23 @@ export const markTransferBookingPaid = async (supabase, bookingId, session, paym
       return true
     }
     const remindAt = balanceDueReminderIso(row.scheduled_at)
+    const grossForDeposit = Number(row.admin_price_eur)
+    const pctForDeposit = normalizedDepositPercent(row.deposit_percent)
+    const depositFallback =
+      Number.isFinite(grossForDeposit) && grossForDeposit > 0 ? depositAmountEur(grossForDeposit, pctForDeposit) : 0
+    const depositCents = /** @type {unknown} */ (session.amount_total)
+    const depositFromStripe =
+      typeof depositCents === 'number' && Number.isFinite(depositCents) ? depositCents / 100 : null
+    const depositReceived =
+      depositFromStripe != null && depositFromStripe > 0
+        ? Math.round(depositFromStripe * 100) / 100
+        : Math.round(depositFallback * 100) / 100
     const { error, data } = await supabase
       .from('transfer_bookings')
       .update({
         payment_status: 'deposit',
+        payment_source: 'stripe',
+        amount_received_eur: depositReceived > 0 ? depositReceived : null,
         balance_remind_at: remindAt,
         balance_remind_sent_at: null,
         updated_at: now,
@@ -193,6 +206,7 @@ export const markTransferBookingPaid = async (supabase, bookingId, session, paym
       const r = await publishTransferPortalPaymentReceipt(supabase, bookingId, {
         receiptKind: 'deposit',
         amountEur,
+        channel: 'stripe',
         stripeSessionId: sessionId,
         stripePaymentIntentId: paymentIntent
       })
@@ -203,7 +217,12 @@ export const markTransferBookingPaid = async (supabase, bookingId, session, paym
         await sendTransferPaymentCustomerEmails(
           supabase,
           bookingId,
-          { paymentKind: 'deposit', amountPaidEur: amountEur },
+          {
+            paymentKind: 'deposit',
+            amountPaidEur: amountEur,
+            paymentChannel: 'stripe',
+            invoicePdf: r.ok ? { filename: r.filename, bytes: r.pdfBytes } : null
+          },
           process.env
         )
       } catch (emailErr) {
@@ -221,8 +240,19 @@ export const markTransferBookingPaid = async (supabase, bookingId, session, paym
     return false
   }
 
+  const paidGross = Number(row.admin_price_eur)
+  const paidCents = /** @type {unknown} */ (session.amount_total)
+  const paidFromStripe = typeof paidCents === 'number' && Number.isFinite(paidCents) ? paidCents / 100 : null
+  const paidReceived =
+    Number.isFinite(paidGross) && paidGross > 0
+      ? Math.round(paidGross * 100) / 100
+      : paidFromStripe != null && paidFromStripe > 0
+        ? Math.round(paidFromStripe * 100) / 100
+        : null
   const paidPatch = {
     payment_status: 'paid',
+    payment_source: 'stripe',
+    amount_received_eur: paidReceived,
     balance_remind_at: null,
     balance_remind_sent_at: null,
     updated_at: now,
@@ -270,6 +300,7 @@ export const markTransferBookingPaid = async (supabase, bookingId, session, paym
     const r = await publishTransferPortalPaymentReceipt(supabase, bookingId, {
       receiptKind: 'paid_in_full',
       amountEur,
+      channel: 'stripe',
       stripeSessionId: sessionId,
       stripePaymentIntentId: paymentIntent
     })
@@ -280,7 +311,12 @@ export const markTransferBookingPaid = async (supabase, bookingId, session, paym
       await sendTransferPaymentCustomerEmails(
         supabase,
         bookingId,
-        { paymentKind: kind === 'balance' ? 'balance' : 'full', amountPaidEur: amountEur },
+        {
+          paymentKind: kind === 'balance' ? 'balance' : 'full',
+          amountPaidEur: amountEur,
+          paymentChannel: 'stripe',
+          invoicePdf: r.ok ? { filename: r.filename, bytes: r.pdfBytes } : null
+        },
         process.env
       )
     } catch (emailErr) {

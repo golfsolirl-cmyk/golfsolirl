@@ -1,22 +1,91 @@
 /**
  * Push a single payment-receipt PDF to the client portal (Your paper trail).
  */
+import { readEnquiryFormFields } from '../shared/client-enquiry-document.mjs'
 import { createTransferPaymentReceiptPdf } from './transfer-portal-pdf-bundle.mjs'
 
 const bucketId = 'client-portal-pdfs'
 
 const shortId = (uuid) => String(uuid ?? '').replace(/-/g, '').slice(0, 8)
 
+const pickField = (fields, needles) => {
+  for (const [key, value] of Object.entries(fields)) {
+    const label = key.toLowerCase()
+    if (needles.some((needle) => label.includes(needle)) && String(value).trim()) {
+      return String(value).trim()
+    }
+  }
+  return ''
+}
+
+/**
+ * Trip lines for the payment invoice and the receipt email.
+ * @param {import('@supabase/supabase-js').SupabaseClient} admin
+ * @param {Record<string, unknown>} booking
+ */
+export const loadPaymentTripRows = async (admin, booking) => {
+  /** @type {{ label: string, value: string }[]} */
+  const rows = []
+  const push = (label, value) => {
+    const text = String(value ?? '').trim()
+    if (!text || rows.some((row) => row.label === label)) return
+    rows.push({ label, value: text.slice(0, 240) })
+  }
+
+  const when = booking.scheduled_at ? String(booking.scheduled_at) : ''
+  if (when) {
+    try {
+      push('Pickup', new Intl.DateTimeFormat('en-IE', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(when)))
+    } catch {
+      push('Pickup', when)
+    }
+  }
+
+  const reference = String(booking.enquiry_reference_id ?? '').trim()
+  let fields = {}
+  if (reference) {
+    const { data: enquiry } = await admin
+      .from('enquiries')
+      .select('interest, form_payload')
+      .eq('reference_id', reference)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    if (enquiry) {
+      fields = readEnquiryFormFields(enquiry.form_payload)
+      push('Requested', enquiry.interest)
+    }
+  }
+  if (booking.package_build_id) {
+    const { data: pack } = await admin
+      .from('package_builds')
+      .select('label, config')
+      .eq('id', booking.package_build_id)
+      .maybeSingle()
+    const config = pack?.config && typeof pack.config === 'object' ? pack.config : {}
+    push('Trip', config.title || pack?.label)
+    push('Included', config.summary)
+  }
+
+  const start = fields._travelDateFrom || fields['Travel start date'] || pickField(fields, ['travel', 'date', 'arrival'])
+  const end = fields._travelDateTo || fields['Travel end date'] || ''
+  if (start || end) push('Travel dates', [start, end].filter(Boolean).join(' – '))
+  push('Party', fields._pax || fields['Group size'] || fields.Passengers || pickField(fields, ['party', 'pax', 'golfer', 'guest']))
+  push('Golf', pickField(fields, ['golf', 'course', 'tee']))
+  push('Hotel', pickField(fields, ['hotel', 'accommodation', 'stay', 'resort']))
+  return rows.slice(0, 8)
+}
+
 /**
  * @param {import('@supabase/supabase-js').SupabaseClient} admin
  * @param {string} bookingId
- * @param {{ receiptKind: 'deposit' | 'paid_in_full'; amountEur: number; stripeSessionId?: string | null; stripePaymentIntentId?: string | null }} detail
+ * @param {{ receiptKind: 'deposit' | 'paid_in_full'; amountEur: number; channel?: 'stripe' | 'manual'; stripeSessionId?: string | null; stripePaymentIntentId?: string | null }} detail
  */
 export const publishTransferPortalPaymentReceipt = async (admin, bookingId, detail) => {
   const { data: booking, error: bErr } = await admin
     .from('transfer_bookings')
     .select(
-      'id, client_user_id, client_email, pickup_label, dropoff_label, admin_price_eur, deposit_percent, payment_status, package_build_id, enquiry_reference_id'
+      'id, client_user_id, client_email, pickup_label, dropoff_label, scheduled_at, admin_price_eur, deposit_percent, payment_status, payment_source, package_build_id, enquiry_reference_id'
     )
     .eq('id', bookingId)
     .maybeSingle()
@@ -71,12 +140,16 @@ export const publishTransferPortalPaymentReceipt = async (admin, bookingId, deta
   const profileEmail = String(profile?.email ?? booking.client_email ?? '').trim()
   const accountRef = profile?.account_reference_id ? String(profile.account_reference_id).trim() : null
 
+  const manual = detail.channel === 'manual' || String(booking.payment_source ?? '') === 'manual'
   const documentKind = detail.receiptKind === 'deposit' ? 'deposit_receipt' : 'payment_confirmation'
-  const title =
-    detail.receiptKind === 'deposit' ? 'Deposit payment received (card)' : 'Payment received in full (card)'
+  const title = detail.receiptKind === 'deposit' ? 'Deposit received' : 'Paid in full'
+  const tripRows = await loadPaymentTripRows(admin, booking)
 
   const sid = shortId(booking.id)
-  const fileLeaf = detail.receiptKind === 'deposit' ? `deposit-receipt-${sid}.pdf` : `payment-confirmation-${sid}.pdf`
+  const fileLeaf =
+    detail.receiptKind === 'deposit'
+      ? `Golf-Sol-Ireland-deposit-invoice-${sid}.pdf`
+      : `Golf-Sol-Ireland-paid-in-full-invoice-${sid}.pdf`
   const storagePath = `${ownerId}/${booking.id}/${fileLeaf}`
 
   const pdfBytes = await createTransferPaymentReceiptPdf({
@@ -86,6 +159,8 @@ export const publishTransferPortalPaymentReceipt = async (admin, bookingId, deta
     accountRef,
     receiptType: detail.receiptKind,
     amountChargedEur: detail.amountEur,
+    channel: manual ? 'manual' : 'stripe',
+    tripRows,
     stripeSessionId: detail.stripeSessionId ?? null,
     stripePaymentIntentId: detail.stripePaymentIntentId ?? null
   })
@@ -114,5 +189,5 @@ export const publishTransferPortalPaymentReceipt = async (admin, bookingId, deta
     return { ok: false, reason: 'db', message: insErr.message }
   }
 
-  return { ok: true, documentKind, storagePath }
+  return { ok: true, documentKind, storagePath, pdfBytes, filename: fileLeaf, title, tripRows }
 }

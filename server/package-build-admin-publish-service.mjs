@@ -1,5 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
+import { buildPricedLinePublishedEmail } from './branded-client-portal-email.mjs'
 import { requireAdminFromBearer } from './auth-verify-admin.mjs'
+import { sendBookingEmailHtml, sendTransferPaymentCustomerEmails } from './transfer-payment-customer-email.mjs'
+import { balanceDueReminderIso } from './transfer-payment-amounts.mjs'
+import { notifyClientPortalTransferPayment } from './portal-transfer-payment-notify.mjs'
 import { publishTransferAdminPricePortalPdfs } from './transfer-portal-publish-admin-price-pdfs.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
@@ -35,7 +39,7 @@ const kindLineLabel = (kind) => {
 
 /**
  * Admin: publish a manual package_builds row to a client dashboard (same data as the old browser insert).
- * Requires at least one transfer_bookings row with payment_status = paid for that profile or login email.
+ * Requires at least one transfer the guest has paid (deposit or in full) for that profile or login email.
  *
  * @param {unknown} body
  * @param {import('node:process').ProcessEnv} env
@@ -74,11 +78,34 @@ export const handlePackageBuildAdminPublish = async (body, env = process.env, me
   if (!Number.isFinite(price) || price <= 0) {
     throwStatus('priceEur must be a positive number.', 400)
   }
+  const priceRounded = Math.round(price * 100) / 100
+  const payStatusRaw = typeof body?.paymentStatus === 'string' ? body.paymentStatus.trim().toLowerCase() : 'unpaid'
+  const payStatus = ['unpaid', 'deposit', 'paid'].includes(payStatusRaw) ? payStatusRaw : 'unpaid'
+  const receivedRaw = body?.amountReceivedEur
+  const receivedParsed =
+    typeof receivedRaw === 'number' && Number.isFinite(receivedRaw)
+      ? receivedRaw
+      : Number(String(receivedRaw ?? '').replace(/,/g, '').trim())
+  let amountReceived = null
+  let depositPercent = 20
+  if (payStatus === 'paid') {
+    amountReceived = priceRounded
+  } else if (payStatus === 'deposit') {
+    if (!Number.isFinite(receivedParsed) || receivedParsed <= 0 || receivedParsed >= priceRounded) {
+      throwStatus('Deposit amount must be greater than zero and less than the price.', 400)
+    }
+    amountReceived = Math.round(receivedParsed * 100) / 100
+    depositPercent = Math.min(99, Math.max(1, Math.round((amountReceived / priceRounded) * 100)))
+  }
   if (!['transfer', 'golf', 'hotel'].includes(kind)) {
     throwStatus('kind must be transfer, golf, or hotel.', 400)
   }
 
-  const { data: prof, error: pErr } = await admin.from('profiles').select('id, email, full_name').ilike('email', email).maybeSingle()
+  const { data: prof, error: pErr } = await admin
+    .from('profiles')
+    .select('id, email, full_name, phone')
+    .ilike('email', email)
+    .maybeSingle()
   if (pErr) {
     throwStatus(pErr.message, 500)
   }
@@ -89,7 +116,7 @@ export const handlePackageBuildAdminPublish = async (body, env = process.env, me
   const { data: byUser, error: uErr } = await admin
     .from('transfer_bookings')
     .select('id')
-    .eq('payment_status', 'paid')
+    .in('payment_status', ['paid', 'deposit'])
     .eq('client_user_id', prof.id)
     .limit(1)
   if (uErr) {
@@ -98,22 +125,33 @@ export const handlePackageBuildAdminPublish = async (body, env = process.env, me
   const { data: byMail, error: mErr } = await admin
     .from('transfer_bookings')
     .select('id')
-    .eq('payment_status', 'paid')
+    .in('payment_status', ['paid', 'deposit'])
     .ilike('client_email', email)
     .limit(1)
   if (mErr) {
     throwStatus(mErr.message, 500)
   }
-  const hasPaid = Boolean((byUser && byUser.length > 0) || (byMail && byMail.length > 0))
+  let hasPaid = Boolean((byUser && byUser.length > 0) || (byMail && byMail.length > 0))
   if (!hasPaid) {
+    const { data: paidInv, error: iErr } = await admin
+      .from('portal_invoices')
+      .select('id')
+      .eq('profile_id', prof.id)
+      .or('status.eq.paid,paid_at.not.is.null')
+      .limit(1)
+    if (iErr) {
+      throwStatus(iErr.message, 500)
+    }
+    hasPaid = Boolean(paidInv && paidInv.length > 0)
+  }
+  if (!hasPaid && payStatus === 'unpaid') {
     throwStatus(
-      'Publishing requires at least one transfer paid in full for this client (Stripe completed). In Account transfers, save the price and let the guest pay in full on their dashboard — same pattern as Save price — then publish golf, hotel, or transfer lines here.',
+      'Publishing an unpaid line needs a payment already on file. Mark this line as a deposit or paid in full, or take a Stripe payment first.',
       400
     )
   }
 
   const source = sourceForKind(kind)
-  const priceRounded = Math.round(price * 100) / 100
   const config = {
     version: 2,
     kind,
@@ -179,8 +217,11 @@ export const handlePackageBuildAdminPublish = async (body, env = process.env, me
       enquiry_reference_id: null,
       admin_price_eur: priceRounded,
       admin_price_vat_treatment: 'tourism',
-      payment_status: 'unpaid',
-      deposit_percent: 20,
+      payment_status: payStatus,
+      payment_source: payStatus === 'unpaid' ? null : 'manual',
+      amount_received_eur: amountReceived,
+      deposit_percent: depositPercent,
+      balance_remind_at: payStatus === 'deposit' ? balanceDueReminderIso(null) : null,
       updated_at: now
     })
     .select('id')
@@ -200,6 +241,31 @@ export const handlePackageBuildAdminPublish = async (body, env = process.env, me
     throwStatus('Transfer mirror insert returned no row.', 500)
   }
 
+  let paymentReceipt = null
+  if (payStatus === 'deposit' || payStatus === 'paid') {
+    try {
+      await notifyClientPortalTransferPayment(admin, String(tbRow.id))
+    } catch (e) {
+      console.error('[package-build-admin-publish] portal payment notify', e)
+    }
+    try {
+      paymentReceipt = await sendTransferPaymentCustomerEmails(
+        admin,
+        String(tbRow.id),
+        {
+          paymentKind: payStatus === 'deposit' ? 'deposit' : 'full',
+          amountPaidEur: amountReceived,
+          paymentChannel: 'manual',
+          skipIdempotency: true
+        },
+        env
+      )
+    } catch (e) {
+      console.error('[package-build-admin-publish] payment invoice email', e)
+      paymentReceipt = { ok: false, message: e instanceof Error ? e.message : String(e) }
+    }
+  }
+
   let pdfPortal = null
   try {
     pdfPortal = await publishTransferAdminPricePortalPdfs(admin, env, String(tbRow.id))
@@ -212,5 +278,41 @@ export const handlePackageBuildAdminPublish = async (body, env = process.env, me
     }
   }
 
-  return { ok: true, row: inserted, transferBookingId: tbRow.id, pdfPortal }
+  const mail = buildPricedLinePublishedEmail({
+    greetingName: displayName,
+    kindLabel: lineKind,
+    title,
+    summary,
+    priceEur: priceRounded
+  })
+  const priceSummary = [title, summary].filter((part) => part && String(part).trim()).join(' — ')
+  const { error: updateErr } = await admin.from('portal_client_updates').insert({
+    owner_id: prof.id,
+    title: `${lineKind} added to your trip`,
+    summary: `${priceSummary} Price ${priceRounded.toFixed(2)} EUR. Open your dashboard to see it.`.slice(0, 2000),
+    email_subject: mail.subject,
+    template_key: 'admin_priced_line',
+    attachment_filenames: []
+  })
+  if (updateErr) {
+    console.error('[package-build-admin-publish] portal update', updateErr.message)
+  }
+
+  let clientEmail = { ok: false, message: 'Email was not sent.' }
+  try {
+    const sent = await sendBookingEmailHtml(
+      admin,
+      { id: tbRow.id, client_email: clientEmailNorm, client_user_id: prof.id },
+      mail,
+      env
+    )
+    clientEmail = sent.ok
+      ? { ok: true, to: sent.to }
+      : { ok: false, message: sent.message || 'Email was not sent.' }
+  } catch (e) {
+    console.error('[package-build-admin-publish] client email', e)
+    clientEmail = { ok: false, message: e instanceof Error ? e.message : String(e) }
+  }
+
+  return { ok: true, row: inserted, transferBookingId: tbRow.id, pdfPortal, clientEmail, paymentReceipt }
 }

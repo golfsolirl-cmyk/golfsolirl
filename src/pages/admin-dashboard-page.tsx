@@ -5,7 +5,7 @@ import { PortalInterestCategoryGlyph } from '../components/portal-interest-categ
 import { FocusTrapDialog } from '../components/focus-trap-dialog'
 import { AdminOperationsHubHero } from '../components/admin-operations-hub-hero'
 import { BankTransferPayCard } from '../components/bank-transfer-pay-card'
-import { AdminPaidTripsRevenuePanel } from '../components/admin-paid-trips-revenue-panel'
+import { AdminPaidTripsRevenuePanel, type PaidClientPriceDraft } from '../components/admin-paid-trips-revenue-panel'
 import { AdminOperatorCodePanel } from '../components/admin-operator-code-panel'
 import { AdminPortalShell, AdminPortalSection, type AdminPortalSectionId } from '../components/admin-portal-shell'
 import { AdminOperationsSectionShell } from '../components/admin-operations-section-shell'
@@ -647,8 +647,12 @@ export function AdminDashboardPage() {
   const [manualOfferTitle, setManualOfferTitle] = useState('')
   const [manualOfferSummary, setManualOfferSummary] = useState('')
   const [manualOfferPrice, setManualOfferPrice] = useState('')
+  const [manualOfferPay, setManualOfferPay] = useState<'unpaid' | 'deposit' | 'paid'>('unpaid')
+  const [manualOfferReceived, setManualOfferReceived] = useState('')
   const [manualOfferBusy, setManualOfferBusy] = useState(false)
   const [manualOfferMessage, setManualOfferMessage] = useState<string | null>(null)
+  const priceDraftTitle = useRef('')
+  const priceDraftSummary = useRef('')
   const [tbTemplate, setTbTemplate] = useState<'airport_only' | 'golf_leg'>('airport_only')
   const [tbPassengers, setTbPassengers] = useState(4)
   const [tbDestTab, setTbDestTab] = useState<'hotels' | 'golf'>('hotels')
@@ -1546,6 +1550,19 @@ export function AdminDashboardPage() {
     revokeManualProposalPdfObjectUrl()
   }
 
+  const handlePreparePriceFromPayment = useCallback((draft: PaidClientPriceDraft) => {
+    setManualOfferEmail(draft.email.includes('@') ? draft.email : '')
+    setManualOfferTitle((prev) => (!prev.trim() || prev === priceDraftTitle.current ? draft.title : prev))
+    setManualOfferSummary((prev) => (!prev.trim() || prev === priceDraftSummary.current ? draft.summary : prev))
+    priceDraftTitle.current = draft.title
+    priceDraftSummary.current = draft.summary
+    setManualOfferMessage(
+      draft.email.includes('@')
+        ? `Filled for ${draft.guest}. Set the price, then publish. Their dashboard updates and we email ${draft.email}.`
+        : `Opened ${draft.guest}. This payment has no sign-in email yet — type the email they use to log in.`
+    )
+  }, [])
+
   const handlePublishManualPackage = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setManualOfferMessage(null)
@@ -1568,6 +1585,11 @@ export function AdminDashboardPage() {
       setManualOfferMessage('Enter a valid price in EUR (greater than zero).')
       return
     }
+    const received = Number(manualOfferReceived.trim().replace(/,/g, ''))
+    if (manualOfferPay === 'deposit' && (!Number.isFinite(received) || received <= 0 || received >= price)) {
+      setManualOfferMessage('Enter the deposit received. It must be more than zero and less than the price.')
+      return
+    }
 
     if (!session?.access_token) {
       setManualOfferMessage('Session expired. Sign in again.')
@@ -1587,13 +1609,17 @@ export function AdminDashboardPage() {
           kind: manualOfferKind,
           title,
           summary,
-          priceEur: price
+          priceEur: price,
+          paymentStatus: manualOfferPay,
+          amountReceivedEur: manualOfferPay === 'deposit' ? received : manualOfferPay === 'paid' ? price : null
         })
       })
       const data = (await res.json().catch(() => ({}))) as {
         message?: string
         row?: PackageBuildAdminRow
         pdfPortal?: { ok?: boolean; reason?: string; message?: string }
+        clientEmail?: { ok?: boolean; to?: string; message?: string }
+        paymentReceipt?: { ok?: boolean; message?: string }
       }
       if (!res.ok) {
         const msg = data.message ?? res.statusText
@@ -1608,14 +1634,33 @@ export function AdminDashboardPage() {
         setPackageBuilds((prev) => [data.row as PackageBuildAdminRow, ...prev])
       }
       const pdfOk = data.pdfPortal?.ok !== false
+      const mailed = data.clientEmail?.ok === true
+      const mailedTo = data.clientEmail?.to || email
+      const receiptNote =
+        data.paymentReceipt?.ok === false
+          ? ' The payment invoice email did not send.'
+          : manualOfferPay === 'unpaid'
+            ? ''
+            : ' We emailed their invoice.'
+      const payLine =
+        manualOfferPay === 'paid'
+          ? ` Marked paid in full manually · €${price}.${receiptNote}`
+          : manualOfferPay === 'deposit'
+            ? ` Marked deposit paid manually · €${received} of €${price}.${receiptNote}`
+            : ''
+      const dashboardLine = mailed
+        ? `Published. ${mailedTo} has it on their dashboard, and we emailed them.${payLine}`
+        : `Published on their dashboard. The email did not send (${data.clientEmail?.message ?? 'unknown'}).${payLine}`
       setManualOfferMessage(
         pdfOk
-          ? 'Published — the client will see the package, a Transfer requests row, Trip details, and quote PDFs on their dashboard.'
-          : `Published package and transfer desk row, but PDF upload failed (${data.pdfPortal?.message ?? data.pdfPortal?.reason ?? 'unknown'}). Fix Storage/env and re-save the price on that row in Account transfers if needed.`
+          ? dashboardLine
+          : `${dashboardLine} Quote PDF upload failed (${data.pdfPortal?.message ?? data.pdfPortal?.reason ?? 'unknown'}).`
       )
       setManualOfferTitle('')
       setManualOfferSummary('')
       setManualOfferPrice('')
+      setManualOfferPay('unpaid')
+      setManualOfferReceived('')
     } finally {
       setManualOfferBusy(false)
     }
@@ -4074,7 +4119,7 @@ export function AdminDashboardPage() {
             </div>
           </div>
 
-          <AdminPaidTripsRevenuePanel />
+          <AdminPaidTripsRevenuePanel onPreparePrice={handlePreparePriceFromPayment} />
 
           <section className="scroll-mt-28 rounded-[2rem] border border-forest-100 bg-white p-5 shadow-soft sm:p-7" id="admin-hub-publish">
             <div className="max-w-2xl">
@@ -4083,7 +4128,7 @@ export function AdminDashboardPage() {
                 Publish a priced line
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-forest-600">
-                Put a transfer, golf, or hotel line on the guest’s dashboard with a price. They see it after you publish.
+                Tap a payment above and this form fills with their sign-in email and trip. Publish puts the line on their dashboard and emails them.
               </p>
             </div>
 
@@ -4194,9 +4239,64 @@ export function AdminDashboardPage() {
                 />
               </div>
 
+              <fieldset>
+                <legend className={adminTripLabelClass}>Payment already received</legend>
+                <p className="mt-1 text-sm text-forest-600">
+                  Leave this as not paid yet, or record a deposit or the full amount. Manual marks stay separate from Stripe.
+                </p>
+                <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                  {(
+                    [
+                      ['unpaid', 'Not paid yet'],
+                      ['deposit', 'Deposit paid'],
+                      ['paid', 'Paid in full']
+                    ] as const
+                  ).map(([value, label]) => (
+                    <label
+                      className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-forest-200 bg-offwhite/80 px-3.5 py-2.5 text-sm font-medium text-forest-900 has-[:checked]:border-fairway-500 has-[:checked]:bg-fairway-50"
+                      key={value}
+                    >
+                      <input
+                        checked={manualOfferPay === value}
+                        className="h-4 w-4 shrink-0 border-forest-300 text-fairway-600 focus:ring-fairway-400"
+                        name="manual-offer-pay"
+                        onChange={() => {
+                          setManualOfferPay(value)
+                          setManualOfferMessage(null)
+                        }}
+                        type="radio"
+                        value={value}
+                      />
+                      {label}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+
+              {manualOfferPay === 'deposit' ? (
+                <div>
+                  <label className={adminTripLabelClass} htmlFor="manual-offer-received">
+                    Deposit received (€)
+                  </label>
+                  <input
+                    className={cx(adminTripInputClass, 'max-w-[200px]')}
+                    id="manual-offer-received"
+                    inputMode="decimal"
+                    min={0}
+                    onChange={(e) => {
+                      setManualOfferReceived(e.target.value)
+                      setManualOfferMessage(null)
+                    }}
+                    placeholder="400"
+                    type="number"
+                    value={manualOfferReceived}
+                  />
+                </div>
+              ) : null}
+
               <div className="flex flex-wrap items-center gap-3 pt-1">
                 <LuxuryButton disabled={manualOfferBusy} type="submit" variant="primary">
-                  {manualOfferBusy ? 'Publishing…' : 'Publish to guest dashboard'}
+                  {manualOfferBusy ? 'Publishing…' : 'Publish and email guest'}
                 </LuxuryButton>
               </div>
 

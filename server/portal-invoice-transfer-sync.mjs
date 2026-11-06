@@ -286,10 +286,14 @@ export const syncTripPassForEnquiryReference = async (supabase, referenceId) => 
 
 export const estimateCollectedEurForBooking = (booking) => {
   const gross = Number(booking.admin_price_eur)
+  const st = String(booking.payment_status ?? 'unpaid').toLowerCase()
+  const recorded = Number(booking.amount_received_eur)
+  if ((st === 'paid' || st === 'deposit') && Number.isFinite(recorded) && recorded > 0) {
+    return Math.round(recorded * 100) / 100
+  }
   if (!Number.isFinite(gross) || gross <= 0) {
     return 0
   }
-  const st = String(booking.payment_status ?? 'unpaid').toLowerCase()
   if (st === 'paid') {
     return gross
   }

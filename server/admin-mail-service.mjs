@@ -810,6 +810,222 @@ const handleMatchEnquiry = async (user, body, env) => {
   return { ok: true, linkedEnquiries: matches.map(publicEnquiry), linkedEnquiry: matches[0] ? publicEnquiry(matches[0]) : null }
 }
 
+const clipText = (value, max = 420) => String(value ?? '').replace(/\s+/g, ' ').trim().slice(0, max)
+
+const PORTAL_CATEGORY_LABEL = {
+  transfers: 'Transfers',
+  golf_courses: 'Golf',
+  hotels: 'Hotel'
+}
+
+/**
+ * One timeline for a guest: Gmail, mail we sent, website forms, and portal tickets.
+ * @param {{ id: string }} user
+ * @param {unknown} body
+ * @param {NodeJS.ProcessEnv} env
+ */
+const handleCustomerCorrespondence = async (user, body, env) => {
+  const db = getAdminDb(env)
+  const requestedEmail = String(body?.email ?? '').trim().toLowerCase()
+  const reference = String(body?.reference ?? '').trim()
+  /** @type {Record<string, unknown>[]} */
+  const enquiryRows = requestedEmail.includes('@') ? await matchEnquiriesByEmail(db, requestedEmail) : []
+
+  if (reference) {
+    const { data, error } = await db
+      .from('enquiries')
+      .select('id, reference_id, email, full_name, phone_whatsapp, interest, created_at, form_payload')
+      .eq('reference_id', reference)
+      .order('created_at', { ascending: false })
+      .limit(5)
+    if (!error && Array.isArray(data)) {
+      for (const row of data) {
+        if (!enquiryRows.some((existing) => existing.id === row.id)) {
+          enquiryRows.push(row)
+        }
+      }
+    }
+  }
+
+  const resolvedEmail = requestedEmail.includes('@')
+    ? requestedEmail
+    : String(enquiryRows[0]?.email ?? '').trim().toLowerCase()
+
+  /** @type {{ id: string, channel: 'email' | 'form' | 'portal', title: string, detail: string, at: string | null, who: string }[]} */
+  const items = []
+
+  for (const row of enquiryRows) {
+    const pub = publicEnquiry(row)
+    if (!pub) continue
+    const bits = [pub.reference, pub.travelDates, pub.numberOfGuests ? `${pub.numberOfGuests} guests` : ''].filter(Boolean)
+    items.push({
+      id: `form-${row.id}`,
+      channel: 'form',
+      title: pub.interest ? `Website form · ${pub.interest}` : 'Website form',
+      detail: bits.join(' · ') || 'Submitted a form on the website.',
+      at: row.created_at || null,
+      who: 'Website form'
+    })
+  }
+
+  if (resolvedEmail.includes('@')) {
+    const { data: profile, error: profileErr } = await db
+      .from('profiles')
+      .select('id')
+      .ilike('email', resolvedEmail)
+      .maybeSingle()
+    if (profileErr) {
+      console.error('[admin-mail] correspondence profile', profileErr.message)
+    }
+    const ownerId = profile?.id ? String(profile.id) : ''
+
+    if (ownerId) {
+      const { data: tickets, error: ticketErr } = await db
+        .from('portal_interest_tickets')
+        .select('id, category, status, created_at, updated_at')
+        .eq('owner_id', ownerId)
+        .order('updated_at', { ascending: false })
+        .limit(20)
+      if (ticketErr) {
+        console.error('[admin-mail] correspondence tickets', ticketErr.message)
+      }
+      const ticketRows = Array.isArray(tickets) ? tickets : []
+      const ticketIds = ticketRows.map((ticket) => ticket.id)
+      /** @type {Record<string, { category?: string }>} */
+      const ticketById = {}
+      for (const ticket of ticketRows) {
+        ticketById[ticket.id] = ticket
+      }
+      const { data: messages, error: messageErr } =
+        ticketIds.length > 0
+          ? await db
+              .from('portal_interest_ticket_messages')
+              .select('id, ticket_id, author_kind, body, created_at')
+              .in('ticket_id', ticketIds)
+              .order('created_at', { ascending: false })
+              .limit(40)
+          : { data: [], error: null }
+      if (messageErr) {
+        console.error('[admin-mail] correspondence messages', messageErr.message)
+      }
+      const messageRows = Array.isArray(messages) ? messages : []
+      const ticketsWithMessages = new Set(messageRows.map((message) => message.ticket_id))
+      for (const message of messageRows) {
+        const ticket = ticketById[message.ticket_id]
+        const category = PORTAL_CATEGORY_LABEL[ticket?.category] || 'Portal'
+        const fromGuest = message.author_kind === 'client'
+        items.push({
+          id: `portal-msg-${message.id}`,
+          channel: 'portal',
+          title: `${category} · ${fromGuest ? 'guest wrote in the portal' : 'we replied in the portal'}`,
+          detail: clipText(message.body),
+          at: message.created_at || null,
+          who: 'Portal'
+        })
+      }
+      for (const ticket of ticketRows) {
+        if (ticketsWithMessages.has(ticket.id)) continue
+        const category = PORTAL_CATEGORY_LABEL[ticket.category] || 'Portal'
+        items.push({
+          id: `portal-ticket-${ticket.id}`,
+          channel: 'portal',
+          title: `${category} request opened in the portal`,
+          detail: `Status: ${ticket.status || 'open'}`,
+          at: ticket.created_at || ticket.updated_at || null,
+          who: 'Portal'
+        })
+      }
+
+      const { data: updates, error: updateErr } = await db
+        .from('portal_client_updates')
+        .select('id, title, summary, created_at')
+        .eq('owner_id', ownerId)
+        .order('created_at', { ascending: false })
+        .limit(15)
+      if (updateErr) {
+        console.error('[admin-mail] correspondence portal updates', updateErr.message)
+      }
+      for (const update of updates ?? []) {
+        items.push({
+          id: `portal-update-${update.id}`,
+          channel: 'portal',
+          title: update.title || 'Update on their dashboard',
+          detail: clipText(update.summary),
+          at: update.created_at || null,
+          who: 'Portal'
+        })
+      }
+    }
+
+    const { data: sent, error: sentErr } = await db
+      .from('email_activity')
+      .select('id, subject, provider, status, sent_at, created_at, to_email')
+      .ilike('to_email', resolvedEmail)
+      .order('created_at', { ascending: false })
+      .limit(20)
+    if (sentErr) {
+      if (!isMissingTable(sentErr, 'email_activity')) {
+        console.error('[admin-mail] correspondence sent mail', sentErr.message)
+      }
+    } else {
+      for (const row of sent ?? []) {
+        items.push({
+          id: `sent-${row.id}`,
+          channel: 'email',
+          title: row.subject || 'Email we sent',
+          detail: `Sent to ${row.to_email || resolvedEmail}${row.status ? ` · ${row.status}` : ''}`,
+          at: row.sent_at || row.created_at || null,
+          who: 'Direct email'
+        })
+      }
+    }
+  }
+
+  let gmailConnected = false
+  let gmailNote = resolvedEmail.includes('@')
+    ? 'Gmail is not connected, so mailbox threads are hidden. Forms and portal messages still show.'
+    : 'No email on this guest yet, so mailbox threads cannot be matched.'
+
+  if (resolvedEmail.includes('@')) {
+    try {
+      const account = await loadGmailAccount(user.id, env)
+      if (account) {
+        const accessToken = await getValidGmailAccessToken(account, env)
+        gmailConnected = true
+        gmailNote = null
+        const safe = resolvedEmail.replace(/"/g, '')
+        const listed = await listGmailThreads(accessToken, {
+          query: `(from:${safe} OR to:${safe})`,
+          max: 15
+        })
+        for (const thread of listed.threads ?? []) {
+          const fromGuest = String(thread.fromEmail ?? '').trim().toLowerCase() === resolvedEmail
+          items.push({
+            id: `gmail-${thread.threadId}`,
+            channel: 'email',
+            title: thread.subject || '(no subject)',
+            detail: clipText(thread.snippet),
+            at: thread.internalDate ? new Date(thread.internalDate).toISOString() : null,
+            who: fromGuest ? 'Direct email from the guest' : 'Direct email'
+          })
+        }
+      }
+    } catch (error) {
+      console.error('[admin-mail] correspondence gmail', error)
+      gmailConnected = false
+      gmailNote = 'Gmail could not be read just now. Forms and portal messages still show.'
+    }
+  }
+
+  items.sort((a, b) => {
+    const left = a.at ? new Date(a.at).getTime() : 0
+    const right = b.at ? new Date(b.at).getTime() : 0
+    return right - left
+  })
+
+  return { ok: true, email: resolvedEmail, gmailConnected, gmailNote, items }
+}
+
 /**
  * @param {unknown} body
  * @param {NodeJS.ProcessEnv} env
@@ -851,6 +1067,8 @@ export const handleAdminMail = async (body, env = process.env, meta = {}) => {
       return handleSaveTemplate(user, body, env)
     case 'match-enquiry':
       return handleMatchEnquiry(user, body, env)
+    case 'customer-correspondence':
+      return handleCustomerCorrespondence(user, body, env)
     default:
       throwStatus('Unknown mail action.', 400)
   }

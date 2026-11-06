@@ -255,8 +255,33 @@ export const handleTransferPaymentAdmin = async (body, env = process.env, meta =
     throwStatus('Booking not found.', 404)
   }
 
+  const parseMoney = (raw) => {
+    const n = typeof raw === 'number' ? raw : Number(String(raw ?? '').replace(/,/g, '').trim())
+    if (!Number.isFinite(n) || n < 0) return null
+    return Math.round(n * 100) / 100
+  }
+  const totalEur = parseMoney(body?.totalEur)
+  const receivedEur = parseMoney(body?.amountReceivedEur)
+  const manualAmounts = totalEur != null || receivedEur != null
+
+  if (manualAmounts && (nextStatus === 'deposit' || nextStatus === 'paid')) {
+    if (totalEur == null || totalEur <= 0) {
+      throwStatus('Enter the trip total in euros.', 400)
+    }
+    if (nextStatus === 'deposit') {
+      if (receivedEur == null || receivedEur <= 0 || receivedEur >= totalEur) {
+        throwStatus('Deposit amount must be greater than zero and less than the trip total.', 400)
+      }
+    }
+  }
+
   const prev = String(row.payment_status ?? 'unpaid')
-  if (prev === nextStatus) {
+  const prevTotal = Number(row.admin_price_eur)
+  const prevReceived = Number(row.amount_received_eur)
+  const totalSame = totalEur == null || (Number.isFinite(prevTotal) && Math.abs(prevTotal - totalEur) < 0.001)
+  const receivedSame =
+    receivedEur == null || (Number.isFinite(prevReceived) && Math.abs(prevReceived - receivedEur) < 0.001)
+  if (prev === nextStatus && totalSame && receivedSame) {
     return {
       ok: true,
       bookingId,
@@ -268,15 +293,40 @@ export const handleTransferPaymentAdmin = async (body, env = process.env, meta =
 
   const now = new Date().toISOString()
   const remindAt = nextStatus === 'deposit' ? balanceDueReminderIso(row.scheduled_at) : null
+  const recordedTotal = totalEur != null && totalEur > 0 ? totalEur : Number(row.admin_price_eur)
+  const recordedReceived =
+    nextStatus === 'paid'
+      ? recordedTotal > 0
+        ? recordedTotal
+        : receivedEur
+      : nextStatus === 'deposit'
+        ? receivedEur != null
+          ? receivedEur
+          : recordedTotal > 0
+            ? Math.round(recordedTotal * (depositPercent / 100) * 100) / 100
+            : null
+        : null
 
   const patch = {
     payment_status: nextStatus,
-    deposit_percent: nextStatus === 'deposit' ? depositPercent : Number(row.deposit_percent) || 20,
+    deposit_percent:
+      nextStatus === 'deposit' && recordedTotal > 0 && recordedReceived != null && recordedReceived > 0
+        ? Math.min(99, Math.max(1, Math.round((recordedReceived / recordedTotal) * 100)))
+        : nextStatus === 'deposit'
+          ? depositPercent
+          : Number(row.deposit_percent) || 20,
+    payment_source: nextStatus === 'unpaid' ? null : 'manual',
     updated_at: now
   }
+  if (totalEur != null && totalEur > 0) {
+    patch.admin_price_eur = totalEur
+  }
   if (nextStatus === 'unpaid') {
+    patch.amount_received_eur = null
     patch.stripe_payment_intent_id = null
     patch.stripe_checkout_session_id = null
+  } else if (recordedReceived != null && recordedReceived > 0) {
+    patch.amount_received_eur = recordedReceived
   }
   if (nextStatus === 'deposit') {
     patch.balance_remind_at = remindAt
@@ -304,6 +354,8 @@ export const handleTransferPaymentAdmin = async (body, env = process.env, meta =
       if (nextStatus === 'deposit') {
         const emailResult = await sendTransferPaymentCustomerEmails(admin, bookingId, {
           paymentKind: 'deposit',
+          amountPaidEur: recordedReceived,
+          paymentChannel: 'manual',
           skipIdempotency: true
         }, env)
         thankYouSent = emailResult.sent?.join(',') || 'deposit'
@@ -316,6 +368,8 @@ export const handleTransferPaymentAdmin = async (body, env = process.env, meta =
           bookingId,
           {
             paymentKind: prev === 'deposit' ? 'balance' : 'full',
+            amountPaidEur: recordedReceived,
+            paymentChannel: 'manual',
             skipIdempotency: true
           },
           env

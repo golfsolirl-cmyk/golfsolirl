@@ -5,6 +5,7 @@ import {
   buildTransferDepositThankYouEmail,
   buildTransferFullPaymentThankYouEmail
 } from './branded-transfer-payment-email.mjs'
+import { loadPaymentTripRows, publishTransferPortalPaymentReceipt } from './transfer-portal-publish-payment-pdf.mjs'
 import {
   balanceAmountEur,
   depositAmountEur,
@@ -75,7 +76,7 @@ const recordBookingEmailEvent = async (admin, bookingId, action, meta = {}) => {
  * @param {Record<string, unknown>} booking
  * @param {{ subject: string; html: string }} content
  * @param {import('node:process').ProcessEnv} env
- * @param {{ throwOnError?: boolean }} [opts]
+ * @param {{ throwOnError?: boolean, attachments?: { filename: string, content: string, contentType?: string }[] }} [opts]
  */
 export const sendBookingEmailHtml = async (admin, booking, content, env = process.env, opts = {}) => {
   const resendKey = env.RESEND_API_KEY?.trim()
@@ -102,11 +103,13 @@ export const sendBookingEmailHtml = async (admin, booking, content, env = proces
     return { ok: false, reason: 'no_client_email' }
   }
   const resend = new Resend(resendKey)
+  const attachments = Array.isArray(opts.attachments) ? opts.attachments.filter((file) => file?.filename && file?.content) : []
   const { error: sendErr } = await resend.emails.send({
     from,
     to,
     subject: content.subject,
-    html: content.html
+    html: content.html,
+    ...(attachments.length ? { attachments } : {})
   })
   if (sendErr) {
     const msg = sendErr.message ?? 'Resend failed'
@@ -166,7 +169,7 @@ export const computeTransferPaymentAmounts = (booking, paymentKind, stripeAmount
  *
  * @param {import('@supabase/supabase-js').SupabaseClient} admin
  * @param {string} bookingId
- * @param {{ paymentKind: 'deposit' | 'balance' | 'full', amountPaidEur?: number | null, skipIdempotency?: boolean }} opts
+ * @param {{ paymentKind: 'deposit' | 'balance' | 'full', amountPaidEur?: number | null, skipIdempotency?: boolean, paymentChannel?: 'stripe' | 'manual', invoicePdf?: { filename?: string, bytes?: Uint8Array | Buffer } | null }} opts
  * @param {import('node:process').ProcessEnv} env
  */
 export const sendTransferPaymentCustomerEmails = async (admin, bookingId, opts, env = process.env) => {
@@ -186,6 +189,36 @@ export const sendTransferPaymentCustomerEmails = async (admin, bookingId, opts, 
   const pct = normalizedDepositPercent(booking.deposit_percent)
   const sent = []
   const errors = []
+  const channel = opts.paymentChannel === 'manual' || String(booking.payment_source ?? '') === 'manual' ? 'manual' : 'stripe'
+  const receiptKind = paymentKind === 'deposit' ? 'deposit' : 'paid_in_full'
+  let invoice = opts.invoicePdf?.bytes ? opts.invoicePdf : null
+  let tripRows = []
+  if (!invoice) {
+    const published = await publishTransferPortalPaymentReceipt(admin, id, {
+      receiptKind,
+      amountEur: amounts.amountPaidEur || Number(booking.amount_received_eur) || Number(booking.admin_price_eur) || 0,
+      channel
+    })
+    if (published?.ok && published.pdfBytes) {
+      invoice = { filename: published.filename, bytes: published.pdfBytes }
+      tripRows = Array.isArray(published.tripRows) ? published.tripRows : []
+    } else if (published && !published.ok) {
+      console.error('[transfer-payment-email] invoice pdf', published.reason, published.message ?? '')
+    }
+  }
+  if (!tripRows.length) {
+    tripRows = await loadPaymentTripRows(admin, booking)
+  }
+  const invoiceAttachments =
+    invoice?.bytes && invoice.filename
+      ? [
+          {
+            filename: invoice.filename,
+            content: Buffer.from(invoice.bytes).toString('base64'),
+            contentType: 'application/pdf'
+          }
+        ]
+      : []
 
   if (paymentKind === 'deposit') {
     const thankYouAction = 'customer_email_deposit_thank_you'
@@ -197,9 +230,10 @@ export const sendTransferPaymentCustomerEmails = async (admin, bookingId, opts, 
     const thankYou = buildTransferDepositThankYouEmail(booking, pct, {
       amountPaidEur: amounts.amountPaidEur,
       grossEur: amounts.grossEur,
-      balanceEur: amounts.balanceEur
+      balanceEur: amounts.balanceEur,
+      tripRows
     })
-    const r1 = await sendBookingEmailHtml(admin, booking, thankYou, env)
+    const r1 = await sendBookingEmailHtml(admin, booking, thankYou, env, { attachments: invoiceAttachments })
     if (r1.ok) {
       sent.push('deposit_thank_you')
       await recordBookingEmailEvent(admin, id, thankYouAction, {
@@ -240,9 +274,10 @@ export const sendTransferPaymentCustomerEmails = async (admin, bookingId, opts, 
 
   const fullEmail = buildTransferFullPaymentThankYouEmail(booking, {
     amountPaidEur: amounts.amountPaidEur,
-    grossEur: amounts.grossEur
+    grossEur: amounts.grossEur,
+    tripRows
   })
-  const r = await sendBookingEmailHtml(admin, booking, fullEmail, env)
+  const r = await sendBookingEmailHtml(admin, booking, fullEmail, env, { attachments: invoiceAttachments })
   if (r.ok) {
     sent.push(fullAction)
     await recordBookingEmailEvent(admin, id, fullAction, {

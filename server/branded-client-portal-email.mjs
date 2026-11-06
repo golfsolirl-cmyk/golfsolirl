@@ -1,5 +1,5 @@
 import { ctaGold, ctaGreen, emailFonts, gs, emailAmbientGradientFillStyle } from './branded-email-shell.mjs'
-import { buildGsolTransactionalEmail, getGsolSiteUrl } from './email-layout.mjs'
+import { buildGsolTransactionalEmail, finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
 
 const escapeHtml = (value) =>
   String(value ?? '')
@@ -276,4 +276,52 @@ export const buildBrandedPortalMagicLinkEmailHtml = ({ actionLink, email, reques
       <p style="margin:8px 0 0 0;font-family:${emailFonts.sans};font-size:13px;line-height:1.5;color:rgba(255,255,255,0.82);"><strong style="font-weight:700;">Need help?</strong> Reply to this message.</p>`,
     bodyHtml
   })
+}
+
+/**
+ * Sent when admin publishes a priced transfer, golf, or hotel line.
+ * @param {{ greetingName?: string, kindLabel: string, title: string, summary?: string, priceEur: number }} opts
+ */
+export const buildPricedLinePublishedEmail = ({ greetingName, kindLabel, title, summary, priceEur }) => {
+  const site = getGsolSiteUrl()
+  const priceTxt = new Intl.NumberFormat('en-IE', {
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(Number(priceEur) || 0)
+  const safeName = escapeHtml(greetingName || 'there')
+  const safeKind = escapeHtml(kindLabel)
+  const safeTitle = escapeHtml(title)
+  const summaryHtml = String(summary ?? '').trim()
+    ? `<p style="margin:0 0 16px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.7;color:${gs.muted};">${escapeHtml(summary).replaceAll('\n', '<br />')}</p>`
+    : ''
+  const subject = `Golf Sol Ireland — ${kindLabel} added to your trip (${priceTxt})`
+  const heroLead = `We added ${escapeHtml(kindLabel).toLowerCase()} to your trip: ${escapeHtml(title)}. The price is ${escapeHtml(priceTxt)}. It is on your dashboard now.`
+  const bodyHtml = `
+    <p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:16px;line-height:1.75;color:${gs.text};">Hi ${safeName},</p>
+    <p style="margin:0 0 16px 0;font-family:${emailFonts.sans};font-size:16px;line-height:1.75;color:${gs.muted};">Your Golf Sol Ireland dashboard has a new <strong style="color:${gs.text};">${safeKind}</strong> line.</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0 0 18px 0;border-collapse:collapse;background:${gs.rowA};border-radius:12px;">
+      <tr><td style="padding:16px 18px;">
+        <p style="margin:0 0 6px 0;font-family:${emailFonts.sans};font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:${gs.muted};">${safeKind}</p>
+        <p style="margin:0 0 8px 0;font-family:${emailFonts.sans};font-size:18px;line-height:1.35;font-weight:700;color:${gs.text};">${safeTitle}</p>
+        <p style="margin:0;font-family:${emailFonts.sans};font-size:20px;font-weight:800;color:${gs.green};">${escapeHtml(priceTxt)}</p>
+      </td></tr>
+    </table>
+    ${summaryHtml}
+    <p style="margin:0 0 18px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Sign in with this same email address. The line is on your trip as soon as you open the dashboard.</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 8px 0;border-collapse:collapse;">
+      <tr><td style="padding:0;"><a href="${escapeHtml(`${site}/dashboard`)}" style="${ctaGold}">Open your dashboard</a></td></tr>
+    </table>`
+
+  const htmlRaw = buildGsolTransactionalEmail({
+    documentTitle: subject,
+    preheader: heroLead.slice(0, 120),
+    heroKicker: 'Golf Sol Ireland',
+    heroTitle: 'A price is on your trip',
+    heroLead,
+    heroMetaHtml: `<p style="margin:0;font-family:${emailFonts.sans};font-size:13px;line-height:1.5;color:rgba(255,255,255,0.88);">Transfers, golf, and hotels · one dashboard</p>`,
+    bodyHtml
+  })
+  return { subject, html: finalizeGsolEmailHtml(htmlRaw) }
 }
