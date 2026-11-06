@@ -4356,7 +4356,7 @@ export function AdminDashboardPage() {
             <AdminOperationsSectionShell
               bodyClassName="space-y-5 sm:py-8"
               className="scroll-mt-28"
-              description="Each card is one website form. Open it, set the trip, then send a price."
+              description="Each card is a website form. Open it to see whether later contact was a direct email, another form, or the portal, then set the trip and send a price."
               headerAside={
                 enquiries.length > 0 ? (
                   <button

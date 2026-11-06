@@ -68,43 +68,72 @@ export const syncTransferBookingFromPaidPortalInvoice = async (supabase, invoice
   }
 
   const st = String(booking.payment_status ?? 'unpaid').toLowerCase()
-  if (st === 'paid') {
+  if (st === 'paid' && !created) {
     return { synced: true, bookingId: booking.id, created, reason: 'already_paid' }
   }
 
   const now = new Date().toISOString()
+  const recordedEur =
+    amountEur != null && amountEur > 0
+      ? amountEur
+      : Number(booking.admin_price_eur) > 0
+        ? Number(booking.admin_price_eur)
+        : null
   const patch = {
     payment_status: 'paid',
+    payment_source: 'stripe',
     balance_remind_at: null,
     balance_remind_sent_at: null,
     updated_at: now,
     stripe_payment_intent_id: paymentIntent,
     stripe_checkout_session_id: sessionId
   }
+  if (recordedEur != null) {
+    patch.amount_received_eur = recordedEur
+  }
 
   if (amountEur != null && amountEur > 0 && (!Number(booking.admin_price_eur) || Number(booking.admin_price_eur) <= 0)) {
     patch.admin_price_eur = amountEur
   }
 
-  const { data: updated, error: upErr } = await supabase
-    .from('transfer_bookings')
-    .update(patch)
-    .eq('id', booking.id)
-    .in('payment_status', ['unpaid', 'deposit'])
-    .select('id')
-    .maybeSingle()
+  let bookingId = booking.id
+  if (st !== 'paid') {
+    let updated = null
+    let upErr = null
+    const first = await supabase
+      .from('transfer_bookings')
+      .update(patch)
+      .eq('id', booking.id)
+      .in('payment_status', ['unpaid', 'deposit'])
+      .select('id')
+      .maybeSingle()
+    updated = first.data
+    upErr = first.error
+    if (upErr && /payment_source|amount_received_eur/i.test(upErr.message)) {
+      delete patch.payment_source
+      delete patch.amount_received_eur
+      const retry = await supabase
+        .from('transfer_bookings')
+        .update(patch)
+        .eq('id', booking.id)
+        .in('payment_status', ['unpaid', 'deposit'])
+        .select('id')
+        .maybeSingle()
+      updated = retry.data
+      upErr = retry.error
+    }
 
-  if (upErr) {
-    const err = new Error(upErr.message)
-    err.statusCode = 500
-    throw err
+    if (upErr) {
+      const err = new Error(upErr.message)
+      err.statusCode = 500
+      throw err
+    }
+
+    if (!updated?.id) {
+      return { synced: false, bookingId: booking.id, reason: 'payment_status_unchanged' }
+    }
+    bookingId = updated.id
   }
-
-  if (!updated?.id && st !== 'paid') {
-    return { synced: false, bookingId: booking.id, reason: 'payment_status_unchanged' }
-  }
-
-  const bookingId = updated?.id ?? booking.id
 
   const { error: evErr } = await supabase.from('transfer_booking_events').insert({
     booking_id: bookingId,
@@ -246,6 +275,8 @@ const createTransferBookingFromPaidInvoice = async (supabase, invoice, amountEur
     enquiry_reference_id: ref || null,
     admin_price_eur: amountEur != null && amountEur > 0 ? amountEur : null,
     payment_status: 'paid',
+    payment_source: 'stripe',
+    amount_received_eur: amountEur != null && amountEur > 0 ? amountEur : null,
     deposit_percent: 20,
     stripe_payment_intent_id:
       typeof invoice.stripe_payment_intent_id === 'string' ? invoice.stripe_payment_intent_id : null,
@@ -253,7 +284,23 @@ const createTransferBookingFromPaidInvoice = async (supabase, invoice, amountEur
       typeof invoice.stripe_checkout_session_id === 'string' ? invoice.stripe_checkout_session_id : null
   }
 
-  const { data: inserted, error } = await supabase.from('transfer_bookings').insert(row).select('id, payment_status, admin_price_eur, deposit_percent').single()
+  const insertBooking = (payload) =>
+    supabase.from('transfer_bookings').insert(payload).select('id, payment_status, admin_price_eur, deposit_percent').single()
+
+  let payload = row
+  let { data: inserted, error } = await insertBooking(payload)
+  if (error && /booking_source|portal_invoice|check constraint/i.test(error.message)) {
+    payload = { ...payload, booking_source: 'client_dashboard' }
+    const retrySource = await insertBooking(payload)
+    inserted = retrySource.data
+    error = retrySource.error
+  }
+  if (error && /payment_source|amount_received_eur/i.test(error.message)) {
+    const { payment_source: _source, amount_received_eur: _amount, ...withoutPaymentColumns } = payload
+    const retryColumns = await insertBooking({ ...withoutPaymentColumns, booking_source: 'client_dashboard' })
+    inserted = retryColumns.data
+    error = retryColumns.error
+  }
   if (error || !inserted?.id) {
     console.error('[portal-invoice-transfer-sync] create booking', error?.message)
     return null

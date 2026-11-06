@@ -12,6 +12,7 @@ import {
 } from '../lib/package-build'
 import type { PortalInterestTicketMessageRow } from '../lib/portal-interest-tickets'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
+import { adminMailRequest } from '../lib/admin-mail-api'
 
 export type AdminEnquiryCardRow = {
   id: string
@@ -161,6 +162,23 @@ type AdminEnquiryCardQueueProps = {
   readonly onEmailCustomer?: (row: AdminEnquiryCardRow) => void
 }
 
+type ContactChannel = 'email' | 'form' | 'portal'
+
+type ContactItem = {
+  id: string
+  channel: ContactChannel
+  title: string
+  detail: string
+  at: string | null
+  who: string
+}
+
+const CONTACT_CHANNEL_LABEL: Record<ContactChannel, string> = {
+  email: 'Direct email',
+  form: 'Website form',
+  portal: 'Portal'
+}
+
 const formatWhen = (iso: string) => {
   try {
     return new Intl.DateTimeFormat('en-IE', {
@@ -192,6 +210,10 @@ export function AdminEnquiryCardQueue({
   const [noteById, setNoteById] = useState<Record<string, string | null>>({})
   const [messageById, setMessageById] = useState<Record<string, string>>({})
   const [threadById, setThreadById] = useState<Record<string, PortalInterestTicketMessageRow[]>>({})
+  const [contactsById, setContactsById] = useState<Record<string, ContactItem[]>>({})
+  const [contactsNoteById, setContactsNoteById] = useState<Record<string, string | null>>({})
+  const [contactsErrorById, setContactsErrorById] = useState<Record<string, string | null>>({})
+  const [contactsLoadingId, setContactsLoadingId] = useState<string | null>(null)
   const [transfersByRef, setTransfersByRef] = useState<Record<string, TransferSnap>>({})
   const [invoicesByEnquiry, setInvoicesByEnquiry] = useState<Record<string, InvoiceSnap>>({})
 
@@ -297,6 +319,35 @@ export function AdminEnquiryCardQueue({
       .eq('ticket_id', ticketId)
       .order('created_at', { ascending: true })
     setThreadById((prev) => ({ ...prev, [row.id]: (msgs ?? []) as PortalInterestTicketMessageRow[] }))
+  }
+
+  const loadContacts = async (row: AdminEnquiryCardRow) => {
+    if (!accessToken) {
+      setContactsErrorById((prev) => ({ ...prev, [row.id]: 'Sign in again to load how this guest got in touch.' }))
+      return
+    }
+    setContactsLoadingId(row.id)
+    setContactsErrorById((prev) => ({ ...prev, [row.id]: null }))
+    try {
+      const data = await adminMailRequest<{
+        items?: ContactItem[]
+        gmailNote?: string | null
+      }>(accessToken, {
+        action: 'customer-correspondence',
+        email: row.email,
+        reference: row.reference_id
+      })
+      setContactsById((prev) => ({ ...prev, [row.id]: Array.isArray(data.items) ? data.items : [] }))
+      setContactsNoteById((prev) => ({ ...prev, [row.id]: data.gmailNote?.trim() || null }))
+    } catch (e) {
+      setContactsById((prev) => ({ ...prev, [row.id]: [] }))
+      setContactsErrorById((prev) => ({
+        ...prev,
+        [row.id]: e instanceof Error ? e.message : 'Could not load messages.'
+      }))
+    } finally {
+      setContactsLoadingId((current) => (current === row.id ? null : current))
+    }
   }
 
   const sendPrice = async (row: AdminEnquiryCardRow, mode: 'deposit' | 'full') => {
@@ -416,7 +467,9 @@ export function AdminEnquiryCardQueue({
             <header className="border-b border-forest-50 bg-gradient-to-br from-fairway-50/90 to-white px-5 py-5 sm:px-7">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                 <div className="min-w-0">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-700">Website form</p>
+                  <span className="inline-flex rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-950">
+                    Website form
+                  </span>
                   <h3 className="font-display mt-1 text-xl font-semibold text-forest-950 sm:text-2xl">
                     {row.full_name}
                   </h3>
@@ -440,8 +493,12 @@ export function AdminEnquiryCardQueue({
                     className="!px-4 !py-2 !text-xs"
                     onClick={() => {
                       onOpen(row)
+                      const opening = expandedId !== row.id
                       setExpandedId((id) => (id === row.id ? null : row.id))
-                      void loadThread(row)
+                      if (opening) {
+                        void loadThread(row)
+                        void loadContacts(row)
+                      }
                     }}
                     type="button"
                     variant="primary"
@@ -657,6 +714,62 @@ export function AdminEnquiryCardQueue({
                   priceEurInput={priceById[row.id] ?? ''}
                   row={row}
                 />
+
+                <section className="rounded-[1.5rem] border border-forest-100 bg-white px-4 py-5 sm:px-5">
+                  <h4 className="font-display text-lg font-semibold text-forest-950">How they got in touch</h4>
+                  <p className="mt-1 text-sm leading-relaxed text-forest-700">
+                    Each note says whether it was a direct email, a website form, or the client portal.
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold">
+                    <span className="rounded-full bg-forest-900 px-2.5 py-1 text-white">Direct email</span>
+                    <span className="rounded-full bg-amber-100 px-2.5 py-1 text-amber-950">Website form</span>
+                    <span className="rounded-full bg-fairway-50 px-2.5 py-1 text-forest-950 ring-1 ring-forest-200">Portal</span>
+                  </div>
+                  {contactsLoadingId === row.id ? (
+                    <p className="mt-4 text-sm text-forest-700">Loading messages…</p>
+                  ) : null}
+                  {contactsErrorById[row.id] ? (
+                    <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-900" role="alert">
+                      {contactsErrorById[row.id]}
+                    </p>
+                  ) : null}
+                  {contactsNoteById[row.id] ? (
+                    <p className="mt-3 text-sm leading-relaxed text-forest-700">{contactsNoteById[row.id]}</p>
+                  ) : null}
+                  {contactsLoadingId !== row.id && !contactsErrorById[row.id] && (contactsById[row.id]?.length ?? 0) === 0 ? (
+                    <p className="mt-4 text-sm text-forest-700">No emails, forms, or portal tickets for this guest yet.</p>
+                  ) : null}
+                  {(contactsById[row.id]?.length ?? 0) > 0 ? (
+                    <ul className="mt-4 space-y-2">
+                      {(contactsById[row.id] ?? []).map((item) => (
+                        <li className="rounded-xl border border-forest-100 bg-offwhite px-4 py-3" key={item.id}>
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <span
+                              className={cx(
+                                'rounded-full px-2.5 py-0.5 text-xs font-semibold',
+                                item.channel === 'email' && 'bg-forest-900 text-white',
+                                item.channel === 'form' && 'bg-amber-100 text-amber-950',
+                                item.channel === 'portal' && 'bg-fairway-50 text-forest-950 ring-1 ring-forest-200'
+                              )}
+                            >
+                              {CONTACT_CHANNEL_LABEL[item.channel] ?? item.who}
+                            </span>
+                            <span className="text-xs text-forest-600">{item.at ? formatWhen(item.at) : ''}</span>
+                          </div>
+                          <p className="mt-2 font-semibold text-forest-950">{item.title}</p>
+                          {item.who && item.who !== CONTACT_CHANNEL_LABEL[item.channel] ? (
+                            <p className="mt-0.5 text-xs font-semibold uppercase tracking-[0.08em] text-forest-600">
+                              {item.who}
+                            </p>
+                          ) : null}
+                          {item.detail ? (
+                            <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-forest-800">{item.detail}</p>
+                          ) : null}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </section>
 
                 <section className="rounded-[1.5rem] border border-forest-100 bg-offwhite/80 px-4 py-5 sm:px-5">
                   <div className="flex items-start gap-3">
