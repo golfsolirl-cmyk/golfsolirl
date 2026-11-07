@@ -5,6 +5,7 @@ import { sendBookingEmailHtml, sendTransferPaymentCustomerEmails } from './trans
 import { balanceDueReminderIso } from './transfer-payment-amounts.mjs'
 import { notifyClientPortalTransferPayment } from './portal-transfer-payment-notify.mjs'
 import { publishTransferAdminPricePortalPdfs } from './transfer-portal-publish-admin-price-pdfs.mjs'
+import { isMissingPaymentLedgerColumnError, omitPaymentLedgerColumns } from './transfer-payment-column-fallback.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
   const e = new Error(message)
@@ -195,37 +196,39 @@ export const handlePackageBuildAdminPublish = async (body, env = process.env, me
     throwStatus('Package insert returned no row.', 500)
   }
 
-  const { data: tbRow, error: tbErr } = await admin
-    .from('transfer_bookings')
-    .insert({
-      client_user_id: prof.id,
-      client_email: clientEmailNorm,
-      client_display_name: displayName,
-      client_phone: phone,
-      pickup_label: pickupLabel,
-      dropoff_label: dropoffLabel,
-      pickup_lat: null,
-      pickup_lng: null,
-      dropoff_lat: null,
-      dropoff_lng: null,
-      scheduled_at: null,
-      client_timing_note: timingNote,
-      next_available_driver: false,
-      status: 'pending',
-      package_build_id: inserted.id,
-      booking_source: 'admin_package_quote',
-      enquiry_reference_id: null,
-      admin_price_eur: priceRounded,
-      admin_price_vat_treatment: 'tourism',
-      payment_status: payStatus,
-      payment_source: payStatus === 'unpaid' ? null : 'manual',
-      amount_received_eur: amountReceived,
-      deposit_percent: depositPercent,
-      balance_remind_at: payStatus === 'deposit' ? balanceDueReminderIso(null) : null,
-      updated_at: now
-    })
-    .select('id')
-    .single()
+  const transferInsert = {
+    client_user_id: prof.id,
+    client_email: clientEmailNorm,
+    client_display_name: displayName,
+    client_phone: phone,
+    pickup_label: pickupLabel,
+    dropoff_label: dropoffLabel,
+    pickup_lat: null,
+    pickup_lng: null,
+    dropoff_lat: null,
+    dropoff_lng: null,
+    scheduled_at: null,
+    client_timing_note: timingNote,
+    next_available_driver: false,
+    status: 'pending',
+    package_build_id: inserted.id,
+    booking_source: 'admin_package_quote',
+    enquiry_reference_id: null,
+    admin_price_eur: priceRounded,
+    admin_price_vat_treatment: 'tourism',
+    payment_status: payStatus,
+    payment_source: payStatus === 'unpaid' ? null : 'manual',
+    amount_received_eur: amountReceived,
+    deposit_percent: depositPercent,
+    balance_remind_at: payStatus === 'deposit' ? balanceDueReminderIso(null) : null,
+    updated_at: now
+  }
+  let { data: tbRow, error: tbErr } = await admin.from('transfer_bookings').insert(transferInsert).select('id').single()
+  if (tbErr && isMissingPaymentLedgerColumnError(tbErr)) {
+    const retry = await admin.from('transfer_bookings').insert(omitPaymentLedgerColumns(transferInsert)).select('id').single()
+    tbRow = retry.data
+    tbErr = retry.error
+  }
 
   if (tbErr) {
     await admin.from('package_builds').delete().eq('id', inserted.id)

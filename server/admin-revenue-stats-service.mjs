@@ -4,6 +4,7 @@ import {
   estimateCollectedEurForBooking,
   syncTripPassForEnquiryReference
 } from './portal-invoice-transfer-sync.mjs'
+import { isMissingPaymentLedgerColumnError, omitPaymentLedgerSelect } from './transfer-payment-column-fallback.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
   const err = new Error(message)
@@ -59,35 +60,43 @@ export const handleAdminRevenueStats = async (body, env = process.env, meta = {}
   const limitRaw = body?.limit
   const limit = typeof limitRaw === 'number' && limitRaw > 0 ? Math.min(limitRaw, 200) : 80
 
-  const [{ data: transfers, error: tErr }, { data: stripeMarkedUnpaid, error: uErr }, { data: invoices, error: iErr }] =
-    await Promise.all([
+  const transferColumns =
+    'id, pickup_label, dropoff_label, payment_status, payment_source, amount_received_eur, admin_price_eur, deposit_percent, enquiry_reference_id, client_email, client_display_name, updated_at, created_at, stripe_payment_intent_id'
+
+  const loadTransferLists = (columns) =>
+    Promise.all([
       supabase
         .from('transfer_bookings')
-        .select(
-          'id, pickup_label, dropoff_label, payment_status, payment_source, amount_received_eur, admin_price_eur, deposit_percent, enquiry_reference_id, client_email, client_display_name, updated_at, created_at, stripe_payment_intent_id'
-        )
+        .select(columns)
         .in('payment_status', ['deposit', 'paid'])
         .order('updated_at', { ascending: false })
         .limit(limit),
       supabase
         .from('transfer_bookings')
-        .select(
-          'id, pickup_label, dropoff_label, payment_status, payment_source, amount_received_eur, admin_price_eur, deposit_percent, enquiry_reference_id, client_email, client_display_name, updated_at, created_at, stripe_payment_intent_id'
-        )
+        .select(columns)
         .eq('payment_status', 'unpaid')
         .not('stripe_payment_intent_id', 'is', null)
         .gt('admin_price_eur', 0)
         .order('updated_at', { ascending: false })
-        .limit(limit),
-      supabase
-        .from('portal_invoices')
-        .select(
-          'id, invoice_number, enquiry_reference_id, amount_cents, status, paid_at, profile_id, stripe_payment_intent_id'
-        )
-        .or('status.eq.paid,paid_at.not.is.null')
-        .order('paid_at', { ascending: false, nullsFirst: false })
         .limit(limit)
     ])
+
+  let [paidList, unmarkedList] = await loadTransferLists(transferColumns)
+  if (isMissingPaymentLedgerColumnError(paidList.error) || isMissingPaymentLedgerColumnError(unmarkedList.error)) {
+    ;[paidList, unmarkedList] = await loadTransferLists(omitPaymentLedgerSelect(transferColumns))
+  }
+
+  const { data: invoices, error: iErr } = await supabase
+    .from('portal_invoices')
+    .select('id, invoice_number, enquiry_reference_id, amount_cents, status, paid_at, profile_id, stripe_payment_intent_id')
+    .or('status.eq.paid,paid_at.not.is.null')
+    .order('paid_at', { ascending: false, nullsFirst: false })
+    .limit(limit)
+
+  const transfers = paidList.data
+  const tErr = paidList.error
+  const stripeMarkedUnpaid = unmarkedList.data
+  const uErr = unmarkedList.error
 
   if (tErr) {
     throwStatus(tErr.message, 500)

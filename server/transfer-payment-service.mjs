@@ -9,6 +9,7 @@ import {
   sendTransferPaymentCustomerEmails
 } from './transfer-payment-customer-email.mjs'
 import { notifyClientPortalTransferPayment } from './portal-transfer-payment-notify.mjs'
+import { writeTransferPaymentPatch } from './transfer-payment-column-fallback.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
   const e = new Error(message)
@@ -336,7 +337,10 @@ export const handleTransferPaymentAdmin = async (body, env = process.env, meta =
     patch.balance_remind_sent_at = null
   }
 
-  const { error: uErr } = await admin.from('transfer_bookings').update(patch).eq('id', bookingId)
+  const { error: uErr } = await writeTransferPaymentPatch(
+    (body) => admin.from('transfer_bookings').update(body).eq('id', bookingId),
+    patch
+  )
   if (uErr) {
     throwStatus(uErr.message, 500)
   }

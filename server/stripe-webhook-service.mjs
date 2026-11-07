@@ -15,6 +15,7 @@ import {
   sendPortalInvoicePaidCustomerEmail,
   sendTransferPaymentCustomerEmails
 } from './transfer-payment-customer-email.mjs'
+import { writeTransferPaymentPatch } from './transfer-payment-column-fallback.mjs'
 
 
 
@@ -162,9 +163,16 @@ export const markTransferBookingPaid = async (supabase, bookingId, session, paym
       depositFromStripe != null && depositFromStripe > 0
         ? Math.round(depositFromStripe * 100) / 100
         : Math.round(depositFallback * 100) / 100
-    const { error, data } = await supabase
-      .from('transfer_bookings')
-      .update({
+    const { error, data } = await writeTransferPaymentPatch(
+      (patch) =>
+        supabase
+          .from('transfer_bookings')
+          .update(patch)
+          .eq('id', bookingId)
+          .eq('payment_status', 'unpaid')
+          .select('id')
+          .maybeSingle(),
+      {
         payment_status: 'deposit',
         payment_source: 'stripe',
         amount_received_eur: depositReceived > 0 ? depositReceived : null,
@@ -173,11 +181,8 @@ export const markTransferBookingPaid = async (supabase, bookingId, session, paym
         updated_at: now,
         stripe_payment_intent_id: paymentIntent ?? null,
         stripe_checkout_session_id: sessionId
-      })
-      .eq('id', bookingId)
-      .eq('payment_status', 'unpaid')
-      .select('id')
-      .maybeSingle()
+      }
+    )
 
     if (error) {
       const err = new Error(error.message)
@@ -260,12 +265,13 @@ export const markTransferBookingPaid = async (supabase, bookingId, session, paym
     stripe_checkout_session_id: sessionId
   }
 
-  const q =
-    kind === 'balance'
-      ? supabase.from('transfer_bookings').update(paidPatch).eq('id', bookingId).eq('payment_status', 'deposit')
-      : supabase.from('transfer_bookings').update(paidPatch).eq('id', bookingId).in('payment_status', ['unpaid', 'deposit'])
-
-  const { error, data } = await q.select('id').maybeSingle()
+  const { error, data } = await writeTransferPaymentPatch((patch) => {
+    const q =
+      kind === 'balance'
+        ? supabase.from('transfer_bookings').update(patch).eq('id', bookingId).eq('payment_status', 'deposit')
+        : supabase.from('transfer_bookings').update(patch).eq('id', bookingId).in('payment_status', ['unpaid', 'deposit'])
+    return q.select('id').maybeSingle()
+  }, paidPatch)
 
   if (error) {
     const err = new Error(error.message)
