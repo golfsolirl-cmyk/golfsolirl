@@ -3,6 +3,7 @@
  */
 import { readEnquiryFormFields } from '../shared/client-enquiry-document.mjs'
 import { createTransferPaymentReceiptPdf } from './transfer-portal-pdf-bundle.mjs'
+import { isMissingPaymentLedgerColumnError, omitPaymentLedgerSelect } from './transfer-payment-column-fallback.mjs'
 
 const bucketId = 'client-portal-pdfs'
 
@@ -82,13 +83,17 @@ export const loadPaymentTripRows = async (admin, booking) => {
  * @param {{ receiptKind: 'deposit' | 'paid_in_full'; amountEur: number; channel?: 'stripe' | 'manual'; stripeSessionId?: string | null; stripePaymentIntentId?: string | null }} detail
  */
 export const publishTransferPortalPaymentReceipt = async (admin, bookingId, detail) => {
-  const { data: booking, error: bErr } = await admin
-    .from('transfer_bookings')
-    .select(
-      'id, client_user_id, client_email, pickup_label, dropoff_label, scheduled_at, admin_price_eur, deposit_percent, payment_status, payment_source, package_build_id, enquiry_reference_id'
-    )
-    .eq('id', bookingId)
-    .maybeSingle()
+  const bookingColumns =
+    'id, client_user_id, client_email, pickup_label, dropoff_label, scheduled_at, admin_price_eur, deposit_percent, payment_status, payment_source, package_build_id, enquiry_reference_id'
+  let bookingResult = await admin.from('transfer_bookings').select(bookingColumns).eq('id', bookingId).maybeSingle()
+  if (isMissingPaymentLedgerColumnError(bookingResult.error)) {
+    bookingResult = await admin
+      .from('transfer_bookings')
+      .select(omitPaymentLedgerSelect(bookingColumns))
+      .eq('id', bookingId)
+      .maybeSingle()
+  }
+  const { data: booking, error: bErr } = bookingResult
 
   if (bErr || !booking) {
     console.error('[transfer-portal-payment-pdf] booking', bErr?.message ?? 'missing')

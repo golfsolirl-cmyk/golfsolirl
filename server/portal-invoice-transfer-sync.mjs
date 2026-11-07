@@ -1,6 +1,8 @@
 import { depositAmountEur, normalizedDepositPercent } from './transfer-payment-amounts.mjs'
 import { notifyClientPortalTransferPayment } from './portal-transfer-payment-notify.mjs'
 import { publishTransferPortalPaymentReceipt } from './transfer-portal-publish-payment-pdf.mjs'
+import { isMissingPaymentLedgerColumnError, omitPaymentLedgerSelect } from './transfer-payment-column-fallback.mjs'
+import { recordedEurAfterPortalInvoicePayment } from './portal-invoice-received-eur.mjs'
 
 /**
  * When a portal invoice is paid, activate the client trip pass by marking the linked
@@ -73,12 +75,7 @@ export const syncTransferBookingFromPaidPortalInvoice = async (supabase, invoice
   }
 
   const now = new Date().toISOString()
-  const recordedEur =
-    amountEur != null && amountEur > 0
-      ? amountEur
-      : Number(booking.admin_price_eur) > 0
-        ? Number(booking.admin_price_eur)
-        : null
+  const recordedEur = recordedEurAfterPortalInvoicePayment(booking, amountEur)
   const patch = {
     payment_status: 'paid',
     payment_source: 'stripe',
@@ -180,28 +177,43 @@ export const syncTransferBookingFromPaidPortalInvoice = async (supabase, invoice
  * @param {import('@supabase/supabase-js').SupabaseClient} supabase
  * @param {{ ref: string, profileId: string, enquiryId?: string | null }} keys
  */
+const TRANSFER_MATCH_COLUMNS =
+  'id, payment_status, admin_price_eur, deposit_percent, client_user_id, enquiry_reference_id, amount_received_eur'
+
+const loadTransferMatch = async (run) => {
+  const first = await run(TRANSFER_MATCH_COLUMNS)
+  if (first?.error && isMissingPaymentLedgerColumnError(first.error)) {
+    return run(omitPaymentLedgerSelect(TRANSFER_MATCH_COLUMNS))
+  }
+  return first
+}
+
 const findTransferBookingForInvoice = async (supabase, { ref, profileId, enquiryId }) => {
   if (ref) {
-    const { data: byRef } = await supabase
-      .from('transfer_bookings')
-      .select('id, payment_status, admin_price_eur, deposit_percent, client_user_id, enquiry_reference_id')
-      .ilike('enquiry_reference_id', ref)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle()
+    const { data: byRef } = await loadTransferMatch((columns) =>
+      supabase
+        .from('transfer_bookings')
+        .select(columns)
+        .ilike('enquiry_reference_id', ref)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+    )
     if (byRef?.id) {
       return byRef
     }
   }
 
   if (profileId) {
-    const { data: byProfile } = await supabase
-      .from('transfer_bookings')
-      .select('id, payment_status, admin_price_eur, deposit_percent, client_user_id, enquiry_reference_id')
-      .eq('client_user_id', profileId)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle()
+    const { data: byProfile } = await loadTransferMatch((columns) =>
+      supabase
+        .from('transfer_bookings')
+        .select(columns)
+        .eq('client_user_id', profileId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+    )
     if (byProfile?.id) {
       return byProfile
     }
@@ -215,13 +227,15 @@ const findTransferBookingForInvoice = async (supabase, { ref, profileId, enquiry
       .maybeSingle()
     const enquiryRef = typeof enquiry?.reference_id === 'string' ? enquiry.reference_id.trim() : ''
     if (enquiryRef) {
-      const { data: byEnquiryRef } = await supabase
-        .from('transfer_bookings')
-        .select('id, payment_status, admin_price_eur, deposit_percent, client_user_id, enquiry_reference_id')
-        .ilike('enquiry_reference_id', enquiryRef)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle()
+      const { data: byEnquiryRef } = await loadTransferMatch((columns) =>
+        supabase
+          .from('transfer_bookings')
+          .select(columns)
+          .ilike('enquiry_reference_id', enquiryRef)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle()
+      )
       if (byEnquiryRef?.id) {
         return byEnquiryRef
       }
