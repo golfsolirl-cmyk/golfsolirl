@@ -2,11 +2,14 @@
  * After a branded admin email: one account number per recipient, a portal inbox row,
  * and a Stripe payment on their dashboard when the quote includes a price.
  */
-import Stripe from 'stripe'
 import { ensureEmailAccountAnchor } from './email-address-registry.mjs'
 import { quotePayableEuros } from '../shared/admin-mail-quotation.mjs'
 
 const normalizeEmail = (value) => (typeof value === 'string' ? value.trim().toLowerCase() : '')
+
+/** Literal ILIKE pattern. `_` and `%` in an address must not match a different customer. */
+export const ilikeExactPattern = (value) =>
+  String(value ?? '').replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_')
 
 const getCheckoutReturnOrigin = (env) => {
   const raw = env.TRANSFER_CHECKOUT_ORIGIN?.trim() || env.TRANSFER_CHECKOUT_SITE_URL?.trim() || env.SITE_URL?.trim()
@@ -26,7 +29,7 @@ const ensureProfile = async (admin, email, fullName, accountRef) => {
   const { data: existing, error } = await admin
     .from('profiles')
     .select('id, email, full_name, account_reference_id')
-    .ilike('email', email)
+    .ilike('email', ilikeExactPattern(email))
     .maybeSingle()
   if (error) {
     return { profileId: null, accountReferenceId: accountRef, note: 'Could not look up their portal account.' }
@@ -89,10 +92,10 @@ const logPortalUpdate = async (admin, profileId, { subject, summary, templateId 
 const openPortalPayment = async (admin, env, { profileId, email, fullName, accountRef, enquiryId, amountEur, sentBy }) => {
   const stripeKey = env.STRIPE_SECRET_KEY?.trim()
   if (!stripeKey) {
-    return { checkoutUrl: null, note: 'Price noted. Set STRIPE_SECRET_KEY to open the portal payment link.' }
+    return { checkoutUrl: null, invoiceId: null, note: 'Price noted. Set STRIPE_SECRET_KEY to open the portal payment link.' }
   }
   const amountCents = Math.round(Number(amountEur) * 100)
-  if (amountCents < 50) return { checkoutUrl: null, note: '' }
+  if (amountCents < 50) return { checkoutUrl: null, invoiceId: null, note: '' }
 
   const enquiryReferenceId = accountRef || 'GMAIL'
   const invoiceNumber = `INV-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`
@@ -112,10 +115,11 @@ const openPortalPayment = async (admin, env, { profileId, email, fullName, accou
     .single()
   if (insErr || !inserted?.id) {
     console.error('[branded-mail-portal] invoice', insErr?.message)
-    return { checkoutUrl: null, note: 'Account assigned. The portal payment could not be opened.' }
+    return { checkoutUrl: null, invoiceId: null, note: 'Account assigned. The portal payment could not be opened.' }
   }
 
   const origin = getCheckoutReturnOrigin(env)
+  const { default: Stripe } = await import('stripe')
   const stripe = new Stripe(stripeKey)
   try {
     const session = await stripe.checkout.sessions.create({
@@ -141,7 +145,7 @@ const openPortalPayment = async (admin, env, { profileId, email, fullName, accou
     })
     if (!session.url || !session.id) {
       await admin.from('portal_invoices').delete().eq('id', inserted.id)
-      return { checkoutUrl: null, note: 'Account assigned. Stripe did not return a payment link.' }
+      return { checkoutUrl: null, invoiceId: null, note: 'Account assigned. Stripe did not return a payment link.' }
     }
     const { error: upErr } = await admin
       .from('portal_invoices')
@@ -149,13 +153,13 @@ const openPortalPayment = async (admin, env, { profileId, email, fullName, accou
       .eq('id', inserted.id)
     if (upErr) {
       await admin.from('portal_invoices').delete().eq('id', inserted.id)
-      return { checkoutUrl: null, note: 'Account assigned. The payment link could not be saved.' }
+      return { checkoutUrl: null, invoiceId: null, note: 'Account assigned. The payment link could not be saved.' }
     }
-    return { checkoutUrl: session.url, invoiceNumber, note: '' }
+    return { checkoutUrl: session.url, invoiceNumber, invoiceId: inserted.id, note: '' }
   } catch (error) {
     await admin.from('portal_invoices').delete().eq('id', inserted.id)
     console.error('[branded-mail-portal] stripe', error instanceof Error ? error.message : error)
-    return { checkoutUrl: null, note: 'Account assigned. The payment link could not be created.' }
+    return { checkoutUrl: null, invoiceId: null, note: 'Account assigned. The payment link could not be created.' }
   }
 }
 
@@ -176,7 +180,7 @@ const openPortalPayment = async (admin, env, { profileId, email, fullName, accou
  */
 export const assignBrandedMailPortal = async (admin, env, input) => {
   const email = normalizeEmail(input.email)
-  const empty = { accountReferenceId: null, checkoutUrl: null, portalNote: '', profileId: null }
+  const empty = { accountReferenceId: null, checkoutUrl: null, portalNote: '', profileId: null, invoiceId: null }
   if (!email.includes('@')) return empty
 
   try {
@@ -203,6 +207,7 @@ export const assignBrandedMailPortal = async (admin, env, input) => {
     }
 
     let checkoutUrl = null
+    let invoiceId = null
     const amount = quotePayableEuros(input.quotation)
     const wantPayment = input.openPayment !== false && amount >= 0.5
     if (wantPayment && profile.profileId) {
@@ -216,6 +221,7 @@ export const assignBrandedMailPortal = async (admin, env, input) => {
         sentBy: input.sentBy
       })
       checkoutUrl = payment.checkoutUrl
+      invoiceId = payment.invoiceId || null
       if (payment.note) notes.push(payment.note)
     } else if (wantPayment && !profile.profileId) {
       notes.push('Price was not opened on the portal because their account could not be created.')
@@ -225,7 +231,8 @@ export const assignBrandedMailPortal = async (admin, env, input) => {
       accountReferenceId: profile.accountReferenceId || accountRef,
       checkoutUrl,
       portalNote: notes.filter(Boolean).join(' '),
-      profileId: profile.profileId
+      profileId: profile.profileId,
+      invoiceId
     }
   } catch (error) {
     console.error('[branded-mail-portal]', error instanceof Error ? error.message : error)
