@@ -57,6 +57,23 @@ export const balanceDueReminderIso = (scheduledAtIso) => {
 
 const round2 = (n) => Math.round(n * 100) / 100
 
+/**
+ * Money field on an admin payment update.
+ * Blank and missing values are omitted. `Number('')` is 0, so treating a missing
+ * field as zero makes the account-hub and trip-workspace deposit/paid buttons
+ * (they send no total) fail with "Enter the trip total".
+ *
+ * @param {unknown} raw
+ * @returns {number | null | 'invalid'}
+ */
+export const parseOptionalEur = (raw) => {
+  if (raw == null) return null
+  if (typeof raw === 'string' && raw.trim() === '') return null
+  const n = typeof raw === 'number' ? raw : Number(String(raw).replace(/,/g, '').trim())
+  if (!Number.isFinite(n) || n < 0) return 'invalid'
+  return round2(n)
+}
+
 /** pct of gross (e.g. 20 → 20% of gross in EUR). */
 export const depositAmountEur = (gross, pct) => round2((gross * pct) / 100)
 

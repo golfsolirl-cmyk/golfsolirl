@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { requireAdminFromBearer } from './auth-verify-admin.mjs'
 import { buildTransferBalanceReminderEmail, buildTransferPaymentRequestEmail } from './branded-transfer-payment-email.mjs'
 import { publishTransferAdminPricePortalPdfs } from './transfer-portal-publish-admin-price-pdfs.mjs'
-import { balanceDueReminderIso } from './transfer-payment-amounts.mjs'
+import { balanceDueReminderIso, parseOptionalEur } from './transfer-payment-amounts.mjs'
 import {
   resolveClientEmail,
   sendBookingEmailHtml,
@@ -255,13 +255,15 @@ export const handleTransferPaymentAdmin = async (body, env = process.env, meta =
     throwStatus('Booking not found.', 404)
   }
 
-  const parseMoney = (raw) => {
-    const n = typeof raw === 'number' ? raw : Number(String(raw ?? '').replace(/,/g, '').trim())
-    if (!Number.isFinite(n) || n < 0) return null
-    return Math.round(n * 100) / 100
+  const readMoney = (raw) => {
+    const parsed = parseOptionalEur(raw)
+    if (parsed === 'invalid') {
+      throwStatus('Enter an amount in euros.', 400)
+    }
+    return parsed
   }
-  const totalEur = parseMoney(body?.totalEur)
-  const receivedEur = parseMoney(body?.amountReceivedEur)
+  const totalEur = readMoney(body?.totalEur)
+  const receivedEur = readMoney(body?.amountReceivedEur)
   const manualAmounts = totalEur != null || receivedEur != null
 
   if (manualAmounts && (nextStatus === 'deposit' || nextStatus === 'paid')) {
