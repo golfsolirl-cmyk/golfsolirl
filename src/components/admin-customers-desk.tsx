@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useId, useMemo, useState } from 'react'
 import { LuxuryButton } from './ui/button'
 import { cx } from '../lib/utils'
 
@@ -51,6 +51,32 @@ type PaymentRow = {
   created_at: string
 }
 
+type DeskLine = {
+  id: string
+  service: 'transfer' | 'golf' | 'accommodation' | 'other'
+  detail: string
+  when: string
+  quantity: string
+}
+
+type DeskTrip = {
+  golfers: string
+  guests: string
+  dateFrom: string
+  dateTo: string
+  pickup: string
+  dropoff: string
+  transferWhen: string
+  transferNotes: string
+  courses: string
+  rounds: string
+  golfNotes: string
+  hotel: string
+  nights: string
+  stayNotes: string
+  lines?: DeskLine[]
+}
+
 type DocumentRow = {
   id: string
   kind: string
@@ -59,6 +85,41 @@ type DocumentRow = {
   amount_cents: number
   status: string
   created_at: string
+  trip_details?: DeskTrip | null
+}
+
+const emptyTrip = (): DeskTrip => ({
+  golfers: '',
+  guests: '',
+  dateFrom: '',
+  dateTo: '',
+  pickup: '',
+  dropoff: '',
+  transferWhen: '',
+  transferNotes: '',
+  courses: '',
+  rounds: '',
+  golfNotes: '',
+  hotel: '',
+  nights: '',
+  stayNotes: ''
+})
+
+const newLine = (): DeskLine => ({
+  id: `line-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
+  service: 'transfer',
+  detail: '',
+  when: '',
+  quantity: ''
+})
+
+const tripSnippet = (trip: DeskTrip | null | undefined) => {
+  if (!trip) return ''
+  const golfers = String(trip.golfers || '').trim()
+  const from = String(trip.dateFrom || '').trim()
+  const to = String(trip.dateTo || '').trim()
+  const dates = from && to ? `${from} to ${to}` : from || to
+  return [golfers ? `${golfers} golfers` : '', dates].filter(Boolean).join(' · ')
 }
 
 type Detail = {
@@ -112,6 +173,8 @@ export function AdminCustomersDesk(props: {
   const [amount, setAmount] = useState('')
   const [summary, setSummary] = useState('')
   const [subject, setSubject] = useState('')
+  const [trip, setTrip] = useState<DeskTrip>(emptyTrip)
+  const [lines, setLines] = useState<DeskLine[]>([])
   const [busy, setBusy] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
@@ -159,6 +222,8 @@ export function AdminCustomersDesk(props: {
     setTab(props.seed.tab || 'overview')
     setName(props.seed.name || '')
     setPhone(props.seed.phone || '')
+    setTrip(emptyTrip())
+    setLines([])
     setNotice(null)
     setError(null)
     props.onSeedConsumed?.()
@@ -194,7 +259,19 @@ export function AdminCustomersDesk(props: {
         title,
         summary,
         subject,
-        amountEur: amount
+        amountEur: amount,
+        trip:
+          action === 'send-note'
+            ? undefined
+            : {
+                ...trip,
+                lines: lines.map(({ service, detail, when: lineWhen, quantity }) => ({
+                  service,
+                  detail,
+                  when: lineWhen,
+                  quantity
+                }))
+              }
       })
       setNotice(data.message)
       setSummary('')
@@ -245,6 +322,8 @@ export function AdminCustomersDesk(props: {
                     setSelectedEmail(row.email)
                     setName(row.name)
                     setPhone(row.phone)
+                    setTrip(emptyTrip())
+                    setLines([])
                     setTab('overview')
                     setNotice(null)
                     setError(null)
@@ -321,7 +400,9 @@ export function AdminCustomersDesk(props: {
                   rows={(detail?.documents ?? []).map((row) => ({
                     id: row.id,
                     title: `${row.kind === 'invoice' ? 'Invoice' : row.kind === 'note' ? 'Email' : 'Quote'} · ${row.reference_code}`,
-                    meta: `${row.title} · ${row.amount_cents ? eur(row.amount_cents) : 'No price'} · ${row.status} · ${when(row.created_at)}`
+                    meta: [row.title, tripSnippet(row.trip_details), row.amount_cents ? eur(row.amount_cents) : 'No price', row.status, when(row.created_at)]
+                      .filter(Boolean)
+                      .join(' · ')
                   }))}
                   title="Quotes, invoices, and emails"
                 />
@@ -365,9 +446,9 @@ export function AdminCustomersDesk(props: {
               >
                 <p className="text-base leading-relaxed text-forest-800">
                   {tab === 'quote'
-                    ? 'They get a PDF quote with Accept and Decline. Accept emails them a Pay now button. Decline emails a seven-day price hold and a WhatsApp reply.'
+                    ? 'They get a PDF quote with Accept and Decline. Add the golfers, dates, transfers, courses, and stay — those lines go on the PDF and in the email. Accept emails them a Pay now button. Decline emails a seven-day price hold and a WhatsApp reply.'
                     : tab === 'invoice'
-                      ? 'They get a PDF invoice and an email button that opens card payment.'
+                      ? 'They get a PDF invoice and an email button that opens card payment. The booking details below are printed on the PDF and in the email.'
                       : 'A short Golf Sol email. A PDF copy of the note is attached.'}
                 </p>
                 <label className="block text-sm font-bold text-forest-900">
@@ -388,6 +469,12 @@ export function AdminCustomersDesk(props: {
                       Total (EUR)
                       <input className={fieldClass} inputMode="decimal" onChange={(event) => setAmount(event.target.value)} value={amount} />
                     </label>
+                    <BookingDetailsFields
+                      lines={lines}
+                      onLines={setLines}
+                      onTrip={(patch) => setTrip((current) => ({ ...current, ...patch }))}
+                      trip={trip}
+                    />
                   </>
                 ) : (
                   <label className="block text-sm font-bold text-forest-900">
@@ -413,6 +500,189 @@ export function AdminCustomersDesk(props: {
           </>
         )}
       </section>
+    </div>
+  )
+}
+
+function Field(props: {
+  readonly label: string
+  readonly value: string
+  readonly onChange: (value: string) => void
+  readonly type?: string
+  readonly placeholder?: string
+  readonly min?: string
+}) {
+  const id = useId()
+  return (
+    <label className="block text-sm font-bold text-forest-900" htmlFor={id}>
+      {props.label}
+      <input
+        className={fieldClass}
+        id={id}
+        min={props.min}
+        onChange={(event) => props.onChange(event.target.value)}
+        placeholder={props.placeholder}
+        type={props.type || 'text'}
+        value={props.value}
+      />
+    </label>
+  )
+}
+
+function AreaField(props: {
+  readonly label: string
+  readonly value: string
+  readonly onChange: (value: string) => void
+  readonly placeholder?: string
+}) {
+  const id = useId()
+  return (
+    <label className="block text-sm font-bold text-forest-900 sm:col-span-2" htmlFor={id}>
+      {props.label}
+      <textarea
+        className={cx(fieldClass, 'min-h-24')}
+        id={id}
+        onChange={(event) => props.onChange(event.target.value)}
+        placeholder={props.placeholder}
+        value={props.value}
+      />
+    </label>
+  )
+}
+
+function BookingDetailsFields(props: {
+  readonly trip: DeskTrip
+  readonly lines: readonly DeskLine[]
+  readonly onTrip: (patch: Partial<DeskTrip>) => void
+  readonly onLines: (lines: DeskLine[]) => void
+}) {
+  const { trip, lines, onTrip, onLines } = props
+  return (
+    <div className="space-y-5 rounded-[1.5rem] border border-forest-100 bg-[#f7f4ec] p-4 sm:p-5">
+      <div>
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-forest-700">Booking details</p>
+        <p className="mt-1 text-sm leading-relaxed text-forest-800">
+          Same kind of detail a guest puts on a quote form. Blank sections are left off the PDF.
+        </p>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Golfers" min="1" onChange={(value) => onTrip({ golfers: value })} placeholder="8" type="number" value={trip.golfers} />
+        <Field label="Other guests" min="0" onChange={(value) => onTrip({ guests: value })} placeholder="2" type="number" value={trip.guests} />
+        <Field label="Arrival" onChange={(value) => onTrip({ dateFrom: value })} type="date" value={trip.dateFrom} />
+        <Field label="Departure" onChange={(value) => onTrip({ dateTo: value })} type="date" value={trip.dateTo} />
+      </div>
+
+      <div className="space-y-3">
+        <h3 className="font-display text-lg font-semibold text-forest-950">Transfers</h3>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Pickup" onChange={(value) => onTrip({ pickup: value })} placeholder="Málaga Airport, Terminal 3" value={trip.pickup} />
+          <Field label="Drop-off" onChange={(value) => onTrip({ dropoff: value })} placeholder="Hotel Finca Cortesin" value={trip.dropoff} />
+          <Field
+            label="When"
+            onChange={(value) => onTrip({ transferWhen: value })}
+            placeholder="Tue 14 Apr, flight EI582 at 11:40"
+            value={trip.transferWhen}
+          />
+          <AreaField
+            label="Transfer notes"
+            onChange={(value) => onTrip({ transferNotes: value })}
+            placeholder="Return transfer Sunday 10:00. Golf bags. One van."
+            value={trip.transferNotes}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <h3 className="font-display text-lg font-semibold text-forest-950">Golf courses</h3>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Rounds" min="1" onChange={(value) => onTrip({ rounds: value })} placeholder="4" type="number" value={trip.rounds} />
+          <AreaField
+            label="Courses"
+            onChange={(value) => onTrip({ courses: value })}
+            placeholder="Finca Cortesin, Valderrama, Flamingos"
+            value={trip.courses}
+          />
+          <AreaField
+            label="Tee times and notes"
+            onChange={(value) => onTrip({ golfNotes: value })}
+            placeholder="Morning tee times. Buggies for the group."
+            value={trip.golfNotes}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <h3 className="font-display text-lg font-semibold text-forest-950">Accommodation</h3>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Hotel or resort" onChange={(value) => onTrip({ hotel: value })} placeholder="Finca Cortesin, Casares" value={trip.hotel} />
+          <Field label="Nights" min="1" onChange={(value) => onTrip({ nights: value })} placeholder="5" type="number" value={trip.nights} />
+          <AreaField
+            label="Stay notes"
+            onChange={(value) => onTrip({ stayNotes: value })}
+            placeholder="4 twin rooms, bed and breakfast, near the first tee."
+            value={trip.stayNotes}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <h3 className="font-display text-lg font-semibold text-forest-950">More bookings</h3>
+        <p className="text-sm text-forest-800">Add another transfer, round, or stay if this quote covers more than one.</p>
+        {lines.map((line, index) => (
+          <div className="grid gap-3 rounded-2xl border border-forest-100 bg-white p-3 sm:grid-cols-2" key={line.id}>
+            <label className="block text-sm font-bold text-forest-900">
+              Service
+              <select
+                className={fieldClass}
+                onChange={(event) =>
+                  onLines(lines.map((row) => (row.id === line.id ? { ...row, service: event.target.value as DeskLine['service'] } : row)))
+                }
+                value={line.service}
+              >
+                <option value="transfer">Transfer</option>
+                <option value="golf">Golf course</option>
+                <option value="accommodation">Accommodation</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+            <Field
+              label="When"
+              onChange={(value) => onLines(lines.map((row) => (row.id === line.id ? { ...row, when: value } : row)))}
+              placeholder="Wed 15 Apr"
+              value={line.when}
+            />
+            <Field
+              label="What"
+              onChange={(value) => onLines(lines.map((row) => (row.id === line.id ? { ...row, detail: value } : row)))}
+              placeholder={index === 0 ? 'Hotel to Valderrama, 08:00' : 'Course, hotel, or route'}
+              value={line.detail}
+            />
+            <Field
+              label="How many"
+              onChange={(value) => onLines(lines.map((row) => (row.id === line.id ? { ...row, quantity: value } : row)))}
+              placeholder="8 golfers"
+              value={line.quantity}
+            />
+            <div className="sm:col-span-2">
+              <button
+                className="min-h-11 rounded-full px-4 text-sm font-bold text-forest-900 underline-offset-2 hover:underline"
+                onClick={() => onLines(lines.filter((row) => row.id !== line.id))}
+                type="button"
+              >
+                Remove this booking
+              </button>
+            </div>
+          </div>
+        ))}
+        <LuxuryButton
+          onClick={() => onLines([...lines, newLine()])}
+          type="button"
+          variant="outlineOnLight"
+        >
+          Add a booking
+        </LuxuryButton>
+      </div>
     </div>
   )
 }

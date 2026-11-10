@@ -69,6 +69,96 @@ const euroFromBody = (body) => {
   return amount
 }
 
+const BOOKING_SERVICES = new Set(['transfer', 'golf', 'accommodation', 'other'])
+const BOOKING_SERVICE_LABEL = {
+  transfer: 'Transfer',
+  golf: 'Golf course',
+  accommodation: 'Accommodation',
+  other: 'Other'
+}
+
+const prettyTripDate = (value) => {
+  const iso = String(value || '').trim().slice(0, 10)
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return String(value || '').trim()
+  const [year, month, day] = iso.split('-').map(Number)
+  return new Date(Date.UTC(year, month - 1, day)).toLocaleDateString('en-IE', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC'
+  })
+}
+
+const normalizeTrip = (raw) => {
+  const src = raw && typeof raw === 'object' ? raw : {}
+  const text = (key, max) => clip(src[key], max)
+  const lines = Array.isArray(src.lines)
+    ? src.lines.slice(0, 20).flatMap((line) => {
+        if (!line || typeof line !== 'object') return []
+        const detail = clip(line.detail, 240)
+        const when = clip(line.when, 80)
+        const quantity = clip(line.quantity, 24)
+        if (!detail && !when && !quantity) return []
+        return [{ service: BOOKING_SERVICES.has(line.service) ? line.service : 'other', detail, when, quantity }]
+      })
+    : []
+  return {
+    golfers: text('golfers', 6),
+    guests: text('guests', 6),
+    dateFrom: text('dateFrom', 12),
+    dateTo: text('dateTo', 12),
+    pickup: text('pickup', 160),
+    dropoff: text('dropoff', 160),
+    transferWhen: text('transferWhen', 80),
+    transferNotes: text('transferNotes', 500),
+    courses: text('courses', 800),
+    rounds: text('rounds', 12),
+    golfNotes: text('golfNotes', 500),
+    hotel: text('hotel', 160),
+    nights: text('nights', 12),
+    stayNotes: text('stayNotes', 500),
+    lines
+  }
+}
+
+const tripRows = (raw) => {
+  const trip = raw && typeof raw === 'object' ? raw : {}
+  const rows = []
+  const push = (label, value) => {
+    const text = String(value ?? '')
+      .replace(/\s+/g, ' ')
+      .trim()
+    if (text) rows.push({ label, value: text })
+  }
+  push('Golfers', trip.golfers)
+  push('Other guests', trip.guests)
+  const from = prettyTripDate(trip.dateFrom)
+  const to = prettyTripDate(trip.dateTo)
+  push('Travel dates', from && to ? `${from} to ${to}` : from || to)
+  push('Pickup', trip.pickup)
+  push('Drop-off', trip.dropoff)
+  push('Transfer time', trip.transferWhen)
+  push('Transfer notes', trip.transferNotes)
+  push('Golf courses', trip.courses)
+  push('Rounds', trip.rounds)
+  push('Golf notes', trip.golfNotes)
+  push('Accommodation', trip.hotel)
+  push('Nights', trip.nights)
+  push('Stay notes', trip.stayNotes)
+  const seen = {}
+  for (const line of Array.isArray(trip.lines) ? trip.lines : []) {
+    const service = BOOKING_SERVICES.has(line?.service) ? line.service : 'other'
+    seen[service] = (seen[service] || 0) + 1
+    const base = BOOKING_SERVICE_LABEL[service]
+    const label = seen[service] > 1 ? `${base} ${seen[service]}` : base
+    const value = [line.detail, line.when, line.quantity ? `Qty ${line.quantity}` : ''].filter(Boolean).join(' · ')
+    push(label, value)
+  }
+  return rows
+}
+
+const tripPlain = (raw) => tripRows(raw).map((row) => `${row.label}: ${row.value}`).join('\n')
+
 const paragraph = (text) =>
   `<p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.7;color:${gs.text};">${text}</p>`
 
@@ -119,7 +209,7 @@ const sendMail = async (env, { to, subject, html, filename, pdfBytes }) => {
   }
 }
 
-const buildPdf = async ({ kind, title, reference, name, email, phone, summary, amountCents }) => {
+const buildPdf = async ({ kind, title, reference, name, email, phone, summary, amountCents, trip }) => {
   const dated = new Date().toLocaleDateString('en-IE', { day: 'numeric', month: 'long', year: 'numeric' })
   const pdfKind = kind === 'invoice' ? 'invoice' : kind === 'note' ? 'enquiry' : 'quotation'
   return buildGsolMasterDocumentPdf({
@@ -131,11 +221,27 @@ const buildPdf = async ({ kind, title, reference, name, email, phone, summary, a
     customerName: name,
     customerEmail: email,
     customerPhone: phone,
+    rows: tripRows(trip),
     amountLabel: amountCents > 0 ? 'Total' : '',
     amountValue: amountCents > 0 ? fmtEur(amountCents) : '',
     notes: summary,
     filename: `golf-sol-${kind}-${reference.replace(/[^\w.-]+/g, '-')}.pdf`
   })
+}
+
+const detailsBlock = (row) => {
+  const rows = tripRows(row?.trip_details)
+  if (!rows.length) return ''
+  const body = rows
+    .map(
+      (item) => `
+        <tr>
+          <td style="padding:7px 14px 7px 0;font-family:${emailFonts.sans};font-size:13px;line-height:1.4;font-weight:700;color:${gs.text};vertical-align:top;white-space:nowrap;">${escapeHtml(item.label)}</td>
+          <td style="padding:7px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.5;color:${gs.text};">${escapeHtml(item.value)}</td>
+        </tr>`
+    )
+    .join('')
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px 0;">${body}</table>`
 }
 
 const loadProfile = async (db, email) => {
@@ -331,7 +437,7 @@ const openCheckout = async (env, db, row) => {
             unit_amount: row.amount_cents,
             product_data: {
               name: row.title || `Golf Sol ${row.reference_code}`,
-              description: row.reference_code
+              description: clip([row.reference_code, tripPlain(row.trip_details)].filter(Boolean).join(' — '), 400)
             }
           }
         }
@@ -384,6 +490,7 @@ const emailPayLink = async (env, row, checkoutUrl, pdf) => {
       paragraph(`Hello ${escapeHtml(first)},`),
       paragraph(`Your invoice for <strong>${escapeHtml(row.title || 'your Costa del Sol trip')}</strong> is attached as a PDF.`),
       paragraph(`Total due: <strong>${escapeHtml(fmtEur(row.amount_cents))}</strong>.`),
+      detailsBlock(row),
       row.summary ? paragraph(escapeHtml(row.summary)) : '',
       buttonRow([{ href: checkoutUrl, label: 'Pay now', style: ctaGreen }]),
       paragraph(`You can also review the trip in your dashboard: <a href="${escapeHtml(`${origin}/dashboard`)}" style="color:${gs.green};">${escapeHtml(`${origin}/dashboard`)}</a>.`)
@@ -409,6 +516,7 @@ const emailQuoteChoice = async (env, row, pdf) => {
       paragraph(`Hello ${escapeHtml(first)},`),
       paragraph(`Here is the quote for <strong>${escapeHtml(row.title || 'your Costa del Sol week')}</strong>. The PDF is attached.`),
       paragraph(`Quoted total: <strong>${escapeHtml(fmtEur(row.amount_cents))}</strong>.`),
+      detailsBlock(row),
       row.summary ? paragraph(escapeHtml(row.summary)) : '',
       paragraph('Accept and we email a secure pay button straight away. Decline and we will hold the price while we find a week that fits.'),
       buttonRow([
@@ -438,6 +546,7 @@ const emailWinBack = async (env, row, pdf) => {
       paragraph(
         `For the next seven days we will hold <strong>${escapeHtml(fmtEur(row.amount_cents))}</strong> on ${escapeHtml(row.reference_code)}, including the airport pickup. The quote PDF is attached, unchanged.`
       ),
+      detailsBlock(row),
       paragraph(
         'If the date was the problem, tell us the week that works. If the price was the problem, tell us the number that would make it a yes. One reply is enough — we will reshape the golf, the hotel, and the transfers around it.'
       ),
@@ -477,7 +586,16 @@ const insertDeskRow = async (db, env, userId, input) => {
     decision_token: token,
     created_by: userId
   }
-  const inserted = await db.from('desk_quotes').insert(row).select('*').single()
+  const trip = normalizeTrip(input.trip)
+  let inserted = await db.from('desk_quotes').insert({ ...row, trip_details: trip }).select('*').single()
+  if (inserted.error && /trip_details/i.test(inserted.error.message || '')) {
+    const folded = [row.summary, tripPlain(trip)].filter(Boolean).join('\n\n')
+    inserted = await db.from('desk_quotes').insert({ ...row, summary: clip(folded, 4000) }).select('*').single()
+    if (inserted.data) {
+      inserted.data.summary = row.summary
+      inserted.data.trip_details = trip
+    }
+  }
   if (inserted.error || !inserted.data) {
     const missing = /desk_quotes|schema cache|does not exist/i.test(inserted.error?.message || '')
     throwStatus(
@@ -502,7 +620,8 @@ const pdfForRow = async (row, supplied) => {
     email: row.customer_email,
     phone: row.customer_phone,
     summary: row.summary,
-    amountCents: row.amount_cents
+    amountCents: row.amount_cents,
+    trip: row.trip_details
   })
 }
 
@@ -548,6 +667,7 @@ export const handleDeskCustomers = async (body, env = process.env, meta = {}) =>
       title: body?.title,
       summary: body?.summary || body?.message,
       amountEur: euroFromBody(body),
+      trip: body?.trip,
       enquiryId: isUuid(body?.enquiryId) ? String(body.enquiryId).trim() : null
     }
     let row
@@ -662,7 +782,8 @@ export const handleDeskQuoteDecision = async (body, env = process.env) => {
     email: row.customer_email,
     phone: row.customer_phone,
     summary: row.summary,
-    amountCents: row.amount_cents
+    amountCents: row.amount_cents,
+    trip: row.trip_details
   })
 
   if (decision === 'decline') {
