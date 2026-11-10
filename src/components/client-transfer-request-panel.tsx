@@ -211,7 +211,7 @@ export function ClientTransferRequestPanel() {
         .select('id, status, pickup_label, dropoff_label, created_at, scheduled_at, cancel_reason')
         .order('created_at', { ascending: false })
         .limit(20)
-      data = fallback.data
+      data = (fallback.data ?? []).map((row) => ({ ...row, payment_attempt: null }))
       error = fallback.error
     }
     if (error) {
