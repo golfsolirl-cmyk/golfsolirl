@@ -13,8 +13,9 @@ import {
   requireClientDocumentAdmin,
   throwStatus
 } from './client-enquiry-document-service.mjs'
-import { documentTypeLabel } from '../shared/client-enquiry-document.mjs'
-import { resolveResendToAddress } from './resend-delivery-email.mjs'
+import { calculateClientDocumentPricing, documentTypeLabel } from '../shared/client-enquiry-document.mjs'
+import { resolveResendToAddress, resendSandboxRecipientHint } from './resend-delivery-email.mjs'
+import { handleDeskCustomers } from './desk-quote-service.mjs'
 
 /**
  * @param {unknown} body
@@ -64,6 +65,17 @@ export const handleClientEnquiryDocumentEmail = async (body, env = process.env, 
         contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
       })
     }
+    if (
+      (draft.documentType === 'quotation' || draft.documentType === 'invoice') &&
+      !attachments.some((file) => file.contentType === 'application/pdf')
+    ) {
+      const pdf = await buildClientEnquiryDocumentPdf(draft)
+      attachments.unshift({
+        filename: pdf.filename,
+        content: Buffer.from(pdf.bytes).toString('base64'),
+        contentType: 'application/pdf'
+      })
+    }
   } catch (error) {
     console.error('[client-enquiry-document-email] generate failed', error)
     throwStatus('Unable to generate the attachment. Please try again.', 500)
@@ -71,6 +83,41 @@ export const handleClientEnquiryDocumentEmail = async (body, env = process.env, 
 
   if (attachments.length === 0) {
     throwStatus('Choose PDF, Word, or both.', 400)
+  }
+
+  const pricedType = draft.documentType === 'quotation' || draft.documentType === 'invoice'
+  const pricing = calculateClientDocumentPricing(draft)
+  const pdfAttachment = attachments.find((file) => file.contentType === 'application/pdf')
+  if (pricedType && pricing.total >= 0.5 && pdfAttachment) {
+    try {
+    const result = await handleDeskCustomers(
+      {
+        action: draft.documentType === 'invoice' ? 'send-invoice' : 'send-quote',
+        email: to,
+        name: draft.customer.name,
+        phone: draft.customer.phone,
+        title: documentTypeLabel(draft.documentType, draft.customTitle),
+        summary: message,
+        amountEur: pricing.total,
+        enquiryId: draft.enquiryId,
+        pdfBase64: pdfAttachment.content,
+        pdfFilename: pdfAttachment.filename
+      },
+      env,
+      meta
+    )
+    let saved = draft
+    try {
+      saved = await markClientDocumentSent(getAdmin(env), draft)
+    } catch (error) {
+      console.error('[client-enquiry-document-email] mark sent failed', error)
+    }
+    return { ...result, draft: saved }
+    } catch (error) {
+      if (!/desk_quotes|20261110150000/i.test(error instanceof Error ? error.message : '')) {
+        throw error
+      }
+    }
   }
 
   const greeting = draft.customer.name ? `Hello ${escapeHtml(draft.customer.name.split(' ')[0])},` : 'Hello,'
@@ -104,7 +151,10 @@ export const handleClientEnquiryDocumentEmail = async (body, env = process.env, 
 
   if (sendError) {
     console.error('[client-enquiry-document-email] resend failed', sendError)
-    throwStatus('Unable to send the email. Please try again.', 502)
+    const hint = /only send|testing emails|verify a domain|not verified/i.test(sendError.message || '')
+      ? ` ${resendSandboxRecipientHint(env)}`
+      : ''
+    throwStatus(`${sendError.message || 'Unable to send the email. Please try again.'}${hint}`, 502)
   }
 
   let saved = draft

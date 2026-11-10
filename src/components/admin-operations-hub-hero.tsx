@@ -7,6 +7,11 @@ type SectionGuide = {
 }
 
 const SECTION_GUIDES: Record<AdminPortalSectionId, SectionGuide> = {
+  customers: {
+    kicker: 'Customers',
+    summary: 'Open a customer, then send a quote or an invoice. Their payments sit on the same screen.',
+    steps: ['Find the customer.', 'Send a quote or an invoice.', 'Accept emails a pay button. Decline holds the price.']
+  },
   desk: {
     kicker: 'Pay & replies',
     summary: 'Reply to a guest, check what has been paid, then add a priced line to their trip.',

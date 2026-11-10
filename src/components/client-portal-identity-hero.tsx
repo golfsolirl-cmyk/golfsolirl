@@ -34,6 +34,8 @@ export type ClientPortalTransferHeroRow = {
   readonly created_at?: string | null
   /** ISO timestamp — used for paid-invoice “systems updated” hint */
   readonly updated_at?: string | null
+  readonly cancel_reason?: string | null
+  readonly payment_attempt?: number | null
 }
 
 export function ClientPortalIdentityHero(props: {
@@ -102,7 +104,7 @@ export function ClientPortalIdentityHero(props: {
   return (
     <div
       className={cx(
-        'ge-on-dark mb-10 overflow-visible rounded-[2rem] border-2 border-brand-700/45 bg-gradient-to-br from-[#0f3d24] via-[#143d28] to-[#0a2416] p-6 text-white shadow-[0_24px_60px_rgba(11,73,52,0.35)] ring-1 ring-white/10 sm:p-8',
+        'ge-on-dark mb-6 overflow-visible rounded-[2rem] border-2 border-brand-700/45 bg-gradient-to-br from-[#0f3d24] via-[#143d28] to-[#0a2416] p-5 text-white shadow-[0_24px_60px_rgba(11,73,52,0.35)] ring-1 ring-white/10 sm:p-6',
         props.className
       )}
     >
@@ -110,7 +112,7 @@ export function ClientPortalIdentityHero(props: {
         <div className="min-w-0 flex-1 space-y-8 xl:max-w-2xl">
           <div>
             <p className="font-ge text-xs font-extrabold uppercase tracking-[0.22em] text-white sm:text-sm">Your account</p>
-            <h2 className="font-display mt-2 text-4xl font-bold tracking-tight text-white sm:text-5xl">
+            <h2 className="font-display mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
               {props.firstName.trim() ? <>Hello, {props.firstName.trim()}</> : <>Hello</>}
             </h2>
             {!emailDisplay ? (
@@ -244,7 +246,12 @@ export function ClientPortalIdentityHero(props: {
                 const depEur = gross !== null ? depositAmountEur(gross, pct) : null
                 const balEur = gross !== null ? balanceAmountEur(gross, pct) : null
                 const dueLine = !fullUpfront ? formatBalanceDueLine(t.scheduled_at) : null
-                const showPay = gross !== null && gross >= 0.5 && typeof props.onPayTransfer === 'function' && !isPaid
+                const showPay =
+                  t.status !== 'cancelled' &&
+                  gross !== null &&
+                  gross >= 0.5 &&
+                  typeof props.onPayTransfer === 'function' &&
+                  !isPaid
                 const payBusy = payBusyId === t.id
                 const emphasized = props.emphasizeTransferBookingId === t.id
                 return (

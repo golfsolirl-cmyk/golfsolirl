@@ -19,6 +19,7 @@ type BookingRow = {
   created_at: string
   scheduled_at?: string | null
   cancel_reason?: string | null
+  payment_attempt?: number | null
 }
 
 type ViaStop = {
@@ -199,11 +200,20 @@ export function ClientTransferRequestPanel() {
     if (!supabase) {
       return
     }
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from('transfer_bookings')
-      .select('id, status, pickup_label, dropoff_label, created_at, scheduled_at, cancel_reason')
+      .select('id, status, pickup_label, dropoff_label, created_at, scheduled_at, cancel_reason, payment_attempt')
       .order('created_at', { ascending: false })
       .limit(20)
+    if (error && /payment_attempt/i.test(error.message)) {
+      const fallback = await supabase
+        .from('transfer_bookings')
+        .select('id, status, pickup_label, dropoff_label, created_at, scheduled_at, cancel_reason')
+        .order('created_at', { ascending: false })
+        .limit(20)
+      data = fallback.data
+      error = fallback.error
+    }
     if (error) {
       if (error.message.includes('relation') || error.message.includes('does not exist')) {
         setTableMissing(true)
@@ -437,6 +447,9 @@ export function ClientTransferRequestPanel() {
   const statusLine = (b: BookingRow) => {
     if (b.status === 'cancelled' && typeof b.cancel_reason === 'string' && b.cancel_reason.startsWith('no_driver')) {
       return 'Declined — our team will be in touch'
+    }
+    if (b.status === 'cancelled' && b.cancel_reason === 'unpaid_timeout') {
+      return (b.payment_attempt ?? 1) >= 2 ? 'Cancelled — closed' : 'Cancelled — unpaid. You can rebook once from Pay.'
     }
     return b.status.replace(/_/g, ' ')
   }

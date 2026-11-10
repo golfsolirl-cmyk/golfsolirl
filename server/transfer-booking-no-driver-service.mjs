@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { requireAdminFromBearer } from './auth-verify-admin.mjs'
 import { processDueBalanceReminders } from './transfer-payment-service.mjs'
+import { processUnpaidBookingCancellations } from './transfer-unpaid-cancel-service.mjs'
 
 const throwStatus = (message, code = 400) => {
   const e = new Error(message)
@@ -135,12 +136,21 @@ export const handleTransferBookingNoDriverSweep = async (env = process.env, meta
     balanceReminders = { sent: 0, candidates: 0, errors: [{ id: '_sweep', message: msg }] }
   }
 
+  let unpaidCancellations = { cancelled: 0, candidates: 0, errors: [] }
+  try {
+    unpaidCancellations = await processUnpaidBookingCancellations(admin, env)
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
+    console.error('[transfer-booking-sweep] unpaid cancellations', msg)
+    unpaidCancellations = { cancelled: 0, candidates: 0, errors: [{ id: '_sweep', message: msg }] }
+  }
+
   return {
     ok: true,
     noDriverSweep: 'disabled',
-    closed: 0,
-    candidates: 0,
-    errors: [],
+    closed: unpaidCancellations.cancelled,
+    candidates: unpaidCancellations.candidates,
+    errors: unpaidCancellations.errors,
     balanceReminderSent: balanceReminders.sent,
     balanceReminderCandidates: balanceReminders.candidates,
     balanceReminderErrors: balanceReminders.errors

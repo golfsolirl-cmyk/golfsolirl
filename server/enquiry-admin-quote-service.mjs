@@ -5,6 +5,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { requireAdminFromBearer } from './auth-verify-admin.mjs'
 import { handlePortalInvoiceSend } from './portal-invoice-send-service.mjs'
+import { handleDeskCustomers } from './desk-quote-service.mjs'
 import { handleTransferPaymentAdmin } from './transfer-payment-service.mjs'
 import { handlePortalInterestTicketReply } from './portal-interest-ticket-reply-service.mjs'
 
@@ -209,6 +210,49 @@ export const handleEnquiryAdminQuote = async (body, env = process.env, meta = {}
     meta
   )
 
+  if (mode === 'full') {
+    try {
+      const invoiceResult = await handlePortalInvoiceSend({ enquiryId, amountEur }, env, meta)
+      return {
+        ok: true,
+        mode: 'full',
+        bookingId: booking.id,
+        price: priceResult,
+        invoice: invoiceResult,
+        message: `Invoice emailed to ${enquiry.email}. They receive one Golf Sol email with the PDF and Pay now.`
+      }
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Invoice email failed'
+      if (/portal profile/i.test(msg)) {
+        const desk = await handleDeskCustomers(
+          {
+            action: 'send-invoice',
+            email: enquiry.email,
+            name: enquiry.full_name,
+            phone: enquiry.phone_whatsapp,
+            title: `Trip invoice ${enquiry.reference_id || ''}`.trim(),
+            summary: `Invoice for ${enquiry.reference_id || 'your Costa del Sol trip'}.`,
+            amountEur,
+            enquiryId
+          },
+          env,
+          meta
+        )
+        return {
+          ok: true,
+          mode: 'full',
+          bookingId: booking.id,
+          price: priceResult,
+          message: desk.message || `Invoice emailed to ${enquiry.email}.`
+        }
+      }
+      throwStatus(
+        `Price saved (€${amountEur.toFixed(2)}). The invoice email did not send — ${msg}`,
+        typeof e?.statusCode === 'number' ? e.statusCode : 502
+      )
+    }
+  }
+
   let emailResult = null
   try {
     emailResult = await handleTransferPaymentAdmin(
@@ -219,29 +263,6 @@ export const handleEnquiryAdminQuote = async (body, env = process.env, meta = {}
   } catch (e) {
     console.warn('[enquiry-admin-quote] payment request email failed:', e instanceof Error ? e.message : e)
     emailResult = { ok: false, message: e instanceof Error ? e.message : 'Email failed' }
-  }
-
-  if (mode === 'full') {
-    let invoiceResult = null
-    try {
-      invoiceResult = await handlePortalInvoiceSend({ enquiryId, amountEur }, env, meta)
-    } catch (e) {
-      console.warn('[enquiry-admin-quote] portal invoice failed:', e instanceof Error ? e.message : e)
-      invoiceResult = { ok: false, message: e instanceof Error ? e.message : 'Invoice failed' }
-    }
-
-    return {
-      ok: true,
-      mode: 'full',
-      bookingId: booking.id,
-      price: priceResult,
-      email: emailResult,
-      invoice: invoiceResult,
-      message:
-        emailResult?.ok === false
-          ? `Full amount €${amountEur.toFixed(2)} saved. Portal shows pay in full; email did not send — ${emailResult.message}.`
-          : `Full amount quote sent — client portal shows €${amountEur.toFixed(2)} to pay in full (VAT quote PDF updated).`
-    }
   }
 
   const depositDueRounded = Math.round((amountEur * depositPercent) / 100 * 100) / 100
@@ -255,8 +276,8 @@ export const handleEnquiryAdminQuote = async (body, env = process.env, meta = {}
     email: emailResult,
     message:
       emailResult?.ok === false
-        ? `Deposit plan saved (total €${amountEur.toFixed(2)}, ${depositPercent}% = €${depositDueRounded.toFixed(2)} due now). Email did not send — ${emailResult.message}.`
-        : `Deposit quote sent — portal shows ${depositPercent}% (€${depositDueRounded.toFixed(2)}) of €${amountEur.toFixed(2)} total. Client emailed.`
+        ? `Deposit saved (total €${amountEur.toFixed(2)}, ${depositPercent}% = €${depositDueRounded.toFixed(2)} due now). The email did not send — ${emailResult.message}.`
+        : `Deposit email sent to ${enquiry.email}. Due now €${depositDueRounded.toFixed(2)} of €${amountEur.toFixed(2)}. They pay from their dashboard.`
   }
 }
 

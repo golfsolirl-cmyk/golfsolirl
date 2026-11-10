@@ -172,7 +172,7 @@ export function AdminEmailsCommsDesk({
 
       <section className="rounded-[2rem] border border-forest-100 bg-white p-6 shadow-soft md:p-8">
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-700">1 · Write & send</p>
-        <h3 className="font-display mt-1 text-xl font-semibold text-forest-950">Branded email to their login</h3>
+        <h3 className="font-display mt-1 text-xl font-semibold text-forest-950">Email their login</h3>
         <p className="mt-1 text-sm text-forest-600">
           Optional PDF attachments (quotes, hotel letters). They get the real email; the same note is logged on their
           dashboard.
@@ -252,7 +252,7 @@ export function AdminEmailsCommsDesk({
             />
           </div>
           <LuxuryButton disabled={studioBusy} type="submit" variant="primary">
-            {studioBusy ? 'Sending…' : 'Send branded email'}
+            {studioBusy ? 'Sending…' : 'Send email'}
           </LuxuryButton>
           {studioMessage ? (
             <p className="text-sm font-medium text-forest-800" role="status">

@@ -139,6 +139,7 @@
     { "source": "/api/transfer-notify", "destination": "/api/gateway?r=transfer-notify" },
     { "source": "/api/transfer-reject-no-driver", "destination": "/api/gateway?r=transfer-reject-no-driver" },
     { "source": "/api/transfer-booking-sweep", "destination": "/api/gateway?r=transfer-booking-sweep" },
+    { "source": "/api/transfer-rebook", "destination": "/api/gateway?r=transfer-rebook" },
     { "source": "/api/transfer-balance-reminder-sweep", "destination": "/api/gateway?r=transfer-balance-reminder-sweep" },
     { "source": "/api/transfer-payment-admin", "destination": "/api/gateway?r=transfer-payment-admin" },
     { "source": "/api/admin-revenue-stats", "destination": "/api/gateway?r=admin-revenue-stats" },
@@ -160,6 +161,8 @@
     { "source": "/api/client-enquiry-document-pdf", "destination": "/api/gateway?r=client-enquiry-document-pdf" },
     { "source": "/api/client-enquiry-document-docx", "destination": "/api/gateway?r=client-enquiry-document-docx" },
     { "source": "/api/admin-mail", "destination": "/api/gateway?r=admin-mail" },
+    { "source": "/api/desk-customers", "destination": "/api/gateway?r=desk-customers" },
+    { "source": "/api/desk-quote-decision", "destination": "/api/gateway?r=desk-quote-decision" },
     { "source": "/api/gmail-oauth-callback", "destination": "/api/gateway?r=gmail-oauth-callback" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]

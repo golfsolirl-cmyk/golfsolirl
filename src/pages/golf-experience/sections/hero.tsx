@@ -59,7 +59,7 @@ export function GeHero({
         style={{ height: 'var(--ge-fixed-header-h)' }}
       />
 
-      <div className={cx('relative w-full', isPortal && 'max-sm:aspect-[9/17] sm:aspect-[2/1]')}>
+      <div className={cx('relative w-full', isPortal && 'h-[13.5rem] sm:h-[15rem]')}>
         <GsolGoldCornerAccents preset={isPortal ? 'hero' : 'light'} className="z-[4]" />
         {isPortal && portalBackdrop === 'client' ? (
           <div className="absolute inset-0 z-0">
@@ -150,9 +150,9 @@ export function GeHero({
         )}
 
         {isPortal && (portalTitle || portalKicker || portalSubtitle || portalTimestamp) ? (
-          <div className="ge-on-dark pointer-events-none absolute inset-0 z-30 flex flex-col justify-end bg-gradient-to-t from-black/92 via-gs-dark/50 to-transparent pb-[12%] pt-32 max-sm:pb-[18%] sm:pb-[10%]">
+          <div className="ge-on-dark pointer-events-none absolute inset-0 z-30 flex flex-col justify-end bg-gradient-to-t from-black/88 via-gs-dark/45 to-transparent px-0 pb-4 pt-3 sm:pb-5">
             <div className="pointer-events-auto mx-auto w-full max-w-[1180px] px-5 sm:px-8">
-              <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div className="min-w-0">
                   {portalKicker ? (
                     <m.p
@@ -167,7 +167,7 @@ export function GeHero({
                   {portalTitle ? (
                     <m.h1
                       id="ge-hero-title"
-                      className="mt-4 max-w-3xl font-ge text-[2.25rem] font-extrabold leading-[1.06] tracking-[-0.02em] text-white [text-shadow:0_2px_28px_rgba(0,0,0,0.55),0_0_40px_rgba(16,185,129,0.12)] sm:text-[2.95rem] md:text-[3.35rem]"
+                      className="mt-2 max-w-3xl font-ge text-2xl font-extrabold leading-tight tracking-[-0.02em] text-white [text-shadow:0_2px_18px_rgba(0,0,0,0.55)] sm:text-3xl"
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.06, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
@@ -177,12 +177,12 @@ export function GeHero({
                   ) : null}
                   {portalTimestamp ? (
                     <m.div
-                      className="mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-1"
+                      className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-1"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.12, duration: 0.4 }}
                     >
-                      <p className="text-base font-semibold tabular-nums text-white [text-shadow:0_1px_16px_rgba(0,0,0,0.5)] md:text-lg">
+                      <p className="text-sm font-semibold tabular-nums text-white [text-shadow:0_1px_12px_rgba(0,0,0,0.5)] sm:text-base">
                         {portalTimestamp}
                       </p>
                       <span className="text-xs font-bold uppercase tracking-[0.16em] text-white md:text-sm">
@@ -192,7 +192,7 @@ export function GeHero({
                   ) : null}
                   {portalSubtitle ? (
                     <m.p
-                      className="mt-4 max-w-2xl border-l-2 border-white/70 pl-4 text-base font-medium leading-relaxed text-white [text-shadow:0_1px_14px_rgba(0,0,0,0.55)] md:text-lg md:leading-8"
+                      className="mt-1 max-w-2xl border-l-2 border-white/70 pl-3 text-sm font-medium leading-snug text-white [text-shadow:0_1px_12px_rgba(0,0,0,0.55)] sm:text-base"
                       initial={{ opacity: 0, y: 6 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.18, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}

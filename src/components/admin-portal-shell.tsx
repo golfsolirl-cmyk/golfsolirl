@@ -80,6 +80,30 @@ export function AdminPortalShell({
           </button>
         </div>
 
+        <div className="mb-5 flex flex-wrap gap-2" aria-label="Jump to a section">
+          {(
+            [
+              ['customers', 'Customers'],
+              ['forms', 'New quotes'],
+              ['desk', 'Payments'],
+              ['mail', 'Inbox'],
+              ['transfers', 'Transfers']
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              className={cx(
+                'min-h-10 rounded-full px-4 py-2 text-sm font-bold',
+                activeSection === id ? 'bg-forest-900 text-white' : 'bg-white text-forest-900 ring-1 ring-forest-200 hover:bg-forest-50'
+              )}
+              key={id}
+              onClick={() => onSectionChange(id)}
+              type="button"
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
         <div className="min-w-0">{children}</div>
       </div>
 

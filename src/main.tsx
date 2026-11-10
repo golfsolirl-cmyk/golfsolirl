@@ -74,6 +74,7 @@ const DriverDashboardPage = lazy(() =>
   import('./pages/driver-dashboard-page').then((m) => ({ default: m.DriverDashboardPage }))
 )
 const RateTripPage = lazy(() => import('./pages/rate-trip-page').then((m) => ({ default: m.RateTripPage })))
+const QuoteReplyPage = lazy(() => import('./pages/quote-reply-page').then((m) => ({ default: m.QuoteReplyPage })))
 const BusinessCardsPage = lazy(() =>
   import('./pages/business-cards-page').then((m) => ({ default: m.BusinessCardsPage }))
 )
@@ -189,6 +190,10 @@ function resolvePage(): PageComponent {
 
   if (normalizedPath === '/rate-trip') {
     return RateTripPage
+  }
+
+  if (normalizedPath.startsWith('/quote-reply/')) {
+    return QuoteReplyPage
   }
 
   if (normalizedPath === '/documents/terms' || normalizedPath === '/documents/welcome') {

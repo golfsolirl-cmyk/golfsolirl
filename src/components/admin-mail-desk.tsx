@@ -637,7 +637,7 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
     }
   }
 
-  const send = async (mode: 'resend' | 'gmail') => {
+  const send = async () => {
     if (!accessToken || sendLock.current) return
     if (!sendEnabled) {
       setStatusError('Email sending is disabled. Preview is available. Set EMAIL_SEND_ENABLED=true to send.')
@@ -649,7 +649,6 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
     setSentNotice(null)
     try {
       if (!idempotencyRef.current) idempotencyRef.current = crypto.randomUUID()
-      const action = mode === 'gmail' ? 'send-gmail-reply' : 'send-branded'
       const data = await adminMailRequest<{
         to: string
         subject: string
@@ -661,7 +660,7 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
         checkoutUrl?: string | null
         portalNote?: string | null
       }>(accessToken, {
-        action,
+        action: 'send-branded',
         ...compose,
         vars,
         attachments: attachments.map((a) => ({ filename: a.filename, contentBase64: a.contentBase64 })),
@@ -673,16 +672,12 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
         data.portalNote || ''
       ].filter(Boolean)
       setSentNotice(
-        `Email sent successfully to ${data.to} · ${data.subject} · ${data.provider === 'gmail' ? 'Gmail' : 'Resend'}${
+        `Email sent to ${data.to} · ${data.subject}${
           data.attachments?.length ? ` · ${data.attachments.join(', ')}` : ''
         }${portalBits.length ? ` · ${portalBits.join(' · ')}` : ''}`
       )
       setPreviewHtml(null)
       idempotencyRef.current = crypto.randomUUID()
-      if (mode === 'gmail' && compose.threadId) {
-        await openThread(compose.threadId)
-        setView('inbox')
-      }
     } catch (error) {
       setStatusError(errorMessage(error, 'The email could not be sent. No message was delivered.'))
     } finally {
@@ -708,7 +703,7 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
     }
   }
 
-  const replyFromThread = (branded: boolean) => {
+  const replyFromThread = () => {
     const last = threadMessages[threadMessages.length - 1]
     if (!last) return
     const inbound = threadMessages.filter(
@@ -729,9 +724,9 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
         threadId: selectedId || last.threadId,
         inReplyTo: last.messageIdHeader,
         references: [last.references, last.messageIdHeader].filter(Boolean).join(' '),
-        templateId: branded ? 'enquiry_followup' : 'general_reply'
+        templateId: 'enquiry_followup'
       },
-      templates.find((t) => t.id === (branded ? 'enquiry_followup' : 'general_reply'))
+      templates.find((t) => t.id === 'enquiry_followup')
     )
   }
 
@@ -775,14 +770,13 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
     setStatusError(null)
     try {
       await adminMailRequest(accessToken, {
-        action: 'send-gmail-reply',
-        branded: false,
+        action: 'send-branded',
         to: customer.fromEmail,
         subject: last.subject.startsWith('Re:') ? last.subject : `Re: ${last.subject}`,
+        heading: 'A note from Golf Sol Ireland',
         body: text,
-        threadId: selectedId,
-        inReplyTo: last.messageIdHeader,
-        references: [last.references, last.messageIdHeader].filter(Boolean).join(' '),
+        templateId: 'enquiry_followup',
+        openPortalPayment: false,
         customerName: customer.fromName || linked?.name || '',
         enquiryId: linked?.id || '',
         reference: linked?.reference || '',
@@ -791,7 +785,7 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
         idempotencyKey: crypto.randomUUID()
       })
       setQuickReply('')
-      setSentNotice(`Reply sent to ${customer.fromEmail}`)
+      setSentNotice(`Email sent to ${customer.fromEmail}`)
       await openThread(selectedId)
     } catch (error) {
       setStatusError(errorMessage(error, 'The reply could not be sent.'))
@@ -1057,11 +1051,8 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                         </div>
                       </div>
                       <div className="mt-6 flex flex-wrap gap-3">
-                        <LuxuryButton className="!px-5 !py-2.5 !text-base" disabled={!connected} onClick={focusReplyBox} type="button">
+                        <LuxuryButton className="!px-5 !py-2.5 !text-base" onClick={focusReplyBox} type="button">
                           Reply
-                        </LuxuryButton>
-                        <LuxuryButton className="!px-5 !py-2.5 !text-base" onClick={() => replyFromThread(true)} type="button" variant="outlineOnLight">
-                          Branded email
                         </LuxuryButton>
                         {linked ? (
                           <LuxuryButton className="!px-5 !py-2.5 !text-base" onClick={() => onCreateDocument?.(linked.id)} type="button" variant="outline">
@@ -1171,14 +1162,14 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                             onClick={() => void sendQuickReply()}
                             type="button"
                           >
-                            {busy === 'send' ? 'Sending…' : 'Send reply'}
+                            {busy === 'send' ? 'Sending…' : 'Send email'}
                           </LuxuryButton>
                           <button
                             className="text-sm font-semibold text-forest-700 underline"
-                            onClick={() => replyFromThread(false)}
+                            onClick={() => replyFromThread()}
                             type="button"
                           >
-                            Open full write screen
+                            Write a longer email
                           </button>
                         </div>
                       </div>
@@ -1195,7 +1186,7 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
             <section className="rounded-[1.75rem] border border-forest-100 bg-white p-5 shadow-soft sm:p-7">
               <h3 className="font-display text-3xl font-semibold text-forest-950">Write</h3>
               <p className="mt-2 text-lg text-forest-700">
-                Reply keeps the Gmail thread. Branded email sends Golf Sol stationery.
+                One send. The customer receives Golf Sol stationery, with any PDF you attach.
               </p>
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 <label className="text-sm font-bold uppercase tracking-wide text-forest-800">
@@ -1380,27 +1371,16 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
                       ? 'Generate quotation PDF'
                       : 'Generate PDF'}
                 </LuxuryButton>
-                <LuxuryButton
-                  className="!px-4 !py-2 !text-sm"
-                  disabled={busy === 'send' || !sendEnabled || !compose.threadId}
-                  onClick={() => void send('gmail')}
-                  type="button"
-                >
-                  {busy === 'send' ? 'Sending…' : 'Send reply'}
-                </LuxuryButton>
-                <LuxuryButton className="!px-4 !py-2 !text-sm" disabled={busy === 'send' || !sendEnabled} onClick={() => void send('resend')} type="button">
+                <LuxuryButton className="!px-4 !py-2 !text-sm" disabled={busy === 'send' || !sendEnabled} onClick={() => void send()} type="button">
                   {busy === 'send' ? (
                     <span className="inline-flex items-center gap-2">
                       <Loader2 className="h-4 w-4 animate-spin" /> Sending email…
                     </span>
                   ) : (
-                    'Send branded email'
+                    'Send email'
                   )}
                 </LuxuryButton>
               </div>
-              {!compose.threadId ? (
-                <p className="mt-2 text-xs text-forest-500">Send reply is available after you open a conversation and use Reply.</p>
-              ) : null}
               {!sendEnabled ? (
                 <p className="mt-2 text-xs font-semibold text-amber-900">Sending is locked. Preview and generate PDF still work.</p>
               ) : null}
@@ -1572,8 +1552,8 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
               <LuxuryButton className="!px-4 !py-2 !text-sm" onClick={() => setPreviewHtml(null)} type="button" variant="outline">
                 Back to edit
               </LuxuryButton>
-              <LuxuryButton className="!px-4 !py-2 !text-sm" disabled={!sendEnabled || busy === 'send'} onClick={() => void send('resend')} type="button">
-                Send branded email
+              <LuxuryButton className="!px-4 !py-2 !text-sm" disabled={!sendEnabled || busy === 'send'} onClick={() => void send()} type="button">
+                Send email
               </LuxuryButton>
             </div>
           </div>

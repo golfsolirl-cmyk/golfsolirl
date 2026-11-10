@@ -1,5 +1,6 @@
-import { ctaGold, emailFonts, gs } from './branded-email-shell.mjs'
+import { ctaGold, ctaGreen, emailFonts, gs } from './branded-email-shell.mjs'
 import { buildGsolTransactionalEmail, finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
+import { depositAmountEur, isTransferFullUpfront, normalizedDepositPercent } from './transfer-payment-amounts.mjs'
 
 const esc = (s) =>
   String(s ?? '')
@@ -213,40 +214,44 @@ export const buildPortalInvoicePaidThankYouEmail = (detail) => {
 }
 
 /**
- * Admin-triggered: ask guest to pay for a specific transfer (preview link until checkout is wired).
+ * Admin-triggered: ask the guest to pay a transfer from their dashboard.
  * @param {Record<string, unknown>} booking
  */
 export const buildTransferPaymentRequestEmail = (booking) => {
   const site = getGsolSiteUrl()
   const route = `${esc(booking.pickup_label)} → ${esc(booking.dropoff_label)}`
-  const idShort = String(booking.id ?? '').slice(0, 8)
-  const rawPrice = booking.admin_price_eur
-  const hasPrice = typeof rawPrice === 'number' && Number.isFinite(rawPrice) && rawPrice >= 0
-  const priceTxt = hasPrice
-    ? new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(rawPrice)
-    : null
-  /** Placeholder: opens client dashboard; replace with Stripe when ready. */
-  const payHref = `${site}/dashboard?transfer_payment_preview=${encodeURIComponent(String(booking.id ?? ''))}`
-  const subject = `Golf Sol Ireland — payment for your transfer (${idShort}…)`
-  const heroTitle = 'Payment request · Costa transfer'
+  const rawPrice = Number(booking.admin_price_eur)
+  const hasPrice = Number.isFinite(rawPrice) && rawPrice >= 0.5
+  const fullUpfront = isTransferFullUpfront(booking)
+  const pct = normalizedDepositPercent(booking.deposit_percent)
+  const dueNow = hasPrice ? (fullUpfront ? rawPrice : depositAmountEur(rawPrice, pct)) : null
+  const dueTxt = dueNow != null ? fmtEur(dueNow) : null
+  const totalTxt = hasPrice ? fmtEur(rawPrice) : null
+  const payHref = `${site}/dashboard`
+  const subject = fullUpfront
+    ? 'Golf Sol Ireland — your transfer is ready to pay'
+    : `Golf Sol Ireland — ${pct}% deposit for your transfer`
+  const heroTitle = fullUpfront ? 'Your transfer is ready to pay' : `${pct}% deposit is ready`
   const heroLead = hasPrice
-    ? `Please arrange payment for your transfer (${route}). Quoted amount: ${priceTxt}. Use the button below to open your client area — we will connect live checkout here soon.`
-    : `Please arrange payment for your transfer (${route}). We quoted this run separately — use the button below to open your client area; reply to this email if you need bank details or a breakdown.`
+    ? fullUpfront
+      ? `Please pay ${dueTxt} for your transfer (${route}). Sign in and use Pay now on your dashboard.`
+      : `Please pay the ${pct}% deposit of ${dueTxt} (trip total ${totalTxt}) for your transfer (${route}). Sign in and use Pay deposit on your dashboard.`
+    : `Please arrange payment for your transfer (${route}). Sign in to your dashboard, or reply if you need the breakdown.`
   const amountBlock = hasPrice
-    ? `<p style="margin:0 0 18px 0;font-family:${emailFonts.sans};font-size:18px;line-height:1.5;color:${gs.text};"><strong style="color:${gs.green};">${priceTxt}</strong> <span style="color:#6b7280;font-size:14px;">(quoted EUR)</span></p>`
+    ? `<p style="margin:0 0 8px 0;font-family:${emailFonts.sans};font-size:18px;line-height:1.5;color:${gs.text};">Due now: <strong style="color:${gs.green};">${dueTxt}</strong></p>
+       <p style="margin:0 0 18px 0;font-family:${emailFonts.sans};font-size:14px;line-height:1.6;color:#6b7280;">Trip total ${totalTxt}${fullUpfront ? '' : ` · ${pct}% deposit now, balance before travel`}</p>`
     : `<p style="margin:0 0 18px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">We will confirm the exact figure if needed — reply to this email or WhatsApp us.</p>`
 
   const bodyHtml = `${amountBlock}
-    <p style="margin:0 0 18px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">This link opens your <strong>dashboard preview</strong> for this transfer. Online card checkout will appear here when activated — for now you can also pay by arrangement with our desk.</p>
+    <p style="margin:0 0 18px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Sign in with this email address. On your dashboard, use <strong>${fullUpfront ? 'Pay now' : 'Pay deposit'}</strong> to pay by card.</p>
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 22px 0;border-collapse:collapse;">
       <tr>
         <td style="padding:0;">
-          <a href="${payHref}" style="${ctaGold}">Open payment preview</a>
+          <a href="${payHref}" style="${ctaGreen}">Pay now</a>
         </td>
       </tr>
     </table>
-    <p style="margin:0 0 12px 0;font-family:${emailFonts.sans};font-size:12px;line-height:1.6;color:#6b7280;">Preview URL (placeholder): <a href="${payHref}" style="color:#2d6a4a;word-break:break-all;">${esc(payHref)}</a></p>
-    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Questions? <a href="tel:+353874464766" style="color:${gs.green};font-weight:600;">+353 87 446 4766</a> · <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">Client dashboard</a></p>`
+    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Questions? <a href="tel:+353874464766" style="color:${gs.green};font-weight:600;">+353 87 446 4766</a> · <a href="${payHref}" style="color:${gs.green};font-weight:600;">Client dashboard</a></p>`
 
   const htmlRaw = buildGsolTransactionalEmail({
     documentTitle: subject,

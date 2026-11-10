@@ -20,9 +20,9 @@ import { AdminTestimonialsPanel } from '../components/admin-testimonials-panel'
 import { AdminDocumentSendDesk } from '../components/admin-document-send-desk'
 import { AdminEmailsCommsDesk } from '../components/admin-emails-comms-desk'
 import { AdminMailDesk, type AdminMailSeed } from '../components/admin-mail-desk'
+import { AdminCustomersDesk, type AdminCustomerDeskSeed } from '../components/admin-customers-desk'
 import { AdminEnquiryCardQueue } from '../components/admin-enquiry-card-queue'
 import { ClientDocumentDesk } from '../components/client-documents/client-document-desk'
-import { quotationSeedFromEnquiry } from '../lib/enquiry-quotation-seed'
 import { TransferPaymentStatusBadge } from '../components/transfer-payment-status-badge'
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
 import { formatDateTimeDdMmYy } from '../lib/date-format-ie'
@@ -3713,6 +3713,7 @@ export function AdminDashboardPage() {
   const [activeAdminSection, setActiveAdminSection] = useState<AdminPortalSectionId>('forms')
   const [clientDocSeedEnquiryId, setClientDocSeedEnquiryId] = useState<string | null>(null)
   const [mailSeed, setMailSeed] = useState<AdminMailSeed | null>(null)
+  const [customerDeskSeed, setCustomerDeskSeed] = useState<AdminCustomerDeskSeed | null>(null)
 
   const openClientDocumentFromEnquiry = useCallback((row: { id: string }) => {
     setClientDocSeedEnquiryId(row.id)
@@ -3720,34 +3721,25 @@ export function AdminDashboardPage() {
   }, [])
 
   const openMailFromEnquiry = useCallback((row: { id: string; email: string; full_name: string; reference_id: string; phone_whatsapp?: string | null; interest?: string | null }) => {
-    setMailSeed({
-      view: 'compose',
-      to: row.email,
-      customerName: row.full_name,
-      enquiryId: row.id,
-      enquiryReference: row.reference_id,
+    setCustomerDeskSeed({
+      email: row.email,
+      name: row.full_name,
       phone: row.phone_whatsapp || '',
-      interest: row.interest || '',
-      threadId: ''
+      tab: 'email',
+      nonce: Date.now()
     })
-    setActiveAdminSection('mail')
+    setActiveAdminSection('customers')
   }, [])
 
   const openQuotationFromEnquiry = useCallback((row: EnquiryRow) => {
-    const quote = quotationSeedFromEnquiry(row)
-    setMailSeed({
-      view: 'compose',
-      to: row.email,
-      customerName: row.full_name,
-      enquiryId: row.id,
-      enquiryReference: row.reference_id,
+    setCustomerDeskSeed({
+      email: row.email,
+      name: row.full_name,
       phone: row.phone_whatsapp || '',
-      interest: quote.destination || row.interest || '',
-      travelDates: quote.travelDates,
-      numberOfGuests: quote.numberOfGuests,
-      templateId: 'quotation'
+      tab: 'quote',
+      nonce: Date.now()
     })
-    setActiveAdminSection('mail')
+    setActiveAdminSection('customers')
   }, [])
 
   const clearMailSeed = useCallback(() => {
@@ -3903,6 +3895,14 @@ export function AdminDashboardPage() {
           adminFirstName={adminGreetingFirst}
         />
 
+
+        <AdminPortalSection activeSection={activeAdminSection} section="customers">
+          <AdminCustomersDesk
+            accessToken={session?.access_token ?? null}
+            onSeedConsumed={() => setCustomerDeskSeed(null)}
+            seed={customerDeskSeed}
+          />
+        </AdminPortalSection>
 
         <AdminPortalSection activeSection={activeAdminSection} section="desk">
         <AdminOperationsSectionShell

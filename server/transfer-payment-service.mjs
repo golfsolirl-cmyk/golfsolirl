@@ -9,6 +9,7 @@ import {
   sendTransferPaymentCustomerEmails
 } from './transfer-payment-customer-email.mjs'
 import { notifyClientPortalTransferPayment } from './portal-transfer-payment-notify.mjs'
+import { stampUnpaidDeadlineIfNeeded } from './transfer-unpaid-cancel-service.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
   const e = new Error(message)
@@ -177,6 +178,9 @@ export const handleTransferPaymentAdmin = async (body, env = process.env, meta =
       .eq('id', bookingId)
     if (pErr) {
       throwStatus(pErr.message, 500)
+    }
+    if (price !== null && price >= 0.5) {
+      await stampUnpaidDeadlineIfNeeded(admin, bookingId)
     }
     await admin.from('transfer_booking_events').insert({
       booking_id: bookingId,

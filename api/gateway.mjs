@@ -29,6 +29,7 @@ import {
   handleTransferBookingNoDriverSweep,
   handleTransferRejectNoDriver
 } from '../server/transfer-booking-no-driver-service.mjs'
+import { handleTransferRebook } from '../server/transfer-unpaid-cancel-service.mjs'
 import { handleTransferBalanceReminderSweep, handleTransferPaymentAdmin } from '../server/transfer-payment-service.mjs'
 import { handleAdminRevenueStats } from '../server/admin-revenue-stats-service.mjs'
 import { handleTransferRefund } from '../server/transfer-refund-service.mjs'
@@ -55,6 +56,7 @@ import {
   handleClientEnquiryDocumentPdf
 } from '../server/client-enquiry-document-email.mjs'
 import { handleAdminMail, handleGmailOauthCallback } from '../server/admin-mail-service.mjs'
+import { handleDeskCustomers, handleDeskQuoteDecision } from '../server/desk-quote-service.mjs'
 import { readIncomingMessageBodyUtf8, readIncomingMessageBodyBuffer } from '../server/vercel-read-body.mjs'
 
 const readStreamBody = (req) =>
@@ -478,6 +480,19 @@ export default async function handler(req, res) {
         return
       }
 
+      case 'transfer-rebook': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const result = await handleTransferRebook(payload, process.env, { authHeader })
+        jsonEnd(res, 200, result)
+        return
+      }
+
       case 'transfer-balance-reminder-sweep': {
         if (req.method !== 'GET' && req.method !== 'POST') {
           jsonEnd(res, 405, { message: 'Method not allowed' })
@@ -828,6 +843,31 @@ export default async function handler(req, res) {
         const rawBuffer = await readIncomingMessageBodyBuffer(req)
         const sig = req.headers['stripe-signature']
         const result = await handleStripeWebhook(rawBuffer, sig, process.env)
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'desk-customers': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const result = await handleDeskCustomers(payload, process.env, { authHeader })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'desk-quote-decision': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const result = await handleDeskQuoteDecision(payload, process.env)
         jsonEnd(res, 200, result)
         return
       }

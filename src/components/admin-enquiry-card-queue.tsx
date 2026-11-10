@@ -532,7 +532,7 @@ export function AdminEnquiryCardQueue({
                       type="button"
                       variant="outlineOnLight"
                     >
-                      Branded email
+                      Email customer
                     </LuxuryButton>
                   ) : null}
                   <LuxuryButton
@@ -564,9 +564,9 @@ export function AdminEnquiryCardQueue({
                 {onCreateDocument || onCreateQuotation || onEmailCustomer ? (
                   <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.5rem] border border-fairway-200 bg-fairway-50/80 px-4 py-4">
                     <div>
-                      <p className="text-sm font-semibold text-forest-950">Reply with a branded letter or email</p>
+                      <p className="text-sm font-semibold text-forest-950">Reply with a quotation or document</p>
                       <p className="mt-0.5 text-xs text-forest-700">
-                        Create a golf holiday quotation, open a Golf Sol document, or compose a branded email.
+                        Create a golf holiday quotation or a Golf Sol document. Use Email customer above to write to them — that send uses Golf Sol stationery.
                       </p>
                     </div>
                     <div className="flex flex-wrap gap-2">
@@ -578,11 +578,6 @@ export function AdminEnquiryCardQueue({
                       {onCreateDocument ? (
                         <LuxuryButton className="!px-5 !py-2.5" onClick={() => onCreateDocument(row)} type="button" variant="outlineOnLight">
                           Create document
-                        </LuxuryButton>
-                      ) : null}
-                      {onEmailCustomer ? (
-                        <LuxuryButton className="!px-5 !py-2.5" onClick={() => onEmailCustomer(row)} type="button" variant="outlineOnLight">
-                          Branded email
                         </LuxuryButton>
                       ) : null}
                     </div>

@@ -53,11 +53,16 @@ export const formatBalanceDueLine = (scheduledAtIso: string | null | undefined):
 export const clientTransferOperationalStatusLabel = (t: {
   readonly status: string
   readonly payment_status?: string | null
+  readonly cancel_reason?: string | null
+  readonly payment_attempt?: number | null
 }): string => {
   const pay = String(t.payment_status ?? 'unpaid').toLowerCase()
   const st = String(t.status ?? '').toLowerCase()
   if (pay === 'paid' && st === 'pending') {
     return 'confirmed'
+  }
+  if (st === 'cancelled' && String(t.cancel_reason ?? '') === 'unpaid_timeout') {
+    return (t.payment_attempt ?? 1) >= 2 ? 'cancelled — closed' : 'cancelled — unpaid'
   }
   return String(t.status ?? '').replace(/_/g, ' ')
 }

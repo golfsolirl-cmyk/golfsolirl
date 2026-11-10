@@ -52,7 +52,12 @@ const throwStatus = (message, statusCode, code) => {
   throw err
 }
 
-const isEmailSendEnabled = (env) => String(env.EMAIL_SEND_ENABLED ?? '').trim().toLowerCase() === 'true'
+const isEmailSendEnabled = (env) => {
+  const raw = String(env.EMAIL_SEND_ENABLED ?? '').trim().toLowerCase()
+  if (raw === 'false' || raw === '0' || raw === 'off' || raw === 'no') return false
+  if (raw === 'true' || raw === '1' || raw === 'on' || raw === 'yes') return true
+  return Boolean(env.RESEND_API_KEY?.trim() && env.RESEND_FROM_EMAIL?.trim())
+}
 
 const requireSendEnabled = (env) => {
   if (!isEmailSendEnabled(env)) {

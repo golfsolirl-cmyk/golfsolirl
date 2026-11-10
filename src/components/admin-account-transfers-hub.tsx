@@ -927,7 +927,7 @@ export function AdminAccountTransfersHub(props: {
             className="!px-3 !py-2 !text-xs !font-semibold !border-2 !border-chrome-700/35 !bg-chrome-100 !text-brand-950 hover:!bg-chrome-200/90 hover:!border-chrome-800/40"
             disabled={reqBusy || !clientMail}
             onClick={() => void sendPaymentRequestEmail(b.id)}
-            title={!clientMail ? 'No client email on this transfer row' : 'Branded email with dashboard payment preview link'}
+            title={!clientMail ? 'No client email on this transfer row' : 'Golf Sol email with a Pay now link to their dashboard'}
             type="button"
             variant="white"
           >

@@ -96,10 +96,14 @@ export function ClientPortalPaymentsDue(props: {
   readonly historyAnchorId?: string
   /** Show completed payment history (default true on payments tab). */
   readonly showPaymentHistory?: boolean
+  readonly accessToken?: string | null
+  readonly onRebooked?: (bookingId: string) => void
 }) {
   const [invoices, setInvoices] = useState<InvoiceDueRow[]>([])
   const [payBusyId, setPayBusyId] = useState<string | null>(null)
   const [payBusyPhase, setPayBusyPhase] = useState<'deposit' | 'balance' | 'full' | null>(null)
+  const [rebookBusyId, setRebookBusyId] = useState<string | null>(null)
+  const [rebookMessage, setRebookMessage] = useState<string | null>(null)
 
   const loadInvoices = useCallback(async () => {
     if (!props.supabase || !props.userId) {
@@ -153,10 +157,45 @@ export function ClientPortalPaymentsDue(props: {
   const pricedUnpaidTransfers = useMemo(
     () =>
       unpaidTransfers.filter(
-        (t) => typeof t.admin_price_eur === 'number' && Number.isFinite(t.admin_price_eur) && t.admin_price_eur >= 0.5
+        (t) =>
+          t.status !== 'cancelled' &&
+          typeof t.admin_price_eur === 'number' &&
+          Number.isFinite(t.admin_price_eur) &&
+          t.admin_price_eur >= 0.5
       ),
     [unpaidTransfers]
   )
+
+  const cancelledBookings = useMemo(
+    () => props.transfers.filter((t) => t.status === 'cancelled' && t.cancel_reason === 'unpaid_timeout'),
+    [props.transfers]
+  )
+
+  const rebook = async (bookingId: string) => {
+    if (!props.accessToken) {
+      setRebookMessage('Sign in again to reopen this booking.')
+      return
+    }
+    setRebookBusyId(bookingId)
+    setRebookMessage(null)
+    try {
+      const res = await fetch('/api/transfer-rebook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${props.accessToken}` },
+        body: JSON.stringify({ bookingId })
+      })
+      const data = (await res.json().catch(() => ({}))) as { message?: string }
+      if (!res.ok) {
+        throw new Error(data.message || 'Could not reopen this booking.')
+      }
+      setRebookMessage(data.message || 'Booking reopened. Pay within 3 days.')
+      props.onRebooked?.(bookingId)
+    } catch (error) {
+      setRebookMessage(error instanceof Error ? error.message : 'Could not reopen this booking.')
+    } finally {
+      setRebookBusyId(null)
+    }
+  }
 
   const unpaidInvoices = useMemo(
     () =>
@@ -249,6 +288,43 @@ export function ClientPortalPaymentsDue(props: {
           </LuxuryButton>
         ) : null}
       </div>
+
+      {rebookMessage ? (
+        <p className="mt-4 rounded-2xl border border-forest-200 bg-white px-4 py-3 text-sm text-forest-900" role="status">
+          {rebookMessage}
+        </p>
+      ) : null}
+
+      {cancelledBookings.length > 0 ? (
+        <ul className="mt-6 space-y-3" aria-label="Cancelled bookings">
+          {cancelledBookings.map((t) => {
+            const canRebook = (t.payment_attempt ?? 1) < 2
+            return (
+              <li className="rounded-2xl border border-forest-200 bg-white px-4 py-4 sm:px-5" key={t.id}>
+                <p className="font-ge text-lg font-semibold text-forest-950">
+                  {t.pickup_label} → {t.dropoff_label}
+                </p>
+                <p className="mt-1 text-sm text-forest-800">
+                  Cancelled because it was not paid within 3 days.
+                  {canRebook
+                    ? ' You can start it again once. Pay the deposit or the full amount within 3 days.'
+                    : ' This was reopened once already, so it stays closed.'}
+                </p>
+                {canRebook ? (
+                  <LuxuryButton
+                    className="mt-3 !px-5 !py-2.5"
+                    disabled={rebookBusyId === t.id}
+                    onClick={() => void rebook(t.id)}
+                    type="button"
+                  >
+                    {rebookBusyId === t.id ? 'Reopening…' : 'Rebook'}
+                  </LuxuryButton>
+                ) : null}
+              </li>
+            )
+          })}
+        </ul>
+      ) : null}
 
       {pricedUnpaidTransfers.length > 0 ? (
         <ul className="mt-6 space-y-3" aria-label="Transfer payments due">

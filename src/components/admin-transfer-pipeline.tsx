@@ -36,6 +36,7 @@ type TransferBookingRow = {
   deposit_percent?: number | null
   stripe_payment_intent_id?: string | null
   stripe_checkout_session_id?: string | null
+  payment_attempt?: number | null
 }
 
 type DriverRow = {
@@ -68,6 +69,9 @@ const formatEurAdmin = (n: number) =>
 const bookingHeadline = (b: TransferBookingRow) => {
   if (b.status === 'cancelled' && typeof b.cancel_reason === 'string' && b.cancel_reason.startsWith('no_driver')) {
     return 'Declined — no driver'
+  }
+  if (b.status === 'cancelled' && b.cancel_reason === 'unpaid_timeout') {
+    return (b.payment_attempt ?? 1) >= 2 ? 'Cancelled — unpaid, closed' : 'Cancelled — unpaid'
   }
   return statusLabel[b.status] ?? b.status
 }

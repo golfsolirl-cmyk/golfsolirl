@@ -18,6 +18,7 @@ import { GOLFSOL_BRAND_LOGO_INTRINSIC } from '../lib/brand-logo-assets'
 import { cx } from '../lib/utils'
 
 export type AdminPortalSectionId =
+  | 'customers'
   | 'desk'
   | 'forms'
   | 'clientDocs'
@@ -39,10 +40,11 @@ export type AdminSidebarItem = {
 }
 
 export const ADMIN_SIDEBAR_ITEMS: readonly AdminSidebarItem[] = [
+  { id: 'customers', label: 'Customers', description: 'Quotes, invoices, and payments', icon: Users },
   { id: 'forms', label: 'New quotes', description: 'Website forms waiting for a price', icon: FileText },
-  { id: 'desk', label: 'Pay & replies', description: 'Money in, guest messages, add a price', icon: Inbox },
+  { id: 'desk', label: 'Pay & replies', description: 'Money in and guest messages', icon: Inbox },
   { id: 'mail', label: 'Email inbox', description: 'Read and reply to customer email', icon: Mails },
-  { id: 'proposals', label: 'Send a PDF', description: 'Email a quote or document', icon: PenLine },
+  { id: 'proposals', label: 'Send a PDF', description: 'Email a document', icon: PenLine },
   { id: 'transfers', label: 'Transfers', description: 'Paid trips and sending a driver', icon: Car },
   { id: 'packages', label: 'Trip prices', description: 'Guest builds that need a price', icon: Package },
   { id: 'drivers', label: 'Driver diary', description: 'Busy days and the printed day sheet', icon: Calendar },
@@ -54,9 +56,9 @@ export const ADMIN_SIDEBAR_ITEMS: readonly AdminSidebarItem[] = [
 ] as const
 
 const ADMIN_NAV_GROUPS: readonly { readonly label: string; readonly ids: readonly AdminPortalSectionId[] }[] = [
-  { label: 'Start here', ids: ['forms', 'desk', 'mail', 'proposals'] },
+  { label: 'Start here', ids: ['customers', 'forms', 'desk', 'mail'] },
   { label: 'On the day', ids: ['transfers', 'packages', 'drivers', 'scan'] },
-  { label: 'Now and then', ids: ['clientDocs', 'emails', 'portal', 'testimonials'] }
+  { label: 'Now and then', ids: ['proposals', 'clientDocs', 'emails', 'portal', 'testimonials'] }
 ]
 
 type AdminSidebarProps = {

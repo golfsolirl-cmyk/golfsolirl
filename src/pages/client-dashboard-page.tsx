@@ -222,6 +222,8 @@ type ClientPortalTransferBookingRow = {
   enquiry_reference_id?: string | null
   created_at?: string | null
   updated_at?: string | null
+  cancel_reason?: string | null
+  payment_attempt?: number | null
 }
 
 export function ClientDashboardPage() {
@@ -366,9 +368,9 @@ export function ClientDashboardPage() {
       }
     }
     const transferSelect =
-      'id, pickup_label, dropoff_label, status, scheduled_at, admin_price_eur, admin_price_vat_treatment, deposit_percent, payment_status, amount_received_eur, next_available_driver, booking_source, package_build_id, enquiry_reference_id, created_at, updated_at'
+      'id, pickup_label, dropoff_label, status, scheduled_at, admin_price_eur, admin_price_vat_treatment, deposit_percent, payment_status, amount_received_eur, next_available_driver, booking_source, package_build_id, enquiry_reference_id, created_at, updated_at, cancel_reason, payment_attempt'
     let tbRes = await supabase.from('transfer_bookings').select(transferSelect).or(orTransfer.join(',')).order('created_at', { ascending: false }).limit(80)
-    if (tbRes.error && /amount_received_eur/i.test(tbRes.error.message)) {
+    if (tbRes.error && /amount_received_eur|cancel_reason|payment_attempt/i.test(tbRes.error.message)) {
       tbRes = (await supabase
         .from('transfer_bookings')
         .select(
@@ -1989,6 +1991,7 @@ export function ClientDashboardPage() {
 
         {activeClientSection === 'home' ? (
         <ClientPortalPaymentsDue
+          accessToken={session?.access_token ?? null}
           anchorId="client-pay-now"
           className="mb-10"
           onGoToPaymentsTab={() => {
@@ -1998,6 +2001,15 @@ export function ClientDashboardPage() {
             })
           }}
           onPayTransfer={handlePayTransfer}
+          onRebooked={(bookingId) => {
+            setTransferBookingsPortal((rows) =>
+              rows.map((row) =>
+                row.id === bookingId
+                  ? { ...row, status: 'pending', payment_status: 'unpaid', payment_attempt: 2, cancel_reason: null }
+                  : row
+              )
+            )
+          }}
           onViewInvoice={(invoiceId) => {
             setActiveClientSection('payments')
             setInvoiceHighlightId(invoiceId)
@@ -2058,9 +2070,19 @@ export function ClientDashboardPage() {
           <div className="space-y-10">
             <BankTransferPayCard audience="client" />
             <ClientPortalPaymentsDue
+              accessToken={session?.access_token ?? null}
               historyAnchorId="client-all-payments"
               onDownloadTransferReceipt={handleTransferPaidInvoicePdf}
               onPayTransfer={handlePayTransfer}
+              onRebooked={(bookingId) => {
+                setTransferBookingsPortal((rows) =>
+                  rows.map((row) =>
+                    row.id === bookingId
+                      ? { ...row, status: 'pending', payment_status: 'unpaid', payment_attempt: 2, cancel_reason: null }
+                      : row
+                  )
+                )
+              }}
               onViewInvoice={(invoiceId) => {
                 setInvoiceHighlightId(invoiceId)
                 setInvoicePanelRefresh((n) => n + 1)

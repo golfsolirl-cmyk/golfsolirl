@@ -3,6 +3,7 @@ import { Resend } from 'resend'
 import { requireAdminFromBearer } from './auth-verify-admin.mjs'
 import { finalizeGsolEmailHtml } from './email-layout.mjs'
 import { buildBrandedClientPortalEmailHtml } from './branded-client-portal-email.mjs'
+import { resolveResendToAddress, resendSandboxRecipientHint } from './resend-delivery-email.mjs'
 
 const getSiteOrigin = (env) => {
   const site = env.SITE_URL?.trim()
@@ -134,21 +135,20 @@ export const handleSendClientPortalEmail = async (body, env = process.env, meta 
     auth: { persistSession: false, autoRefreshToken: false }
   })
 
-  const { data: clientProfile, error: clientErr } = await supabase
+  const { data: profileRows, error: clientErr } = await supabase
     .from('profiles')
     .select('id, email, full_name')
     .ilike('email', clientEmail)
-    .maybeSingle()
+    .limit(1)
 
-  if (clientErr || !clientProfile?.id) {
-    const err = new Error('No client account matches that email. They must sign in once with this address first.')
-    err.statusCode = 404
-    throw err
+  if (clientErr) {
+    console.error('[client-portal-email] profile lookup failed:', clientErr.message)
   }
+  const clientProfile = Array.isArray(profileRows) ? profileRows[0] : null
 
   const origin = getSiteOrigin(env)
   const dashboardUrl = `${origin}/dashboard/login?next=${encodeURIComponent('/dashboard')}`
-  const greeting = (clientProfile.full_name ?? '').trim().split(/\s+/)[0] || 'there'
+  const greeting = (clientProfile?.full_name ?? '').trim().split(/\s+/)[0] || 'there'
   const paragraphs = splitMessageParagraphs(message)
 
   const rawHtml = buildBrandedClientPortalEmailHtml({
@@ -162,9 +162,10 @@ export const handleSendClientPortalEmail = async (body, env = process.env, meta 
   const html = finalizeGsolEmailHtml(rawHtml)
 
   const resend = new Resend(resendKey)
+  const deliverTo = resolveResendToAddress(clientEmail, env)
   const { error: sendError } = await resend.emails.send({
     from: fromEmail,
-    to: [clientEmail],
+    to: [deliverTo],
     subject,
     html,
     ...(pdfAttachments.length
@@ -179,9 +180,22 @@ export const handleSendClientPortalEmail = async (body, env = process.env, meta 
   })
 
   if (sendError) {
-    const err = new Error(sendError.message || 'Email could not be sent.')
+    const hint = /only send|testing emails|verify a domain|not verified/i.test(sendError.message || '')
+      ? ` ${resendSandboxRecipientHint(env)}`
+      : ''
+    const err = new Error(`${sendError.message || 'Email could not be sent.'}${hint}`)
     err.statusCode = 502
     throw err
+  }
+
+  if (!clientProfile?.id) {
+    return {
+      ok: true,
+      logged: false,
+      attachmentCount: namesForLog.length,
+      documentsStored: 0,
+      message: `Sent to ${deliverTo}. They do not have a dashboard login yet, so it was not filed on a portal account.`
+    }
   }
 
   const { error: logErr } = await supabase.from('portal_client_updates').insert({

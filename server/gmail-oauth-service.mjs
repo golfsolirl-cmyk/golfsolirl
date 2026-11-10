@@ -343,7 +343,12 @@ export const publicGmailStatus = (account, env) => ({
   connected: Boolean(account),
   emailAddress: account?.email_address || '',
   scopes: account?.scopes || '',
-  sendEnabled: String(env.EMAIL_SEND_ENABLED ?? '').trim().toLowerCase() === 'true',
+  sendEnabled: (() => {
+    const raw = String(env.EMAIL_SEND_ENABLED ?? '').trim().toLowerCase()
+    if (raw === 'false' || raw === '0' || raw === 'off' || raw === 'no') return false
+    if (raw === 'true' || raw === '1' || raw === 'on' || raw === 'yes') return true
+    return Boolean(env.RESEND_API_KEY?.trim() && env.RESEND_FROM_EMAIL?.trim())
+  })(),
   googleConfigured: Boolean(googleClientId(env) && googleClientSecret(env) && hasOauthEncryptionKey(env))
 })
 

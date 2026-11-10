@@ -470,6 +470,25 @@ export const handleStripeWebhook = async (rawBody, signatureHeader, env = proces
 
 
 
+    const metaDesk =
+
+      typeof meta.desk_quote_id === 'string' && meta.desk_quote_id.trim()
+
+        ? meta.desk_quote_id.trim()
+
+        : ''
+
+    const markDeskPaid = async (column, value) => {
+      if (!value) return
+      const { error } = await supabase
+        .from('desk_quotes')
+        .update({ status: 'paid', paid_at: paidAt, updated_at: paidAt })
+        .eq(column, value)
+      if (error && !/desk_quotes|schema cache|does not exist/i.test(error.message || '')) {
+        console.error('[stripe-webhook] desk quote paid', error.message)
+      }
+    }
+
     if (metaPortal) {
 
       await markPortalInvoicePaid(supabase, metaPortal, paymentIntent, paidAt, {
@@ -479,6 +498,7 @@ export const handleStripeWebhook = async (rawBody, signatureHeader, env = proces
             ? session.amount_total / 100
             : null
       })
+      await markDeskPaid('portal_invoice_id', metaPortal)
 
     } else if (metaTransfer) {
 
@@ -501,6 +521,8 @@ export const handleStripeWebhook = async (rawBody, signatureHeader, env = proces
       }
 
     }
+
+    await markDeskPaid('id', metaDesk)
 
   }
 

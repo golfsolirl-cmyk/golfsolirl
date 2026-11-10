@@ -24,6 +24,7 @@ import {
   handleTransferBookingNoDriverSweep,
   handleTransferRejectNoDriver
 } from './server/transfer-booking-no-driver-service.mjs'
+import { handleTransferRebook } from './server/transfer-unpaid-cancel-service.mjs'
 import { handleTransferBalanceReminderSweep, handleTransferPaymentAdmin } from './server/transfer-payment-service.mjs'
 import { handleAdminRevenueStats } from './server/admin-revenue-stats-service.mjs'
 import { handlePackageBuildAdminPublish } from './server/package-build-admin-publish-service.mjs'
@@ -44,6 +45,7 @@ import {
   handleClientEnquiryDocumentPdf
 } from './server/client-enquiry-document-email.mjs'
 import { handleAdminMail, handleGmailOauthCallback } from './server/admin-mail-service.mjs'
+import { handleDeskCustomers, handleDeskQuoteDecision } from './server/desk-quote-service.mjs'
 import { handleNewsletterSubscribe } from './server/newsletter-subscribe-service.mjs'
 import { handleStripeWebhook } from './server/stripe-webhook-service.mjs'
 import { readIncomingMessageBodyBuffer } from './server/vercel-read-body.mjs'
@@ -1071,10 +1073,13 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
     jsonApi('/api/enquiry-contact-verify-send', handleEnquiryContactVerifySend as never, { ip: true })
     jsonApi('/api/enquiry-contact-verify-check', handleEnquiryContactVerifyCheck as never, { ip: true })
     jsonApi('/api/enquiry-admin-quote', handleEnquiryAdminQuote as never, { auth: true })
+    jsonApi('/api/transfer-rebook', handleTransferRebook as never, { auth: true })
     jsonApi('/api/enquiry-admin-message', handleEnquiryAdminMessage as never, { auth: true })
     jsonApi('/api/admin-send-document', handleAdminSendDocument as never, { auth: true })
     jsonApi('/api/client-enquiry-document', handleClientEnquiryDocument as never, { auth: true })
     jsonApi('/api/client-enquiry-document-email', handleClientEnquiryDocumentEmail as never, { auth: true })
+    jsonApi('/api/desk-customers', handleDeskCustomers as never, { auth: true })
+    jsonApi('/api/desk-quote-decision', handleDeskQuoteDecision as never)
 
     server.middlewares.use('/api/admin-mail', async (request, response) => {
       if (request.method !== 'POST') {

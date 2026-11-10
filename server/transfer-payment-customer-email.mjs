@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import { resolveResendToAddress, resendSandboxRecipientHint } from './resend-delivery-email.mjs'
 import {
   buildPortalInvoicePaidThankYouEmail,
   buildTransferBalancePayNowEmail,
@@ -103,16 +104,20 @@ export const sendBookingEmailHtml = async (admin, booking, content, env = proces
     return { ok: false, reason: 'no_client_email' }
   }
   const resend = new Resend(resendKey)
+  const deliverTo = resolveResendToAddress(to, env)
   const attachments = Array.isArray(opts.attachments) ? opts.attachments.filter((file) => file?.filename && file?.content) : []
   const { error: sendErr } = await resend.emails.send({
     from,
-    to,
+    to: deliverTo,
     subject: content.subject,
     html: content.html,
     ...(attachments.length ? { attachments } : {})
   })
   if (sendErr) {
-    const msg = sendErr.message ?? 'Resend failed'
+    const hint = /only send|testing emails|verify a domain|not verified/i.test(sendErr.message || '')
+      ? ` ${resendSandboxRecipientHint(env)}`
+      : ''
+    const msg = `${sendErr.message ?? 'Resend failed'}${hint}`
     if (opts.throwOnError) {
       const e = new Error(msg)
       e.statusCode = 500
