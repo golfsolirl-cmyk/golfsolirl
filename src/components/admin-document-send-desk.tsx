@@ -1,22 +1,44 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { FileText, Send } from 'lucide-react'
 import { ADMIN_DOCUMENT_CATALOG } from '../lib/admin-document-catalog'
 import { LuxuryButton } from './ui/button'
 import { cx } from '../lib/utils'
 
-type AdminDocumentSendDeskProps = {
-  readonly accessToken: string | null
+type AdminDocumentSendSeed = {
+  readonly email: string
+  readonly clientRef?: string
+  readonly name?: string
 }
 
-export function AdminDocumentSendDesk({ accessToken }: AdminDocumentSendDeskProps) {
+type AdminDocumentSendDeskProps = {
+  readonly accessToken: string | null
+  readonly seed?: AdminDocumentSendSeed | null
+}
+
+export function AdminDocumentSendDesk({ accessToken, seed }: AdminDocumentSendDeskProps) {
   const [documentType, setDocumentType] = useState(ADMIN_DOCUMENT_CATALOG[0]?.id ?? 'custom_letter')
-  const [clientRef, setClientRef] = useState('')
-  const [clientEmail, setClientEmail] = useState('')
+  const [clientRef, setClientRef] = useState(seed?.clientRef ?? '')
+  const [clientEmail, setClientEmail] = useState(seed?.email ?? '')
+  const seededEmail = useRef(seed?.email ?? '')
   const [subject, setSubject] = useState('')
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
   const [status, setStatus] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!seed?.email) return
+    const customerChanged = seededEmail.current !== seed.email
+    seededEmail.current = seed.email
+    setClientEmail(seed.email)
+    if (seed.clientRef) setClientRef(seed.clientRef)
+    if (customerChanged) {
+      setMessage('')
+      setSubject('')
+      setStatus(null)
+      setError(null)
+    }
+  }, [seed?.email, seed?.clientRef])
 
   const selected = useMemo(
     () => ADMIN_DOCUMENT_CATALOG.find((d) => d.id === documentType) ?? ADMIN_DOCUMENT_CATALOG[0],
@@ -67,7 +89,10 @@ export function AdminDocumentSendDesk({ accessToken }: AdminDocumentSendDeskProp
   return (
     <section
       aria-label="Send a PDF document to a client"
-      className="scroll-mt-28 overflow-hidden rounded-[2rem] border-2 border-forest-200/80 bg-gradient-to-br from-white via-offwhite/80 to-fairway-50/40 p-6 shadow-soft sm:p-8"
+      className={cx(
+        'scroll-mt-28 overflow-hidden rounded-[2rem] border-2 border-forest-200/80 p-6 shadow-soft sm:p-8',
+        seed?.email ? 'bg-offwhite' : 'bg-gradient-to-br from-white via-offwhite/80 to-fairway-50/40'
+      )}
       id="admin-hub-document-send"
     >
       <div className="flex flex-wrap items-start gap-4">
@@ -81,9 +106,10 @@ export function AdminDocumentSendDesk({ accessToken }: AdminDocumentSendDeskProp
           <h2 className="font-display mt-1 text-xl font-bold tracking-tight text-forest-950 sm:text-2xl">
             Send a PDF to a client
           </h2>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-forest-600">
-            Pick a document from your house PDF list, add the client ID or email, write a message, and send. They get the
-            PDF by email and it appears on their dashboard Documents tab.
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-forest-800">
+            {seed?.email
+              ? `This PDF emails to ${seed.name ? `${seed.name} · ` : ''}${seed.email}. Pick the document, add a message, and send.`
+              : 'Pick a document from your house PDF list, add the client ID or email, write a message, and send. They get the PDF by email and it appears on their dashboard Documents tab.'}
           </p>
         </div>
       </div>

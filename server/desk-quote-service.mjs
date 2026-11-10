@@ -9,6 +9,8 @@ import { requireAdminFromBearer } from './auth-verify-admin.mjs'
 import { buildGsolTransactionalEmail, finalizeGsolEmailHtml } from './email-layout.mjs'
 import { ctaGreen, emailFonts, escapeHtml, gs } from './branded-email-shell.mjs'
 import { buildGsolMasterDocumentPdf } from './gsol-master-document-pdf.mjs'
+import { computePhoneUniquenessKey, isLikelyMobileE164 } from './phone-e164.mjs'
+import { createEnquiryReferenceId } from '../shared/document-templates.mjs'
 import { gsolEmailBrand } from './email-constants.mjs'
 import { Resend } from 'resend'
 import { resolveResendToAddress, resendSandboxRecipientHint } from './resend-delivery-email.mjs'
@@ -327,6 +329,128 @@ const listCustomers = async (db) => {
 
   const customers = [...byEmail.values()].sort((a, b) => (a.latestAt < b.latestAt ? 1 : -1))
   return { ok: true, customers }
+}
+
+const rowsOrEmpty = async (query) => {
+  const result = await query
+  if (result.error && /phone_e164/i.test(result.error.message || '')) return []
+  if (result.error) throwStatus(result.error.message, 500)
+  return result.data || []
+}
+
+const customerCard = (row, source) => ({
+  email: cleanEmail(row.email),
+  name: row.full_name || '',
+  phone: source === 'profile' ? row.phone || '' : row.phone_whatsapp || '',
+  accountReference: source === 'profile' ? row.account_reference_id || '' : row.reference_id || '',
+  profileId: source === 'profile' ? row.id : null,
+  enquiryCount: source === 'profile' ? 0 : 1,
+  latestAt: new Date().toISOString()
+})
+
+const findExistingCustomer = async (db, email, phoneKey) => {
+  const [profileByPhone, enquiryByPhone, profileByEmail, enquiryByEmail] = await Promise.all([
+    rowsOrEmpty(
+      db.from('profiles').select('id, email, full_name, phone, account_reference_id, role').eq('phone_e164', phoneKey).limit(1)
+    ),
+    rowsOrEmpty(
+      db
+        .from('enquiries')
+        .select('email, full_name, phone_whatsapp, reference_id')
+        .eq('phone_e164', phoneKey)
+        .order('created_at', { ascending: false })
+        .limit(1)
+    ),
+    rowsOrEmpty(db.from('profiles').select('id, email, full_name, phone, account_reference_id, role').ilike('email', email).limit(1)),
+    rowsOrEmpty(
+      db
+        .from('enquiries')
+        .select('email, full_name, phone_whatsapp, reference_id')
+        .ilike('email', email)
+        .order('created_at', { ascending: false })
+        .limit(1)
+    )
+  ])
+
+  const phoneProfile = profileByPhone.find((row) => row.role !== 'admin' && cleanEmail(row.email))
+  if (phoneProfile) return { matched: 'phone', customer: customerCard(phoneProfile, 'profile') }
+  const phoneEnquiry = enquiryByPhone.find((row) => cleanEmail(row.email))
+  if (phoneEnquiry) return { matched: 'phone', customer: customerCard(phoneEnquiry, 'enquiry') }
+
+  const emailProfile = profileByEmail[0]
+  if (emailProfile?.role === 'admin') {
+    throwStatus('That email is a desk login. Use the guest’s own email.', 400)
+  }
+  if (emailProfile && cleanEmail(emailProfile.email)) {
+    return { matched: 'email', customer: customerCard(emailProfile, 'profile') }
+  }
+  const emailEnquiry = enquiryByEmail.find((row) => cleanEmail(row.email))
+  if (emailEnquiry) return { matched: 'email', customer: customerCard(emailEnquiry, 'enquiry') }
+  return null
+}
+
+const createCustomer = async (db, body) => {
+  const email = cleanEmail(body?.email)
+  const name = clip(body?.name, 160)
+  const phone = clip(body?.phone, 40)
+  if (!name) throwStatus('Enter the customer’s name.', 400)
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throwStatus('Enter a valid email.', 400)
+  const phoneKey = computePhoneUniquenessKey(phone)
+  if (!phoneKey || !isLikelyMobileE164(phoneKey)) {
+    throwStatus('Enter a mobile number, for example 087 446 4766.', 400)
+  }
+
+  const existing = await findExistingCustomer(db, email, phoneKey)
+  if (existing) {
+    return {
+      ok: true,
+      existing: true,
+      customer: existing.customer,
+      message:
+        existing.matched === 'phone'
+          ? 'That mobile is already on the desk. Opened their record.'
+          : 'That email is already on the desk. Opened their record.'
+    }
+  }
+
+  const reference = createEnquiryReferenceId()
+  const base = {
+    reference_id: reference,
+    email,
+    full_name: name,
+    interest: 'Added on the desk',
+    phone_whatsapp: phone,
+    phone_e164: phoneKey,
+    form_payload: { form: 'desk_manual_customer', fields: { source: 'Customers desk' } }
+  }
+  let payload = { ...base }
+  let inserted = await db.from('enquiries').insert(payload).select('reference_id').single()
+  if (inserted.error && /form_payload/i.test(inserted.error.message || '')) {
+    delete payload.form_payload
+    inserted = await db.from('enquiries').insert(payload).select('reference_id').single()
+  }
+  if (inserted.error && /phone_e164/i.test(inserted.error.message || '')) {
+    delete payload.phone_e164
+    inserted = await db.from('enquiries').insert(payload).select('reference_id').single()
+  }
+  if (inserted.error || !inserted.data) {
+    throwStatus(inserted.error?.message || 'Could not add this customer.', 500)
+  }
+
+  return {
+    ok: true,
+    existing: false,
+    customer: {
+      email,
+      name,
+      phone,
+      accountReference: inserted.data.reference_id || reference,
+      profileId: null,
+      enquiryCount: 1,
+      latestAt: new Date().toISOString()
+    },
+    message: `Added ${name}. Account ${inserted.data.reference_id || reference}.`
+  }
 }
 
 const customerDetail = async (db, email) => {
@@ -655,6 +779,9 @@ export const handleDeskCustomers = async (body, env = process.env, meta = {}) =>
     const email = cleanEmail(body?.email)
     if (!email) throwStatus('Enter a customer email.', 400)
     return customerDetail(db, email)
+  }
+  if (action === 'create-customer') {
+    return createCustomer(db, body)
   }
 
   if (action === 'send-quote' || action === 'send-invoice' || action === 'send-note') {

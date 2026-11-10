@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useId, useMemo, useState } from 'react'
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
+import { AdminDocumentSendDesk } from './admin-document-send-desk'
 import { LuxuryButton } from './ui/button'
 import { cx } from '../lib/utils'
 
@@ -10,7 +11,7 @@ export type AdminCustomerDeskSeed = {
   readonly nonce: number
 }
 
-type CustomerTab = 'overview' | 'quote' | 'invoice' | 'email'
+type CustomerTab = 'overview' | 'quote' | 'invoice' | 'email' | 'document'
 
 type CustomerRow = {
   email: string
@@ -175,6 +176,11 @@ export function AdminCustomersDesk(props: {
   const [subject, setSubject] = useState('')
   const [trip, setTrip] = useState<DeskTrip>(emptyTrip)
   const [lines, setLines] = useState<DeskLine[]>([])
+  const addFormRef = useRef<HTMLFormElement | null>(null)
+  const scrollToAdd = useRef(false)
+  const [newName, setNewName] = useState('')
+  const [newEmail, setNewEmail] = useState('')
+  const [newPhone, setNewPhone] = useState('')
   const [busy, setBusy] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
@@ -232,6 +238,10 @@ export function AdminCustomersDesk(props: {
   useEffect(() => {
     if (!selectedEmail) {
       setDetail(null)
+      if (scrollToAdd.current) {
+        scrollToAdd.current = false
+        addFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      }
       return
     }
     void loadDetail(selectedEmail)
@@ -284,16 +294,79 @@ export function AdminCustomersDesk(props: {
     }
   }
 
+  const openCustomer = (row: Pick<CustomerRow, 'email' | 'name' | 'phone'>) => {
+    setSelectedEmail(row.email)
+    setName(row.name)
+    setPhone(row.phone)
+    setTrip(emptyTrip())
+    setLines([])
+    setTab('overview')
+  }
+
+  const addCustomer = async () => {
+    if (!props.accessToken) return
+    const nextName = newName.trim()
+    const nextEmail = newEmail.trim().toLowerCase()
+    const nextPhone = newPhone.trim()
+    if (!nextName || !nextEmail || !nextPhone) {
+      setError('Enter a name, email, and mobile number.')
+      return
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(nextEmail)) {
+      setError('Enter a valid email.')
+      return
+    }
+    setBusy('create')
+    setError(null)
+    setNotice(null)
+    try {
+      const data = await deskRequest<{ message: string; customer: CustomerRow }>(props.accessToken, {
+        action: 'create-customer',
+        name: nextName,
+        email: nextEmail,
+        phone: nextPhone
+      })
+      setCustomers((current) => [data.customer, ...current.filter((row) => row.email !== data.customer.email)])
+      openCustomer(data.customer)
+      setNotice(data.message)
+      setNewName('')
+      setNewEmail('')
+      setNewPhone('')
+      void loadList()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not add this customer.')
+    } finally {
+      setBusy(null)
+    }
+  }
+
   const tabs: { id: CustomerTab; label: string }[] = [
     { id: 'overview', label: 'Everything' },
     { id: 'quote', label: 'Send quote' },
     { id: 'invoice', label: 'Send invoice' },
-    { id: 'email', label: 'Send email' }
+    { id: 'email', label: 'Send email' },
+    { id: 'document', label: 'Send a PDF' }
   ]
 
   return (
     <div className="grid gap-6 lg:grid-cols-[20rem_minmax(0,1fr)]">
       <section className="rounded-[2rem] border border-forest-100 bg-white p-4 shadow-soft sm:p-5">
+        <button
+          className="mb-4 min-h-11 w-full rounded-full bg-forest-900 px-4 text-sm font-bold text-white"
+          onClick={() => {
+            setNotice(null)
+            setError(null)
+            if (!selectedEmail) {
+              addFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+              return
+            }
+            scrollToAdd.current = true
+            setSelectedEmail('')
+          }}
+          type="button"
+        >
+          Add a customer
+        </button>
         <label className="block text-xs font-bold uppercase tracking-[0.14em] text-forest-700" htmlFor="customer-search">
           Find a customer
         </label>
@@ -319,12 +392,7 @@ export function AdminCustomersDesk(props: {
                     active ? 'border-forest-900 bg-forest-900 text-white' : 'border-forest-100 bg-offwhite text-forest-950 hover:border-forest-300'
                   )}
                   onClick={() => {
-                    setSelectedEmail(row.email)
-                    setName(row.name)
-                    setPhone(row.phone)
-                    setTrip(emptyTrip())
-                    setLines([])
-                    setTab('overview')
+                    openCustomer(row)
                     setNotice(null)
                     setError(null)
                   }}
@@ -347,8 +415,53 @@ export function AdminCustomersDesk(props: {
           <div>
             <h2 className="font-display text-2xl font-semibold text-forest-950">Customers</h2>
             <p className="mt-2 max-w-xl text-base leading-relaxed text-forest-800">
-              Pick someone on the left. You will see their quotes, invoices, and payments, and you can email a quote or an invoice from the tabs.
+              Add someone who has not filled in a form, or pick a customer on the left. You can then send a quote, an invoice, or a PDF.
             </p>
+            {error ? (
+              <p className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-950" role="alert">
+                {error}
+              </p>
+            ) : null}
+            <form
+              className="mt-6 max-w-xl space-y-4"
+              ref={addFormRef}
+              onSubmit={(event) => {
+                event.preventDefault()
+                void addCustomer()
+              }}
+            >
+              <h3 className="font-display text-lg font-semibold text-forest-950">Add a customer</h3>
+              <label className="block text-sm font-bold text-forest-900">
+                Name
+                <input className={fieldClass} autoComplete="name" onChange={(event) => setNewName(event.target.value)} value={newName} />
+              </label>
+              <label className="block text-sm font-bold text-forest-900">
+                Email
+                <input
+                  className={fieldClass}
+                  autoComplete="email"
+                  inputMode="email"
+                  onChange={(event) => setNewEmail(event.target.value)}
+                  type="email"
+                  value={newEmail}
+                />
+              </label>
+              <label className="block text-sm font-bold text-forest-900">
+                Mobile
+                <input
+                  className={fieldClass}
+                  autoComplete="tel"
+                  inputMode="tel"
+                  onChange={(event) => setNewPhone(event.target.value)}
+                  placeholder="087 446 4766"
+                  type="tel"
+                  value={newPhone}
+                />
+              </label>
+              <LuxuryButton disabled={busy === 'create'} type="submit">
+                {busy === 'create' ? 'Adding…' : 'Add customer'}
+              </LuxuryButton>
+            </form>
           </div>
         ) : (
           <>
@@ -432,6 +545,19 @@ export function AdminCustomersDesk(props: {
                     meta: `${row.interest || 'Website form'} · ${when(row.created_at)}`
                   }))}
                   title="Website forms"
+                />
+              </div>
+            ) : null}
+
+            {tab === 'document' ? (
+              <div className="mt-6">
+                <AdminDocumentSendDesk
+                  accessToken={props.accessToken}
+                  seed={{
+                    email: selectedEmail,
+                    clientRef: detail?.customer.accountReference || '',
+                    name: detail?.customer.name || name
+                  }}
                 />
               </div>
             ) : null}
