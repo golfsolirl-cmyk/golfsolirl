@@ -298,7 +298,8 @@ export function ClientPortalPaymentsDue(props: {
       {cancelledBookings.length > 0 ? (
         <ul className="mt-6 space-y-3" aria-label="Cancelled bookings">
           {cancelledBookings.map((t) => {
-            const canRebook = (t.payment_attempt ?? 1) < 2
+            const pay = String(t.payment_status ?? 'unpaid').toLowerCase()
+            const canRebook = (t.payment_attempt ?? 1) < 2 && pay !== 'paid' && pay !== 'deposit'
             return (
               <li className="rounded-2xl border border-forest-200 bg-white px-4 py-4 sm:px-5" key={t.id}>
                 <p className="font-ge text-lg font-semibold text-forest-950">
