@@ -15,6 +15,7 @@ import {
   sendPortalInvoicePaidCustomerEmail,
   sendTransferPaymentCustomerEmails
 } from './transfer-payment-customer-email.mjs'
+import { reopenPatchAfterUnpaidCancel } from './transfer-unpaid-cancel-service.mjs'
 
 
 
@@ -118,7 +119,7 @@ export const markTransferBookingPaid = async (supabase, bookingId, session, paym
   const { data: row, error: loadErr } = await supabase
     .from('transfer_bookings')
     .select(
-      'id, payment_status, admin_price_eur, deposit_percent, scheduled_at, next_available_driver, stripe_payment_intent_id, stripe_checkout_session_id'
+      'id, payment_status, status, cancel_reason, admin_price_eur, deposit_percent, scheduled_at, next_available_driver, stripe_payment_intent_id, stripe_checkout_session_id'
     )
     .eq('id', bookingId)
     .maybeSingle()
@@ -172,7 +173,8 @@ export const markTransferBookingPaid = async (supabase, bookingId, session, paym
         balance_remind_sent_at: null,
         updated_at: now,
         stripe_payment_intent_id: paymentIntent ?? null,
-        stripe_checkout_session_id: sessionId
+        stripe_checkout_session_id: sessionId,
+        ...reopenPatchAfterUnpaidCancel(row)
       })
       .eq('id', bookingId)
       .eq('payment_status', 'unpaid')
@@ -257,7 +259,8 @@ export const markTransferBookingPaid = async (supabase, bookingId, session, paym
     balance_remind_sent_at: null,
     updated_at: now,
     stripe_payment_intent_id: paymentIntent ?? null,
-    stripe_checkout_session_id: sessionId
+    stripe_checkout_session_id: sessionId,
+    ...reopenPatchAfterUnpaidCancel(row)
   }
 
   const q =

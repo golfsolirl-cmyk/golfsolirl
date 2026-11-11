@@ -21,6 +21,41 @@ const throwStatus = (message, statusCode) => {
 
 export const unpaidDeadlineFrom = (from = new Date()) => new Date(from.getTime() + HOLD_MS).toISOString()
 
+/** Money already taken, even if payment_status was left at unpaid. */
+export const bookingHasRecordedPayment = (row) => {
+  const received = Number(row?.amount_received_eur)
+  if (Number.isFinite(received) && received > 0) return true
+  const intent = row?.stripe_payment_intent_id
+  return typeof intent === 'string' && intent.trim().length > 0
+}
+
+/**
+ * What the daily sweep should do with one pending unpaid row.
+ * A missing deadline is the start of the 3-day window, not proof the window already elapsed.
+ * created_at is not used: a trip requested last month and priced today must not be cancelled tonight.
+ * @param {Record<string, unknown> | null | undefined} row
+ * @param {string} nowIso
+ * @returns {'skip' | 'stamp' | 'wait' | 'cancel'}
+ */
+export const planUnpaidBooking = (row, nowIso) => {
+  if (bookingHasRecordedPayment(row)) return 'skip'
+  if (!row?.unpaid_deadline_at) return 'stamp'
+  return String(row.unpaid_deadline_at) <= String(nowIso) ? 'cancel' : 'wait'
+}
+
+/** Rebook must not clear a card or manual payment back to unpaid. */
+export const rebookBlockedByPayment = (row) => {
+  const pay = String(row?.payment_status ?? 'unpaid').toLowerCase()
+  if (pay === 'paid' || pay === 'deposit') return true
+  return bookingHasRecordedPayment(row)
+}
+
+/** A card payment that arrives after the unpaid sweep must put the trip back on the dashboard. */
+export const reopenPatchAfterUnpaidCancel = (row) =>
+  String(row?.status ?? '') === 'cancelled' && row?.cancel_reason === 'unpaid_timeout'
+    ? { status: 'pending', cancel_reason: null }
+    : {}
+
 const getAdmin = (env) => {
   const url = env.SUPABASE_URL?.trim()
   const key = env.SUPABASE_SERVICE_ROLE_KEY?.trim()
@@ -145,38 +180,66 @@ const emailCancellation = async (env, row) => {
   })
 }
 
+const CANDIDATE_COLUMNS =
+  'id, client_user_id, client_email, client_display_name, pickup_label, dropoff_label, enquiry_reference_id, admin_price_eur, payment_status, status, payment_attempt, unpaid_deadline_at, created_at'
+
+const loadUnpaidCandidates = (admin, columns) =>
+  admin
+    .from('transfer_bookings')
+    .select(columns)
+    .eq('payment_status', 'unpaid')
+    .eq('status', 'pending')
+    .gte('admin_price_eur', 0.5)
+    .order('unpaid_deadline_at', { ascending: true, nullsFirst: false })
+    .limit(80)
+
 /**
  * @param {import('@supabase/supabase-js').SupabaseClient} admin
  * @param {NodeJS.ProcessEnv} env
  */
 export const processUnpaidBookingCancellations = async (admin, env = process.env) => {
   const nowIso = new Date().toISOString()
-  const agedIso = new Date(Date.now() - HOLD_MS).toISOString()
-  const { data, error } = await admin
-    .from('transfer_bookings')
-    .select(
-      'id, client_user_id, client_email, client_display_name, pickup_label, dropoff_label, enquiry_reference_id, admin_price_eur, payment_status, status, payment_attempt, unpaid_deadline_at, created_at'
-    )
-    .eq('payment_status', 'unpaid')
-    .eq('status', 'pending')
-    .gte('admin_price_eur', 0.5)
-    .limit(80)
+  let { data, error } = await loadUnpaidCandidates(
+    admin,
+    `${CANDIDATE_COLUMNS}, amount_received_eur, stripe_payment_intent_id`
+  )
+  if (error && /amount_received_eur|stripe_payment_intent_id/i.test(error.message || '')) {
+    const retry = await loadUnpaidCandidates(admin, CANDIDATE_COLUMNS)
+    data = retry.data
+    error = retry.error
+  }
 
   if (error) {
     if (missingColumn(error)) {
-      return { cancelled: 0, skipped: true, reason: 'migration_pending' }
+      return { cancelled: 0, stamped: 0, skipped: true, reason: 'migration_pending' }
     }
     throw error
   }
 
-  const due = (data || []).filter((row) => {
-    if (row.unpaid_deadline_at) return row.unpaid_deadline_at <= nowIso
-    return row.created_at && row.created_at <= agedIso
-  })
-
   const errors = []
   let cancelled = 0
-  for (const row of due) {
+  let stamped = 0
+  let candidates = 0
+  for (const row of data || []) {
+    const plan = planUnpaidBooking(row, nowIso)
+    if (plan === 'skip' || plan === 'wait') continue
+    if (plan === 'stamp') {
+      const { error: stampErr } = await admin
+        .from('transfer_bookings')
+        .update({ unpaid_deadline_at: unpaidDeadlineFrom() })
+        .eq('id', row.id)
+        .eq('status', 'pending')
+        .eq('payment_status', 'unpaid')
+        .is('unpaid_deadline_at', null)
+      if (stampErr) {
+        if (!missingColumn(stampErr)) errors.push({ id: row.id, message: stampErr.message })
+      } else {
+        stamped += 1
+      }
+      continue
+    }
+
+    candidates += 1
     const { data: updated, error: upErr } = await admin
       .from('transfer_bookings')
       .update({
@@ -223,7 +286,7 @@ export const processUnpaidBookingCancellations = async (admin, env = process.env
     }
   }
 
-  return { cancelled, candidates: due.length, errors }
+  return { cancelled, stamped, candidates, errors }
 }
 
 /**
@@ -250,6 +313,9 @@ export const handleTransferRebook = async (body, env = process.env, meta = {}) =
   if (row.status !== 'cancelled' || row.cancel_reason !== 'unpaid_timeout') {
     throwStatus('This booking cannot be reopened.', 409)
   }
+  if (rebookBlockedByPayment(row)) {
+    throwStatus('This booking already has a payment, so it was not reopened.', 409)
+  }
   if ((Number(row.payment_attempt) || 1) >= 2) {
     throwStatus('This booking was already reopened once. It cannot be started again.', 409)
   }
@@ -267,6 +333,7 @@ export const handleTransferRebook = async (body, env = process.env, meta = {}) =
     })
     .eq('id', bookingId)
     .eq('status', 'cancelled')
+    .eq('payment_status', 'unpaid')
     .select('id, client_email, client_display_name, pickup_label, dropoff_label, enquiry_reference_id, admin_price_eur')
     .maybeSingle()
   if (upErr) throwStatus(upErr.message, 500)

@@ -60,6 +60,17 @@ const cleanEmail = (value) => {
   return email
 }
 
+/**
+ * `.ilike` treats `_` as one character and `%` as any run.
+ * `mary_okeeffe@gmail.com` must not match `mary.okeeffe@gmail.com`.
+ */
+export const ilikeExact = (value) =>
+  cleanEmail(value)
+    .replace(/\\/g, '\\\\')
+    .replace(/%/g, '\\%')
+    .replace(/_/g, '\\_')
+    .replace(/\*/g, '\\*')
+
 const clip = (value, max) => String(value ?? '').trim().slice(0, max)
 
 const isUuid = (value) =>
@@ -250,7 +261,7 @@ const loadProfile = async (db, email) => {
   const { data, error } = await db
     .from('profiles')
     .select('id, email, full_name, phone, account_reference_id, role')
-    .ilike('email', email)
+    .ilike('email', ilikeExact(email))
     .limit(1)
   if (error) {
     throwStatus(error.message, 500)
@@ -361,12 +372,12 @@ const findExistingCustomer = async (db, email, phoneKey) => {
         .order('created_at', { ascending: false })
         .limit(1)
     ),
-    rowsOrEmpty(db.from('profiles').select('id, email, full_name, phone, account_reference_id, role').ilike('email', email).limit(1)),
+    rowsOrEmpty(db.from('profiles').select('id, email, full_name, phone, account_reference_id, role').ilike('email', ilikeExact(email)).limit(1)),
     rowsOrEmpty(
       db
         .from('enquiries')
         .select('email, full_name, phone_whatsapp, reference_id')
-        .ilike('email', email)
+        .ilike('email', ilikeExact(email))
         .order('created_at', { ascending: false })
         .limit(1)
     )
@@ -459,7 +470,7 @@ const customerDetail = async (db, email) => {
     db
       .from('enquiries')
       .select('id, reference_id, full_name, email, phone_whatsapp, interest, created_at')
-      .ilike('email', email)
+      .ilike('email', ilikeExact(email))
       .order('created_at', { ascending: false })
       .limit(40),
     db
@@ -467,10 +478,10 @@ const customerDetail = async (db, email) => {
       .select(
         'id, client_email, client_display_name, pickup_label, dropoff_label, payment_status, admin_price_eur, amount_received_eur, status, enquiry_reference_id, created_at'
       )
-      .ilike('client_email', email)
+      .ilike('client_email', ilikeExact(email))
       .order('created_at', { ascending: false })
       .limit(40),
-    db.from('desk_quotes').select('*').ilike('customer_email', email).order('created_at', { ascending: false }).limit(40)
+    db.from('desk_quotes').select('*').ilike('customer_email', ilikeExact(email)).order('created_at', { ascending: false }).limit(40)
   ])
   if (enquiriesRes.error) throwStatus(enquiriesRes.error.message, 500)
   if (transfersRes.error) throwStatus(transfersRes.error.message, 500)
@@ -516,9 +527,16 @@ const openCheckout = async (env, db, row) => {
   if (!stripeKey) {
     throwStatus('STRIPE_SECRET_KEY is not set, so a pay link cannot be created.', 500)
   }
+  const fresh = await db.from('desk_quotes').select('*').eq('id', row.id).maybeSingle()
+  if (fresh.error) throwStatus(fresh.error.message, 500)
+  const current = fresh.data || row
+  if (current.stripe_checkout_url) {
+    return { checkoutUrl: current.stripe_checkout_url, portalInvoiceId: current.portal_invoice_id || null }
+  }
   const origin = getSiteOrigin(env)
-  const profile = row.profile_id ? { id: row.profile_id } : await loadProfile(db, row.customer_email)
-  let portalInvoiceId = row.portal_invoice_id || null
+  const profile = current.profile_id ? { id: current.profile_id } : await loadProfile(db, current.customer_email)
+  const previousInvoiceId = current.portal_invoice_id || null
+  let portalInvoiceId = previousInvoiceId
 
   if (profile?.id && !portalInvoiceId) {
     const invoiceNumber = `INV-${Date.now().toString(36).toUpperCase()}`
@@ -526,13 +544,13 @@ const openCheckout = async (env, db, row) => {
       .from('portal_invoices')
       .insert({
         profile_id: profile.id,
-        enquiry_id: row.enquiry_id,
-        enquiry_reference_id: row.reference_code,
-        amount_cents: row.amount_cents,
+        enquiry_id: current.enquiry_id,
+        enquiry_reference_id: current.reference_code,
+        amount_cents: current.amount_cents,
         currency: 'eur',
         status: 'sent',
         invoice_number: invoiceNumber,
-        sent_by: row.created_by
+        sent_by: current.created_by
       })
       .select('id')
       .single()
@@ -540,6 +558,20 @@ const openCheckout = async (env, db, row) => {
       throwStatus(inserted.error?.message || 'Could not save the invoice on their account.', 500)
     }
     portalInvoiceId = inserted.data.id
+    const linked = await db
+      .from('desk_quotes')
+      .update({
+        portal_invoice_id: portalInvoiceId,
+        profile_id: profile.id,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', current.id)
+      .select('id')
+      .maybeSingle()
+    if (linked.error || !linked.data) {
+      await db.from('portal_invoices').delete().eq('id', portalInvoiceId)
+      throwStatus(linked.error?.message || 'Could not attach the invoice.', 500)
+    }
   }
 
   const stripe = new Stripe(stripeKey)
@@ -547,10 +579,10 @@ const openCheckout = async (env, db, row) => {
   try {
     session = await stripe.checkout.sessions.create({
       mode: 'payment',
-      customer_email: row.customer_email,
-      client_reference_id: portalInvoiceId || row.id,
+      customer_email: current.customer_email,
+      client_reference_id: portalInvoiceId || current.id,
       metadata: {
-        desk_quote_id: row.id,
+        desk_quote_id: current.id,
         ...(portalInvoiceId ? { portal_invoice_id: portalInvoiceId } : {})
       },
       line_items: [
@@ -558,39 +590,49 @@ const openCheckout = async (env, db, row) => {
           quantity: 1,
           price_data: {
             currency: 'eur',
-            unit_amount: row.amount_cents,
+            unit_amount: current.amount_cents,
             product_data: {
-              name: row.title || `Golf Sol ${row.reference_code}`,
-              description: clip([row.reference_code, tripPlain(row.trip_details)].filter(Boolean).join(' — '), 400)
+              name: current.title || `Golf Sol ${current.reference_code}`,
+              description: clip([current.reference_code, tripPlain(current.trip_details)].filter(Boolean).join(' — '), 400)
             }
           }
         }
       ],
-      success_url: `${origin}/quote-reply/${row.decision_token}?paid=1`,
-      cancel_url: `${origin}/quote-reply/${row.decision_token}?choice=accept`
+      success_url: `${origin}/quote-reply/${current.decision_token}?paid=1`,
+      cancel_url: `${origin}/quote-reply/${current.decision_token}?choice=accept`
     })
   } catch (error) {
-    if (portalInvoiceId && portalInvoiceId !== row.portal_invoice_id) {
+    if (portalInvoiceId && portalInvoiceId !== previousInvoiceId) {
       await db.from('portal_invoices').delete().eq('id', portalInvoiceId)
+      await db.from('desk_quotes').update({ portal_invoice_id: previousInvoiceId }).eq('id', current.id)
     }
     throwStatus(error instanceof Error ? error.message : 'Stripe Checkout failed.', 502)
   }
 
   if (!session?.url) {
+    if (portalInvoiceId && portalInvoiceId !== previousInvoiceId) {
+      await db.from('portal_invoices').delete().eq('id', portalInvoiceId)
+      await db.from('desk_quotes').update({ portal_invoice_id: previousInvoiceId }).eq('id', current.id)
+    }
     throwStatus('Stripe did not return a pay link.', 502)
   }
 
-  await db
+  const saved = await db
     .from('desk_quotes')
     .update({
       portal_invoice_id: portalInvoiceId,
-      profile_id: profile?.id || row.profile_id,
+      profile_id: profile?.id || current.profile_id,
       stripe_checkout_session_id: session.id,
       stripe_checkout_url: session.url,
       status: 'invoiced',
       updated_at: new Date().toISOString()
     })
-    .eq('id', row.id)
+    .eq('id', current.id)
+    .select('id')
+    .maybeSingle()
+  if (saved.error || !saved.data) {
+    throwStatus(saved.error?.message || 'Could not save the pay link.', 500)
+  }
 
   if (portalInvoiceId) {
     await db.from('portal_invoices').update({ stripe_checkout_session_id: session.id, stripe_checkout_url: session.url }).eq('id', portalInvoiceId)
@@ -929,17 +971,50 @@ export const handleDeskQuoteDecision = async (body, env = process.env) => {
     }
   }
 
-  if (row.stripe_checkout_url && (row.status === 'accepted' || row.status === 'invoiced')) {
+  if (row.stripe_checkout_url) {
     await emailPayLink(env, row, row.stripe_checkout_url, pdf)
     return { ok: true, status: 'invoiced', message: 'You already accepted this quote. We have sent the pay email again.' }
   }
 
-  await db
+  const now = new Date().toISOString()
+  const claim = await db
     .from('desk_quotes')
-    .update({ status: 'accepted', decided_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .update({ status: 'accepted', decided_at: row.decided_at || now, updated_at: now })
     .eq('id', row.id)
-  const pay = await openCheckout(env, db, { ...row, status: 'accepted' })
-  await emailPayLink(env, row, pay.checkoutUrl, pdf)
+    .in('status', ['sent', 'declined'])
+    .select('id')
+    .maybeSingle()
+  if (claim.error) throwStatus(claim.error.message, 500)
+  if (!claim.data) {
+    const again = await db.from('desk_quotes').select('*').eq('id', row.id).maybeSingle()
+    if (again.error) throwStatus(again.error.message, 500)
+    const current = again.data
+    if (current?.status === 'paid') {
+      return { ok: true, status: 'paid', message: 'This trip is already paid. Your receipt is on its way by email.' }
+    }
+    if (current?.stripe_checkout_url) {
+      await emailPayLink(env, current, current.stripe_checkout_url, pdf)
+      return { ok: true, status: 'invoiced', message: 'You already accepted this quote. We have sent the pay email again.' }
+    }
+    return {
+      ok: true,
+      status: current?.status || 'accepted',
+      message: 'We are already emailing your pay link. Check your inbox in a minute.'
+    }
+  }
+
+  try {
+    const pay = await openCheckout(env, db, row)
+    await emailPayLink(env, row, pay.checkoutUrl, pdf)
+  } catch (error) {
+    await db
+      .from('desk_quotes')
+      .update({ status: 'sent', updated_at: new Date().toISOString() })
+      .eq('id', row.id)
+      .eq('status', 'accepted')
+      .is('stripe_checkout_url', null)
+    throw error
+  }
   return {
     ok: true,
     status: 'invoiced',
