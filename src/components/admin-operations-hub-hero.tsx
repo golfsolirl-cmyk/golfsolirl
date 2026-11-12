@@ -84,26 +84,26 @@ export function AdminOperationsHubHero(props: {
   const Icon = navItem?.icon
 
   return (
-    <div className="mb-6 rounded-[2rem] border border-forest-100 bg-white px-5 py-5 shadow-soft sm:px-7 sm:py-6" id="admin-hub-welcome">
+    <div className="mb-6 rounded-2xl border border-black/[0.06] bg-white px-5 py-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_4px_16px_rgba(0,0,0,0.04)] sm:px-7 sm:py-6" id="admin-hub-welcome">
       <div className="flex items-start gap-3">
         {Icon ? (
-          <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-forest-900 text-white">
+          <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-sm">
             <Icon aria-hidden className="h-5 w-5" />
           </span>
         ) : null}
         <div className="min-w-0">
-          <p className="font-ge text-xs font-extrabold uppercase tracking-[0.16em] text-brand-600">{guide.kicker}</p>
-          <p className="mt-1 max-w-3xl text-base leading-relaxed text-forest-800">{guide.summary}</p>
-          {name ? <p className="mt-1 text-sm font-medium text-forest-600">Signed in as {name}</p> : null}
+          <p className="font-ge text-xs font-semibold uppercase tracking-[0.14em] text-emerald-600">{guide.kicker}</p>
+          <p className="mt-1 max-w-3xl text-[0.95rem] leading-relaxed text-gray-600">{guide.summary}</p>
+          {name ? <p className="mt-1 text-sm font-medium text-gray-400">Signed in as {name}</p> : null}
         </div>
       </div>
       <ol className="mt-4 grid gap-3 lg:grid-cols-3">
         {guide.steps.map((step, index) => (
-          <li className="flex gap-3 rounded-2xl border border-forest-100 bg-offwhite px-4 py-3 text-base leading-snug text-forest-900" key={step}>
-            <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-forest-900 text-sm font-bold text-white">
+          <li className="flex gap-3 rounded-xl border border-black/[0.04] bg-[#f9fafb] px-4 py-3 text-[0.9rem] leading-snug text-gray-700" key={step}>
+            <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-xs font-bold text-white">
               {index + 1}
             </span>
-            <span className="pt-1">{step}</span>
+            <span className="pt-0.5">{step}</span>
           </li>
         ))}
       </ol>

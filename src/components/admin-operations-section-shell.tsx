@@ -21,13 +21,13 @@ export function AdminOperationsSectionShell(props: {
   return (
     <section
       className={cx(
-        'scroll-mt-28 overflow-hidden rounded-[2rem] border-2 border-brand-700/40 bg-gradient-to-br from-white via-white to-[#f0faf4] shadow-[0_22px_56px_rgba(11,73,52,0.08)] ring-1 ring-forest-900/[0.06]',
+        'scroll-mt-28 overflow-hidden rounded-2xl border border-black/[0.06] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04),0_4px_16px_rgba(0,0,0,0.04)]',
         props.className
       )}
       id={props.id}
     >
       {showHeaderRow ? (
-        <div className="border-b border-forest-900/[0.05] bg-offwhite px-6 py-5 sm:px-8">
+        <div className="border-b border-black/[0.04] bg-[#f9fafb] px-6 py-5 sm:px-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0 flex-1">
               {props.kicker ? (
