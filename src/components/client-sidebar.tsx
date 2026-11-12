@@ -53,21 +53,21 @@ function NavButton({
     <button
       aria-current={active ? 'page' : undefined}
       className={cx(
-        'group relative flex w-full items-start gap-3 rounded-xl px-3 py-2.5 text-left transition duration-200',
+        'group relative flex w-full items-start gap-3 rounded-xl px-3 py-2.5 text-left transition-all duration-200',
         active
-          ? 'bg-fairway-100 shadow-sm ring-2 ring-fairway-600/70'
-          : 'hover:bg-forest-50/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fairway-400'
+          ? 'bg-emerald-50 shadow-[0_1px_3px_rgba(0,0,0,0.06)] ring-1 ring-emerald-200'
+          : 'hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400'
       )}
       onClick={onSelect}
       type="button"
     >
       {active ? (
-        <span aria-hidden className="absolute bottom-2 left-0 top-2 w-1.5 rounded-full bg-fairway-800" />
+        <span aria-hidden className="absolute bottom-2 left-0 top-2 w-1 rounded-full bg-emerald-600" />
       ) : null}
       <span
         className={cx(
           'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition',
-          active ? 'bg-fairway-800 text-white shadow-sm' : 'bg-forest-100/80 text-forest-700 group-hover:bg-fairway-100'
+          active ? 'bg-emerald-600 text-white shadow-sm' : 'bg-gray-100 text-gray-500 group-hover:bg-emerald-50 group-hover:text-emerald-600'
         )}
       >
         <Icon aria-hidden className="h-4 w-4" />
@@ -119,11 +119,11 @@ export function ClientSidebar({
 
       <aside
         className={cx(
-          'fixed inset-y-0 left-0 z-50 flex w-[min(100vw-2rem,280px)] flex-col border-r border-forest-100/90 bg-white shadow-xl transition-transform duration-300 lg:static lg:z-auto lg:w-60 lg:shrink-0 lg:translate-x-0 lg:shadow-none',
+          'fixed inset-y-0 left-0 z-50 flex w-[min(100vw-2rem,300px)] flex-col border-r border-black/[0.06] bg-white shadow-2xl transition-transform duration-300 ease-out lg:static lg:z-auto lg:w-64 lg:shrink-0 lg:translate-x-0 lg:shadow-none',
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         )}
       >
-        <div className="flex items-center gap-2.5 border-b border-forest-100/80 px-4 py-4">
+        <div className="flex items-center gap-3 border-b border-black/[0.06] px-5 py-5">
           <BrandLogoPicture
             alt="Golf Sol Ireland"
             className="h-10 w-auto object-contain"

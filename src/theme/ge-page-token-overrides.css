@@ -1153,8 +1153,8 @@
   color: #9a7618 !important;
 }
 
-/* Homepage airport hero: light type on the forest panel, dark type only on gold. */
-.ge-page .airport-poster-hero :is(h1, h2, h3, p, li, span, a, small, strong) {
+/* Homepage airport hero: light type on the forest panel, dark type only on light-bg elements. */
+.ge-page .airport-poster-hero :is(h1, h2, h3, p, li, span, a, small, strong):not([data-hero-light] *, [data-hero-light]) {
   color: #f7f3ea !important;
   -webkit-text-fill-color: #f7f3ea !important;
 }
@@ -1163,6 +1163,12 @@
 .ge-page .airport-poster-hero h1 span.airport-poster-gold-type {
   color: #e4c56a !important;
   -webkit-text-fill-color: #e4c56a !important;
+}
+
+.ge-page .airport-poster-hero [data-hero-light],
+.ge-page .airport-poster-hero [data-hero-light] :is(span, a, small, strong, svg) {
+  color: #04291a !important;
+  -webkit-text-fill-color: #04291a !important;
 }
 
 .ge-page .airport-poster-hero .airport-poster-on-gold,

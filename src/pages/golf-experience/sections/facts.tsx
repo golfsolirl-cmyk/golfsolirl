@@ -49,17 +49,17 @@ const pillarIcons: readonly LucideIcon[] = [Users, MapPin, PhoneCall]
 export function GeFacts() {
   return (
     <GeSection
-      background="soft"
-      className="relative isolate overflow-hidden pt-24 pb-20 sm:pt-28 sm:pb-24"
+      background="white"
+      className="relative isolate overflow-hidden pt-20 pb-20 sm:pt-24 sm:pb-24"
       innerClassName="relative z-[1]"
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -right-20 top-10 h-[min(100vw,28rem)] w-[min(100vw,28rem)] rounded-full bg-gs-green/[0.07] blur-[100px]"
+        className="pointer-events-none absolute -right-20 top-10 h-[min(100vw,28rem)] w-[min(100vw,28rem)] rounded-full bg-emerald-500/[0.03] blur-[120px]"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -left-24 bottom-0 h-72 w-72 rounded-full bg-brand-700/[0.12] blur-[90px]"
+        className="pointer-events-none absolute -left-24 bottom-0 h-72 w-72 rounded-full bg-emerald-600/[0.05] blur-[100px]"
       />
 
       <div className="grid gap-14 lg:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] lg:items-start lg:gap-16">
@@ -87,7 +87,7 @@ export function GeFacts() {
             return (
               <m.article
                 key={pillar.title}
-                className="group relative overflow-hidden rounded-[1.65rem] border border-gs-green/10 bg-white p-6 shadow-[0_20px_50px_rgba(6,59,42,0.07)] ring-1 ring-gs-green/[0.04] transition-shadow duration-300 hover:shadow-[0_26px_60px_rgba(6,59,42,0.1)] sm:p-7"
+                className="group relative overflow-hidden rounded-2xl border border-black/[0.04] bg-white p-6 shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] sm:p-7"
                 {...fadeUp}
                 transition={{ ...fadeUp.transition, delay: 0.05 * index }}
               >
@@ -127,7 +127,7 @@ export function GeFacts() {
           editorial halo, kicker pill, two-tone headline, three trust signals,
           dual CTA (primary + WhatsApp), gold/chrome accents. —— */}
       <m.div
-        className="ge-on-dark facts-cta relative z-[1] mt-20 overflow-hidden rounded-[2rem] border border-[#d9be7a]/45 bg-[linear-gradient(135deg,#0d3a2a_0%,#0a2d20_45%,#08231a_100%)] px-6 pb-12 pt-14 text-center shadow-[0_36px_90px_rgba(6,32,22,0.42),0_0_36px_rgba(217,190,122,0.18)] ring-1 ring-white/10 sm:px-12 sm:pb-14 sm:pt-16"
+        className="ge-on-dark facts-cta relative z-[1] mt-20 overflow-hidden rounded-2xl border border-white/[0.06] bg-[linear-gradient(145deg,#04291a_0%,#0a5e42_50%,#04291a_100%)] px-6 pb-12 pt-14 text-center shadow-[0_16px_48px_rgba(4,41,26,0.24)] sm:px-12 sm:pb-14 sm:pt-16"
         variants={ctaContainer}
         initial="hidden"
         whileInView="visible"

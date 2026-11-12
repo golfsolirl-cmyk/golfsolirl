@@ -28,7 +28,7 @@ export default function HomeBelowTheFold() {
     <>
       <CustomerTripReel placement="feature" />
       <GeHomeWhatWeDo />
-      <div className="bg-cream px-3 py-6 sm:px-8 sm:py-10">
+      <div className="bg-[#f7faf8] px-4 py-8 sm:px-8 sm:py-12">
         <div className="mx-auto max-w-[1180px]">
           <TripServiceBookingCta pageLabel="Homepage" />
         </div>
@@ -51,7 +51,7 @@ export default function HomeBelowTheFold() {
       <SectionShadowBridge variant="soft-lift" />
       <GeHomeEnquiry />
 
-      <div className="bg-[#faf8f4] px-5 pb-16 pt-2 sm:px-8 sm:pb-20">
+      <div className="bg-white px-5 pb-16 pt-4 sm:px-8 sm:pb-20">
         <div className="mx-auto max-w-[1180px]">
           <WhatsAppConcierge sourcePage="/" />
         </div>

@@ -86,21 +86,21 @@ function NavButton({
   return (
     <button
       className={cx(
-        'group relative flex w-full items-start gap-3 rounded-2xl px-3 py-3 text-left transition',
+        'group relative flex w-full items-start gap-3 rounded-xl px-3 py-2.5 text-left transition-all duration-200',
         active
-          ? 'bg-fairway-50/90 ring-1 ring-fairway-200/80'
-          : 'hover:bg-forest-50/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fairway-400'
+          ? 'bg-emerald-50 shadow-[0_1px_3px_rgba(0,0,0,0.06)] ring-1 ring-emerald-200'
+          : 'hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400'
       )}
       onClick={onSelect}
       type="button"
     >
       {active ? (
-        <span aria-hidden className="absolute bottom-2 left-0 top-2 w-1 rounded-full bg-fairway-700" />
+        <span aria-hidden className="absolute bottom-2 left-0 top-2 w-1 rounded-full bg-emerald-600" />
       ) : null}
       <span
         className={cx(
           'relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg',
-          active ? 'bg-fairway-800 text-white' : 'bg-forest-100/80 text-forest-700 group-hover:bg-fairway-100'
+          active ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-500 group-hover:bg-emerald-50 group-hover:text-emerald-600'
         )}
       >
         <Icon aria-hidden className="h-4 w-4" />
@@ -147,7 +147,7 @@ export function AdminSidebar({
 
       <aside
         className={cx(
-          'fixed inset-y-0 left-0 z-50 flex w-[min(100vw-2.5rem,20rem)] flex-col border-r border-forest-100 bg-offwhite shadow-xl transition-transform duration-300 lg:sticky lg:top-6 lg:z-auto lg:max-h-[calc(100vh-3rem)] lg:w-[18.5rem] lg:shrink-0 lg:translate-x-0 lg:self-start lg:rounded-[1.75rem] lg:border lg:shadow-soft',
+          'fixed inset-y-0 left-0 z-50 flex w-[min(100vw-2.5rem,20rem)] flex-col border-r border-black/[0.06] bg-white shadow-2xl transition-transform duration-300 ease-out lg:sticky lg:top-6 lg:z-auto lg:max-h-[calc(100vh-3rem)] lg:w-[18.5rem] lg:shrink-0 lg:translate-x-0 lg:self-start lg:rounded-2xl lg:border lg:border-black/[0.04] lg:shadow-[0_4px_16px_rgba(0,0,0,0.06)]',
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         )}
       >

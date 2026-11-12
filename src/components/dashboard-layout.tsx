@@ -62,7 +62,7 @@ export function DashboardLayout({ title, subtitle, kicker, variant, titleAdornme
 
   return (
     <div
-      className="ge-page flex min-h-screen flex-col overflow-x-hidden bg-white font-ge text-gs-dark"
+      className="ge-page flex min-h-screen flex-col overflow-x-hidden bg-[#f7faf8] font-ge text-gs-dark"
       data-dashboard-variant={variant}
     >
       <GeNavbar portalSlot={portalSlot} />
@@ -81,8 +81,8 @@ export function DashboardLayout({ title, subtitle, kicker, variant, titleAdornme
         <div
           className={
             variant === 'admin'
-              ? 'relative z-[1] mx-auto w-full max-w-[1680px] flex-1 px-5 pb-16 pt-5 text-base leading-relaxed sm:px-8 lg:px-10 lg:pt-6 xl:px-12'
-              : 'relative z-[1] mx-auto w-full max-w-[1180px] flex-1 px-5 pb-16 pt-5 text-[1.125rem] leading-[1.72] sm:px-8 sm:text-[1.1875rem] sm:leading-[1.75] md:pb-24 md:pt-6'
+              ? 'relative z-[1] mx-auto w-full max-w-[1680px] flex-1 px-5 pb-16 pt-6 text-base leading-relaxed sm:px-8 lg:px-10 lg:pt-8 xl:px-12'
+              : 'relative z-[1] mx-auto w-full max-w-[1180px] flex-1 px-5 pb-16 pt-6 text-[1.06rem] leading-[1.7] sm:px-8 sm:text-[1.1rem] sm:leading-[1.72] md:pb-24 md:pt-8'
           }
         >
           {children}

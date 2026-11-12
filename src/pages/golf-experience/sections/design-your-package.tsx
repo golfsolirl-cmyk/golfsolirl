@@ -69,12 +69,12 @@ export function GeDesignYourPackage() {
     <section
       id="design-package"
       aria-labelledby="design-package-title"
-      className="relative overflow-hidden border-b border-chrome-300/60 bg-cream text-gs-dark"
+      className="relative overflow-hidden bg-[#f7faf8] text-gs-dark"
     >
       <div className="relative mx-auto max-w-[1180px] px-5 pb-20 pt-14 sm:px-8 sm:pb-24 sm:pt-16">
         <m.div
           ref={heroRef}
-          className="design-package-hero relative overflow-hidden rounded-[2rem] border border-white/30 bg-[linear-gradient(128deg,var(--brand-800)_0%,#0f4f3c_42%,var(--brand-700)_100%)] px-6 py-10 text-center shadow-[0_32px_90px_rgba(11,77,59,0.32)] sm:px-10 sm:py-14"
+          className="design-package-hero relative overflow-hidden rounded-2xl border border-white/10 bg-[linear-gradient(145deg,#04291a_0%,#0a5e42_50%,#0e7a56_100%)] px-6 py-12 text-center shadow-[0_16px_48px_rgba(4,41,26,0.24)] sm:px-10 sm:py-16"
           variants={heroContainerVariants}
           initial="hidden"
           animate={heroRevealed ? 'visible' : 'hidden'}
@@ -144,7 +144,7 @@ export function GeDesignYourPackage() {
                 animate={stepsRevealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
                 transition={{ ...revealTransition, delay: index * 0.06 }}
               >
-                <article className="relative flex flex-1 flex-col overflow-hidden rounded-[1.75rem] border border-white/80 bg-white text-gs-dark shadow-[0_20px_50px_rgba(6,32,22,0.12)] ring-1 ring-chrome-300/80 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_28px_64px_rgba(6,32,22,0.18)]">
+                <article className="relative flex flex-1 flex-col overflow-hidden rounded-2xl border border-black/[0.04] bg-white text-gs-dark shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-400 hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)]">
                   <div className="relative aspect-[16/10] overflow-hidden">
                     <img
                       src={step.image}

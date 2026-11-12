@@ -31,9 +31,9 @@ interface GeQuickEnquiryFormProps {
 }
 
 const labelClass =
-  'mb-1.5 block font-ge text-[0.88rem] font-bold uppercase tracking-[0.14em] text-ge-gray500 sm:text-[0.92rem]'
+  'mb-1.5 block font-ge text-[0.82rem] font-semibold uppercase tracking-[0.12em] text-ge-gray500 sm:text-[0.84rem]'
 const inputClass =
-  'h-12 w-full rounded-xl border border-ge-gray200 bg-white px-3.5 font-ge text-[1.02rem] text-gs-dark outline-none transition-shadow placeholder:text-ge-gray300 focus:border-gs-green focus:ring-2 focus:ring-gs-green/25 sm:text-[1.04rem]'
+  'h-12 w-full rounded-xl border border-black/[0.08] bg-[#f9fafb] px-4 font-ge text-[0.95rem] text-gs-dark outline-none transition-all placeholder:text-ge-gray300 focus:border-gs-green focus:bg-white focus:ring-2 focus:ring-gs-green/20 sm:text-[0.98rem]'
 
 function createInitialFieldValues(fields: readonly ContentFormField[]) {
   return fields.reduce<Record<string, string>>((accumulator, field) => {
@@ -391,16 +391,16 @@ export function GeQuickEnquiryForm({
   return (
     <div
       id="ge-enquiry-form"
-      className="rounded-[1.75rem] border border-gs-dark/10 bg-white p-5 shadow-[0_24px_60px_rgba(6,59,42,0.12)] sm:p-6"
+      className="rounded-2xl border border-black/[0.06] bg-white p-6 shadow-[0_4px_16px_rgba(0,0,0,0.04),0_16px_48px_rgba(0,0,0,0.06)] sm:p-8"
     >
-      <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.14em] text-brand-700 sm:text-[0.95rem]">
+      <p className="font-ge text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-gs-green sm:text-[0.76rem]">
         {formConfig.badge}
       </p>
-      <h2 className="mt-3 font-ge text-[1.95rem] font-extrabold leading-tight tracking-[-0.01em] text-gs-green sm:text-[2.1rem]">
+      <h2 className="mt-3 font-ge text-[1.7rem] font-extrabold leading-tight tracking-[-0.02em] text-gs-dark sm:text-[1.9rem]">
         {title}
       </h2>
-      <p className="mt-3 font-ge text-[1.06rem] leading-8 text-ge-gray500 sm:text-[1.1rem]">{lead}</p>
-      <p className="mt-3 text-[1rem] font-medium leading-7 text-gs-dark/72 sm:text-[1.02rem]">
+      <p className="mt-3 font-ge text-[0.95rem] leading-7 text-ge-gray500 sm:text-[1rem]">{lead}</p>
+      <p className="mt-2 text-[0.9rem] leading-7 text-gs-dark/60 sm:text-[0.92rem]">
         {isTestimonialForm
           ? 'Write it like a Tripadvisor review — we approve it before it appears on our homepage.'
           : 'We reply from Ireland by email, phone, or WhatsApp with a clear next step.'}
