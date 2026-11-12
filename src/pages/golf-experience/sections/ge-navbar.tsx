@@ -94,7 +94,7 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
         'fixed inset-x-0 top-0 z-40 overflow-visible transition-all duration-300',
         isOverlay
           ? 'bg-transparent'
-          : 'bg-cream shadow-[0_2px_12px_rgba(8,46,35,0.08)]'
+          : 'border-b border-black/[0.04] bg-white/95 shadow-[0_1px_3px_rgba(0,0,0,0.04)] backdrop-blur-xl'
       )}
     >
       {isOverlay ? <GeTopBar /> : null}

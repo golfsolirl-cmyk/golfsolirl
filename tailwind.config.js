@@ -134,15 +134,15 @@ export default {
         }
       },
       fontFamily: {
-        premium: ['"Manrope"', 'system-ui', 'sans-serif'],
-        display: ['"Rubik"', 'system-ui', 'sans-serif'],
-        body: ['"Rubik"', 'system-ui', 'sans-serif'],
-        accent: ['"Rubik"', 'system-ui', 'sans-serif'],
-        script: ['"Rubik"', 'system-ui', 'sans-serif'],
+        premium: ['"Inter"', 'system-ui', 'sans-serif'],
+        display: ['"Inter"', 'system-ui', 'sans-serif'],
+        body: ['"Inter"', 'system-ui', 'sans-serif'],
+        accent: ['"Inter"', 'system-ui', 'sans-serif'],
+        script: ['"Inter"', 'system-ui', 'sans-serif'],
         'brand-script': ['"Dancing Script"', 'cursive'],
-        'brand-serif': ['"Rubik"', 'system-ui', 'sans-serif'],
+        'brand-serif': ['"Inter"', 'system-ui', 'sans-serif'],
         'ge-display': ['"Cormorant Garamond"', 'Georgia', 'serif'],
-        ge: ['"Open Sans"', 'system-ui', 'sans-serif'],
+        ge: ['"Inter"', 'system-ui', 'sans-serif'],
         'bc-display': ['"Playfair Display"', 'Georgia', 'serif'],
         'bc-body': ['"Inter"', 'system-ui', 'sans-serif']
       },

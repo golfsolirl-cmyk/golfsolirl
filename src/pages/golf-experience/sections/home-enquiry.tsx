@@ -99,15 +99,15 @@ export function GeHomeEnquiry() {
       id="enquire"
       background="white"
       innerClassName="relative !pt-20 pb-20 sm:!pt-24 sm:pb-24 scroll-mt-28"
-      className="relative isolate overflow-hidden bg-[linear-gradient(180deg,_#FAF8F4_0%,_#FFFFFF_62%)]"
+      className="relative isolate overflow-hidden bg-[linear-gradient(180deg,_#f7faf8_0%,_#ffffff_50%)]"
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -left-32 top-1/4 h-96 w-96 -translate-y-1/2 rounded-full bg-gs-green/[0.07] blur-[100px]"
+        className="pointer-events-none absolute -left-32 top-1/4 h-96 w-96 -translate-y-1/2 rounded-full bg-emerald-500/[0.04] blur-[120px]"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-brand-700/[0.1] blur-[90px]"
+        className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-emerald-600/[0.05] blur-[100px]"
       />
 
       <div className="grid gap-10 lg:grid-cols-[1fr_1.05fr] lg:items-start lg:gap-14">

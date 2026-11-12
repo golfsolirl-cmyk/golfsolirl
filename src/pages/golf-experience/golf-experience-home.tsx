@@ -54,7 +54,7 @@ export function GolfExperienceHome() {
     <div
       className={cx(
         'ge-page min-h-screen overflow-x-hidden',
-        HOMEPAGE_CREATIVE_CANVAS_ENABLED ? 'homepage-creative-shell' : 'bg-offwhite'
+        HOMEPAGE_CREATIVE_CANVAS_ENABLED ? 'homepage-creative-shell' : 'bg-white'
       )}
     >
       {HOMEPAGE_CREATIVE_CANVAS_ENABLED ? <HomeCreativeCanvas /> : null}

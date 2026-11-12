@@ -56,9 +56,9 @@ export function GeFooter() {
   return (
     <>
     <CustomerTripReel placement="band" />
-    <footer className="relative overflow-hidden bg-gs-dark text-white">
+    <footer className="relative overflow-hidden bg-[#021a0e] text-white">
       <GsolGoldCornerAccents preset="footer" />
-      <div className="relative z-[1] mx-auto max-w-[1180px] px-5 py-14">
+      <div className="relative z-[1] mx-auto max-w-[1180px] px-5 py-16 sm:py-20">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           {footerColumns.map((column) => (
             <div key={column.title}>
