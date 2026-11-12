@@ -14,6 +14,7 @@ import { createEnquiryReferenceId } from '../shared/document-templates.mjs'
 import { gsolEmailBrand } from './email-constants.mjs'
 import { Resend } from 'resend'
 import { resolveResendToAddress, resendSandboxRecipientHint } from './resend-delivery-email.mjs'
+import { deskInvoiceCheckoutRefs, deskInvoiceMayLinkTransfer } from './desk-invoice-transfer-link.mjs'
 
 const throwStatus = (message, statusCode) => {
   const err = new Error(message)
@@ -542,17 +543,35 @@ const openCheckout = async (env, db, row) => {
     portalInvoiceId = inserted.data.id
   }
 
+  let linkedTransferId = ''
+  if (!portalInvoiceId && isUuid(row.transfer_booking_id)) {
+    const linked = await db
+      .from('transfer_bookings')
+      .select('id, client_email, admin_price_eur, payment_status')
+      .eq('id', row.transfer_booking_id)
+      .maybeSingle()
+    if (linked.error) {
+      throwStatus(linked.error.message, 500)
+    }
+    if (deskInvoiceMayLinkTransfer(linked.data, row.customer_email, row.amount_cents)) {
+      linkedTransferId = linked.data.id
+    }
+  }
+
+  const checkoutRefs = deskInvoiceCheckoutRefs({
+    deskQuoteId: row.id,
+    portalInvoiceId,
+    transferBookingId: linkedTransferId
+  })
+
   const stripe = new Stripe(stripeKey)
   let session
   try {
     session = await stripe.checkout.sessions.create({
       mode: 'payment',
       customer_email: row.customer_email,
-      client_reference_id: portalInvoiceId || row.id,
-      metadata: {
-        desk_quote_id: row.id,
-        ...(portalInvoiceId ? { portal_invoice_id: portalInvoiceId } : {})
-      },
+      client_reference_id: checkoutRefs.clientReferenceId,
+      metadata: checkoutRefs.metadata,
       line_items: [
         {
           quantity: 1,
@@ -844,7 +863,8 @@ export const handleDeskCustomers = async (body, env = process.env, meta = {}) =>
       return { ok: true, message: `Quote emailed to ${row.customer_email} with Accept and Decline, and the PDF attached.`, reference: row.reference_code }
     }
     if (kind === 'invoice') {
-      const pay = await openCheckout(env, db, row)
+      const transferBookingId = isUuid(body?.transferBookingId) ? String(body.transferBookingId).trim() : ''
+      const pay = await openCheckout(env, db, transferBookingId ? { ...row, transfer_booking_id: transferBookingId } : row)
       await emailPayLink(env, row, pay.checkoutUrl, pdf)
       return { ok: true, message: `Invoice emailed to ${row.customer_email} with a Pay now button and the PDF attached.`, reference: row.reference_code }
     }
