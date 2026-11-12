@@ -233,7 +233,8 @@ export const handleEnquiryAdminQuote = async (body, env = process.env, meta = {}
             title: `Trip invoice ${enquiry.reference_id || ''}`.trim(),
             summary: `Invoice for ${enquiry.reference_id || 'your Costa del Sol trip'}.`,
             amountEur,
-            enquiryId
+            enquiryId,
+            transferBookingId: booking.id
           },
           env,
           meta

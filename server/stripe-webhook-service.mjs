@@ -15,6 +15,7 @@ import {
   sendPortalInvoicePaidCustomerEmail,
   sendTransferPaymentCustomerEmails
 } from './transfer-payment-customer-email.mjs'
+import { applyDeskInvoiceTransferPayment } from './desk-invoice-transfer-link.mjs'
 
 
 
@@ -502,7 +503,20 @@ export const handleStripeWebhook = async (rawBody, signatureHeader, env = proces
 
     } else if (metaTransfer) {
 
-      await markTransferBookingPaid(supabase, metaTransfer, session, paymentIntent, paymentKind)
+      if (metaDesk) {
+        const paidEur =
+          typeof session.amount_total === 'number' && Number.isFinite(session.amount_total)
+            ? session.amount_total / 100
+            : null
+        await applyDeskInvoiceTransferPayment(supabase, metaTransfer, {
+          paidAt,
+          paymentIntent,
+          sessionId: typeof session.id === 'string' ? session.id : null,
+          amountEur: paidEur
+        })
+      } else {
+        await markTransferBookingPaid(supabase, metaTransfer, session, paymentIntent, paymentKind)
+      }
 
     } else if (cref) {
 
