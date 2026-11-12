@@ -58,6 +58,7 @@ export function GeFooter() {
     <CustomerTripReel placement="band" />
     <footer className="relative overflow-hidden bg-[#021a0e] text-white">
       <GsolGoldCornerAccents preset="footer" />
+      <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_100%,rgba(14,122,86,0.08),transparent_50%)]" />
       <div className="relative z-[1] mx-auto max-w-[1180px] px-5 py-16 sm:py-20">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           {footerColumns.map((column) => (
