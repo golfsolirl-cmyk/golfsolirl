@@ -112,6 +112,7 @@ export function AirportTransferPosterHero({ className }: { readonly className?: 
           <m.div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4" {...fadeUp(0.22, reduceMotion)}>
             <a
               href="#enquire"
+              data-hero-light
               className="group inline-flex h-14 items-center justify-center gap-2.5 rounded-2xl bg-white px-7 font-ge text-[0.88rem] font-bold text-[#04291a] shadow-[0_8px_24px_rgba(0,0,0,0.2)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(0,0,0,0.25)] sm:h-[52px]"
             >
               Get a quote

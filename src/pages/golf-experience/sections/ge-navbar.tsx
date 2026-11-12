@@ -136,6 +136,11 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
               <DesktopNavItem key={link.label} link={link} colorClass={linkColor} />
             ))}
             {portalSlot ? <PortalNavActions portalSlot={portalSlot} layout="desktop" /> : null}
+            {!portalSlot ? (
+              <div className="flex items-center gap-2 pl-2">
+                <HeaderSignInButtons />
+              </div>
+            ) : null}
           </nav>
 
           {isOverlay ? (
@@ -284,7 +289,10 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
                 </div>
               ) : null}
               {!portalSlot ? (
-                <div className="mt-4">
+                <div className="mt-4 space-y-3">
+                  <div className="flex gap-2">
+                    <HeaderSignInButtons layout="menu" onNavigate={() => setIsMenuOpen(false)} />
+                  </div>
                   <GeButton href="/contact" size="md" variant="gs-green" className="w-full" onClick={() => setIsMenuOpen(false)}>
                     Get a Quote
                   </GeButton>
