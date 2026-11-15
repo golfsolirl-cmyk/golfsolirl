@@ -11,6 +11,7 @@ import { ctaGreen, emailFonts, escapeHtml, gs } from './branded-email-shell.mjs'
 import { buildGsolMasterDocumentPdf } from './gsol-master-document-pdf.mjs'
 import { computePhoneUniquenessKey, isLikelyMobileE164 } from './phone-e164.mjs'
 import { createEnquiryReferenceId } from '../shared/document-templates.mjs'
+import { deskCheckoutPaymentMetadata, pickUnpaidTransferForDeskInvoice } from './desk-enquiry-invoice-link.mjs'
 import { gsolEmailBrand } from './email-constants.mjs'
 import { Resend } from 'resend'
 import { resolveResendToAddress, resendSandboxRecipientHint } from './resend-delivery-email.mjs'
@@ -511,6 +512,24 @@ const customerDetail = async (db, email) => {
   }
 }
 
+const linkedUnpaidTransferId = async (db, row) => {
+  if (!isUuid(row?.enquiry_id)) return ''
+  const enquiry = await db.from('enquiries').select('reference_id').eq('id', row.enquiry_id).maybeSingle()
+  if (enquiry.error) throwStatus(enquiry.error.message, 500)
+  const ref = typeof enquiry.data?.reference_id === 'string' ? enquiry.data.reference_id.trim() : ''
+  if (!ref) return ''
+  const transfers = await db
+    .from('transfer_bookings')
+    .select('id, client_email, admin_price_eur, payment_status')
+    .eq('enquiry_reference_id', ref)
+    .eq('payment_status', 'unpaid')
+    .limit(20)
+  if (transfers.error) throwStatus(transfers.error.message, 500)
+  const rows = transfers.data || []
+  if (rows.length >= 20) return ''
+  return pickUnpaidTransferForDeskInvoice(rows, row.customer_email, row.amount_cents) || ''
+}
+
 const openCheckout = async (env, db, row) => {
   const stripeKey = env.STRIPE_SECRET_KEY?.trim()
   if (!stripeKey) {
@@ -542,17 +561,21 @@ const openCheckout = async (env, db, row) => {
     portalInvoiceId = inserted.data.id
   }
 
+  const linkedTransferId = portalInvoiceId ? '' : await linkedUnpaidTransferId(db, row)
+  const checkoutRefs = deskCheckoutPaymentMetadata({
+    deskQuoteId: row.id,
+    portalInvoiceId,
+    transferBookingId: linkedTransferId
+  })
+
   const stripe = new Stripe(stripeKey)
   let session
   try {
     session = await stripe.checkout.sessions.create({
       mode: 'payment',
       customer_email: row.customer_email,
-      client_reference_id: portalInvoiceId || row.id,
-      metadata: {
-        desk_quote_id: row.id,
-        ...(portalInvoiceId ? { portal_invoice_id: portalInvoiceId } : {})
-      },
+      client_reference_id: checkoutRefs.clientReferenceId,
+      metadata: checkoutRefs.metadata,
       line_items: [
         {
           quantity: 1,
