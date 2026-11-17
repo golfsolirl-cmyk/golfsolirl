@@ -13,6 +13,7 @@ import {
 import type { PortalInterestTicketMessageRow } from '../lib/portal-interest-tickets'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { adminMailRequest } from '../lib/admin-mail-api'
+import { parseEuroAmount } from '../../shared/parse-euro-amount.mjs'
 
 export type AdminEnquiryCardRow = {
   id: string
@@ -355,7 +356,7 @@ export function AdminEnquiryCardQueue({
       setNoteById((prev) => ({ ...prev, [row.id]: 'Sign in again as admin.' }))
       return
     }
-    const parsed = Number(String(priceById[row.id] ?? '').replace(/,/g, '.').trim())
+    const parsed = parseEuroAmount(priceById[row.id] ?? '')
     if (!Number.isFinite(parsed) || parsed < 0.5) {
       setNoteById((prev) => ({ ...prev, [row.id]: 'Enter a valid total in euros (min €0.50).' }))
       return
@@ -669,7 +670,7 @@ export function AdminEnquiryCardQueue({
                             value={priceById[row.id] ?? ''}
                           />
                           {(() => {
-                            const parsed = Number(String(priceById[row.id] ?? '').replace(/,/g, '.').trim())
+                            const parsed = parseEuroAmount(priceById[row.id] ?? '')
                             if (!Number.isFinite(parsed) || parsed < 0.5) return null
                             const dep = Math.round(parsed * 0.2 * 100) / 100
                             return (

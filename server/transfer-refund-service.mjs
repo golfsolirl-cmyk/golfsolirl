@@ -4,6 +4,7 @@ import { Resend } from 'resend'
 import { requireAdminFromBearer } from './auth-verify-admin.mjs'
 import { buildTransferRefundEmail } from './branded-transfer-payment-email.mjs'
 import { buildTransferRefundPdfBytes } from './transfer-refund-pdf.mjs'
+import { parseEuroAmount } from '../shared/parse-euro-amount.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
   const e = new Error(message)
@@ -46,7 +47,7 @@ export const handleTransferRefund = async (body, env = process.env, meta = {}) =
     if (raw === null || raw === undefined || raw === '') {
       throwStatus('amountEur is required (or set fullRemaining: true).', 400)
     }
-    const n = typeof raw === 'number' ? raw : Number(String(raw).replace(',', '.'))
+    const n = parseEuroAmount(raw)
     if (!Number.isFinite(n) || n <= 0) {
       throwStatus('amountEur must be a positive number.', 400)
     }

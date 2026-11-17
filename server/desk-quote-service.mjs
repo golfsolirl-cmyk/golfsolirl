@@ -11,6 +11,7 @@ import { ctaGreen, emailFonts, escapeHtml, gs } from './branded-email-shell.mjs'
 import { buildGsolMasterDocumentPdf } from './gsol-master-document-pdf.mjs'
 import { computePhoneUniquenessKey, isLikelyMobileE164 } from './phone-e164.mjs'
 import { createEnquiryReferenceId } from '../shared/document-templates.mjs'
+import { parseEuroAmount } from '../shared/parse-euro-amount.mjs'
 import { gsolEmailBrand } from './email-constants.mjs'
 import { Resend } from 'resend'
 import { resolveResendToAddress, resendSandboxRecipientHint } from './resend-delivery-email.mjs'
@@ -65,11 +66,7 @@ const clip = (value, max) => String(value ?? '').trim().slice(0, max)
 const isUuid = (value) =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value || ''))
 
-const euroFromBody = (body) => {
-  const raw = body?.amountEur
-  const amount = typeof raw === 'number' ? raw : typeof raw === 'string' ? Number(String(raw).replace(',', '.')) : NaN
-  return amount
-}
+const euroFromBody = (body) => parseEuroAmount(body?.amountEur)
 
 const BOOKING_SERVICES = new Set(['transfer', 'golf', 'accommodation', 'other'])
 const BOOKING_SERVICE_LABEL = {

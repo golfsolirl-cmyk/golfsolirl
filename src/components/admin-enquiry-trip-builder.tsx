@@ -4,6 +4,7 @@ import { COURSES } from '../data/coastal-golf-data'
 import { cx } from '../lib/utils'
 import { LuxuryButton } from './ui/button'
 import type { AdminEnquiryCardRow } from './admin-enquiry-card-queue'
+import { parseEuroAmount } from '../../shared/parse-euro-amount.mjs'
 
 export type EnquiryTripPlan = {
   includeTransfers: boolean
@@ -129,7 +130,7 @@ export function AdminEnquiryTripBuilder({
       return
     }
 
-    const price = Number(String(priceEurInput).replace(/,/g, '.').trim())
+    const price = parseEuroAmount(priceEurInput)
     if (!Number.isFinite(price) || price < 0.5) {
       onNote('Enter a total price above (Add a price) before saving the trip to the guest.')
       return

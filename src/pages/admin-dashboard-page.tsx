@@ -22,6 +22,7 @@ import { AdminEmailsCommsDesk } from '../components/admin-emails-comms-desk'
 import { AdminMailDesk, type AdminMailSeed } from '../components/admin-mail-desk'
 import { AdminCustomersDesk, type AdminCustomerDeskSeed } from '../components/admin-customers-desk'
 import { AdminEnquiryCardQueue } from '../components/admin-enquiry-card-queue'
+import { parseEuroAmount } from '../../shared/parse-euro-amount.mjs'
 import { ClientDocumentDesk } from '../components/client-documents/client-document-desk'
 import { TransferPaymentStatusBadge } from '../components/transfer-payment-status-badge'
 import { DashboardLayout, DashboardLoadingShell } from '../components/dashboard-layout'
@@ -2641,8 +2642,8 @@ export function AdminDashboardPage() {
       setAdminTicketReplyMessage('Supabase is not configured.')
       return
     }
-    const raw = adminTicketQuoteDraft.trim().replace(',', '.')
-    const parsed = raw === '' ? null : Number(raw)
+    const raw = adminTicketQuoteDraft.trim()
+    const parsed = raw === '' ? null : parseEuroAmount(raw)
     if (raw !== '' && (!Number.isFinite(parsed) || (parsed as number) < 0)) {
       setAdminTicketReplyMessage('Enter a valid EUR amount (or leave blank to clear).')
       return
@@ -3198,7 +3199,7 @@ export function AdminDashboardPage() {
       setPortalInvoiceSendMessage('Sign in again as admin to send invoices.')
       return
     }
-    const parsed = Number(String(portalInvoiceAmountInput).replace(/,/g, '.').trim())
+    const parsed = parseEuroAmount(portalInvoiceAmountInput)
     if (!Number.isFinite(parsed) || parsed < 0.5) {
       setPortalInvoiceSendMessage('Enter a valid amount in euros (minimum €0.50).')
       return

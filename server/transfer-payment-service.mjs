@@ -10,6 +10,7 @@ import {
 } from './transfer-payment-customer-email.mjs'
 import { notifyClientPortalTransferPayment } from './portal-transfer-payment-notify.mjs'
 import { stampUnpaidDeadlineIfNeeded } from './transfer-unpaid-cancel-service.mjs'
+import { parseEuroAmount } from '../shared/parse-euro-amount.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
   const e = new Error(message)
@@ -149,7 +150,7 @@ export const handleTransferPaymentAdmin = async (body, env = process.env, meta =
     if (raw === null || raw === undefined || raw === '') {
       price = null
     } else {
-      const n = typeof raw === 'number' ? raw : Number(String(raw).replace(',', '.'))
+      const n = parseEuroAmount(raw)
       if (!Number.isFinite(n) || n < 0 || n > 999999.99) {
         throwStatus('adminPriceEur must be a non-negative number (or empty to clear).', 400)
       }
