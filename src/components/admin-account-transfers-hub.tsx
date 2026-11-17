@@ -14,6 +14,7 @@ import { useAuth } from '../providers/auth-provider'
 import { LuxuryButton } from './ui/button'
 import { TransferPaymentStatusBadge } from './transfer-payment-status-badge'
 import { cx } from '../lib/utils'
+import { parseEuroAmount } from '../../shared/parse-euro-amount.mjs'
 
 type VatTreatmentChoice = 'tourism' | 'services'
 
@@ -468,7 +469,12 @@ export function AdminAccountTransfersHub(props: {
       setError('Sign in again as admin.')
       return
     }
-    const raw = (priceDraft[bookingId] ?? '').trim().replace(/,/g, '')
+    const raw = (priceDraft[bookingId] ?? '').trim()
+    const priceEur = raw === '' ? null : parseEuroAmount(raw)
+    if (priceEur != null && !Number.isFinite(priceEur)) {
+      setError('Enter a valid price in EUR.')
+      return
+    }
     setPriceBusyId(bookingId)
     try {
       const res = await fetch('/api/transfer-payment-admin', {
@@ -480,8 +486,8 @@ export function AdminAccountTransfersHub(props: {
         body: JSON.stringify({
           action: 'set_admin_price',
           bookingId,
-          adminPriceEur: raw === '' ? null : Number(raw),
-          adminPriceVatTreatment: raw === '' ? null : (vatDraft[bookingId] ?? 'tourism')
+          adminPriceEur: priceEur,
+          adminPriceVatTreatment: priceEur == null ? null : (vatDraft[bookingId] ?? 'tourism')
         })
       })
       const data = (await res.json().catch(() => ({}))) as {
@@ -625,8 +631,7 @@ export function AdminAccountTransfersHub(props: {
       if (fullRemaining) {
         body.fullRemaining = true
       } else {
-        const raw = (refundDraft[bookingId] ?? '').trim().replace(/,/g, '.')
-        const n = Number(raw)
+        const n = parseEuroAmount(refundDraft[bookingId] ?? '')
         if (!Number.isFinite(n) || n <= 0) {
           throw new Error('Enter a valid refund amount in EUR.')
         }

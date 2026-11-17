@@ -5,6 +5,7 @@ import { sendBookingEmailHtml, sendTransferPaymentCustomerEmails } from './trans
 import { balanceDueReminderIso } from './transfer-payment-amounts.mjs'
 import { notifyClientPortalTransferPayment } from './portal-transfer-payment-notify.mjs'
 import { publishTransferAdminPricePortalPdfs } from './transfer-portal-publish-admin-price-pdfs.mjs'
+import { parseEuroAmount } from '../shared/parse-euro-amount.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
   const e = new Error(message)
@@ -67,7 +68,7 @@ export const handlePackageBuildAdminPublish = async (body, env = process.env, me
   const price =
     typeof rawPrice === 'number' && Number.isFinite(rawPrice)
       ? rawPrice
-      : Number(String(rawPrice ?? '').replace(/,/g, '.').replace(/\s/g, ''))
+      : parseEuroAmount(rawPrice)
 
   if (!email.includes('@')) {
     throwStatus('Enter a valid client login email.', 400)

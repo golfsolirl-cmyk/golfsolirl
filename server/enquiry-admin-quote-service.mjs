@@ -6,6 +6,7 @@ import { createClient } from '@supabase/supabase-js'
 import { requireAdminFromBearer } from './auth-verify-admin.mjs'
 import { handlePortalInvoiceSend } from './portal-invoice-send-service.mjs'
 import { handleDeskCustomers } from './desk-quote-service.mjs'
+import { parseEuroAmount } from '../shared/parse-euro-amount.mjs'
 import { handleTransferPaymentAdmin } from './transfer-payment-service.mjs'
 import { handlePortalInterestTicketReply } from './portal-interest-ticket-reply-service.mjs'
 
@@ -153,8 +154,7 @@ export const handleEnquiryAdminQuote = async (body, env = process.env, meta = {}
 
   const enquiryId = typeof body?.enquiryId === 'string' ? body.enquiryId.trim() : ''
   const mode = typeof body?.mode === 'string' ? body.mode.trim().toLowerCase() : ''
-  const amountRaw = body?.amountEur
-  const amountEur = typeof amountRaw === 'number' ? amountRaw : typeof amountRaw === 'string' ? Number(String(amountRaw).replace(',', '.')) : NaN
+  const amountEur = parseEuroAmount(body?.amountEur)
 
   if (!enquiryId) {
     throwStatus('enquiryId is required.', 400)
