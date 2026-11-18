@@ -55,7 +55,9 @@ export const syncTransferBookingFromPaidPortalInvoice = async (supabase, invoice
         ? Math.round(Number(invoice.amount_cents)) / 100
         : null
 
-  let booking = await findTransferBookingForInvoice(supabase, { ref, profileId, enquiryId: invoice.enquiry_id })
+  const found = await findTransferBookingForInvoice(supabase, { ref, profileId, enquiryId: invoice.enquiry_id })
+  let booking = found.booking
+  let matchedBy = found.matchedBy
   let created = false
 
   if (!booking?.id) {
@@ -64,15 +66,34 @@ export const syncTransferBookingFromPaidPortalInvoice = async (supabase, invoice
       return { synced: false, reason: 'no_transfer_booking' }
     }
     booking = createdRow
+    matchedBy = 'created'
     created = true
   }
 
+  const now = new Date().toISOString()
+  const reopen = paidInvoiceTransferReopenPatch(booking, matchedBy)
   const st = String(booking.payment_status ?? 'unpaid').toLowerCase()
   if (st === 'paid' && !created) {
-    return { synced: true, bookingId: booking.id, created, reason: 'already_paid' }
+    let reopened = false
+    if (reopen.status) {
+      const repaired = await supabase
+        .from('transfer_bookings')
+        .update({ status: 'pending', cancel_reason: null, updated_at: now })
+        .eq('id', booking.id)
+        .eq('status', 'cancelled')
+        .eq('cancel_reason', 'unpaid_timeout')
+        .select('id')
+        .maybeSingle()
+      if (repaired.error) {
+        const err = new Error(repaired.error.message)
+        err.statusCode = 500
+        throw err
+      }
+      reopened = Boolean(repaired.data?.id)
+    }
+    return { synced: true, bookingId: booking.id, created, reason: 'already_paid', reopened }
   }
 
-  const now = new Date().toISOString()
   const recordedEur =
     amountEur != null && amountEur > 0
       ? amountEur
@@ -94,6 +115,10 @@ export const syncTransferBookingFromPaidPortalInvoice = async (supabase, invoice
 
   if (amountEur != null && amountEur > 0 && (!Number(booking.admin_price_eur) || Number(booking.admin_price_eur) <= 0)) {
     patch.admin_price_eur = amountEur
+  }
+  if (reopen.status) {
+    patch.status = reopen.status
+    patch.cancel_reason = reopen.cancel_reason
   }
 
   let bookingId = booking.id
@@ -142,7 +167,8 @@ export const syncTransferBookingFromPaidPortalInvoice = async (supabase, invoice
     meta: {
       portal_invoice_id: invoice.id,
       enquiry_reference_id: ref || null,
-      created_booking: created
+      created_booking: created,
+      reopened: Boolean(reopen.status)
     }
   })
   if (evErr) {
@@ -173,7 +199,34 @@ export const syncTransferBookingFromPaidPortalInvoice = async (supabase, invoice
   }
 
   await notifyClientPortalTransferPayment(supabase, bookingId)
-  return { synced: true, bookingId, created }
+  return { synced: true, bookingId, created, reopened: Boolean(reopen.status) }
+}
+
+/**
+ * A portal invoice paid for this enquiry must put the trip back on the desk
+ * when the unpaid sweep already cancelled it. A profile-only match is a
+ * different trip and stays cancelled.
+ * @param {Record<string, unknown> | null | undefined} booking
+ * @param {string | null} matchedBy
+ */
+export const paidInvoiceTransferReopenPatch = (booking, matchedBy) => {
+  if (matchedBy !== 'reference') return {}
+  if (String(booking?.status ?? '') !== 'cancelled') return {}
+  if (booking?.cancel_reason !== 'unpaid_timeout') return {}
+  return { status: 'pending', cancel_reason: null }
+}
+
+const TRANSFER_MATCH_COLUMNS =
+  'id, payment_status, admin_price_eur, deposit_percent, client_user_id, enquiry_reference_id, status, cancel_reason'
+const TRANSFER_MATCH_COLUMNS_LEGACY =
+  'id, payment_status, admin_price_eur, deposit_percent, client_user_id, enquiry_reference_id'
+
+const selectTransferMatch = async (run) => {
+  let result = await run(TRANSFER_MATCH_COLUMNS)
+  if (result.error && /cancel_reason/i.test(result.error.message || '')) {
+    result = await run(TRANSFER_MATCH_COLUMNS_LEGACY)
+  }
+  return result.data ?? null
 }
 
 /**
@@ -182,28 +235,32 @@ export const syncTransferBookingFromPaidPortalInvoice = async (supabase, invoice
  */
 const findTransferBookingForInvoice = async (supabase, { ref, profileId, enquiryId }) => {
   if (ref) {
-    const { data: byRef } = await supabase
-      .from('transfer_bookings')
-      .select('id, payment_status, admin_price_eur, deposit_percent, client_user_id, enquiry_reference_id')
-      .ilike('enquiry_reference_id', ref)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle()
+    const byRef = await selectTransferMatch((columns) =>
+      supabase
+        .from('transfer_bookings')
+        .select(columns)
+        .ilike('enquiry_reference_id', ref)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+    )
     if (byRef?.id) {
-      return byRef
+      return { booking: byRef, matchedBy: 'reference' }
     }
   }
 
   if (profileId) {
-    const { data: byProfile } = await supabase
-      .from('transfer_bookings')
-      .select('id, payment_status, admin_price_eur, deposit_percent, client_user_id, enquiry_reference_id')
-      .eq('client_user_id', profileId)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle()
+    const byProfile = await selectTransferMatch((columns) =>
+      supabase
+        .from('transfer_bookings')
+        .select(columns)
+        .eq('client_user_id', profileId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+    )
     if (byProfile?.id) {
-      return byProfile
+      return { booking: byProfile, matchedBy: 'profile' }
     }
   }
 
@@ -215,20 +272,22 @@ const findTransferBookingForInvoice = async (supabase, { ref, profileId, enquiry
       .maybeSingle()
     const enquiryRef = typeof enquiry?.reference_id === 'string' ? enquiry.reference_id.trim() : ''
     if (enquiryRef) {
-      const { data: byEnquiryRef } = await supabase
-        .from('transfer_bookings')
-        .select('id, payment_status, admin_price_eur, deposit_percent, client_user_id, enquiry_reference_id')
-        .ilike('enquiry_reference_id', enquiryRef)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle()
+      const byEnquiryRef = await selectTransferMatch((columns) =>
+        supabase
+          .from('transfer_bookings')
+          .select(columns)
+          .ilike('enquiry_reference_id', enquiryRef)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle()
+      )
       if (byEnquiryRef?.id) {
-        return byEnquiryRef
+        return { booking: byEnquiryRef, matchedBy: 'reference' }
       }
     }
   }
 
-  return null
+  return { booking: null, matchedBy: null }
 }
 
 /**
