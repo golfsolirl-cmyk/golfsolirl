@@ -10,6 +10,7 @@ import { buildGsolTransactionalEmail, finalizeGsolEmailHtml } from './email-layo
 import { ctaGreen, emailFonts, escapeHtml, gs } from './branded-email-shell.mjs'
 import { buildGsolMasterDocumentPdf } from './gsol-master-document-pdf.mjs'
 import { computePhoneUniquenessKey, isLikelyMobileE164 } from './phone-e164.mjs'
+import { claimDeskQuoteDecline } from './desk-quote-decline.mjs'
 import { createEnquiryReferenceId } from '../shared/document-templates.mjs'
 import { gsolEmailBrand } from './email-constants.mjs'
 import { Resend } from 'resend'
@@ -901,8 +902,45 @@ export const handleDeskQuoteDecision = async (body, env = process.env) => {
     throwStatus('This document cannot be declined.', 400)
   }
 
+  if (decision === 'decline') {
+    if (row.status === 'declined') {
+      return { ok: true, status: 'declined', message: 'We already have your decline. The price stays open for seven days — WhatsApp the desk if you want to reshape the week.' }
+    }
+    const claim = await claimDeskQuoteDecline(db, row)
+    if (!claim.claimed) {
+      if (claim.status === 'paid') {
+        return { ok: true, status: 'paid', message: 'This trip is already paid. Your receipt is on its way by email.' }
+      }
+      if (claim.status === 'declined') {
+        return { ok: true, status: 'declined', message: 'We already have your decline. The price stays open for seven days — WhatsApp the desk if you want to reshape the week.' }
+      }
+      return {
+        ok: true,
+        status: claim.status || row.status,
+        message: 'This quote changed while we were saving your reply. Open the latest email from the desk.'
+      }
+    }
+    const pdf = await buildPdf({
+      kind: 'quote',
+      title: row.title,
+      reference: row.reference_code,
+      name: row.customer_name,
+      email: row.customer_email,
+      phone: row.customer_phone,
+      summary: row.summary,
+      amountCents: row.amount_cents,
+      trip: row.trip_details
+    })
+    await emailWinBack(env, row, pdf)
+    return {
+      ok: true,
+      status: 'declined',
+      message: 'Noted. We emailed you a seven-day hold on this price, with the quote PDF attached. One reply is enough if you want the week reshaped.'
+    }
+  }
+
   const pdf = await buildPdf({
-    kind: decision === 'accept' ? 'invoice' : 'quote',
+    kind: 'invoice',
     title: row.title,
     reference: row.reference_code,
     name: row.customer_name,
@@ -912,22 +950,6 @@ export const handleDeskQuoteDecision = async (body, env = process.env) => {
     amountCents: row.amount_cents,
     trip: row.trip_details
   })
-
-  if (decision === 'decline') {
-    if (row.status === 'declined') {
-      return { ok: true, status: 'declined', message: 'We already have your decline. The price stays open for seven days — WhatsApp the desk if you want to reshape the week.' }
-    }
-    await db
-      .from('desk_quotes')
-      .update({ status: 'declined', decided_at: new Date().toISOString(), updated_at: new Date().toISOString() })
-      .eq('id', row.id)
-    await emailWinBack(env, row, pdf)
-    return {
-      ok: true,
-      status: 'declined',
-      message: 'Noted. We emailed you a seven-day hold on this price, with the quote PDF attached. One reply is enough if you want the week reshaped.'
-    }
-  }
 
   if (row.stripe_checkout_url && (row.status === 'accepted' || row.status === 'invoiced')) {
     await emailPayLink(env, row, row.stripe_checkout_url, pdf)
