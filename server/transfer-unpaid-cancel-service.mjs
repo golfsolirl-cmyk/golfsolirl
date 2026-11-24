@@ -5,6 +5,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { requireUserFromBearer } from './auth-verify-user.mjs'
+import { planUnpaidDeadlineOnPriceSave } from './transfer-unpaid-deadline.mjs'
 import { buildGsolMasterDocumentPdf } from './gsol-master-document-pdf.mjs'
 import { buildGsolTransactionalEmail, finalizeGsolEmailHtml } from './email-layout.mjs'
 import { emailFonts, escapeHtml, gs } from './branded-email-shell.mjs'
@@ -59,6 +60,40 @@ export const stampUnpaidDeadlineIfNeeded = async (admin, bookingId) => {
   if (upErr && !missingColumn(upErr)) {
     console.error('[unpaid-cancel] deadline stamp', upErr.message)
   }
+}
+
+/**
+ * Keep the pay clock aligned with the saved price.
+ * @param {import('@supabase/supabase-js').SupabaseClient} admin
+ * @param {string} bookingId
+ * @param {number | null} price
+ */
+export const syncUnpaidDeadlineForPrice = async (admin, bookingId, price) => {
+  const { data, error } = await admin
+    .from('transfer_bookings')
+    .select('unpaid_deadline_at')
+    .eq('id', bookingId)
+    .maybeSingle()
+  if (error) {
+    if (!missingColumn(error)) {
+      console.error('[unpaid-cancel] deadline sync lookup', error.message)
+    }
+    return
+  }
+  const plan = planUnpaidDeadlineOnPriceSave(price, data?.unpaid_deadline_at)
+  if (plan === 'keep') return
+  if (plan === 'clear') {
+    if (!data?.unpaid_deadline_at) return
+    const { error: clearErr } = await admin
+      .from('transfer_bookings')
+      .update({ unpaid_deadline_at: null })
+      .eq('id', bookingId)
+    if (clearErr && !missingColumn(clearErr)) {
+      console.error('[unpaid-cancel] deadline clear', clearErr.message)
+    }
+    return
+  }
+  await stampUnpaidDeadlineIfNeeded(admin, bookingId)
 }
 
 const paragraph = (text) =>
