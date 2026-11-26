@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { AdminPaymentRequestModeToggle } from '../../components/admin-payment-request-mode-toggle'
 import { TowAdminShell } from '../../components/tow-admin/tow-admin-bar'
 import { TripTrackerPanel } from '../../components/tow-admin/trip-tracker-panel'
 import { ensureAdminSession, towAdmin } from '../../lib/tow-admin-api'
@@ -11,6 +12,11 @@ import {
   formTypeLabel,
   type TripStepStatus
 } from '../../lib/tow-admin-constants'
+import {
+  calcDeposit20Eur,
+  roundMoney2,
+  type PaymentRequestMode
+} from '../../lib/payment-request-mode'
 
 type Enquiry = {
   id: string
@@ -47,6 +53,9 @@ export function TowAdminEnquiryDetailPage() {
   const [linked, setLinked] = useState<{ id: string; account_reference_id?: string; portal_token?: string } | null>(null)
   const [notes, setNotes] = useState('')
   const [amount, setAmount] = useState('')
+  const [deposit, setDeposit] = useState('')
+  const [paymentRequestMode, setPaymentRequestMode] = useState<PaymentRequestMode>('deposit_20')
+  const [depositTouched, setDepositTouched] = useState(false)
   const [paySeg, setPaySeg] = useState<'awaiting_payment' | 'customer_reported' | 'paid_in_full'>('awaiting_payment')
   const [paidVia, setPaidVia] = useState('monzo')
   const [emailReceipt, setEmailReceipt] = useState(true)
@@ -61,6 +70,8 @@ export function TowAdminEnquiryDetailPage() {
     setLinked(res.linkedProfile)
     setNotes(res.enquiry.adminPrivateNotes || '')
     setAmount(res.enquiry.amountDue != null ? String(res.enquiry.amountDue) : '')
+    const autoDep = calcDeposit20Eur(res.enquiry.amountDue)
+    if (autoDep != null && !depositTouched) setDeposit(String(autoDep))
     setEmailOnStep(res.enquiry.emailTripOnStepChange !== false)
     const ui = res.enquiry.paymentUi
     if (ui === 'customer_reported' || ui === 'paid_in_full' || ui === 'awaiting_payment') setPaySeg(ui)
@@ -161,6 +172,14 @@ export function TowAdminEnquiryDetailPage() {
     }
   }
 
+  const tripTotalEur = roundMoney2(amount) ?? (enq?.amountDue ?? 0)
+
+  useEffect(() => {
+    if (depositTouched || paymentRequestMode !== 'deposit_20') return
+    const auto = calcDeposit20Eur(tripTotalEur)
+    if (auto != null) setDeposit(String(auto))
+  }, [tripTotalEur, paymentRequestMode, depositTouched])
+
   const sendDoc = async (kind: 'quote' | 'invoice' | 'receipt') => {
     if (!enq?.email) {
       setError('Enquiry needs an email to send documents.')
@@ -180,12 +199,21 @@ export function TowAdminEnquiryDetailPage() {
         name: enq.name,
         phone: enq.phone,
         amountEur: amount ? Number(amount) : enq.amountDue || 0,
-        title: kind === 'quote' ? 'Trip quote' : kind === 'invoice' ? 'Trip invoice' : 'Payment receipt',
+        depositEur: deposit ? Number(deposit) : undefined,
+        title:
+          kind === 'quote'
+            ? 'Trip quote'
+            : kind === 'invoice'
+              ? paymentRequestMode === 'deposit_20'
+                ? 'Deposit invoice (20%)'
+                : 'Trip invoice'
+              : 'Payment receipt',
         summary: enq.interest || '',
         validUntil: kind === 'quote' ? valid : undefined,
         dueDate: kind === 'invoice' ? valid : undefined,
         paidVia,
-        invoiceMode: 'full'
+        paymentRequestMode,
+        invoiceMode: paymentRequestMode === 'deposit_20' ? 'deposit' : 'full'
       })
       setMsg(res.message || `${kind} sent.`)
       await load()
@@ -352,6 +380,36 @@ export function TowAdminEnquiryDetailPage() {
             <p className="mt-1 text-sm text-slate-500">
               Quote, invoice (Monzo pay page), or receipt — PDF + Golf Sol email. Logged on the customer record.
             </p>
+            <div className="mt-3">
+              <AdminPaymentRequestModeToggle
+                amountReceivedEur={0}
+                depositEur={roundMoney2(deposit)}
+                idPrefix={`tow-enq-${id}`}
+                mode={paymentRequestMode}
+                onModeChange={(next) => {
+                  setPaymentRequestMode(next)
+                  if (next === 'deposit_20' && !depositTouched) {
+                    const auto = calcDeposit20Eur(tripTotalEur)
+                    if (auto != null) setDeposit(String(auto))
+                  }
+                }}
+                tripTotalEur={tripTotalEur > 0 ? tripTotalEur : null}
+              />
+            </div>
+            {paymentRequestMode === 'deposit_20' ? (
+              <label className="mt-3 block text-sm font-semibold text-slate-600">
+                Deposit (EUR)
+                <input
+                  className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2"
+                  inputMode="decimal"
+                  onChange={(e) => {
+                    setDepositTouched(true)
+                    setDeposit(e.target.value)
+                  }}
+                  value={deposit}
+                />
+              </label>
+            ) : null}
             <div className="mt-3 flex flex-col gap-2">
               {(
                 [

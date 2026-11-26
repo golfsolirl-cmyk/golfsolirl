@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { AdminDocumentSendDesk } from './admin-document-send-desk'
+import { AdminPaymentRequestModeToggle } from './admin-payment-request-mode-toggle'
 import { LuxuryButton } from './ui/button'
+import { calcDeposit20Eur, roundMoney2, type PaymentRequestMode } from '../lib/payment-request-mode'
 import { cx } from '../lib/utils'
 
 export type AdminCustomerDeskSeed = {
@@ -172,6 +174,9 @@ export function AdminCustomersDesk(props: {
   const [phone, setPhone] = useState('')
   const [title, setTitle] = useState('Costa del Sol golf week')
   const [amount, setAmount] = useState('')
+  const [deposit, setDeposit] = useState('')
+  const [paymentRequestMode, setPaymentRequestMode] = useState<PaymentRequestMode>('deposit_20')
+  const [depositTouched, setDepositTouched] = useState(false)
   const [summary, setSummary] = useState('')
   const [subject, setSubject] = useState('')
   const [trip, setTrip] = useState<DeskTrip>(emptyTrip)
@@ -255,6 +260,14 @@ export function AdminCustomersDesk(props: {
     )
   }, [customers, query])
 
+  const tripTotalEur = roundMoney2(amount)
+
+  useEffect(() => {
+    if (depositTouched || paymentRequestMode !== 'deposit_20') return
+    const auto = calcDeposit20Eur(tripTotalEur)
+    if (auto != null) setDeposit(String(auto))
+  }, [tripTotalEur, paymentRequestMode, depositTouched])
+
   const send = async (action: 'send-quote' | 'send-invoice' | 'send-note') => {
     if (!props.accessToken || !selectedEmail) return
     setBusy(action)
@@ -270,6 +283,8 @@ export function AdminCustomersDesk(props: {
         summary,
         subject,
         amountEur: amount,
+        paymentRequestMode: action === 'send-note' ? undefined : paymentRequestMode,
+        depositEur: action === 'send-note' ? undefined : deposit,
         trip:
           action === 'send-note'
             ? undefined
@@ -592,9 +607,37 @@ export function AdminCustomersDesk(props: {
                       <input className={fieldClass} onChange={(event) => setTitle(event.target.value)} value={title} />
                     </label>
                     <label className="block text-sm font-bold text-forest-900">
-                      Total (EUR)
+                      Trip total (EUR)
                       <input className={fieldClass} inputMode="decimal" onChange={(event) => setAmount(event.target.value)} value={amount} />
                     </label>
+                    <AdminPaymentRequestModeToggle
+                      amountReceivedEur={0}
+                      depositEur={roundMoney2(deposit)}
+                      idPrefix={`desk-${tab}`}
+                      mode={paymentRequestMode}
+                      onModeChange={(next) => {
+                        setPaymentRequestMode(next)
+                        if (next === 'deposit_20' && !depositTouched) {
+                          const auto = calcDeposit20Eur(tripTotalEur)
+                          if (auto != null) setDeposit(String(auto))
+                        }
+                      }}
+                      tripTotalEur={tripTotalEur}
+                    />
+                    {paymentRequestMode === 'deposit_20' ? (
+                      <label className="block text-sm font-bold text-forest-900">
+                        Deposit due now (EUR) · auto 20%, editable
+                        <input
+                          className={fieldClass}
+                          inputMode="decimal"
+                          onChange={(event) => {
+                            setDepositTouched(true)
+                            setDeposit(event.target.value)
+                          }}
+                          value={deposit}
+                        />
+                      </label>
+                    ) : null}
                     <BookingDetailsFields
                       lines={lines}
                       onLines={setLines}

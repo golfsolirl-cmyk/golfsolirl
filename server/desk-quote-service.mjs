@@ -14,6 +14,15 @@ import { createEnquiryReferenceId } from '../shared/document-templates.mjs'
 import { gsolEmailBrand } from './email-constants.mjs'
 import { Resend } from 'resend'
 import { resolveResendToAddress, resendSandboxRecipientHint } from './resend-delivery-email.mjs'
+import {
+  buildPaymentRequestMeta,
+  normalizePaymentRequestMode,
+  paymentRequestCustomerCopy,
+  paymentRequestSummaryLabel,
+  readPaymentRequestMeta,
+  resolvePaymentRequestAmounts,
+  roundMoney2
+} from '../shared/payment-request-mode.mjs'
 
 const throwStatus = (message, statusCode) => {
   const err = new Error(message)
@@ -104,6 +113,7 @@ const normalizeTrip = (raw) => {
         return [{ service: BOOKING_SERVICES.has(line.service) ? line.service : 'other', detail, when, quantity }]
       })
     : []
+  const paymentRequest = readPaymentRequestMeta({ paymentRequest: src.paymentRequest })
   return {
     golfers: text('golfers', 6),
     guests: text('guests', 6),
@@ -119,8 +129,33 @@ const normalizeTrip = (raw) => {
     hotel: text('hotel', 160),
     nights: text('nights', 12),
     stayNotes: text('stayNotes', 500),
-    lines
+    lines,
+    ...(paymentRequest ? { paymentRequest } : {})
   }
+}
+
+/**
+ * Attach payment request mode onto trip_details and decide amount_cents for the pay page.
+ * Quotes keep the trip total on amount_cents; invoices charge amount-now (deposit or full).
+ */
+const applyPaymentRequestToSend = ({ kind, amountEur, body, trip }) => {
+  const mode = normalizePaymentRequestMode(body?.paymentRequestMode ?? body?.invoiceMode ?? 'deposit_20')
+  const tripTotalEur = roundMoney2(amountEur) ?? 0
+  const depositEur =
+    roundMoney2(body?.depositEur) ??
+    (mode === 'deposit_20' ? Math.round(tripTotalEur * 0.2 * 100) / 100 : tripTotalEur)
+  const amountReceivedEur = roundMoney2(body?.amountReceivedEur) ?? 0
+  const resolved = resolvePaymentRequestAmounts({
+    mode,
+    tripTotalEur,
+    depositEur,
+    amountReceivedEur
+  })
+  const meta = buildPaymentRequestMeta(resolved)
+  const nextTrip = { ...(trip && typeof trip === 'object' ? trip : {}), paymentRequest: meta }
+  // Quotes show full trip total; invoices / pay links use amount due now.
+  const chargeEur = kind === 'quote' ? tripTotalEur : resolved.amountNowEur
+  return { mode, resolved, meta, trip: nextTrip, chargeEur, tripTotalEur }
 }
 
 const tripRows = (raw) => {
@@ -605,18 +640,40 @@ const openCheckout = async (env, db, row) => {
 const emailPayLink = async (env, row, checkoutUrl, pdf) => {
   const origin = getSiteOrigin(env)
   const first = row.customer_name.split(/\s+/)[0] || 'there'
+  const meta = readPaymentRequestMeta(row.trip_details)
+  const copy = meta
+    ? paymentRequestCustomerCopy(meta, { amountCentsFallback: row.amount_cents })
+    : paymentRequestCustomerCopy(
+        {
+          mode: 'full',
+          tripTotalEur: (Number(row.amount_cents) || 0) / 100,
+          depositEur: 0,
+          amountNowEur: (Number(row.amount_cents) || 0) / 100,
+          amountReceivedEur: 0,
+          remainingAfterNowEur: 0
+        },
+        { amountCentsFallback: row.amount_cents }
+      )
   const subject = `Your Golf Sol invoice — ${row.reference_code}`
+  const dueRows = copy.rows
+    .map(
+      ([label, value]) =>
+        `<tr><td style="padding:4px 12px 4px 0;color:#5a6b62;font-size:14px;">${escapeHtml(label)}</td><td style="padding:4px 0;font-weight:700;font-size:14px;">${escapeHtml(value)}</td></tr>`
+    )
+    .join('')
   const html = buildGsolTransactionalEmail({
     documentTitle: subject,
-    preheader: `Pay ${fmtEur(row.amount_cents)} to confirm ${row.reference_code}. The invoice PDF is attached.`,
+    preheader: `${copy.headline}: ${copy.amountNowLabel} · ref ${row.reference_code}. PDF attached.`,
     heroKicker: 'Golf Sol Ireland',
     heroTitle: 'Your invoice is ready',
-    heroLead: `${fmtEur(row.amount_cents)} · ${row.reference_code}`,
+    heroLead: `${copy.headline} · ${copy.amountNowLabel} · ${row.reference_code}`,
     heroMetaHtml: '',
     bodyHtml: [
       paragraph(`Hello ${escapeHtml(first)},`),
       paragraph(`Your invoice for <strong>${escapeHtml(row.title || 'your Costa del Sol trip')}</strong> is attached as a PDF.`),
-      paragraph(`Total due: <strong>${escapeHtml(fmtEur(row.amount_cents))}</strong>.`),
+      paragraph(`<strong>${escapeHtml(copy.headline)}:</strong> ${escapeHtml(copy.amountNowLabel)}.`),
+      paragraph(escapeHtml(copy.leadExtra)),
+      `<table role="presentation" style="margin:0 0 16px;border-collapse:collapse;">${dueRows}</table>`,
       detailsBlock(row),
       row.summary ? paragraph(escapeHtml(row.summary)) : '',
       buttonRow([{ href: checkoutUrl, label: 'Open Monzo pay page', style: ctaGreen }]),
@@ -631,6 +688,17 @@ const emailQuoteChoice = async (env, row, pdf) => {
   const acceptHref = `${origin}/quote-reply/${row.decision_token}?choice=accept`
   const declineHref = `${origin}/quote-reply/${row.decision_token}?choice=decline`
   const first = row.customer_name.split(/\s+/)[0] || 'there'
+  const meta = readPaymentRequestMeta(row.trip_details)
+  const payHint = meta
+    ? paymentRequestSummaryLabel(
+        resolvePaymentRequestAmounts({
+          mode: meta.mode,
+          tripTotalEur: meta.tripTotalEur || (Number(row.amount_cents) || 0) / 100,
+          depositEur: meta.depositEur,
+          amountReceivedEur: meta.amountReceivedEur
+        })
+      )
+    : null
   const subject = `Your Golf Sol quote — ${row.reference_code}`
   const html = buildGsolTransactionalEmail({
     documentTitle: subject,
@@ -643,6 +711,7 @@ const emailQuoteChoice = async (env, row, pdf) => {
       paragraph(`Hello ${escapeHtml(first)},`),
       paragraph(`Here is the quote for <strong>${escapeHtml(row.title || 'your Costa del Sol week')}</strong>. The PDF is attached.`),
       paragraph(`Quoted total: <strong>${escapeHtml(fmtEur(row.amount_cents))}</strong>.`),
+      payHint ? paragraph(`After you accept: <strong>${escapeHtml(payHint)}</strong>.`) : '',
       detailsBlock(row),
       row.summary ? paragraph(escapeHtml(row.summary)) : '',
       paragraph('Accept and we email a secure pay button straight away. Decline and we will hold the price while we find a week that fits.'),
@@ -691,13 +760,39 @@ const insertDeskRow = async (db, env, userId, input) => {
   if (!email) throwStatus('Enter a valid customer email.', 400)
   const kind = input.kind
   const amountEur = Number(input.amountEur)
-  const amountCents = Number.isFinite(amountEur) ? Math.round(amountEur * 100) : 0
-  if (kind !== 'note' && amountCents < 50) {
+  if (kind !== 'note' && (!Number.isFinite(amountEur) || amountEur < 0.5)) {
     throwStatus('Enter a total of at least €0.50.', 400)
+  }
+  const applied =
+    kind === 'note'
+      ? null
+      : applyPaymentRequestToSend({
+          kind,
+          amountEur,
+          body: input,
+          trip: input.trip
+        })
+  const chargeEur = applied ? applied.chargeEur : Number.isFinite(amountEur) ? amountEur : 0
+  const amountCents = Math.round((chargeEur || 0) * 100)
+  if (kind !== 'note' && amountCents < 50) {
+    throwStatus(
+      applied?.mode === 'deposit_20'
+        ? 'Deposit due now is under €0.50 — check the trip total and deposit.'
+        : 'Enter a total of at least €0.50.',
+      400
+    )
   }
   const profile = await loadProfile(db, email)
   const token = randomBytes(24).toString('hex')
   const reference = `GSQ-${Date.now().toString(36).toUpperCase()}`
+  const titleDefault =
+    kind === 'invoice'
+      ? applied?.mode === 'deposit_20'
+        ? 'Deposit invoice (20%)'
+        : 'Trip invoice'
+      : kind === 'note'
+        ? 'Note from the desk'
+        : 'Trip quote'
   const row = {
     kind,
     profile_id: profile?.role === 'admin' ? null : profile?.id || null,
@@ -706,14 +801,14 @@ const insertDeskRow = async (db, env, userId, input) => {
     customer_name: clip(input.name || profile?.full_name || '', 160),
     customer_phone: clip(input.phone || profile?.phone || '', 40),
     reference_code: reference,
-    title: clip(input.title || (kind === 'invoice' ? 'Trip invoice' : kind === 'note' ? 'Note from the desk' : 'Trip quote'), 180),
+    title: clip(input.title || titleDefault, 180),
     summary: clip(input.summary, 4000),
     amount_cents: kind === 'note' ? Math.max(0, amountCents) : amountCents,
     status: 'sent',
     decision_token: token,
     created_by: userId
   }
-  const trip = normalizeTrip(input.trip)
+  const trip = normalizeTrip(applied?.trip || input.trip)
   let inserted = await db.from('desk_quotes').insert({ ...row, trip_details: trip }).select('*').single()
   if (inserted.error && /trip_details/i.test(inserted.error.message || '')) {
     const folded = [row.summary, tripPlain(trip)].filter(Boolean).join('\n\n')
@@ -732,6 +827,39 @@ const insertDeskRow = async (db, env, userId, input) => {
       missing ? 400 : 500
     )
   }
+
+  // Keep enquiry ledger in sync when linked (no new columns — uses deposit_eur / amount_due_eur / form_payload).
+  if (input.enquiryId && applied) {
+    const { data: enq } = await db
+      .from('enquiries')
+      .select('id, form_payload, amount_received_eur')
+      .eq('id', input.enquiryId)
+      .maybeSingle()
+    if (enq) {
+      const payload =
+        enq.form_payload && typeof enq.form_payload === 'object' && !Array.isArray(enq.form_payload)
+          ? { ...enq.form_payload }
+          : {}
+      payload._paymentRequest = {
+        mode: applied.mode,
+        tripTotalEur: applied.tripTotalEur,
+        depositEur: applied.resolved.depositEur,
+        amountNowEur: applied.resolved.amountNowEur,
+        updatedAt: new Date().toISOString()
+      }
+      await db
+        .from('enquiries')
+        .update({
+          amount_due_eur: applied.tripTotalEur,
+          deposit_eur: applied.resolved.depositEur,
+          payment_reference: reference,
+          payment_status: 'awaiting_payment',
+          form_payload: payload
+        })
+        .eq('id', input.enquiryId)
+    }
+  }
+
   return inserted.data
 }
 
@@ -798,7 +926,10 @@ export const handleDeskCustomers = async (body, env = process.env, meta = {}) =>
       summary: body?.summary || body?.message,
       amountEur: euroFromBody(body),
       trip: body?.trip,
-      enquiryId: isUuid(body?.enquiryId) ? String(body.enquiryId).trim() : null
+      enquiryId: isUuid(body?.enquiryId) ? String(body.enquiryId).trim() : null,
+      paymentRequestMode: body?.paymentRequestMode ?? body?.invoiceMode,
+      depositEur: body?.depositEur,
+      amountReceivedEur: body?.amountReceivedEur
     }
     let row
     try {
@@ -937,12 +1068,37 @@ export const handleDeskQuoteDecision = async (body, env = process.env) => {
     return { ok: true, status: 'invoiced', message: 'You already accepted this quote. We have sent the pay email again.' }
   }
 
-  await db
-    .from('desk_quotes')
-    .update({ status: 'accepted', decided_at: new Date().toISOString(), updated_at: new Date().toISOString() })
-    .eq('id', row.id)
-  const pay = await openCheckout(env, db, { ...row, status: 'accepted' })
-  await emailPayLink(env, row, pay.checkoutUrl, pdf)
+  // Quotes store trip total on amount_cents; switch pay page to amount-now when deposit mode is set.
+  const meta = readPaymentRequestMeta(row.trip_details)
+  let payRow = { ...row, status: 'accepted' }
+  if (meta?.mode === 'deposit_20' && meta.amountNowEur > 0) {
+    const nowCents = Math.round(meta.amountNowEur * 100)
+    if (nowCents >= 50 && nowCents !== row.amount_cents) {
+      await db
+        .from('desk_quotes')
+        .update({
+          amount_cents: nowCents,
+          title: row.title?.includes('Deposit') ? row.title : 'Deposit invoice (20%)',
+          status: 'accepted',
+          decided_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', row.id)
+      payRow = { ...payRow, amount_cents: nowCents, title: 'Deposit invoice (20%)' }
+    } else {
+      await db
+        .from('desk_quotes')
+        .update({ status: 'accepted', decided_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+        .eq('id', row.id)
+    }
+  } else {
+    await db
+      .from('desk_quotes')
+      .update({ status: 'accepted', decided_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+      .eq('id', row.id)
+  }
+  const pay = await openCheckout(env, db, payRow)
+  await emailPayLink(env, payRow, pay.checkoutUrl, pdf)
   return {
     ok: true,
     status: 'invoiced',

@@ -100,16 +100,18 @@ export function buildGsolCatalogEmail(id, overrides = {}) {
     'offer-golf': () => buildOffer('golf_courses', 'Golf courses & tee times', overrides),
     'payment-request': () => {
       const pay = { ...samplePayment, ...(overrides.payment || {}) }
+      const amountNow = String(overrides.amountNowLabel || pay.amountDueLabel || '')
+      const headline = String(overrides.paymentRequestHeadline || 'Amount due now')
       const html = finalizeGsolEmailHtml(
         buildLeanTransactionalEmailHtml({
           documentTitle: 'Payment request',
-          preheader: `Pay ${pay.amountDueLabel} with reference ${pay.paymentReference}.`,
+          preheader: `${headline}: ${amountNow} · ref ${pay.paymentReference}.`,
           kicker: `Payment request · ${pay.paymentReference}`,
           title: 'Here is how to pay for your trip',
-          lead: 'Transfer from any Irish or EU bank. Use the reference so we can match your payment. All payments are handled in Ireland.',
+          lead: `${headline}: ${amountNow}. Transfer from any Irish or EU bank. Use the reference so we can match your payment. All payments are handled in Ireland.`,
           rows: [
             ['Item', String(overrides.item || 'Costa del Sol golf trip')],
-            ['Amount', pay.amountDueLabel],
+            [headline, amountNow],
             ['Reference', pay.paymentReference]
           ],
           payment: pay,
@@ -122,11 +124,11 @@ export function buildGsolCatalogEmail(id, overrides = {}) {
         id,
         label: 'Payment request (Monzo)',
         subject: `Golf Sol Ireland — payment details (${pay.paymentReference})`,
-        preheader: `Pay ${pay.amountDueLabel} · ref ${pay.paymentReference}`,
+        preheader: `${headline}: ${amountNow} · ref ${pay.paymentReference}`,
         html,
         text: [
           `Payment request ${pay.paymentReference}`,
-          `Amount: ${pay.amountDueLabel}`,
+          `${headline}: ${amountNow}`,
           `Account: ${pay.accountName}`,
           `IBAN: ${pay.ibanDisplay}`,
           pay.bic ? `BIC: ${pay.bic}` : '',

@@ -18,6 +18,13 @@ import { loadSitePaymentForEmail, paymentBlockFromSettings } from './load-site-p
 import { resolveResendToAddress, resendSandboxRecipientHint } from './resend-delivery-email.mjs'
 import { getGsolSiteUrl } from './site-url.mjs'
 import { buildGsolCatalogEmail } from './gsol-transactional-catalog.mjs'
+import {
+  buildPaymentRequestMeta,
+  normalizePaymentRequestMode,
+  paymentRequestCustomerCopy,
+  resolvePaymentRequestAmounts,
+  roundMoney2
+} from '../shared/payment-request-mode.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
   const e = new Error(message)
@@ -251,7 +258,10 @@ const optionalStripeCheckout = async (env, db, row, portalInvoiceId) => {
  *   profileId?: string | null
  *   createdBy?: string | null
  *   paidVia?: string
- *   invoiceMode?: 'deposit' | 'balance' | 'full'
+ *   invoiceMode?: 'deposit' | 'balance' | 'full' | 'deposit_20'
+ *   paymentRequestMode?: 'deposit_20' | 'full'
+ *   depositEur?: number
+ *   amountReceivedEur?: number
  * }} input
  */
 export const sendTowDocument = async (db, env, input) => {
@@ -259,15 +269,46 @@ export const sendTowDocument = async (db, env, input) => {
   if (!['quote', 'invoice', 'receipt'].includes(kind)) throwStatus('Document kind must be quote, invoice, or receipt.')
   const email = blank(input.email).toLowerCase()
   if (!email.includes('@')) throwStatus('Customer email is required.')
-  const amountEur = Number(input.amountEur)
-  const amountCents = Number.isFinite(amountEur) ? Math.round(amountEur * 100) : 0
+  const tripTotalEur = roundMoney2(input.amountEur) ?? 0
+  const mode = normalizePaymentRequestMode(
+    input.paymentRequestMode ??
+      (input.invoiceMode === 'deposit' || input.invoiceMode === 'deposit_20'
+        ? 'deposit_20'
+        : input.invoiceMode === 'balance' || input.invoiceMode === 'full'
+          ? 'full'
+          : 'deposit_20')
+  )
+  const depositEur =
+    roundMoney2(input.depositEur) ??
+    (mode === 'deposit_20' ? Math.round(tripTotalEur * 0.2 * 100) / 100 : tripTotalEur)
+  const amountReceivedEur = roundMoney2(input.amountReceivedEur) ?? 0
+  const resolved = resolvePaymentRequestAmounts({
+    mode,
+    tripTotalEur,
+    depositEur,
+    amountReceivedEur
+  })
+  const paymentMeta = buildPaymentRequestMeta(resolved)
+  // Quotes show trip total; invoices charge amount due now (deposit or remaining).
+  const chargeEur = kind === 'quote' || kind === 'receipt' ? tripTotalEur : resolved.amountNowEur
+  const amountCents = Math.round((chargeEur || 0) * 100)
   if (kind !== 'receipt' && amountCents < 50) throwStatus('Enter a total of at least €0.50.')
   if (kind === 'receipt' && amountCents < 1) throwStatus('Receipt needs a paid amount.')
 
   const lines = normalizeLines(input.lines)
   if (!lines.length && amountCents > 0) {
     lines.push({
-      description: clip(input.title || (kind === 'quote' ? 'Trip quote' : kind === 'invoice' ? 'Trip invoice' : 'Payment received'), 240),
+      description: clip(
+        input.title ||
+          (kind === 'quote'
+            ? 'Trip quote'
+            : kind === 'invoice'
+              ? mode === 'deposit_20'
+                ? '20% deposit'
+                : 'Trip invoice'
+              : 'Payment received'),
+        240
+      ),
       qty: 1,
       unitEur: amountCents / 100
     })
@@ -297,9 +338,9 @@ export const sendTowDocument = async (db, env, input) => {
         (kind === 'quote'
           ? 'Trip quote'
           : kind === 'invoice'
-            ? input.invoiceMode === 'deposit'
-              ? 'Deposit invoice'
-              : input.invoiceMode === 'balance'
+            ? mode === 'deposit_20'
+              ? 'Deposit invoice (20%)'
+              : amountReceivedEur > 0
                 ? 'Balance invoice'
                 : 'Trip invoice'
             : 'Payment receipt'),
@@ -313,18 +354,26 @@ export const sendTowDocument = async (db, env, input) => {
     line_items: lines,
     valid_until: blank(input.validUntil) || null,
     due_date: blank(input.dueDate) || null,
-    paid_at: kind === 'receipt' ? new Date().toISOString() : null
+    paid_at: kind === 'receipt' ? new Date().toISOString() : null,
+    trip_details: { paymentRequest: paymentMeta }
   }
 
   let inserted = await db.from('desk_quotes').insert(rowBase).select('*').single()
-  if (inserted.error && /document_kind|line_items|valid_until|due_date|customer_reported/i.test(inserted.error.message || '')) {
+  if (
+    inserted.error &&
+    /document_kind|line_items|valid_until|due_date|customer_reported|trip_details/i.test(inserted.error.message || '')
+  ) {
     // Migration not applied yet — insert lean row
     const leanRow = { ...rowBase }
     delete leanRow.document_kind
     delete leanRow.line_items
     delete leanRow.valid_until
     delete leanRow.due_date
+    delete leanRow.trip_details
     inserted = await db.from('desk_quotes').insert(leanRow).select('*').single()
+    if (inserted.data) {
+      inserted.data.trip_details = rowBase.trip_details
+    }
   }
   if (inserted.error || !inserted.data) {
     throwStatus(inserted.error?.message || 'Could not save document.', 500)
@@ -332,6 +381,7 @@ export const sendTowDocument = async (db, env, input) => {
   const row = inserted.data
   const payUrl = `${origin}/pay/${row.decision_token}`
   const amountLabel = fmtEur(amountCents)
+  const customerCopy = paymentRequestCustomerCopy(paymentMeta, { amountCentsFallback: amountCents })
   const pay = paymentBlockFromSettings(settings, {
     paymentReference: reference,
     amountDueEur: amountCents / 100
@@ -405,17 +455,16 @@ export const sendTowDocument = async (db, env, input) => {
     )
   } else if (kind === 'invoice') {
     subject = `Your Golf Sol invoice — ${reference}`
-    const modeLabel =
-      input.invoiceMode === 'deposit' ? 'Deposit' : input.invoiceMode === 'balance' ? 'Balance' : 'Invoice'
+    const modeLabel = customerCopy.headline
     html = finalizeGsolEmailHtml(
       buildLeanTransactionalEmailHtml({
         documentTitle: subject,
-        preheader: `Pay ${amountLabel} · ref ${reference}. PDF attached.`,
+        preheader: `${modeLabel}: ${customerCopy.amountNowLabel} · ref ${reference}. PDF attached.`,
         kicker: `${modeLabel} · ${reference}`,
         title: 'Your invoice is ready',
-        lead: `Hello ${first}, your ${modeLabel.toLowerCase()} for ${row.title} is attached. Transfer to our Monzo account using reference ${reference}.`,
+        lead: `Hello ${first}, ${customerCopy.leadExtra} Transfer to our Monzo account using reference ${reference}.`,
         rows: [
-          ['Amount due', amountLabel],
+          ...customerCopy.rows,
           ['Reference', reference],
           ...(blank(input.dueDate) ? [['Due', blank(input.dueDate)]] : []),
           ...lines.slice(0, 6).map((l) => [l.description, fmtEurFromNumber(l.unitEur * l.qty)])
@@ -445,12 +494,26 @@ export const sendTowDocument = async (db, env, input) => {
   await sendMail(env, { to: email, subject, html, filename: pdf.filename, pdfBytes: pdf.bytes })
 
   if (kind === 'invoice' && input.enquiryId) {
+    const { data: enq } = await db.from('enquiries').select('form_payload').eq('id', input.enquiryId).maybeSingle()
+    const payload =
+      enq?.form_payload && typeof enq.form_payload === 'object' && !Array.isArray(enq.form_payload)
+        ? { ...enq.form_payload }
+        : {}
+    payload._paymentRequest = {
+      mode,
+      tripTotalEur,
+      depositEur: resolved.depositEur,
+      amountNowEur: resolved.amountNowEur,
+      updatedAt: new Date().toISOString()
+    }
     await db
       .from('enquiries')
       .update({
         payment_status: 'awaiting_payment',
-        amount_due_eur: amountCents / 100,
-        payment_reference: reference
+        amount_due_eur: tripTotalEur,
+        deposit_eur: resolved.depositEur,
+        payment_reference: reference,
+        form_payload: payload
       })
       .eq('id', input.enquiryId)
   }

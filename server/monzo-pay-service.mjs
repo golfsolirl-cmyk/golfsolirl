@@ -18,6 +18,10 @@ import { loadSitePaymentForEmail, paymentBlockFromSettings } from './load-site-p
 import { buildGsolCatalogEmail } from './gsol-transactional-catalog.mjs'
 import { resolveResendToAddress, resendSandboxRecipientHint } from './resend-delivery-email.mjs'
 import { getGsolSiteUrl } from './site-url.mjs'
+import {
+  paymentRequestCustomerCopy,
+  readPaymentRequestMeta
+} from '../shared/payment-request-mode.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
   const e = new Error(message)
@@ -125,6 +129,20 @@ const secondaryMethods = (env) => {
 const publicPayload = async (env, row) => {
   const settings = await loadSitePaymentForEmail(env)
   const amountLabel = fmtEur(row.amount_cents)
+  const meta = readPaymentRequestMeta(row.trip_details)
+  const copy = meta
+    ? paymentRequestCustomerCopy(meta, { amountCentsFallback: row.amount_cents })
+    : paymentRequestCustomerCopy(
+        {
+          mode: 'full',
+          tripTotalEur: (Number(row.amount_cents) || 0) / 100,
+          depositEur: 0,
+          amountNowEur: (Number(row.amount_cents) || 0) / 100,
+          amountReceivedEur: 0,
+          remainingAfterNowEur: 0
+        },
+        { amountCentsFallback: row.amount_cents }
+      )
   const pay = paymentBlockFromSettings(settings, {
     paymentReference: row.reference_code,
     amountDueEur: (Number(row.amount_cents) || 0) / 100
@@ -142,8 +160,18 @@ const publicPayload = async (env, row) => {
     reference: row.reference_code,
     title: row.title || 'Your Golf Sol trip',
     summary: row.summary || '',
-    amountLabel,
+    amountLabel: copy.amountNowLabel || amountLabel,
     amountCents: row.amount_cents,
+    paymentRequest: {
+      mode: copy.mode,
+      headline: copy.headline,
+      leadExtra: copy.leadExtra,
+      rows: copy.rows,
+      amountNowLabel: copy.amountNowLabel,
+      amountNowEur: copy.amountNowEur,
+      tripTotalEur: meta?.tripTotalEur ?? (Number(row.amount_cents) || 0) / 100,
+      remainingAfterNowEur: meta?.remainingAfterNowEur ?? 0
+    },
     status,
     paidAt: row.paid_at || null,
     customerReportedAt: row.customer_reported_paid_at || null,
@@ -156,7 +184,12 @@ const publicPayload = async (env, row) => {
     secondary,
     stripeCheckoutUrl: row.stripe_checkout_url || null,
     payUrl: `${origin}/pay/${row.decision_token}`,
-    enquiryId: row.enquiry_id || null
+    enquiryId: row.enquiry_id || null,
+    contact: {
+      email: gsolEmailBrand.email || 'info@golfsolirl.com',
+      irishPhone: gsolEmailBrand.phoneDisplay || '+353 86 851 5000',
+      spanishPhone: gsolEmailBrand.spanishPhoneDisplay || '+34 641 81 53 66'
+    }
   }
 }
 
@@ -258,23 +291,39 @@ export const handleMonzoPay = async (env = process.env, meta = {}) => {
     if (!pay) throwStatus('Monzo payment details are not configured yet. Ask the desk to set them in Admin → Payments.', 400)
 
     const payUrl = `${origin}/pay/${row.decision_token}`
+    const meta = readPaymentRequestMeta(row.trip_details)
+    const copy = meta
+      ? paymentRequestCustomerCopy(meta, { amountCentsFallback: row.amount_cents })
+      : paymentRequestCustomerCopy(
+          {
+            mode: 'full',
+            tripTotalEur: (Number(row.amount_cents) || 0) / 100,
+            depositEur: 0,
+            amountNowEur: (Number(row.amount_cents) || 0) / 100,
+            amountReceivedEur: 0,
+            remainingAfterNowEur: 0
+          },
+          { amountCentsFallback: row.amount_cents }
+        )
     const built = buildGsolCatalogEmail('payment-request', {
       payment: pay,
       item: row.title || 'Costa del Sol golf trip',
-      payUrl
+      payUrl,
+      paymentRequestHeadline: copy.headline,
+      amountNowLabel: copy.amountNowLabel
     })
     // Soften subject to “how to pay” when customer requested details themselves
     const first = (row.customer_name || '').split(/\s+/)[0] || 'there'
     const howHtml = finalizeGsolEmailHtml(
       buildLeanTransactionalEmailHtml({
         documentTitle: 'How to pay',
-        preheader: `How to pay for your trip · ref ${row.reference_code}`,
+        preheader: `${copy.headline}: ${copy.amountNowLabel} · ref ${row.reference_code}`,
         kicker: `Payment details · ${row.reference_code}`,
         title: `Here’s how to pay, ${first}.`,
-        lead: `Transfer from any Irish or EU bank to our Monzo account. Use reference ${row.reference_code} so we can match your payment. All payments are handled in Ireland.`,
+        lead: `${copy.leadExtra} Transfer from any Irish or EU bank to our Monzo account. Use reference ${row.reference_code} so we can match your payment. All payments are handled in Ireland.`,
         rows: [
           ['Item', row.title || 'Costa del Sol golf trip'],
-          ['Amount', amountLabel],
+          ...copy.rows,
           ['Reference', row.reference_code]
         ],
         payment: pay,
