@@ -64,7 +64,6 @@ export function PortalTokenLoginPage() {
 
   return (
     <MinimalLoginShell
-      helper={error ? undefined : 'One moment while we open your trip desk.'}
       title={error ? 'Link unavailable' : 'Opening your portal'}
       whatsappMessage="Hi Golf Sol Ireland — my private portal link is not opening."
     >

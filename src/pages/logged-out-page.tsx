@@ -25,11 +25,7 @@ export function LoggedOutPage() {
 
   return (
     <MinimalLoginShell
-      helper={
-        idleLogout
-          ? 'We signed you out after a period with no activity.'
-          : 'Your session is cleared on this device.'
-      }
+      helper={idleLogout ? 'Signed out after inactivity.' : 'Session cleared on this device.'}
       title="You're signed out"
     >
       <a

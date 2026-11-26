@@ -313,6 +313,27 @@ const WhatsappFab = lazy(() =>
   import('./pages/golf-experience/components/whatsapp-fab').then((m) => ({ default: m.WhatsappFab }))
 )
 
+/** Login / auth surfaces stay a single centred card — no floating marketing chrome. */
+const isMinimalAuthPath = (path: string) => {
+  if (path === '/portal' || path === '/admin/login' || path === '/logged-out' || path === '/login') {
+    return true
+  }
+  if (path.startsWith('/portal/')) {
+    return true
+  }
+  if (
+    path === '/dashboard/login' ||
+    path === '/dashboard/admin/login' ||
+    path === '/driver/login' ||
+    path === '/auth/callback'
+  ) {
+    return true
+  }
+  return false
+}
+
+const showSiteWhatsappFab = !isMinimalAuthPath(normalizedBootstrapPath)
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <AppErrorBoundary>
     <Suspense fallback={null}>
@@ -321,9 +342,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <ActivePage />
           <CookieConsent />
           {/* One site-wide compact dismissible WhatsApp FAB (+353) — not the old full-width box. */}
-          <Suspense fallback={null}>
-            <WhatsappFab />
-          </Suspense>
+          {showSiteWhatsappFab ? (
+            <Suspense fallback={null}>
+              <WhatsappFab />
+            </Suspense>
+          ) : null}
         </MotionRoot>
       </AuthProviderShell>
     </Suspense>

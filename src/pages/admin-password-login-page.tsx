@@ -78,7 +78,7 @@ export function AdminPasswordLoginPage() {
   }
 
   return (
-    <MinimalLoginShell helper="Operator email and password." title="Admin sign-in">
+    <MinimalLoginShell helper="Email and password." title="Admin sign-in">
       <form className="space-y-4" noValidate onSubmit={(e) => void onSubmit(e)}>
         {queryError ? (
           <p className="rounded-xl bg-amber-50 px-3 py-2 font-ge text-sm text-forest-900" role="status">

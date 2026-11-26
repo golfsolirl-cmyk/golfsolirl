@@ -63,7 +63,7 @@ export function PortalLoginPage() {
 
   return (
     <MinimalLoginShell
-      helper="Use the email and reference from your confirmation — no password needed."
+      helper="Email and reference from your confirmation."
       title="Open your portal"
       whatsappMessage="Hi Golf Sol Ireland — I need help opening my client portal."
     >

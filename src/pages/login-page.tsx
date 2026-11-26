@@ -176,9 +176,7 @@ export function LoginPage() {
   }
 
   const title = isAdminLoginPath ? 'Admin sign-in' : 'Driver sign-in'
-  const helper = isAdminLoginPath
-    ? 'We’ll email a secure sign-in link to your operator inbox.'
-    : 'We’ll email a secure sign-in link for the driver desk.'
+  const helper = isAdminLoginPath ? 'We’ll email a sign-in link.' : 'We’ll email a driver desk link.'
 
   return (
     <MinimalLoginShell
