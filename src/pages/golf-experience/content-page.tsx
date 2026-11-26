@@ -18,6 +18,51 @@ import { FindYourHotel } from './components/find-your-hotel'
 import { GOLF_COURSES_MAP_SECTION_ID } from './components/ge-courses-map-visibility'
 import { GeGolfMapSimple } from './components/ge-golf-map-simple'
 import { WhatsAppBanner } from '../../components/whatsapp/WhatsAppBanner'
+import { GSOL_BUSINESS } from '../../lib/business-details'
+
+function CompanyIdentityBlock() {
+  return (
+    <GeSection background="cream" innerClassName="py-10 sm:py-12">
+      <div className="mx-auto max-w-[760px] px-5 sm:px-8">
+        <h2 className="font-ge text-[1.35rem] font-extrabold leading-tight text-gs-dark sm:text-[1.55rem]">
+          Company identity
+        </h2>
+        <address className="mt-3 not-italic font-ge text-base leading-7 text-ge-gray600">
+          <span className="block font-semibold text-gs-dark">{GSOL_BUSINESS.brandName}</span>
+          <span className="mt-1 block">{GSOL_BUSINESS.addressOneLine}</span>
+        </address>
+        <ul className="mt-4 space-y-2 font-ge text-base text-gs-dark">
+          <li>
+            Ireland{' '}
+            <a className="font-semibold underline decoration-brand-500/40 underline-offset-2" href={`tel:${GSOL_BUSINESS.irishPhoneTel}`}>
+              {GSOL_BUSINESS.irishPhoneDisplay}
+            </a>
+            {' · '}
+            Spain{' '}
+            <a className="font-semibold underline decoration-brand-500/40 underline-offset-2" href={`tel:${GSOL_BUSINESS.spanishPhoneTel}`}>
+              {GSOL_BUSINESS.spanishPhoneDisplay}
+            </a>
+          </li>
+          <li>
+            <a className="font-semibold underline decoration-brand-500/40 underline-offset-2" href={`mailto:${GSOL_BUSINESS.email}`}>
+              {GSOL_BUSINESS.email}
+            </a>
+            {' · '}
+            <a
+              className="font-semibold underline decoration-brand-500/40 underline-offset-2"
+              href={GSOL_BUSINESS.websiteUrl}
+              rel="noreferrer"
+              target="_blank"
+            >
+              {GSOL_BUSINESS.websiteDisplay}
+            </a>
+          </li>
+          <li className="text-ge-gray600">{GSOL_BUSINESS.registeredInLabel}</li>
+        </ul>
+      </div>
+    </GeSection>
+  )
+}
 
 function normalisePath() {
   const path = window.location.pathname.replace(/\/+$/, '')
@@ -147,6 +192,9 @@ export function GeContentPage() {
   /** Keep the first section only — cut the long repeated story grid. */
   const leadSections = page.sections.slice(0, 1)
   const isTermsPage = path.includes('terms')
+  const isPrivacyPage = path.includes('privacy')
+  const isContactPage = path === '/contact' || path.startsWith('/contact/')
+  const showCompanyIdentity = isTermsPage || isPrivacyPage || isContactPage
   const isAccommodationHub = path === '/accommodation' || path.startsWith('/accommodation/')
   const isGolfCoursesHub = path === '/golf-courses' || path.startsWith('/golf-courses/')
   const isChooserHub = isAccommodationHub || isGolfCoursesHub
@@ -246,6 +294,8 @@ export function GeContentPage() {
                 </div>
               </GeSection>
             ) : null}
+
+            {showCompanyIdentity ? <CompanyIdentityBlock /> : null}
 
             {isTermsPage ? (
               <>
