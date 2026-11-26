@@ -5,6 +5,7 @@ import { cx } from '../../lib/utils'
 import {
   createWhatsAppLink,
   trackWhatsAppClick,
+  WHATSAPP_CTA_WITH_NUMBER,
   WHATSAPP_DISPLAY,
   WHATSAPP_MESSAGES
 } from '../../lib/whatsapp'
@@ -166,7 +167,7 @@ export function FloatingWhatsApp() {
               })
             }
           >
-            WhatsApp {WHATSAPP_DISPLAY}
+            {WHATSAPP_CTA_WITH_NUMBER}
           </a>
           <button
             type="button"

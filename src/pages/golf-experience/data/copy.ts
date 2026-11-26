@@ -9,10 +9,10 @@ export const contactInfo = {
   tagline: 'IRISH-OWNED · COSTA DEL SOL GOLF SPECIALISTS',
   phoneDisplay: '+353 87 446 4766',
   phoneTel: '+353874464766',
-  /** Voice line in Spain — same team; WhatsApp stays on the Irish number. */
+  /** Voice line in Spain — same team; WhatsApp is +353 86 600 6202. */
   spanishPhoneDisplay: '+34 641 81 53 66',
   spanishPhoneTel: '+34641815366',
-  phoneIrishLineLabel: 'Irish support (WhatsApp)',
+  phoneIrishLineLabel: 'Irish support',
   phoneSpanishLineLabel: 'Spanish line',
   /** Hint for enquiry forms — your number, not ours. */
   phoneFieldPlaceholder: '+353 or +34 mobile',
@@ -188,9 +188,9 @@ export const factsCopy = {
     }
   ],
   ctaLabel: 'GET A QUOTE',
-  ctaSecondaryLabel: 'WHATSAPP US NOW',
+  ctaSecondaryLabel: 'WhatsApp us · +353 86 600 6202',
   ctaWhatsappHref:
-    'https://wa.me/353874464766?text=Hi%20Golf%20Sol%20Ireland%20%E2%80%94%20can%20you%20design%20our%20Costa%20del%20Sol%20trip%3F',
+    'https://wa.me/353866006202?text=Hi%20Golf%20Sol%20Ireland%20%E2%80%94%20can%20you%20design%20our%20Costa%20del%20Sol%20trip%3F',
   ctaAside: 'Málaga → Sotogrande · One crew · 24/7 on-trip care'
 } as const
 

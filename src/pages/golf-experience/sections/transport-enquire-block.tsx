@@ -3,7 +3,7 @@ import { CheckCircle2, MessageCircle, Sparkles } from 'lucide-react'
 import { GeDualPhoneEnquiryCallRow } from '../components/ge-dual-phone-contact'
 import { GeSection } from '../components/ge-section'
 import { TransportHeroEnquiryForm } from '../components/transport-hero-enquiry-form'
-import { contactInfo } from '../data/copy'
+import { createWhatsAppLink, WHATSAPP_CTA_WITH_NUMBER } from '../../../lib/whatsapp'
 import { transportEnquireBlockCopy } from '../data/transport-service'
 
 const fadeUp = {
@@ -34,9 +34,7 @@ const heroItemVariants: Variants = {
  * green journey section above it.
  */
 export function TransportEnquireBlock() {
-  const whatsappHref = `https://wa.me/${contactInfo.phoneTel.replace('+', '')}?text=${encodeURIComponent(
-    'Hi GolfSol — looking for a Costa del Sol golf transfer.'
-  )}`
+  const whatsappHref = createWhatsAppLink('Hi GolfSol — looking for a Costa del Sol golf transfer.')
 
   return (
     <GeSection
@@ -111,10 +109,10 @@ export function TransportEnquireBlock() {
               href={whatsappHref}
               target="_blank"
               rel="noreferrer"
-              className="group inline-flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-xl border-2 border-[#25D366]/70 bg-white px-5 font-ge text-[1rem] font-bold uppercase tracking-[0.11em] text-[#0f7a3a] shadow-[0_0_18px_rgba(37,211,102,0.18)] transition-all hover:bg-[#25D366] hover:text-white hover:shadow-[0_0_28px_rgba(37,211,102,0.3)] sm:text-[1rem]"
+              className="group inline-flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-xl border-2 border-[#25D366]/70 bg-white px-5 font-ge text-[1rem] font-bold tracking-normal text-[#0f7a3a] shadow-[0_0_18px_rgba(37,211,102,0.18)] transition-all hover:bg-[#25D366] hover:text-white hover:shadow-[0_0_28px_rgba(37,211,102,0.3)] sm:text-[1rem]"
             >
               <MessageCircle className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" aria-hidden />
-              WhatsApp us (Irish number)
+              {WHATSAPP_CTA_WITH_NUMBER}
             </a>
           </m.div>
 

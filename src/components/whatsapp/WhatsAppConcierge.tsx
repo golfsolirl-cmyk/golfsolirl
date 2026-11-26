@@ -54,7 +54,7 @@ export function WhatsAppConcierge({ variant = 'home', sourcePage = '/', classNam
               Not Tech Savvy?
             </h2>
             <p className="gsol-wa-gold mt-4 max-w-xl font-ge text-[1.15rem] font-semibold leading-snug sm:text-[1.28rem]">
-              WhatsApp GolfSol Ireland on {WHATSAPP_DISPLAY}.
+              WhatsApp us · {WHATSAPP_DISPLAY}.
             </p>
             <p className="mt-4 max-w-xl font-ge text-base leading-7 text-white sm:text-[1.0625rem] sm:leading-8">
               {isContact
@@ -101,11 +101,11 @@ export function WhatsAppConcierge({ variant = 'home', sourcePage = '/', classNam
                 context={context}
                 className="sm:min-w-[18rem]"
               >
-                {isContact ? 'Message GolfSol Ireland' : 'Chat With Us on WhatsApp'}
+                {`WhatsApp us · ${WHATSAPP_DISPLAY}`}
               </WhatsAppButton>
               <p className="mt-3 font-ge text-base leading-7 text-white">
                 {isContact
-                  ? `Message us on ${WHATSAPP_DISPLAY}. A person in Ireland will reply.`
+                  ? `WhatsApp us on ${WHATSAPP_DISPLAY}. A person in Ireland will reply.`
                   : 'No complicated forms. No hassle. Just a friendly chat.'}
               </p>
               {isContact ? null : (

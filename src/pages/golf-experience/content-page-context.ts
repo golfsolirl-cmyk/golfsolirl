@@ -1,4 +1,5 @@
 import { SEO_LANDING_PAGE_PATHS } from '../../data/seo-landing-page-paths'
+import { WHATSAPP_NUMBER } from '../../lib/whatsapp'
 import { contactInfo } from './data/copy'
 import type { GeContentPageData } from './data/content-pages'
 import { leanEnquiryFormConfig } from './data/lean-enquiry-fields'
@@ -68,8 +69,6 @@ type ContentPageKind =
   | 'about'
   | 'news'
   | 'support'
-
-const WHATSAPP_NUMBER = contactInfo.phoneTel.replace(/[^0-9]/g, '')
 
 function toTitleCase(segment: string) {
   return segment

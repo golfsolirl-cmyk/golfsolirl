@@ -117,9 +117,9 @@ export const companyContact = {
   phoneTel: '+353874464766',
   spanishPhoneDisplay: '+34 641 81 53 66',
   spanishPhoneTel: '+34641815366',
-  phoneIrishLineLabel: 'Irish support (WhatsApp)',
+  phoneIrishLineLabel: 'Irish support',
   phoneSpanishLineLabel: 'Spanish line',
-  whatsappHref: 'https://wa.me/353874464766',
+  whatsappHref: 'https://wa.me/353866006202',
   mapsQuery: '6 Richmond Road, Drumcondra, Dublin 3, D03 C434, Ireland'
 } as const satisfies CompanyContact
 

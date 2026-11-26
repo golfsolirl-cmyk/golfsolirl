@@ -10,6 +10,12 @@ export const WHATSAPP_NUMBER = '353866006202'
 export const WHATSAPP_DISPLAY = '+353 86 600 6202'
 /** Alternate Irish trunk display (00353…). */
 export const WHATSAPP_DISPLAY_00353 = '00353 86 600 6202'
+/** Base wa.me link (no prefilled message). */
+export const WHATSAPP_HREF = `https://wa.me/${WHATSAPP_NUMBER}`
+/** Compact public CTA label — sentence case, no all-caps, no “(Irish number)”. */
+export const WHATSAPP_CTA_LABEL = 'WhatsApp us'
+/** Compact CTA with number for buttons / FAB / enquire strips. */
+export const WHATSAPP_CTA_WITH_NUMBER = `${WHATSAPP_CTA_LABEL} · ${WHATSAPP_DISPLAY}`
 
 export const WHATSAPP_EVENT = 'whatsapp_contact_click'
 

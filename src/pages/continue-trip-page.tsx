@@ -187,7 +187,7 @@ export function ContinueTripPage() {
     }
   }, [submitStatus])
 
-  const whatsappHref = `https://wa.me/${contactInfo.phoneTel.replace('+', '')}?text=${encodeURIComponent(
+  const whatsappHref = `https://wa.me/353866006202?text=${encodeURIComponent(
     'Hi GolfSol Ireland — I have started my trip brief and would like to WhatsApp my enquiry.'
   )}`
 

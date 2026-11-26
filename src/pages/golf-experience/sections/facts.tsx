@@ -257,7 +257,7 @@ export function GeFacts() {
               href={factsCopy.ctaWhatsappHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex w-full items-center justify-center gap-2 rounded-md border-2 px-6 py-3 font-ge text-[0.86rem] font-extrabold uppercase tracking-[0.14em] transition-all duration-300 hover:-translate-y-0.5 sm:w-auto sm:text-[0.92rem]"
+              className="group inline-flex w-full items-center justify-center gap-2 rounded-md border-2 px-6 py-3 font-ge text-[0.92rem] font-bold tracking-normal transition-all duration-300 hover:-translate-y-0.5 sm:w-auto sm:text-[0.98rem]"
               style={{
                 borderColor: 'rgba(244, 223, 166, 0.6)',
                 color: '#fbe8b5',

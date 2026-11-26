@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { BrandLogoPicture } from './brand-logo-picture'
 import { GOLFSOL_BRAND_LOGO_INTRINSIC } from '../lib/brand-logo-assets'
-import { createWhatsAppLink } from '../lib/whatsapp'
+import { createWhatsAppLink, WHATSAPP_CTA_WITH_NUMBER } from '../lib/whatsapp'
 
 type MinimalLoginShellProps = {
   readonly title: string
@@ -47,7 +47,7 @@ export function MinimalLoginShell({
               rel="noopener noreferrer"
               target="_blank"
             >
-              WhatsApp us
+              {WHATSAPP_CTA_WITH_NUMBER}
             </a>
           </p>
         </div>
