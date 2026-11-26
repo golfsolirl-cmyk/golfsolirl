@@ -8,7 +8,7 @@ export type BrandLogoKitItem = {
   readonly downloadName: string
   readonly format: string
   readonly useFor: string
-  readonly previewBg: 'cream' | 'white' | 'forest' | 'checker'
+  readonly previewBg: 'cream' | 'white' | 'forest' | 'charcoal' | 'checker'
 }
 
 /** Curated official files — printers & profiles should start here. */
@@ -21,7 +21,7 @@ export const BRAND_LOGO_KIT: readonly BrandLogoKitItem[] = [
     downloadName: 'golfsol-ireland-crest-master.png',
     format: 'PNG · transparent',
     useFor: 'Print · web · Google / Facebook crop source',
-    previewBg: 'checker'
+    previewBg: 'forest'
   },
   {
     id: 'master-crest-webp',
@@ -31,7 +31,7 @@ export const BRAND_LOGO_KIT: readonly BrandLogoKitItem[] = [
     downloadName: 'golfsol-ireland-crest-master.webp',
     format: 'WebP · transparent',
     useFor: 'Web & email',
-    previewBg: 'checker'
+    previewBg: 'forest'
   },
   {
     id: 'crest-brand-png',
@@ -41,7 +41,7 @@ export const BRAND_LOGO_KIT: readonly BrandLogoKitItem[] = [
     downloadName: 'golfsol-crest-brand.png',
     format: 'PNG · transparent',
     useFor: 'Print & social pack',
-    previewBg: 'checker'
+    previewBg: 'forest'
   },
   {
     id: 'crest-brand-svg',
@@ -51,7 +51,7 @@ export const BRAND_LOGO_KIT: readonly BrandLogoKitItem[] = [
     downloadName: 'golfsol-crest-brand.svg',
     format: 'SVG · vector',
     useFor: 'Print / large format',
-    previewBg: 'cream'
+    previewBg: 'forest'
   },
   {
     id: 'ireland-logo-svg',
@@ -61,7 +61,7 @@ export const BRAND_LOGO_KIT: readonly BrandLogoKitItem[] = [
     downloadName: 'golf-sol-ireland-logo.svg',
     format: 'SVG · vector',
     useFor: 'Print · letterheads',
-    previewBg: 'cream'
+    previewBg: 'forest'
   },
   {
     id: 'gsol-transparent',
@@ -71,7 +71,7 @@ export const BRAND_LOGO_KIT: readonly BrandLogoKitItem[] = [
     downloadName: 'g-sol-logo.png',
     format: 'PNG · transparent',
     useFor: 'Web overlays',
-    previewBg: 'checker'
+    previewBg: 'forest'
   },
   {
     id: 'gsol-white-bg',
@@ -81,7 +81,7 @@ export const BRAND_LOGO_KIT: readonly BrandLogoKitItem[] = [
     downloadName: 'g-sol-logo-white-bg.png',
     format: 'PNG · white bg',
     useFor: 'Forms · docs · directories that reject transparency',
-    previewBg: 'white'
+    previewBg: 'checker'
   },
   {
     id: 'header-logo',
@@ -101,7 +101,7 @@ export const BRAND_LOGO_KIT: readonly BrandLogoKitItem[] = [
     downloadName: 'golfsol-og-share-crest.jpg',
     format: 'JPG',
     useFor: 'Link previews · quick profile upload',
-    previewBg: 'forest'
+    previewBg: 'cream'
   }
 ] as const
 

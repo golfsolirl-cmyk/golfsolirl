@@ -1,6 +1,6 @@
 import {
-  bundlePriceKey,
-  formatBundlePrice,
+  PUBLIC_BUNDLE_PRICE_HINT,
+  PUBLIC_BUNDLE_PRICE_LABEL,
   quoteHrefForBundle,
   type BundleDuration,
   type BundlePriceMap,
@@ -11,17 +11,14 @@ import { GeButton } from './ge-button'
 type BundleDurationTableProps = {
   readonly duration: BundleDuration
   readonly tier: BundleTier
+  /** Kept for API compatibility with admin-synced maps; not shown publicly. */
   readonly prices: BundlePriceMap
   /** Compact homepage preview — link to full bundles page. */
   readonly compact?: boolean
 }
 
-function priceLabel(price: number | null | undefined) {
-  return formatBundlePrice(price)
-}
-
-/** Clean Package | Golf rounds rows for one stay length. */
-export function BundleDurationTable({ duration, tier, prices, compact = false }: BundleDurationTableProps) {
+/** Clean Package | Golf rounds rows for one stay length — no public euro figures. */
+export function BundleDurationTable({ duration, tier, prices: _prices, compact = false }: BundleDurationTableProps) {
   return (
     <section id={duration.id} className="gsol-fly-scope gsol-reveal scroll-mt-28">
       <div className="mb-4">
@@ -35,17 +32,15 @@ export function BundleDurationTable({ duration, tier, prices, compact = false }:
       </div>
 
       <div className="gsol-fly gsol-fly-from-left overflow-hidden rounded-2xl border border-chrome-300/80 bg-white shadow-sm">
-        <div className="hidden grid-cols-[minmax(0,1.4fr)_7rem_minmax(5.5rem,1fr)_auto] gap-3 border-b border-chrome-200 bg-cream/80 px-5 py-3 font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.12em] text-ge-gray500 sm:grid">
+        <div className="hidden grid-cols-[minmax(0,1.4fr)_7rem_minmax(6.5rem,1fr)_auto] gap-3 border-b border-chrome-200 bg-cream/80 px-5 py-3 font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.12em] text-ge-gray500 sm:grid">
           <span>Package</span>
           <span>Golf rounds</span>
-          {!compact ? <span>From</span> : <span />}
+          {!compact ? <span>Pricing</span> : <span />}
           <span className="sr-only">Quote</span>
         </div>
 
         <ul className="divide-y divide-chrome-100">
           {duration.packages.map((pkg) => {
-            const key = bundlePriceKey(duration.id, pkg.id, tier.id)
-            const price = prices[key] ?? pkg.priceFromEuro
             const href = quoteHrefForBundle({
               durationId: duration.id,
               packageId: pkg.id,
@@ -55,14 +50,20 @@ export function BundleDurationTable({ duration, tier, prices, compact = false }:
               tierId: tier.id
             })
             return (
-              <li key={pkg.id} className="px-4 py-4 sm:grid sm:grid-cols-[minmax(0,1.4fr)_7rem_minmax(5.5rem,1fr)_auto] sm:items-center sm:gap-3 sm:px-5 sm:py-3.5">
+              <li
+                key={pkg.id}
+                className="px-4 py-4 sm:grid sm:grid-cols-[minmax(0,1.4fr)_7rem_minmax(6.5rem,1fr)_auto] sm:items-center sm:gap-3 sm:px-5 sm:py-3.5"
+              >
                 <div className="min-w-0">
                   <p className="font-ge text-[1.02rem] font-extrabold text-gs-dark">{pkg.name}</p>
                   <p className="mt-0.5 font-ge text-sm text-ge-gray600 sm:hidden">{pkg.rounds} rounds</p>
                 </div>
                 <p className="hidden font-ge text-sm text-ge-gray600 sm:block">{pkg.rounds} rounds</p>
                 {!compact ? (
-                  <p className="mt-1 font-ge text-sm font-semibold text-gs-green sm:mt-0">{priceLabel(price)}</p>
+                  <div className="mt-1 sm:mt-0">
+                    <p className="font-ge text-sm font-semibold text-gs-green">{PUBLIC_BUNDLE_PRICE_LABEL}</p>
+                    <p className="font-ge text-xs text-ge-gray500">{PUBLIC_BUNDLE_PRICE_HINT}</p>
+                  </div>
                 ) : (
                   <span className="hidden sm:block" />
                 )}

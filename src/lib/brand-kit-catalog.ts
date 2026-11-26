@@ -28,7 +28,12 @@ export type BrandKitAsset = {
   readonly href: string
   readonly downloadName: string
   readonly format: string
-  readonly previewBg: 'cream' | 'white' | 'forest' | 'checker'
+  /**
+   * Preview surface for gallery cards.
+   * - `forest` / `charcoal`: light / white / silver logos (crest lockups)
+   * - `cream` / `white` / `checker`: dark logos and photo plates
+   */
+  readonly previewBg: 'cream' | 'white' | 'forest' | 'charcoal' | 'checker'
 }
 
 export const BRAND_KIT_CATEGORY_LABELS: Record<BrandKitCategory, string> = {
@@ -55,7 +60,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: GOLFSOL_BRAND_LOGO.png,
     downloadName: 'golfsol-ireland-crest-master.png',
     format: 'PNG · transparent',
-    previewBg: 'checker'
+    previewBg: 'forest'
   },
   {
     id: 'crest-master-webp',
@@ -65,7 +70,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: GOLFSOL_BRAND_LOGO.webp,
     downloadName: 'golfsol-ireland-crest-master.webp',
     format: 'WebP · transparent',
-    previewBg: 'checker'
+    previewBg: 'forest'
   },
   {
     id: 'crest-brand-png',
@@ -75,7 +80,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/golfsol-crest-brand.png',
     downloadName: 'golfsol-crest-brand.png',
     format: 'PNG · transparent',
-    previewBg: 'checker'
+    previewBg: 'forest'
   },
   {
     id: 'crest-brand-svg',
@@ -85,7 +90,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/golfsol-crest-brand.svg',
     downloadName: 'golfsol-crest-brand.svg',
     format: 'SVG · vector',
-    previewBg: 'cream'
+    previewBg: 'forest'
   },
   {
     id: 'crest-brand-webp',
@@ -95,7 +100,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/golfsol-crest-brand.webp',
     downloadName: 'golfsol-crest-brand.webp',
     format: 'WebP · transparent',
-    previewBg: 'checker'
+    previewBg: 'forest'
   },
   {
     id: 'crest-header-png',
@@ -105,7 +110,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/golfsol-crest-header.png',
     downloadName: 'golfsol-crest-header.png',
     format: 'PNG',
-    previewBg: 'cream'
+    previewBg: 'charcoal'
   },
   {
     id: 'crest-footer-png',
@@ -115,7 +120,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/golfsol-crest-footer.png',
     downloadName: 'golfsol-crest-footer.png',
     format: 'PNG',
-    previewBg: 'cream'
+    previewBg: 'charcoal'
   },
   {
     id: 'ireland-logo-svg',
@@ -125,7 +130,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/golf-sol-ireland-logo.svg',
     downloadName: 'golf-sol-ireland-logo.svg',
     format: 'SVG · vector',
-    previewBg: 'cream'
+    previewBg: 'forest'
   },
   {
     id: 'golf-sol-irl-png',
@@ -135,7 +140,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/golf-sol-irl.png',
     downloadName: 'golf-sol-irl.png',
     format: 'PNG',
-    previewBg: 'cream'
+    previewBg: 'charcoal'
   },
   {
     id: 'gsol-transparent',
@@ -145,7 +150,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/images/g-sol-logo.png',
     downloadName: 'g-sol-logo.png',
     format: 'PNG · transparent',
-    previewBg: 'checker'
+    previewBg: 'forest'
   },
   {
     id: 'gsol-svg',
@@ -155,7 +160,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/images/g-sol-logo.svg',
     downloadName: 'g-sol-logo.svg',
     format: 'SVG · vector',
-    previewBg: 'cream'
+    previewBg: 'forest'
   },
   {
     id: 'gsol-white-bg',
@@ -165,7 +170,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/images/g-sol-logo-white-bg.png',
     downloadName: 'g-sol-logo-white-bg.png',
     format: 'PNG · white bg',
-    previewBg: 'white'
+    previewBg: 'checker'
   },
   {
     id: 'header-logo-1440',
@@ -185,7 +190,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: `${SOCIAL_PACK}/Facebook/facebook-cover.png`,
     downloadName: 'golfsol-facebook-cover.png',
     format: 'PNG · cover',
-    previewBg: 'forest'
+    previewBg: 'cream'
   },
   {
     id: 'fb-profile',
@@ -195,7 +200,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: `${SOCIAL_PACK}/Facebook/facebook-profile.png`,
     downloadName: 'golfsol-facebook-profile.png',
     format: 'PNG · square',
-    previewBg: 'cream'
+    previewBg: 'forest'
   },
   {
     id: 'ig-profile',
@@ -205,7 +210,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: `${SOCIAL_PACK}/Instagram/instagram-profile.png`,
     downloadName: 'golfsol-instagram-profile.png',
     format: 'PNG · square',
-    previewBg: 'cream'
+    previewBg: 'forest'
   },
   {
     id: 'ig-post',
@@ -215,7 +220,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: `${SOCIAL_PACK}/Instagram/instagram-post.png`,
     downloadName: 'golfsol-instagram-post.png',
     format: 'PNG · 1:1',
-    previewBg: 'forest'
+    previewBg: 'cream'
   },
   {
     id: 'ig-story',
@@ -225,7 +230,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: `${SOCIAL_PACK}/Instagram/instagram-story.png`,
     downloadName: 'golfsol-instagram-story.png',
     format: 'PNG · 9:16',
-    previewBg: 'forest'
+    previewBg: 'cream'
   },
   {
     id: 'li-banner',
@@ -235,7 +240,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: `${SOCIAL_PACK}/LinkedIn/linkedin-banner.png`,
     downloadName: 'golfsol-linkedin-banner.png',
     format: 'PNG · banner',
-    previewBg: 'forest'
+    previewBg: 'cream'
   },
   {
     id: 'li-profile',
@@ -245,7 +250,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: `${SOCIAL_PACK}/LinkedIn/linkedin-profile.png`,
     downloadName: 'golfsol-linkedin-profile.png',
     format: 'PNG · square',
-    previewBg: 'cream'
+    previewBg: 'forest'
   },
   {
     id: 'x-header',
@@ -255,7 +260,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: `${SOCIAL_PACK}/X - Twitter/twitter-header.png`,
     downloadName: 'golfsol-x-twitter-header.png',
     format: 'PNG · header',
-    previewBg: 'forest'
+    previewBg: 'cream'
   },
   {
     id: 'x-profile',
@@ -265,7 +270,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: `${SOCIAL_PACK}/X - Twitter/twitter-profile.png`,
     downloadName: 'golfsol-x-twitter-profile.png',
     format: 'PNG · square',
-    previewBg: 'cream'
+    previewBg: 'forest'
   },
   {
     id: 'yt-banner',
@@ -275,7 +280,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: `${SOCIAL_PACK}/YouTube/youtube-banner.png`,
     downloadName: 'golfsol-youtube-banner.png',
     format: 'PNG · banner',
-    previewBg: 'forest'
+    previewBg: 'cream'
   },
   {
     id: 'yt-profile',
@@ -285,7 +290,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: `${SOCIAL_PACK}/YouTube/youtube-profile.png`,
     downloadName: 'golfsol-youtube-profile.png',
     format: 'PNG · square',
-    previewBg: 'cream'
+    previewBg: 'forest'
   },
   {
     id: 'google-cover',
@@ -295,7 +300,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: `${SOCIAL_PACK}/Google Business/google-cover.png`,
     downloadName: 'golfsol-google-business-cover.png',
     format: 'PNG · cover',
-    previewBg: 'forest'
+    previewBg: 'cream'
   },
   {
     id: 'google-profile',
@@ -305,7 +310,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: `${SOCIAL_PACK}/Google Business/google-profile.png`,
     downloadName: 'golfsol-google-business-profile.png',
     format: 'PNG · square',
-    previewBg: 'cream'
+    previewBg: 'forest'
   },
   {
     id: 'social-source-logo',
@@ -315,7 +320,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: `${SOCIAL_PACK}/Source assets/logo-transparent.png`,
     downloadName: 'golfsol-source-logo-transparent.png',
     format: 'PNG · transparent',
-    previewBg: 'checker'
+    previewBg: 'forest'
   },
   {
     id: 'social-source-hero',
@@ -325,7 +330,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: `${SOCIAL_PACK}/Source assets/hero-banner-full.png`,
     downloadName: 'golfsol-source-hero-banner-full.png',
     format: 'PNG',
-    previewBg: 'forest'
+    previewBg: 'cream'
   },
   {
     id: 'favicon-ico',
@@ -335,7 +340,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/favicon.ico',
     downloadName: 'favicon.ico',
     format: 'ICO',
-    previewBg: 'white'
+    previewBg: 'charcoal'
   },
   {
     id: 'favicon-svg',
@@ -345,7 +350,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/favicon.svg',
     downloadName: 'favicon.svg',
     format: 'SVG',
-    previewBg: 'cream'
+    previewBg: 'forest'
   },
   {
     id: 'favicon-96',
@@ -355,7 +360,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/favicon-96x96.png',
     downloadName: 'favicon-96x96.png',
     format: 'PNG · 96×96',
-    previewBg: 'white'
+    previewBg: 'charcoal'
   },
   {
     id: 'apple-touch',
@@ -365,7 +370,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/apple-touch-icon.png',
     downloadName: 'apple-touch-icon.png',
     format: 'PNG',
-    previewBg: 'white'
+    previewBg: 'cream'
   },
   {
     id: 'android-192',
@@ -375,7 +380,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/android-chrome-192x192.png',
     downloadName: 'android-chrome-192x192.png',
     format: 'PNG · 192×192',
-    previewBg: 'white'
+    previewBg: 'charcoal'
   },
   {
     id: 'android-512',
@@ -385,7 +390,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/android-chrome-512x512.png',
     downloadName: 'android-chrome-512x512.png',
     format: 'PNG · 512×512',
-    previewBg: 'white'
+    previewBg: 'charcoal'
   },
   {
     id: 'manifest-192',
@@ -395,7 +400,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/web-app-manifest-192x192.png',
     downloadName: 'web-app-manifest-192x192.png',
     format: 'PNG · 192×192',
-    previewBg: 'white'
+    previewBg: 'cream'
   },
   {
     id: 'manifest-512',
@@ -405,7 +410,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/web-app-manifest-512x512.png',
     downloadName: 'web-app-manifest-512x512.png',
     format: 'PNG · 512×512',
-    previewBg: 'white'
+    previewBg: 'cream'
   },
   {
     id: 'og-fleet',
@@ -415,7 +420,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/images/og-share-fleet.jpg',
     downloadName: 'golfsol-og-share-fleet.jpg',
     format: 'JPG',
-    previewBg: 'forest'
+    previewBg: 'cream'
   },
   {
     id: 'og-crest',
@@ -425,7 +430,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/images/og-share-crest.jpg',
     downloadName: 'golfsol-og-share-crest.jpg',
     format: 'JPG',
-    previewBg: 'forest'
+    previewBg: 'cream'
   },
   {
     id: 'hero-fpf-cover',
@@ -435,7 +440,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: BRAND_FLEET_HERO_IMAGE_SRC,
     downloadName: 'fpf-cover-fleet-hero.webp',
     format: 'WebP',
-    previewBg: 'forest'
+    previewBg: 'charcoal'
   },
   {
     id: 'hero-fpf-cover-png',
@@ -445,7 +450,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.png',
     downloadName: 'fpf-cover-fleet-hero.png',
     format: 'PNG',
-    previewBg: 'forest'
+    previewBg: 'charcoal'
   },
   {
     id: 'hero-homepage-desktop',
@@ -455,7 +460,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: BRAND_MARKETING_HERO_DESKTOP.webp,
     downloadName: 'homepage-desktop-hero.webp',
     format: 'WebP',
-    previewBg: 'forest'
+    previewBg: 'charcoal'
   },
   {
     id: 'hero-fleet-fairway',
@@ -465,7 +470,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: BRAND_MARKETING_HERO_FLEET_ON_FAIRWAY_SRC,
     downloadName: 'hero-fleet-golf-golden-hour.webp',
     format: 'WebP',
-    previewBg: 'forest'
+    previewBg: 'charcoal'
   },
   {
     id: 'hero-twilight',
@@ -475,7 +480,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: BRAND_PORTAL_HERO_GOLF_BACKDROP_SRC,
     downloadName: 'twilight-golf-hero.webp',
     format: 'WebP',
-    previewBg: 'forest'
+    previewBg: 'cream'
   },
   {
     id: 'hero-raster',
@@ -485,7 +490,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: BRAND_MARKETING_RASTER_HERO_SRC,
     downloadName: 'himage.webp',
     format: 'WebP',
-    previewBg: 'forest'
+    previewBg: 'charcoal'
   },
   {
     id: 'hero-admin-ops',
@@ -495,7 +500,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/images/admin-operations-hero.webp',
     downloadName: 'admin-operations-hero.webp',
     format: 'WebP',
-    previewBg: 'forest'
+    previewBg: 'charcoal'
   },
   {
     id: 'hero-client-portal',
@@ -505,7 +510,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: BRAND_CLIENT_PORTAL_HERO_ILLUSTRATION_SRC,
     downloadName: 'client-portal-hero-illustration.webp',
     format: 'WebP',
-    previewBg: 'forest'
+    previewBg: 'charcoal'
   },
   {
     id: 'email-crest',
@@ -515,7 +520,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: GOLFSOL_BRAND_LOGO.png,
     downloadName: 'golfsol-email-crest.png',
     format: 'PNG · transparent',
-    previewBg: 'checker'
+    previewBg: 'forest'
   },
   {
     id: 'email-transfer-banner',
@@ -525,7 +530,7 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     href: '/images/hero-costa-del-sol-transfer-banner.png',
     downloadName: 'golfsol-email-transfer-banner.png',
     format: 'PNG · banner',
-    previewBg: 'forest'
+    previewBg: 'cream'
   },
   {
     id: 'email-signature-html',

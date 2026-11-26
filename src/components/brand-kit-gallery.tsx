@@ -8,11 +8,14 @@ import {
 } from '../lib/brand-kit-catalog'
 import { cx } from '../lib/utils'
 
+/** High-contrast preview surfaces so light logos and dark plates stay readable. */
 function previewSurfaceClass(bg: BrandKitAsset['previewBg']): string {
-  if (bg === 'forest') return 'bg-gs-dark'
+  if (bg === 'forest') return 'bg-[#0f2a0c]'
+  if (bg === 'charcoal') return 'bg-[#1a1f1c]'
   if (bg === 'white') return 'bg-white'
   if (bg === 'cream') return 'bg-[#f7f3e8]'
-  return 'bg-[length:18px_18px] bg-[linear-gradient(45deg,#e8e4d8_25%,transparent_25%),linear-gradient(-45deg,#e8e4d8_25%,transparent_25%),linear-gradient(45deg,transparent_75%,#e8e4d8_75%),linear-gradient(-45deg,transparent_75%,#e8e4d8_75%)] bg-[position:0_0,0_9px,9px_-9px,-9px_0] bg-white'
+  // Stronger checker than before — dark tiles make white/silver crest edges obvious
+  return 'bg-[length:16px_16px] bg-[linear-gradient(45deg,#c8c2b4_25%,transparent_25%),linear-gradient(-45deg,#c8c2b4_25%,transparent_25%),linear-gradient(45deg,transparent_75%,#c8c2b4_75%),linear-gradient(-45deg,transparent_75%,#c8c2b4_75%)] bg-[position:0_0,0_8px,8px_-8px,-8px_0] bg-[#f4f0e6]'
 }
 
 function formatBytes(n: number | null): string {
@@ -42,18 +45,41 @@ function BrandKitCard({
   const formatLower = item.format.toLowerCase()
   const isFilePreview =
     formatLower.includes('pdf') || formatLower.includes('zip') || formatLower.includes('html')
+  const isWidePlate =
+    item.category === 'heroes' ||
+    item.category === 'og' ||
+    formatLower.includes('banner') ||
+    formatLower.includes('cover') ||
+    formatLower.includes('header')
+  const darkSurface = item.previewBg === 'forest' || item.previewBg === 'charcoal'
+
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-chrome-200 bg-white shadow-sm">
-      <div className={cx('flex min-h-[10.5rem] items-center justify-center p-5', previewSurfaceClass(item.previewBg))}>
+      <div
+        className={cx(
+          'flex items-center justify-center p-5 sm:p-6',
+          isWidePlate ? 'min-h-[12.5rem] sm:min-h-[14rem]' : 'min-h-[13.5rem] sm:min-h-[15.5rem]',
+          previewSurfaceClass(item.previewBg),
+          darkSurface ? 'ring-1 ring-inset ring-white/10' : 'ring-1 ring-inset ring-black/5'
+        )}
+      >
         {isFilePreview ? (
-          <div className="flex flex-col items-center gap-2 text-gs-dark/70">
+          <div
+            className={cx(
+              'flex flex-col items-center gap-2',
+              darkSurface ? 'text-white/75' : 'text-gs-dark/70'
+            )}
+          >
             <FileArchive className="h-10 w-10" aria-hidden />
             <span className="font-ge text-[0.72rem] font-bold uppercase tracking-[0.14em]">{item.format}</span>
           </div>
         ) : (
           <img
-            alt=""
-            className="max-h-36 w-auto max-w-full object-contain"
+            alt={item.name}
+            className={cx(
+              'w-auto max-w-full object-contain',
+              isWidePlate ? 'max-h-44 sm:max-h-52' : 'max-h-48 sm:max-h-56'
+            )}
             decoding="async"
             loading="eager"
             src={item.href}

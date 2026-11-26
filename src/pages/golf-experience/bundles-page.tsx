@@ -49,7 +49,7 @@ export function BundlesPage() {
           ariaLabel="Our golf holiday bundles"
           images={NAMED_HERO_IMAGE_SETS.packages}
           kicker="GolfSol Ireland"
-          lead="Three stay lengths. Three golf options. Pick Value, Classic or Premium — then get a personal quote."
+          lead="Three stay lengths. Three golf options. Pick Value, Classic or Premium — pricing is tailored on enquiry, never a public list."
           primaryCta={{ label: 'See packages', href: '#bundle-list' }}
           secondaryCta={{ label: 'Get a quote', href: '/quote' }}
           title="Our golf holiday bundles"

@@ -10,6 +10,15 @@ import { WhatsAppBanner } from '../../components/whatsapp/WhatsAppBanner'
 import { GeFooter } from './sections/ge-footer'
 import { GeNavbar } from './sections/ge-navbar'
 
+function leaveQuotePage() {
+  if (typeof window === 'undefined') return
+  if (window.history.length > 1) {
+    window.history.back()
+    return
+  }
+  window.location.assign('/')
+}
+
 /**
  * Dedicated quote / enquire form page — form-first (no big hero).
  * CTAs across the site land here with query prefill so the form is above the fold.
@@ -97,6 +106,8 @@ export function QuotePage() {
           preset={preset}
           title=""
           compact
+          onDismiss={leaveQuotePage}
+          dismissLabel="Close quote form"
         />
       </main>
       <WhatsAppBanner sourcePage={preset.sourcePage || '/quote'} />

@@ -20,26 +20,38 @@ export type PostEnquirySuccess = {
  * so all submissions share one server handler (PDFs, email, dedupe).
  */
 export const postWebsiteEnquiry = async (body: Record<string, unknown>): Promise<PostEnquirySuccess | PostEnquiryFailure> => {
-  const response = await fetch('/api/enquiry', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  })
+  try {
+    const response = await fetch('/api/enquiry', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
 
-  const data = (await response.json().catch(() => ({}))) as { message?: string; code?: string; referenceId?: string }
+    const data = (await response.json().catch(() => ({}))) as {
+      message?: string
+      code?: string
+      referenceId?: string
+    }
 
-  if (!response.ok) {
+    if (!response.ok) {
+      return {
+        ok: false,
+        status: response.status,
+        message: data.message ?? 'Could not send your request right now.',
+        code: typeof data.code === 'string' ? data.code : undefined
+      }
+    }
+
+    return {
+      ok: true,
+      message: data.message ?? 'Your enquiry has been sent.',
+      referenceId: typeof data.referenceId === 'string' ? data.referenceId : undefined
+    }
+  } catch {
     return {
       ok: false,
-      status: response.status,
-      message: data.message ?? 'Could not send your request right now.',
-      code: typeof data.code === 'string' ? data.code : undefined
+      status: 0,
+      message: 'Network error — check your connection and try again.'
     }
-  }
-
-  return {
-    ok: true,
-    message: data.message ?? 'Your enquiry has been sent.',
-    referenceId: typeof data.referenceId === 'string' ? data.referenceId : undefined
   }
 }

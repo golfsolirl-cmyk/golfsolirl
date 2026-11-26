@@ -27,30 +27,57 @@ declare global {
 const RECAPTCHA_SRC = (key: string) =>
   `https://www.google.com/recaptcha/api.js?render=${encodeURIComponent(key)}`
 
+const SCRIPT_LOAD_TIMEOUT_MS = 4000
+const EXECUTE_TIMEOUT_MS = 4000
+
+function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return new Promise((resolve) => {
+    const timer = window.setTimeout(() => resolve(fallback), ms)
+    void promise.then(
+      (value) => {
+        window.clearTimeout(timer)
+        resolve(value)
+      },
+      () => {
+        window.clearTimeout(timer)
+        resolve(fallback)
+      }
+    )
+  })
+}
+
 function ensureScript(src: string, id: string): Promise<void> {
   if (typeof document === 'undefined') return Promise.resolve()
   const existing = document.getElementById(id)
   if (existing) {
-    return new Promise((resolve) => {
-      if ((existing as HTMLScriptElement).dataset.loaded === '1') {
-        resolve()
-        return
-      }
-      existing.addEventListener('load', () => resolve(), { once: true })
-    })
-  }
-  return new Promise((resolve, reject) => {
-    const s = document.createElement('script')
-    s.id = id
-    s.src = src
-    s.async = true
-    s.onload = () => {
-      s.dataset.loaded = '1'
-      resolve()
+    if ((existing as HTMLScriptElement).dataset.loaded === '1') {
+      return Promise.resolve()
     }
-    s.onerror = () => reject(new Error(`Failed to load ${src}`))
-    document.head.appendChild(s)
-  })
+    return withTimeout(
+      new Promise<boolean>((resolve) => {
+        existing.addEventListener('load', () => resolve(true), { once: true })
+        existing.addEventListener('error', () => resolve(false), { once: true })
+      }),
+      SCRIPT_LOAD_TIMEOUT_MS,
+      false
+    ).then(() => undefined)
+  }
+  return withTimeout(
+    new Promise<boolean>((resolve) => {
+      const s = document.createElement('script')
+      s.id = id
+      s.src = src
+      s.async = true
+      s.onload = () => {
+        s.dataset.loaded = '1'
+        resolve(true)
+      }
+      s.onerror = () => resolve(false)
+      document.head.appendChild(s)
+    }),
+    SCRIPT_LOAD_TIMEOUT_MS,
+    false
+  ).then(() => undefined)
 }
 
 async function executeRecaptchaV3(action: string): Promise<string | null> {
@@ -59,14 +86,18 @@ async function executeRecaptchaV3(action: string): Promise<string | null> {
   try {
     await ensureScript(RECAPTCHA_SRC(siteKey), 'grecaptcha-v3-script')
     if (!window.grecaptcha) return null
-    return await new Promise<string | null>((resolve) => {
-      window.grecaptcha?.ready(() => {
-        void window.grecaptcha
-          ?.execute(siteKey, { action })
-          .then((token) => resolve(token))
-          .catch(() => resolve(null))
-      })
-    })
+    return await withTimeout(
+      new Promise<string | null>((resolve) => {
+        window.grecaptcha?.ready(() => {
+          void window.grecaptcha
+            ?.execute(siteKey, { action })
+            .then((token) => resolve(token))
+            .catch(() => resolve(null))
+        })
+      }),
+      EXECUTE_TIMEOUT_MS,
+      null
+    )
   } catch (err) {
     console.warn('[enquiry-spam] reCAPTCHA execute skipped:', err)
     return null
