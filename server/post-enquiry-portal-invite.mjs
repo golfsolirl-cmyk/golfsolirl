@@ -3,6 +3,7 @@ import { Resend } from 'resend'
 import { finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
 import { buildBrandedPostEnquiryPortalInviteHtml } from './branded-post-enquiry-portal-invite-email.mjs'
 import { resolveResendToAddress } from './resend-delivery-email.mjs'
+import { ensurePortalAccessForEmail } from './portal-otp-auth.mjs'
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -19,7 +20,7 @@ const resolveDelayMs = (env) => {
 }
 
 /**
- * After enquiry confirmation: wait, then send a branded “open your dashboard” email with a magic link.
+ * After enquiry confirmation: wait, then send a branded portal invite with reference + private link.
  * @param {{ enquiry: { fullName: string; email: string }; enquiryId: string; enquiryDate: string; env: NodeJS.ProcessEnv }} args
  */
 export const runPostEnquiryPortalInviteJob = async ({ enquiry, enquiryId, enquiryDate, env }) => {
@@ -53,21 +54,29 @@ export const runPostEnquiryPortalInviteJob = async ({ enquiry, enquiryId, enquir
     auth: { persistSession: false, autoRefreshToken: false }
   })
 
-  const base = getGsolSiteUrl().replace(/\/$/, '')
-  const redirectTo = `${base}/auth/callback?next=${encodeURIComponent(`/dashboard?enquiry_ref=${enquiryId}`)}`
-
-  const { data, error: genError } = await admin.auth.admin.generateLink({
-    type: 'magiclink',
-    email: emailLower,
-    options: { redirectTo }
-  })
-
-  if (genError || !data?.properties?.action_link) {
-    console.error('[post-enquiry-portal-invite] generateLink failed:', genError?.message ?? 'no action_link')
+  let access
+  try {
+    access = await ensurePortalAccessForEmail(
+      admin,
+      {
+        email: emailLower,
+        fullName: enquiry.fullName,
+        preferredReference: enquiryId
+      },
+      env
+    )
+  } catch (err) {
+    console.error(
+      '[post-enquiry-portal-invite] ensurePortalAccess failed:',
+      err instanceof Error ? err.message : err
+    )
     return
   }
 
-  const actionLink = data.properties.action_link
+  const site = getGsolSiteUrl().replace(/\/$/, '')
+  const privateUrl = access.privateUrl || `${site}/portal/${encodeURIComponent(access.token)}`
+  const portalLoginUrl = access.portalLoginUrl || `${site}/portal`
+
   const sentAtDisplay = new Intl.DateTimeFormat('en-IE', {
     day: 'numeric',
     month: 'short',
@@ -81,7 +90,8 @@ export const runPostEnquiryPortalInviteJob = async ({ enquiry, enquiryId, enquir
     email: emailLower,
     enquiryId,
     enquiryDate,
-    actionLink,
+    privateUrl,
+    portalLoginUrl,
     sentAtDisplay
   })
   const html = finalizeGsolEmailHtml(htmlRaw)

@@ -50,6 +50,9 @@ const AdminPasswordLoginPage = lazy(() =>
 const PortalTokenLoginPage = lazy(() =>
   import('./pages/portal-token-login-page').then((m) => ({ default: m.PortalTokenLoginPage }))
 )
+const PortalLoginPage = lazy(() =>
+  import('./pages/portal-login-page').then((m) => ({ default: m.PortalLoginPage }))
+)
 const LoggedOutPage = lazy(() => import('./pages/logged-out-page').then((m) => ({ default: m.LoggedOutPage })))
 const AuthCallbackPage = lazy(() =>
   import('./pages/auth-callback-page').then((m) => ({ default: m.AuthCallbackPage }))
@@ -182,6 +185,10 @@ function resolvePage(): PageComponent {
 
   if (normalizedPath === '/admin/login') {
     return AdminPasswordLoginPage
+  }
+
+  if (normalizedPath === '/portal') {
+    return PortalLoginPage
   }
 
   if (normalizedPath.startsWith('/portal/') && normalizedPath.length > '/portal/'.length) {

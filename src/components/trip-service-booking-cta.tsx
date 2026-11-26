@@ -174,7 +174,7 @@ export function TripServiceBookingCta({
     const next = referenceId
       ? `/dashboard?enquiry_ref=${encodeURIComponent(referenceId)}`
       : '/dashboard'
-    return `/dashboard/login?next=${encodeURIComponent(next)}`
+    return `/portal?next=${encodeURIComponent(next)}`
   }
 
   const handleSubmit = async (event: FormEvent) => {

@@ -162,7 +162,7 @@ export const handlePortalLinkIssue = async (body, env = process.env, meta = {}) 
   }
 
   const ctx = createPortalLoginCtx({ accountReferenceId: ar, portal }, env)
-  const loginPath = portal === 'admin' ? '/dashboard/admin/login' : '/dashboard/login'
+  const loginPath = portal === 'admin' ? '/dashboard/admin/login' : '/portal'
   const loginUrl = `${siteOrigin}${loginPath}?ctx=${encodeURIComponent(ctx)}`
 
   return { ok: true, loginUrl, ctx, portal, accountReferenceId: ar }

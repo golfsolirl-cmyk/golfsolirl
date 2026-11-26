@@ -693,7 +693,7 @@ export function ContinueTripPage() {
                         <p>{submitError}</p>
                         {submitErrorCode === ENQUIRY_CONFLICT_EXISTING_PHONE ? (
                           <p className="mt-2 font-semibold text-gs-green">
-                            <a className="underline underline-offset-2" href="/dashboard/login">
+                            <a className="underline underline-offset-2" href="/portal">
                               Sign in to your trip desk
                             </a>
                           </p>

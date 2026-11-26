@@ -1,8 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { KeyRound, Lock, ShieldCheck } from 'lucide-react'
-import { PremiumHero, PremiumCard, PremiumPageShell } from '../components/premium'
-import { GeButton } from '../pages/golf-experience/components/ge-button'
-import { GeBrandLockup } from '../pages/golf-experience/components/brand-lockup'
+import { MinimalLoginShell } from '../components/minimal-login-shell'
 import { DEFAULT_ADMIN_LOGIN_EMAIL } from '../lib/admin-login-email'
 import { isSafeInternalPath } from '../lib/internal-redirect'
 
@@ -59,8 +56,8 @@ export function AdminPasswordLoginPage() {
           data.code === 'ADMIN_LOCKED'
             ? 'Too many attempts. Wait about 15 minutes and try again.'
             : data.code === 'ADMIN_NOT_CONFIGURED'
-              ? 'Password sign-in is not set up yet. Use the legacy admin sign-in or configure ADMIN_* env vars.'
-              : data.message || 'Sign-in failed. Check your email and password.'
+              ? 'Password sign-in is not set up yet.'
+              : data.message || 'Check your email and password.'
         setError(msg)
         return
       }
@@ -74,120 +71,72 @@ export function AdminPasswordLoginPage() {
 
   if (checkingSession) {
     return (
-      <PremiumPageShell identityLabel="Admin sign-in" identityDescription="Golf Sol Ireland operator dashboard.">
-        <div className="flex flex-1 flex-col items-center justify-center px-6 pb-24 pt-24">
-          <GeBrandLockup mode="footer" tone="on-light" />
-          <p className="mt-8 font-ge text-sm font-bold uppercase tracking-[0.16em] text-ge-gray500">Checking session…</p>
-        </div>
-      </PremiumPageShell>
+      <MinimalLoginShell title="Admin sign-in">
+        <p className="font-ge text-sm text-forest-600">Checking session…</p>
+      </MinimalLoginShell>
     )
   }
 
   return (
-    <PremiumPageShell identityLabel="Admin sign-in" identityDescription="Secure operator access for Golf Sol Ireland.">
-      <PremiumHero
-        body="Use the operator email and password configured for this site. Your session lasts seven days on this device."
-        headlineAccent="desk."
-        headlinePrimary="Operator"
-        kicker="Admin"
-        kickerIcon={ShieldCheck}
-        lead="Forest green · Gold accent · Secure session"
-        variant="login"
-      />
-
-      <main className="relative z-[1] mx-auto w-full max-w-2xl flex-1 px-5 pb-20 pt-12 sm:px-8 md:pb-28">
-        <PremiumCard tone="light">
-          <div
-            aria-hidden="true"
-            className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-brand-800 via-gs-green to-gs-gold"
+    <MinimalLoginShell helper="Operator email and password." title="Admin sign-in">
+      <form className="space-y-4" noValidate onSubmit={(e) => void onSubmit(e)}>
+        {queryError ? (
+          <p className="rounded-xl bg-amber-50 px-3 py-2 font-ge text-sm text-forest-900" role="status">
+            Sign-in could not be completed. Try again.
+          </p>
+        ) : null}
+        {error ? (
+          <p className="rounded-xl bg-rose-50 px-3 py-2 font-ge text-sm text-rose-900" role="alert">
+            {error}
+          </p>
+        ) : null}
+        <div>
+          <label className="mb-1.5 block font-ge text-sm font-semibold text-forest-950" htmlFor="admin-login-email">
+            Email
+          </label>
+          <input
+            autoComplete="username"
+            className="w-full rounded-xl border border-forest-300 bg-white px-3 py-3 font-ge text-base text-forest-950 outline-none focus:border-forest-700 focus:ring-2 focus:ring-forest-700/20"
+            id="admin-login-email"
+            name="email"
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            type="email"
+            value={email}
           />
-
-          {queryError ? (
-            <div className="mb-6 rounded-2xl border border-brand-700/40 bg-[#fff9e8] px-4 py-3 font-ge text-sm text-gs-dark">
-              Sign-in could not be completed. Try again below.
-            </div>
-          ) : null}
-
-          {error ? (
-            <div className="mb-6 rounded-2xl border border-red-300/60 bg-red-50 px-4 py-3 font-ge text-sm text-red-900">
-              {error}
-            </div>
-          ) : null}
-
-          <form className="space-y-6" noValidate onSubmit={onSubmit}>
-            <div>
-              <label
-                className="mb-2 block font-ge text-sm font-bold uppercase tracking-[0.14em] text-gs-dark"
-                htmlFor="admin-login-email"
-              >
-                Operator email
-              </label>
-              <input
-                autoComplete="username"
-                className="w-full rounded-xl border-2 border-ge-gray200 bg-white px-4 py-3.5 font-ge text-base text-gs-dark outline-none transition focus:border-forest-600 focus:ring-2 focus:ring-forest-600/20"
-                id="admin-login-email"
-                name="email"
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                type="email"
-                value={email}
-              />
-            </div>
-
-            <div>
-              <label
-                className="mb-2 block font-ge text-sm font-bold uppercase tracking-[0.14em] text-gs-dark"
-                htmlFor="admin-login-password"
-              >
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  autoComplete="current-password"
-                  className="w-full rounded-xl border-2 border-ge-gray200 bg-white px-4 py-3.5 pr-24 font-ge text-base text-gs-dark outline-none transition focus:border-forest-600 focus:ring-2 focus:ring-forest-600/20"
-                  id="admin-login-password"
-                  name="password"
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                />
-                <button
-                  className="absolute inset-y-0 right-2 my-auto inline-flex h-10 items-center rounded-lg px-3 font-ge text-sm font-bold text-forest-800 hover:bg-cream"
-                  onClick={() => setShowPassword((open) => !open)}
-                  type="button"
-                >
-                  {showPassword ? 'Hide' : 'Show'}
-                </button>
-              </div>
-            </div>
-
-            <GeButton
-              className="w-full justify-center gap-2"
-              disabled={busy}
-              size="lg"
-              type="submit"
-              variant="gs-green"
+        </div>
+        <div>
+          <label className="mb-1.5 block font-ge text-sm font-semibold text-forest-950" htmlFor="admin-login-password">
+            Password
+          </label>
+          <div className="relative">
+            <input
+              autoComplete="current-password"
+              className="w-full rounded-xl border border-forest-300 bg-white px-3 py-3 pr-20 font-ge text-base text-forest-950 outline-none focus:border-forest-700 focus:ring-2 focus:ring-forest-700/20"
+              id="admin-login-password"
+              name="password"
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+            />
+            <button
+              className="absolute inset-y-0 right-2 my-auto inline-flex h-9 items-center rounded-lg px-2.5 font-ge text-sm font-semibold text-forest-800 hover:bg-[#f4f7f5]"
+              onClick={() => setShowPassword((open) => !open)}
+              type="button"
             >
-              <Lock className="h-4 w-4" aria-hidden />
-              {busy ? 'Signing in…' : 'Sign in to admin desk'}
-            </GeButton>
-          </form>
-
-          <div className="mt-8 space-y-3 border-t border-gs-green/15 pt-6">
-            <p className="font-ge text-sm text-ge-gray600">
-              <KeyRound className="-mt-0.5 mr-1.5 inline h-4 w-4 text-gs-green" aria-hidden />
-              Legacy Supabase operator sign-in is still available if password login is not configured.
-            </p>
-            <GeButton className="w-full sm:w-auto" href="/dashboard/admin/login" size="sm" variant="outline-gs-green">
-              Use legacy admin sign-in
-            </GeButton>
-            <GeButton className="w-full sm:w-auto" href="/" size="sm" variant="outline-gs-green">
-              Back to the homepage
-            </GeButton>
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
           </div>
-        </PremiumCard>
-      </main>
-    </PremiumPageShell>
+        </div>
+        <button
+          className="inline-flex w-full min-h-12 items-center justify-center rounded-xl bg-forest-900 px-4 py-3.5 font-ge text-base font-bold text-white transition hover:bg-forest-800 disabled:opacity-60"
+          disabled={busy}
+          type="submit"
+        >
+          {busy ? 'Signing in…' : 'Sign in'}
+        </button>
+      </form>
+    </MinimalLoginShell>
   )
 }

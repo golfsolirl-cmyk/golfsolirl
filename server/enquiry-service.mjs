@@ -1021,12 +1021,38 @@ export const handleEnquirySubmission = async (payload, env = process.env, runtim
       const customerTo = resolveResendToAddress(enquiry.email, env)
       const ownerTo = resolveResendToAddress(notificationEmail, env)
 
+      let portalPrivateUrl = ''
+      try {
+        if (sbUrl && sbKey) {
+          const { createClient } = await import('@supabase/supabase-js')
+          const { ensurePortalAccessForEmail } = await import('./portal-otp-auth.mjs')
+          const sb = createClient(sbUrl, sbKey, {
+            auth: { persistSession: false, autoRefreshToken: false }
+          })
+          const access = await ensurePortalAccessForEmail(
+            sb,
+            {
+              email: enquiry.email,
+              fullName: enquiry.fullName,
+              preferredReference: enquiryId
+            },
+            env
+          )
+          portalPrivateUrl = access.privateUrl || ''
+        }
+      } catch (portalErr) {
+        console.warn(
+          '[enquiry-service] portal access for confirmation email skipped:',
+          portalErr instanceof Error ? portalErr.message : portalErr
+        )
+      }
+
       const [customerResult, ownerResult] = await Promise.all([
         resend.emails.send({
           from: fromEmail,
           to: [customerTo],
           subject: `Your Golf Sol Ireland enquiry confirmation (${enquiryId})`,
-          html: buildCustomerHtml({ ...enquiry, enquiryId, enquiryDate }),
+          html: buildCustomerHtml({ ...enquiry, enquiryId, enquiryDate, portalPrivateUrl }),
           attachments: enquiryPdfAttachments
         }),
         resend.emails.send({

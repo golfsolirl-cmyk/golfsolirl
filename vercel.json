@@ -205,6 +205,8 @@
     { "source": "/api/admin-login", "destination": "/api/gateway?r=admin-login" },
     { "source": "/api/admin-logout", "destination": "/api/gateway?r=admin-logout" },
     { "source": "/api/admin-session-check", "destination": "/api/gateway?r=admin-session-check" },
+    { "source": "/api/portal-login", "destination": "/api/gateway?r=portal-login" },
+    { "source": "/api/portal-token-open", "destination": "/api/gateway?r=portal-token-open" },
     { "source": "/api/portal-otp-send", "destination": "/api/gateway?r=portal-otp-send" },
     { "source": "/api/portal-otp-verify", "destination": "/api/gateway?r=portal-otp-verify" },
     { "source": "/api/portal-otp-logout", "destination": "/api/gateway?r=portal-otp-logout" },

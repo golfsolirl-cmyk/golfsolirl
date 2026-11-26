@@ -63,7 +63,13 @@ import {
   handleAdminLogout,
   handleAdminSessionCheck
 } from '../server/admin-session.mjs'
-import { handlePortalOtpLogout, handlePortalOtpSend, handlePortalOtpVerify } from '../server/portal-otp-auth.mjs'
+import {
+  handlePortalLogin,
+  handlePortalOtpLogout,
+  handlePortalOtpSend,
+  handlePortalOtpVerify,
+  handlePortalTokenOpen
+} from '../server/portal-otp-auth.mjs'
 import { bindRequestCookieHeader, clearRequestCookieHeader } from '../server/auth-request-context.mjs'
 
 const readStreamBody = (req) =>
@@ -917,6 +923,32 @@ export default async function handler(req, res) {
         }
         const result = handleAdminSessionCheck(process.env, { cookieHeader: req.headers?.cookie })
         jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'portal-login': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const result = await handlePortalLogin(payload, process.env, { clientIp: getClientIp(req) })
+        const { setCookie, ...rest } = result
+        jsonEnd(res, 200, rest, setCookie)
+        return
+      }
+
+      case 'portal-token-open': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const result = await handlePortalTokenOpen(payload, process.env, { clientIp: getClientIp(req) })
+        const { setCookie, ...rest } = result
+        jsonEnd(res, 200, rest, setCookie)
         return
       }
 

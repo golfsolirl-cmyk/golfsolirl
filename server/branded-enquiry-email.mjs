@@ -73,9 +73,15 @@ export function buildBrandedEnquiryEmailHtml(payload, variant = 'customer') {
     ['Trip interest', payload.interest]
   ])
 
-  const saveToAccountHref = isAdmin
+  const site = getGsolSiteUrl().replace(/\/+$/, '')
+  const portalLoginHref = isAdmin
     ? ''
-    : `${getGsolSiteUrl()}/dashboard/login?next=${encodeURIComponent(`/dashboard?enquiry_ref=${payload.enquiryId}`)}`
+    : `${site}/portal?next=${encodeURIComponent(`/dashboard?enquiry_ref=${payload.enquiryId}`)}`
+  const portalPrivateHref =
+    !isAdmin && typeof payload.portalPrivateUrl === 'string' && payload.portalPrivateUrl.trim()
+      ? payload.portalPrivateUrl.trim()
+      : ''
+  const portalCtaHref = portalPrivateHref || portalLoginHref
 
   return `<!doctype html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -242,12 +248,17 @@ ${emailResponsiveCss}
                     <tr>
                       <td class="mobile-pad" style="padding:36px 38px 40px 38px;">
                         <p style="margin:0; font-family:${emailFonts.sans}; color:${gs.green}; font-size:11px; line-height:15px; font-weight:900; letter-spacing:0.22em; text-transform:uppercase;">Your trip hub</p>
-                        <h2 class="section-title" style="margin:12px 0 12px 0; font-family:${emailFonts.sans}; color:${gs.text}; font-size:30px; line-height:1.15; font-weight:800; letter-spacing:-0.03em;">Save this enquiry to your account</h2>
-                        <p style="margin:0 0 24px 0; font-family:${emailFonts.sans}; color:${gs.muted}; font-size:16px; line-height:1.65; font-weight:500;">Use the same email you entered on the form. After sign-in you can add airport transfers, golf rounds (including our interactive course map), and hotel notes for 1–8 guests — pick one, two, or all three.</p>
-                        <a class="cta-button" href="${escapeHtml(saveToAccountHref)}" target="_blank" rel="noopener noreferrer" style="${ctaGreen}">
-                          Open my dashboard
+                        <h2 class="section-title" style="margin:12px 0 12px 0; font-family:${emailFonts.sans}; color:${gs.text}; font-size:30px; line-height:1.15; font-weight:800; letter-spacing:-0.03em;">Open your private portal</h2>
+                        <p style="margin:0 0 18px 0; font-family:${emailFonts.sans}; color:${gs.muted}; font-size:16px; line-height:1.65; font-weight:500;">Your reference is <strong style="color:${gs.text};font-weight:800;">${escapeHtml(payload.enquiryId)}</strong>. Use that with the same email on ${escapeHtml(site)}/portal — or tap your private link below. No password needed.</p>
+                        <a class="cta-button" href="${escapeHtml(portalCtaHref)}" target="_blank" rel="noopener noreferrer" style="${ctaGreen}">
+                          Open my portal
                         </a>
-                        <p style="margin:18px 0 0 0; font-family:${emailFonts.sans}; color:${gs.muted}; font-size:13px; line-height:20px;">Reference <strong style="color:${gs.text};font-weight:800;">${escapeHtml(payload.enquiryId)}</strong> is carried into your workspace automatically.</p>
+                        ${
+                          portalPrivateHref
+                            ? `<p style="margin:18px 0 0 0; font-family:${emailFonts.sans}; color:${gs.muted}; font-size:13px; line-height:20px;">Private link:</p>
+                        <p style="margin:6px 0 0 0; font-family:${emailFonts.sans}; font-size:12px; line-height:1.45; word-break:break-all; color:${gs.text};"><a href="${escapeHtml(portalPrivateHref)}" style="color:${gs.green};">${escapeHtml(portalPrivateHref)}</a></p>`
+                            : `<p style="margin:18px 0 0 0; font-family:${emailFonts.sans}; color:${gs.muted}; font-size:13px; line-height:20px;">Or go to <a href="${escapeHtml(portalLoginHref)}" style="color:${gs.green};font-weight:700;">${escapeHtml(site)}/portal</a> and enter your email + reference.</p>`
+                        }
                       </td>
                     </tr>
                   </table>

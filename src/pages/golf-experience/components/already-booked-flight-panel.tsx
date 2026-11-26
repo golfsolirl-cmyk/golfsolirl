@@ -146,7 +146,7 @@ export function GeAlreadyBookedFlightPanel() {
         setSubmitting(false)
         if (result.code === ENQUIRY_CONFLICT_EXISTING_PHONE) {
           setError(
-            `${result.message} Sign in at golfsolirl.com/dashboard/login with the email you used before, then continue your trip.`
+            `${result.message} Sign in at golfsolirl.com/portal with the email you used before, then continue your trip.`
           )
         } else {
           setError(result.message ?? 'Could not send your arrival snapshot right now.')

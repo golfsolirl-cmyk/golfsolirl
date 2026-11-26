@@ -6,6 +6,7 @@ import { createEnquiryReferenceId } from '../shared/document-templates.mjs'
 import { buildBrandedPortalMagicLinkEmailHtml } from './branded-client-portal-email.mjs'
 import { finalizeGsolEmailHtml } from './email-layout.mjs'
 import { normalizeOperatorPasscode } from './magic-link-service.mjs'
+import { regeneratePortalAccess, revokePortalAccess } from './portal-otp-auth.mjs'
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
@@ -528,9 +529,55 @@ export const handleAdminPortalClient = async (payload = {}, env = process.env, m
     return { ok: true, unblocked: true }
   }
 
+  if (action === 'revoke_portal_access') {
+    const emailRaw = typeof payload.email === 'string' ? payload.email.trim().toLowerCase() : ''
+    if (!emailRaw || !isValidEmail(emailRaw)) {
+      throwStatus('Valid client email is required.', 400)
+    }
+    const { data: prof, error: pErr } = await admin
+      .from('profiles')
+      .select('id, email, account_reference_id')
+      .ilike('email', emailRaw)
+      .maybeSingle()
+    if (pErr) {
+      throwStatus(pErr.message, 500)
+    }
+    if (!prof?.id) {
+      throwStatus('No profile with that email.', 404)
+    }
+    await revokePortalAccess(admin, prof.id)
+    return {
+      ok: true,
+      revoked: true,
+      profileId: prof.id,
+      accountReferenceId: prof.account_reference_id ?? null
+    }
+  }
+
+  if (action === 'regenerate_portal_access') {
+    const emailRaw = typeof payload.email === 'string' ? payload.email.trim().toLowerCase() : ''
+    if (!emailRaw || !isValidEmail(emailRaw)) {
+      throwStatus('Valid client email is required.', 400)
+    }
+    const regenerateReference = payload.regenerateReference === true
+    const { data: prof, error: pErr } = await admin
+      .from('profiles')
+      .select('id')
+      .ilike('email', emailRaw)
+      .maybeSingle()
+    if (pErr) {
+      throwStatus(pErr.message, 500)
+    }
+    if (!prof?.id) {
+      throwStatus('No profile with that email.', 404)
+    }
+    const result = await regeneratePortalAccess(admin, prof.id, { regenerateReference }, env)
+    return result
+  }
+
   if (action !== 'create') {
     throwStatus(
-      'Unknown action. Use "create", "delete", "reset_portal_onboarding", "clear_dashboard_by_account_ref", "clear_portal_messages_by_account_ref", "list_auth_email_blocks", "block_auth_email", "unblock_auth_email", or "operator_code".',
+      'Unknown action. Use "create", "delete", "reset_portal_onboarding", "clear_dashboard_by_account_ref", "clear_portal_messages_by_account_ref", "list_auth_email_blocks", "block_auth_email", "unblock_auth_email", "revoke_portal_access", "regenerate_portal_access", or "operator_code".',
       400
     )
   }

@@ -611,7 +611,7 @@ export function GeQuickEnquiryForm({
               <p>{errorMessage}</p>
               {errorCode === ENQUIRY_CONFLICT_EXISTING_PHONE ? (
                 <p className="mt-3 text-[0.98rem] font-semibold text-gs-green">
-                  <a className="underline decoration-gs-green/50 underline-offset-2" href="/dashboard/login">
+                  <a className="underline decoration-gs-green/50 underline-offset-2" href="/portal">
                     Sign in to your trip desk
                   </a>{' '}
                   (same email you used before) — or contact us if you need help.

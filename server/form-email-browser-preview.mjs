@@ -41,7 +41,8 @@ export const getFormEmailPreviewHtml = (kind, requestOrigin = '') => {
         email: p.email,
         enquiryId: p.enquiryId,
         enquiryDate: p.enquiryDate,
-        actionLink: `${origin}/dashboard/login?next=${encodeURIComponent(`/dashboard?enquiry_ref=${p.enquiryId}`)}`,
+        privateUrl: `${origin}/portal/preview-token`,
+        portalLoginUrl: `${origin}/portal`,
         sentAtDisplay: p.enquiryDate
       })
       break

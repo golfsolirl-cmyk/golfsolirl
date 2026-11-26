@@ -641,7 +641,7 @@ export function TransportHeroEnquiryForm() {
                 </p>
                 {errorCode === ENQUIRY_CONFLICT_EXISTING_PHONE ? (
                   <p className="mt-2 text-sm font-semibold text-gs-green">
-                    <a className="underline underline-offset-2" href="/dashboard/login">
+                    <a className="underline underline-offset-2" href="/portal">
                       Sign in to your trip desk
                     </a>
                   </p>

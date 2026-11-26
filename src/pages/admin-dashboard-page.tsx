@@ -541,7 +541,9 @@ export function AdminDashboardPage() {
   const [portalProposalsEnabled, setPortalProposalsEnabled] = useState(false)
   const [portalPdfLibraryEnabled, setPortalPdfLibraryEnabled] = useState(false)
   const [portalClubConciergeEnabled, setPortalClubConciergeEnabled] = useState(false)
-  const [portalSettingsBusy, setPortalSettingsBusy] = useState<'idle' | 'load' | 'save'>('idle')
+  const [portalSettingsBusy, setPortalSettingsBusy] = useState<
+    'idle' | 'load' | 'save' | 'revoke' | 'regen' | 'regen-ref'
+  >('idle')
   const [portalSettingsMessage, setPortalSettingsMessage] = useState<string | null>(null)
   const [manualPortalCreateName, setManualPortalCreateName] = useState('')
   const [manualPortalCreateEmail, setManualPortalCreateEmail] = useState('')
@@ -2225,6 +2227,60 @@ export function AdminDashboardPage() {
     setPortalSettingsMessage('Saved. The client will see changes after their next page load (or sign-in).')
   }
 
+  const handlePortalAccessAction = async (action: 'revoke_portal_access' | 'regenerate_portal_access', regenerateReference = false) => {
+    setPortalSettingsMessage(null)
+    if (!session?.access_token) {
+      setPortalSettingsMessage('Sign in again as admin.')
+      return
+    }
+    const email = portalClientEmail.trim().toLowerCase()
+    if (!email.includes('@')) {
+      setPortalSettingsMessage('Load a client email first.')
+      return
+    }
+
+    setPortalSettingsBusy(action === 'revoke_portal_access' ? 'revoke' : regenerateReference ? 'regen-ref' : 'regen')
+    try {
+      const res = await fetch('/api/admin-portal-client', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          action,
+          email,
+          ...(action === 'regenerate_portal_access' ? { regenerateReference } : {})
+        })
+      })
+      const data = (await res.json().catch(() => ({}))) as {
+        message?: string
+        privateUrl?: string
+        accountReferenceId?: string | null
+      }
+      if (!res.ok) {
+        throw new Error(data.message || 'Request failed.')
+      }
+      if (action === 'revoke_portal_access') {
+        setPortalSettingsMessage('Private link revoked. Client cannot open it until you regenerate.')
+      } else {
+        if (typeof data.accountReferenceId === 'string' && data.accountReferenceId.trim()) {
+          setPortalAccountRef(data.accountReferenceId.trim())
+        }
+        const link = typeof data.privateUrl === 'string' ? data.privateUrl : ''
+        setPortalSettingsMessage(
+          regenerateReference
+            ? `New reference ${data.accountReferenceId ?? ''} and private link ready.${link ? ` ${link}` : ''}`
+            : `New private link ready.${link ? ` ${link}` : ''}`
+        )
+      }
+    } catch (err) {
+      setPortalSettingsMessage(err instanceof Error ? err.message : 'Request failed.')
+    } finally {
+      setPortalSettingsBusy('idle')
+    }
+  }
+
   const handleCreateManualPortalClient = async () => {
     setManualPortalCreateMessage(null)
     if (!session?.access_token) {
@@ -2649,7 +2705,7 @@ export function AdminDashboardPage() {
       setPortalLinkCopyMessage(
         portal === 'admin'
           ? `Copied admin sign-in link for ${ref}. Paste into email to golfsolirl@gmail.com (or any admin inbox).`
-          : `Copied client sign-in link for ${ref}. Paste into your resend email — it opens /dashboard/login with a signed context.`
+          : `Copied client sign-in link for ${ref}. Paste into your resend email — it opens /portal with a signed context.`
       )
     } catch (e) {
       setPortalLinkCopyMessage(e instanceof Error ? e.message : 'Copy failed.')
@@ -7087,6 +7143,43 @@ export function AdminDashboardPage() {
                   {portalSettingsBusy === 'save' ? 'Saving…' : 'Save settings'}
                 </button>
               </div>
+
+              <div className="mt-6 rounded-2xl border border-forest-100 bg-offwhite/80 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-700">
+                  Private link &amp; reference
+                </p>
+                <p className="mt-1 text-sm text-forest-600">
+                  Clients open <span className="font-mono text-forest-900">/portal</span> with email + reference, or their
+                  private link. Revoke or mint a fresh link here.
+                </p>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <button
+                    className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-rose-200 bg-white px-5 py-2.5 text-sm font-semibold text-rose-900 transition-colors hover:border-rose-400 disabled:opacity-60"
+                    disabled={portalSettingsBusy !== 'idle'}
+                    onClick={() => void handlePortalAccessAction('revoke_portal_access')}
+                    type="button"
+                  >
+                    {portalSettingsBusy === 'revoke' ? 'Revoking…' : 'Revoke private link'}
+                  </button>
+                  <button
+                    className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-forest-200 bg-white px-5 py-2.5 text-sm font-semibold text-forest-900 transition-colors hover:border-fairway-400 disabled:opacity-60"
+                    disabled={portalSettingsBusy !== 'idle'}
+                    onClick={() => void handlePortalAccessAction('regenerate_portal_access', false)}
+                    type="button"
+                  >
+                    {portalSettingsBusy === 'regen' ? 'Regenerating…' : 'Regenerate private link'}
+                  </button>
+                  <button
+                    className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-forest-200 bg-white px-5 py-2.5 text-sm font-semibold text-forest-900 transition-colors hover:border-fairway-400 disabled:opacity-60"
+                    disabled={portalSettingsBusy !== 'idle'}
+                    onClick={() => void handlePortalAccessAction('regenerate_portal_access', true)}
+                    type="button"
+                  >
+                    {portalSettingsBusy === 'regen-ref' ? 'Updating…' : 'New link + new reference'}
+                  </button>
+                </div>
+              </div>
+
               {portalSettingsMessage ? (
                 <p className="mt-3 text-sm font-medium text-forest-800" role="status">
                   {portalSettingsMessage}

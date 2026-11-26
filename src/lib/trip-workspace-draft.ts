@@ -252,5 +252,5 @@ export const illustrativeTripPriceRangeEur = (draft: TripWorkspaceDraft): { low:
 export const buildClientLoginUrlForEnquiry = (origin: string, enquiryId: string): string => {
   const base = origin.replace(/\/+$/, '')
   const next = `/dashboard?enquiry_ref=${encodeURIComponent(enquiryId)}`
-  return `${base}/dashboard/login?next=${encodeURIComponent(next)}`
+  return `${base}/portal?next=${encodeURIComponent(next)}`
 }

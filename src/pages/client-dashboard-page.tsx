@@ -677,7 +677,7 @@ export function ClientDashboardPage() {
       if (b?.data?.session?.user) {
         return
       }
-      window.location.replace('/dashboard/login')
+      window.location.replace('/portal')
     }
     void verify()
     return () => {
