@@ -11,8 +11,8 @@ export function AdminPasswordLoginPage() {
   const [checkingSession, setCheckingSession] = useState(true)
 
   const params = new URLSearchParams(window.location.search)
-  const nextRaw = params.get('next') ?? '/dashboard/admin'
-  const safeNext = nextRaw && isSafeInternalPath(nextRaw) ? nextRaw : '/dashboard/admin'
+  const nextRaw = params.get('next') ?? '/admin'
+  const safeNext = nextRaw && isSafeInternalPath(nextRaw) ? nextRaw : '/admin'
   const queryError = params.get('error')
 
   useEffect(() => {

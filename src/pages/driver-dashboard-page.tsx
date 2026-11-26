@@ -349,7 +349,7 @@ export function DriverDashboardPage() {
           </a>{' '}
           for magic-link access.
         </p>
-        <GeButton href="/dashboard/admin" variant="outline-gs-green">
+        <GeButton href="/admin" variant="outline-gs-green">
           Admin dashboard
         </GeButton>
         <GeButton href="/driver/login" variant="gs-green">

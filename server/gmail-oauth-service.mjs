@@ -111,7 +111,7 @@ const adminRedirectBase = (env) => {
 
 export const adminMailDashboardUrl = (env, query) => {
   const q = new URLSearchParams(query)
-  return `${adminRedirectBase(env)}/dashboard/admin?${q.toString()}`
+  return `${adminRedirectBase(env)}/dashboard/admin/legacy?${q.toString()}`
 }
 
 /**

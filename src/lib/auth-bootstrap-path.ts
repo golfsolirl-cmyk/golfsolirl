@@ -6,6 +6,7 @@ export function pathnameNeedsImmediateSupabaseHydration(normalizedPath: string):
   const p = normalizedPath === '/' ? '/' : normalizedPath.replace(/\/+$/, '')
   return (
     p.startsWith('/dashboard') ||
+    p.startsWith('/admin') ||
     p.startsWith('/driver') ||
     p.startsWith('/documents') ||
     p === '/auth/callback' ||

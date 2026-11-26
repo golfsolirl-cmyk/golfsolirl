@@ -12,7 +12,7 @@ export function LoggedOutPage() {
     if (isLoading || !session) {
       return
     }
-    window.location.replace(profile?.role === 'admin' ? '/dashboard/admin' : '/dashboard')
+    window.location.replace(profile?.role === 'admin' ? '/admin' : '/dashboard')
   }, [isLoading, session, profile?.role])
 
   if (isLoading) {

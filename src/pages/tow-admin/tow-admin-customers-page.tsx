@@ -73,7 +73,7 @@ export function TowAdminCustomersPage() {
           </p>
         </div>
         <a
-          href="/dashboard/admin"
+          href="/dashboard/admin/legacy"
           className="rounded-xl bg-gs-green px-4 py-2.5 font-ge text-sm font-semibold text-white hover:bg-[#0f4d38]"
         >
           + New customer

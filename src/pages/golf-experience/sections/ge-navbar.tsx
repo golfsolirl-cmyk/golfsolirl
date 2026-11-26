@@ -279,7 +279,7 @@ function PortalNavActions({
         </GeButton>
       ) : null}
       {variant === 'client' && showAdminDashboardLink ? (
-        <GeButton className={btnSm} href="/dashboard/admin" size="sm" variant="outline-gs-green">
+        <GeButton className={btnSm} href="/admin" size="sm" variant="outline-gs-green">
           Admin dashboard
         </GeButton>
       ) : null}
