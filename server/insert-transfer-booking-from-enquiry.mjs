@@ -9,11 +9,14 @@
 
 const FORM_TRANSPORT = 'transport_service_page'
 const FORM_QUICK = 'content_quick_enquiry'
+const FORM_MALAGA = 'malaga_airport_transfer'
+const FORM_BUNDLE_QUOTE = 'bundle_quote'
 
 const KEY_QUOTE_INTENT = '_quoteIntent'
 const QUOTE_AIRPORT_ONLY = 'airport_only'
 const KEY_PICKUP_LABEL = '_pickupLabel'
 const KEY_DROPOFF_LABEL = '_dropoffLabel'
+const KEY_ADD_TRANSFERS = '_addTransfers'
 
 const norm = (s) => String(s ?? '').trim()
 
@@ -41,7 +44,10 @@ const looksLikeTransferEnquiry = (enquiry) => {
   const fm = fieldMap(fp.fields)
   const interest = norm(enquiry.interest).toUpperCase()
 
-  if (form === FORM_TRANSPORT) {
+  if (form === FORM_TRANSPORT || form === FORM_MALAGA) {
+    return true
+  }
+  if (norm(fm.get(KEY_ADD_TRANSFERS)).toLowerCase() === 'yes') {
     return true
   }
   if (fm.get(KEY_QUOTE_INTENT) === QUOTE_AIRPORT_ONLY) {
@@ -53,10 +59,16 @@ const looksLikeTransferEnquiry = (enquiry) => {
   if (interest.includes('TRANSPORT PAGE')) {
     return true
   }
-  if (interest.includes('AIRPORT TRANSFERS ONLY')) {
+  if (interest.includes('AIRPORT TRANSFERS ONLY') || interest.includes('TRANSFERS FROM MÁLAGA') || interest.includes('TRANSFERS FROM MALAGA')) {
     return true
   }
   if (norm(fm.get('Collection point')) && norm(fm.get('Destination'))) {
+    return true
+  }
+  if (form === FORM_BUNDLE_QUOTE && interest.includes('TRANSFER')) {
+    return true
+  }
+  if (form === FORM_QUICK && norm(fm.get(KEY_ADD_TRANSFERS)).toLowerCase() === 'yes') {
     return true
   }
   return false
@@ -65,6 +77,13 @@ const looksLikeTransferEnquiry = (enquiry) => {
 const pickupDropoffFromFields = (fm) => {
   let pickup = norm(fm.get(KEY_PICKUP_LABEL)) || norm(fm.get('Collection point'))
   let dropoff = norm(fm.get(KEY_DROPOFF_LABEL)) || norm(fm.get('Destination'))
+  const wantsTransfers = norm(fm.get(KEY_ADD_TRANSFERS)).toLowerCase() === 'yes'
+  if (!pickup && wantsTransfers) {
+    pickup = 'Málaga Airport (AGP)'
+  }
+  if (!dropoff && wantsTransfers) {
+    dropoff = 'Hotel / resort — confirm with guest'
+  }
   if (!pickup) {
     pickup = 'Pickup — confirm with guest'
   }
