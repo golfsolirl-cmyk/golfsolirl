@@ -16,14 +16,14 @@ const services = [
     title: 'Golf courses',
     body: 'Tell us the courses you want. We request the tee times between Málaga and Sotogrande.',
     href: '/golf-courses',
-    cta: 'See the courses'
+    cta: 'Find golf courses'
   },
   {
     icon: BedDouble,
     title: 'Hotels & stays',
     body: 'Fuengirola and Torremolinos bases Irish groups book again and again.',
     href: '/accommodation',
-    cta: 'See the hotels'
+    cta: 'Find hotels'
   }
 ] as const
 
@@ -88,10 +88,13 @@ export function GeHomeWhatWeDo() {
         })}
       </div>
 
-      <m.div className="mt-10 flex justify-center sm:mt-12" {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.2 }}>
-        <GeButton href="/contact" variant="gs-green" size="lg">
-          Get a quote
+      <m.div className="mt-10 flex flex-col items-center justify-center gap-3 sm:mt-12 sm:flex-row" {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.2 }}>
+        <GeButton href="/bundles" variant="gs-green" size="lg">
+          View bundles
           <ArrowRight className="h-4 w-4" aria-hidden />
+        </GeButton>
+        <GeButton href="/contact" variant="outline-gs-green" size="lg">
+          Get a quote
         </GeButton>
       </m.div>
     </GeSection>

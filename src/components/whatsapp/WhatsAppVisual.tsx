@@ -32,7 +32,7 @@ export function WhatsAppVisual({ message, context, className }: WhatsAppVisualPr
       target="_blank"
       rel="noopener noreferrer"
       onClick={onClick}
-      aria-label="Not tech savvy? WhatsApp GolfSol Ireland on 086 600 6202. Opens WhatsApp."
+      aria-label="Not tech savvy? WhatsApp GolfSol Ireland on +353 86 600 6202. Opens WhatsApp."
       className={cx(
         'gsol-wa-visual group relative mx-auto block w-full max-w-[28rem] rounded-[2.5rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f4dfa6] focus-visible:ring-offset-4 focus-visible:ring-offset-[#062016]',
         className
@@ -172,7 +172,7 @@ export function WhatsAppVisual({ message, context, className }: WhatsAppVisualPr
           fontSize="28"
           fontWeight="800"
         >
-          086 600 6202
+          +353 86 600 6202
         </text>
         <rect x="178" y="476" width="200" height="36" rx="18" fill="#f7f3ea" />
         <text

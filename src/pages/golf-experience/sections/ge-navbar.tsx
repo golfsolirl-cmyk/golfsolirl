@@ -37,24 +37,39 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
   const chromeRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    const isMobile = () => window.matchMedia('(max-width: 1023px)').matches
+    // Mobile starts compact so the crest row never traps half the viewport.
+    if (isMobile()) setRibbonHidden(true)
+
     let hideTimer = 0
     const onScroll = () => {
       window.clearTimeout(hideTimer)
-      if (window.scrollY < 16) {
-        setRibbonHidden(false)
+      const y = window.scrollY
+      if (!isMobile()) {
+        if (y < 12) {
+          setRibbonHidden(false)
+          return
+        }
+        hideTimer = window.setTimeout(() => setRibbonHidden(y > 12), 120)
         return
       }
-      hideTimer = window.setTimeout(() => {
-        setRibbonHidden(window.scrollY > 16)
-      }, 320)
+      // Mobile: keep ribbon collapsed while scrolling; only reopen near the very top
+      // and only when the menu is closed.
+      if (y < 4 && !isMenuOpen) {
+        hideTimer = window.setTimeout(() => setRibbonHidden(false), 180)
+      } else {
+        setRibbonHidden(true)
+      }
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll, { passive: true })
     return () => {
       window.clearTimeout(hideTimer)
       window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
     }
-  }, [])
+  }, [isMenuOpen])
 
   useEffect(() => {
     if (!isMenuOpen) return
@@ -185,13 +200,13 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
                 : 'border-brand-700/12 bg-gradient-to-r from-cream via-white to-cream'
             )}
           >
-            <div className="mx-auto flex w-full max-w-[1340px] justify-center px-2.5 py-1 sm:px-5 sm:py-1.5 lg:py-1.5">
+            <div className="mx-auto flex w-full max-w-[1340px] justify-center px-2.5 py-0.5 sm:px-5 sm:py-1 lg:py-1.5">
               <BrandPlaneToFairwayTagline tone={isOverlay ? 'dark' : 'light'} layout="ribbon" className="max-w-full" />
             </div>
             {!portalSlot ? (
-              <div className="mx-auto flex w-full max-w-[1340px] flex-wrap items-center justify-center gap-2 px-3 pb-2.5">
+              <div className="mx-auto hidden w-full max-w-[1340px] flex-wrap items-center justify-center gap-2 px-3 pb-2 lg:flex">
                 <HeaderSignInButtons />
-                <a href="/contact" className="header-quote-btn inline-flex min-h-10 items-center justify-center rounded-full bg-[#d4a843] px-4 py-2 font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.12em] text-[#062016] shadow-[0_6px_16px_rgba(8,46,35,0.16)]">
+                <a href="/contact" className="header-quote-btn inline-flex min-h-9 items-center justify-center rounded-full bg-[#d4a843] px-4 py-2 font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.12em] text-[#062016] shadow-[0_6px_16px_rgba(8,46,35,0.16)]">
                   Get Quote
                 </a>
               </div>
@@ -284,7 +299,8 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
                 </div>
               ) : null}
               {!portalSlot ? (
-                <div className="mt-4">
+                <div className="mt-4 space-y-3">
+                  <HeaderSignInButtons layout="menu" onNavigate={() => setIsMenuOpen(false)} />
                   <GeButton href="/contact" size="md" variant="gs-green" className="w-full" onClick={() => setIsMenuOpen(false)}>
                     Get a Quote
                   </GeButton>

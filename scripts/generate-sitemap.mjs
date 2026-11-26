@@ -18,6 +18,7 @@ const siteBase = (process.env.SITE_URL || 'https://www.golfsolirl.com').replace(
 
 const staticPaths = [
   '/',
+  '/bundles',
   '/services/transport',
   '/packages',
   '/about',
@@ -25,7 +26,8 @@ const staticPaths = [
   '/golf-courses',
   '/accommodation',
   '/faq',
-  '/booking'
+  '/booking',
+  '/leave-a-review'
 ]
 
 /** Secondary aliases — keep out of sitemap; vercel redirects to canonical. */

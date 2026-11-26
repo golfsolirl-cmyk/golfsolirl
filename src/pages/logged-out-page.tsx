@@ -42,7 +42,7 @@ export function LoggedOutPage() {
   return (
     <PremiumPageShell
       identityLabel="Signed out"
-      identityDescription="You have been securely signed out. Come back any time with your magic link."
+      identityDescription="You have been securely signed out. Come back any time with a fresh sign-in code."
     >
       <PremiumHero
         variant="loggedOut"
@@ -59,7 +59,7 @@ export function LoggedOutPage() {
           idleLogout ? (
             <>
               We signed you out of your <span className="font-extrabold">Golf Sol Ireland</span> desk after a
-              period with no activity. Request a new magic link when you&apos;re ready to continue.
+              period with no activity. Request a new sign-in code when you&apos;re ready to continue.
             </>
           ) : (
             <>

@@ -1,63 +1,21 @@
-import { CustomerTripReel } from '../../components/customer-trip-reel'
-import { SectionShadowBridge } from '../../components/ui/SectionShadowBridge'
-import { GeAboutBlock } from './sections/about-block'
-import { GeAccommodationIntro } from './sections/accommodation-intro'
-import { GeAccommodationSpain } from './sections/accommodation-spain'
-import { GeCoursesSpain } from './sections/courses-spain'
-import { GeDesignYourPackage } from './sections/design-your-package'
-import { GeHomeTripadvisorReviews } from './sections/home-tripadvisor-reviews'
-import { GeExtrasStrip } from './sections/extras-strip'
-import { GeFacts } from './sections/facts'
-import { GeFinalCta } from './sections/final-cta'
 import { GeFooter } from './sections/ge-footer'
-import { HomeAirportTransfersCta } from './sections/home-airport-transfers-cta'
+import { GeHomeBundlesTeaser } from './sections/home-bundles-teaser'
 import { GeHomeEnquiry } from './sections/home-enquiry'
-import { GeHomeEuNordicWelcome } from './sections/home-eu-nordic-welcome'
-import { GeHomeFleetHighlight } from './sections/home-fleet-highlight'
-import { TripServiceBookingCta } from '../../components/trip-service-booking-cta'
-import { WhatsAppConcierge } from '../../components/whatsapp/WhatsAppConcierge'
 import { GeHomeWhatWeDo } from './sections/home-what-we-do'
 import { WhatsappFab } from './components/whatsapp-fab'
 
 /**
- * Split from the main entry so the first paint can ship navbar + hero + smaller core JS;
- * this chunk includes Framer sections and (via courses) Leaflet when the user scrolls.
+ * Lean homepage fold — one purpose per band, one primary path to quote/bundles.
+ * Heavy repeats (design-your-package steps, dual course+hotel galleries, extras,
+ * facts, about, floating concierge panel) were cut after client feedback that
+ * the site felt too busy.
  */
 export default function HomeBelowTheFold() {
   return (
     <>
-      <CustomerTripReel placement="feature" />
       <GeHomeWhatWeDo />
-      <div className="bg-cream px-3 py-6 sm:px-8 sm:py-10">
-        <div className="mx-auto max-w-[1180px]">
-          <TripServiceBookingCta pageLabel="Homepage" />
-        </div>
-      </div>
-      <GeHomeEuNordicWelcome />
-      <GeDesignYourPackage />
-      <HomeAirportTransfersCta />
-      <GeHomeTripadvisorReviews />
-      <GeCoursesSpain />
-      <GeAccommodationIntro />
-      <GeAccommodationSpain />
-      <GeHomeFleetHighlight />
-
-      <SectionShadowBridge variant="plateau-to-dark" />
-      <GeExtrasStrip />
-
-      <GeFacts />
-      <GeAboutBlock />
-
-      <SectionShadowBridge variant="soft-lift" />
+      <GeHomeBundlesTeaser />
       <GeHomeEnquiry />
-
-      <div className="bg-[#faf8f4] px-5 pb-16 pt-2 sm:px-8 sm:pb-20">
-        <div className="mx-auto max-w-[1180px]">
-          <WhatsAppConcierge sourcePage="/" />
-        </div>
-      </div>
-
-      <GeFinalCta />
       <GeFooter />
       <WhatsappFab />
     </>

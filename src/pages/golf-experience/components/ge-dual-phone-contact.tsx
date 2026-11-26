@@ -127,10 +127,13 @@ export function GeDualPhoneFooterLines() {
       <li className="flex items-start gap-2">
         <Phone className="mt-1 h-4 w-4 shrink-0 text-emerald-200/90" aria-hidden="true" />
         <span className="min-w-0 font-ge text-[1.05rem] leading-7 text-white/95 sm:text-[0.98rem]">
-          <span className="block text-[0.68rem] font-bold uppercase tracking-[0.12em] text-white/80">
-            {contactInfo.phoneIrishLineLabel}
+          <span className="block whitespace-nowrap text-[0.68rem] font-bold uppercase tracking-[0.12em] text-white/80">
+            Ireland
           </span>
-          <a href={`tel:${contactInfo.phoneTel}`} className="hover:text-gs-green-light">
+          <a
+            href={`tel:${contactInfo.phoneTel}`}
+            className="whitespace-nowrap tabular-nums hover:text-gs-green-light"
+          >
             {contactInfo.phoneDisplay}
           </a>
         </span>
@@ -138,10 +141,13 @@ export function GeDualPhoneFooterLines() {
       <li className="flex items-start gap-2">
         <Phone className="mt-1 h-4 w-4 shrink-0 text-emerald-200/90" aria-hidden="true" />
         <span className="min-w-0 font-ge text-[1.05rem] leading-7 text-white/95 sm:text-[0.98rem]">
-          <span className="block text-[0.68rem] font-bold uppercase tracking-[0.12em] text-white/80">
-            {contactInfo.phoneSpanishLineLabel}
+          <span className="block whitespace-nowrap text-[0.68rem] font-bold uppercase tracking-[0.12em] text-white/80">
+            Spain
           </span>
-          <a href={`tel:${contactInfo.spanishPhoneTel}`} className="hover:text-gs-green-light">
+          <a
+            href={`tel:${contactInfo.spanishPhoneTel}`}
+            className="whitespace-nowrap tabular-nums hover:text-gs-green-light"
+          >
             {contactInfo.spanishPhoneDisplay}
           </a>
         </span>
@@ -162,11 +168,11 @@ export function GeDualPhoneEnquiryCallRow() {
     <div className="flex flex-col gap-3 sm:flex-row sm:gap-3">
       <a href={`tel:${contactInfo.phoneTel}`} className={enquiryPrimaryCallClass}>
         <Phone className="h-4 w-4 shrink-0" aria-hidden />
-        <span className="min-w-0 text-center">{contactInfo.phoneDisplay}</span>
+        <span className="min-w-0 whitespace-nowrap text-center tabular-nums">{contactInfo.phoneDisplay}</span>
       </a>
       <a href={`tel:${contactInfo.spanishPhoneTel}`} className={enquirySecondaryCallClass}>
         <Phone className="h-4 w-4 shrink-0" aria-hidden />
-        <span className="min-w-0 text-center">{contactInfo.spanishPhoneDisplay}</span>
+        <span className="min-w-0 whitespace-nowrap text-center tabular-nums">{contactInfo.spanishPhoneDisplay}</span>
       </a>
     </div>
   )
@@ -187,11 +193,11 @@ export function GeDualPhoneHeroButtons({
     <div className={cx('flex flex-col gap-3 sm:flex-row sm:items-stretch sm:gap-3', className)}>
       <GeButton href={`tel:${contactInfo.phoneTel}`} variant={variant} size="lg" className="w-full min-w-0 sm:flex-1">
         <Phone className="h-4 w-4 shrink-0" aria-hidden />
-        <span className="truncate">{contactInfo.phoneDisplay}</span>
+        <span className="whitespace-nowrap tabular-nums tracking-normal">{contactInfo.phoneDisplay}</span>
       </GeButton>
       <GeButton href={`tel:${contactInfo.spanishPhoneTel}`} variant={variant} size="lg" className="w-full min-w-0 sm:flex-1">
         <Phone className="h-4 w-4 shrink-0" aria-hidden />
-        <span className="truncate">{contactInfo.spanishPhoneDisplay}</span>
+        <span className="whitespace-nowrap tabular-nums tracking-normal">{contactInfo.spanishPhoneDisplay}</span>
       </GeButton>
     </div>
   )
@@ -201,16 +207,28 @@ export function GeDualPhoneHeroButtons({
 export function GeDualPhoneFinalCtaRow() {
   return (
     <div className="flex w-full max-w-xl flex-col items-stretch justify-center gap-3 sm:mx-auto sm:max-w-none sm:flex-row sm:flex-wrap">
-      <GeButton href={`tel:${contactInfo.phoneTel}`} variant="outline-gs-green" size="lg" className="min-w-0 sm:min-w-[200px]">
-        <span className="sm:hidden">Ireland </span>
-        <span className="hidden sm:inline">Irish </span>
-        {contactInfo.phoneDisplay}
-      </GeButton>
-      <GeButton href={`tel:${contactInfo.spanishPhoneTel}`} variant="outline-gs-green" size="lg" className="min-w-0 sm:min-w-[200px]">
-        <span className="sm:hidden">Spain </span>
-        <span className="hidden sm:inline">Spanish </span>
-        {contactInfo.spanishPhoneDisplay}
-      </GeButton>
+      <a
+        href={`tel:${contactInfo.phoneTel}`}
+        className="inline-flex min-h-[52px] w-full items-center justify-between gap-3 rounded-xl border-2 border-gs-green bg-white px-4 py-3 font-ge text-gs-green shadow-sm transition-colors hover:bg-gs-green/10 sm:min-w-[220px] sm:justify-center sm:gap-2"
+      >
+        <span className="shrink-0 whitespace-nowrap text-[0.72rem] font-extrabold uppercase tracking-[0.12em]">
+          Ireland
+        </span>
+        <span className="min-w-0 whitespace-nowrap text-right text-[0.95rem] font-bold tabular-nums tracking-normal sm:text-[1rem]">
+          {contactInfo.phoneDisplay}
+        </span>
+      </a>
+      <a
+        href={`tel:${contactInfo.spanishPhoneTel}`}
+        className="inline-flex min-h-[52px] w-full items-center justify-between gap-3 rounded-xl border-2 border-gs-green bg-white px-4 py-3 font-ge text-gs-green shadow-sm transition-colors hover:bg-gs-green/10 sm:min-w-[220px] sm:justify-center sm:gap-2"
+      >
+        <span className="shrink-0 whitespace-nowrap text-[0.72rem] font-extrabold uppercase tracking-[0.12em]">
+          Spain
+        </span>
+        <span className="min-w-0 whitespace-nowrap text-right text-[0.95rem] font-bold tabular-nums tracking-normal sm:text-[1rem]">
+          {contactInfo.spanishPhoneDisplay}
+        </span>
+      </a>
     </div>
   )
 }
@@ -241,10 +259,10 @@ export function GeDualPhoneAirportTransferCalls({ onDark = false }: { readonly o
           <Phone className="h-5 w-5 text-white" strokeWidth={2} aria-hidden />
         </span>
         <span className="ge-airport-call-copy min-w-0 text-left">
-          <span className="block text-[0.62rem] font-bold uppercase tracking-[0.16em] text-forest-900 sm:text-[0.68rem]">
-            Call Irish support
+          <span className="block whitespace-nowrap text-[0.62rem] font-bold uppercase tracking-[0.16em] text-forest-900 sm:text-[0.68rem]">
+            Ireland
           </span>
-          <span className="mt-0.5 block text-[1.08rem] font-extrabold tracking-[0.01em] text-forest-900 sm:text-[1.18rem]">
+          <span className="mt-0.5 block whitespace-nowrap text-[1.08rem] font-extrabold tracking-normal text-forest-900 tabular-nums sm:text-[1.18rem]">
             {contactInfo.phoneDisplay}
           </span>
         </span>
@@ -259,10 +277,10 @@ export function GeDualPhoneAirportTransferCalls({ onDark = false }: { readonly o
           <Phone className="h-5 w-5 text-white" strokeWidth={2} aria-hidden />
         </span>
         <span className="ge-airport-call-copy min-w-0 text-left">
-          <span className="block text-[0.62rem] font-bold uppercase tracking-[0.16em] text-forest-900 sm:text-[0.68rem]">
-            Call Spanish line
+          <span className="block whitespace-nowrap text-[0.62rem] font-bold uppercase tracking-[0.16em] text-forest-900 sm:text-[0.68rem]">
+            Spain
           </span>
-          <span className="mt-0.5 block text-[1.08rem] font-extrabold tracking-[0.01em] text-forest-900 sm:text-[1.18rem]">
+          <span className="mt-0.5 block whitespace-nowrap text-[1.08rem] font-extrabold tracking-normal text-forest-900 tabular-nums sm:text-[1.18rem]">
             {contactInfo.spanishPhoneDisplay}
           </span>
         </span>

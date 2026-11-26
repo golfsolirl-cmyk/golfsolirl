@@ -6,7 +6,10 @@
 
 /** Irish mobile 086 600 6202. wa.me needs the country code and no leading zero. */
 export const WHATSAPP_NUMBER = '353866006202'
-export const WHATSAPP_DISPLAY = '086 600 6202'
+/** International display — client asked for 00353 / +353 prefix on the concierge line. */
+export const WHATSAPP_DISPLAY = '+353 86 600 6202'
+/** Alternate Irish trunk display (00353…). */
+export const WHATSAPP_DISPLAY_00353 = '00353 86 600 6202'
 
 export const WHATSAPP_EVENT = 'whatsapp_contact_click'
 

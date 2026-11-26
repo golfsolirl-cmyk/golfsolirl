@@ -5,61 +5,35 @@ export interface GeNavLink {
 }
 
 /**
- * Top-level desktop nav. Kept to a maximum of 7 visible items so the bar
- * never wraps at 1024px+. Secondary links live under the "More" dropdown.
+ * Top-level desktop nav — kept to five clear items (no mega-menus).
+ * Secondary links live in the footer only.
  */
 export const primaryNav: readonly GeNavLink[] = [
-  { label: 'Home', href: '/#top' },
-  {
-    label: 'Services',
-    href: '/services/transport',
-    children: [
-      { label: 'Transport', href: '/services/transport' },
-      { label: 'Tee times only', href: '/services/tee-time-bookings' },
-      { label: 'Twilight Golf', href: '/services/twilight-golf' }
-    ]
-  },
-  {
-    label: 'Golf Courses',
-    href: '/golf-courses',
-    children: [
-      { label: 'Sotogrande Cluster', href: '/golf-courses/sotogrande' },
-      { label: 'Marbella Golf Valley', href: '/golf-courses/marbella-golf-valley' },
-      { label: 'Mijas & Fuengirola', href: '/golf-courses/mijas-fuengirola' }
-    ]
-  },
-  {
-    label: 'Accommodation',
-    href: '/accommodation',
-    children: [
-      { label: 'Fuengirola Hotels', href: '/accommodation/fuengirola-hotels' },
-      { label: 'Torremolinos Hotels', href: '/accommodation/torremolinos-hotels' }
-    ]
-  },
-  { label: 'Transport', href: '/services/transport' },
-  {
-    label: 'More',
-    href: '/contact',
-    children: [
-      { label: 'Testimonials', href: '/testimonials' },
-      { label: 'Golf Map', href: '/golf-map' },
-      { label: 'News', href: '/news' },
-      { label: 'FAQ', href: '/faq' },
-      { label: 'Contact', href: '/contact' }
-    ]
-  }
+  { label: 'Golf Bundles', href: '/bundles' },
+  { label: 'Hotels', href: '/accommodation' },
+  { label: 'Golf Courses', href: '/golf-courses' },
+  { label: 'Transfers', href: '/services/transport' },
+  { label: 'Contact', href: '/contact' }
 ] as const
 
 export const footerColumns = [
   {
-    title: 'Quick Links',
+    title: 'Plan your trip',
     links: [
-      { label: 'Tee times only', href: '/services/tee-time-bookings' },
-      { label: 'Twilight Golf — Costa del Sol', href: '/services/twilight-golf' },
-      { label: 'Society & Group Trips', href: '/booking' },
-      { label: 'Dress Code on the Costa del Sol', href: '/guides/dress-code-costa-del-sol' },
-      { label: 'Travelling to Málaga (AGP)', href: '/guides/travelling-to-malaga-agp' },
-      { label: 'Costa del Sol Golf Map', href: '/golf-map' }
+      { label: 'Golf holiday bundles', href: '/bundles' },
+      { label: 'Hotels', href: '/accommodation' },
+      { label: 'Golf courses', href: '/golf-courses' },
+      { label: 'Málaga airport transfers', href: '/services/transport' },
+      { label: 'Get a quote', href: '/contact' }
+    ]
+  },
+  {
+    title: 'Help',
+    links: [
+      { label: 'FAQ', href: '/faq' },
+      { label: 'Testimonials', href: '/testimonials' },
+      { label: 'Leave us a review', href: '/leave-a-review' },
+      { label: 'Golf map', href: '/golf-map' }
     ]
   },
   {
@@ -67,29 +41,7 @@ export const footerColumns = [
     links: [
       { label: 'Privacy Policy', href: '/privacy-policy' },
       { label: 'Cookie Policy', href: '/cookie-policy' },
-      { label: 'Cookie settings', href: '/cookie-policy#settings' },
       { label: 'Terms & Conditions', href: '/terms-and-conditions' }
-    ]
-  },
-  {
-    title: 'Docs',
-    links: [
-      { label: 'Terms & Conditions', href: '/docs/terms-and-conditions.pdf' },
-      { label: 'Traveller Contacts', href: '/docs/traveller-contacts.pdf' },
-      { label: 'Packing Checklist', href: '/docs/packing-checklist.pdf' }
-    ]
-  },
-  {
-    title: 'Navigation',
-    links: [
-      { label: 'Home', href: '/#top' },
-      { label: 'Costa del Sol Courses', href: '/golf-courses' },
-      { label: 'Málaga Airport Transfers', href: '/transport' },
-      { label: 'Hotels Irish Groups Love', href: '/accommodation' },
-      { label: 'Get a Quote', href: '/contact' },
-      { label: 'News', href: '/news' },
-      { label: 'Join our newsletter', href: '/newsletter' },
-      { label: 'Give a Testimonial', href: '/contact/give-a-testimonial' }
     ]
   }
 ] as const

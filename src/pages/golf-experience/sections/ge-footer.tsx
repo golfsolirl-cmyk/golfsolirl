@@ -163,11 +163,11 @@ export function GeFooter() {
               Stay in touch
             </p>
             <div className="flex flex-wrap gap-3">
-              <GeButton href="/newsletter" variant="outline-white" size="sm">
-                Join our newsletter
+              <GeButton href="/leave-a-review" variant="outline-white" size="sm">
+                Leave us a review
               </GeButton>
-              <GeButton href="/testimonials" variant="outline-white" size="sm">
-                Give a Testimonial
+              <GeButton href="/contact" variant="outline-white" size="sm">
+                Get a quote
               </GeButton>
             </div>
           </div>

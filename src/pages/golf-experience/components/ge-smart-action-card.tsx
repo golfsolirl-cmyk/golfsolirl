@@ -34,15 +34,15 @@ export function GeSmartActionCard({ action, appearance = 'brand' }: GeSmartActio
           <div className="mt-3 space-y-2 border-t border-neutral-200 pt-3">
             <a
               href={action.href}
-              className="block font-ge text-[0.88rem] font-bold text-neutral-900 underline decoration-neutral-400 underline-offset-2 transition-colors hover:text-neutral-700"
+              className="block whitespace-nowrap font-ge text-[0.88rem] font-bold tabular-nums tracking-normal text-neutral-900 underline decoration-neutral-400 underline-offset-2 transition-colors hover:text-neutral-700"
             >
-              {contactInfo.phoneIrishLineLabel}: {contactInfo.phoneDisplay}
+              Ireland: {contactInfo.phoneDisplay}
             </a>
             <a
               href={action.secondaryTelHref}
-              className="block font-ge text-[0.88rem] font-bold text-neutral-900 underline decoration-neutral-400 underline-offset-2 transition-colors hover:text-neutral-700"
+              className="block whitespace-nowrap font-ge text-[0.88rem] font-bold tabular-nums tracking-normal text-neutral-900 underline decoration-neutral-400 underline-offset-2 transition-colors hover:text-neutral-700"
             >
-              {contactInfo.phoneSpanishLineLabel}: {action.secondaryTelLabel}
+              Spain: {action.secondaryTelLabel}
             </a>
           </div>
         </div>
@@ -67,18 +67,18 @@ export function GeSmartActionCard({ action, appearance = 'brand' }: GeSmartActio
         )}
       >
         <div className="flex items-start justify-between gap-2">
-          <p className="min-w-0 flex-1 break-words font-ge text-[0.7rem] font-extrabold uppercase leading-snug tracking-[0.09em] sm:text-[0.8rem] sm:tracking-[0.12em]">
+          <p className="min-w-0 flex-1 font-ge text-[0.7rem] font-extrabold uppercase leading-snug tracking-[0.09em] sm:text-[0.8rem] sm:tracking-[0.12em]">
             {action.label}
           </p>
           <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-white/70" aria-hidden />
         </div>
-        <p className={cx('mt-1.5 break-words font-ge text-[0.82rem] leading-5 sm:text-[0.86rem] sm:leading-5', bodyTone)}>{action.description}</p>
+        <p className={cx('mt-1.5 font-ge text-[0.82rem] leading-5 sm:text-[0.86rem] sm:leading-5', bodyTone)}>{action.description}</p>
         <div className="mt-3 space-y-2 border-t border-white/15 pt-2.5">
-          <a href={action.href} className={cx('block', linkTone)}>
-            {contactInfo.phoneIrishLineLabel}: {contactInfo.phoneDisplay}
+          <a href={action.href} className={cx('block whitespace-nowrap tabular-nums tracking-normal', linkTone)}>
+            Ireland: {contactInfo.phoneDisplay}
           </a>
-          <a href={action.secondaryTelHref} className={cx('block', linkTone)}>
-            {contactInfo.phoneSpanishLineLabel}: {action.secondaryTelLabel}
+          <a href={action.secondaryTelHref} className={cx('block whitespace-nowrap tabular-nums tracking-normal', linkTone)}>
+            Spain: {action.secondaryTelLabel}
           </a>
         </div>
       </div>

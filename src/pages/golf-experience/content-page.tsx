@@ -5,22 +5,14 @@ import { buildBreadcrumbListSchema, buildFaqSchema, buildWebPageSchema } from '.
 import { absoluteOgImageUrl } from '../../lib/site-seo'
 import { GeFooter } from './sections/ge-footer'
 import { GeNavbar } from './sections/ge-navbar'
-import { GePaymentsIreland } from './sections/payments-ireland'
-import { GeFinalCta } from './sections/final-cta'
 import { GeContentEnquireBlock } from './sections/ge-content-enquire-block'
-import { GeContentPromiseBand } from './sections/ge-content-promise-band'
-import { GeContentStoryGrid, type GeContentStoryCard } from './sections/ge-content-story-grid'
 import { PremiumPageHero } from '../../components/home/premium-page-hero'
 import { buildContentPageHeroConfig } from '../../lib/content-page-hero-config'
 import { TermsEmailRequest } from './sections/terms-email-request'
 import { TermsSolicitorNotice } from './sections/terms-solicitor-notice'
 import { getGeContentPage } from './data/content-pages'
-import { formatContentPageRouteLabel, getContentPageFormConfig, getContentStorySectionMedia } from './content-page-context'
-import { GeTransfersInsuranceBanner } from './components/ge-transfers-insurance-banner'
+import { formatContentPageRouteLabel, getContentPageFormConfig } from './content-page-context'
 import { WhatsappFab } from './components/whatsapp-fab'
-import { WhatsAppBookingHelp } from '../../components/whatsapp/WhatsAppBookingHelp'
-import { WhatsAppConcierge } from '../../components/whatsapp/WhatsAppConcierge'
-import { nightsFromRoute, resolveWhatsAppPanel } from '../../lib/whatsapp'
 import { GeSection } from './components/ge-section'
 import {
   GOLF_COURSES_MAP_SECTION_ID,
@@ -30,6 +22,14 @@ import {
 const GeCoursesInteractiveCorridor = lazy(async () => {
   const mod = await import('./components/ge-courses-interactive-corridor')
   return { default: mod.GeCoursesInteractiveCorridor }
+})
+const GeAccommodationSpain = lazy(async () => {
+  const mod = await import('./sections/accommodation-spain')
+  return { default: mod.GeAccommodationSpain }
+})
+const GeCoursesSpain = lazy(async () => {
+  const mod = await import('./sections/courses-spain')
+  return { default: mod.GeCoursesSpain }
 })
 
 function normalisePath() {
@@ -81,15 +81,6 @@ export function GeContentPage() {
   const path = useMemo(() => normalisePath(), [])
   const page = useMemo(() => getGeContentPage(path), [path])
   const formConfig = useMemo(() => (page ? getContentPageFormConfig(path, page) : null), [page, path])
-
-  const storyCards: readonly GeContentStoryCard[] = useMemo(() => {
-    if (!page) return []
-    return page.sections.slice(0, 3).map((section, index) => {
-      const media = getContentStorySectionMedia(path, page, index)
-      const badge = index === 0 ? 'Step 01' : index === 1 ? 'Step 02' : 'Step 03'
-      return { section, badge, image: media.image, imageAlt: media.alt }
-    })
-  }, [page, path])
 
   const crumbs = useMemo(
     () => (page ? breadcrumbItemsForPath(path, page.title) : []),
@@ -166,11 +157,19 @@ export function GeContentPage() {
   }
 
   const isNewsletter = page.enquiryType === 'newsletter'
-  const extraSections = page.sections.length > 3 ? page.sections.slice(3) : []
-  const promiseBody = page.sections[0]?.body ?? page.subtitle
+  /** Keep the first section only — cut the long repeated story grid. */
+  const leadSections = page.sections.slice(0, 1)
   const isTermsPage = path.includes('terms')
+  const isAccommodationHub = path === '/accommodation' || path.startsWith('/accommodation/')
+  const isGolfCoursesHub = path === '/golf-courses' || path.startsWith('/golf-courses/')
   const showCourseCorridorMap = shouldShowInteractiveCourseMap(path)
-  const formTarget = showCourseCorridorMap ? `#${GOLF_COURSES_MAP_SECTION_ID}` : '#ge-content-enquire'
+  const formTarget = showCourseCorridorMap
+    ? `#${GOLF_COURSES_MAP_SECTION_ID}`
+    : isAccommodationHub
+      ? '#hotel-list'
+      : path === '/golf-courses'
+        ? '#course-list'
+        : '#ge-content-enquire'
   const heroConfig = buildContentPageHeroConfig(path, page, formTarget)
   const routeLabel = formatContentPageRouteLabel(path)
 
@@ -193,27 +192,35 @@ export function GeContentPage() {
           titleLine1={heroConfig.titleLine1}
           titleLine2={heroConfig.titleLine2}
           lead={heroConfig.lead}
-          trustBadges={heroConfig.trustBadges}
-          trustSectionTitle={heroConfig.trustSectionTitle}
-          floatingBadges={heroConfig.floatingBadges}
+          trustBadges={undefined}
+          trustSectionTitle={undefined}
+          floatingBadges={undefined}
           formScrollTarget={heroConfig.formScrollTarget}
-          formScrollLabel={heroConfig.formScrollLabel}
+          formScrollLabel={
+            isAccommodationHub ? 'Find hotels' : isGolfCoursesHub ? 'Find golf courses' : heroConfig.formScrollLabel
+          }
           formScrollSublabel={
             showCourseCorridorMap
-              ? 'See every course on the map'
+              ? 'See courses on the map'
               : isNewsletter
                 ? 'Your email is enough'
-                : heroConfig.formScrollSublabel
+                : undefined
           }
           primaryCta={{
-            label: showCourseCorridorMap ? 'Explore the course map' : isNewsletter ? 'Subscribe' : heroConfig.primaryCtaLabel,
+            label: isAccommodationHub
+              ? 'Find hotels'
+              : isGolfCoursesHub || showCourseCorridorMap
+                ? 'Find golf courses'
+                : isNewsletter
+                  ? 'Subscribe'
+                  : 'Get a quote',
             href: formTarget,
             variant: 'gs-gold'
           }}
           secondaryCta={
-            showCourseCorridorMap
-              ? { label: 'Start your enquiry', href: '#ge-content-enquire', variant: 'outline-gs-green' }
-              : undefined
+            isAccommodationHub || isGolfCoursesHub || showCourseCorridorMap
+              ? { label: 'Get a quote', href: '#ge-content-enquire', variant: 'outline-gs-green' }
+              : { label: 'View bundles', href: '/bundles', variant: 'outline-gs-green' }
           }
         />
 
@@ -228,6 +235,22 @@ export function GeContentPage() {
           >
             <GeCoursesInteractiveCorridor path={path} routeLabel={routeLabel} />
           </Suspense>
+        ) : null}
+
+        {path === '/accommodation' || path.startsWith('/accommodation/') ? (
+          <div id="hotel-list">
+            <Suspense fallback={<div aria-hidden className="min-h-[40vh] bg-cream" />}>
+              <GeAccommodationSpain />
+            </Suspense>
+          </div>
+        ) : null}
+
+        {path === '/golf-courses' ? (
+          <div id="course-list">
+            <Suspense fallback={<div aria-hidden className="min-h-[40vh] bg-cream" />}>
+              <GeCoursesSpain />
+            </Suspense>
+          </div>
         ) : null}
 
         {isNewsletter && formConfig ? (
@@ -246,95 +269,56 @@ export function GeContentPage() {
         ) : null}
 
         {isNewsletter ? null : (
-        <>
-        <GeContentPromiseBand
-          eyebrow="Why us"
-          title="One Irish team. A clear plan."
-          body={promiseBody}
-          bullets={page.highlights}
-        />
-
-        <GePaymentsIreland />
-
-        <div className="bg-white px-5 py-6 sm:px-8 sm:py-7">
-          <div className="mx-auto max-w-[1180px]">
-            <GeTransfersInsuranceBanner variant="inline" />
-          </div>
-        </div>
-
-        <GeContentStoryGrid
-          eyebrow="The detail"
-          title="The short version."
-          lead={page.subtitle}
-          cards={storyCards}
-        />
-
-        {extraSections.length > 0 ? (
-          <GeSection background="white" innerClassName="py-14 sm:py-16">
-            <div className="mx-auto max-w-[1180px] space-y-8 px-5 sm:px-8">
-              {extraSections.map((section) => (
-                <article
-                  key={section.title}
-                  className="rounded-2xl border border-ge-gray100 bg-ge-gray50/40 p-5 shadow-[0_10px_30px_rgba(6,59,42,0.06)] sm:p-7"
-                >
-                  <h2 className="font-ge text-[1.58rem] font-extrabold leading-tight text-gs-green sm:text-[1.9rem]">{section.title}</h2>
-                  <p className="mt-3 font-ge text-base leading-7 text-ge-gray500">{section.body}</p>
-                  {section.bullets ? (
-                    <ul className="mt-4 space-y-2.5">
-                      {section.bullets.map((bullet) => (
-                        <ContentBullet key={bullet} bullet={bullet} />
-                      ))}
-                    </ul>
-                  ) : null}
-                </article>
-              ))}
-            </div>
-          </GeSection>
-        ) : null}
-
-        {isTermsPage ? (
           <>
-            <TermsSolicitorNotice />
-            <TermsEmailRequest />
-          </>
-        ) : null}
+            {leadSections.length > 0 ? (
+              <GeSection background="white" innerClassName="py-12 sm:py-14">
+                <div className="mx-auto max-w-[760px] space-y-6 px-5 sm:px-8">
+                  {leadSections.map((section) => (
+                    <article key={section.title}>
+                      <h2 className="font-ge text-[1.45rem] font-extrabold leading-tight text-gs-dark sm:text-[1.7rem]">
+                        {section.title}
+                      </h2>
+                      <p className="mt-3 font-ge text-base leading-7 text-ge-gray600">{section.body}</p>
+                      {section.bullets ? (
+                        <ul className="mt-4 space-y-2.5">
+                          {section.bullets.slice(0, 4).map((bullet) => (
+                            <ContentBullet key={bullet} bullet={bullet} />
+                          ))}
+                        </ul>
+                      ) : null}
+                    </article>
+                  ))}
+                </div>
+              </GeSection>
+            ) : null}
 
-        {formConfig && resolveWhatsAppPanel(path, page.enquiryType) === 'contact' ? (
-          <div className="bg-[#faf8f4] px-5 pb-2 pt-12 sm:px-8 sm:pt-16">
-            <div className="mx-auto max-w-[1180px]">
-              <WhatsAppConcierge variant="contact" sourcePage={path} />
-            </div>
-          </div>
-        ) : null}
+            {isTermsPage ? (
+              <>
+                <TermsSolicitorNotice />
+                <TermsEmailRequest />
+              </>
+            ) : null}
 
-        {formConfig && resolveWhatsAppPanel(path, page.enquiryType) === 'booking' ? (
-          <div className="bg-[#faf8f4] px-5 pb-2 pt-12 sm:px-8 sm:pt-16">
-            <div className="mx-auto max-w-[1180px]">
-              <WhatsAppBookingHelp
-                sourcePage={path}
-                packageName={page.title}
-                nights={nightsFromRoute(path)}
+            {formConfig ? (
+              <GeContentEnquireBlock
+                eyebrow={
+                  page.enquiryType === 'testimonial'
+                    ? 'Your trip'
+                    : page.enquiryType === 'legal'
+                      ? 'The terms'
+                      : 'Get a quote'
+                }
+                title={page.formTitle}
+                body={page.formLead}
+                formTitle={page.formTitle}
+                formLead={page.formLead}
+                interestPreset={page.interestPreset}
+                routeLabel={routeLabel}
+                formConfig={formConfig}
               />
-            </div>
-          </div>
-        ) : null}
-
-        {formConfig ? (
-          <GeContentEnquireBlock
-            eyebrow={page.enquiryType === 'testimonial' ? 'Your trip' : page.enquiryType === 'legal' ? 'The terms' : 'Get a quote'}
-            title={page.formTitle}
-            body={page.formLead}
-            formTitle={page.formTitle}
-            formLead={page.formLead}
-            interestPreset={page.interestPreset}
-            routeLabel={routeLabel}
-            formConfig={formConfig}
-          />
-        ) : null}
-        </>
+            ) : null}
+          </>
         )}
-
-        <GeFinalCta />
       </main>
 
       <GeFooter />

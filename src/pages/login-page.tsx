@@ -87,7 +87,7 @@ export function LoginPage() {
         window.history.replaceState(null, '', `${window.location.pathname}${q ? `?${q}` : ''}`)
       } catch {
         if (!cancelled) {
-          setPortalCtxBanner('Could not verify this link. You can still request a magic link below.')
+          setPortalCtxBanner('Could not verify this link. You can still request a sign-in code below.')
         }
       }
     })()
@@ -300,7 +300,7 @@ export function LoginPage() {
   const heroBody = isAdminLoginPath
     ? `${adminHeroBodyPublic} The email link opens the production admin desk on golfsolirl.com.`
     : isDriverLoginPage
-      ? 'Same secure magic link as the client portal and admin — after sign-in, admins use the Irish Driver preview desk; linked drivers see live jobs.'
+      ? 'We email a short sign-in code for the driver desk. After sign-in, admins can open the Irish Driver preview; linked drivers see live jobs.'
       : 'We email a short sign-in code — enter it here to open your trip desk. No password to remember.'
 
   // —— Supabase-not-configured fallback ——
@@ -405,7 +405,7 @@ export function LoginPage() {
             <div className="mb-6 space-y-2 rounded-2xl border border-brand-700/50 bg-[#fff9e8] px-4 py-3 font-ge text-base text-gs-dark">
               <p className="font-bold text-gs-dark">
                 {queryError === 'no_session'
-                  ? 'We could not complete sign-in from that link. Request a new magic link below.'
+                  ? 'We could not complete sign-in from that link. Request a new sign-in code below.'
                   : queryError === 'auth'
                     ? 'Supabase returned an error for this sign-in attempt.'
                     : 'Something went wrong. Try again.'}
@@ -580,10 +580,10 @@ export function LoginPage() {
               ) : null}
               <GeButton className="w-full" disabled={isSending} size="md" type="submit" variant="gs-green">
                 {isSending ? (
-                  'Sending link…'
+                  'Sending…'
                 ) : (
                   <>
-                    Email me a magic link
+                    Email me a sign-in link
                     <Send className="ml-2 h-4 w-4" aria-hidden />
                   </>
                 )}
