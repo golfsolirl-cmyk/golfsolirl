@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import {
   BUNDLE_TIERS,
   resolveBundleFromSlug,
@@ -9,6 +9,8 @@ import {
   EnquirySpamGuardFields,
   useEnquirySpamGuardState
 } from '../../../components/enquiry-spam-guard-fields'
+import { DismissCloseButton } from '../../../components/ui/dismiss-close-button'
+import { useEscapeDismiss } from '../../../hooks/use-escape-dismiss'
 import { RECAPTCHA_ACTIONS } from '../../../lib/enquiry-spam-guard'
 import {
   ENQUIRY_STRUCTURED_FIELD_KEYS,
@@ -23,7 +25,6 @@ import { TERMS_ACCEPTANCE_ERROR, termsAcceptanceFormFields } from '../../../lib/
 import { travelEndMinIso, travelStartMinIso } from '../../../lib/travel-date-bounds'
 import {
   atLeastOneTripService,
-  emptyTripServices,
   tripServicesFromFlags,
   TRIP_SERVICE_LABELS,
   TRIP_SERVICE_ORDER,
@@ -36,6 +37,13 @@ import { arrivalTimeFormFields, normalizeTimeOfDay } from '../../../lib/time-of-
 import { golferGroupSizeSelectOptions, passengerCountSelectOptions } from '../data/form-people-options'
 import { GeButton } from './ge-button'
 import { GeTermsAcceptanceField } from './ge-terms-acceptance-field'
+
+/** Bare /quote with no query flags — start with all three services selected. */
+const DEFAULT_QUOTE_SERVICES: TripServiceSelection = {
+  transfers: true,
+  accommodation: true,
+  golf_courses: true
+}
 
 const labelClass =
   'mb-1.5 block font-ge text-[0.82rem] font-bold uppercase tracking-[0.12em] text-forest-800'
@@ -50,6 +58,9 @@ type SmartTripQuoteFormProps = {
   readonly formId?: string
   /** Hide redundant kicker/title when the page already shows a compact heading. */
   readonly compact?: boolean
+  /** Optional dismiss (e.g. leave /quote). Shows a 44px X and listens for Escape. */
+  readonly onDismiss?: () => void
+  readonly dismissLabel?: string
 }
 
 function toggleService(prev: TripServiceSelection, id: TripServiceId): TripServiceSelection {
@@ -64,7 +75,9 @@ export function SmartTripQuoteForm({
   title = 'Build your quote',
   lead = 'Pick what you need. We only ask for the details that matter.',
   formId = 'quote-form',
-  compact = false
+  compact = false,
+  onDismiss,
+  dismissLabel = 'Close quote form'
 }: SmartTripQuoteFormProps) {
   const bundle = useMemo(
     () => resolveBundleFromSlug(preset?.bundleSlug ?? null),
@@ -72,10 +85,17 @@ export function SmartTripQuoteForm({
   )
 
   const initialServices = useMemo(() => {
-    if (preset?.services) return tripServicesFromFlags(preset.services)
+    if (preset?.services && atLeastOneTripService(tripServicesFromFlags(preset.services))) {
+      return tripServicesFromFlags(preset.services)
+    }
     if (bundle) return { transfers: true, accommodation: true, golf_courses: true }
-    return emptyTripServices()
+    return DEFAULT_QUOTE_SERVICES
   }, [preset?.services, bundle])
+
+  const handleDismiss = useCallback(() => {
+    onDismiss?.()
+  }, [onDismiss])
+  useEscapeDismiss(handleDismiss, Boolean(onDismiss))
 
   const [services, setServices] = useState<TripServiceSelection>(initialServices)
   const [tier, setTier] = useState<BundleTierId>(
@@ -126,6 +146,16 @@ export function SmartTripQuoteForm({
   const [errorCode, setErrorCode] = useState<string | null>(null)
   const [bookedDays, setBookedDays] = useState<Set<string>>(() => new Set())
   const confirmationRef = useRef<HTMLDivElement>(null)
+  const errorRef = useRef<HTMLDivElement>(null)
+
+  const showError = useCallback((message: string, code: string | null = null) => {
+    setErrorMessage(message)
+    setErrorCode(code)
+    setStatus('error')
+    window.requestAnimationFrame(() => {
+      errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    })
+  }, [])
 
   useEffect(() => {
     setServices(initialServices)
@@ -156,8 +186,7 @@ export function SmartTripQuoteForm({
     setErrorCode(null)
 
     if (!atLeastOneTripService(services)) {
-      setErrorMessage('Select at least one: transfers, accommodation, or golf courses.')
-      setStatus('error')
+      showError('Select at least one: transfers, accommodation, or golf courses.')
       return
     }
 
@@ -165,35 +194,29 @@ export function SmartTripQuoteForm({
     const mail = email.trim()
     const phone = phoneWhatsApp.trim()
     if (!name || !mail || !phone) {
-      setErrorMessage('Name, email and mobile are required.')
-      setStatus('error')
+      showError('Name, email and mobile are required.')
       return
     }
     const phoneCheck = validateMobilePhoneInput(phone)
     if (!phoneCheck.ok) {
-      setErrorMessage(phoneCheck.message)
-      setStatus('error')
+      showError(phoneCheck.message)
       return
     }
     if (!termsAccepted) {
-      setErrorMessage(TERMS_ACCEPTANCE_ERROR)
-      setStatus('error')
+      showError(TERMS_ACCEPTANCE_ERROR)
       return
     }
 
     if (services.golf_courses && !groupSize) {
-      setErrorMessage('Select how many golfers.')
-      setStatus('error')
+      showError('Select how many golfers.')
       return
     }
     if (services.transfers && !passengers && !groupSize) {
-      setErrorMessage('Select passengers for transfers.')
-      setStatus('error')
+      showError('Select passengers for transfers.')
       return
     }
     if (services.transfers && !destination.trim() && !hotelPreference.trim()) {
-      setErrorMessage('Add a destination hotel or area for transfers.')
-      setStatus('error')
+      showError('Add a destination hotel or area for transfers.')
       return
     }
 
@@ -202,126 +225,131 @@ export function SmartTripQuoteForm({
       [travelDateFrom, travelDateTo].filter((d) => d.length === 10)
     )
     if (bookedMsg) {
-      setErrorMessage(bookedMsg)
-      setStatus('error')
+      showError(bookedMsg)
       return
     }
 
     setStatus('submitting')
 
-    const serviceLabels = TRIP_SERVICE_ORDER.filter((id) => services[id]).map((id) => TRIP_SERVICE_LABELS[id])
-    const interestLines = [
-      `Trip builder: ${serviceLabels.join(' · ')}`,
-      bundle ? `Bundle: ${bundle.packageName} · ${bundle.nights}n · ${bundle.rounds}r · ${tierMeta.label}` : null,
-      notes.trim() || null
-    ].filter(Boolean)
+    try {
+      const serviceLabels = TRIP_SERVICE_ORDER.filter((id) => services[id]).map((id) => TRIP_SERVICE_LABELS[id])
+      const interestLines = [
+        `Trip builder: ${serviceLabels.join(' · ')}`,
+        bundle ? `Bundle: ${bundle.packageName} · ${bundle.nights}n · ${bundle.rounds}r · ${tierMeta.label}` : null,
+        notes.trim() || null
+      ].filter(Boolean)
 
-    const sourcePage =
-      preset?.sourcePage ||
-      preset?.pageLabel ||
-      (typeof window !== 'undefined' ? window.location.pathname : '/quote')
-    const formFields: Record<string, string> = {
-      Page: preset?.pageLabel || sourcePage || '/quote',
-      Topic: interestLines[0] ?? 'Trip quote',
-      Services: serviceLabels.join(', '),
-      [ENQUIRY_STRUCTURED_FIELD_KEYS.sourcePage]: sourcePage,
-      [ENQUIRY_STRUCTURED_FIELD_KEYS.serviceStages]: JSON.stringify(services),
-      [ENQUIRY_STRUCTURED_FIELD_KEYS.servicePrimary]: services.transfers
-        ? 'transfer'
-        : services.golf_courses
-          ? 'golf'
-          : 'accommodation',
-      [ENQUIRY_STRUCTURED_FIELD_KEYS.addTransfers]: services.transfers ? 'yes' : 'no'
-    }
-    if (preset?.nights != null) formFields.Nights = String(preset.nights)
-    if (preset?.rounds != null) formFields.Rounds = String(preset.rounds)
-    if (preset?.area) formFields.Area = preset.area
-    if (preset?.intent) formFields.Intent = preset.intent
-
-    if (bundle) {
-      formFields.Bundle = bundle.packageName
-      formFields.Nights = String(bundle.nights)
-      formFields.Rounds = String(bundle.rounds)
-      formFields['Price level'] = tierMeta.label
-      formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.bundleSlug] = bundle.slug
-      formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.bundleName] = bundle.packageName
-      formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.bundleNights] = String(bundle.nights)
-      formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.bundleRounds] = String(bundle.rounds)
-      formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.bundleTier] = tier
-    }
-
-    if (travelDateFrom) {
-      formFields['Start date'] = travelDateFrom
-      formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateFrom] = travelDateFrom
-    }
-    if (travelDateTo) {
-      formFields['End date'] = travelDateTo
-      formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateTo] = travelDateTo
-    }
-
-    if (services.golf_courses) {
-      if (groupSize) formFields.Golfers = groupSize
-      if (coursePreference.trim()) formFields.Courses = coursePreference.trim()
-      const paxMatch = groupSize.match(/^(\d+)/)
-      if (paxMatch) formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.pax] = paxMatch[1] ?? ''
-    }
-
-    if (services.accommodation) {
-      if (hotelPreference.trim()) formFields.Hotel = hotelPreference.trim()
-      if (tierMeta) formFields['Hotel level'] = tierMeta.label
-    }
-
-    if (services.transfers) {
-      const dest = destination.trim() || hotelPreference.trim()
-      const arrivalHhmm = normalizeTimeOfDay(arrivalTime)
-      const pickup = `Málaga Airport (AGP)${flightNo.trim() ? ` · Flight ${flightNo.trim()}` : ''}${
-        arrivalHhmm ? ` · ${arrivalHhmm}` : ''
-      }`
-      formFields.Destination = dest
-      Object.assign(formFields, arrivalTimeFormFields(arrivalHhmm))
-      if (flightNo.trim()) formFields['Flight number'] = flightNo.trim()
-      if (passengers) formFields.Passengers = passengers
-      formFields['Golf bags'] = golfBags
-      formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.pickupType] = PICKUP_DROPOFF_TYPES.malagaAirport
-      formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.pickupLabel] = pickup
-      formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffType] = PICKUP_DROPOFF_TYPES.hotel
-      formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffLabel] = dest
-      const paxMatch = (passengers || groupSize).match(/^(\d+)/)
-      if (paxMatch) formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.pax] = paxMatch[1] ?? ''
-    }
-
-    if (notes.trim()) formFields.Notes = notes.trim()
-
-    const result = await postWebsiteEnquiry({
-      fullName: name,
-      email: mail,
-      phoneWhatsApp: phone,
-      interest: interestLines.join('\n'),
-      bestTimeToCall: 'Any time',
-      requestedServices: services,
-      spamGuard: await spamGuard(),
-      formPayload: {
-        form: preset?.formKey || WEBSITE_ENQUIRY_FORM.bundleQuote,
-        fields: { ...formFields, ...termsAcceptanceFormFields() }
+      const sourcePage =
+        preset?.sourcePage ||
+        preset?.pageLabel ||
+        (typeof window !== 'undefined' ? window.location.pathname : '/quote')
+      const formFields: Record<string, string> = {
+        Page: preset?.pageLabel || sourcePage || '/quote',
+        Topic: interestLines[0] ?? 'Trip quote',
+        Services: serviceLabels.join(', '),
+        [ENQUIRY_STRUCTURED_FIELD_KEYS.sourcePage]: sourcePage,
+        [ENQUIRY_STRUCTURED_FIELD_KEYS.serviceStages]: JSON.stringify(services),
+        [ENQUIRY_STRUCTURED_FIELD_KEYS.servicePrimary]: services.transfers
+          ? 'transfer'
+          : services.golf_courses
+            ? 'golf'
+            : 'accommodation',
+        [ENQUIRY_STRUCTURED_FIELD_KEYS.addTransfers]: services.transfers ? 'yes' : 'no'
       }
-    })
+      if (preset?.nights != null) formFields.Nights = String(preset.nights)
+      if (preset?.rounds != null) formFields.Rounds = String(preset.rounds)
+      if (preset?.area) formFields.Area = preset.area
+      if (preset?.intent) formFields.Intent = preset.intent
 
-    if (!result.ok) {
-      setStatus('error')
-      setErrorMessage(result.message)
-      setErrorCode(result.code ?? null)
-      return
+      if (bundle) {
+        formFields.Bundle = bundle.packageName
+        formFields.Nights = String(bundle.nights)
+        formFields.Rounds = String(bundle.rounds)
+        formFields['Price level'] = tierMeta.label
+        formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.bundleSlug] = bundle.slug
+        formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.bundleName] = bundle.packageName
+        formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.bundleNights] = String(bundle.nights)
+        formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.bundleRounds] = String(bundle.rounds)
+        formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.bundleTier] = tier
+      }
+
+      if (travelDateFrom) {
+        formFields['Start date'] = travelDateFrom
+        formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateFrom] = travelDateFrom
+      }
+      if (travelDateTo) {
+        formFields['End date'] = travelDateTo
+        formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateTo] = travelDateTo
+      }
+
+      if (services.golf_courses) {
+        if (groupSize) formFields.Golfers = groupSize
+        if (coursePreference.trim()) formFields.Courses = coursePreference.trim()
+        const paxMatch = groupSize.match(/^(\d+)/)
+        if (paxMatch) formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.pax] = paxMatch[1] ?? ''
+      }
+
+      if (services.accommodation) {
+        if (hotelPreference.trim()) formFields.Hotel = hotelPreference.trim()
+        if (tierMeta) formFields['Hotel level'] = tierMeta.label
+      }
+
+      if (services.transfers) {
+        const dest = destination.trim() || hotelPreference.trim()
+        const arrivalHhmm = normalizeTimeOfDay(arrivalTime)
+        const pickup = `Málaga Airport (AGP)${flightNo.trim() ? ` · Flight ${flightNo.trim()}` : ''}${
+          arrivalHhmm ? ` · ${arrivalHhmm}` : ''
+        }`
+        formFields.Destination = dest
+        Object.assign(formFields, arrivalTimeFormFields(arrivalHhmm))
+        if (flightNo.trim()) formFields['Flight number'] = flightNo.trim()
+        if (passengers) formFields.Passengers = passengers
+        formFields['Golf bags'] = golfBags
+        formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.pickupType] = PICKUP_DROPOFF_TYPES.malagaAirport
+        formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.pickupLabel] = pickup
+        formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffType] = PICKUP_DROPOFF_TYPES.hotel
+        formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffLabel] = dest
+        const paxMatch = (passengers || groupSize).match(/^(\d+)/)
+        if (paxMatch) formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.pax] = paxMatch[1] ?? ''
+      }
+
+      if (notes.trim()) formFields.Notes = notes.trim()
+
+      const guard = await spamGuard()
+      const result = await postWebsiteEnquiry({
+        fullName: name,
+        email: mail,
+        phoneWhatsApp: phone,
+        interest: interestLines.join('\n'),
+        bestTimeToCall: 'Any time',
+        requestedServices: services,
+        spamGuard: guard,
+        formPayload: {
+          form: preset?.formKey || WEBSITE_ENQUIRY_FORM.bundleQuote,
+          fields: { ...formFields, ...termsAcceptanceFormFields() }
+        }
+      })
+
+      if (!result.ok) {
+        showError(result.message, result.code ?? null)
+        return
+      }
+
+      setStatus('success')
+      setErrorCode(null)
+      setFullName('')
+      setEmail('')
+      setPhoneWhatsApp('')
+      setNotes('')
+      setGroupSize('')
+      setPassengers('')
+      setTermsAccepted(false)
+      window.requestAnimationFrame(() => {
+        confirmationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      })
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Could not send your request. Please try again.')
     }
-
-    setStatus('success')
-    setErrorCode(null)
-    setFullName('')
-    setEmail('')
-    setPhoneWhatsApp('')
-    setNotes('')
-    setGroupSize('')
-    setPassengers('')
-    setTermsAccepted(false)
   }
 
   const startMin = travelStartMinIso()
@@ -332,6 +360,15 @@ export function SmartTripQuoteForm({
       id={formId}
       className="relative w-full max-w-full overflow-x-hidden rounded-[1.75rem] border border-gs-dark/10 bg-white p-4 shadow-[0_24px_60px_rgba(6,59,42,0.12)] sm:p-6"
     >
+      {onDismiss ? (
+        <div className="absolute right-3 top-3 z-10 sm:right-4 sm:top-4">
+          <DismissCloseButton
+            aria-label={dismissLabel}
+            onClick={handleDismiss}
+            tone="light"
+          />
+        </div>
+      ) : null}
       {!compact && title ? (
         <>
           <p className="font-ge text-[0.85rem] font-bold uppercase tracking-[0.14em] text-brand-700">Trip builder</p>
@@ -611,7 +648,11 @@ export function SmartTripQuoteForm({
             <GeTermsAcceptanceField checked={termsAccepted} onChange={setTermsAccepted} id={`${formId}-terms`} />
 
             {errorMessage ? (
-              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 font-ge text-sm text-red-800">
+              <div
+                ref={errorRef}
+                role="alert"
+                className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 font-ge text-sm text-red-800"
+              >
                 <p>{errorMessage}</p>
                 {errorCode === ENQUIRY_CONFLICT_EXISTING_PHONE ? (
                   <a className="mt-2 inline-block font-bold underline" href="/login">
@@ -628,7 +669,12 @@ export function SmartTripQuoteForm({
             </div>
             {/* Sticky mobile submit — always reachable without hunting for the button */}
             <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:hidden">
-              <div className="pointer-events-auto mx-auto max-w-[640px] rounded-2xl border border-gs-dark/10 bg-white/95 p-2 shadow-[0_-8px_30px_rgba(6,59,42,0.18)] backdrop-blur">
+              <div className="pointer-events-auto mx-auto max-w-[640px] space-y-2 rounded-2xl border border-gs-dark/10 bg-white/95 p-2 shadow-[0_-8px_30px_rgba(6,59,42,0.18)] backdrop-blur">
+                {errorMessage ? (
+                  <p className="px-2 pt-1 text-center font-ge text-xs font-semibold leading-snug text-red-700" role="status">
+                    {errorMessage}
+                  </p>
+                ) : null}
                 <GeButton type="submit" variant="gs-green" size="lg" className="w-full min-h-[52px]" disabled={status === 'submitting'}>
                   {status === 'submitting' ? 'Sending…' : preset?.intent === 'callback' ? 'Request callback' : 'Send quote request'}
                 </GeButton>

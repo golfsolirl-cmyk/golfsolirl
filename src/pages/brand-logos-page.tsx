@@ -15,10 +15,11 @@ import {
 import { cx } from '../lib/utils'
 
 function previewSurfaceClass(bg: BrandLogoKitItem['previewBg']): string {
-  if (bg === 'forest') return 'bg-forest-950'
+  if (bg === 'forest') return 'bg-[#0f2a0c]'
+  if (bg === 'charcoal') return 'bg-[#1a1f1c]'
   if (bg === 'white') return 'bg-white'
   if (bg === 'cream') return 'bg-[#f7f3e8]'
-  return 'bg-[length:18px_18px] bg-[linear-gradient(45deg,#e8e4d8_25%,transparent_25%),linear-gradient(-45deg,#e8e4d8_25%,transparent_25%),linear-gradient(45deg,transparent_75%,#e8e4d8_75%),linear-gradient(-45deg,transparent_75%,#e8e4d8_75%)] bg-[position:0_0,0_9px,9px_-9px,-9px_0] bg-white'
+  return 'bg-[length:16px_16px] bg-[linear-gradient(45deg,#c8c2b4_25%,transparent_25%),linear-gradient(-45deg,#c8c2b4_25%,transparent_25%),linear-gradient(45deg,transparent_75%,#c8c2b4_75%),linear-gradient(-45deg,transparent_75%,#c8c2b4_75%)] bg-[position:0_0,0_8px,8px_-8px,-8px_0] bg-[#f4f0e6]'
 }
 
 async function loadImage(src: string): Promise<HTMLImageElement> {
@@ -70,12 +71,19 @@ async function downloadSquareExport(spec: SocialLogoExport): Promise<void> {
 }
 
 function LogoCard({ item }: { readonly item: BrandLogoKitItem }) {
+  const darkSurface = item.previewBg === 'forest' || item.previewBg === 'charcoal'
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-forest-100 bg-white shadow-soft">
-      <div className={cx('flex min-h-[11rem] items-center justify-center p-6', previewSurfaceClass(item.previewBg))}>
+      <div
+        className={cx(
+          'flex min-h-[13.5rem] items-center justify-center p-6 sm:min-h-[15.5rem]',
+          previewSurfaceClass(item.previewBg),
+          darkSurface ? 'ring-1 ring-inset ring-white/10' : 'ring-1 ring-inset ring-black/5'
+        )}
+      >
         <img
           alt={item.name}
-          className="max-h-36 w-auto max-w-full object-contain"
+          className="max-h-48 w-auto max-w-full object-contain sm:max-h-56"
           decoding="async"
           loading="lazy"
           src={item.href}
@@ -247,13 +255,15 @@ export function BrandLogosPage() {
               >
                 <div
                   className={cx(
-                    'mx-auto flex h-28 w-28 items-center justify-center overflow-hidden rounded-2xl border border-forest-100',
-                    spec.bg === 'forest' ? 'bg-forest-950' : 'bg-white'
+                    'mx-auto flex h-36 w-36 items-center justify-center overflow-hidden rounded-2xl border border-forest-100 sm:h-40 sm:w-40',
+                    // Crest uses white/silver type — always preview on a dark plate so it stays readable.
+                    // White/transparent export still downloads with the requested plate.
+                    spec.bg === 'white' ? 'bg-[#0f2a0c]' : spec.bg === 'forest' ? 'bg-[#0f2a0c]' : 'bg-[#1a1f1c]'
                   )}
                 >
                   <img
                     alt=""
-                    className="h-[78%] w-[78%] object-contain"
+                    className="h-[82%] w-[82%] object-contain"
                     decoding="async"
                     loading="lazy"
                     src={BRAND_LOGO_MASTER_SRC}

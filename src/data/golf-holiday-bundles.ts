@@ -110,10 +110,15 @@ export function saveBundlePrices(prices: BundlePriceMap) {
   window.dispatchEvent(new CustomEvent(BUNDLE_PRICES_UPDATED_EVENT))
 }
 
+/** Admin / internal formatting only — do not show on public `/bundles` or marketing cards. */
 export function formatBundlePrice(price: number | null | undefined): string {
-  if (price == null || !Number.isFinite(price) || price <= 0) return 'From €—'
-  return `From €${Math.round(price).toLocaleString('en-IE')}`
+  if (price == null || !Number.isFinite(price) || price <= 0) return '—'
+  return `€${Math.round(price).toLocaleString('en-IE')}`
 }
+
+/** Public-facing copy when euro figures must stay private until enquiry. */
+export const PUBLIC_BUNDLE_PRICE_LABEL = 'Price on request' as const
+export const PUBLIC_BUNDLE_PRICE_HINT = 'Tailored quote on enquiry' as const
 
 /** URL slug for a bundle package, e.g. `weekend-golf-2`. */
 export function bundleQuoteSlug(packageId: string, rounds: number): string {
