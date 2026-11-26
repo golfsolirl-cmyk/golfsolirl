@@ -4488,6 +4488,18 @@ export function AdminDashboardPage() {
               <BankTransferPayCard audience="admin" />
               <AdminOperatorCodePanel accessToken={session?.access_token ?? null} />
               <AdminBundlePricesPanel />
+              <div className="rounded-2xl border border-forest-100 bg-forest-50/60 px-4 py-4">
+                <p className="font-display text-lg font-semibold text-forest-950">Brand Kit</p>
+                <p className="mt-1 text-sm leading-relaxed text-forest-600">
+                  Logos, favicons, heroes, and a private share link for partners.
+                </p>
+                <a
+                  href="/admin/brand"
+                  className="mt-3 inline-flex min-h-10 items-center rounded-full bg-forest-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-forest-900"
+                >
+                  Open Brand Kit
+                </a>
+              </div>
             </div>
           </details>
         </AdminOperationsSectionShell>

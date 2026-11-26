@@ -49,6 +49,7 @@ import {
 } from '../server/enquiry-contact-verify-service.mjs'
 import { handleEnquiryAdminMessage, handleEnquiryAdminQuote } from '../server/enquiry-admin-quote-service.mjs'
 import { handleSitePaymentSettings } from '../server/site-payment-settings-service.mjs'
+import { handleBrandKit } from '../server/brand-kit-service.mjs'
 import { handleEnquiryPaymentAdmin } from '../server/enquiry-payment-service.mjs'
 import { handleEnquiryTransferUpsellEmail } from '../server/enquiry-transfer-upsell-email.mjs'
 import { handleAdminSendDocument } from '../server/admin-send-document-service.mjs'
@@ -539,6 +540,50 @@ export default async function handler(req, res) {
         const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
         const result = await handleTransferPaymentAdmin(payload, process.env, { authHeader })
         jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'brand-kit': {
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const cookieHeader = typeof req.headers?.cookie === 'string' ? req.headers.cookie : ''
+        const urlObj = new URL(req.url || '/', 'http://localhost')
+        const tokenFromQuery = urlObj.searchParams.get('token') || ''
+        if (req.method === 'GET') {
+          try {
+            const result = await handleBrandKit(process.env, {
+              method: 'GET',
+              authHeader,
+              cookieHeader,
+              token: tokenFromQuery
+            })
+            jsonEnd(res, 200, result)
+          } catch (e) {
+            const statusCode = e && typeof e === 'object' && 'statusCode' in e ? Number(e.statusCode) || 400 : 400
+            const message = e instanceof Error ? e.message : 'Bad request'
+            jsonEnd(res, statusCode, { message })
+          }
+          return
+        }
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        try {
+          const raw = await readIncomingMessageBodyUtf8(req)
+          const payload = raw ? JSON.parse(raw) : {}
+          const result = await handleBrandKit(process.env, {
+            method: 'POST',
+            authHeader,
+            cookieHeader,
+            body: payload,
+            token: tokenFromQuery
+          })
+          jsonEnd(res, 200, result)
+        } catch (e) {
+          const statusCode = e && typeof e === 'object' && 'statusCode' in e ? Number(e.statusCode) || 400 : 400
+          const message = e instanceof Error ? e.message : 'Bad request'
+          jsonEnd(res, statusCode, { message })
+        }
         return
       }
 

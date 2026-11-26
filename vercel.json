@@ -182,6 +182,7 @@
     { "source": "/api/transfer-balance-reminder-sweep", "destination": "/api/gateway?r=transfer-balance-reminder-sweep" },
     { "source": "/api/transfer-payment-admin", "destination": "/api/gateway?r=transfer-payment-admin" },
     { "source": "/api/site-payment-settings", "destination": "/api/gateway?r=site-payment-settings" },
+    { "source": "/api/brand-kit", "destination": "/api/gateway?r=brand-kit" },
     { "source": "/api/enquiry-payment-admin", "destination": "/api/gateway?r=enquiry-payment-admin" },
     { "source": "/api/enquiry-transfer-upsell-email", "destination": "/api/gateway?r=enquiry-transfer-upsell-email" },
     { "source": "/api/admin-revenue-stats", "destination": "/api/gateway?r=admin-revenue-stats" },
