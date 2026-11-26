@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo } from 'react'
+import { useMemo } from 'react'
 import { ChevronRight } from 'lucide-react'
 import { useJsonLd, usePageMeta } from '../../lib/use-page-meta'
 import { buildBreadcrumbListSchema, buildFaqSchema, buildWebPageSchema } from '../../lib/seo/organization-schema'
@@ -6,30 +6,20 @@ import { absoluteOgImageUrl } from '../../lib/site-seo'
 import { GeFooter } from './sections/ge-footer'
 import { GeNavbar } from './sections/ge-navbar'
 import { GeContentEnquireBlock } from './sections/ge-content-enquire-block'
-import { PremiumPageHero } from '../../components/home/premium-page-hero'
+import { LeanPublicHero } from '../../components/home/premium-golf-hero'
 import { buildContentPageHeroConfig } from '../../lib/content-page-hero-config'
 import { TermsEmailRequest } from './sections/terms-email-request'
 import { TermsSolicitorNotice } from './sections/terms-solicitor-notice'
 import { getGeContentPage } from './data/content-pages'
 import { formatContentPageRouteLabel, getContentPageFormConfig } from './content-page-context'
 import { GeSection } from './components/ge-section'
+import { FindYourCourse } from './components/find-your-course'
+import { FindYourHotel } from './components/find-your-hotel'
 import {
   GOLF_COURSES_MAP_SECTION_ID,
   shouldShowInteractiveCourseMap
 } from './components/ge-courses-map-visibility'
-
-const GeCoursesInteractiveCorridor = lazy(async () => {
-  const mod = await import('./components/ge-courses-interactive-corridor')
-  return { default: mod.GeCoursesInteractiveCorridor }
-})
-const GeAccommodationSpain = lazy(async () => {
-  const mod = await import('./sections/accommodation-spain')
-  return { default: mod.GeAccommodationSpain }
-})
-const GeCoursesSpain = lazy(async () => {
-  const mod = await import('./sections/courses-spain')
-  return { default: mod.GeCoursesSpain }
-})
+import { GeCoursesInteractiveCorridor } from './components/ge-courses-interactive-corridor'
 
 function normalisePath() {
   const path = window.location.pathname.replace(/\/+$/, '')
@@ -161,6 +151,7 @@ export function GeContentPage() {
   const isTermsPage = path.includes('terms')
   const isAccommodationHub = path === '/accommodation' || path.startsWith('/accommodation/')
   const isGolfCoursesHub = path === '/golf-courses' || path.startsWith('/golf-courses/')
+  const isChooserHub = isAccommodationHub || path === '/golf-courses'
   const showCourseCorridorMap = shouldShowInteractiveCourseMap(path)
   const formTarget = showCourseCorridorMap
     ? `#${GOLF_COURSES_MAP_SECTION_ID}`
@@ -183,28 +174,11 @@ export function GeContentPage() {
       <GeNavbar />
 
       <main id="main">
-        <PremiumPageHero
-          srTitle={page.title}
-          breadcrumbs={crumbs}
+        <LeanPublicHero
+          ariaLabel={page.title}
           images={heroConfig.images}
-          kicker={heroConfig.kicker}
-          titleLine1={heroConfig.titleLine1}
-          titleLine2={heroConfig.titleLine2}
-          lead={heroConfig.lead}
-          trustBadges={undefined}
-          trustSectionTitle={undefined}
-          floatingBadges={undefined}
-          formScrollTarget={heroConfig.formScrollTarget}
-          formScrollLabel={
-            isAccommodationHub ? 'Find hotels' : isGolfCoursesHub ? 'Find golf courses' : heroConfig.formScrollLabel
-          }
-          formScrollSublabel={
-            showCourseCorridorMap
-              ? 'See courses on the map'
-              : isNewsletter
-                ? 'Your email is enough'
-                : undefined
-          }
+          kicker={heroConfig.kicker || 'GolfSol Ireland'}
+          lead={page.subtitle}
           primaryCta={{
             label: isAccommodationHub
               ? 'Find hotels'
@@ -213,44 +187,25 @@ export function GeContentPage() {
                 : isNewsletter
                   ? 'Subscribe'
                   : 'Get a quote',
-            href: formTarget,
-            variant: 'gs-gold'
+            href: formTarget
           }}
           secondaryCta={
-            isAccommodationHub || isGolfCoursesHub || showCourseCorridorMap
-              ? { label: 'Get a quote', href: '#ge-content-enquire', variant: 'outline-gs-green' }
-              : { label: 'View bundles', href: '/bundles', variant: 'outline-gs-green' }
+            isChooserHub
+              ? { label: 'Build my quote', href: '/quote' }
+              : showCourseCorridorMap
+                ? { label: 'Get a quote', href: '/quote' }
+                : { label: 'View bundles', href: '/bundles' }
           }
+          title={page.title}
         />
 
         {showCourseCorridorMap ? (
-          <Suspense
-            fallback={
-              <div
-                aria-hidden
-                className="mx-auto h-[min(52vh,520px)] max-w-[1180px] animate-pulse rounded-[2rem] bg-forest-100/40 px-5 sm:px-8"
-              />
-            }
-          >
-            <GeCoursesInteractiveCorridor path={path} routeLabel={routeLabel} />
-          </Suspense>
+          <GeCoursesInteractiveCorridor path={path} routeLabel={routeLabel} />
         ) : null}
 
-        {path === '/accommodation' || path.startsWith('/accommodation/') ? (
-          <div id="hotel-list">
-            <Suspense fallback={<div aria-hidden className="min-h-[40vh] bg-cream" />}>
-              <GeAccommodationSpain />
-            </Suspense>
-          </div>
-        ) : null}
+        {path === '/accommodation' || path.startsWith('/accommodation/') ? <FindYourHotel /> : null}
 
-        {path === '/golf-courses' ? (
-          <div id="course-list">
-            <Suspense fallback={<div aria-hidden className="min-h-[40vh] bg-cream" />}>
-              <GeCoursesSpain />
-            </Suspense>
-          </div>
-        ) : null}
+        {path === '/golf-courses' ? <FindYourCourse /> : null}
 
         {isNewsletter && formConfig ? (
           <GeContentEnquireBlock
@@ -267,7 +222,7 @@ export function GeContentPage() {
           />
         ) : null}
 
-        {isNewsletter ? null : (
+        {isNewsletter || isChooserHub ? null : (
           <>
             {leadSections.length > 0 ? (
               <GeSection background="white" innerClassName="py-12 sm:py-14">

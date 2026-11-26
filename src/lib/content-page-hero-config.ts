@@ -68,7 +68,7 @@ function imagesForKind(kind: ContentPageKind, path: string, page: GeContentPageD
     case 'transport':
       return NAMED_HERO_IMAGE_SETS.transportCoastal
     case 'booking':
-      return NAMED_HERO_IMAGE_SETS.fleetCover
+      return NAMED_HERO_IMAGE_SETS.quoteCostaGolf
     case 'testimonial':
       return NAMED_HERO_IMAGE_SETS.testimonial
     case 'legal':
