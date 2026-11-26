@@ -24,7 +24,7 @@ export function GeHomeFleetHighlight() {
       <div className="grid gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-start lg:gap-12">
         <div className="flex min-w-0 flex-col gap-4 sm:gap-5">
           <m.div
-            className="relative isolate aspect-[16/9] min-h-[220px] w-full overflow-hidden rounded-[2rem] border border-[#d9d9d9] bg-gs-dark shadow-[0_26px_70px_rgba(6,59,42,0.18)] sm:aspect-[16/10] sm:min-h-[260px] lg:min-h-[300px]"
+            className="gsol-fly-scope gsol-fly gsol-fly-from-left relative isolate aspect-[16/9] min-h-[220px] w-full overflow-hidden rounded-[2rem] border border-[#d9d9d9] bg-gs-dark shadow-[0_26px_70px_rgba(6,59,42,0.18)] sm:aspect-[16/10] sm:min-h-[260px] lg:min-h-[300px]"
             {...fadeUp}
           >
             <img

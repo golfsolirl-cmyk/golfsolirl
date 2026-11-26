@@ -91,7 +91,7 @@ export function HomeAirportTransfersCta() {
                 variants={headlineItem}
                 className="relative mt-7 overflow-hidden rounded-[1.75rem] border border-chrome-300 bg-white shadow-[0_26px_64px_rgba(6,32,22,0.12)]"
               >
-                <div className="relative aspect-[16/10] min-h-[200px] overflow-hidden sm:aspect-[21/10] sm:min-h-0">
+                <div className="gsol-fly-scope gsol-fly gsol-fly-from-left relative aspect-[16/10] min-h-[200px] overflow-hidden sm:aspect-[21/10] sm:min-h-0">
                   <img
                     src={copy.fleetImageSrc}
                     alt={copy.fleetImageAlt}

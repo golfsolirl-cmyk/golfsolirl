@@ -910,12 +910,24 @@
  * Public scroll-enter / fly-in — progressive enhancement only.
  * Default: fully visible (no JS / reduced-motion).
  * html.gsol-motion-ready + prefers-reduced-motion: no-preference → animate once into view.
+ * Mobile image fly: ~56px from L/R edge, scale 0.96 + fade, ~620ms ease-out (no bounce/spin).
  */
 .gsol-reveal,
 .gsol-fly {
   /* Visible by default — never hide content if JS fails. */
   opacity: 1;
   transform: none;
+}
+
+/* Clip horizontal fly travel without page-level overflow-x scrollbars / layout shift. */
+.gsol-fly-scope {
+  overflow-x: clip;
+}
+
+@supports not (overflow: clip) {
+  .gsol-fly-scope {
+    overflow-x: hidden;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -937,15 +949,17 @@
     will-change: auto;
   }
 
+  /* Mobile-first fly — noticeable edge travel; pure horizontal (no bounce/spin). */
   html.gsol-motion-ready .gsol-fly:not(.gsol-reveal--in) {
     opacity: 0;
-    transform: translate3d(var(--gsol-fly-x, 48px), 12px, 0) scale(0.96);
+    transform: translate3d(var(--gsol-fly-x, 56px), 0, 0) scale(0.96);
   }
 
   html.gsol-motion-ready .gsol-fly {
+    --gsol-fly-ms: 0.62s;
     transition:
-      opacity 0.58s ease-out,
-      transform 0.58s ease-out;
+      opacity var(--gsol-fly-ms) ease-out,
+      transform var(--gsol-fly-ms) ease-out;
     will-change: opacity, transform;
   }
 
@@ -955,34 +969,57 @@
     will-change: auto;
   }
 
+  /* Photo zoom lives on the media, not the flying card — no transition conflict. */
+  .gsol-media-zoom {
+    transition: transform 1.15s ease-out;
+  }
+
+  .group:hover .gsol-media-zoom {
+    transform: scale(1.08);
+  }
+
   .gsol-fly-from-left {
-    --gsol-fly-x: -52px;
+    --gsol-fly-x: -56px;
   }
 
   .gsol-fly-from-right {
-    --gsol-fly-x: 52px;
+    --gsol-fly-x: 56px;
   }
 
   /* Alternate direction inside a card/list scope when no explicit side is set. */
   .gsol-fly-scope > *:nth-child(odd) .gsol-fly:not(.gsol-fly-from-left):not(.gsol-fly-from-right),
   .gsol-fly-scope > *:nth-child(odd).gsol-fly:not(.gsol-fly-from-left):not(.gsol-fly-from-right) {
-    --gsol-fly-x: -52px;
+    --gsol-fly-x: -56px;
   }
 
   .gsol-fly-scope > *:nth-child(even) .gsol-fly:not(.gsol-fly-from-left):not(.gsol-fly-from-right),
   .gsol-fly-scope > *:nth-child(even).gsol-fly:not(.gsol-fly-from-left):not(.gsol-fly-from-right) {
-    --gsol-fly-x: 52px;
+    --gsol-fly-x: 56px;
   }
 
-  /* Clip horizontal fly travel without page-level overflow scrollbars. */
-  .gsol-fly-scope {
-    overflow-x: clip;
-  }
-}
+  /* Slightly shorter on larger screens — still within 500–650ms. */
+  @media (min-width: 768px) {
+    html.gsol-motion-ready .gsol-fly {
+      --gsol-fly-ms: 0.54s;
+    }
 
-@supports not (overflow: clip) {
-  .gsol-fly-scope {
-    overflow-x: hidden;
+    .gsol-fly-from-left {
+      --gsol-fly-x: -48px;
+    }
+
+    .gsol-fly-from-right {
+      --gsol-fly-x: 48px;
+    }
+
+    .gsol-fly-scope > *:nth-child(odd) .gsol-fly:not(.gsol-fly-from-left):not(.gsol-fly-from-right),
+    .gsol-fly-scope > *:nth-child(odd).gsol-fly:not(.gsol-fly-from-left):not(.gsol-fly-from-right) {
+      --gsol-fly-x: -48px;
+    }
+
+    .gsol-fly-scope > *:nth-child(even) .gsol-fly:not(.gsol-fly-from-left):not(.gsol-fly-from-right),
+    .gsol-fly-scope > *:nth-child(even).gsol-fly:not(.gsol-fly-from-left):not(.gsol-fly-from-right) {
+      --gsol-fly-x: 48px;
+    }
   }
 }
 

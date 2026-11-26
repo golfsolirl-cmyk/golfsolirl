@@ -5,6 +5,7 @@
 
 const ROOT_READY = 'gsol-motion-ready'
 const IN_CLASS = 'gsol-reveal--in'
+const TARGET_SELECTOR = '.gsol-reveal, .gsol-fly'
 
 const isPublicMarketingPath = (pathname: string) => {
   const path = pathname.replace(/\/+$/, '') || '/'
@@ -51,20 +52,15 @@ export function enablePublicScrollEnter(root: ParentNode = document): () => void
   }
   if (prefersReducedMotion()) {
     document.documentElement.classList.remove(ROOT_READY)
-    root.querySelectorAll('.gsol-reveal, .gsol-fly').forEach(markIn)
+    root.querySelectorAll(TARGET_SELECTOR).forEach(markIn)
     return () => undefined
   }
 
   document.documentElement.classList.add(ROOT_READY)
 
-  const targets = root.querySelectorAll('.gsol-reveal, .gsol-fly')
-  if (!targets.length) {
-    return () => {
-      document.documentElement.classList.remove(ROOT_READY)
-    }
-  }
+  const observed = new WeakSet<Element>()
+  const vh = () => window.innerHeight || 800
 
-  const vh = window.innerHeight || 800
   const observer = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
@@ -73,21 +69,61 @@ export function enablePublicScrollEnter(root: ParentNode = document): () => void
         observer.unobserve(entry.target)
       }
     },
-    { root: null, rootMargin: '0px 0px -8% 0px', threshold: 0.12 }
+    /* Start animating when the block is meaningfully on-screen (not barely peeking). */
+    { root: null, rootMargin: '0px 0px -12% 0px', threshold: 0.18 }
   )
 
-  targets.forEach((el) => {
+  const watch = (el: Element) => {
+    if (observed.has(el) || el.classList.contains(IN_CLASS)) return
+    observed.add(el)
     const rect = el.getBoundingClientRect()
-    // Already on screen (hero / above fold) — show immediately, no wait.
-    if (rect.top < vh * 0.92 && rect.bottom > 0) {
+    const height = vh()
+    // Already well into the viewport (hero / above-fold) — settle immediately.
+    if (rect.top < height * 0.72 && rect.bottom > height * 0.08) {
       markIn(el)
       return
     }
     observer.observe(el)
-  })
+  }
+
+  const scan = () => {
+    root.querySelectorAll(TARGET_SELECTOR).forEach(watch)
+  }
+
+  scan()
+
+  // Late-mounted marketing cards (lazy sections). Coalesce to one scan per frame.
+  let scanRaf = 0
+  const scheduleScan = () => {
+    if (scanRaf) return
+    scanRaf = window.requestAnimationFrame(() => {
+      scanRaf = 0
+      scan()
+    })
+  }
+  const mo =
+    typeof MutationObserver !== 'undefined'
+      ? new MutationObserver(() => {
+          scheduleScan()
+        })
+      : null
+  if (mo && root instanceof Node) {
+    mo.observe(root === document ? document.body : (root as Node), {
+      childList: true,
+      subtree: true
+    })
+  }
+
+  const onResize = () => {
+    /* no-op — IO handles; kept for future threshold tweaks */
+  }
+  window.addEventListener('orientationchange', onResize)
 
   return () => {
+    if (scanRaf) window.cancelAnimationFrame(scanRaf)
     observer.disconnect()
+    mo?.disconnect()
+    window.removeEventListener('orientationchange', onResize)
     document.documentElement.classList.remove(ROOT_READY)
   }
 }

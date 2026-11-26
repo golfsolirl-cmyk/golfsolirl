@@ -187,12 +187,15 @@ export function FindYourCourse() {
           const eager = index < 2
           const flySide = index % 2 === 0 ? 'gsol-fly-from-left' : 'gsol-fly-from-right'
           return (
-            <li key={course.name} className="overflow-hidden rounded-2xl border border-chrome-200 bg-white">
+            <li
+              key={course.name}
+              className={`gsol-fly ${flySide} overflow-hidden rounded-2xl border border-chrome-200 bg-white`}
+            >
               <div className="flex flex-col sm:flex-row">
                 <img
                   src={course.image}
                   alt=""
-                  className={`gsol-fly ${flySide} h-36 w-full object-cover sm:h-auto sm:w-40 sm:shrink-0`}
+                  className="h-36 w-full object-cover sm:h-auto sm:w-40 sm:shrink-0"
                   loading={eager ? 'eager' : 'lazy'}
                   fetchPriority={eager ? 'high' : 'auto'}
                   decoding={eager ? 'sync' : 'async'}

@@ -44,12 +44,12 @@ export function GeContentStoryGrid({ eyebrow, title, lead, cards }: GeContentSto
       </m.div>
 
       <div
-        className={`mt-14 grid gap-7 ${cards.length === 1 ? 'md:max-w-lg md:mx-auto' : ''} ${cards.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'}`}
+        className={`gsol-fly-scope mt-14 grid gap-7 ${cards.length === 1 ? 'md:max-w-lg md:mx-auto' : ''} ${cards.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'}`}
       >
         {cards.map((card, i) => (
           <m.article
             key={card.section.title}
-            className="group relative flex flex-col overflow-hidden rounded-2xl bg-gs-dark/40 ring-1 ring-white/10 shadow-[0_22px_60px_rgba(0,0,0,0.45)] transition-all duration-500 hover:-translate-y-1 hover:ring-brand-700/40 ge-on-dark"
+            className={`gsol-fly ${i % 2 === 0 ? 'gsol-fly-from-left' : 'gsol-fly-from-right'} group relative flex flex-col overflow-hidden rounded-2xl bg-gs-dark/40 ring-1 ring-white/10 shadow-[0_22px_60px_rgba(0,0,0,0.45)] transition-all duration-500 hover:-translate-y-1 hover:ring-brand-700/40 ge-on-dark`}
             {...fadeUp}
             transition={{ ...fadeUp.transition, delay: i * 0.08 }}
           >
@@ -61,7 +61,7 @@ export function GeContentStoryGrid({ eyebrow, title, lead, cards }: GeContentSto
                 decoding="async"
                 width={1200}
                 height={1500}
-                className="h-full w-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-105"
+                className="gsol-media-zoom h-full w-full object-cover"
               />
               <div
                 aria-hidden

@@ -58,7 +58,7 @@ export function GeHotelCard({ hotel }: HotelCardProps) {
     <m.a
       href={hotel.href}
       className={cx(
-        'group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white transition-all duration-500 hover:-translate-y-1.5',
+        'gsol-fly group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white transition-all duration-500 hover:-translate-y-1.5',
         isHighlight
           ? 'border-[3px] border-gs-green shadow-[0_10px_32px_rgba(11,107,69,0.22)] ring-2 ring-gs-green/25 hover:shadow-[0_22px_56px_rgba(11,107,69,0.28)]'
           : 'border border-ge-gray100 shadow-[0_6px_20px_rgba(6,59,42,0.08)] hover:shadow-[0_22px_50px_rgba(6,59,42,0.18)]'
@@ -79,7 +79,7 @@ export function GeHotelCard({ hotel }: HotelCardProps) {
           alt={hotel.name}
           loading="eager"
           decoding="async"
-          className="gsol-fly h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-110"
+          className="gsol-media-zoom h-full w-full object-cover"
         />
         <div
           aria-hidden="true"

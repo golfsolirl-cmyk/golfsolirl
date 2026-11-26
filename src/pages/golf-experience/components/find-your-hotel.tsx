@@ -180,12 +180,15 @@ export function FindYourHotel() {
           const eager = index < 2
           const flySide = index % 2 === 0 ? 'gsol-fly-from-left' : 'gsol-fly-from-right'
           return (
-            <li key={hotel.name} className="overflow-hidden rounded-2xl border border-chrome-200 bg-white">
+            <li
+              key={hotel.name}
+              className={`gsol-fly ${flySide} overflow-hidden rounded-2xl border border-chrome-200 bg-white`}
+            >
               <div className="flex flex-col sm:flex-row">
                 <img
                   src={hotel.image}
                   alt=""
-                  className={`gsol-fly ${flySide} h-36 w-full object-cover sm:h-auto sm:w-40 sm:shrink-0`}
+                  className="h-36 w-full object-cover sm:h-auto sm:w-40 sm:shrink-0"
                   width={320}
                   height={200}
                   loading={eager ? 'eager' : 'lazy'}
