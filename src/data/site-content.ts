@@ -15,6 +15,7 @@ import {
   Sparkles,
   Trophy
 } from 'lucide-react'
+import { GSOL_BUSINESS } from '../lib/business-details'
 
 export interface StatItem {
   readonly value: string
@@ -108,19 +109,31 @@ export interface CompanyContact {
   readonly phoneSpanishLineLabel: string
   readonly whatsappHref: string
   readonly mapsQuery: string
+  readonly email: string
+  readonly registeredInLabel: string
+  readonly addressOneLine: string
+  readonly websiteDisplay: string
 }
 
 export const companyContact = {
-  addressLines: ['6 Richmond Road', 'Drumcondra', 'Dublin 3'],
-  eircode: 'D03 C434',
-  phoneDisplay: '087 446 4766',
-  phoneTel: '+353874464766',
-  spanishPhoneDisplay: '+34 641 81 53 66',
-  spanishPhoneTel: '+34641815366',
-  phoneIrishLineLabel: 'Irish support',
-  phoneSpanishLineLabel: 'Spanish line',
-  whatsappHref: 'https://wa.me/353866006202',
-  mapsQuery: '6 Richmond Road, Drumcondra, Dublin 3, D03 C434, Ireland'
+  addressLines: [
+    GSOL_BUSINESS.address.streetAddress,
+    GSOL_BUSINESS.address.addressLocality,
+    GSOL_BUSINESS.address.addressRegion
+  ],
+  eircode: GSOL_BUSINESS.address.postalCode,
+  phoneDisplay: GSOL_BUSINESS.irishPhoneDisplay,
+  phoneTel: GSOL_BUSINESS.irishPhoneTel,
+  spanishPhoneDisplay: GSOL_BUSINESS.spanishPhoneDisplay,
+  spanishPhoneTel: GSOL_BUSINESS.spanishPhoneTel,
+  phoneIrishLineLabel: GSOL_BUSINESS.irishPhoneLabel,
+  phoneSpanishLineLabel: GSOL_BUSINESS.spanishPhoneLabel,
+  whatsappHref: GSOL_BUSINESS.whatsappHref,
+  mapsQuery: GSOL_BUSINESS.mapsQuery,
+  email: GSOL_BUSINESS.email,
+  registeredInLabel: GSOL_BUSINESS.registeredInLabel,
+  addressOneLine: GSOL_BUSINESS.addressOneLine,
+  websiteDisplay: GSOL_BUSINESS.websiteDisplay
 } as const satisfies CompanyContact
 
 export const navLinks = [

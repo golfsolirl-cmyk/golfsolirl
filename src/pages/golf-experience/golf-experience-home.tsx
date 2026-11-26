@@ -8,6 +8,7 @@ import { prefetchLikelyMarketingRoutes } from '../../lib/prefetch-route-chunk'
 import { cx } from '../../lib/utils'
 import { useJsonLd, usePageMeta } from '../../lib/use-page-meta'
 import {
+  buildLocalBusinessSchema,
   buildOrganizationSchema,
   buildWebPageSchema,
   buildWebSiteSchema
@@ -26,6 +27,10 @@ export function GolfExperienceHome() {
   useJsonLd(
     'gsol-home-org',
     useMemo(() => buildOrganizationSchema(), [])
+  )
+  useJsonLd(
+    'gsol-home-localbusiness',
+    useMemo(() => buildLocalBusinessSchema(), [])
   )
   useJsonLd(
     'gsol-home-website',

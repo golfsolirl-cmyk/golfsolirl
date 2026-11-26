@@ -453,7 +453,7 @@ export function AdminCustomersDesk(props: {
                   autoComplete="tel"
                   inputMode="tel"
                   onChange={(event) => setNewPhone(event.target.value)}
-                  placeholder="087 446 4766"
+                  placeholder="086 123 4567"
                   type="tel"
                   value={newPhone}
                 />

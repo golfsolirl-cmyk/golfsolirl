@@ -705,7 +705,7 @@ export const createEnquiryPdf = async ({
   })
   const fyRight = drawTextBlock({
     page: footerPage,
-    text: '087 446 4766 (IE / WhatsApp)\n+34 641 81 53 66 (ES)\ninfo@golfsolirl.com\ngolfsolirl.com',
+    text: `${gsolEmailBrand.phoneDisplay} (Ireland)\n${gsolEmailBrand.spanishPhoneDisplay} (Spain)\nWhatsApp ${gsolEmailBrand.whatsappDisplay}\n${gsolEmailBrand.email}\n${gsolEmailBrand.websiteDisplay}`,
     x: col2X,
     y: fy,
     font: regularFont,

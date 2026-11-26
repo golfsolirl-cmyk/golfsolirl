@@ -13,7 +13,11 @@ import {
   requireClientDocumentAdmin,
   throwStatus
 } from './client-enquiry-document-service.mjs'
-import { calculateClientDocumentPricing, documentTypeLabel } from '../shared/client-enquiry-document.mjs'
+import {
+  calculateClientDocumentPricing,
+  CLIENT_DOCUMENT_COMPANY,
+  documentTypeLabel
+} from '../shared/client-enquiry-document.mjs'
 import { resolveResendToAddress, resendSandboxRecipientHint } from './resend-delivery-email.mjs'
 import { handleDeskCustomers } from './desk-quote-service.mjs'
 
@@ -125,7 +129,7 @@ export const handleClientEnquiryDocumentEmail = async (body, env = process.env, 
     <p style="margin:0 0 14px 0;">${greeting}</p>
     <p style="margin:0 0 14px 0;white-space:pre-wrap;">${escapeHtml(message)}</p>
     <p style="margin:0 0 14px 0;">Reference: <strong>${escapeHtml(draft.reference)}</strong></p>
-    <p style="margin:0;">Golf Sol Ireland · info@golfsolirl.com · +353 87 446 4766</p>
+    <p style="margin:0;">${escapeHtml(CLIENT_DOCUMENT_COMPANY.name)} · ${escapeHtml(CLIENT_DOCUMENT_COMPANY.email)} · ${escapeHtml(CLIENT_DOCUMENT_COMPANY.irishPhone)} · ${escapeHtml(CLIENT_DOCUMENT_COMPANY.spanishPhone)}</p>
   `
 
   const rawHtml = buildGsolTransactionalEmail({

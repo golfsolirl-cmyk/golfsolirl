@@ -5,23 +5,28 @@
  * (Málaga → Sotogrande) where Irish groups travel most.
  */
 
+import { GSOL_BUSINESS } from '../../../lib/business-details'
+
 export const contactInfo = {
   tagline: 'IRISH-OWNED · COSTA DEL SOL GOLF SPECIALISTS',
-  phoneDisplay: '+353 87 446 4766',
-  phoneTel: '+353874464766',
-  /** Voice line in Spain — same team; WhatsApp is +353 86 600 6202. */
-  spanishPhoneDisplay: '+34 641 81 53 66',
-  spanishPhoneTel: '+34641815366',
-  phoneIrishLineLabel: 'Irish support',
-  phoneSpanishLineLabel: 'Spanish line',
+  phoneDisplay: GSOL_BUSINESS.irishPhoneDisplay,
+  phoneTel: GSOL_BUSINESS.irishPhoneTel,
+  /** Voice line in Spain — same team; WhatsApp is separate (+353 86 600 6202). */
+  spanishPhoneDisplay: GSOL_BUSINESS.spanishPhoneDisplay,
+  spanishPhoneTel: GSOL_BUSINESS.spanishPhoneTel,
+  phoneIrishLineLabel: 'Ireland',
+  phoneSpanishLineLabel: 'Spain',
   /** Hint for enquiry forms — your number, not ours. */
   phoneFieldPlaceholder: '+353 or +34 mobile',
-  email: 'info@golfsolirl.com'
+  email: GSOL_BUSINESS.email,
+  addressOneLine: GSOL_BUSINESS.addressOneLine,
+  registeredInLabel: GSOL_BUSINESS.registeredInLabel,
+  websiteDisplay: GSOL_BUSINESS.websiteDisplay
 } as const
 
 /** Alt text for the brand-composed Malaga hero raster (homepage). */
 export const malagaHeroImageAlt =
-  'GolfSol Ireland — From plane to fairway. Meet-and-greet at Malaga, golf-bag friendly private transfers, tee times pre-booked. Irish and Spanish phone lines: +353 87 446 4766 and +34 641 81 53 66.' as const
+  `GolfSol Ireland — From plane to fairway. Meet-and-greet at Malaga, golf-bag friendly private transfers, tee times pre-booked. Irish and Spanish phone lines: ${GSOL_BUSINESS.irishPhoneDisplay} and ${GSOL_BUSINESS.spanishPhoneDisplay}.` as const
 
 /** Alt for the transport-page hero variant (premium van, chauffeur, golf bags at airport). */
 export const transportHeroImageAlt =

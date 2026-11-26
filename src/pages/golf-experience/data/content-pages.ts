@@ -2,6 +2,9 @@ import { footerArticlePages, type FooterArticleContent } from '../../../data/foo
 import { seoLandingPages } from '../../../data/seo-landing-pages'
 import { seoSearchClusterPages } from '../../../data/seo-search-cluster-pages'
 import { seoIrelandSearchPages } from '../../../data/seo-ireland-search-pages'
+import { GSOL_BUSINESS } from '../../../lib/business-details'
+
+const companyIdentityBody = `${GSOL_BUSINESS.brandName} — ${GSOL_BUSINESS.addressOneLine}. Ireland ${GSOL_BUSINESS.irishPhoneDisplay} · Spain ${GSOL_BUSINESS.spanishPhoneDisplay}. ${GSOL_BUSINESS.email} · ${GSOL_BUSINESS.websiteDisplay}. ${GSOL_BUSINESS.registeredInLabel}.`
 
 export interface GeContentPageSection {
   readonly title: string
@@ -142,6 +145,16 @@ const contactPage: GeContentPageData = {
       title: 'What to send us',
       body: 'Your dates and group size are enough to start. We refine hotels, courses and transfers from there.',
       bullets: ['Quick first response', 'Clear choices to compare', 'Practical next actions']
+    },
+    {
+      title: 'Company details',
+      body: companyIdentityBody,
+      bullets: [
+        `Ireland ${GSOL_BUSINESS.irishPhoneDisplay}`,
+        `Spain ${GSOL_BUSINESS.spanishPhoneDisplay}`,
+        GSOL_BUSINESS.email,
+        GSOL_BUSINESS.registeredInLabel
+      ]
     }
   ],
   formTitle: 'Start your quote request',
@@ -209,6 +222,15 @@ const termsPage: GeContentPageData = {
         'Our maximum liability, where a legal claim is proven against GolfSol Ireland, is limited to the amount paid to us for the affected service, except where law requires otherwise.',
         'We will always try to assist with supplier issues, but assistance does not mean we accept liability for another company’s mistake.'
       ]
+    },
+    {
+      title: 'Company identity',
+      body: `${GSOL_BUSINESS.brandName} is registered in Ireland (Co. ${GSOL_BUSINESS.companyRegistrationNumber}). Registered office: ${GSOL_BUSINESS.addressOneLine}. Contact: Ireland ${GSOL_BUSINESS.irishPhoneDisplay} · Spain ${GSOL_BUSINESS.spanishPhoneDisplay} · ${GSOL_BUSINESS.email} · ${GSOL_BUSINESS.websiteDisplay}.`,
+      bullets: [
+        GSOL_BUSINESS.registeredInLabel,
+        GSOL_BUSINESS.addressOneLine,
+        `Ireland ${GSOL_BUSINESS.irishPhoneDisplay} · Spain ${GSOL_BUSINESS.spanishPhoneDisplay}`
+      ]
     }
   ],
   formTitle: 'Ask about terms',
@@ -247,6 +269,15 @@ const privacyPage: GeContentPageData = {
       title: 'Cookies',
       body: 'Essential cookies remember your cookie choice, and a sign-in session only after you log in. We do not use analytics or advertising cookies. The cookie policy has the full list.',
       bullets: ['Cookie policy — /cookie-policy']
+    },
+    {
+      title: 'Data controller',
+      body: `${GSOL_BUSINESS.brandName} (${GSOL_BUSINESS.registeredInLabel}), ${GSOL_BUSINESS.addressOneLine}. Contact: Ireland ${GSOL_BUSINESS.irishPhoneDisplay} · Spain ${GSOL_BUSINESS.spanishPhoneDisplay} · ${GSOL_BUSINESS.email} · ${GSOL_BUSINESS.websiteDisplay}.`,
+      bullets: [
+        `Registered office: ${GSOL_BUSINESS.addressOneLine}`,
+        GSOL_BUSINESS.email,
+        GSOL_BUSINESS.registeredInLabel
+      ]
     }
   ],
   formTitle: 'Ask a privacy question',

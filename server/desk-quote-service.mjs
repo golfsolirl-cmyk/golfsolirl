@@ -397,7 +397,7 @@ const createCustomer = async (db, body) => {
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throwStatus('Enter a valid email.', 400)
   const phoneKey = computePhoneUniquenessKey(phone)
   if (!phoneKey || !isLikelyMobileE164(phoneKey)) {
-    throwStatus('Enter a mobile number, for example 087 446 4766.', 400)
+    throwStatus('Enter a mobile number, for example 086 123 4567.', 400)
   }
 
   const existing = await findExistingCustomer(db, email, phoneKey)

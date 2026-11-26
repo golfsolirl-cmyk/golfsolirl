@@ -132,7 +132,7 @@ function overlaySvg(outW, outH) {
   </g>
 
   <g filter="url(#softShadow)">
-    <text x="${ctaCenterX}" y="738" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="900" letter-spacing="5" fill="${BRAND_GOLD_LIGHT}">CALL +353 87 446 4766</text>
+    <text x="${ctaCenterX}" y="738" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="900" letter-spacing="5" fill="${BRAND_GOLD_LIGHT}">CALL +353 86 851 5000</text>
   </g>
 
   <g transform="translate(1396 116)">
@@ -220,12 +220,12 @@ function overlaySvgMobile(outW, outH) {
       <tspan x="${cx}" dy="52" font-size="46">FULLY INSURED</tspan>
     </text>
     <text x="${cx}" y="1008" text-anchor="middle" font-size="36" letter-spacing="3" fill="${BRAND_GOLD_LIGHT}">IRISH &amp; SPANISH PHONE SUPPORT</text>
-    <text x="${cx}" y="1082" text-anchor="middle" font-size="50" letter-spacing="3" fill="#ffffff">+353 87 446 4766</text>
+    <text x="${cx}" y="1082" text-anchor="middle" font-size="50" letter-spacing="3" fill="#ffffff">+353 86 851 5000</text>
     <text x="${cx}" y="1168" text-anchor="middle" font-size="50" letter-spacing="3" fill="#ffffff">+34 641 81 53 66</text>
   </g>
 
   <g filter="url(#mSoftShadow)">
-    <text x="${cx}" y="1710" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="900" letter-spacing="5" fill="${BRAND_GOLD_LIGHT}">CALL +353 87 446 4766</text>
+    <text x="${cx}" y="1710" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="900" letter-spacing="5" fill="${BRAND_GOLD_LIGHT}">CALL +353 86 851 5000</text>
   </g>
 
   <rect x="0" y="0" width="${w}" height="${h}" fill="none" stroke="${BRAND_GOLD}" stroke-opacity="0.22" stroke-width="4"/>

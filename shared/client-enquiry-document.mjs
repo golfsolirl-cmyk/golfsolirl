@@ -2,21 +2,28 @@
  * Client enquiry / quotation document model.
  * Shared by admin UI, PDF, Word, and save APIs so branding and totals stay aligned.
  *
- * Company details match src/lib/seo/seo-contact.ts and server/email-constants.mjs.
+ * Company details from shared/business-details.mjs.
  * Default terms match server/enquiry-form-pdfs-unified.mjs supplementalTermsSections.
  * VAT default matches src/lib/package-build.ts IRISH_VAT_STANDARD_RATE (23%).
  */
 
+import { GSOL_BUSINESS } from './business-details.mjs'
+
 export const CLIENT_DOCUMENT_COMPANY = {
-  name: 'Golf Sol Ireland',
-  tagline: 'Irish-owned Costa del Sol golf travel',
-  addressLines: ['6 Richmond Road', 'Drumcondra, Dublin 3', 'D03 C434'],
-  irishPhone: '+353 87 446 4766',
-  spanishPhone: '+34 641 81 53 66',
-  email: 'info@golfsolirl.com',
-  websiteDisplay: 'www.golfsolirl.com',
-  websiteUrl: 'https://www.golfsolirl.com',
-  companyReg: '814210',
+  name: GSOL_BUSINESS.brandName,
+  tagline: GSOL_BUSINESS.tagline,
+  addressLines: [
+    GSOL_BUSINESS.address.streetAddress,
+    `${GSOL_BUSINESS.address.addressLocality}, ${GSOL_BUSINESS.address.addressRegion}`,
+    GSOL_BUSINESS.address.postalCode,
+    GSOL_BUSINESS.address.addressCountryName
+  ],
+  irishPhone: GSOL_BUSINESS.irishPhoneDisplay,
+  spanishPhone: GSOL_BUSINESS.spanishPhoneDisplay,
+  email: GSOL_BUSINESS.email,
+  websiteDisplay: GSOL_BUSINESS.websiteDisplay,
+  websiteUrl: GSOL_BUSINESS.websiteUrl,
+  companyReg: GSOL_BUSINESS.companyRegistrationNumber,
   logoPublicPath: '/images/newbf9f08a4-8fac-496b-8181-6f6b680d19c3.png',
   logoFilename: 'newbf9f08a4-8fac-496b-8181-6f6b680d19c3.png'
 }
@@ -142,7 +149,7 @@ export const DEFAULT_CLIENT_DOCUMENT_PAYMENT = [
   'Unless this document states otherwise, a 20% deposit is payable to proceed. The remaining balance is due as set out in our terms.',
   clientBankHowToPayPlainText(),
   'Card payment can also be arranged through your Golf Sol Ireland client portal when a quote is issued.',
-  'For payment questions, contact info@golfsolirl.com or +353 87 446 4766.'
+  `For payment questions, contact ${GSOL_BUSINESS.email} or ${GSOL_BUSINESS.irishPhoneDisplay}.`
 ].join('\n\n')
 
 export const createClientDocumentReferenceId = () =>

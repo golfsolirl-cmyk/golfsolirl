@@ -1,9 +1,10 @@
 import { GOLFSOL_BRAND_LOGO_HOSTED } from './brand-logo-assets'
+import { GSOL_BUSINESS } from './business-details'
 
-const SITE = 'https://www.golfsolirl.com'
-const PHONE = '+353 87 446 4766'
-const EMAIL = 'info@golfsolirl.com'
-const WA = 'https://wa.me/353866006202'
+const SITE = GSOL_BUSINESS.websiteUrl
+const PHONE = GSOL_BUSINESS.irishPhoneDisplay
+const EMAIL = GSOL_BUSINESS.email
+const WA = GSOL_BUSINESS.whatsappHref
 
 /** Hosted crest URL for Gmail signatures. */
 export const SIGNATURE_LOGO_URL = GOLFSOL_BRAND_LOGO_HOSTED

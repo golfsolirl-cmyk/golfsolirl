@@ -90,8 +90,10 @@ export const emailResponsiveCss = `
         .mobile-pad a { word-break: break-word !important; overflow-wrap: break-word !important; }
       }`
 
-export const phoneIrelandHref = 'tel:+353874464766'
-export const phoneIrelandDisplay = '+353 87 446 4766'
+export const phoneIrelandHref = `tel:${gsolEmailBrand.phoneTel}`
+export const phoneIrelandDisplay = gsolEmailBrand.phoneDisplay
+export const phoneSpainHref = `tel:${gsolEmailBrand.spanishPhoneTel}`
+export const phoneSpainDisplay = gsolEmailBrand.spanishPhoneDisplay
 
 export const ctaGold =
   `display:inline-block;border-radius:16px;background-color:#0b4d3b;background-image:linear-gradient(135deg,#0b4d3b 0%,#136047 100%);color:#FFFFFF;font-family:${emailFonts.sans};font-size:15px;line-height:1.45;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:20px 38px;box-shadow:0 8px 22px rgba(11,77,59,0.32);text-decoration:none;text-align:center;`
@@ -423,13 +425,16 @@ export const buildBrandedFooterHtml = (opts = {}) => {
                             </td>
                           </tr>
                         </table>
-                        <p style="margin:22px 0 0 0;text-align:center;font-family:${emailFonts.sans};font-size:15px;line-height:1.62;color:rgba(255,255,255,0.78);font-weight:500;">
-                          <a href="${phoneIrelandHref}" style="color:${gs.white};font-weight:800;text-decoration:none;">${escapeHtml(phoneIrelandDisplay)}</a>
+                        <p style="margin:22px 0 0 0;text-align:center;font-family:${emailFonts.sans};font-size:14px;line-height:1.55;color:rgba(255,255,255,0.72);font-weight:500;">
+                          ${escapeHtml(gsolEmailBrand.addressOneLine)}
+                        </p>
+                        <p style="margin:10px 0 0 0;text-align:center;font-family:${emailFonts.sans};font-size:15px;line-height:1.62;color:rgba(255,255,255,0.78);font-weight:500;">
+                          Ireland <a href="${phoneIrelandHref}" style="color:${gs.white};font-weight:800;text-decoration:none;">${escapeHtml(phoneIrelandDisplay)}</a>
                           <span style="color:rgba(255,255,255,0.35);padding:0 8px;">·</span>
-                          Ireland / WhatsApp
+                          Spain <a href="${phoneSpainHref}" style="color:${gs.white};font-weight:800;text-decoration:none;">${escapeHtml(phoneSpainDisplay)}</a>
                         </p>
                         <p style="margin:8px 0 0 0;text-align:center;font-family:${emailFonts.sans};font-size:14px;line-height:1.62;color:rgba(255,255,255,0.6);font-weight:500;">
-                          Company registration no. <span style="color:rgba(255,255,255,0.88);font-weight:700;">${escapeHtml(gsolCompanyLegal.companyRegistrationNumber)}</span> (Ireland)
+                          ${escapeHtml(gsolEmailBrand.registeredInLabel)}
                         </p>
                         <p style="margin:8px 0 0 0;text-align:center;font-family:${emailFonts.sans};font-size:14px;line-height:1.62;color:rgba(255,255,255,0.6);font-weight:500;">
                           &copy; ${footerYear} Golf Sol Ireland. All rights reserved.

@@ -27,7 +27,9 @@ export function FooterCompanyContact() {
                       {line}
                     </span>
                   ))}
-                  <span className="mt-1 block text-sm font-semibold tracking-[0.12em] text-white/58">{companyContact.eircode}</span>
+                  <span className="mt-1 block text-sm font-semibold tracking-[0.12em] text-white/58">
+                    {companyContact.eircode}, Ireland
+                  </span>
                 </address>
                 <a
                   className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
@@ -38,6 +40,15 @@ export function FooterCompanyContact() {
                   Open in Maps
                   <ExternalLink className="h-3.5 w-3.5 opacity-80" aria-hidden="true" />
                 </a>
+                <a
+                  className="mt-3 block text-sm font-semibold text-white/85 transition-colors hover:text-brand-200"
+                  href={`mailto:${companyContact.email}`}
+                >
+                  {companyContact.email}
+                </a>
+                <p className="mt-3 text-xs font-medium tracking-wide text-white/55">
+                  {companyContact.registeredInLabel}
+                </p>
               </div>
             </div>
           </div>
