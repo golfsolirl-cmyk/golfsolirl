@@ -23,6 +23,12 @@ if (typeof window !== 'undefined') {
 const TransportServicePage = lazy(() =>
   import('./pages/golf-experience/transport-service-page').then((m) => ({ default: m.TransportServicePage }))
 )
+const BundlesPage = lazy(() =>
+  import('./pages/golf-experience/bundles-page').then((m) => ({ default: m.BundlesPage }))
+)
+const LeaveAReviewPage = lazy(() =>
+  import('./pages/leave-a-review-page').then((m) => ({ default: m.LeaveAReviewPage }))
+)
 const GeContentPage = lazy(() =>
   import('./pages/golf-experience/content-page').then((m) => ({ default: m.GeContentPage }))
 )
@@ -37,6 +43,12 @@ const EmailTemplatePreviewPage = lazy(() =>
 )
 const LogoPreviewPage = lazy(() => import('./pages/logo-preview').then((m) => ({ default: m.LogoPreviewPage })))
 const LoginPage = lazy(() => import('./pages/login-page').then((m) => ({ default: m.LoginPage })))
+const AdminPasswordLoginPage = lazy(() =>
+  import('./pages/admin-password-login-page').then((m) => ({ default: m.AdminPasswordLoginPage }))
+)
+const PortalTokenLoginPage = lazy(() =>
+  import('./pages/portal-token-login-page').then((m) => ({ default: m.PortalTokenLoginPage }))
+)
 const LoggedOutPage = lazy(() => import('./pages/logged-out-page').then((m) => ({ default: m.LoggedOutPage })))
 const AuthCallbackPage = lazy(() =>
   import('./pages/auth-callback-page').then((m) => ({ default: m.AuthCallbackPage }))
@@ -135,6 +147,14 @@ function resolvePage(): PageComponent {
     return TransportServicePage
   }
 
+  if (normalizedPath === '/bundles') {
+    return BundlesPage
+  }
+
+  if (normalizedPath === '/leave-a-review') {
+    return LeaveAReviewPage
+  }
+
   if (isGeContentPagePath(normalizedPath)) {
     return GeContentPage
   }
@@ -153,6 +173,14 @@ function resolvePage(): PageComponent {
 
   if (normalizedPath === '/logo-preview') {
     return LogoPreviewPage
+  }
+
+  if (normalizedPath === '/admin/login') {
+    return AdminPasswordLoginPage
+  }
+
+  if (normalizedPath.startsWith('/portal/') && normalizedPath.length > '/portal/'.length) {
+    return PortalTokenLoginPage
   }
 
   if (

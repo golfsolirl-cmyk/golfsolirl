@@ -7,6 +7,7 @@ import { AdminOperationsHubHero } from '../components/admin-operations-hub-hero'
 import { BankTransferPayCard } from '../components/bank-transfer-pay-card'
 import { AdminPaidTripsRevenuePanel, type PaidClientPriceDraft } from '../components/admin-paid-trips-revenue-panel'
 import { AdminOperatorCodePanel } from '../components/admin-operator-code-panel'
+import { AdminBundlePricesPanel } from '../components/admin-bundle-prices-panel'
 import { AdminPortalShell, AdminPortalSection, type AdminPortalSectionId } from '../components/admin-portal-shell'
 import { AdminOperationsSectionShell } from '../components/admin-operations-section-shell'
 import {
@@ -693,24 +694,50 @@ export function AdminDashboardPage() {
   const [websiteQuoteBusy, setWebsiteQuoteBusy] = useState(false)
   const [websiteQuoteMessage, setWebsiteQuoteMessage] = useState<string | null>(null)
 
+  const [adminCookieSession, setAdminCookieSession] = useState(false)
+
   useEffect(() => {
     if (isLoading) {
       return
     }
 
     if (!session?.user) {
-      window.location.replace('/dashboard/login')
-      return
+      let cancelled = false
+      void (async () => {
+        try {
+          const res = await fetch('/api/admin-session-check', { credentials: 'include' })
+          const data = (await res.json().catch(() => ({}))) as { ok?: boolean }
+          if (!cancelled && data.ok) {
+            setAdminCookieSession(true)
+            return
+          }
+        } catch {
+          /* offline */
+        }
+        if (!cancelled) {
+          window.location.replace('/admin/login')
+        }
+      })()
+      return () => {
+        cancelled = true
+      }
     }
 
     /** Only redirect once profile row is known; `null` means fetch failed / no row — do not send real admins to the client dashboard during a race or RLS glitch. */
     if (
+      session?.user &&
       profile !== null &&
       (profile.role !== 'admin' || !isAllowedAdminLoginEmail(profile.email ?? session.user.email ?? ''))
     ) {
       window.location.replace('/dashboard')
     }
   }, [isLoading, session?.user?.id, profile])
+
+  useEffect(() => {
+    if (adminCookieSession && !session?.user) {
+      setListLoading(false)
+    }
+  }, [adminCookieSession, session?.user])
 
   useEffect(() => {
     if (
@@ -3834,11 +3861,11 @@ export function AdminDashboardPage() {
     </div>
   )
 
-  if (isLoading || !session) {
+  if (isLoading || (!session && !adminCookieSession)) {
     return <DashboardLoadingShell label="Loading admin dashboard…" />
   }
 
-  if (!profile) {
+  if (!adminCookieSession && !profile) {
     return (
       <DashboardLayout
         kicker="Operations"
@@ -3860,7 +3887,11 @@ export function AdminDashboardPage() {
     )
   }
 
-  if (profile.role !== 'admin' || !isAllowedAdminLoginEmail(profile.email ?? session?.user?.email ?? '')) {
+  if (
+    !adminCookieSession &&
+    profile &&
+    (profile.role !== 'admin' || !isAllowedAdminLoginEmail(profile.email ?? session?.user?.email ?? ''))
+  ) {
     return <DashboardLoadingShell label="Opening your client dashboard…" />
   }
 
@@ -3871,6 +3902,13 @@ export function AdminDashboardPage() {
       title={adminHeroTitle}
       variant="admin"
     >
+      {adminCookieSession && !session?.access_token ? (
+        <div className="mb-6 rounded-2xl border border-gs-gold/45 bg-[#fff9e8] px-4 py-3 text-sm text-forest-900">
+          Signed in with operator password. Desk tools that call the API use this secure cookie — if something asks you
+          to sign in again, open <a className="font-semibold underline" href="/dashboard/admin/login">legacy admin sign-in</a>{' '}
+          for a Supabase session.
+        </div>
+      ) : null}
       {loadError ? (
         <div className="mb-8 rounded-3xl border border-red-200/80 bg-red-50/90 px-6 py-4 text-sm text-red-800 shadow-soft">
           {loadError}
@@ -4318,6 +4356,7 @@ export function AdminDashboardPage() {
             <div className="mt-5 space-y-5">
               <BankTransferPayCard audience="admin" />
               <AdminOperatorCodePanel accessToken={session?.access_token ?? null} />
+              <AdminBundlePricesPanel />
             </div>
           </details>
         </AdminOperationsSectionShell>

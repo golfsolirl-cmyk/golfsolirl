@@ -163,6 +163,12 @@
     { "source": "/api/admin-mail", "destination": "/api/gateway?r=admin-mail" },
     { "source": "/api/desk-customers", "destination": "/api/gateway?r=desk-customers" },
     { "source": "/api/desk-quote-decision", "destination": "/api/gateway?r=desk-quote-decision" },
+    { "source": "/api/admin-login", "destination": "/api/gateway?r=admin-login" },
+    { "source": "/api/admin-logout", "destination": "/api/gateway?r=admin-logout" },
+    { "source": "/api/admin-session-check", "destination": "/api/gateway?r=admin-session-check" },
+    { "source": "/api/portal-otp-send", "destination": "/api/gateway?r=portal-otp-send" },
+    { "source": "/api/portal-otp-verify", "destination": "/api/gateway?r=portal-otp-verify" },
+    { "source": "/api/portal-otp-logout", "destination": "/api/gateway?r=portal-otp-logout" },
     { "source": "/api/gmail-oauth-callback", "destination": "/api/gateway?r=gmail-oauth-callback" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]

@@ -27,6 +27,10 @@ export function LoginPage() {
   const [isSending, setIsSending] = useState(false)
   const [sent, setSent] = useState(false)
   const [portalCtxBanner, setPortalCtxBanner] = useState<string | null>(null)
+  const [clientOtpSent, setClientOtpSent] = useState(false)
+  const [clientOtpMasked, setClientOtpMasked] = useState<string | null>(null)
+  const [clientOtpCode, setClientOtpCode] = useState('')
+  const [showMagicLinkFallback, setShowMagicLinkFallback] = useState(false)
 
   const params = new URLSearchParams(window.location.search)
   const queryError = params.get('error')
@@ -164,6 +168,65 @@ export function LoginPage() {
     }
   }, [sent])
 
+  const handleClientOtpSend = async () => {
+    setFormError(null)
+    const emailNorm = email.trim().toLowerCase()
+    if (!emailNorm) {
+      setFormError('Enter your email address.')
+      return
+    }
+    setIsSending(true)
+    try {
+      const res = await fetch('/api/portal-otp-send', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailNorm })
+      })
+      const data = (await res.json().catch(() => ({}))) as { message?: string; sentTo?: string }
+      if (!res.ok) {
+        setFormError(data.message || 'Could not send a code just now.')
+        return
+      }
+      setClientOtpMasked(data.sentTo ?? 'your inbox')
+      setClientOtpSent(true)
+    } catch {
+      setFormError('Network error. Try again.')
+    } finally {
+      setIsSending(false)
+    }
+  }
+
+  const handleClientOtpVerify = async (event: FormEvent) => {
+    event.preventDefault()
+    setFormError(null)
+    const emailNorm = email.trim().toLowerCase()
+    const code = clientOtpCode.replace(/\D/g, '')
+    if (!emailNorm || code.length !== 6) {
+      setFormError('Enter the 6-digit code from your email.')
+      return
+    }
+    setIsSending(true)
+    try {
+      const res = await fetch('/api/portal-otp-verify', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailNorm, code })
+      })
+      const data = (await res.json().catch(() => ({}))) as { message?: string }
+      if (!res.ok) {
+        setFormError(data.message || 'That code did not work.')
+        return
+      }
+      window.location.replace(safeReturnPath ?? '/dashboard')
+    } catch {
+      setFormError('Network error. Try again.')
+    } finally {
+      setIsSending(false)
+    }
+  }
+
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
     setFormError(null)
@@ -230,15 +293,15 @@ export function LoginPage() {
   const heroLead = isAdminLoginPath
     ? 'Operator dashboard · Magic link'
     : isDriverLoginPage
-      ? 'Live jobs · Same magic link · Driver desk'
-      : 'Saved trips · Quotes · Account access'
+      ? 'Live jobs · Driver desk'
+      : 'Saved trips · Quotes · Email sign-in code'
   const adminHeroBodyPublic =
     'Enter your operator code - we will send a secure sign-in link to your operator inbox.'
   const heroBody = isAdminLoginPath
     ? `${adminHeroBodyPublic} The email link opens the production admin desk on golfsolirl.com.`
     : isDriverLoginPage
       ? 'Same secure magic link as the client portal and admin — after sign-in, admins use the Irish Driver preview desk; linked drivers see live jobs.'
-      : "We'll email you a secure magic link — it opens on golfsolirl.com. No password to remember."
+      : 'We email a short sign-in code — enter it here to open your trip desk. No password to remember.'
 
   // —— Supabase-not-configured fallback ——
   if (!integrationRegistry.supabase.enabled || !isSupabaseConfigured) {
@@ -374,6 +437,89 @@ export function LoginPage() {
                   : 'Open the link from Golf Sol Ireland to finish signing in on golfsolirl.com. You can close this tab — the link opens in your browser.'}
               </p>
             </div>
+          ) : !isAdminLoginPath && !isDriverLoginPage && clientOtpSent ? (
+            <form className="space-y-6" noValidate onSubmit={handleClientOtpVerify}>
+              <p className="font-ge text-sm text-ge-gray600">
+                Code sent to <span className="font-semibold text-gs-dark">{clientOtpMasked}</span>. Check spam if needed.
+              </p>
+              <div>
+                <label
+                  className="mb-2 block font-ge text-sm font-bold uppercase tracking-[0.14em] text-gs-dark"
+                  htmlFor="client-otp-code"
+                >
+                  6-digit code
+                </label>
+                <input
+                  autoComplete="one-time-code"
+                  className="w-full rounded-xl border-2 border-ge-gray200 bg-white px-4 py-3.5 font-mono text-xl tracking-[0.35em] text-gs-dark outline-none focus:border-gs-green focus:ring-2 focus:ring-gs-green/25"
+                  id="client-otp-code"
+                  inputMode="numeric"
+                  maxLength={6}
+                  onChange={(event) => setClientOtpCode(event.target.value.replace(/\D/g, '').slice(0, 6))}
+                  value={clientOtpCode}
+                />
+              </div>
+              {formError ? (
+                <p className="font-ge text-base font-semibold text-red-800" role="alert">
+                  {formError}
+                </p>
+              ) : null}
+              <GeButton className="w-full" disabled={isSending || clientOtpCode.length !== 6} size="md" type="submit" variant="gs-green">
+                {isSending ? 'Checking…' : 'Open my trip desk'}
+              </GeButton>
+              <button
+                className="font-ge text-sm font-bold text-forest-800 underline underline-offset-2"
+                disabled={isSending}
+                onClick={() => void handleClientOtpSend()}
+                type="button"
+              >
+                Email me another code
+              </button>
+            </form>
+          ) : !isAdminLoginPath && !isDriverLoginPage && !showMagicLinkFallback ? (
+            <div className="space-y-6">
+              <div className="space-y-6">
+              <div>
+                <label
+                  className="mb-2 block font-ge text-sm font-bold uppercase tracking-[0.14em] text-gs-dark"
+                  htmlFor="login-email-otp"
+                >
+                  Email
+                </label>
+                <input
+                  autoComplete="email"
+                  className="w-full rounded-xl border-2 border-ge-gray200 bg-white px-4 py-3.5 font-ge text-base text-gs-dark outline-none focus:border-gs-green focus:ring-2 focus:ring-gs-green/25"
+                  id="login-email-otp"
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder="you@example.com"
+                  type="email"
+                  value={email}
+                />
+              </div>
+              {formError ? (
+                <p className="font-ge text-base font-semibold text-red-800" role="alert">
+                  {formError}
+                </p>
+              ) : null}
+              <GeButton
+                className="w-full"
+                disabled={isSending}
+                onClick={() => void handleClientOtpSend()}
+                size="md"
+                type="button"
+                variant="gs-green"
+              >
+                {isSending ? 'Sending code…' : 'Email me a sign-in code'}
+              </GeButton>
+              </div>
+              <button
+                className="font-ge text-sm font-semibold text-forest-800 underline underline-offset-2"
+                onClick={() => setShowMagicLinkFallback(true)}
+                type="button"
+              >
+                Prefer a link in your email instead?
+              </button>
+            </div>
           ) : (
             <form className="space-y-6" noValidate onSubmit={handleSubmit}>
               {isAdminLoginPath ? (
@@ -447,7 +593,7 @@ export function LoginPage() {
 
           <div className="mt-8 flex flex-col items-center gap-3 border-t border-gs-green/15 pt-7 sm:flex-row sm:justify-center sm:gap-4">
             <GeButton className="w-full sm:w-auto" href="/" size="md" variant="outline-gs-green">
-              ← Back to website
+              Back to the homepage
             </GeButton>
           </div>
         </PremiumCard>

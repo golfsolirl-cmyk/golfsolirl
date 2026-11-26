@@ -21,7 +21,7 @@ export function HeaderSignInButtons({
   const isMenu = layout === 'menu'
   const isDark = tone === 'dark'
   const clientHref = session ? '/dashboard' : '/dashboard/login'
-  const adminHref = session && isAdmin ? '/dashboard/admin' : '/dashboard/admin/login'
+  const adminHref = session && isAdmin ? '/dashboard/admin' : '/admin/login'
   const clientLabel = session ? 'Trip desk' : isMenu ? 'Client sign-in' : 'Client'
   const adminLabel = session && isAdmin ? 'Admin desk' : isMenu ? 'Admin sign-in' : 'Admin'
   const clientAria = session ? 'Open your trip desk' : 'Client sign-in'
