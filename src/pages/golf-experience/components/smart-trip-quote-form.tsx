@@ -704,7 +704,11 @@ export function SmartTripQuoteForm({
                 {/* Keep the inline submit scrollable above the fixed bar on small screens. */}
                 <div className="h-[5.75rem] sm:hidden" aria-hidden="true" />
                 <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[45] p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:hidden">
-                  <div className="pointer-events-auto relative mx-auto max-w-[640px] space-y-2 rounded-2xl border border-gs-dark/15 bg-white p-2 pr-14 shadow-[0_-8px_30px_rgba(6,59,42,0.18)]">
+                  {/*
+                    Use hex white — `.ge-page .bg-white` is remapped to rgba(255,255,255,0.96)
+                    which caused page text to bleed through the sticky shell.
+                  */}
+                  <div className="pointer-events-auto relative mx-auto max-w-[640px] space-y-2 rounded-2xl border border-gs-dark/15 bg-[#ffffff] p-2 pr-14 shadow-[0_-8px_30px_rgba(6,59,42,0.18)] [background-color:#ffffff!important]">
                     <div className="absolute right-1.5 top-1.5 z-10">
                       <DismissCloseButton
                         aria-label="Dismiss send quote bar"
