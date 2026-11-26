@@ -9,6 +9,7 @@ import { gsolEmailBrand } from './email-constants.mjs'
 import { emailFonts, gs, emailAmbientGradientFillStyle } from './branded-email-shell.mjs'
 import { buildGsolTransactionalEmail, finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
 import { buildBrandedEnquiryEmailHtml } from './branded-enquiry-email.mjs'
+import { loadSitePaymentForEmail, paymentBlockFromSettings } from './load-site-payment-for-email.mjs'
 import { runPostEnquiryPortalInviteJob } from './post-enquiry-portal-invite.mjs'
 import { insertTransferBookingFromWebsiteEnquiry } from './insert-transfer-booking-from-enquiry.mjs'
 import { assertEnquiryDriverDatesNotBlocked } from './enquiry-booked-dates.mjs'
@@ -1098,12 +1099,24 @@ export const handleEnquirySubmission = async (payload, env = process.env, runtim
         )
       }
 
+      const bankSettings = await loadSitePaymentForEmail(env)
+      const payment = paymentBlockFromSettings(bankSettings, {
+        paymentReference: enquiryId,
+        amountDueEur: null
+      })
+
       const [customerResult, ownerResult] = await Promise.all([
         resend.emails.send({
           from: fromEmail,
           to: [customerTo],
           subject: `Your Golf Sol Ireland enquiry confirmation (${enquiryId})`,
-          html: buildCustomerHtml({ ...enquiry, enquiryId, enquiryDate, portalPrivateUrl }),
+          html: buildCustomerHtml({
+            ...enquiry,
+            enquiryId,
+            enquiryDate,
+            portalPrivateUrl,
+            payment
+          }),
           attachments: enquiryPdfAttachments
         }),
         resend.emails.send({

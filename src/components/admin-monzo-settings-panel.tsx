@@ -16,11 +16,11 @@ type RawSettings = {
 
 export function AdminMonzoSettingsPanel({ accessToken }: AdminMonzoSettingsPanelProps) {
   const [form, setForm] = useState<RawSettings>({
-    monzo_account_name: '',
+    monzo_account_name: 'Gregory Mc Donald',
     monzo_bank_name: 'Monzo Bank',
-    monzo_iban: '',
-    monzo_bic: '',
-    monzo_iban_display: ''
+    monzo_iban: 'IE07MONZ91004078972387',
+    monzo_bic: 'MONZIE22',
+    monzo_iban_display: 'IE07 MONZ 9100 4078 9723 87'
   })
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)

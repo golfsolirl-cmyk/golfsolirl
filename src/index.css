@@ -570,15 +570,38 @@
   html,
   body {
     background: #ffffff !important;
+    color: #16231d !important;
   }
 
-  .pdf-screen-only {
+  /* Hide chrome: nav, WhatsApp FAB, heroes, sticky bars */
+  .no-print,
+  .pdf-screen-only,
+  .print\:hidden,
+  header,
+  nav,
+  aside,
+  .ge-navbar,
+  [data-floating-whatsapp],
+  [data-whatsapp-fab],
+  .lean-public-hero,
+  [data-lean-public-hero],
+  .premium-page-hero,
+  .sticky,
+  .fixed {
     display: none !important;
   }
 
   .pdf-page-shell {
     padding: 0 !important;
     background: #ffffff !important;
+  }
+
+  .client-document-a4,
+  .print-document,
+  article.print-sheet {
+    box-shadow: none !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
   #proposal-pdf-export-root [data-proposal-dark-panel] :is(h1, h2, h3, h4, p, li, span, strong) {

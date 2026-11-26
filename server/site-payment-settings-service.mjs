@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { formatIbanGroupsOf4 } from '../shared/format-iban.mjs'
 import { requireAdminFromBearer } from './auth-verify-admin.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
@@ -19,7 +20,7 @@ export const mapSitePaymentSettingsPublic = (row) => {
   if (!iban || !accountName) {
     return null
   }
-  const ibanDisplay = blank(row.monzo_iban_display) || iban.replace(/(.{4})/g, '$1 ').trim()
+  const ibanDisplay = formatIbanGroupsOf4(blank(row.monzo_iban_display) || iban)
   return {
     accountName,
     bankName: blank(row.monzo_bank_name) || 'Monzo Bank',
@@ -109,8 +110,8 @@ export const handleSitePaymentSettings = async (env = process.env, meta = {}) =>
     updated_at: new Date().toISOString()
   }
 
-  if (patch.monzo_iban && !patch.monzo_iban_display) {
-    patch.monzo_iban_display = patch.monzo_iban.replace(/(.{4})/g, '$1 ').trim()
+  if (patch.monzo_iban) {
+    patch.monzo_iban_display = formatIbanGroupsOf4(patch.monzo_iban_display || patch.monzo_iban)
   }
 
   const { error: uErr } = await admin.from('site_payment_settings').upsert({ id: 1, ...patch }, { onConflict: 'id' })

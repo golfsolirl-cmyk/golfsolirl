@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { CLIENT_BANK_HOW_TO_PAY_INTRO } from '../lib/client-enquiry-document'
+import { formatIbanGroupsOf4 } from '../lib/format-iban'
 import { fetchSitePaymentSettings, type SiteBankPaymentSettings } from '../lib/site-payment-settings'
 import { useAuth } from '../providers/auth-provider'
 
@@ -50,10 +51,11 @@ export function BankTransferPayCard({ audience, enquiryHint, settingsOverride }:
     return null
   }
 
+  const ibanGrouped = formatIbanGroupsOf4(settings.ibanDisplay || settings.iban)
   const details = [
     { label: 'Account name', value: settings.accountName, copy: settings.accountName },
     { label: 'Bank', value: settings.bankName, copy: settings.bankName },
-    { label: 'IBAN', value: settings.ibanDisplay || settings.iban, copy: settings.iban },
+    { label: 'IBAN', value: ibanGrouped, copy: settings.iban.replace(/\s+/g, '').toUpperCase() },
     { label: 'BIC', value: settings.bic, copy: settings.bic }
   ] as const
 

@@ -130,9 +130,10 @@ export function FloatingWhatsApp() {
 
   return (
     <div
+      data-floating-whatsapp
       style={{ bottom: `max(${bottom}px, env(safe-area-inset-bottom))` }}
       className={cx(
-        'fixed right-3 z-[30] flex flex-col items-end gap-2 md:z-[54]',
+        'fixed right-3 z-[30] flex flex-col items-end gap-2 print:hidden md:z-[54]',
         (hidden || !ready) && 'pointer-events-none invisible'
       )}
     >

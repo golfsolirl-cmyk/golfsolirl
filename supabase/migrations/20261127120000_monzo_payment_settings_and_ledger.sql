@@ -10,12 +10,26 @@ create table if not exists public.site_payment_settings (
   updated_at timestamptz not null default now()
 );
 
-insert into public.site_payment_settings (id)
-values (1)
+insert into public.site_payment_settings (
+  id,
+  monzo_account_name,
+  monzo_bank_name,
+  monzo_iban,
+  monzo_bic,
+  monzo_iban_display
+)
+values (
+  1,
+  'Gregory Mc Donald',
+  'Monzo Bank',
+  'IE07MONZ91004078972387',
+  'MONZIE22',
+  'IE07 MONZ 9100 4078 9723 87'
+)
 on conflict (id) do nothing;
 
 comment on table public.site_payment_settings is
-  'Singleton Monzo bank details for client-facing transfer instructions; empty strings until admin configures.';
+  'Singleton Monzo bank details for client-facing transfer instructions; admin-editable in dashboard.';
 
 alter table public.site_payment_settings enable row level security;
 
