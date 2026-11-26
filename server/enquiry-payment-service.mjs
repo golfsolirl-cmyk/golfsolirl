@@ -71,6 +71,35 @@ export const handleEnquiryPaymentAdmin = async (body, env = process.env, meta = 
   const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } })
   const action = typeof body?.action === 'string' ? body.action.trim() : ''
 
+  if (action === 'set_requested_services') {
+    const enquiryIdForSvc = typeof body?.enquiryId === 'string' ? body.enquiryId.trim() : ''
+    if (!enquiryIdForSvc) {
+      throwStatus('enquiryId is required.', 400)
+    }
+    const raw = body?.requestedServices
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+      throwStatus('requestedServices object is required.', 400)
+    }
+    const requested_services = {
+      transfers: Boolean(raw.transfers),
+      accommodation: Boolean(raw.accommodation),
+      golf_courses: Boolean(raw.golf_courses)
+    }
+    const { data, error } = await admin
+      .from('enquiries')
+      .update({ requested_services })
+      .eq('id', enquiryIdForSvc)
+      .select('id, requested_services')
+      .maybeSingle()
+    if (error) {
+      throwStatus(error.message, 500)
+    }
+    if (!data) {
+      throwStatus('Enquiry not found.', 404)
+    }
+    return { ok: true, enquiry: data }
+  }
+
   if (action === 'list_awaiting') {
     const limitRaw = body?.limit
     const limit =

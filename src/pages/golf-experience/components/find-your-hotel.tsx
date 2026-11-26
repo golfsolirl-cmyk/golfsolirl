@@ -1,5 +1,6 @@
 import { useMemo, useState, type MouseEvent } from 'react'
 import { Check, Plus } from 'lucide-react'
+import { buildTripQuoteHref } from '../../../lib/trip-quote-services'
 import { coursesSpain, type GeCourse } from '../data/courses'
 import { hotelsSpain, type GeHotel } from '../data/hotels'
 import { GeButton } from './ge-button'
@@ -92,15 +93,19 @@ export function FindYourHotel() {
     setSelectedCourses((prev) => (prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]))
   }
 
-  const quoteHref = useMemo(() => {
-    const params = new URLSearchParams()
-    params.set('from', 'hotels')
-    if (selectedHotels.length) params.set('hotel', selectedHotels[0] ?? '')
-    if (selectedHotels.length > 1) params.set('hotels', selectedHotels.join('|'))
-    if (selectedCourses.length) params.set('courses', selectedCourses.join('|'))
-    if (addTransfers) params.set('transfers', '1')
-    return `/quote?${params.toString()}`
-  }, [selectedHotels, selectedCourses, addTransfers])
+  const quoteHref = useMemo(
+    () =>
+      buildTripQuoteHref({
+        from: 'hotels',
+        hotels: selectedHotels,
+        hotel: selectedHotels[0] ?? null,
+        courses: selectedCourses,
+        transfers: addTransfers,
+        accommodation: true,
+        golf: selectedCourses.length > 0
+      }),
+    [selectedHotels, selectedCourses, addTransfers]
+  )
 
   return (
     <section id="hotel-list" className="mx-auto max-w-[920px] px-5 pb-16 pt-10 sm:px-8 sm:pb-20 sm:pt-12">

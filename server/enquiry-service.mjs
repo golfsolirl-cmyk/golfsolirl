@@ -15,7 +15,7 @@ import { assertEnquiryDriverDatesNotBlocked } from './enquiry-booked-dates.mjs'
 import { ensureEmailAccountAnchor, isAuthEmailBlocked } from './email-address-registry.mjs'
 import { assertApiRateLimit, parsePositiveInt } from './api-rate-limit.mjs'
 import { computePhoneUniquenessKey, validateMobilePhoneInput } from './phone-e164.mjs'
-import { assertEnquiryContactVerified } from './enquiry-contact-verify-service.mjs'
+import { assertEnquirySpamProtection } from './enquiry-spam-guard.mjs'
 import { resolveResendToAddress, resendSandboxRecipientHint } from './resend-delivery-email.mjs'
 /** Real imports (not `export { … } from './…'` only): handlers call these by name in module scope. */
 import {
@@ -257,8 +257,7 @@ export const validateEnquiryPayload = (payload) => {
   }
 
   const formPayload = sanitizeFormPayload(payload?.formPayload)
-  const contactVerifyToken =
-    typeof payload?.contactVerifyToken === 'string' ? payload.contactVerifyToken.trim() : ''
+  const requestedServices = sanitizeRequestedServices(payload?.requestedServices)
 
   return {
     fullName,
@@ -267,9 +266,45 @@ export const validateEnquiryPayload = (payload) => {
     phoneWhatsApp,
     bestTimeToCall,
     phoneE164: phoneCheck.phoneE164,
-    ...(contactVerifyToken ? { contactVerifyToken } : {}),
-    ...(formPayload ? { formPayload } : {})
+    ...(formPayload ? { formPayload } : {}),
+    ...(requestedServices ? { requestedServices } : {})
   }
+}
+
+const sanitizeRequestedServices = (raw) => {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+    return null
+  }
+  const o = raw
+  const transfers = Boolean(o.transfers ?? o.transfer)
+  const accommodation = Boolean(o.accommodation ?? o.hotel)
+  const golf_courses = Boolean(o.golf_courses ?? o.golf)
+  if (!transfers && !accommodation && !golf_courses) {
+    return null
+  }
+  return { transfers, accommodation, golf_courses }
+}
+
+const resolveRequestedServices = (enquiry, formPayload) => {
+  if (enquiry?.requestedServices) {
+    return enquiry.requestedServices
+  }
+  const fields = formPayload?.fields
+  if (!fields || typeof fields !== 'object') {
+    return null
+  }
+  const stagesRaw = fields._serviceStages
+  if (typeof stagesRaw === 'string' && stagesRaw.trim()) {
+    try {
+      return sanitizeRequestedServices(JSON.parse(stagesRaw))
+    } catch {
+      /* ignore */
+    }
+  }
+  if (String(fields._addTransfers || '').toLowerCase() === 'yes') {
+    return { transfers: true, accommodation: false, golf_courses: false }
+  }
+  return null
 }
 
 const TERMS_ACCEPTED_FIELD = '_termsAccepted'
@@ -810,7 +845,22 @@ const recordEnquiryToSupabase = async (enquiry, enquiryId, env) => {
     if (mergedFormPayload) {
       row.form_payload = mergedFormPayload
     }
+    const requestedServices = resolveRequestedServices(enquiry, mergedFormPayload)
+    if (requestedServices) {
+      row.requested_services = requestedServices
+    }
     let { error } = await sb.from('enquiries').insert(row)
+
+    if (error && requestedServices && String(error.message).toLowerCase().includes('requested_services')) {
+      delete row.requested_services
+      const retrySvc = await sb.from('enquiries').insert(row)
+      error = retrySvc.error
+      if (!retrySvc.error) {
+        console.warn(
+          '[enquiry-service] enquiries row saved without requested_services; apply migration 20261127140000_enquiries_requested_services.sql.'
+        )
+      }
+    }
 
     if (error && phoneE164 && String(error.message).toLowerCase().includes('phone_e164')) {
       delete row.phone_e164
@@ -952,6 +1002,8 @@ export const handleEnquirySubmission = async (payload, env = process.env, runtim
     message: 'Too many enquiry submissions from this connection. Please wait a few minutes and try again.'
   })
 
+  await assertEnquirySpamProtection(payload, env, runtime)
+
   const enquiry = validateEnquiryPayload(payload)
   assertWebsiteEnquiryTermsAccepted(enquiry)
   const enquiryId = createEnquiryReferenceId()
@@ -974,7 +1026,6 @@ export const handleEnquirySubmission = async (payload, env = process.env, runtim
       auth: { persistSession: false, autoRefreshToken: false }
     })
     await assertNoDuplicatePhoneForWebsiteEnquiry(sb, enquiry.phoneWhatsApp, env)
-    await assertEnquiryContactVerified(sb, enquiry, env)
     await assertEnquiryDriverDatesNotBlocked(sb, enquiry)
   }
 

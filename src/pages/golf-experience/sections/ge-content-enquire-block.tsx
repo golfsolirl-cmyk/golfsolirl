@@ -5,7 +5,9 @@ import { WhatsAppPill } from '../../../components/whatsapp/WhatsAppPill'
 import { GeDualPhoneEnquiryCallRow } from '../components/ge-dual-phone-contact'
 import { GeSection } from '../components/ge-section'
 import { NewsletterSubscribeForm } from '../../../components/newsletter-subscribe-form'
+import { WEBSITE_ENQUIRY_FORM } from '../../../lib/enquiry-form-registry'
 import { GeQuickEnquiryForm } from '../components/ge-quick-enquiry-form'
+import { SmartTripQuoteForm } from '../components/smart-trip-quote-form'
 import type { ContentFormConfig } from '../content-page-context'
 
 const heroContainerVariants: Variants = {
@@ -151,13 +153,23 @@ export function GeContentEnquireBlock({
           <div className="relative">
             {isNewsletter ? (
               <NewsletterSubscribeForm title={formTitle} lead={formLead} />
-            ) : (
+            ) : formConfig.submissionKind === 'testimonial' ? (
               <GeQuickEnquiryForm
                 title={formTitle}
                 lead={formLead}
                 interestPreset={interestPreset}
                 routeLabel={routeLabel}
                 formConfig={formConfig}
+              />
+            ) : (
+              <SmartTripQuoteForm
+                formId={`content-enquire-${routeLabel.replace(/\W+/g, '-').toLowerCase()}`}
+                lead={formLead || 'What do you need? Only those fields appear next.'}
+                preset={{
+                  pageLabel: routeLabel,
+                  formKey: WEBSITE_ENQUIRY_FORM.contentQuickEnquiry
+                }}
+                title={formTitle}
               />
             )}
           </div>

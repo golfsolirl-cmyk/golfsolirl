@@ -2,10 +2,10 @@ import { m, type Variants } from 'framer-motion'
 import { CheckCircle2, Sparkles } from 'lucide-react'
 import { IrelandPaymentsTrust } from '../../../components/ireland-payments-trust'
 import { WhatsAppPill } from '../../../components/whatsapp/WhatsAppPill'
+import { WEBSITE_ENQUIRY_FORM } from '../../../lib/enquiry-form-registry'
 import { GeDualPhoneEnquiryCallRow } from '../components/ge-dual-phone-contact'
-import { GeQuickEnquiryForm } from '../components/ge-quick-enquiry-form'
+import { SmartTripQuoteForm } from '../components/smart-trip-quote-form'
 import { GeSection } from '../components/ge-section'
-import { leanEnquiryFormConfig } from '../data/lean-enquiry-fields'
 
 const fadeUp = {
   initial: { opacity: 0, y: 18 },
@@ -23,15 +23,6 @@ const heroItemVariants: Variants = {
   hidden: { opacity: 0, y: 14 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.46, ease: 'easeOut' } }
 }
-
-const homeQuoteFormConfig = leanEnquiryFormConfig({
-  badge: 'Get a quote',
-  submitLabel: 'Send enquiry',
-  successTitle: 'Enquiry received',
-  successBody: 'Thanks — we will reply from Ireland with the next clear step for your Costa del Sol golf trip.',
-  includeBundle: true,
-  notesPlaceholder: 'Anything else — courses, hotel style, flights…'
-})
 
 const reassuranceLines = [
   'Tee times, transfers and routing handled by one Irish team',
@@ -90,14 +81,14 @@ export function GeHomeEnquiry() {
             variants={heroItemVariants}
             className="mt-5 max-w-2xl font-ge text-[0.9rem] font-semibold uppercase tracking-[0.18em] text-gs-green sm:text-[0.98rem]"
           >
-            Name · Dates · Golfers · Bundle
+            Transfers · Hotels · Golf — pick what you need
           </m.p>
 
           <m.p
             variants={heroItemVariants}
             className="mt-4 max-w-2xl font-ge text-[1.06rem] leading-[1.7] text-gs-dark/85 sm:text-[1.12rem] sm:leading-8"
           >
-            Essentials only. Your enquiry goes straight to the GolfSol crew — back with prices and a clean next step, usually inside 24 hours.
+            Choose your services, add the details that matter, and we reply from Ireland with clear options — usually inside 24 hours.
           </m.p>
 
           <m.div variants={heroItemVariants} className="mt-7 flex flex-col gap-3">
@@ -138,12 +129,14 @@ export function GeHomeEnquiry() {
             className="pointer-events-none absolute -inset-2 rounded-[2.15rem] bg-gradient-to-br from-brand-700/10 via-transparent to-[#d9be7a]/10"
           />
           <div className="relative">
-            <GeQuickEnquiryForm
+            <SmartTripQuoteForm
+              formId="home-enquire-form"
+              lead="What do you need? Only those fields appear next."
+              preset={{
+                pageLabel: '/',
+                formKey: WEBSITE_ENQUIRY_FORM.contentQuickEnquiry
+              }}
               title="Get your Costa del Sol quote"
-              lead="Name, contact, dates, golfers — that is enough to start."
-              interestPreset="HOMEPAGE — Costa del Sol golf trip quote"
-              routeLabel="Homepage"
-              formConfig={homeQuoteFormConfig}
             />
           </div>
         </m.div>

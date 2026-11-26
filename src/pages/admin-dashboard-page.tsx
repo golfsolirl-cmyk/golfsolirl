@@ -598,6 +598,9 @@ export function AdminDashboardPage() {
   const [enquiryDeleteMessage, setEnquiryDeleteMessage] = useState<string | null>(null)
   const [enquirySearchQuery, setEnquirySearchQuery] = useState('')
   const [enquiryPaymentFilter, setEnquiryPaymentFilter] = useState<'all' | 'awaiting_payment'>('all')
+  const [enquiryServiceFilter, setEnquiryServiceFilter] = useState<
+    'all' | 'transfers' | 'accommodation' | 'golf_courses'
+  >('all')
   const [selectedEnquiryDetailRef, setSelectedEnquiryDetailRef] = useState<string | null>(null)
   const [accountLookupSeedFromTable, setAccountLookupSeedFromTable] = useState<AdminAccountLookupSeed | null>(null)
   const [portalInvoiceAmountInput, setPortalInvoiceAmountInput] = useState('')
@@ -906,6 +909,31 @@ export function AdminDashboardPage() {
       if (enquiryPaymentFilter === 'awaiting_payment') {
         out = out.filter((row) => (row.payment_status ?? 'awaiting_payment') === 'awaiting_payment')
       }
+      if (enquiryServiceFilter !== 'all') {
+        out = out.filter((row) => {
+          const raw = (row as EnquiryRow & { requested_services?: unknown }).requested_services
+          const svc =
+            raw && typeof raw === 'object' && !Array.isArray(raw)
+              ? (raw as Record<string, unknown>)
+              : null
+          if (svc && svc[enquiryServiceFilter] === true) return true
+          const fields =
+            row.form_payload && typeof row.form_payload === 'object' && !Array.isArray(row.form_payload)
+              ? (row.form_payload as { fields?: Record<string, string> }).fields
+              : undefined
+          if (!fields) return false
+          try {
+            const stages = fields._serviceStages ? JSON.parse(fields._serviceStages) : null
+            if (stages && stages[enquiryServiceFilter] === true) return true
+            if (enquiryServiceFilter === 'transfers' && String(fields._addTransfers || '').toLowerCase() === 'yes') {
+              return true
+            }
+          } catch {
+            /* ignore */
+          }
+          return false
+        })
+      }
       const q = enquirySearchQuery.trim().toLowerCase()
       if (!q) {
         return out
@@ -916,7 +944,7 @@ export function AdminDashboardPage() {
         return hay.includes(q)
       })
     },
-    [enquiryPaymentFilter, enquirySearchQuery]
+    [enquiryPaymentFilter, enquiryServiceFilter, enquirySearchQuery]
   )
 
   const refreshEnquiryPaymentFields = useCallback(
@@ -4555,6 +4583,27 @@ export function AdminDashboardPage() {
                       >
                         Awaiting bank transfer
                       </button>
+                      {(
+                        [
+                          ['all', 'Any service'],
+                          ['transfers', 'Transfers'],
+                          ['accommodation', 'Hotels'],
+                          ['golf_courses', 'Golf']
+                        ] as const
+                      ).map(([id, label]) => (
+                        <button
+                          key={id}
+                          className={
+                            enquiryServiceFilter === id
+                              ? 'rounded-full bg-fairway-700 px-3 py-1.5 text-xs font-semibold text-white'
+                              : 'rounded-full border border-forest-200 bg-white px-3 py-1.5 text-xs font-semibold text-forest-900 hover:bg-cream'
+                          }
+                          onClick={() => setEnquiryServiceFilter(id)}
+                          type="button"
+                        >
+                          {label}
+                        </button>
+                      ))}
                     </div>
                   </div>
                   <details className="text-sm">

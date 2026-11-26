@@ -8,6 +8,8 @@ import { buildAdminBrandedMailHtml, brandedMailPlainText } from './admin-mail-ht
 import { gsolEmailBrand } from './email-constants.mjs'
 import { getGsolSiteUrl } from './email-layout.mjs'
 import {
+  defaultServiceOfferBodyPlain,
+  defaultServiceOfferSubject,
   defaultTransferUpsellBodyPlain,
   defaultTransferUpsellSubject,
   enquiryTransferUpsellFirstName
@@ -70,19 +72,30 @@ const bodyBlocksFromPlain = (plain) => {
 }
 
 /**
- * @param {{ fullName: string; referenceId: string; subject?: string; bodyPlain?: string }} input
+ * @param {{ fullName: string; referenceId: string; subject?: string; bodyPlain?: string; service?: string }} input
  */
 export const buildTransferUpsellMail = (input) => {
   const portalUrl = `${getGsolSiteUrl()}/portal`
   const first = enquiryTransferUpsellFirstName(input.fullName)
+  const service =
+    input.service === 'accommodation' || input.service === 'golf_courses' || input.service === 'transfers'
+      ? input.service
+      : 'transfers'
+  const heading =
+    service === 'accommodation'
+      ? 'Accommodation options'
+      : service === 'golf_courses'
+        ? 'Golf course options'
+        : 'Airport & hotel transfers'
   const subject =
     typeof input.subject === 'string' && input.subject.trim()
       ? input.subject.trim().slice(0, 180)
-      : defaultTransferUpsellSubject(input.referenceId)
+      : defaultServiceOfferSubject(service, input.referenceId)
   const bodyPlain =
     typeof input.bodyPlain === 'string' && input.bodyPlain.trim()
       ? input.bodyPlain.trim().slice(0, 8000)
-      : defaultTransferUpsellBodyPlain({
+      : defaultServiceOfferBodyPlain({
+          service,
           first,
           referenceId: input.referenceId,
           portalUrl
@@ -96,7 +109,7 @@ export const buildTransferUpsellMail = (input) => {
   }
 
   const html = buildAdminBrandedMailHtml({
-    heading: 'Airport & hotel transfers',
+    heading,
     introduction: blocks.introduction,
     body: blocks.body,
     closing: blocks.closing,
@@ -106,7 +119,7 @@ export const buildTransferUpsellMail = (input) => {
     vars
   })
   const plainText = brandedMailPlainText({
-    heading: 'Airport & hotel transfers',
+    heading,
     introduction: blocks.introduction,
     body: blocks.body,
     closing: blocks.closing,
@@ -115,7 +128,7 @@ export const buildTransferUpsellMail = (input) => {
     vars
   })
 
-  return { subject, html, plainText, bodyPlain }
+  return { subject, html, plainText, bodyPlain, service }
 }
 
 const emailSendDisabled = (env) => {
@@ -143,7 +156,7 @@ export const handleEnquiryTransferUpsellEmail = async (body, env = process.env, 
   const admin = getAdmin(env)
   const { data: enquiry, error } = await admin
     .from('enquiries')
-    .select('id, reference_id, email, full_name, phone_whatsapp, payment_notes, form_payload')
+    .select('id, reference_id, email, full_name, phone_whatsapp, payment_notes, form_payload, service_offer_log')
     .eq('id', enquiryId)
     .maybeSingle()
   if (error) {
@@ -153,13 +166,19 @@ export const handleEnquiryTransferUpsellEmail = async (body, env = process.env, 
     throwStatus('Enquiry not found or has no email.', 404)
   }
 
+  const serviceRaw = typeof body?.service === 'string' ? body.service.trim() : 'transfers'
+  const service =
+    serviceRaw === 'accommodation' || serviceRaw === 'golf_courses' || serviceRaw === 'transfers'
+      ? serviceRaw
+      : 'transfers'
   const subjectIn = typeof body?.subject === 'string' ? body.subject : undefined
   const bodyPlainIn = typeof body?.bodyPlain === 'string' ? body.bodyPlain : undefined
   const built = buildTransferUpsellMail({
     fullName: enquiry.full_name ?? '',
     referenceId: enquiry.reference_id ?? '',
     subject: subjectIn,
-    bodyPlain: bodyPlainIn
+    bodyPlain: bodyPlainIn,
+    service
   })
 
   const payload = parseFormPayload(enquiry.form_payload)
@@ -214,21 +233,28 @@ export const handleEnquiryTransferUpsellEmail = async (body, env = process.env, 
   const sentAt = new Date().toISOString()
   const nextFields = {
     ...payload.fields,
-    [TRANSFER_UPSELL_EMAIL_SENT_AT_KEY]: sentAt
+    [TRANSFER_UPSELL_EMAIL_SENT_AT_KEY]: sentAt,
+    [`_serviceOfferSentAt_${service}`]: sentAt
   }
   const nextPayload = {
-    form: payload.form || 'admin_transfer_upsell',
+    form: payload.form || 'admin_service_offer',
     fields: nextFields
   }
-  const noteLine = `Transfer upsell email sent ${sentAt.slice(0, 19).replace('T', ' ')} UTC`
+  const noteLine = `${service} offer email sent ${sentAt.slice(0, 19).replace('T', ' ')} UTC`
   const prevNotes = typeof enquiry.payment_notes === 'string' ? enquiry.payment_notes.trim() : ''
   const paymentNotes = prevNotes ? `${prevNotes}\n${noteLine}` : noteLine
+  const prevLog = Array.isArray(enquiry.service_offer_log) ? enquiry.service_offer_log : []
+  const service_offer_log = [
+    ...prevLog,
+    { service, sentAt, subject: built.subject, to: deliverTo }
+  ].slice(-40)
 
   const { error: uErr } = await admin
     .from('enquiries')
     .update({
       form_payload: nextPayload,
-      payment_notes: paymentNotes
+      payment_notes: paymentNotes,
+      service_offer_log
     })
     .eq('id', enquiryId)
   if (uErr) {

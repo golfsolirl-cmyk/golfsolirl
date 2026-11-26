@@ -3,9 +3,10 @@ import { PlaneLanding, X } from 'lucide-react'
 import { LuxuryButton } from './ui/button'
 import { ENQUIRY_STRUCTURED_FIELD_KEYS } from '../lib/enquiry-form-registry'
 import {
-  defaultTransferUpsellBodyPlainForEnquiry,
-  defaultTransferUpsellSubject
+  defaultServiceOfferBodyPlainForEnquiry,
+  defaultServiceOfferSubject
 } from '../lib/enquiry-transfer-upsell-copy'
+import type { TripServiceId } from '../lib/trip-quote-services'
 
 type TransferUpsellTarget = {
   readonly id: string
@@ -20,6 +21,8 @@ type AdminEnquiryTransferUpsellModalProps = {
   readonly row: TransferUpsellTarget | null
   readonly onClose: () => void
   readonly onSent?: (sentAtIso: string) => void
+  /** Which service offer email to send — defaults to transfers. */
+  readonly offerService?: TripServiceId
 }
 
 function readSentAt(formPayload: unknown): string | null {
@@ -40,7 +43,8 @@ export function AdminEnquiryTransferUpsellModal({
   accessToken,
   row,
   onClose,
-  onSent
+  onSent,
+  offerService = 'transfers'
 }: AdminEnquiryTransferUpsellModalProps) {
   const [subject, setSubject] = useState('')
   const [bodyPlain, setBodyPlain] = useState('')
@@ -54,9 +58,9 @@ export function AdminEnquiryTransferUpsellModal({
     if (!row) {
       return
     }
-    setSubject(defaultTransferUpsellSubject(row.reference_id))
-    setBodyPlain(defaultTransferUpsellBodyPlainForEnquiry(row.full_name, row.reference_id))
-  }, [row])
+    setSubject(defaultServiceOfferSubject(offerService, row.reference_id))
+    setBodyPlain(defaultServiceOfferBodyPlainForEnquiry(offerService, row.full_name, row.reference_id))
+  }, [row, offerService])
 
   useEffect(() => {
     if (!row) {
@@ -87,7 +91,8 @@ export function AdminEnquiryTransferUpsellModal({
           action,
           enquiryId: row.id,
           subject,
-          bodyPlain
+          bodyPlain,
+          service: offerService
         })
       })
       const data = (await res.json().catch(() => ({}))) as {
@@ -144,7 +149,11 @@ export function AdminEnquiryTransferUpsellModal({
             </span>
             <div>
               <h3 className="font-display text-lg font-semibold text-forest-950" id="transfer-upsell-title">
-                Airport & hotel transfers email
+                {offerService === 'accommodation'
+                  ? 'Offer accommodation email'
+                  : offerService === 'golf_courses'
+                    ? 'Offer golf courses email'
+                    : 'Airport & hotel transfers email'}
               </h3>
               <p className="mt-0.5 text-sm text-forest-700">
                 To <span className="font-medium">{row.email}</span> · {row.reference_id}
