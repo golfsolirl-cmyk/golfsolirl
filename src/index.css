@@ -489,6 +489,47 @@
     border-color: var(--input-border);
   }
 
+  /*
+   * Native date/time controls break on iOS/Android when line-height + fixed height
+   * clip the shadow-DOM picker affordance. Keep them tappable and above overlays.
+   */
+  .ge-page input[type='date'],
+  .ge-page input[type='time'],
+  .ge-page input[type='datetime-local'],
+  input[type='date'],
+  input[type='time'],
+  input[type='datetime-local'] {
+    /* Do not set appearance:none — that disables the native picker on iOS/Android. */
+    line-height: normal;
+    min-height: 52px;
+    position: relative;
+    z-index: 1;
+    touch-action: manipulation;
+    color-scheme: light;
+  }
+
+  input[type='date']::-webkit-calendar-picker-indicator,
+  input[type='time']::-webkit-calendar-picker-indicator,
+  input[type='datetime-local']::-webkit-calendar-picker-indicator {
+    opacity: 1;
+    display: block;
+    width: 1.35rem;
+    height: 1.35rem;
+    cursor: pointer;
+    margin-left: 0.25rem;
+  }
+
+  [data-time-of-day-field] {
+    position: relative;
+    z-index: 2;
+  }
+
+  [data-time-of-day-field] select {
+    touch-action: manipulation;
+    position: relative;
+    z-index: 2;
+  }
+
   .ge-page input:focus,
   .ge-page textarea:focus,
   .ge-page select:focus {

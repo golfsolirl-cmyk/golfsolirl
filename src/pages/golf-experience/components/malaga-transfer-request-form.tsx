@@ -14,6 +14,8 @@ import { ENQUIRY_CONFLICT_EXISTING_PHONE, postWebsiteEnquiry } from '../../../li
 import { validateMobilePhoneInput } from '../../../lib/phone-mobile'
 import { TERMS_ACCEPTANCE_ERROR, termsAcceptanceFormFields } from '../../../lib/terms-acceptance'
 import { travelStartMinIso } from '../../../lib/travel-date-bounds'
+import { TimeOfDayField } from '../../../components/time-of-day-field'
+import { arrivalTimeFormFields, normalizeTimeOfDay } from '../../../lib/time-of-day'
 import { passengerCountSelectOptions } from '../data/form-people-options'
 import { GeButton } from './ge-button'
 import { GeTermsAcceptanceField } from './ge-terms-acceptance-field'
@@ -82,8 +84,9 @@ export function MalagaTransferRequestForm() {
     }
 
     setStatus('submitting')
+    const arrivalHhmm = normalizeTimeOfDay(arrivalTime)
     const pickupLabel = `Málaga Airport (AGP)${flightNo.trim() ? ` · Flight ${flightNo.trim()}` : ''}${
-      arrivalTime ? ` · ${arrivalTime}` : ''
+      arrivalHhmm ? ` · ${arrivalHhmm}` : ''
     }`
     const formFields: Record<string, string> = {
       Page: '/',
@@ -98,9 +101,9 @@ export function MalagaTransferRequestForm() {
       [ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffType]: PICKUP_DROPOFF_TYPES.hotel,
       [ENQUIRY_STRUCTURED_FIELD_KEYS.dropoffLabel]: dest,
       [ENQUIRY_STRUCTURED_FIELD_KEYS.travelDateFrom]: arrivalDate,
-      [ENQUIRY_STRUCTURED_FIELD_KEYS.addTransfers]: 'yes'
+      [ENQUIRY_STRUCTURED_FIELD_KEYS.addTransfers]: 'yes',
+      ...arrivalTimeFormFields(arrivalHhmm)
     }
-    if (arrivalTime) formFields['Arrival time'] = arrivalTime
     if (flightNo.trim()) formFields['Flight number'] = flightNo.trim()
     const paxMatch = passengers.match(/^(\d+)/)
     if (paxMatch) formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.pax] = paxMatch[1] ?? ''
@@ -111,7 +114,7 @@ export function MalagaTransferRequestForm() {
       phoneWhatsApp: phone,
       interest: [
         'Transfers from Málaga Airport',
-        `Arrival: ${arrivalDate}${arrivalTime ? ` ${arrivalTime}` : ''}`,
+        `Arrival: ${arrivalDate}${arrivalHhmm ? ` ${arrivalHhmm}` : ''}`,
         flightNo.trim() ? `Flight: ${flightNo.trim()}` : null,
         `Passengers: ${passengers}`,
         `Golf bags: ${golfBags}`,
@@ -182,15 +185,17 @@ export function MalagaTransferRequestForm() {
                 onChange={(e) => setArrivalDate(e.target.value)}
               />
             </label>
-            <label className="block">
+            <div className="block">
               <span className={labelClass}>Arrival time</span>
-              <input
-                className={inputClass}
-                type="time"
+              <TimeOfDayField
+                name="arrivalTime"
                 value={arrivalTime}
-                onChange={(e) => setArrivalTime(e.target.value)}
+                onChange={setArrivalTime}
+                selectClassName={inputClass}
+                hourAriaLabel="Arrival hour"
+                minuteAriaLabel="Arrival minute"
               />
-            </label>
+            </div>
           </div>
 
           <label className="block">

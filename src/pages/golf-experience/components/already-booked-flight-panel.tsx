@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { AnimatePresence,  m  } from 'framer-motion'
 import { ChevronDown, Hotel, MapPin, PlaneLanding, Sparkles, X } from 'lucide-react'
+import { TimeOfDayField } from '../../../components/time-of-day-field'
+import { normalizeTimeOfDay } from '../../../lib/time-of-day'
 import { cx } from '../../../lib/utils'
 import { WEBSITE_ENQUIRY_FORM } from '../../../lib/enquiry-form-registry'
 import { ENQUIRY_CONFLICT_EXISTING_PHONE, postWebsiteEnquiry } from '../../../lib/post-enquiry-client'
@@ -26,7 +28,7 @@ export function GeAlreadyBookedFlightPanel() {
   const [termsAccepted, setTermsAccepted] = useState(false)
   const firstFieldRef = useRef<HTMLInputElement>(null)
   const flightFieldRef = useRef<HTMLInputElement>(null)
-  const collectionFieldRef = useRef<HTMLInputElement>(null)
+  const collectionFieldRef = useRef<HTMLSelectElement>(null)
 
   useEffect(() => {
     if (!open) return
@@ -75,12 +77,14 @@ export function GeAlreadyBookedFlightPanel() {
       setError(alreadyBookedHotelCopy.modeRequiredError)
       return
     }
+    const arrivalHhmm = normalizeTimeOfDay(arrivalTime)
+    const collectionHhmm = normalizeTimeOfDay(collectionTime)
     if (travelMode === 'flight') {
-      if (!flightNo.trim() || !arrivalTime.trim()) {
+      if (!flightNo.trim() || !arrivalHhmm) {
         setError('Add your flight number and expected landing time (local).')
         return
       }
-    } else if (!collectionTime.trim()) {
+    } else if (!collectionHhmm) {
       setError('Choose when you would like to be collected.')
       return
     }
@@ -100,8 +104,8 @@ export function GeAlreadyBookedFlightPanel() {
       }
       const payload =
         travelMode === 'flight'
-          ? { ...base, flightNo: flightNo.trim(), arrivalTime: arrivalTime.trim(), collectionTime: '' }
-          : { ...base, flightNo: '', arrivalTime: '', collectionTime: collectionTime.trim() }
+          ? { ...base, flightNo: flightNo.trim(), arrivalTime: arrivalHhmm, collectionTime: '' }
+          : { ...base, flightNo: '', arrivalTime: '', collectionTime: collectionHhmm }
 
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
 
@@ -111,12 +115,12 @@ export function GeAlreadyBookedFlightPanel() {
               'HOMEPAGE — hotel already booked arrival snapshot',
               `Travel mode: Flight number`,
               `Flight number: ${flightNo.trim()}`,
-              `Expected landing time: ${arrivalTime.trim()}`
+              `Expected landing time: ${arrivalHhmm}`
             ].join('\n')
           : [
               'HOMEPAGE — hotel already booked arrival snapshot',
               `Travel mode: Already arrived`,
-              `Collection time: ${collectionTime.trim()}`
+              `Collection time: ${collectionHhmm}`
             ].join('\n')
 
       const formFields: Record<string, string> =
@@ -124,11 +128,12 @@ export function GeAlreadyBookedFlightPanel() {
           ? {
               'Travel mode': 'Flight number',
               'Flight number': flightNo.trim(),
-              'Expected landing time': arrivalTime.trim()
+              'Expected landing time': arrivalHhmm,
+              'Arrival time': arrivalHhmm
             }
           : {
               'Travel mode': 'Already arrived',
-              'Collection time': collectionTime.trim()
+              'Collection time': collectionHhmm
             }
 
       const result = await postWebsiteEnquiry({
@@ -136,7 +141,7 @@ export function GeAlreadyBookedFlightPanel() {
         email: mail,
         phoneWhatsApp: phone,
         interest,
-        bestTimeToCall: travelMode === 'flight' ? `Landing: ${arrivalTime.trim()}` : `Collection: ${collectionTime.trim()}`,
+        bestTimeToCall: travelMode === 'flight' ? `Landing: ${arrivalHhmm}` : `Collection: ${collectionHhmm}`,
         formPayload: {
           form: WEBSITE_ENQUIRY_FORM.homepageHotelBookedSnapshot,
           fields: { ...formFields, ...termsAcceptanceFormFields() }
@@ -392,18 +397,20 @@ export function GeAlreadyBookedFlightPanel() {
                             placeholder={alreadyBookedHotelCopy.flightPlaceholder}
                           />
                         </label>
-                        <label className="block min-w-0 sm:col-span-1 lg:col-span-3">
+                        <div className="block min-w-0 sm:col-span-1 lg:col-span-3">
                           <span className="mb-1.5 block font-ge text-[0.72rem] font-bold uppercase tracking-[0.14em] text-gs-dark/72">
                             {alreadyBookedHotelCopy.arrivalLabel}
                           </span>
-                          <input
+                          <TimeOfDayField
                             name="arrivalTime"
-                            type="time"
                             value={arrivalTime}
-                            onChange={(e) => setArrivalTime(e.target.value)}
-                            className="h-11 w-full min-w-0 rounded-xl border border-white/20 bg-white px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-brand-700/40 transition-shadow focus:border-brand-700 focus:ring-2"
+                            onChange={setArrivalTime}
+                            required
+                            selectClassName="h-11 w-full min-w-0 rounded-xl border border-white/20 bg-white px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-brand-700/40 transition-shadow focus:border-brand-700 focus:ring-2"
+                            hourAriaLabel="Landing hour"
+                            minuteAriaLabel="Landing minute"
                           />
-                        </label>
+                        </div>
                       </m.div>
                     ) : null}
                     {travelMode === 'arrived' ? (
@@ -415,22 +422,24 @@ export function GeAlreadyBookedFlightPanel() {
                         transition={{ duration: 0.22, ease: 'easeOut' }}
                         className="space-y-2"
                       >
-                        <label className="block min-w-0 max-w-md">
+                        <div className="block min-w-0 max-w-md">
                           <span className="mb-1.5 block font-ge text-[0.72rem] font-bold uppercase tracking-[0.14em] text-gs-dark/72">
                             {alreadyBookedHotelCopy.collectionTimeLabel}
                           </span>
-                          <input
-                            ref={collectionFieldRef}
+                          <TimeOfDayField
                             name="collectionTime"
-                            type="time"
                             value={collectionTime}
-                            onChange={(e) => setCollectionTime(e.target.value)}
-                            className="h-11 w-full min-w-0 rounded-xl border border-white/20 bg-white px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-brand-700/40 transition-shadow focus:border-brand-700 focus:ring-2"
+                            onChange={setCollectionTime}
+                            required
+                            hourRef={collectionFieldRef}
+                            selectClassName="h-11 w-full min-w-0 rounded-xl border border-white/20 bg-white px-3.5 font-ge text-sm text-gs-dark shadow-sm outline-none ring-brand-700/40 transition-shadow focus:border-brand-700 focus:ring-2"
+                            hourAriaLabel="Collection hour"
+                            minuteAriaLabel="Collection minute"
                           />
                           <span className="mt-1.5 block font-ge text-[0.68rem] leading-snug text-gs-dark/68">
                             {alreadyBookedHotelCopy.collectionTimeHint}
                           </span>
-                        </label>
+                        </div>
                       </m.div>
                     ) : null}
                   </AnimatePresence>

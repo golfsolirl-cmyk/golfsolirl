@@ -31,6 +31,8 @@ import {
   type TripServiceId,
   type TripServiceSelection
 } from '../../../lib/trip-quote-services'
+import { TimeOfDayField } from '../../../components/time-of-day-field'
+import { arrivalTimeFormFields, normalizeTimeOfDay } from '../../../lib/time-of-day'
 import { golferGroupSizeSelectOptions, passengerCountSelectOptions } from '../data/form-people-options'
 import { GeButton } from './ge-button'
 import { GeTermsAcceptanceField } from './ge-terms-acceptance-field'
@@ -253,11 +255,12 @@ export function SmartTripQuoteForm({
 
     if (services.transfers) {
       const dest = destination.trim() || hotelPreference.trim()
+      const arrivalHhmm = normalizeTimeOfDay(arrivalTime)
       const pickup = `Málaga Airport (AGP)${flightNo.trim() ? ` · Flight ${flightNo.trim()}` : ''}${
-        arrivalTime ? ` · ${arrivalTime}` : ''
+        arrivalHhmm ? ` · ${arrivalHhmm}` : ''
       }`
       formFields.Destination = dest
-      if (arrivalTime) formFields['Arrival time'] = arrivalTime
+      Object.assign(formFields, arrivalTimeFormFields(arrivalHhmm))
       if (flightNo.trim()) formFields['Flight number'] = flightNo.trim()
       if (passengers) formFields.Passengers = passengers
       formFields['Golf bags'] = golfBags
@@ -462,15 +465,17 @@ export function SmartTripQuoteForm({
             {services.transfers ? (
               <>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="block">
+                  <div className="block">
                     <span className={labelClass}>Arrival time</span>
-                    <input
-                      className={inputClass}
-                      type="time"
+                    <TimeOfDayField
+                      name="arrivalTime"
                       value={arrivalTime}
-                      onChange={(e) => setArrivalTime(e.target.value)}
+                      onChange={setArrivalTime}
+                      selectClassName={inputClass}
+                      hourAriaLabel="Arrival hour"
+                      minuteAriaLabel="Arrival minute"
                     />
-                  </label>
+                  </div>
                   <label className="block">
                     <span className={labelClass}>Flight number</span>
                     <input
