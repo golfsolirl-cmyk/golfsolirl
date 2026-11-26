@@ -12,6 +12,7 @@ import {
 
 export type BrandKitCategory =
   | 'logos'
+  | 'social'
   | 'favicons'
   | 'og'
   | 'heroes'
@@ -32,13 +33,17 @@ export type BrandKitAsset = {
 
 export const BRAND_KIT_CATEGORY_LABELS: Record<BrandKitCategory, string> = {
   logos: 'Logos & crests',
+  social: 'Social media accounts',
   favicons: 'Favicons & app icons',
-  og: 'OG & social',
+  og: 'OG & link previews',
   heroes: 'Hero & brand photography',
   email: 'Email',
   cards: 'Business cards',
   packs: 'Download packs'
 }
+
+/** Social pack files live under public/downloads/golfsol-ireland-asset-pack/ */
+const SOCIAL_PACK = '/downloads/golfsol-ireland-asset-pack' as const
 
 /** Existing repo assets only — no invented files. */
 export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
@@ -171,6 +176,156 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     downloadName: 'golfsol-header-logo-w1440.png',
     format: 'PNG',
     previewBg: 'cream'
+  },
+  {
+    id: 'fb-cover',
+    category: 'social',
+    name: 'Facebook cover',
+    description: 'Facebook page cover / banner.',
+    href: `${SOCIAL_PACK}/Facebook/facebook-cover.png`,
+    downloadName: 'golfsol-facebook-cover.png',
+    format: 'PNG · cover',
+    previewBg: 'forest'
+  },
+  {
+    id: 'fb-profile',
+    category: 'social',
+    name: 'Facebook profile',
+    description: 'Facebook page profile picture. Also works for WhatsApp display photo.',
+    href: `${SOCIAL_PACK}/Facebook/facebook-profile.png`,
+    downloadName: 'golfsol-facebook-profile.png',
+    format: 'PNG · square',
+    previewBg: 'cream'
+  },
+  {
+    id: 'ig-profile',
+    category: 'social',
+    name: 'Instagram profile',
+    description: 'Instagram avatar (circle-safe). Also suits TikTok / WhatsApp profile uploads.',
+    href: `${SOCIAL_PACK}/Instagram/instagram-profile.png`,
+    downloadName: 'golfsol-instagram-profile.png',
+    format: 'PNG · square',
+    previewBg: 'cream'
+  },
+  {
+    id: 'ig-post',
+    category: 'social',
+    name: 'Instagram post',
+    description: 'Square Instagram feed post.',
+    href: `${SOCIAL_PACK}/Instagram/instagram-post.png`,
+    downloadName: 'golfsol-instagram-post.png',
+    format: 'PNG · 1:1',
+    previewBg: 'forest'
+  },
+  {
+    id: 'ig-story',
+    category: 'social',
+    name: 'Instagram story',
+    description: 'Vertical Instagram / TikTok story frame.',
+    href: `${SOCIAL_PACK}/Instagram/instagram-story.png`,
+    downloadName: 'golfsol-instagram-story.png',
+    format: 'PNG · 9:16',
+    previewBg: 'forest'
+  },
+  {
+    id: 'li-banner',
+    category: 'social',
+    name: 'LinkedIn banner',
+    description: 'LinkedIn company / personal cover banner.',
+    href: `${SOCIAL_PACK}/LinkedIn/linkedin-banner.png`,
+    downloadName: 'golfsol-linkedin-banner.png',
+    format: 'PNG · banner',
+    previewBg: 'forest'
+  },
+  {
+    id: 'li-profile',
+    category: 'social',
+    name: 'LinkedIn profile',
+    description: 'LinkedIn profile / company logo square.',
+    href: `${SOCIAL_PACK}/LinkedIn/linkedin-profile.png`,
+    downloadName: 'golfsol-linkedin-profile.png',
+    format: 'PNG · square',
+    previewBg: 'cream'
+  },
+  {
+    id: 'x-header',
+    category: 'social',
+    name: 'X (Twitter) header',
+    description: 'X / Twitter profile header banner.',
+    href: `${SOCIAL_PACK}/X - Twitter/twitter-header.png`,
+    downloadName: 'golfsol-x-twitter-header.png',
+    format: 'PNG · header',
+    previewBg: 'forest'
+  },
+  {
+    id: 'x-profile',
+    category: 'social',
+    name: 'X (Twitter) profile',
+    description: 'X / Twitter profile avatar.',
+    href: `${SOCIAL_PACK}/X - Twitter/twitter-profile.png`,
+    downloadName: 'golfsol-x-twitter-profile.png',
+    format: 'PNG · square',
+    previewBg: 'cream'
+  },
+  {
+    id: 'yt-banner',
+    category: 'social',
+    name: 'YouTube banner',
+    description: 'YouTube channel art / banner.',
+    href: `${SOCIAL_PACK}/YouTube/youtube-banner.png`,
+    downloadName: 'golfsol-youtube-banner.png',
+    format: 'PNG · banner',
+    previewBg: 'forest'
+  },
+  {
+    id: 'yt-profile',
+    category: 'social',
+    name: 'YouTube profile',
+    description: 'YouTube channel profile image.',
+    href: `${SOCIAL_PACK}/YouTube/youtube-profile.png`,
+    downloadName: 'golfsol-youtube-profile.png',
+    format: 'PNG · square',
+    previewBg: 'cream'
+  },
+  {
+    id: 'google-cover',
+    category: 'social',
+    name: 'Google Business cover',
+    description: 'Google Business Profile cover photo.',
+    href: `${SOCIAL_PACK}/Google Business/google-cover.png`,
+    downloadName: 'golfsol-google-business-cover.png',
+    format: 'PNG · cover',
+    previewBg: 'forest'
+  },
+  {
+    id: 'google-profile',
+    category: 'social',
+    name: 'Google Business profile',
+    description: 'Google Business Profile logo / avatar.',
+    href: `${SOCIAL_PACK}/Google Business/google-profile.png`,
+    downloadName: 'golfsol-google-business-profile.png',
+    format: 'PNG · square',
+    previewBg: 'cream'
+  },
+  {
+    id: 'social-source-logo',
+    category: 'social',
+    name: 'Source logo (transparent)',
+    description: 'Master transparent logo from the social pack — crop for any network.',
+    href: `${SOCIAL_PACK}/Source assets/logo-transparent.png`,
+    downloadName: 'golfsol-source-logo-transparent.png',
+    format: 'PNG · transparent',
+    previewBg: 'checker'
+  },
+  {
+    id: 'social-source-hero',
+    category: 'social',
+    name: 'Source hero banner',
+    description: 'Full hero plate used to build covers and posts.',
+    href: `${SOCIAL_PACK}/Source assets/hero-banner-full.png`,
+    downloadName: 'golfsol-source-hero-banner-full.png',
+    format: 'PNG',
+    previewBg: 'forest'
   },
   {
     id: 'favicon-ico',
@@ -361,6 +516,26 @@ export const BRAND_KIT_ASSETS: readonly BrandKitAsset[] = [
     downloadName: 'golfsol-email-crest.png',
     format: 'PNG · transparent',
     previewBg: 'checker'
+  },
+  {
+    id: 'email-transfer-banner',
+    category: 'email',
+    name: 'Email / newsletter transfer banner',
+    description: 'Wide Costa del Sol transfer banner for email headers and newsletters.',
+    href: '/images/hero-costa-del-sol-transfer-banner.png',
+    downloadName: 'golfsol-email-transfer-banner.png',
+    format: 'PNG · banner',
+    previewBg: 'forest'
+  },
+  {
+    id: 'email-signature-html',
+    category: 'email',
+    name: 'Email signature HTML',
+    description: 'Hosted Gmail-ready signature template (open, then copy into Gmail Settings).',
+    href: '/email-signature.html',
+    downloadName: 'golfsol-email-signature.html',
+    format: 'HTML',
+    previewBg: 'cream'
   },
   {
     id: 'bc-pdf',

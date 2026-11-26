@@ -701,7 +701,7 @@ export function ClientDashboardPage() {
     }
     const email = profile.email ?? session.user.email ?? ''
     if (profile.role === 'admin' && isAllowedAdminLoginEmail(email)) {
-      window.location.replace('/dashboard/admin')
+      window.location.replace('/admin')
     }
   }, [isLoading, session?.user?.id, session?.user?.email, profile])
 

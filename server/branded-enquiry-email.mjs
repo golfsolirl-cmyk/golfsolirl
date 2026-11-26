@@ -42,7 +42,7 @@ export function buildBrandedEnquiryEmailHtml(payload, variant = 'customer') {
   if (isAdmin) {
     const mailto = email
       ? `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(`Your Golf Sol Ireland enquiry (${enquiryId})`)}`
-      : `${site}/dashboard/admin`
+      : `${site}/admin`
     const html = buildLeanTransactionalEmailHtml({
       documentTitle: `New enquiry — ${fullName}`,
       preheader: `New enquiry ${enquiryId} from ${fullName}.`,

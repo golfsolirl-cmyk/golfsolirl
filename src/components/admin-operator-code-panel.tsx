@@ -74,7 +74,7 @@ export function AdminOperatorCodePanel({ accessToken }: AdminOperatorCodePanelPr
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-700">Admin sign-in</p>
           <h3 className="font-display mt-1 text-xl font-semibold text-forest-950">Operator code</h3>
           <p className="mt-1 text-sm leading-relaxed text-forest-600">
-            Needed on <span className="font-medium text-forest-800">/dashboard/admin/login</span> with the operator inbox.
+            Needed on <span className="font-medium text-forest-800">/admin/login</span> with the operator inbox.
             Hidden until you choose to view it.
           </p>
         </div>

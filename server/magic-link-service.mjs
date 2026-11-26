@@ -67,7 +67,7 @@ const assertMagicLinkRateLimit = (clientIp, email, env) => {
  */
 const resolveMagicLinkRedirectTo = (redirectTo, portal, env) => {
   const defaultNext =
-    portal === 'admin' ? '/dashboard/admin' : portal === 'driver' ? '/driver' : '/dashboard'
+    portal === 'admin' ? '/admin' : portal === 'driver' ? '/driver' : '/dashboard'
 
   const siteRaw = env.SITE_URL?.trim() || 'https://golfsolirl.com'
   const siteUrl = siteRaw.startsWith('http') ? siteRaw : `https://${siteRaw}`

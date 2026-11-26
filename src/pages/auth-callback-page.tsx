@@ -41,7 +41,7 @@ const resolvePostLoginPath = (search: URLSearchParams, sessionEmail?: string | n
   }
 
   if (isAllowedAdminLoginEmail(sessionEmail ?? '')) {
-    return '/dashboard/admin'
+    return '/admin'
   }
 
   return '/dashboard'

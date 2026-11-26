@@ -59,7 +59,7 @@ export function LoginPage() {
       return
     }
     if (explicitAs === 'admin') {
-      window.location.replace(canAccessAdmin ? '/dashboard/admin' : '/dashboard')
+      window.location.replace(canAccessAdmin ? '/admin' : '/dashboard')
       return
     }
     if (explicitAs === 'driver') {
@@ -75,11 +75,11 @@ export function LoginPage() {
       return
     }
     if (path === '/dashboard/admin/login') {
-      window.location.replace(canAccessAdmin ? '/dashboard/admin' : '/dashboard')
+      window.location.replace(canAccessAdmin ? '/admin' : '/dashboard')
       return
     }
     if (canAccessAdmin) {
-      window.location.replace('/dashboard/admin')
+      window.location.replace('/admin')
       return
     }
     window.location.replace('/dashboard')
@@ -101,7 +101,7 @@ export function LoginPage() {
     if (safeReturnPath && !isAdminLoginPath) {
       redirectTo = `${callbackBase}?next=${encodeURIComponent(safeReturnPath)}`
     } else if (isAdminLoginPath || (adminInbox && path !== '/driver/login')) {
-      redirectTo = `${callbackBase}?next=${encodeURIComponent('/dashboard/admin')}`
+      redirectTo = `${callbackBase}?next=${encodeURIComponent('/admin')}`
     } else if (path === '/driver/login') {
       redirectTo = `${callbackBase}?next=${encodeURIComponent('/driver')}`
     }
@@ -110,7 +110,7 @@ export function LoginPage() {
       if (safeReturnPath) {
         sessionStorage.setItem(AUTH_NEXT_STORAGE_KEY, safeReturnPath)
       } else if (path === '/dashboard/admin/login' || (adminInbox && path !== '/driver/login')) {
-        sessionStorage.setItem(AUTH_NEXT_STORAGE_KEY, '/dashboard/admin')
+        sessionStorage.setItem(AUTH_NEXT_STORAGE_KEY, '/admin')
       } else if (path === '/driver/login') {
         sessionStorage.setItem(AUTH_NEXT_STORAGE_KEY, '/driver')
       }

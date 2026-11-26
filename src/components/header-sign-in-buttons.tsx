@@ -22,7 +22,7 @@ export function HeaderSignInButtons({
   const isAdmin = profile?.role === 'admin'
   const isDark = tone === 'dark'
   const clientHref = session ? '/dashboard' : '/portal'
-  const adminHref = session && isAdmin ? '/dashboard/admin' : '/admin/login'
+  const adminHref = session && isAdmin ? '/admin' : '/admin/login'
   const clientLabel = session ? 'Trip desk' : isMenu ? 'Client sign-in' : 'Client'
   const adminLabel = session && isAdmin ? 'Admin desk' : isMenu ? 'Admin sign-in' : 'Admin'
   const clientAria = session ? 'Open your trip desk' : 'Client sign-in'

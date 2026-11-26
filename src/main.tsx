@@ -16,6 +16,7 @@ import { BundlesPage } from './pages/golf-experience/bundles-page'
 import { QuotePage } from './pages/golf-experience/quote-page'
 import { GeContentPage } from './pages/golf-experience/content-page'
 import { RedirectToBundlesPage } from './pages/redirect-to-bundles-page'
+import { RedirectToAdminPage } from './pages/redirect-to-admin-page'
 import { LoginPage } from './pages/login-page'
 import { AdminPasswordLoginPage } from './pages/admin-password-login-page'
 import { PortalTokenLoginPage } from './pages/portal-token-login-page'
@@ -283,6 +284,10 @@ function resolvePage(): PageComponent {
   }
 
   if (normalizedPath === '/dashboard/admin') {
+    return RedirectToAdminPage
+  }
+
+  if (normalizedPath === '/dashboard/admin/legacy') {
     return AdminDashboardPage
   }
 

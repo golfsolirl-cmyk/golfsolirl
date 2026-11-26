@@ -39,12 +39,13 @@ function BrandKitCard({
   readonly item: BrandKitAsset
   readonly sizeLabel: string
 }) {
-  const isPdf = item.format.toLowerCase().includes('pdf')
-  const isZip = item.format.toLowerCase().includes('zip')
+  const formatLower = item.format.toLowerCase()
+  const isFilePreview =
+    formatLower.includes('pdf') || formatLower.includes('zip') || formatLower.includes('html')
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-chrome-200 bg-white shadow-sm">
       <div className={cx('flex min-h-[10.5rem] items-center justify-center p-5', previewSurfaceClass(item.previewBg))}>
-        {isPdf || isZip ? (
+        {isFilePreview ? (
           <div className="flex flex-col items-center gap-2 text-gs-dark/70">
             <FileArchive className="h-10 w-10" aria-hidden />
             <span className="font-ge text-[0.72rem] font-bold uppercase tracking-[0.14em]">{item.format}</span>
@@ -98,7 +99,16 @@ export function BrandKitGallery({ compact = false }: BrandKitGalleryProps) {
   const [sizes, setSizes] = useState<Record<string, number | null>>({})
 
   const categories = useMemo(() => {
-    const order: BrandKitCategory[] = ['logos', 'favicons', 'og', 'heroes', 'email', 'cards', 'packs']
+    const order: BrandKitCategory[] = [
+      'logos',
+      'social',
+      'favicons',
+      'og',
+      'heroes',
+      'email',
+      'cards',
+      'packs'
+    ]
     return order
       .map((category) => ({
         category,
