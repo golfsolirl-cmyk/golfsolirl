@@ -14,11 +14,12 @@ export function HeaderSignInButtons({
   onNavigate
 }: HeaderSignInButtonsProps) {
   const { session, profile, isLoading } = useAuth()
+  const isMenu = layout === 'menu'
 
-  if (!integrationRegistry.supabase.enabled) return null
+  // Menu always offers Client / Admin (header ribbon removed). Cluster needs Supabase.
+  if (!isMenu && !integrationRegistry.supabase.enabled) return null
 
   const isAdmin = profile?.role === 'admin'
-  const isMenu = layout === 'menu'
   const isDark = tone === 'dark'
   const clientHref = session ? '/dashboard' : '/dashboard/login'
   const adminHref = session && isAdmin ? '/dashboard/admin' : '/admin/login'
