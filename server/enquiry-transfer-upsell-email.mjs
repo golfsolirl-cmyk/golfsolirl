@@ -185,8 +185,7 @@ export const handleEnquiryTransferUpsellEmail = async (body, env = process.env, 
   if (emailSendDisabled(env)) {
     throwStatus(
       'Email sending is disabled. Set EMAIL_SEND_ENABLED=true on the server when you are ready to send real mail.',
-      503,
-      'EMAIL_SEND_DISABLED'
+      503
     )
   }
 

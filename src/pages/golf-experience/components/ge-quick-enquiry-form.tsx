@@ -66,6 +66,7 @@ export function GeQuickEnquiryForm({
   const [bookedDays, setBookedDays] = useState<Set<string>>(() => new Set())
   const [testimonialRating, setTestimonialRating] = useState(5)
   const [termsAccepted, setTermsAccepted] = useState(false)
+  const [addTransfers, setAddTransfers] = useState(false)
   const [contactVerifyToken, setContactVerifyToken] = useState<string | null>(null)
   const confirmationRef = useRef<HTMLDivElement>(null)
   const isTestimonialForm = formConfig.submissionKind === 'testimonial'
@@ -320,6 +321,10 @@ export function GeQuickEnquiryForm({
         if (value) {
           formFields[field.label] = value
         }
+      }
+      if (!isTestimonialForm) {
+        formFields['Add airport & hotel transfers'] = addTransfers ? 'Yes' : 'No'
+        formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.addTransfers] = addTransfers ? 'yes' : 'no'
       }
 
       const tripTypeVal = fieldValues.tripType?.trim() ?? ''
@@ -618,6 +623,25 @@ export function GeQuickEnquiryForm({
                 </p>
               ) : null}
             </div>
+          ) : null}
+
+          {!isTestimonialForm ? (
+            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-chrome-200 bg-cream/50 px-4 py-3">
+              <input
+                type="checkbox"
+                className="mt-1 h-5 w-5 rounded border-chrome-300 text-gs-green focus:ring-gs-green/30"
+                checked={addTransfers}
+                onChange={(e) => setAddTransfers(e.target.checked)}
+              />
+              <span>
+                <span className="block font-ge text-[0.95rem] font-bold text-gs-dark">
+                  Add airport & hotel transfers
+                </span>
+                <span className="mt-0.5 block font-ge text-sm text-ge-gray600">
+                  Optional — Málaga Airport and hotel runs with your quote.
+                </span>
+              </span>
+            </label>
           ) : null}
 
           {!isTestimonialForm ? (

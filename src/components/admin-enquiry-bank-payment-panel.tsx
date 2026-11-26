@@ -25,7 +25,7 @@ type PaymentEvent = {
 type AdminEnquiryBankPaymentPanelProps = {
   readonly row: EnquiryBankPaymentFields
   readonly accessToken: string | null
-  readonly onUpdated?: () => void
+  readonly onUpdated?: (enquiryId: string) => void
 }
 
 const formatEur = (n: number) => new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' }).format(n)
@@ -118,7 +118,8 @@ export function AdminEnquiryBankPaymentPanel({ row, accessToken, onUpdated }: Ad
           amountDueEur: amountDue,
           depositEur: deposit,
           paymentReference: paymentRef,
-          paymentNotes
+          paymentNotes,
+          paymentStatus: status
         })
       })
       const data = (await res.json().catch(() => ({}))) as { message?: string; paymentStatus?: string }
@@ -130,7 +131,7 @@ export function AdminEnquiryBankPaymentPanel({ row, accessToken, onUpdated }: Ad
         setStatus(data.paymentStatus)
       }
       setNote('Trip payment amounts saved.')
-      onUpdated?.()
+      onUpdated?.(row.id)
       await loadEvents()
     } finally {
       setBusy(null)
@@ -177,7 +178,7 @@ export function AdminEnquiryBankPaymentPanel({ row, accessToken, onUpdated }: Ad
       setMarkAmount('')
       setMarkNote('')
       setNote('Payment recorded on the ledger.')
-      onUpdated?.()
+      onUpdated?.(row.id)
       await loadEvents()
     } finally {
       setBusy(null)
@@ -238,6 +239,23 @@ export function AdminEnquiryBankPaymentPanel({ row, accessToken, onUpdated }: Ad
             onChange={(e) => setPaymentRef(e.target.value)}
             value={paymentRef}
           />
+        </div>
+        <div>
+          <label className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.12em] text-forest-700" htmlFor={`pstatus-${row.id}`}>
+            Payment status
+          </label>
+          <select
+            className="w-full rounded-xl border border-forest-200 bg-white px-3 py-2.5 text-sm font-medium text-forest-900"
+            id={`pstatus-${row.id}`}
+            onChange={(e) => setStatus(e.target.value)}
+            value={status}
+          >
+            {Object.entries(statusLabel).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="sm:col-span-2">
           <label className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.12em] text-forest-700" htmlFor={`pnotes-${row.id}`}>
