@@ -1,5 +1,9 @@
 import { useRef, useState, type FormEvent } from 'react'
-import { EnquiryContactVerifyFields } from '../../../components/enquiry-contact-verify-fields'
+import {
+  EnquirySpamGuardFields,
+  useEnquirySpamGuardState
+} from '../../../components/enquiry-spam-guard-fields'
+import { RECAPTCHA_ACTIONS } from '../../../lib/enquiry-spam-guard'
 import {
   ENQUIRY_STRUCTURED_FIELD_KEYS,
   PICKUP_DROPOFF_TYPES,
@@ -43,7 +47,9 @@ export function MalagaTransferRequestForm() {
   const [email, setEmail] = useState('')
   const [phoneWhatsApp, setPhoneWhatsApp] = useState('')
   const [termsAccepted, setTermsAccepted] = useState(false)
-  const [contactVerifyToken, setContactVerifyToken] = useState<string | null>(null)
+  const { spamGuard, fieldsProps: spamFieldsProps } = useEnquirySpamGuardState(
+    RECAPTCHA_ACTIONS.malagaTransfer
+  )
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [errorCode, setErrorCode] = useState<string | null>(null)
@@ -114,7 +120,7 @@ export function MalagaTransferRequestForm() {
         .filter(Boolean)
         .join('\n'),
       bestTimeToCall: 'Any time',
-      ...(contactVerifyToken ? { contactVerifyToken } : {}),
+      spamGuard: await spamGuard(),
       formPayload: {
         form: WEBSITE_ENQUIRY_FORM.malagaAirportTransfer,
         fields: { ...formFields, ...termsAcceptanceFormFields() }
@@ -140,8 +146,7 @@ export function MalagaTransferRequestForm() {
     setEmail('')
     setPhoneWhatsApp('')
     setTermsAccepted(false)
-    setContactVerifyToken(null)
-  }
+      }
 
   return (
     <div
@@ -258,8 +263,7 @@ export function MalagaTransferRequestForm() {
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value)
-                setContactVerifyToken(null)
-              }}
+                              }}
             />
           </label>
           <label className="block">
@@ -272,20 +276,10 @@ export function MalagaTransferRequestForm() {
               value={phoneWhatsApp}
               onChange={(e) => {
                 setPhoneWhatsApp(e.target.value)
-                setContactVerifyToken(null)
-              }}
+                              }}
             />
           </label>
-
-          <EnquiryContactVerifyFields
-            contactVerifyToken={contactVerifyToken}
-            email={email}
-            labelClassName={labelClass}
-            inputClassName={inputClass}
-            onTokenCleared={() => setContactVerifyToken(null)}
-            onVerified={(token) => setContactVerifyToken(token)}
-            phoneWhatsApp={phoneWhatsApp}
-          />
+          <EnquirySpamGuardFields {...spamFieldsProps} />
 
           <GeTermsAcceptanceField checked={termsAccepted} onChange={setTermsAccepted} id="malaga-transfer-terms" />
 

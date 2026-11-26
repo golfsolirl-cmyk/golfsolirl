@@ -19,7 +19,11 @@ import { ENQUIRY_CONFLICT_EXISTING_PHONE, postWebsiteEnquiry } from '../../../li
 import { postWebsiteTestimonial } from '../../../lib/post-website-testimonial'
 import { TERMS_ACCEPTANCE_ERROR, termsAcceptanceFormFields } from '../../../lib/terms-acceptance'
 import { validateMobilePhoneInput } from '../../../lib/phone-mobile'
-import { EnquiryContactVerifyFields } from '../../../components/enquiry-contact-verify-fields'
+import {
+  EnquirySpamGuardFields,
+  useEnquirySpamGuardState
+} from '../../../components/enquiry-spam-guard-fields'
+import { RECAPTCHA_ACTIONS } from '../../../lib/enquiry-spam-guard'
 import { GeTermsAcceptanceField } from './ge-terms-acceptance-field'
 
 interface GeQuickEnquiryFormProps {
@@ -67,7 +71,9 @@ export function GeQuickEnquiryForm({
   const [testimonialRating, setTestimonialRating] = useState(5)
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [addTransfers, setAddTransfers] = useState(false)
-  const [contactVerifyToken, setContactVerifyToken] = useState<string | null>(null)
+  const { spamGuard, fieldsProps: spamFieldsProps } = useEnquirySpamGuardState(
+    RECAPTCHA_ACTIONS.contentEnquiry
+  )
   const confirmationRef = useRef<HTMLDivElement>(null)
   const isTestimonialForm = formConfig.submissionKind === 'testimonial'
 
@@ -90,8 +96,7 @@ export function GeQuickEnquiryForm({
     setErrorMessage(null)
     setErrorCode(null)
     setTermsAccepted(false)
-    setContactVerifyToken(null)
-    setAddTransfers(false)
+        setAddTransfers(false)
   }, [initialFieldValues])
 
   useEffect(() => {
@@ -358,7 +363,7 @@ export function GeQuickEnquiryForm({
         phoneWhatsApp: phone,
         interest: interestLines.join('\n'),
         bestTimeToCall: 'Any time',
-        ...(contactVerifyToken ? { contactVerifyToken } : {}),
+        spamGuard: await spamGuard(),
         formPayload: {
           form: WEBSITE_ENQUIRY_FORM.contentQuickEnquiry,
           fields: { ...formFields, ...termsAcceptanceFormFields() }
@@ -379,8 +384,7 @@ export function GeQuickEnquiryForm({
       setPhoneWhatsApp('')
       setFieldValues(initialFieldValues)
       setTermsAccepted(false)
-      setContactVerifyToken(null)
-      setAddTransfers(false)
+            setAddTransfers(false)
     } catch (error) {
       setStatus('error')
       setErrorCode(null)
@@ -450,10 +454,7 @@ export function GeQuickEnquiryForm({
             <input
               className={inputClass}
               value={email}
-              onChange={(e) => {
-                setEmail(e.target.value)
-                setContactVerifyToken(null)
-              }}
+              onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
               type="email"
               required
@@ -465,35 +466,14 @@ export function GeQuickEnquiryForm({
             <input
               className={inputClass}
               value={phoneWhatsApp}
-              onChange={(e) => {
-                setPhoneWhatsApp(e.target.value)
-                setContactVerifyToken(null)
-              }}
+              onChange={(e) => setPhoneWhatsApp(e.target.value)}
               autoComplete="tel"
               type="tel"
               required
               placeholder={contactInfo.phoneFieldPlaceholder}
             />
           </label>
-
-          {!isTestimonialForm ? (
-            <details className="rounded-xl border border-ge-gray200 bg-ge-gray50/60 px-3.5 py-2.5">
-              <summary className="cursor-pointer list-none font-ge text-[0.9rem] font-semibold text-ge-gray600 marker:content-none [&::-webkit-details-marker]:hidden">
-                Optional: confirm email before send
-              </summary>
-              <div className="mt-3">
-                <EnquiryContactVerifyFields
-                  contactVerifyToken={contactVerifyToken}
-                  email={email}
-                  labelClassName={labelClass}
-                  inputClassName={inputClass}
-                  onTokenCleared={() => setContactVerifyToken(null)}
-                  onVerified={(token) => setContactVerifyToken(token)}
-                  phoneWhatsApp={phoneWhatsApp}
-                />
-              </div>
-            </details>
-          ) : null}
+          {!isTestimonialForm ? <EnquirySpamGuardFields {...spamFieldsProps} /> : null}
 
           {isTestimonialForm ? (
             <div className="block">

@@ -22,6 +22,11 @@ import { getSupabaseBrowserClient } from '../../../lib/supabase-client'
 import { ENQUIRY_CONFLICT_EXISTING_PHONE, postWebsiteEnquiry } from '../../../lib/post-enquiry-client'
 import { validateMobilePhoneInput } from '../../../lib/phone-mobile'
 import { TERMS_ACCEPTANCE_ERROR, termsAcceptanceFormFields } from '../../../lib/terms-acceptance'
+import {
+  EnquirySpamGuardFields,
+  useEnquirySpamGuardState
+} from '../../../components/enquiry-spam-guard-fields'
+import { RECAPTCHA_ACTIONS } from '../../../lib/enquiry-spam-guard'
 import { GeTermsAcceptanceField } from './ge-terms-acceptance-field'
 import { MAX_ENQUIRY_PEOPLE } from '../data/form-people-options'
 
@@ -62,6 +67,9 @@ export function TransportHeroEnquiryForm() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [errorCode, setErrorCode] = useState<string | null>(null)
   const [termsAccepted, setTermsAccepted] = useState(false)
+  const { spamGuard, fieldsProps: spamFieldsProps } = useEnquirySpamGuardState(
+    RECAPTCHA_ACTIONS.transportEnquiry
+  )
   const confirmationRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -346,6 +354,7 @@ export function TransportHeroEnquiryForm() {
         phoneWhatsApp: phone,
         interest,
         bestTimeToCall,
+        spamGuard: await spamGuard(),
         formPayload: {
           form: WEBSITE_ENQUIRY_FORM.transportServicePage,
           fields: { ...formFields, ...termsAcceptanceFormFields() }
@@ -649,6 +658,7 @@ export function TransportHeroEnquiryForm() {
               </div>
             ) : null}
 
+            <EnquirySpamGuardFields {...spamFieldsProps} />
             <GeTermsAcceptanceField
               checked={termsAccepted}
               onChange={setTermsAccepted}

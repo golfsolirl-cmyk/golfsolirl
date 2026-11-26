@@ -5,7 +5,11 @@ import {
   type ResolvedBundleQuote
 } from '../../../data/golf-holiday-bundles'
 import { BookedDatesAvailabilityNotice } from '../../../components/booked-dates-availability-notice'
-import { EnquiryContactVerifyFields } from '../../../components/enquiry-contact-verify-fields'
+import {
+  EnquirySpamGuardFields,
+  useEnquirySpamGuardState
+} from '../../../components/enquiry-spam-guard-fields'
+import { RECAPTCHA_ACTIONS } from '../../../lib/enquiry-spam-guard'
 import { assertDatesNotBooked, loadBookedServiceDayIsoSet } from '../../../lib/booked-service-days'
 import {
   ENQUIRY_STRUCTURED_FIELD_KEYS,
@@ -61,7 +65,9 @@ export function BundleQuoteForm({
   const [notes, setNotes] = useState(tripNotesSeed)
   const [addTransfers, setAddTransfers] = useState(presetAddTransfers)
   const [termsAccepted, setTermsAccepted] = useState(false)
-  const [contactVerifyToken, setContactVerifyToken] = useState<string | null>(null)
+  const { spamGuard, fieldsProps: spamFieldsProps } = useEnquirySpamGuardState(
+    RECAPTCHA_ACTIONS.bundleQuote
+  )
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [errorCode, setErrorCode] = useState<string | null>(null)
@@ -179,7 +185,7 @@ export function BundleQuoteForm({
       phoneWhatsApp: phone,
       interest: [`Bundle quote: ${bundleLabel}`, notes.trim() || null].filter(Boolean).join('\n'),
       bestTimeToCall: 'Any time',
-      ...(contactVerifyToken ? { contactVerifyToken } : {}),
+      spamGuard: await spamGuard(),
       formPayload: {
         form: WEBSITE_ENQUIRY_FORM.bundleQuote,
         fields: { ...formFields, ...termsAcceptanceFormFields() }
@@ -204,8 +210,7 @@ export function BundleQuoteForm({
     setTravelDateTo('')
     setAddTransfers(false)
     setTermsAccepted(false)
-    setContactVerifyToken(null)
-  }
+      }
 
   const startMin = travelStartMinIso()
   const endMin = travelEndMinIso(travelDateFrom)
@@ -338,8 +343,7 @@ export function BundleQuoteForm({
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value)
-                  setContactVerifyToken(null)
-                }}
+                                  }}
               />
             </label>
             <label className="block">
@@ -353,20 +357,10 @@ export function BundleQuoteForm({
                 value={phoneWhatsApp}
                 onChange={(e) => {
                   setPhoneWhatsApp(e.target.value)
-                  setContactVerifyToken(null)
-                }}
+                                  }}
               />
             </label>
-
-            <EnquiryContactVerifyFields
-              contactVerifyToken={contactVerifyToken}
-              email={email}
-              labelClassName={labelClass}
-              inputClassName={inputClass}
-              onTokenCleared={() => setContactVerifyToken(null)}
-              onVerified={(token) => setContactVerifyToken(token)}
-              phoneWhatsApp={phoneWhatsApp}
-            />
+            <EnquirySpamGuardFields {...spamFieldsProps} />
 
             <label className="block">
               <span className={labelClass}>Notes</span>
