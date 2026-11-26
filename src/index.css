@@ -260,10 +260,10 @@
    */
   .ge-pad-under-fixed-header {
     /*
-     * Extra breathing room vs hero pages (0.65rem): cream form surfaces need more
-     * clearance under the crest drop-shadow so eyebrow / h1 never look sliced.
+     * Crest drop-shadow extends ~2rem below the measured header box on cream
+     * pages — keep content clear of that soft falloff (heroes use dark media).
      */
-    padding-top: calc(var(--ge-fixed-header-h) + 1.75rem + env(safe-area-inset-top, 0px));
+    padding-top: calc(var(--ge-fixed-header-h) + 2.5rem + env(safe-area-inset-top, 0px));
   }
 
   /**
