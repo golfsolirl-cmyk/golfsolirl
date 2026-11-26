@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { MinimalLoginShell } from '../components/minimal-login-shell'
 import { integrationRegistry } from '../config/integrations'
 import { AUTH_NEXT_STORAGE_KEY, isSafeInternalPath } from '../lib/internal-redirect'
-import { DEFAULT_ADMIN_LOGIN_EMAIL, isAllowedAdminLoginEmail } from '../lib/admin-login-email'
+import { isAllowedAdminLoginEmail } from '../lib/admin-login-email'
 import { useAuth } from '../providers/auth-provider'
 
 const normalizeLoginPath = () => (window.location.pathname.replace(/\/+$/, '') || '/') as string
@@ -84,12 +84,6 @@ export function LoginPage() {
     }
     window.location.replace('/dashboard')
   }, [isLoading, session, profile, safeReturnPath, path, isClientLoginPath])
-
-  useEffect(() => {
-    if (isAdminLoginPath && !email) {
-      setEmail(DEFAULT_ADMIN_LOGIN_EMAIL)
-    }
-  }, [isAdminLoginPath, email])
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
@@ -242,7 +236,7 @@ export function LoginPage() {
               id="login-email"
               name="email"
               onChange={(event) => setEmail(event.target.value)}
-              placeholder={isAdminLoginPath ? 'operator@golfsolirl.com' : 'you@example.com'}
+              placeholder="Email address"
               required
               type="email"
               value={email}

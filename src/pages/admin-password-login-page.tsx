@@ -1,10 +1,9 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { MinimalLoginShell } from '../components/minimal-login-shell'
-import { DEFAULT_ADMIN_LOGIN_EMAIL } from '../lib/admin-login-email'
 import { isSafeInternalPath } from '../lib/internal-redirect'
 
 export function AdminPasswordLoginPage() {
-  const [email, setEmail] = useState(DEFAULT_ADMIN_LOGIN_EMAIL)
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -100,6 +99,7 @@ export function AdminPasswordLoginPage() {
             id="admin-login-email"
             name="email"
             onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email address"
             required
             type="email"
             value={email}
