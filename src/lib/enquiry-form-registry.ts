@@ -12,6 +12,8 @@
  * | `continue_trip` | `ContinueTripPage` |
  * | `package_builder` | `CustomerPackagePage` |
  * | `trip_service_cta` | `TripServiceBookingCta` (marketing pages) |
+ * | `bundle_quote` | `BundleQuoteForm` (`/quote?bundle=…`) |
+ * | `malaga_airport_transfer` | Homepage Malaga transfers section |
  *
  * Trip timing: forms collect `tripArrivalMode` (`planned` | `already_at_agp`) plus optional ISO `travelDateFrom` / `travelDateTo`, mirrored in `fields` via `ENQUIRY_STRUCTURED_FIELD_KEYS`.
  */
@@ -22,7 +24,9 @@ export const WEBSITE_ENQUIRY_FORM = {
   homepageHotelBookedSnapshot: 'homepage_hotel_booked_snapshot',
   continueTrip: 'continue_trip',
   packageBuilder: 'package_builder',
-  tripServiceCta: 'trip_service_cta'
+  tripServiceCta: 'trip_service_cta',
+  bundleQuote: 'bundle_quote',
+  malagaAirportTransfer: 'malaga_airport_transfer'
 } as const
 
 export type WebsiteEnquiryFormKey = (typeof WEBSITE_ENQUIRY_FORM)[keyof typeof WEBSITE_ENQUIRY_FORM]
@@ -57,7 +61,15 @@ export const ENQUIRY_STRUCTURED_FIELD_KEYS = {
   /** JSON `{ transfer, golf, accommodation }` booleans. */
   serviceStages: '_serviceStages',
   /** JSON `TripWorkspaceDraft` slice for portal + profile restore. */
-  portalTripWorkspace: '_portalTripWorkspace'
+  portalTripWorkspace: '_portalTripWorkspace',
+  /** Bundle quote slug e.g. `weekend-golf-2`. */
+  bundleSlug: '_bundleSlug',
+  bundleName: '_bundleName',
+  bundleNights: '_bundleNights',
+  bundleRounds: '_bundleRounds',
+  bundleTier: '_bundleTier',
+  /** `yes` when client asked to add airport & hotel transfers. */
+  addTransfers: '_addTransfers'
 } as const
 
 /** Stored in `fields` / structured payload for select `tripArrivalMode`. */

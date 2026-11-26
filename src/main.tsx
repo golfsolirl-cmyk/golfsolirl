@@ -14,6 +14,7 @@ import { FloatingWhatsApp as WhatsappFab } from './components/whatsapp/FloatingW
 import { GolfExperienceHome } from './pages/golf-experience/golf-experience-home'
 import { TransportServicePage } from './pages/golf-experience/transport-service-page'
 import { BundlesPage } from './pages/golf-experience/bundles-page'
+import { QuotePage } from './pages/golf-experience/quote-page'
 import { GeContentPage } from './pages/golf-experience/content-page'
 import { RedirectToBundlesPage } from './pages/redirect-to-bundles-page'
 import { LoginPage } from './pages/login-page'
@@ -143,6 +144,10 @@ function resolvePage(): PageComponent {
 
   if (normalizedPath === '/bundles') {
     return BundlesPage
+  }
+
+  if (normalizedPath === '/quote') {
+    return QuotePage
   }
 
   if (bundleRedirectForPath(normalizedPath)) {

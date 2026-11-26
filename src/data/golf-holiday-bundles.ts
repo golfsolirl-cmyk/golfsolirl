@@ -115,20 +115,62 @@ export function formatBundlePrice(price: number | null | undefined): string {
   return `From €${Math.round(price).toLocaleString('en-IE')}`
 }
 
+/** URL slug for a bundle package, e.g. `weekend-golf-2`. */
+export function bundleQuoteSlug(packageId: string, rounds: number): string {
+  return `${packageId}-${rounds}`
+}
+
+export type ResolvedBundleQuote = {
+  readonly slug: string
+  readonly durationId: BundleDurationId
+  readonly nights: 3 | 5 | 7
+  readonly packageId: string
+  readonly packageName: string
+  readonly rounds: 2 | 3 | 5
+  readonly durationTitle: string
+}
+
+/** Resolve `/quote?bundle=weekend-golf-2` (and optional legacy query keys). */
+export function resolveBundleFromSlug(slug: string | null | undefined): ResolvedBundleQuote | null {
+  const raw = String(slug ?? '')
+    .trim()
+    .toLowerCase()
+  if (!raw) return null
+
+  for (const duration of BUNDLE_DURATIONS) {
+    for (const pkg of duration.packages) {
+      const candidate = bundleQuoteSlug(pkg.id, pkg.rounds)
+      if (candidate === raw || pkg.id === raw) {
+        return {
+          slug: candidate,
+          durationId: duration.id,
+          nights: duration.nights,
+          packageId: pkg.id,
+          packageName: pkg.name,
+          rounds: pkg.rounds,
+          durationTitle: duration.title
+        }
+      }
+    }
+  }
+  return null
+}
+
 export function quoteHrefForBundle(opts: {
   readonly durationId: BundleDurationId
+  readonly packageId?: string
   readonly packageName: string
   readonly rounds: number
   readonly nights: number
   readonly tierId?: BundleTierId
 }): string {
+  const pkgId =
+    opts.packageId ??
+    BUNDLE_DURATIONS.flatMap((d) => d.packages).find((p) => p.name === opts.packageName)?.id ??
+    opts.packageName.toLowerCase().replace(/\s+/g, '-')
   const params = new URLSearchParams({
-    interest: 'golf-holiday-bundle',
-    package: opts.packageName,
-    nights: String(opts.nights),
-    rounds: String(opts.rounds),
-    duration: opts.durationId
+    bundle: bundleQuoteSlug(pkgId, opts.rounds)
   })
   if (opts.tierId) params.set('tier', opts.tierId)
-  return `/contact?${params.toString()}`
+  return `/quote?${params.toString()}`
 }

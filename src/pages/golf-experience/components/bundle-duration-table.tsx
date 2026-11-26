@@ -48,6 +48,7 @@ export function BundleDurationTable({ duration, tier, prices, compact = false }:
             const price = prices[key] ?? pkg.priceFromEuro
             const href = quoteHrefForBundle({
               durationId: duration.id,
+              packageId: pkg.id,
               packageName: pkg.name,
               rounds: pkg.rounds,
               nights: duration.nights,
