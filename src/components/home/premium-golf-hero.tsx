@@ -35,18 +35,18 @@ export function PremiumGolfHero({ className }: PremiumGolfHeroProps) {
         </picture>
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-b from-forest-950/55 via-forest-950/50 to-cream"
+          className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,32,22,0.72)_0%,rgba(6,32,22,0.78)_42%,rgba(250,248,244,0.96)_100%)]"
         />
       </div>
 
       <div className="relative z-[1] mx-auto flex min-h-[min(72vh,38rem)] max-w-[1100px] flex-col justify-end px-5 pb-14 pt-10 sm:min-h-[min(78vh,42rem)] sm:px-8 sm:pb-16">
-        <p className="font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.2em] text-[#f4dfa6]">
+        <p className="font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.2em] !text-[#f4dfa6]">
           GolfSol Ireland
         </p>
-        <h1 className="mt-3 max-w-2xl font-ge text-[2.15rem] font-extrabold leading-[1.05] tracking-[-0.02em] text-white sm:text-[3rem]">
+        <h1 className="mt-3 max-w-2xl font-ge text-[2.15rem] font-extrabold leading-[1.05] tracking-[-0.02em] !text-white [text-shadow:0_2px_18px_rgba(0,0,0,0.45)] sm:text-[3rem]">
           Costa del Sol golf holidays, simply planned.
         </h1>
-        <p className="mt-4 max-w-xl font-ge text-[1.05rem] leading-7 text-white/88">
+        <p className="mt-4 max-w-xl font-ge text-[1.05rem] leading-7 !text-white/92 [text-shadow:0_1px_12px_rgba(0,0,0,0.4)]">
           Bundles for 3, 5 or 7 nights — transfers, hotels and tee times from one Irish desk.
         </p>
         <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
