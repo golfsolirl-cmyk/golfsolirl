@@ -1,5 +1,4 @@
 import type { SVGProps } from 'react'
-import { CustomerTripReel } from '../../../components/customer-trip-reel'
 import { ChevronRight, Mail } from 'lucide-react'
 import { FooterBrandLogoPicture } from '../../../components/brand-logo-picture'
 import { BrandPlaneToFairwayTagline } from '../../../components/brand-plane-to-fairway-tagline'
@@ -55,38 +54,20 @@ const socials = [
 export function GeFooter() {
   return (
     <>
-    <CustomerTripReel placement="band" />
     <footer className="relative overflow-hidden bg-gs-dark text-white">
       <GsolGoldCornerAccents preset="footer" />
       <div className="relative z-[1] mx-auto max-w-[1180px] px-5 py-14">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           {footerColumns.map((column) => (
             <div key={column.title}>
-              {column.title === 'Docs' ? (
-                <div className="mb-3 flex items-center gap-3">
-                  <FooterBrandLogoPicture
-                    alt=""
-                    width={GOLFSOL_BRAND_LOGO_INTRINSIC.width}
-                    height={GOLFSOL_BRAND_LOGO_INTRINSIC.height}
-                    sizes="72px"
-                    loading="lazy"
-                    decoding="async"
-                    className="h-12 w-12 shrink-0 object-contain drop-shadow-[0_6px_16px_rgba(0,0,0,0.4)] sm:h-14 sm:w-14"
-                  />
-                  <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-emerald-200 drop-shadow-sm sm:text-[0.82rem]">
-                    {column.title}
-                  </p>
-                </div>
-              ) : (
-                <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-emerald-200 drop-shadow-sm sm:text-[0.82rem]">
-                  {column.title}
-                </p>
-              )}
+              <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-emerald-200 drop-shadow-sm sm:text-[0.82rem]">
+                {column.title}
+              </p>
               <ul className="mt-4 space-y-2.5">
                 {column.links.map((link) => (
                   <li key={`${column.title}-${link.label}`} className="flex items-start gap-2">
                     <ChevronRight className="mt-1 h-3.5 w-3.5 shrink-0 text-gs-electric" aria-hidden="true" />
-                    {link.href === '/cookie-policy#settings' ? (
+                    {link.label === 'Cookie Policy' ? (
                       <button
                         className="text-left font-ge text-[1.05rem] leading-7 text-white transition-colors hover:text-[#fbe8b5] sm:text-[0.98rem]"
                         onClick={openCookieSettings}
