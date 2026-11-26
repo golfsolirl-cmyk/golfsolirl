@@ -34,12 +34,7 @@ const excludeFromSitemap = new Set([
   '/package',
   '/packages',
   '/golf-packages',
-  '/golf-packages/3-night-golf-breaks',
   '/golf-packages/4-night-golf-breaks',
-  '/golf-packages/5-night-golf-holidays',
-  '/golf-packages/7-night-golf-holidays',
-  '/golf-packages/golf-society-packages',
-  '/golf-packages/group-golf-holidays',
   '/golf-packages/bespoke-golf-packages',
   '/incentive-packages',
   '/accommodation-tiers',
@@ -54,7 +49,10 @@ const excludeFromSitemap = new Set([
   '/contact/privacy-policy',
   '/services/tee-time-bookings',
   '/services/twilight-golf',
-  '/services/society-group-trips'
+  '/admin',
+  '/portal',
+  '/brand',
+  '/pay'
 ])
 
 const scrapePaths = (filePath) => {
@@ -86,6 +84,13 @@ const bumpedLastmod = new Set([
   '/golf-holidays-spain-from-ireland',
   '/guides/best-golf-courses-costa-del-sol',
   '/guides/best-time-golf-costa-del-sol',
+  '/guides/costa-del-sol-golf-faq',
+  '/faq',
+  '/golf-packages/3-night-golf-breaks',
+  '/golf-packages/5-night-golf-holidays',
+  '/golf-packages/7-night-golf-holidays',
+  '/golf-packages/golf-society-packages',
+  '/golf-packages/group-golf-holidays',
   '/privacy-policy'
 ])
 

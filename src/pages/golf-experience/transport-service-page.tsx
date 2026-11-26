@@ -4,6 +4,7 @@ import { NAMED_HERO_IMAGE_SETS } from '../../lib/page-hero-images'
 import { WEBSITE_ENQUIRY_FORM } from '../../lib/enquiry-form-registry'
 import { usePageMeta } from '../../lib/use-page-meta'
 import { SmartTripQuoteForm } from './components/smart-trip-quote-form'
+import { WhatsAppBanner } from '../../components/whatsapp/WhatsAppBanner'
 import { GeFooter } from './sections/ge-footer'
 import { GeNavbar } from './sections/ge-navbar'
 import { transportHeroCopy } from './data/transport-service'
@@ -77,6 +78,7 @@ export function TransportServicePage() {
         </section>
       </main>
 
+      <WhatsAppBanner sourcePage="/services/transport" />
       <GeFooter />
     </div>
   )

@@ -25,7 +25,7 @@ export function PortalCostaTransfersStub({ variant = 'client' }: { readonly vari
               : 'Pick-up anywhere on the Costa del Sol to any destination on the coast — live driver tracking, job updates, and trip ratings are rolling out here next.'}
           </p>
         </div>
-        <GeButton className="shrink-0" href="/contact" size="md" variant="gs-green">
+        <GeButton className="shrink-0" href="/quote" size="md" variant="gs-green">
           {isAdmin ? 'Contact ops' : 'Get a transfer quote'}
         </GeButton>
       </div>

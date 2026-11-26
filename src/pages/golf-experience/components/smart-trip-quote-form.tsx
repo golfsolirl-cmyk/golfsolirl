@@ -39,14 +39,17 @@ import { GeTermsAcceptanceField } from './ge-terms-acceptance-field'
 
 const labelClass =
   'mb-1.5 block font-ge text-[0.82rem] font-bold uppercase tracking-[0.12em] text-forest-800'
+/** 16px+ text avoids iOS focus zoom; 52px min height for tap targets. */
 const inputClass =
-  'min-h-[52px] h-13 w-full rounded-xl border border-ge-gray200 bg-white px-4 font-ge text-[1.06rem] text-gs-dark outline-none transition-shadow placeholder:text-ge-gray300 focus:border-gs-green focus:ring-2 focus:ring-gs-green/25'
+  'min-h-[52px] h-13 w-full max-w-full rounded-xl border border-ge-gray200 bg-white px-4 font-ge text-base text-gs-dark outline-none transition-shadow placeholder:text-ge-gray300 focus:border-gs-green focus:ring-2 focus:ring-gs-green/25'
 
 type SmartTripQuoteFormProps = {
   readonly preset?: TripQuotePreset
   readonly title?: string
   readonly lead?: string
   readonly formId?: string
+  /** Hide redundant kicker/title when the page already shows a compact heading. */
+  readonly compact?: boolean
 }
 
 function toggleService(prev: TripServiceSelection, id: TripServiceId): TripServiceSelection {
@@ -60,7 +63,8 @@ export function SmartTripQuoteForm({
   preset,
   title = 'Build your quote',
   lead = 'Pick what you need. We only ask for the details that matter.',
-  formId = 'quote-form'
+  formId = 'quote-form',
+  compact = false
 }: SmartTripQuoteFormProps) {
   const bundle = useMemo(
     () => resolveBundleFromSlug(preset?.bundleSlug ?? null),
@@ -103,8 +107,13 @@ export function SmartTripQuoteForm({
     const bits: string[] = []
     if (coursesSeed.length) bits.push(`Courses: ${coursesSeed.join(', ')}`)
     if (hotelsSeed.length) bits.push(`Hotel: ${hotelsSeed.join(', ')}`)
+    if (preset?.area) bits.push(`Area: ${preset.area}`)
+    if (preset?.nights != null) bits.push(`Nights: ${preset.nights}`)
+    if (preset?.rounds != null) bits.push(`Rounds: ${preset.rounds}`)
+    if (preset?.bundleName) bits.push(`Package: ${preset.bundleName}`)
+    if (preset?.intent === 'callback') bits.push('Requested: callback')
     return bits.join('\n')
-  }, [coursesSeed, hotelsSeed])
+  }, [coursesSeed, hotelsSeed, preset?.area, preset?.nights, preset?.rounds, preset?.bundleName, preset?.intent])
   const [notes, setNotes] = useState(notesSeed)
   const [hotelPreference, setHotelPreference] = useState(hotelsSeed.join(', '))
   const [coursePreference, setCoursePreference] = useState(coursesSeed.join(', '))
@@ -207,10 +216,15 @@ export function SmartTripQuoteForm({
       notes.trim() || null
     ].filter(Boolean)
 
+    const sourcePage =
+      preset?.sourcePage ||
+      preset?.pageLabel ||
+      (typeof window !== 'undefined' ? window.location.pathname : '/quote')
     const formFields: Record<string, string> = {
-      Page: preset?.pageLabel || '/quote',
+      Page: preset?.pageLabel || sourcePage || '/quote',
       Topic: interestLines[0] ?? 'Trip quote',
       Services: serviceLabels.join(', '),
+      [ENQUIRY_STRUCTURED_FIELD_KEYS.sourcePage]: sourcePage,
       [ENQUIRY_STRUCTURED_FIELD_KEYS.serviceStages]: JSON.stringify(services),
       [ENQUIRY_STRUCTURED_FIELD_KEYS.servicePrimary]: services.transfers
         ? 'transfer'
@@ -219,6 +233,10 @@ export function SmartTripQuoteForm({
           : 'accommodation',
       [ENQUIRY_STRUCTURED_FIELD_KEYS.addTransfers]: services.transfers ? 'yes' : 'no'
     }
+    if (preset?.nights != null) formFields.Nights = String(preset.nights)
+    if (preset?.rounds != null) formFields.Rounds = String(preset.rounds)
+    if (preset?.area) formFields.Area = preset.area
+    if (preset?.intent) formFields.Intent = preset.intent
 
     if (bundle) {
       formFields.Bundle = bundle.packageName
@@ -312,13 +330,19 @@ export function SmartTripQuoteForm({
   return (
     <div
       id={formId}
-      className="relative rounded-[1.75rem] border border-gs-dark/10 bg-white p-5 shadow-[0_24px_60px_rgba(6,59,42,0.12)] sm:p-6"
+      className="relative w-full max-w-full overflow-x-hidden rounded-[1.75rem] border border-gs-dark/10 bg-white p-4 shadow-[0_24px_60px_rgba(6,59,42,0.12)] sm:p-6"
     >
-      <p className="font-ge text-[0.85rem] font-bold uppercase tracking-[0.14em] text-brand-700">Trip builder</p>
-      <h2 className="mt-2.5 font-ge text-[1.7rem] font-extrabold leading-tight tracking-[-0.01em] text-gs-green sm:text-[1.9rem]">
-        {title}
-      </h2>
-      <p className="mt-2 font-ge text-[1.02rem] leading-7 text-ge-gray500">{lead}</p>
+      {!compact && title ? (
+        <>
+          <p className="font-ge text-[0.85rem] font-bold uppercase tracking-[0.14em] text-brand-700">Trip builder</p>
+          <h2 className="mt-2.5 font-ge text-[1.7rem] font-extrabold leading-tight tracking-[-0.01em] text-gs-green sm:text-[1.9rem]">
+            {title}
+          </h2>
+        </>
+      ) : null}
+      {!compact && lead ? (
+        <p className="mt-2 font-ge text-[1.02rem] leading-7 text-ge-gray500">{lead}</p>
+      ) : null}
 
       {bundle ? (
         <div className="mt-5 rounded-2xl border border-chrome-200 bg-cream/80 px-4 py-3.5">
@@ -328,6 +352,18 @@ export function SmartTripQuoteForm({
           <p className="mt-1 font-ge text-[1.05rem] font-extrabold text-gs-dark">{bundle.packageName}</p>
           <p className="mt-0.5 font-ge text-sm text-ge-gray600">
             {bundle.nights} nights · {bundle.rounds} rounds · {bundle.durationTitle}
+          </p>
+        </div>
+      ) : null}
+
+      {!bundle && coursesSeed.length > 0 ? (
+        <div className="mt-5 rounded-2xl border border-gs-green/25 bg-gs-green/5 px-4 py-3.5">
+          <p className="font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.14em] text-gs-green">
+            Course from the map
+          </p>
+          <p className="mt-1 font-ge text-[1.05rem] font-extrabold text-gs-dark">{coursesSeed.join(', ')}</p>
+          <p className="mt-0.5 font-ge text-sm text-ge-gray600">
+            Golf is selected. Add transfers and accommodation below — hotel level, dates, group size and arrival time.
           </p>
         </div>
       ) : null}
@@ -359,12 +395,13 @@ export function SmartTripQuoteForm({
                     <button
                       key={id}
                       type="button"
+                      data-service-chip
                       aria-pressed={on}
                       onClick={() => setServices((prev) => toggleService(prev, id))}
                       className={
                         on
-                          ? 'rounded-full bg-gs-dark px-4 py-2.5 font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.1em] text-white'
-                          : 'rounded-full border border-chrome-300 bg-white px-4 py-2.5 font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.1em] text-gs-dark'
+                          ? 'min-h-[44px] rounded-full bg-gs-dark px-4 py-2.5 font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.1em] text-white'
+                          : 'min-h-[44px] rounded-full border border-chrome-300 bg-white px-4 py-2.5 font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.1em] text-gs-dark'
                       }
                     >
                       {TRIP_SERVICE_LABELS[id]}
@@ -584,9 +621,19 @@ export function SmartTripQuoteForm({
               </div>
             ) : null}
 
-            <GeButton type="submit" variant="gs-green" size="lg" className="w-full" disabled={status === 'submitting'}>
-              {status === 'submitting' ? 'Sending…' : 'Send quote request'}
-            </GeButton>
+            <div className="hidden sm:block">
+              <GeButton type="submit" variant="gs-green" size="lg" className="w-full min-h-[52px]" disabled={status === 'submitting'}>
+                {status === 'submitting' ? 'Sending…' : preset?.intent === 'callback' ? 'Request callback' : 'Send quote request'}
+              </GeButton>
+            </div>
+            {/* Sticky mobile submit — always reachable without hunting for the button */}
+            <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:hidden">
+              <div className="pointer-events-auto mx-auto max-w-[640px] rounded-2xl border border-gs-dark/10 bg-white/95 p-2 shadow-[0_-8px_30px_rgba(6,59,42,0.18)] backdrop-blur">
+                <GeButton type="submit" variant="gs-green" size="lg" className="w-full min-h-[52px]" disabled={status === 'submitting'}>
+                  {status === 'submitting' ? 'Sending…' : preset?.intent === 'callback' ? 'Request callback' : 'Send quote request'}
+                </GeButton>
+              </div>
+            </div>
           </form>
         </>
       )}

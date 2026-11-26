@@ -16,7 +16,8 @@ export const RECAPTCHA_ACTIONS = {
   contentEnquiry: 'content_enquiry',
   bundleQuote: 'bundle_quote',
   malagaTransfer: 'malaga_transfer',
-  transportEnquiry: 'transport_enquiry'
+  transportEnquiry: 'transport_enquiry',
+  callbackRequest: 'callback_request'
 } as const
 
 export type RecaptchaAction = (typeof RECAPTCHA_ACTIONS)[keyof typeof RECAPTCHA_ACTIONS]

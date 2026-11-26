@@ -121,12 +121,12 @@ export function GeAccommodationSpain() {
         transition={{ ...fadeUp.transition, delay: 0.1 }}
         className="mt-12 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center sm:justify-center sm:gap-4"
       >
-        <GeButton href="/contact" variant="gs-green" size="lg" className="w-full sm:w-auto sm:min-w-[14rem]">
+        <GeButton href="/quote" variant="gs-green" size="lg" className="w-full sm:w-auto sm:min-w-[14rem]">
           {hotelListsCopy.cta}
           <ArrowRight className="ml-1 h-4 w-4" aria-hidden />
         </GeButton>
         <GeButton
-          href="#enquire"
+          href="/quote?from=hotels&svc_accommodation=1"
           variant="outline-gs-green"
           size="lg"
           className="gsol-cta-outline-on-light w-full sm:w-auto sm:min-w-[14rem]"

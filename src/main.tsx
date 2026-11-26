@@ -8,7 +8,6 @@ import { isGeContentPagePath } from './pages/golf-experience/data/ge-content-pag
 import { bundleRedirectForPath } from './lib/bundle-route-redirects'
 import { AuthProvider as AuthProviderDeferred } from './providers/auth-provider-deferred'
 import { AuthProvider as AuthProviderSync } from './providers/auth-provider-sync'
-import { FloatingWhatsApp as WhatsappFab } from './components/whatsapp/FloatingWhatsApp'
 
 /** Main public surfaces are eager — no Suspense spinners / blank folds on first paint. */
 import { GolfExperienceHome } from './pages/golf-experience/golf-experience-home'
@@ -85,6 +84,7 @@ const DriverDashboardPage = lazy(() =>
 )
 const RateTripPage = lazy(() => import('./pages/rate-trip-page').then((m) => ({ default: m.RateTripPage })))
 const QuoteReplyPage = lazy(() => import('./pages/quote-reply-page').then((m) => ({ default: m.QuoteReplyPage })))
+const PayPage = lazy(() => import('./pages/pay-page').then((m) => ({ default: m.PayPage })))
 const BusinessCardsPage = lazy(() =>
   import('./pages/business-cards-page').then((m) => ({ default: m.BusinessCardsPage }))
 )
@@ -107,6 +107,31 @@ const AdminBrandKitPage = lazy(() =>
 )
 const PublicBrandKitPage = lazy(() =>
   import('./pages/public-brand-kit-page').then((m) => ({ default: m.PublicBrandKitPage }))
+)
+const TowAdminEnquiriesPage = lazy(() =>
+  import('./pages/tow-admin/tow-admin-enquiries-page').then((m) => ({ default: m.TowAdminEnquiriesPage }))
+)
+const TowAdminEnquiryDetailPage = lazy(() =>
+  import('./pages/tow-admin/tow-admin-enquiry-detail-page').then((m) => ({
+    default: m.TowAdminEnquiryDetailPage
+  }))
+)
+const TowAdminCustomersPage = lazy(() =>
+  import('./pages/tow-admin/tow-admin-customers-page').then((m) => ({ default: m.TowAdminCustomersPage }))
+)
+const TowAdminCustomerDetailPage = lazy(() =>
+  import('./pages/tow-admin/tow-admin-customer-detail-page').then((m) => ({
+    default: m.TowAdminCustomerDetailPage
+  }))
+)
+const TowAdminSignaturePage = lazy(() =>
+  import('./pages/tow-admin/tow-admin-signature-page').then((m) => ({ default: m.TowAdminSignaturePage }))
+)
+const TowAdminOfferPage = lazy(() =>
+  import('./pages/tow-admin/tow-admin-offer-page').then((m) => ({ default: m.TowAdminOfferPage }))
+)
+const TowAdminEmailsPage = lazy(() =>
+  import('./pages/tow-admin/tow-admin-emails-page').then((m) => ({ default: m.TowAdminEmailsPage }))
 )
 
 type PageComponent = ComponentType | LazyExoticComponent<ComponentType>
@@ -188,6 +213,34 @@ function resolvePage(): PageComponent {
     return AdminPasswordLoginPage
   }
 
+  if (normalizedPath === '/admin' || normalizedPath === '/admin/enquiries') {
+    return TowAdminEnquiriesPage
+  }
+
+  if (normalizedPath.startsWith('/admin/enquiries/')) {
+    return TowAdminEnquiryDetailPage
+  }
+
+  if (normalizedPath === '/admin/customers') {
+    return TowAdminCustomersPage
+  }
+
+  if (normalizedPath.startsWith('/admin/customers/')) {
+    return TowAdminCustomerDetailPage
+  }
+
+  if (normalizedPath === '/admin/signature') {
+    return TowAdminSignaturePage
+  }
+
+  if (normalizedPath === '/admin/offer') {
+    return TowAdminOfferPage
+  }
+
+  if (normalizedPath === '/admin/emails') {
+    return TowAdminEmailsPage
+  }
+
   if (normalizedPath === '/admin/brand') {
     return AdminBrandKitPage
   }
@@ -243,6 +296,10 @@ function resolvePage(): PageComponent {
 
   if (normalizedPath.startsWith('/quote-reply/')) {
     return QuoteReplyPage
+  }
+
+  if (normalizedPath.startsWith('/pay/')) {
+    return PayPage
   }
 
   if (normalizedPath === '/documents/terms' || normalizedPath === '/documents/welcome') {
@@ -316,30 +373,6 @@ const AuthProviderShell = pathnameNeedsImmediateSupabaseHydration(normalizedBoot
   ? AuthProviderSync
   : AuthProviderDeferred
 
-/** Login / auth surfaces stay a single centred card — no floating marketing chrome. */
-const isMinimalAuthPath = (path: string) => {
-  if (path === '/portal' || path === '/admin/login' || path === '/logged-out' || path === '/login') {
-    return true
-  }
-  if (path === '/admin/brand' || path === '/brand' || path.startsWith('/brand/')) {
-    return true
-  }
-  if (path.startsWith('/portal/')) {
-    return true
-  }
-  if (
-    path === '/dashboard/login' ||
-    path === '/dashboard/admin/login' ||
-    path === '/driver/login' ||
-    path === '/auth/callback'
-  ) {
-    return true
-  }
-  return false
-}
-
-const showSiteWhatsappFab = !isMinimalAuthPath(normalizedBootstrapPath)
-
 const Page = ActivePage as ComponentType
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -351,7 +384,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Page />
         </Suspense>
         <CookieConsent />
-        {showSiteWhatsappFab ? <WhatsappFab /> : null}
       </MotionRoot>
     </AuthProviderShell>
   </AppErrorBoundary>

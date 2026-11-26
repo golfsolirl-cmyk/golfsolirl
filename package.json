@@ -5,7 +5,8 @@
   "description": "Premium landing page for Golf Sol Ireland",
   "scripts": {
     "dev": "vite",
-    "build": "npm run generate:sitemap && tsc --noEmit && vite build",
+    "build": "npm run generate:sitemap && tsc --noEmit && vite build && node scripts/prerender-seo-shells.mjs",
+    "prerender:seo": "node scripts/prerender-seo-shells.mjs",
     "preview": "vite preview",
     "generate:sample-proposal-pdf": "node scripts/generate-sample-proposal-pdf.mjs",
     "generate:branded-sample-pdf": "node scripts/generate-branded-sample-pdf.mjs",

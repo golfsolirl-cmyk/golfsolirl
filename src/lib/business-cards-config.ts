@@ -38,18 +38,18 @@ const businessCardSharedContact = {
   companyRegIreland: '814210'
 } as const
 
-/** Martin Kelly — Irish 086 line; WhatsApp on card backs uses Spanish line. */
+/** Martin Kelly — Irish company voice line; WhatsApp is the dedicated WA number only. */
 export const businessCardContact = {
   ...businessCardSharedContact,
-  phoneIe: '+353 86 600 6202',
-  whatsappHref: 'https://wa.me/34641815366'
+  phoneIe: '+353 86 851 5000',
+  whatsappHref: 'https://wa.me/353866006202'
 } as const
 
-/** Greg McDonald — Irish 087 line; WhatsApp on card backs uses same Irish mobile. */
+/** Greg McDonald — same company voice + WhatsApp lines. */
 export const businessCardContactGreg = {
   ...businessCardSharedContact,
-  phoneIe: '+353 87 446 4766',
-  whatsappHref: 'https://wa.me/353874464766'
+  phoneIe: '+353 86 851 5000',
+  whatsappHref: 'https://wa.me/353866006202'
 } as const
 
 export type BusinessCardContactPack =
@@ -107,8 +107,8 @@ export const businessCardTommy = {
   name: "Tommy O'Shea",
   roleTitle: 'Founder & Golf Travel Specialist',
   email: 'info@golfsolirl.com',
-  phone: '+353 87 446 4766',
-  phoneTel: '+353874464766',
+  phone: '+353 86 851 5000',
+  phoneTel: '+353868515000',
   websiteDisplay: 'www.golfsolirl.com',
   websiteUrl: 'https://golfsolirl.com',
   qrUrl: 'https://golfsolirl.com',

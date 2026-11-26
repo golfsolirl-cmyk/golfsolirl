@@ -1,5 +1,5 @@
 import type { SVGProps } from 'react'
-import { ChevronRight, Mail } from 'lucide-react'
+import { ChevronRight, Mail, MapPin } from 'lucide-react'
 import { FooterBrandLogoPicture } from '../../../components/brand-logo-picture'
 import { BrandPlaneToFairwayTagline } from '../../../components/brand-plane-to-fairway-tagline'
 import { GOLFSOL_BRAND_LOGO_FOOTER_SIZES, GOLFSOL_BRAND_LOGO_INTRINSIC } from '../../../lib/brand-logo-assets'
@@ -96,6 +96,12 @@ export function GeFooter() {
               Contact Us
             </p>
             <ul className="mt-4 space-y-3">
+              <li className="flex items-start gap-2">
+                <MapPin className="mt-1 h-4 w-4 shrink-0 text-emerald-200/90" aria-hidden="true" />
+                <address className="not-italic font-ge text-[0.95rem] leading-6 text-white/90 sm:text-[0.9rem]">
+                  {contactInfo.addressOneLine}
+                </address>
+              </li>
               <GeDualPhoneFooterLines />
               <li className="flex items-start gap-2">
                 <Mail className="mt-1 h-4 w-4 shrink-0 text-emerald-200/90" aria-hidden="true" />
@@ -113,6 +119,9 @@ export function GeFooter() {
                   showNumber
                   tone="forest"
                 />
+              </li>
+              <li className="font-ge text-[0.85rem] leading-6 text-white/70 sm:text-[0.8rem]">
+                {contactInfo.registeredInLabel}
               </li>
             </ul>
             <p className="mt-6 font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-emerald-200 drop-shadow-sm sm:text-[0.82rem]">
@@ -157,7 +166,7 @@ export function GeFooter() {
               <GeButton href="/leave-a-review" variant="outline-white" size="sm">
                 Leave us a review
               </GeButton>
-              <GeButton href="/contact" variant="outline-white" size="sm">
+              <GeButton href="/quote" variant="outline-white" size="sm">
                 Get a quote
               </GeButton>
             </div>
@@ -175,6 +184,9 @@ export function GeFooter() {
             Irish-owned · Costa del Sol golf specialists
           </p>
         </div>
+        <p className="mx-auto max-w-[1180px] px-5 pb-4 text-center font-ge text-[0.78rem] leading-5 text-white/55 sm:text-left sm:text-[0.75rem]">
+          {contactInfo.registeredInLabel}
+        </p>
       </div>
     </footer>
     </>

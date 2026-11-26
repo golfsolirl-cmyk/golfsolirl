@@ -127,7 +127,7 @@ export function GeCoursesSpain() {
           {...fadeUp}
           className="mx-auto mt-10 flex max-w-3xl flex-col items-stretch gap-3 rounded-[1.5rem] border border-ge-gray100 bg-white px-5 py-6 text-center shadow-[0_16px_40px_rgba(6,59,42,0.08)] sm:flex-row sm:items-center sm:justify-center sm:gap-4 sm:px-8"
         >
-          <GeButton href="/contact" variant="gs-green" size="md" className="w-full min-w-[12rem] sm:w-auto">
+          <GeButton href="/quote" variant="gs-green" size="md" className="w-full min-w-[12rem] sm:w-auto">
             {courseListsCopy.cta}
             <ArrowRight className="ml-1 h-4 w-4" aria-hidden />
           </GeButton>

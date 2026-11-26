@@ -86,7 +86,8 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
   return (
     <header
       ref={headerRef}
-      className="fixed inset-x-0 top-0 z-40 overflow-visible bg-cream shadow-[0_2px_12px_rgba(8,46,35,0.08)] transition-all duration-300"
+      data-site-header
+      className="ge-navbar fixed inset-x-0 top-0 z-40 overflow-visible bg-cream shadow-[0_2px_12px_rgba(8,46,35,0.08)] transition-all duration-300"
     >
       <div ref={chromeRef}>
         <div
@@ -121,7 +122,7 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
               {portalSlot ? <PortalNavActions portalSlot={portalSlot} layout="desktop" /> : null}
               {!portalSlot ? (
                 <a
-                  href="/contact"
+                  href="/quote"
                   className="header-quote-btn inline-flex min-h-9 items-center justify-center rounded-full bg-[#d4a843] px-4 py-2 font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.12em] text-[#062016] shadow-[0_6px_16px_rgba(8,46,35,0.16)]"
                 >
                   Get a quote
@@ -232,7 +233,7 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
                 <div className="mt-4 space-y-3 border-t border-ge-gray100 pt-4">
                   <HeaderSignInButtons layout="menu" onNavigate={() => setIsMenuOpen(false)} />
                   <GeButton
-                    href="/contact"
+                    href="/quote"
                     size="md"
                     variant="gs-green"
                     className="w-full"

@@ -1,8 +1,13 @@
 import { SEO_LANDING_PAGE_PATHS } from '../../data/seo-landing-page-paths'
 import { WHATSAPP_NUMBER } from '../../lib/whatsapp'
+import { buildTripQuoteHref } from '../../lib/trip-quote-services'
 import { contactInfo } from './data/copy'
 import type { GeContentPageData } from './data/content-pages'
 import { leanEnquiryFormConfig } from './data/lean-enquiry-fields'
+
+/** Form CTAs land on form-first /quote with page context prefilled (no scroll past hero). */
+const quoteHrefForPath = (path: string, from = 'seo') =>
+  buildTripQuoteHref({ from, page: path })
 
 const SEO_LANDING_PATH_SET = new Set<string>(SEO_LANDING_PAGE_PATHS)
 
@@ -380,7 +385,7 @@ export function getContentPageSmartActions(path: string, page: GeContentPageData
           kind: 'form',
           label: 'Request twilight slots',
           description: 'Tell us dates and base — we return sunset-safe options with clear tee windows.',
-          href: '#ge-enquiry-form',
+          href: quoteHrefForPath(path),
           tone: 'gold'
         },
         {
@@ -409,7 +414,7 @@ export function getContentPageSmartActions(path: string, page: GeContentPageData
           kind: 'form',
           label: 'Build a course shortlist',
           description: 'Route your week around the right challenge level and travel times.',
-          href: '#ge-enquiry-form',
+          href: quoteHrefForPath(path),
           tone: 'gold'
         },
         {
@@ -438,7 +443,7 @@ export function getContentPageSmartActions(path: string, page: GeContentPageData
           kind: 'form',
           label: 'Match our hotel base',
           description: 'Tell us dates, group size, and preferred area for a smarter stay fit.',
-          href: '#ge-enquiry-form',
+          href: quoteHrefForPath(path),
           tone: 'gold'
         },
         {
@@ -467,7 +472,7 @@ export function getContentPageSmartActions(path: string, page: GeContentPageData
           kind: 'form',
           label: 'Plan our transfers',
           description: 'Share airport, base, and bag load so we can map the week cleanly.',
-          href: '#ge-enquiry-form',
+          href: quoteHrefForPath(path),
           tone: 'gold'
         },
         {
@@ -496,7 +501,7 @@ export function getContentPageSmartActions(path: string, page: GeContentPageData
           kind: 'form',
           label: 'Ask the policy question',
           description: 'Send the exact clause or concern you want clarified.',
-          href: '#ge-enquiry-form',
+          href: quoteHrefForPath(path),
           tone: 'gold'
         },
         {
@@ -523,7 +528,7 @@ export function getContentPageSmartActions(path: string, page: GeContentPageData
           kind: 'form',
           label: 'Tell us what updates matter',
           description: 'Keep it relevant: routes, hotels, course timing, or planning tips.',
-          href: '#ge-enquiry-form',
+          href: quoteHrefForPath(path),
           tone: 'gold'
         },
         {
@@ -548,7 +553,7 @@ export function getContentPageSmartActions(path: string, page: GeContentPageData
           kind: 'form',
           label: 'Share trip feedback',
           description: 'Tell us what worked well so the next organiser benefits too.',
-          href: '#ge-enquiry-form',
+          href: quoteHrefForPath(path),
           tone: 'gold'
         },
         {
@@ -575,7 +580,7 @@ export function getContentPageSmartActions(path: string, page: GeContentPageData
           kind: 'form',
           label: 'Ask a direct question',
           description: 'Send a focused brief and we will reply with the right next step.',
-          href: '#ge-enquiry-form',
+          href: quoteHrefForPath(path),
           tone: 'gold'
         },
         {
@@ -603,7 +608,7 @@ export function getContentPageSmartActions(path: string, page: GeContentPageData
           kind: 'form',
           label: 'Start my quote',
           description: 'Build a quick trip brief and let us shape the cleanest next step.',
-          href: '#ge-enquiry-form',
+          href: quoteHrefForPath(path),
           tone: 'gold'
         },
         {

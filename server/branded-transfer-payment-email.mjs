@@ -1,4 +1,4 @@
-import { ctaGold, ctaGreen, emailFonts, gs } from './branded-email-shell.mjs'
+import { ctaGold, ctaGreen, emailFonts, gs, phoneIrelandDisplay, phoneIrelandHref } from './branded-email-shell.mjs'
 import { buildGsolTransactionalEmail, finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
 import { depositAmountEur, isTransferFullUpfront, normalizedDepositPercent } from './transfer-payment-amounts.mjs'
 
@@ -193,7 +193,7 @@ export const buildPortalInvoicePaidThankYouEmail = (detail) => {
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 22px 0;border-collapse:collapse;">
       <tr><td style="padding:0;"><a href="${site}/dashboard" style="${ctaGold}">Open your dashboard</a></td></tr>
     </table>
-    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Questions? <a href="tel:+353874464766" style="color:${gs.green};font-weight:600;">+353 87 446 4766</a></p>`
+    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Questions? <a href="${phoneIrelandHref}" style="color:${gs.green};font-weight:600;">${phoneIrelandDisplay}</a></p>`
 
   const htmlRaw = buildGsolTransactionalEmail({
     documentTitle: subject,
@@ -327,7 +327,7 @@ export const buildTransferRefundEmail = (booking, detail) => {
 
   const bodyHtml = `<p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Total refunded to your card for this transfer (including any earlier steps): <strong style="color:${gs.green};">${cum}</strong>.</p>
     <p style="margin:0 0 14px 0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">A <strong>PDF confirmation</strong> is attached for your records. Timing on your bank statement can vary — typically a few business days.</p>
-    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Questions? <a href="tel:+353874464766" style="color:${gs.green};font-weight:600;">+353 87 446 4766</a> · <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">Your dashboard</a></p>`
+    <p style="margin:0;font-family:${emailFonts.sans};font-size:15px;line-height:1.75;color:${gs.text};">Questions? <a href="${phoneIrelandHref}" style="color:${gs.green};font-weight:600;">${phoneIrelandDisplay}</a> · <a href="${site}/dashboard" style="color:${gs.green};font-weight:600;">Your dashboard</a></p>`
 
   const htmlRaw = buildGsolTransactionalEmail({
     documentTitle: subject,

@@ -1,5 +1,9 @@
 import { useMemo, useState, type MouseEvent } from 'react'
 import { Check, Plus } from 'lucide-react'
+import { DismissCloseButton } from '../../../components/ui/dismiss-close-button'
+import { usePersistedDismiss } from '../../../hooks/use-persisted-dismiss'
+import { useEscapeDismiss } from '../../../hooks/use-escape-dismiss'
+import { DISMISS_STORAGE_KEYS } from '../../../lib/persisted-dismiss'
 import { buildTripQuoteHref } from '../../../lib/trip-quote-services'
 import { coursesSpain, type GeCourse } from '../data/courses'
 import { hotelsSpain, type GeHotel } from '../data/hotels'
@@ -77,6 +81,11 @@ function oneLineNote(course: GeCourse) {
  * Simple Find-your-course chooser — filters + compact cards + trip handoff to /quote.
  */
 export function FindYourCourse() {
+  const { dismissed: stickyDismissed, dismiss: dismissSticky, ready: stickyReady } = usePersistedDismiss(
+    DISMISS_STORAGE_KEYS.stickyCourseQuoteBar,
+    'session'
+  )
+  useEscapeDismiss(dismissSticky, stickyReady && !stickyDismissed)
   const [area, setArea] = useState<(typeof AREA_FILTERS)[number]['id']>('all')
   const [level, setLevel] = useState<(typeof LEVEL_FILTERS)[number]['id']>('all')
   const [nearHotel, setNearHotel] = useState('')
@@ -288,15 +297,39 @@ export function FindYourCourse() {
         <p className="mt-6 font-ge text-base text-ge-gray600">No courses match these filters. Try another area or level.</p>
       ) : null}
 
-      <div className="sticky bottom-3 z-20 mt-8 rounded-2xl border border-gs-dark/15 bg-white/95 p-4 shadow-[0_12px_40px_rgba(6,32,22,0.14)] backdrop-blur-sm">
-        <p className="font-ge text-sm text-ge-gray600">
-          {selectedCourses.length === 0
-            ? 'Add one or more courses to build a quote.'
-            : `${selectedCourses.length} course${selectedCourses.length === 1 ? '' : 's'}${
-                selectedHotel ? ` · ${selectedHotel}` : ''
-              }${addTransfers ? ' · transfers' : ''}`}
-        </p>
-        <div className="mt-3">
+      {stickyReady && !stickyDismissed ? (
+        <div className="relative sticky bottom-3 z-20 mt-8 rounded-2xl border border-gs-dark/15 bg-white/95 p-4 pr-14 shadow-[0_12px_40px_rgba(6,32,22,0.14)] backdrop-blur-sm">
+          <div className="absolute right-2 top-2">
+            <DismissCloseButton onClick={dismissSticky} tone="light" />
+          </div>
+          <p className="font-ge text-sm text-ge-gray600">
+            {selectedCourses.length === 0
+              ? 'Add one or more courses to build a quote.'
+              : `${selectedCourses.length} course${selectedCourses.length === 1 ? '' : 's'}${
+                  selectedHotel ? ` · ${selectedHotel}` : ''
+                }${addTransfers ? ' · transfers' : ''}`}
+          </p>
+          <div className="mt-3">
+            <GeButton
+              href={selectedCourses.length ? quoteHref : undefined}
+              variant="gs-green"
+              size="lg"
+              className="w-full sm:w-auto"
+              disabled={selectedCourses.length === 0}
+              onClick={
+                selectedCourses.length
+                  ? undefined
+                  : (e: MouseEvent) => {
+                      e.preventDefault()
+                    }
+              }
+            >
+              Build my quote
+            </GeButton>
+          </div>
+        </div>
+      ) : (
+        <div className="mt-8">
           <GeButton
             href={selectedCourses.length ? quoteHref : undefined}
             variant="gs-green"
@@ -314,7 +347,7 @@ export function FindYourCourse() {
             Build my quote
           </GeButton>
         </div>
-      </div>
+      )}
     </section>
   )
 }

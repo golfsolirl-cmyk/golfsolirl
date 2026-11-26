@@ -1,3 +1,5 @@
+import { GSOL_BUSINESS } from '../shared/business-details.mjs'
+
 /** Legacy `cid:` keys — only referenced by `adaptTransactionalEmailHtmlForBrowserPreview` if old HTML still contains them. */
 export const logoLockupEmailContentId = 'gsol-brand-lockup-email'
 export const shamrockInlineContentId = 'gsol-shamrock-inline'
@@ -8,21 +10,29 @@ export const socialContentIds = {
   bsky: 'gsol-social-bsky'
 }
 
-/** Legal — company no. mirrors `src/lib/business-cards-config.ts` businessCardContact.companyRegIreland */
+/** Legal — company no. from shared/business-details.mjs */
 export const gsolCompanyLegal = {
-  companyRegistrationNumber: '814210'
+  companyRegistrationNumber: GSOL_BUSINESS.companyRegistrationNumber
 }
 
-/** Brand lines — align with `src/data/site-content.ts` companyContact + footer. */
+/** Brand lines — align with shared/business-details.mjs */
 export const gsolEmailBrand = {
-  phoneDisplay: '087 446 4766',
-  phoneTel: '+353874464766',
-  spanishPhoneDisplay: '+34 641 81 53 66',
-  spanishPhoneTel: '+34641815366',
-  phoneIrishLineLabel: 'Ireland',
-  phoneSpanishLineLabel: 'Spain',
-  whatsappHref: 'https://wa.me/353874464766',
-  email: 'info@golfsolirl.com',
-  addressLines: ['6 Richmond Road', 'Drumcondra, Dublin 3'],
-  eircode: 'D03 C434'
+  phoneDisplay: GSOL_BUSINESS.irishPhoneDisplay,
+  phoneTel: GSOL_BUSINESS.irishPhoneTel,
+  spanishPhoneDisplay: GSOL_BUSINESS.spanishPhoneDisplay,
+  spanishPhoneTel: GSOL_BUSINESS.spanishPhoneTel,
+  phoneIrishLineLabel: GSOL_BUSINESS.irishPhoneLabel,
+  phoneSpanishLineLabel: GSOL_BUSINESS.spanishPhoneLabel,
+  whatsappHref: GSOL_BUSINESS.whatsappHref,
+  whatsappDisplay: GSOL_BUSINESS.whatsappDisplay,
+  email: GSOL_BUSINESS.email,
+  addressLines: [
+    GSOL_BUSINESS.address.streetAddress,
+    `${GSOL_BUSINESS.address.addressLocality}, ${GSOL_BUSINESS.address.addressRegion}`
+  ],
+  eircode: GSOL_BUSINESS.address.postalCode,
+  websiteDisplay: GSOL_BUSINESS.websiteDisplay,
+  websiteUrl: GSOL_BUSINESS.websiteUrl,
+  registeredInLabel: GSOL_BUSINESS.registeredInLabel,
+  addressOneLine: GSOL_BUSINESS.addressOneLine
 }

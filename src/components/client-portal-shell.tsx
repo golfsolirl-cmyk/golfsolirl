@@ -45,7 +45,7 @@ export function ClientPortalShell({
   )
 
   return (
-    <div className="portal-ui-root flex min-h-[min(70vh,900px)] gap-0 pb-[calc(4.75rem+env(safe-area-inset-bottom))] lg:pb-0">
+    <div className="portal-ui-root flex min-h-[min(70vh,900px)] gap-0 rounded-2xl bg-slate-100/80 p-2 pb-[calc(4.75rem+env(safe-area-inset-bottom))] sm:p-3 lg:pb-3">
       <ClientSidebar
         activeSection={activeSection}
         mobileOpen={mobileNavOpen}
@@ -54,7 +54,7 @@ export function ClientPortalShell({
         unreadMessages={unreadMessages}
       />
 
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-200/80 sm:p-5">
         <div className="sticky top-0 z-30 mb-4 border-b border-forest-200 bg-white/95 px-1 py-3 backdrop-blur-sm lg:hidden">
           <div className="flex items-center gap-3">
             <button

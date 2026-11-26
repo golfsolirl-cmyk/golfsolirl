@@ -50,6 +50,7 @@ import {
 import { handleEnquiryAdminMessage, handleEnquiryAdminQuote } from '../server/enquiry-admin-quote-service.mjs'
 import { handleSitePaymentSettings } from '../server/site-payment-settings-service.mjs'
 import { handleBrandKit } from '../server/brand-kit-service.mjs'
+import { handleLaunchOfferPublic, handleTowAdmin } from '../server/tow-admin-service.mjs'
 import { handleEnquiryPaymentAdmin } from '../server/enquiry-payment-service.mjs'
 import { handleEnquiryTransferUpsellEmail } from '../server/enquiry-transfer-upsell-email.mjs'
 import { handleAdminSendDocument } from '../server/admin-send-document-service.mjs'
@@ -61,6 +62,7 @@ import {
 } from '../server/client-enquiry-document-email.mjs'
 import { handleAdminMail, handleGmailOauthCallback } from '../server/admin-mail-service.mjs'
 import { handleDeskCustomers, handleDeskQuoteDecision } from '../server/desk-quote-service.mjs'
+import { handleMonzoPay } from '../server/monzo-pay-service.mjs'
 import { readIncomingMessageBodyUtf8, readIncomingMessageBodyBuffer } from '../server/vercel-read-body.mjs'
 import {
   handleAdminLogin,
@@ -543,6 +545,35 @@ export default async function handler(req, res) {
         return
       }
 
+      case 'tow-admin': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const cookieHeader = typeof req.headers?.cookie === 'string' ? req.headers.cookie : ''
+        const result = await handleTowAdmin(process.env, {
+          method: 'POST',
+          authHeader,
+          cookieHeader,
+          body: payload
+        })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'launch-offer': {
+        if (req.method !== 'GET') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const result = await handleLaunchOfferPublic(process.env)
+        jsonEnd(res, 200, result)
+        return
+      }
+
       case 'brand-kit': {
         const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
         const cookieHeader = typeof req.headers?.cookie === 'string' ? req.headers.cookie : ''
@@ -1003,6 +1034,27 @@ export default async function handler(req, res) {
         const raw = await readIncomingMessageBodyUtf8(req)
         const payload = raw ? JSON.parse(raw) : {}
         const result = await handleDeskQuoteDecision(payload, process.env)
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'monzo-pay': {
+        if (req.method !== 'POST' && req.method !== 'GET') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        let payload = {}
+        if (req.method === 'POST') {
+          const raw = await readIncomingMessageBodyUtf8(req)
+          payload = raw ? JSON.parse(raw) : {}
+        }
+        const urlObj = new URL(req.url || '/', 'http://localhost')
+        const query = Object.fromEntries(urlObj.searchParams.entries())
+        const result = await handleMonzoPay(process.env, {
+          method: req.method,
+          body: payload,
+          query
+        })
         jsonEnd(res, 200, result)
         return
       }

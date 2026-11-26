@@ -1,5 +1,6 @@
 import { SEO_CONTACT } from './seo-contact'
 import { SITE_ORIGIN } from '../site-seo'
+import { gsolPostalAddressJsonLd } from '../business-details'
 
 /** Verified sameAs only — generic facebook.com homepage is excluded. */
 const SAME_AS: readonly string[] = [
@@ -8,26 +9,31 @@ const SAME_AS: readonly string[] = [
   'https://www.linkedin.com/in/gregory-mcdonald-44a537415/'
 ]
 
+function companyIdentifier(): Record<string, unknown> {
+  return {
+    '@type': 'PropertyValue',
+    name: 'Company registration number',
+    propertyID: 'companyRegistration',
+    value: SEO_CONTACT.companyRegistrationNumber
+  }
+}
+
 export function buildOrganizationSchema(origin: string = SITE_ORIGIN): Record<string, unknown> {
   return {
     '@context': 'https://schema.org',
-    '@type': 'TravelAgency',
+    '@type': ['TravelAgency', 'Organization', 'LocalBusiness'],
     '@id': `${origin}/#organization`,
     name: SEO_CONTACT.brandName,
     alternateName: SEO_CONTACT.alternateName,
+    legalName: SEO_CONTACT.brandName,
     url: origin,
     email: SEO_CONTACT.email,
     description:
       'Irish-owned Costa del Sol golf holiday specialist for golfers travelling from Ireland — courses, hotels, tee times, and Málaga airport transfers.',
     telephone: [SEO_CONTACT.irishPhoneTel, SEO_CONTACT.spanishPhoneTel],
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: SEO_CONTACT.address.streetAddress,
-      addressLocality: SEO_CONTACT.address.addressLocality,
-      addressRegion: SEO_CONTACT.address.addressRegion,
-      postalCode: SEO_CONTACT.address.postalCode,
-      addressCountry: SEO_CONTACT.address.addressCountry
-    },
+    address: gsolPostalAddressJsonLd(),
+    identifier: companyIdentifier(),
+    companyRegistration: SEO_CONTACT.companyRegistrationNumber,
     areaServed: [
       { '@type': 'Country', name: 'Ireland' },
       { '@type': 'AdministrativeArea', name: 'Costa del Sol' }
@@ -49,6 +55,23 @@ export function buildOrganizationSchema(origin: string = SITE_ORIGIN): Record<st
       }
     ],
     sameAs: [...SAME_AS]
+  }
+}
+
+/** Explicit LocalBusiness graph node (same address / phones / registration). */
+export function buildLocalBusinessSchema(origin: string = SITE_ORIGIN): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    '@id': `${origin}/#localbusiness`,
+    name: SEO_CONTACT.brandName,
+    url: origin,
+    email: SEO_CONTACT.email,
+    telephone: [SEO_CONTACT.irishPhoneTel, SEO_CONTACT.spanishPhoneTel],
+    address: gsolPostalAddressJsonLd(),
+    identifier: companyIdentifier(),
+    companyRegistration: SEO_CONTACT.companyRegistrationNumber,
+    parentOrganization: { '@id': `${origin}/#organization` }
   }
 }
 

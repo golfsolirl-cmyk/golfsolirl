@@ -348,6 +348,15 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
         title: 'Cancellations and protection',
         body: 'Cancellations, group reductions, weather disruption, missed services and force majeure events are subject to the relevant supplier terms. Travel insurance is strongly recommended.',
         bullets: ['No-shows are normally charged in full', 'Reduced group numbers can increase per-person costs', 'Nothing limits rights that cannot legally be excluded under Irish law']
+      },
+      {
+        title: 'Company identity',
+        body: 'Golf Sol Ireland is registered in Ireland (Co. 814210). Registered office: 6 Richmond Road, Drumcondra, Dublin 3, D03 C434, Ireland. Ireland +353 86 851 5000 · Spain +34 641 81 53 66 · info@golfsolirl.com · www.golfsolirl.com.',
+        bullets: [
+          'Registered in Ireland · Co. 814210',
+          '6 Richmond Road, Drumcondra, Dublin 3, D03 C434, Ireland',
+          'Ireland +353 86 851 5000 · Spain +34 641 81 53 66'
+        ]
       }
     ]
   }

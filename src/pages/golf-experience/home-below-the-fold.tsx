@@ -1,3 +1,4 @@
+import { WhatsAppBanner } from '../../components/whatsapp/WhatsAppBanner'
 import { GeFooter } from './sections/ge-footer'
 import { GeHomeBundlesTeaser } from './sections/home-bundles-teaser'
 import { GeHomeEnquiry } from './sections/home-enquiry'
@@ -7,7 +8,7 @@ import { GeHomeWhatWeDo } from './sections/home-what-we-do'
 /**
  * Homepage fold — bundles first (centrepiece), thin services strip, then enquiry + Malaga transfers.
  * Competing package calculators and dense galleries stay off the home path.
- * WhatsApp FAB is mounted once in main.tsx.
+ * WhatsApp lives in the TOW-style banner above the footer (no floating popup).
  */
 export default function HomeBelowTheFold() {
   return (
@@ -16,6 +17,7 @@ export default function HomeBelowTheFold() {
       <GeHomeWhatWeDo />
       <GeHomeEnquiry />
       <GeHomeMalagaTransfers />
+      <WhatsAppBanner sourcePage="/" />
       <GeFooter />
     </>
   )

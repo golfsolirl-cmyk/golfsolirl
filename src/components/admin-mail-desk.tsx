@@ -26,6 +26,7 @@ import {
   type MailQuotationPackage
 } from '../lib/admin-mail-quotation'
 import { cx } from '../lib/utils'
+import { GSOL_BUSINESS } from '../lib/business-details'
 
 export type AdminMailSeed = {
   readonly view?: 'inbox' | 'compose' | 'sent' | 'templates'
@@ -508,9 +509,9 @@ export function AdminMailDesk({ accessToken, seed, onSeedConsumed, onCreateDocum
       interest: compose.interest,
       travelDates: compose.travelDates,
       numberOfGuests: compose.numberOfGuests,
-      companyName: 'Golf Sol Ireland',
-      companyPhone: '+353 87 446 4766',
-      website: 'www.golfsolirl.com',
+      companyName: GSOL_BUSINESS.brandName,
+      companyPhone: GSOL_BUSINESS.irishPhoneDisplay,
+      website: GSOL_BUSINESS.websiteDisplay,
       ...quoteVars
     }
   }, [compose])

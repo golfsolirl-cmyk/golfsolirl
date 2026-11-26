@@ -1,17 +1,18 @@
 /**
  * GolfSol Ireland WhatsApp concierge.
- * One place to change the business number and the messages we prefill.
+ * Number comes from shared/business-details.mjs (WhatsApp only — not the Irish voice line).
  * Links never include payment details, passwords, or sign-in tokens.
  */
+import { GSOL_BUSINESS } from './business-details'
 
-/** Irish mobile 086 600 6202. wa.me needs the country code and no leading zero. */
-export const WHATSAPP_NUMBER = '353866006202'
-/** International display — client asked for 00353 / +353 prefix on the concierge line. */
-export const WHATSAPP_DISPLAY = '+353 86 600 6202'
+/** Irish WhatsApp 086 600 6202. wa.me needs the country code and no leading zero. */
+export const WHATSAPP_NUMBER = GSOL_BUSINESS.whatsappNumberDigits
+/** International display. */
+export const WHATSAPP_DISPLAY = GSOL_BUSINESS.whatsappDisplay
 /** Alternate Irish trunk display (00353…). */
 export const WHATSAPP_DISPLAY_00353 = '00353 86 600 6202'
 /** Base wa.me link (no prefilled message). */
-export const WHATSAPP_HREF = `https://wa.me/${WHATSAPP_NUMBER}`
+export const WHATSAPP_HREF = GSOL_BUSINESS.whatsappHref
 /** Compact public CTA label — sentence case, no all-caps, no “(Irish number)”. */
 export const WHATSAPP_CTA_LABEL = 'WhatsApp us'
 /**

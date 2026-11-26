@@ -2,6 +2,9 @@ import { footerArticlePages, type FooterArticleContent } from '../../../data/foo
 import { seoLandingPages } from '../../../data/seo-landing-pages'
 import { seoSearchClusterPages } from '../../../data/seo-search-cluster-pages'
 import { seoIrelandSearchPages } from '../../../data/seo-ireland-search-pages'
+import { GSOL_BUSINESS } from '../../../lib/business-details'
+
+const companyIdentityBody = `${GSOL_BUSINESS.brandName} — ${GSOL_BUSINESS.addressOneLine}. Ireland ${GSOL_BUSINESS.irishPhoneDisplay} · Spain ${GSOL_BUSINESS.spanishPhoneDisplay}. ${GSOL_BUSINESS.email} · ${GSOL_BUSINESS.websiteDisplay}. ${GSOL_BUSINESS.registeredInLabel}.`
 
 export interface GeContentPageSection {
   readonly title: string
@@ -142,6 +145,16 @@ const contactPage: GeContentPageData = {
       title: 'What to send us',
       body: 'Your dates and group size are enough to start. We refine hotels, courses and transfers from there.',
       bullets: ['Quick first response', 'Clear choices to compare', 'Practical next actions']
+    },
+    {
+      title: 'Company details',
+      body: companyIdentityBody,
+      bullets: [
+        `Ireland ${GSOL_BUSINESS.irishPhoneDisplay}`,
+        `Spain ${GSOL_BUSINESS.spanishPhoneDisplay}`,
+        GSOL_BUSINESS.email,
+        GSOL_BUSINESS.registeredInLabel
+      ]
     }
   ],
   formTitle: 'Start your quote request',
@@ -209,6 +222,15 @@ const termsPage: GeContentPageData = {
         'Our maximum liability, where a legal claim is proven against GolfSol Ireland, is limited to the amount paid to us for the affected service, except where law requires otherwise.',
         'We will always try to assist with supplier issues, but assistance does not mean we accept liability for another company’s mistake.'
       ]
+    },
+    {
+      title: 'Company identity',
+      body: `${GSOL_BUSINESS.brandName} is registered in Ireland (Co. ${GSOL_BUSINESS.companyRegistrationNumber}). Registered office: ${GSOL_BUSINESS.addressOneLine}. Contact: Ireland ${GSOL_BUSINESS.irishPhoneDisplay} · Spain ${GSOL_BUSINESS.spanishPhoneDisplay} · ${GSOL_BUSINESS.email} · ${GSOL_BUSINESS.websiteDisplay}.`,
+      bullets: [
+        GSOL_BUSINESS.registeredInLabel,
+        GSOL_BUSINESS.addressOneLine,
+        `Ireland ${GSOL_BUSINESS.irishPhoneDisplay} · Spain ${GSOL_BUSINESS.spanishPhoneDisplay}`
+      ]
     }
   ],
   formTitle: 'Ask about terms',
@@ -247,6 +269,15 @@ const privacyPage: GeContentPageData = {
       title: 'Cookies',
       body: 'Essential cookies remember your cookie choice, and a sign-in session only after you log in. We do not use analytics or advertising cookies. The cookie policy has the full list.',
       bullets: ['Cookie policy — /cookie-policy']
+    },
+    {
+      title: 'Data controller',
+      body: `${GSOL_BUSINESS.brandName} (${GSOL_BUSINESS.registeredInLabel}), ${GSOL_BUSINESS.addressOneLine}. Contact: Ireland ${GSOL_BUSINESS.irishPhoneDisplay} · Spain ${GSOL_BUSINESS.spanishPhoneDisplay} · ${GSOL_BUSINESS.email} · ${GSOL_BUSINESS.websiteDisplay}.`,
+      bullets: [
+        `Registered office: ${GSOL_BUSINESS.addressOneLine}`,
+        GSOL_BUSINESS.email,
+        GSOL_BUSINESS.registeredInLabel
+      ]
     }
   ],
   formTitle: 'Ask a privacy question',
@@ -535,16 +566,35 @@ const faqPage: GeContentPageData = {
   highlights: trustHighlights,
   sections: [
     {
-      title: 'Common planning questions',
+      title: 'How do deposits and balances work?',
       body:
-        'Most organisers ask about deposits, cancellation windows, tee-time certainty, and group-size pricing. We explain these upfront.',
+        'Unless your written proposal says otherwise, expect a deposit to hold supplier space and a balance before travel. We confirm milestones in writing so the group knows what is locked.',
       bullets: ['Simple payment milestones', 'What is confirmed and when', 'How changes are handled']
     },
     {
-      title: 'Need a direct answer?',
+      title: 'When are tee times and hotels confirmed?',
       body:
-        'If your question is specific to your dates or group, send it through and we will answer directly.',
-      bullets: ['Fast response from Ireland', 'No chatbot runaround', 'Clear next step with each reply']
+        'We hold preferred options while suppliers confirm. Nothing is final until you have written confirmation and the required payment steps are complete.'
+    },
+    {
+      title: 'Do you arrange Málaga Airport golf transfers?',
+      body:
+        'Yes — private, golf-bag-friendly transfers from AGP to your hotel or resort base. See /transfers/malaga-airport-golf-transfers for the full transfer story.'
+    },
+    {
+      title: 'How many nights should our group stay?',
+      body:
+        '3 nights suits short breaks; 5–7 nights suits most societies. Compare /golf-packages/3-night-golf-breaks, /golf-packages/5-night-golf-holidays, and /golf-packages/7-night-golf-holidays.'
+    },
+    {
+      title: 'Need a direct answer for your dates?',
+      body:
+        'If your question is specific to your dates or group, send it through and we will answer directly from Ireland.',
+      bullets: [
+        'Fast response from Ireland',
+        'Costa del Sol FAQ — /guides/costa-del-sol-golf-faq',
+        'Get a quote — /quote'
+      ]
     }
   ],
   formTitle: 'Ask your question',
@@ -730,8 +780,8 @@ const coreGeContentPages: Record<string, GeContentPageData> = {
     ...coursesPage,
     metaTitle: 'Costa del Sol Golf Map | GolfSol Ireland',
     eyebrow: 'Planning',
-    title: 'Costa del Sol golf map guidance without the noise',
-    subtitle: 'Understand practical clusters, driving windows, and route logic before you commit.',
+    title: 'Costa del Sol golf map',
+    subtitle: 'Browse courses as a simple list or map — tap one to plan transfers, hotel and tee times.',
     interestPreset: 'Costa del Sol golf map'
   },
   '/iagto': {

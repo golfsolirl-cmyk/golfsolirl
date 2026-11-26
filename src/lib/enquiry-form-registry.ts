@@ -26,7 +26,9 @@ export const WEBSITE_ENQUIRY_FORM = {
   packageBuilder: 'package_builder',
   tripServiceCta: 'trip_service_cta',
   bundleQuote: 'bundle_quote',
-  malagaAirportTransfer: 'malaga_airport_transfer'
+  malagaAirportTransfer: 'malaga_airport_transfer',
+  /** Compact “Request a callback” card beside WhatsApp — name, phone, best time, optional note. */
+  callbackRequest: 'callback_request'
 } as const
 
 export type WebsiteEnquiryFormKey = (typeof WEBSITE_ENQUIRY_FORM)[keyof typeof WEBSITE_ENQUIRY_FORM]
@@ -71,7 +73,9 @@ export const ENQUIRY_STRUCTURED_FIELD_KEYS = {
   /** `yes` when client asked to add airport & hotel transfers. */
   addTransfers: '_addTransfers',
   /** ISO timestamp when admin sent the transfer upsell email. */
-  transferUpsellEmailSentAt: '_transferUpsellEmailSentAt'
+  transferUpsellEmailSentAt: '_transferUpsellEmailSentAt',
+  /** Pathname where the form was submitted (SEO landings, map, etc.). */
+  sourcePage: '_sourcePage'
 } as const
 
 /** Stored in `fields` / structured payload for select `tripArrivalMode`. */

@@ -1,4 +1,6 @@
 import { useMemo, useState, type FormEvent } from 'react'
+import { LeanPublicHero } from '../components/home/premium-golf-hero'
+import { NAMED_HERO_IMAGE_SETS } from '../lib/page-hero-images'
 import { GeFooter } from './golf-experience/sections/ge-footer'
 import { GeNavbar } from './golf-experience/sections/ge-navbar'
 import { GeButton } from './golf-experience/components/ge-button'
@@ -48,12 +50,15 @@ export function RateTripPage() {
   return (
     <div className="ge-page min-h-screen bg-white">
       <GeNavbar />
-      <main className="mx-auto max-w-lg px-5 pb-24 pt-32 sm:pt-36">
-        <h1 className="font-ge text-3xl font-extrabold text-gs-dark">Rate your transfer</h1>
-        <p className="mt-3 font-ge text-sm leading-relaxed text-ge-gray500">
-          Honest feedback helps us train partners and celebrate great driving on the Costa del Sol.
-        </p>
-
+      <LeanPublicHero
+        title="Rate your transfer"
+        lead="Honest feedback helps us train partners and celebrate great driving on the Costa del Sol."
+        images={NAMED_HERO_IMAGE_SETS.homepageFleet}
+        primaryCta={{ label: 'Get a quote', href: '/quote' }}
+        secondaryCta={{ label: 'Home', href: '/' }}
+        showTrust={false}
+      />
+      <main className="mx-auto max-w-lg px-5 pb-24 pt-10 sm:pt-12">
         {!bid || !token ? (
           <p className="mt-8 text-sm text-red-700">Missing review parameters. Use the link from your completion email.</p>
         ) : done ? (

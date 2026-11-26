@@ -397,7 +397,7 @@ const createCustomer = async (db, body) => {
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throwStatus('Enter a valid email.', 400)
   const phoneKey = computePhoneUniquenessKey(phone)
   if (!phoneKey || !isLikelyMobileE164(phoneKey)) {
-    throwStatus('Enter a mobile number, for example 087 446 4766.', 400)
+    throwStatus('Enter a mobile number, for example 086 123 4567.', 400)
   }
 
   const existing = await findExistingCustomer(db, email, phoneKey)
@@ -512,11 +512,9 @@ const customerDetail = async (db, email) => {
 }
 
 const openCheckout = async (env, db, row) => {
-  const stripeKey = env.STRIPE_SECRET_KEY?.trim()
-  if (!stripeKey) {
-    throwStatus('STRIPE_SECRET_KEY is not set, so a pay link cannot be created.', 500)
-  }
+  // Monzo pay page is primary. Stripe remains optional secondary when configured.
   const origin = getSiteOrigin(env)
+  const monzoPayUrl = `${origin}/pay/${row.decision_token}`
   const profile = row.profile_id ? { id: row.profile_id } : await loadProfile(db, row.customer_email)
   let portalInvoiceId = row.portal_invoice_id || null
 
@@ -542,42 +540,41 @@ const openCheckout = async (env, db, row) => {
     portalInvoiceId = inserted.data.id
   }
 
-  const stripe = new Stripe(stripeKey)
-  let session
-  try {
-    session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      customer_email: row.customer_email,
-      client_reference_id: portalInvoiceId || row.id,
-      metadata: {
-        desk_quote_id: row.id,
-        ...(portalInvoiceId ? { portal_invoice_id: portalInvoiceId } : {})
-      },
-      line_items: [
-        {
-          quantity: 1,
-          price_data: {
-            currency: 'eur',
-            unit_amount: row.amount_cents,
-            product_data: {
-              name: row.title || `Golf Sol ${row.reference_code}`,
-              description: clip([row.reference_code, tripPlain(row.trip_details)].filter(Boolean).join(' — '), 400)
+  let stripeUrl = null
+  let sessionId = null
+  const stripeKey = env.STRIPE_SECRET_KEY?.trim()
+  if (stripeKey) {
+    try {
+      const stripe = new Stripe(stripeKey)
+      const session = await stripe.checkout.sessions.create({
+        mode: 'payment',
+        customer_email: row.customer_email,
+        client_reference_id: portalInvoiceId || row.id,
+        metadata: {
+          desk_quote_id: row.id,
+          ...(portalInvoiceId ? { portal_invoice_id: portalInvoiceId } : {})
+        },
+        line_items: [
+          {
+            quantity: 1,
+            price_data: {
+              currency: 'eur',
+              unit_amount: row.amount_cents,
+              product_data: {
+                name: row.title || `Golf Sol ${row.reference_code}`,
+                description: clip([row.reference_code, tripPlain(row.trip_details)].filter(Boolean).join(' — '), 400)
+              }
             }
           }
-        }
-      ],
-      success_url: `${origin}/quote-reply/${row.decision_token}?paid=1`,
-      cancel_url: `${origin}/quote-reply/${row.decision_token}?choice=accept`
-    })
-  } catch (error) {
-    if (portalInvoiceId && portalInvoiceId !== row.portal_invoice_id) {
-      await db.from('portal_invoices').delete().eq('id', portalInvoiceId)
+        ],
+        success_url: `${origin}/pay/${row.decision_token}?paid=1`,
+        cancel_url: monzoPayUrl
+      })
+      stripeUrl = session?.url || null
+      sessionId = session?.id || null
+    } catch (error) {
+      console.warn('[desk-quote] optional Stripe checkout failed', error instanceof Error ? error.message : error)
     }
-    throwStatus(error instanceof Error ? error.message : 'Stripe Checkout failed.', 502)
-  }
-
-  if (!session?.url) {
-    throwStatus('Stripe did not return a pay link.', 502)
   }
 
   await db
@@ -585,18 +582,24 @@ const openCheckout = async (env, db, row) => {
     .update({
       portal_invoice_id: portalInvoiceId,
       profile_id: profile?.id || row.profile_id,
-      stripe_checkout_session_id: session.id,
-      stripe_checkout_url: session.url,
+      ...(sessionId ? { stripe_checkout_session_id: sessionId } : {}),
+      ...(stripeUrl ? { stripe_checkout_url: stripeUrl } : {}),
       status: 'invoiced',
       updated_at: new Date().toISOString()
     })
     .eq('id', row.id)
 
-  if (portalInvoiceId) {
-    await db.from('portal_invoices').update({ stripe_checkout_session_id: session.id, stripe_checkout_url: session.url }).eq('id', portalInvoiceId)
+  if (portalInvoiceId && (sessionId || stripeUrl)) {
+    await db
+      .from('portal_invoices')
+      .update({
+        ...(sessionId ? { stripe_checkout_session_id: sessionId } : {}),
+        ...(stripeUrl ? { stripe_checkout_url: stripeUrl } : {})
+      })
+      .eq('id', portalInvoiceId)
   }
 
-  return { checkoutUrl: session.url, portalInvoiceId }
+  return { checkoutUrl: monzoPayUrl, stripeCheckoutUrl: stripeUrl, portalInvoiceId }
 }
 
 const emailPayLink = async (env, row, checkoutUrl, pdf) => {
@@ -616,8 +619,8 @@ const emailPayLink = async (env, row, checkoutUrl, pdf) => {
       paragraph(`Total due: <strong>${escapeHtml(fmtEur(row.amount_cents))}</strong>.`),
       detailsBlock(row),
       row.summary ? paragraph(escapeHtml(row.summary)) : '',
-      buttonRow([{ href: checkoutUrl, label: 'Pay now', style: ctaGreen }]),
-      paragraph(`You can also review the trip in your dashboard: <a href="${escapeHtml(`${origin}/dashboard`)}" style="color:${gs.green};">${escapeHtml(`${origin}/dashboard`)}</a>.`)
+      buttonRow([{ href: checkoutUrl, label: 'Open Monzo pay page', style: ctaGreen }]),
+      paragraph(`Transfer using reference <strong>${escapeHtml(row.reference_code)}</strong>. You can also review the trip in your dashboard: <a href="${escapeHtml(`${origin}/dashboard`)}" style="color:${gs.green};">${escapeHtml(`${origin}/dashboard`)}</a>.`)
     ].join('')
   })
   await sendMail(env, { to: row.customer_email, subject, html, filename: pdf.filename, pdfBytes: pdf.bytes })

@@ -4,6 +4,7 @@ import { buildBrandedPostEnquiryPortalInviteHtml } from './branded-post-enquiry-
 import { buildFormAutoresponseEmailHtml, buildSignInEmailHtml } from './branded-autoresponse-email.mjs'
 import { adaptTransactionalEmailHtmlForBrowserPreview, finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
 import { getTermsEmailHtmlSampleForPreview } from './enquiry-service.mjs'
+import { buildGsolCatalogEmail, GSOL_EMAIL_CATALOG } from './gsol-transactional-catalog.mjs'
 
 const sampleEnquiryPayload = () => ({
   fullName: 'Aoife Murphy',
@@ -66,8 +67,14 @@ export const getFormEmailPreviewHtml = (kind, requestOrigin = '') => {
         })
       )
       break
-    default:
+    default: {
+      const catalogIds = new Set(GSOL_EMAIL_CATALOG.map((c) => c.id))
+      if (catalogIds.has(kind)) {
+        html = buildGsolCatalogEmail(kind).html
+        break
+      }
       throw new Error(`Unknown email preview kind: ${kind}`)
+    }
   }
 
   return adaptTransactionalEmailHtmlForBrowserPreview(html, origin)

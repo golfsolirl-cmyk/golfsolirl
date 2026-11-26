@@ -27,7 +27,7 @@ export function GeFinalCta() {
             Dates, how many of you, and where you want to stay. We reply with a clear plan.
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-4">
-            <GeButton href="/contact" variant="gs-green" size="lg">
+            <GeButton href="/quote" variant="gs-green" size="lg">
               {finalCtaCopy.cta}
             </GeButton>
             <GeDualPhoneFinalCtaRow />

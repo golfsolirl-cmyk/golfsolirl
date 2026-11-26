@@ -6,7 +6,7 @@ import { cx } from '../../lib/utils'
 
 const HERO_MOBILE_SRC = '/images/hero-airport-mobile.webp'
 const HERO_DESKTOP_SRC = '/images/hero-airport-desktop.webp'
-const HERO_CALL_DISPLAY = '+353 87 446 4766'
+const HERO_CALL_DISPLAY = companyContact.phoneDisplay
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
 const MARKS: readonly { readonly icon: LucideIcon; readonly title: string; readonly detail: string }[] = [
@@ -77,7 +77,7 @@ function ServiceMarks({ reduceMotion }: { readonly reduceMotion: boolean }) {
 function PriceBanner({ reduceMotion }: { readonly reduceMotion: boolean }) {
   return (
     <a
-      href="#enquire"
+      href="/quote?from=transfers&svc_transfers=1"
       className="airport-poster-on-gold group relative isolate inline-flex min-h-12 w-full max-w-[28rem] items-center gap-3 overflow-hidden rounded-full bg-[#d4a843] px-3 py-1.5 shadow-[0_14px_30px_rgba(0,0,0,0.28)] ring-1 ring-[#f3e6c4]/80 sm:w-auto sm:pr-6"
     >
       <span

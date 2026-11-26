@@ -59,7 +59,7 @@ export function GeHomeBundlesTeaser() {
             View all bundles
             <ArrowRight className="h-4 w-4" aria-hidden />
           </GeButton>
-          <GeButton href="/contact" variant="outline-gs-green" size="lg">
+          <GeButton href="/quote" variant="outline-gs-green" size="lg">
             Get a quote
           </GeButton>
         </div>
