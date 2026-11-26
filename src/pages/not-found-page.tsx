@@ -14,7 +14,7 @@ export function NotFoundPage() {
     <div className="ge-page flex min-h-screen flex-col bg-offwhite">
       <GeNavbar />
       <main
-        className="flex flex-1 flex-col items-center justify-center px-5 py-20 text-center"
+        className="ge-pad-under-fixed-header flex flex-1 flex-col items-center justify-center px-5 pb-20 text-center"
         id="main"
       >
         <p className="font-ge text-xs font-bold uppercase tracking-[0.2em] text-brand-700">404</p>

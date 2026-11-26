@@ -339,7 +339,10 @@ export function ContinueTripPage() {
     return (
       <div className="ge-page min-h-screen overflow-x-hidden bg-white">
         <GeNavbar />
-        <main id="main" className="flex min-h-[50vh] items-center justify-center bg-ge-gray50 px-5 py-16 font-ge text-ge-gray500">
+        <main
+          id="main"
+          className="ge-pad-under-fixed-header flex min-h-[50vh] items-center justify-center bg-ge-gray50 px-5 pb-16 font-ge text-ge-gray500"
+        >
           Loading…
         </main>
         <GeFooter />

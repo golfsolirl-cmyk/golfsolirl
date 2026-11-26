@@ -97,7 +97,10 @@ export function DashboardLoadingShell({ label }: { readonly label: string }) {
   return (
     <div className="ge-page flex min-h-screen flex-col overflow-x-hidden bg-white text-gs-dark">
       <GeNavbar />
-      <main id="main" className="flex flex-1 flex-col items-center justify-center px-6 pb-24 pt-28 text-center">
+      <main
+        id="main"
+        className="ge-pad-under-fixed-header flex flex-1 flex-col items-center justify-center px-6 pb-24 text-center"
+      >
         <div className="mb-8 scale-[0.92] opacity-95">
           <GeBrandLockup tone="on-light" mode="footer" />
         </div>

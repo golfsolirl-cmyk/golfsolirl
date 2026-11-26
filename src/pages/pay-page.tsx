@@ -116,7 +116,10 @@ export function PayPage() {
   return (
     <div className="ge-page flex min-h-screen flex-col bg-[#F4F7F5] text-gs-dark">
       <GeNavbar />
-      <main id="main" className="mx-auto w-full max-w-lg flex-1 px-4 py-8 sm:px-6">
+      <main
+        id="main"
+        className="ge-pad-under-fixed-header mx-auto w-full max-w-lg flex-1 px-4 pb-8 sm:px-6 sm:pb-10"
+      >
         <p className="font-ge text-[0.75rem] font-extrabold uppercase tracking-[0.14em] text-brand-700">
           Golf Sol Ireland · Pay
         </p>
