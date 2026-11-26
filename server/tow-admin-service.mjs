@@ -58,7 +58,12 @@ const mapEnquiry = (row) => {
     blank(row.full_name) ||
     '—'
   const email = blank(fields.Email) || blank(fields.email) || blank(row.email) || ''
-  const phone = blank(fields.Phone) || blank(fields.phone) || blank(row.phone) || blank(row.phone_e164) || ''
+  const phone =
+    blank(fields.Phone) ||
+    blank(fields.phone) ||
+    blank(row.phone_whatsapp) ||
+    blank(row.phone_e164) ||
+    ''
   const interest =
     blank(fields.Interest) ||
     blank(fields.Message) ||
@@ -75,12 +80,7 @@ const mapEnquiry = (row) => {
     interest,
     source: blank(fp.source) || null
   })
-  const amount =
-    typeof row.amount_due_eur === 'number'
-      ? row.amount_due_eur
-      : typeof row.amount_total_eur === 'number'
-        ? row.amount_total_eur
-        : null
+  const amount = typeof row.amount_due_eur === 'number' ? row.amount_due_eur : null
   let payUi = row.payment_status || 'awaiting_payment'
   if (row.payment_customer_reported_at && payUi === 'awaiting_payment') {
     payUi = 'customer_reported'
@@ -196,7 +196,7 @@ export const handleTowAdmin = async (env = process.env, meta = {}) => {
     const { data, error } = await admin
       .from('enquiries')
       .select(
-        'id, created_at, email, phone, phone_e164, form_payload, source, form_type, form_type_label, form_source_page, admin_status, admin_private_notes, payment_status, payment_reference, amount_due_eur, amount_total_eur, paid_via, payment_customer_reported_at, last_payment_at, requested_services, reference_id, full_name, interest, trip_tracker, email_trip_on_step_change, trip_step_email_log'
+        'id, created_at, email, phone_whatsapp, phone_e164, form_payload, form_type, form_type_label, form_source_page, admin_status, admin_private_notes, payment_status, payment_reference, amount_due_eur, paid_via, payment_customer_reported_at, last_payment_at, requested_services, reference_id, full_name, interest, trip_tracker, email_trip_on_step_change, trip_step_email_log'
       )
       .order('created_at', { ascending: false })
       .limit(500)
@@ -457,7 +457,7 @@ export const handleTowAdmin = async (env = process.env, meta = {}) => {
       if (!cust) throwStatus('Customer not found.', 404)
       email = email || blank(cust.email)
       name = name || blank(cust.full_name)
-      phone = phone || blank(cust.phone_e164)
+      phone = phone || blank(cust.phone) || blank(cust.phone_e164)
       profileId = cust.id
     }
 
@@ -527,7 +527,7 @@ export const handleTowAdmin = async (env = process.env, meta = {}) => {
     const { data, error } = await admin
       .from('profiles')
       .select(
-        'id, email, full_name, phone_e164, account_reference_id, business_name, trip_tracker, payments_log, archived_at, created_at, role'
+        'id, email, full_name, phone, phone_e164, account_reference_id, business_name, trip_tracker, payments_log, archived_at, created_at, role'
       )
       .neq('role', 'admin')
       .order('created_at', { ascending: false })
@@ -540,7 +540,7 @@ export const handleTowAdmin = async (env = process.env, meta = {}) => {
         id: p.id,
         email: p.email,
         fullName: p.full_name,
-        phone: p.phone_e164,
+        phone: blank(p.phone) || blank(p.phone_e164),
         accountRef: p.account_reference_id,
         businessName: p.business_name,
         tripTracker: p.trip_tracker || defaultTracker(),
@@ -567,7 +567,7 @@ export const handleTowAdmin = async (env = process.env, meta = {}) => {
         id: data.id,
         email: data.email,
         fullName: data.full_name,
-        phone: data.phone_e164,
+        phone: blank(data.phone) || blank(data.phone_e164),
         accountRef: data.account_reference_id,
         businessName: data.business_name,
         billingAddress: data.billing_address,
