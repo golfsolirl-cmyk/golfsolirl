@@ -31,9 +31,9 @@ interface GeQuickEnquiryFormProps {
 }
 
 const labelClass =
-  'mb-1.5 block font-ge text-[0.88rem] font-bold uppercase tracking-[0.14em] text-ge-gray500 sm:text-[0.92rem]'
+  'mb-1.5 block font-ge text-[0.82rem] font-bold uppercase tracking-[0.12em] text-ge-gray500'
 const inputClass =
-  'h-12 w-full rounded-xl border border-ge-gray200 bg-white px-3.5 font-ge text-[1.02rem] text-gs-dark outline-none transition-shadow placeholder:text-ge-gray300 focus:border-gs-green focus:ring-2 focus:ring-gs-green/25 sm:text-[1.04rem]'
+  'min-h-[52px] h-13 w-full rounded-xl border border-ge-gray200 bg-white px-4 font-ge text-[1.06rem] text-gs-dark outline-none transition-shadow placeholder:text-ge-gray300 focus:border-gs-green focus:ring-2 focus:ring-gs-green/25'
 
 function createInitialFieldValues(fields: readonly ContentFormField[]) {
   return fields.reduce<Record<string, string>>((accumulator, field) => {
@@ -393,25 +393,20 @@ export function GeQuickEnquiryForm({
       id="ge-enquiry-form"
       className="rounded-[1.75rem] border border-gs-dark/10 bg-white p-5 shadow-[0_24px_60px_rgba(6,59,42,0.12)] sm:p-6"
     >
-      <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.14em] text-brand-700 sm:text-[0.95rem]">
+      <p className="font-ge text-[0.85rem] font-bold uppercase tracking-[0.14em] text-brand-700">
         {formConfig.badge}
       </p>
-      <h2 className="mt-3 font-ge text-[1.95rem] font-extrabold leading-tight tracking-[-0.01em] text-gs-green sm:text-[2.1rem]">
+      <h2 className="mt-2.5 font-ge text-[1.7rem] font-extrabold leading-tight tracking-[-0.01em] text-gs-green sm:text-[1.9rem]">
         {title}
       </h2>
-      <p className="mt-3 font-ge text-[1.06rem] leading-8 text-ge-gray500 sm:text-[1.1rem]">{lead}</p>
-      <p className="mt-3 text-[1rem] font-medium leading-7 text-gs-dark/72 sm:text-[1.02rem]">
-        {isTestimonialForm
-          ? 'Write it like a Tripadvisor review — we approve it before it appears on our homepage.'
-          : 'We reply from Ireland by email, phone, or WhatsApp with a clear next step.'}
-      </p>
+      <p className="mt-2 font-ge text-[1.02rem] leading-7 text-ge-gray500">{lead}</p>
 
       {status === 'success' ? (
         <div ref={confirmationRef} className="mt-6 rounded-xl border border-gs-green/30 bg-gs-green/5 px-4 py-4">
-          <p className="font-ge text-[0.92rem] font-bold uppercase tracking-[0.12em] text-gs-green sm:text-[0.96rem]">
+          <p className="font-ge text-[0.92rem] font-bold uppercase tracking-[0.12em] text-gs-green">
             {formConfig.successTitle}
           </p>
-          <p className="mt-2 font-ge text-[1.04rem] leading-8 text-gs-dark sm:text-[1.08rem]">
+          <p className="mt-2 font-ge text-[1.04rem] leading-7 text-gs-dark">
             {formConfig.successBody}
           </p>
           {isTestimonialForm ? (
@@ -428,12 +423,12 @@ export function GeQuickEnquiryForm({
         <>
           <BookedDatesAvailabilityNotice
             bookedDays={bookedDays}
-            className="mt-6"
+            className="mt-5"
             watchDates={[fieldValues.travelDateFrom, fieldValues.travelDateTo]}
           />
-          <form className="mt-4 space-y-4" onSubmit={handleSubmit} noValidate>
+          <form className="mt-4 flex max-w-xl flex-col gap-4" onSubmit={handleSubmit} noValidate>
           <label className="block">
-            <span className={labelClass}>Full name</span>
+            <span className={labelClass}>Name</span>
             <input
               className={inputClass}
               value={fullName}
@@ -457,14 +452,9 @@ export function GeQuickEnquiryForm({
               required
               placeholder="you@example.com"
             />
-            {!isTestimonialForm ? (
-              <span className="mt-1.5 block font-ge text-xs leading-relaxed text-ge-gray500">
-                Your 6-digit confirmation code is sent to this email address, not by text message.
-              </span>
-            ) : null}
           </label>
           <label className="block">
-            <span className={labelClass}>Mobile (WhatsApp)</span>
+            <span className={labelClass}>Phone</span>
             <input
               className={inputClass}
               value={phoneWhatsApp}
@@ -477,21 +467,25 @@ export function GeQuickEnquiryForm({
               required
               placeholder={contactInfo.phoneFieldPlaceholder}
             />
-            <span className="mt-1.5 block font-ge text-xs text-ge-gray500">
-              Ireland, UK, or Spain mobile only (e.g. 087… / 07… / +34 6…).
-            </span>
           </label>
 
           {!isTestimonialForm ? (
-            <EnquiryContactVerifyFields
-              contactVerifyToken={contactVerifyToken}
-              email={email}
-              labelClassName={labelClass}
-              inputClassName={inputClass}
-              onTokenCleared={() => setContactVerifyToken(null)}
-              onVerified={(token) => setContactVerifyToken(token)}
-              phoneWhatsApp={phoneWhatsApp}
-            />
+            <details className="rounded-xl border border-ge-gray200 bg-ge-gray50/60 px-3.5 py-2.5">
+              <summary className="cursor-pointer list-none font-ge text-[0.9rem] font-semibold text-ge-gray600 marker:content-none [&::-webkit-details-marker]:hidden">
+                Optional: confirm email before send
+              </summary>
+              <div className="mt-3">
+                <EnquiryContactVerifyFields
+                  contactVerifyToken={contactVerifyToken}
+                  email={email}
+                  labelClassName={labelClass}
+                  inputClassName={inputClass}
+                  onTokenCleared={() => setContactVerifyToken(null)}
+                  onVerified={(token) => setContactVerifyToken(token)}
+                  phoneWhatsApp={phoneWhatsApp}
+                />
+              </div>
+            </details>
           ) : null}
 
           {isTestimonialForm ? (
@@ -565,11 +559,12 @@ export function GeQuickEnquiryForm({
                 <label key={field.id} className="block">
                   <span className={labelClass}>{field.label}</span>
                   <textarea
-                    className="w-full rounded-xl border border-ge-gray200 bg-white px-3.5 py-3 font-ge text-[1.02rem] leading-8 text-gs-dark outline-none transition-shadow placeholder:text-ge-gray300 focus:border-gs-green focus:ring-2 focus:ring-gs-green/25 sm:text-[1.04rem]"
+                    className="min-h-[120px] w-full rounded-xl border border-ge-gray200 bg-white px-4 py-3.5 font-ge text-[1.06rem] leading-7 text-gs-dark outline-none transition-shadow placeholder:text-ge-gray300 focus:border-gs-green focus:ring-2 focus:ring-gs-green/25"
                     value={value}
                     onChange={(e) => handleFieldChange(field.id, e.target.value)}
                     placeholder={getFieldPlaceholder(field)}
-                    rows={field.rows ?? 5}
+                    rows={field.rows ?? 4}
+                    required={field.required}
                   />
                 </label>
               )

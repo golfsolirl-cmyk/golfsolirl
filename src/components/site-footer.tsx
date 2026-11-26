@@ -53,7 +53,7 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
                   <a
                     key={label}
                     aria-label={`Visit our ${label} page`}
-                    className="group inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#136047]/25 bg-forest-950 text-[#136047] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#136047]/65 hover:bg-[#136047] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#136047] focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
+                    className="group inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/25 bg-forest-950 text-silver-200 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#fbe8b5]/65 hover:bg-[#136047] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fbe8b5] focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
                     href={href}
                     rel="noreferrer"
                     target="_blank"
@@ -73,7 +73,7 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
               <ul className="mt-4 space-y-2.5">
                 {group.links.map((item) => (
                   <li key={item.href} className="flex items-center gap-2">
-                    <ChevronRight className="h-4 w-4 shrink-0 text-brand-400" aria-hidden="true" />
+                    <ChevronRight className="h-4 w-4 shrink-0 text-[#fbe8b5]" aria-hidden="true" />
                     <a
                       className="text-[1.05rem] font-medium text-white transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
                       href={item.href}

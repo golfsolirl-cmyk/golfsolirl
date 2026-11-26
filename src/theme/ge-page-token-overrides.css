@@ -172,15 +172,7 @@
 .ge-page .text-fairway-600,
 .ge-page .text-forest-700,
 .ge-page .text-brand-700,
-.ge-page .text-brand-800 {
-  color: var(--brand-700) !important;
-}
-
-.ge-page .text-brand-700,
-.ge-page .text-brand-400,
-.ge-page .text-brand-500,
-.ge-page .text-brand-400,
-.ge-page .text-brand-500,
+.ge-page .text-brand-800,
 .ge-page .text-brand-400,
 .ge-page .text-brand-500 {
   color: var(--brand-700) !important;
@@ -191,6 +183,52 @@
 .ge-page h3,
 .ge-page h4 {
   color: var(--heading-color);
+}
+
+/*
+ * Dark surfaces (higher specificity + later): force light type for WCAG AA.
+ * Carve out white/cream cards nested inside dark shells.
+ */
+.ge-page .ge-on-dark,
+.ge-page .bg-gs-dark,
+.ge-page .bg-forest-950,
+.ge-page .bg-forest-900,
+.ge-page .airport-poster-hero {
+  color: #f7f3ea;
+}
+
+.ge-page :is(.ge-on-dark, .bg-gs-dark, .bg-forest-950, .bg-forest-900, .airport-poster-hero)
+  :is(
+    .text-gs-dark,
+    .text-forest-900,
+    .text-forest-800,
+    .text-forest-700,
+    .text-ge-ink,
+    .text-ge-gray500,
+    .text-ge-gray600,
+    .text-gs-green,
+    .text-gs-primary,
+    .text-fairway-600,
+    .text-brand-800,
+    .text-brand-700,
+    .text-brand-500,
+    .text-brand-400
+  ):not(
+    .bg-white :is(.text-gs-dark, .text-forest-900, .text-forest-800, .text-forest-700, .text-ge-ink, .text-ge-gray500, .text-ge-gray600, .text-gs-green, .text-gs-primary, .text-fairway-600, .text-brand-800, .text-brand-700, .text-brand-500, .text-brand-400),
+    [class*='bg-white'] :is(.text-gs-dark, .text-forest-900, .text-forest-800, .text-forest-700, .text-ge-ink, .text-ge-gray500, .text-ge-gray600, .text-gs-green, .text-gs-primary, .text-fairway-600, .text-brand-800, .text-brand-700, .text-brand-500, .text-brand-400),
+    [class*='bg-offwhite'] :is(.text-gs-dark, .text-forest-900, .text-forest-800, .text-forest-700, .text-ge-ink, .text-ge-gray500, .text-ge-gray600, .text-gs-green, .text-gs-primary, .text-fairway-600, .text-brand-800, .text-brand-700, .text-brand-500, .text-brand-400),
+    [class*='bg-chrome'] :is(.text-gs-dark, .text-forest-900, .text-forest-800, .text-forest-700, .text-ge-ink, .text-ge-gray500, .text-ge-gray600, .text-gs-green, .text-gs-primary, .text-fairway-600, .text-brand-800, .text-brand-700, .text-brand-500, .text-brand-400)
+  ) {
+  color: #f7f3ea !important;
+}
+
+.ge-page :is(.ge-on-dark, .bg-gs-dark, .bg-forest-950, .bg-forest-900, .airport-poster-hero)
+  :is(h1, h2, h3, h4):not(
+    .bg-white :is(h1, h2, h3, h4),
+    [class*='bg-white'] :is(h1, h2, h3, h4),
+    [class*='bg-offwhite'] :is(h1, h2, h3, h4)
+  ) {
+  color: #f7f3ea !important;
 }
 
 #business-cards-pdf-export-root h1,
@@ -506,36 +544,39 @@
 }
 
 /* —— Footer — make every line readable on the deep forest base —— */
-.ge-page footer.bg-gs-dark,
-.ge-page footer.bg-gs-dark p,
-.ge-page footer.bg-gs-dark li,
-.ge-page footer.bg-gs-dark a {
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950),
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) p,
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) li,
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) a {
   color: #ffffff !important;
 }
 
-.ge-page footer.bg-gs-dark a:hover {
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) a:hover {
   color: #fbe8b5 !important;
 }
 
-.ge-page footer.bg-gs-dark p[class*='text-white\\/'],
-.ge-page footer.bg-gs-dark p[class*='text-white/'] {
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) p[class*='text-white\\/'],
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) p[class*='text-white/'] {
   color: rgba(255, 255, 255, 0.94) !important;
 }
 
-/* Footer column titles + small "Stay in touch" / Follow Social kickers in bright gold-cream */
-.ge-page footer.bg-gs-dark .text-brand-700,
-.ge-page footer.bg-gs-dark [class*='text-brand-700'] {
+/* Footer column titles + small kickers in bright gold-cream */
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) .text-brand-700,
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) [class*='text-brand-700'],
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) .text-brand-400,
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) .text-silver-200 {
   color: #fbe8b5 !important;
-  text-shadow: 0 0 18px rgba(217, 190, 122, 0.25);
 }
 
-/* Bottom legal strip — was washed out at /60 /70 /78 — push to readable white */
-.ge-page footer.bg-gs-dark .text-white\/60,
-.ge-page footer.bg-gs-dark .text-white\/70,
-.ge-page footer.bg-gs-dark .text-white\/78,
-.ge-page footer.bg-gs-dark .text-white\/80,
-.ge-page footer.bg-gs-dark .text-white\/90,
-.ge-page footer.bg-gs-dark .text-white\/95 {
+/* Bottom legal strip — push washed /60–/80 to readable white */
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) .text-white\/60,
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) .text-white\/70,
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) .text-white\/72,
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) .text-white\/76,
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) .text-white\/78,
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) .text-white\/80,
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) .text-white\/90,
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) .text-white\/95 {
   color: rgba(255, 255, 255, 0.94) !important;
 }
 

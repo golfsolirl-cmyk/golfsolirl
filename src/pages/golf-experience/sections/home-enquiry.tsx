@@ -4,8 +4,7 @@ import { GeDualPhoneEnquiryCallRow } from '../components/ge-dual-phone-contact'
 import { GeQuickEnquiryForm } from '../components/ge-quick-enquiry-form'
 import { GeSection } from '../components/ge-section'
 import { contactInfo } from '../data/copy'
-import type { ContentFormConfig } from '../content-page-context'
-import { golferGroupSizeSelectOptions } from '../data/form-people-options'
+import { leanEnquiryFormConfig } from '../data/lean-enquiry-fields'
 
 const fadeUp = {
   initial: { opacity: 0, y: 18 },
@@ -24,64 +23,14 @@ const heroItemVariants: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.46, ease: 'easeOut' } }
 }
 
-const homeQuoteFormConfig = {
-  badge: 'Start your quote',
-  submitLabel: 'Send my trip brief',
-  successTitle: 'Trip brief received',
-  successBody: 'Thanks. We will reply from Ireland with the clearest next step for your Costa del Sol golf trip.',
-  fields: [
-    {
-      id: 'tripArrivalMode',
-      label: 'Trip timing',
-      type: 'select',
-      required: true,
-      options: [
-        { label: 'I have travel dates (arrival and departure)', value: 'planned' },
-        { label: 'Already at Málaga (AGP) — need transfers now', value: 'already_at_agp' }
-      ]
-    },
-    { id: 'travelDateFrom', label: 'Travel start date', type: 'date', required: false },
-    { id: 'travelDateTo', label: 'Travel end date', type: 'date', required: false },
-    {
-      id: 'groupSize',
-      label: 'Group size',
-      type: 'select',
-      required: true,
-      options: golferGroupSizeSelectOptions
-    },
-    {
-      id: 'tripType',
-      label: 'What do you need?',
-      type: 'select',
-      required: true,
-      options: [
-        { label: 'Full trip: golf, transfers and planning', value: 'Full trip: golf, transfers and planning' },
-        { label: 'Airport transfers only', value: 'Airport transfers only' },
-        { label: 'Golf and tee times', value: 'Golf and tee times' }
-      ]
-    },
-    {
-      id: 'preferredBase',
-      label: 'Preferred location',
-      type: 'select',
-      options: [
-        { label: 'Fuengirola', value: 'Fuengirola' },
-        { label: 'Torremolinos', value: 'Torremolinos' },
-        { label: 'Marbella', value: 'Marbella' },
-        { label: 'Vélez-Málaga', value: 'Vélez-Málaga' },
-        { label: 'Sotogrande', value: 'Sotogrande' },
-        { label: 'Need advice', value: 'Need advice' }
-      ]
-    },
-    {
-      id: 'notes',
-      label: 'Trip brief',
-      type: 'textarea',
-      placeholder: 'Tell us number of rounds, must-play courses, airport transfer needs, budget band, or anything already booked.',
-      rows: 5
-    }
-  ]
-} as const satisfies ContentFormConfig
+const homeQuoteFormConfig = leanEnquiryFormConfig({
+  badge: 'Get a quote',
+  submitLabel: 'Send enquiry',
+  successTitle: 'Enquiry received',
+  successBody: 'Thanks — we will reply from Ireland with the next clear step for your Costa del Sol golf trip.',
+  includeBundle: true,
+  notesPlaceholder: 'Anything else — courses, hotel style, flights…'
+})
 
 const reassuranceLines = [
   'Tee times, transfers and routing handled by one Irish team',
@@ -143,14 +92,14 @@ export function GeHomeEnquiry() {
             variants={heroItemVariants}
             className="mt-5 max-w-2xl font-ge text-[0.9rem] font-semibold uppercase tracking-[0.18em] text-gs-green sm:text-[0.98rem]"
           >
-            Dates · Group size · What&apos;s already booked
+            Name · Dates · Golfers · Bundle
           </m.p>
 
           <m.p
             variants={heroItemVariants}
             className="mt-4 max-w-2xl font-ge text-[1.06rem] leading-[1.7] text-gs-dark/85 sm:text-[1.12rem] sm:leading-8"
           >
-            A short brief is all we need. Your enquiry goes straight to the GolfSol crew on the Costa del Sol — back to you with prices, options and a clean breakdown, usually inside 24 hours.
+            Essentials only. Your enquiry goes straight to the GolfSol crew — back with prices and a clean next step, usually inside 24 hours.
           </m.p>
 
           <m.div variants={heroItemVariants} className="mt-7 flex flex-col gap-3">
@@ -194,8 +143,8 @@ export function GeHomeEnquiry() {
           />
           <div className="relative">
             <GeQuickEnquiryForm
-              title="Start your Costa del Sol quote"
-              lead="A short brief is enough. We will fill in the details with you."
+              title="Get your Costa del Sol quote"
+              lead="Name, contact, dates, golfers — that is enough to start."
               interestPreset="HOMEPAGE — Costa del Sol golf trip quote"
               routeLabel="Homepage"
               formConfig={homeQuoteFormConfig}
