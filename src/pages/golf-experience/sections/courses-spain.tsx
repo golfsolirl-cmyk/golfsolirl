@@ -102,7 +102,7 @@ export function GeCoursesSpain() {
             aria-hidden="true"
             className="pointer-events-none absolute inset-x-[8%] top-0 hidden h-px bg-gradient-to-r from-transparent via-gs-dark/12 to-transparent lg:block"
           />
-          <ul className="grid list-none gap-7 p-0 md:grid-cols-3">
+          <ul className="gsol-fly-scope grid list-none gap-7 p-0 md:grid-cols-3">
             {coursesSpain.map((course, index) => (
               <m.li
                 key={course.name}

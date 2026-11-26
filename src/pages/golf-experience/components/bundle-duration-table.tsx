@@ -23,7 +23,7 @@ function priceLabel(price: number | null | undefined) {
 /** Clean Package | Golf rounds rows for one stay length. */
 export function BundleDurationTable({ duration, tier, prices, compact = false }: BundleDurationTableProps) {
   return (
-    <section id={duration.id} className="scroll-mt-28">
+    <section id={duration.id} className="gsol-reveal scroll-mt-28">
       <div className="mb-4">
         <span className="inline-flex rounded-md bg-gs-green/10 px-2.5 py-1 font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.14em] text-gs-green">
           {duration.badge}

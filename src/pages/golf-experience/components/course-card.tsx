@@ -41,9 +41,9 @@ export function GeCourseCard({ course }: CourseCardProps) {
         <img
           src={course.image}
           alt={course.name}
-          loading="lazy"
+          loading="eager"
           decoding="async"
-          className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-110"
+          className="gsol-fly h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-110"
         />
         <div
           aria-hidden="true"

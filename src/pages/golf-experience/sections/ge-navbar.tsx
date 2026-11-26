@@ -34,6 +34,26 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null)
   const [menuMaxPx, setMenuMaxPx] = useState<number | null>(null)
   const chromeRef = useRef<HTMLDivElement>(null)
+  const headerRef = useRef<HTMLElement>(null)
+
+  /** Keep hero / page offsets locked to the real sticky header height. */
+  useEffect(() => {
+    const header = headerRef.current
+    if (!header) return
+    const publish = () => {
+      const h = Math.ceil(header.getBoundingClientRect().height)
+      if (h < 48) return
+      document.documentElement.style.setProperty('--ge-fixed-header-h', `${h}px`)
+    }
+    publish()
+    const ro = new ResizeObserver(publish)
+    ro.observe(header)
+    window.addEventListener('resize', publish, { passive: true })
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', publish)
+    }
+  }, [])
 
   useEffect(() => {
     if (!isMenuOpen) return
@@ -64,7 +84,10 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
   const linkColor = 'text-gs-dark hover:text-gs-primary'
 
   return (
-    <header className="fixed inset-x-0 top-0 z-40 overflow-visible bg-cream shadow-[0_2px_12px_rgba(8,46,35,0.08)] transition-all duration-300">
+    <header
+      ref={headerRef}
+      className="fixed inset-x-0 top-0 z-40 overflow-visible bg-cream shadow-[0_2px_12px_rgba(8,46,35,0.08)] transition-all duration-300"
+    >
       <div ref={chromeRef}>
         <div
           className={cx(

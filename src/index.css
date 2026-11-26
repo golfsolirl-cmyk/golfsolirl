@@ -46,8 +46,11 @@
     /** Header navbar — locked (unchanged). */
     --header-bg: #f7f4ec;
 
-    /** Fixed header (nav row + tagline ribbon) — hero spacers match this exactly. */
-    --ge-fixed-header-h: 340px;
+    /**
+     * Fixed slim header height (cream nav + crest). Kept in sync at runtime by
+     * GeNavbar; these defaults clear the crest on phones until JS measures.
+     */
+    --ge-fixed-header-h: 9.5rem;
 
     /* ========= TEXT ========= */
     --text-primary: #08120d;
@@ -142,25 +145,13 @@
 
   @media (min-width: 640px) {
     :root {
-      --ge-fixed-header-h: 300px;
-    }
-  }
-
-  @media (min-width: 768px) {
-    :root {
-      --ge-fixed-header-h: 280px;
+      --ge-fixed-header-h: 9.75rem;
     }
   }
 
   @media (min-width: 1024px) {
     :root {
-      --ge-fixed-header-h: 280px;
-    }
-  }
-
-  @media (min-width: 1280px) {
-    :root {
-      --ge-fixed-header-h: 276px;
+      --ge-fixed-header-h: 9.5rem;
     }
   }
 
@@ -912,6 +903,86 @@
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/*
+ * Public scroll-enter / fly-in — progressive enhancement only.
+ * Default: fully visible (no JS / reduced-motion).
+ * html.gsol-motion-ready + prefers-reduced-motion: no-preference → animate once into view.
+ */
+.gsol-reveal,
+.gsol-fly {
+  /* Visible by default — never hide content if JS fails. */
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html.gsol-motion-ready .gsol-reveal:not(.gsol-reveal--in) {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+
+  html.gsol-motion-ready .gsol-reveal {
+    transition:
+      opacity 0.5s ease-out,
+      transform 0.5s ease-out;
+    will-change: opacity, transform;
+  }
+
+  html.gsol-motion-ready .gsol-reveal.gsol-reveal--in {
+    opacity: 1;
+    transform: none;
+    will-change: auto;
+  }
+
+  html.gsol-motion-ready .gsol-fly:not(.gsol-reveal--in) {
+    opacity: 0;
+    transform: translate3d(var(--gsol-fly-x, 48px), 12px, 0) scale(0.96);
+  }
+
+  html.gsol-motion-ready .gsol-fly {
+    transition:
+      opacity 0.58s ease-out,
+      transform 0.58s ease-out;
+    will-change: opacity, transform;
+  }
+
+  html.gsol-motion-ready .gsol-fly.gsol-reveal--in {
+    opacity: 1;
+    transform: none;
+    will-change: auto;
+  }
+
+  .gsol-fly-from-left {
+    --gsol-fly-x: -52px;
+  }
+
+  .gsol-fly-from-right {
+    --gsol-fly-x: 52px;
+  }
+
+  /* Alternate direction inside a card/list scope when no explicit side is set. */
+  .gsol-fly-scope > *:nth-child(odd) .gsol-fly:not(.gsol-fly-from-left):not(.gsol-fly-from-right),
+  .gsol-fly-scope > *:nth-child(odd).gsol-fly:not(.gsol-fly-from-left):not(.gsol-fly-from-right) {
+    --gsol-fly-x: -52px;
+  }
+
+  .gsol-fly-scope > *:nth-child(even) .gsol-fly:not(.gsol-fly-from-left):not(.gsol-fly-from-right),
+  .gsol-fly-scope > *:nth-child(even).gsol-fly:not(.gsol-fly-from-left):not(.gsol-fly-from-right) {
+    --gsol-fly-x: 52px;
+  }
+
+  /* Clip horizontal fly travel without page-level overflow scrollbars. */
+  .gsol-fly-scope {
+    overflow-x: clip;
+  }
+}
+
+@supports not (overflow: clip) {
+  .gsol-fly-scope {
+    overflow-x: hidden;
   }
 }
 

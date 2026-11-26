@@ -171,20 +171,21 @@ export function FindYourHotel() {
         </label>
       </div>
 
-      <ul className="mt-8 space-y-3">
+      <ul className="gsol-fly-scope mt-8 space-y-3">
         {filtered.map((hotel, index) => {
           const selected = selectedHotels.includes(hotel.name)
           const open = expandedName === hotel.name
           const hotelLevel = hotelLevelFromStars(hotel.stars)
           const nearbyCourses = coursesSpain.filter((c) => courseMatchesHotelArea(c, hotel.area)).slice(0, 4)
           const eager = index < 2
+          const flySide = index % 2 === 0 ? 'gsol-fly-from-left' : 'gsol-fly-from-right'
           return (
             <li key={hotel.name} className="overflow-hidden rounded-2xl border border-chrome-200 bg-white">
               <div className="flex flex-col sm:flex-row">
                 <img
                   src={hotel.image}
                   alt=""
-                  className="h-36 w-full object-cover sm:h-auto sm:w-40 sm:shrink-0"
+                  className={`gsol-fly ${flySide} h-36 w-full object-cover sm:h-auto sm:w-40 sm:shrink-0`}
                   width={320}
                   height={200}
                   loading={eager ? 'eager' : 'lazy'}

@@ -49,9 +49,10 @@ export function LeanPublicHero({
     <section
       aria-label={ariaLabel ?? title}
       className={cx(
-        'premium-golf-hero ge-on-dark relative isolate overflow-hidden bg-forest-950 pt-[4.75rem] text-white sm:pt-[5.25rem]',
+        'premium-golf-hero ge-on-dark relative isolate overflow-hidden bg-forest-950 text-white',
         className
       )}
+      style={{ paddingTop: 'calc(var(--ge-fixed-header-h) + 0.65rem)' }}
     >
       <div className="absolute inset-0">
         <picture>
@@ -75,10 +76,10 @@ export function LeanPublicHero({
         />
       </div>
 
-      <div className="premium-golf-hero-copy relative z-[1] mx-auto flex min-h-[min(72vh,38rem)] max-w-[1100px] flex-col justify-end overflow-visible px-4 pb-14 pt-10 xs:px-5 sm:min-h-[min(78vh,42rem)] sm:px-8 sm:pb-16">
+      <div className="premium-golf-hero-copy relative z-[1] mx-auto flex min-h-[min(72vh,38rem)] max-w-[1100px] flex-col justify-end overflow-visible px-4 pb-14 pt-5 xs:px-5 sm:min-h-[min(78vh,42rem)] sm:px-8 sm:pb-16 sm:pt-6">
         {/*
-          Mobile eyebrow: tighter tracking + slightly smaller type so “GOLFSOL IRELAND”
-          never clips at 320–430px. Allow wrap; never nowrap/overflow-hidden here.
+          Eyebrow sits below the measured sticky header (--ge-fixed-header-h).
+          Keep type wrapping; never nowrap / overflow-hidden on the kicker.
         */}
         <p
           className="premium-golf-hero-kicker max-w-full font-ge text-[0.62rem] font-extrabold uppercase leading-snug tracking-[0.08em] text-[#f4dfa6] [overflow-wrap:anywhere] sm:text-[0.72rem] sm:tracking-[0.14em]"
