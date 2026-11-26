@@ -597,6 +597,7 @@ export function AdminDashboardPage() {
   const [enquiryDeletingAll, setEnquiryDeletingAll] = useState(false)
   const [enquiryDeleteMessage, setEnquiryDeleteMessage] = useState<string | null>(null)
   const [enquirySearchQuery, setEnquirySearchQuery] = useState('')
+  const [enquiryPaymentFilter, setEnquiryPaymentFilter] = useState<'all' | 'awaiting_payment'>('all')
   const [selectedEnquiryDetailRef, setSelectedEnquiryDetailRef] = useState<string | null>(null)
   const [accountLookupSeedFromTable, setAccountLookupSeedFromTable] = useState<AdminAccountLookupSeed | null>(null)
   const [portalInvoiceAmountInput, setPortalInvoiceAmountInput] = useState('')
@@ -895,19 +896,47 @@ export function AdminDashboardPage() {
     }
   }, [session?.user?.id, profile?.id, profile?.role])
 
+  const patchEnquiryRow = useCallback((enquiryId: string, patch: Partial<EnquiryRow>) => {
+    setEnquiries((prev) => prev.map((e) => (e.id === enquiryId ? { ...e, ...patch } : e)))
+  }, [])
+
   const filterEnquiriesByQuery = useCallback(
     (list: EnquiryRow[]) => {
+      let out = list
+      if (enquiryPaymentFilter === 'awaiting_payment') {
+        out = out.filter((row) => (row.payment_status ?? 'awaiting_payment') === 'awaiting_payment')
+      }
       const q = enquirySearchQuery.trim().toLowerCase()
       if (!q) {
-        return list
+        return out
       }
-      return list.filter((row) => {
+      return out.filter((row) => {
         const hay =
           `${row.reference_id} ${row.full_name} ${row.email} ${row.interest ?? ''} ${row.phone_whatsapp ?? ''} ${row.client_portal_account_ref ?? ''}`.toLowerCase()
         return hay.includes(q)
       })
     },
-    [enquirySearchQuery]
+    [enquiryPaymentFilter, enquirySearchQuery]
+  )
+
+  const refreshEnquiryPaymentFields = useCallback(
+    async (enquiryId: string) => {
+      const supabase = getSupabaseBrowserClient()
+      if (!supabase) {
+        return
+      }
+      const { data, error } = await supabase
+        .from('enquiries')
+        .select(
+          'amount_due_eur, deposit_eur, amount_received_eur, payment_reference, payment_status, payment_notes, last_payment_at'
+        )
+        .eq('id', enquiryId)
+        .maybeSingle()
+      if (!error && data) {
+        patchEnquiryRow(enquiryId, data)
+      }
+    },
+    [patchEnquiryRow]
   )
 
   const unviewedEnquiries = useMemo(
@@ -919,10 +948,6 @@ export function AdminDashboardPage() {
     () => filterEnquiriesByQuery(enquiries.filter((row) => isEnquiryAdminViewed(row))),
     [enquiries, filterEnquiriesByQuery]
   )
-
-  const patchEnquiryRow = useCallback((enquiryId: string, patch: Partial<EnquiryRow>) => {
-    setEnquiries((prev) => prev.map((e) => (e.id === enquiryId ? { ...e, ...patch } : e)))
-  }, [])
 
   const markEnquiryViewed = useCallback(async (row: EnquiryRow) => {
     if (isEnquiryAdminViewed(row)) {
@@ -4507,6 +4532,30 @@ export function AdminDashboardPage() {
                       type="search"
                       value={enquirySearchQuery}
                     />
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button
+                        className={
+                          enquiryPaymentFilter === 'all'
+                            ? 'rounded-full bg-forest-900 px-3 py-1.5 text-xs font-semibold text-white'
+                            : 'rounded-full border border-forest-200 bg-white px-3 py-1.5 text-xs font-semibold text-forest-900 hover:bg-cream'
+                        }
+                        onClick={() => setEnquiryPaymentFilter('all')}
+                        type="button"
+                      >
+                        All enquiries
+                      </button>
+                      <button
+                        className={
+                          enquiryPaymentFilter === 'awaiting_payment'
+                            ? 'rounded-full bg-amber-100 px-3 py-1.5 text-xs font-semibold text-amber-950 ring-1 ring-amber-300'
+                            : 'rounded-full border border-forest-200 bg-white px-3 py-1.5 text-xs font-semibold text-forest-900 hover:bg-cream'
+                        }
+                        onClick={() => setEnquiryPaymentFilter('awaiting_payment')}
+                        type="button"
+                      >
+                        Awaiting bank transfer
+                      </button>
+                    </div>
                   </div>
                   <details className="text-sm">
                     <summary className="cursor-pointer text-xs font-semibold text-ge-gray500 hover:text-forest-800">
@@ -4569,6 +4618,7 @@ export function AdminDashboardPage() {
                 onCreateQuotation={openQuotationFromEnquiry}
                 onEmailCustomer={openMailFromEnquiry}
                 onEnquiryPatch={patchEnquiryRow}
+                onEnquiryPaymentUpdated={(id) => void refreshEnquiryPaymentFields(id)}
                 onOpen={(row) => {
                   setSelectedEnquiryDetailRef(row.reference_id)
                   void markEnquiryViewed(row)
@@ -4597,6 +4647,7 @@ export function AdminDashboardPage() {
                   onCreateQuotation={openQuotationFromEnquiry}
                   onEmailCustomer={openMailFromEnquiry}
                   onEnquiryPatch={patchEnquiryRow}
+                  onEnquiryPaymentUpdated={(id) => void refreshEnquiryPaymentFields(id)}
                   onOpen={(row) => {
                     setSelectedEnquiryDetailRef(row.reference_id)
                     void markEnquiryViewed(row)

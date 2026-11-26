@@ -171,7 +171,7 @@ type AdminEnquiryCardQueueProps = {
   readonly onCreateQuotation?: (row: AdminEnquiryCardRow) => void
   readonly onEmailCustomer?: (row: AdminEnquiryCardRow) => void
   readonly onEnquiryPatch?: (enquiryId: string, patch: Partial<AdminEnquiryCardRow>) => void
-  readonly onEnquiryPaymentUpdated?: () => void
+  readonly onEnquiryPaymentUpdated?: (enquiryId: string) => void
 }
 
 type ContactChannel = 'email' | 'form' | 'portal'

@@ -144,13 +144,17 @@ export const handleEnquiryPaymentAdmin = async (body, env = process.env, meta = 
     }
     const paymentNotes = typeof body?.paymentNotes === 'string' ? body.paymentNotes.trim() : existing.payment_notes
     const statusOverride = typeof body?.paymentStatus === 'string' ? body.paymentStatus.trim() : null
+    const allowedStatuses = new Set(['awaiting_payment', 'deposit_received', 'paid_in_full', 'refunded'])
     const received = Number(existing.amount_received_eur) || 0
-    const nextStatus = recomputeEnquiryPaymentStatus(
+    let nextStatus = recomputeEnquiryPaymentStatus(
       amountDue,
       deposit,
       received,
       statusOverride === 'refunded' ? 'refunded' : null
     )
+    if (statusOverride && allowedStatuses.has(statusOverride)) {
+      nextStatus = statusOverride
+    }
 
     const { error: uErr } = await admin
       .from('enquiries')
@@ -159,13 +163,13 @@ export const handleEnquiryPaymentAdmin = async (body, env = process.env, meta = 
         deposit_eur: deposit,
         payment_reference: paymentReference,
         payment_notes: paymentNotes || null,
-        payment_status: statusOverride === 'refunded' ? 'refunded' : nextStatus
+        payment_status: nextStatus
       })
       .eq('id', enquiryId)
     if (uErr) {
       throwStatus(uErr.message, 500)
     }
-    return { ok: true, enquiryId, paymentStatus: statusOverride === 'refunded' ? 'refunded' : nextStatus }
+    return { ok: true, enquiryId, paymentStatus: nextStatus }
   }
 
   if (action === 'mark_payment_received') {

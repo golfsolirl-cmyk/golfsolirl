@@ -91,6 +91,7 @@ export function GeQuickEnquiryForm({
     setErrorCode(null)
     setTermsAccepted(false)
     setContactVerifyToken(null)
+    setAddTransfers(false)
   }, [initialFieldValues])
 
   useEffect(() => {
@@ -379,6 +380,7 @@ export function GeQuickEnquiryForm({
       setFieldValues(initialFieldValues)
       setTermsAccepted(false)
       setContactVerifyToken(null)
+      setAddTransfers(false)
     } catch (error) {
       setStatus('error')
       setErrorCode(null)
