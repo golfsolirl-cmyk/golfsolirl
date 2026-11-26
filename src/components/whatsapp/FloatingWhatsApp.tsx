@@ -1,5 +1,4 @@
 import { m, useReducedMotion } from 'framer-motion'
-import { X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { cx } from '../../lib/utils'
 import {
@@ -8,6 +7,7 @@ import {
   WHATSAPP_DISPLAY,
   WHATSAPP_MESSAGES
 } from '../../lib/whatsapp'
+import { DismissCloseButton } from '../ui/dismiss-close-button'
 import { WhatsAppIcon } from './WhatsAppIcon'
 import { WhatsAppPill } from './WhatsAppPill'
 
@@ -144,14 +144,9 @@ export function FloatingWhatsApp() {
           transition={{ duration: reduceMotion ? 0 : 0.2 }}
           className="relative max-w-[min(15rem,calc(100vw-1.5rem))] rounded-2xl border border-[#d9be7a]/80 bg-[#062016] p-3 text-white shadow-[0_10px_24px_rgba(6,32,22,0.28)]"
         >
-          <button
-            type="button"
-            aria-label="Close"
-            onClick={dismiss}
-            className="absolute -right-1 -top-1 inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-white/20 bg-[#0b3d2e] text-white hover:bg-[#12523d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f4dfa6]"
-          >
-            <X className="h-5 w-5" aria-hidden />
-          </button>
+          <div className="absolute -right-1 -top-1">
+            <DismissCloseButton onClick={dismiss} tone="dark" aria-label="Close" />
+          </div>
           <p className="pr-5 font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.12em] text-[#f4dfa6]">
             Prefer a call?
           </p>
@@ -204,14 +199,9 @@ export function FloatingWhatsApp() {
         >
           <WhatsAppIcon className="h-6 w-6" />
         </m.a>
-        <button
-          type="button"
-          aria-label="Close"
-          onClick={dismiss}
-          className="absolute -left-2 -top-2 inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-forest-800/20 bg-white text-forest-900 shadow-sm hover:bg-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-700"
-        >
-          <X className="h-5 w-5" aria-hidden />
-        </button>
+        <div className="absolute -left-2 -top-2">
+          <DismissCloseButton onClick={dismiss} tone="light" aria-label="Close WhatsApp button" />
+        </div>
         {!expanded ? (
           <button
             type="button"

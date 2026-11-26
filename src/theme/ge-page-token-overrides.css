@@ -415,6 +415,29 @@
   color: #ffffff !important;
 }
 
+/* Dismiss X on light pills must stay dark even inside `.ge-on-dark` (WhatsApp / callback). */
+.ge-page button[data-gsol-dismiss-close='light'],
+.ge-page .ge-on-dark button[data-gsol-dismiss-close='light'] {
+  color: #062016 !important;
+  -webkit-text-fill-color: #062016 !important;
+  background-color: #fffdf8 !important;
+  border-color: rgba(11, 49, 35, 0.3) !important;
+}
+
+.ge-page button[data-gsol-dismiss-close='light']:hover,
+.ge-page .ge-on-dark button[data-gsol-dismiss-close='light']:hover {
+  color: #04140c !important;
+  -webkit-text-fill-color: #04140c !important;
+  background-color: #f3ecda !important;
+  border-color: rgba(11, 49, 35, 0.55) !important;
+}
+
+.ge-page button[data-gsol-dismiss-close='light'] svg,
+.ge-page .ge-on-dark button[data-gsol-dismiss-close='light'] svg {
+  color: inherit !important;
+  stroke: currentColor !important;
+}
+
 /* Light pill / outline CTAs stay dark on forest panels (client messages, payment banner, etc.) */
 .ge-page .ge-on-dark button.gsol-cta-secondary,
 .ge-page .ge-on-dark a.gsol-cta-secondary,

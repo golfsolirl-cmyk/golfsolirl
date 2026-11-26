@@ -79,8 +79,8 @@ export function WhatsAppBanner({
             </div>
             <DismissCloseButton
               onClick={dismiss}
-              tone="dark"
-              className="bg-white/95 text-gs-dark shadow-md hover:bg-white"
+              tone="light"
+              aria-label="Dismiss WhatsApp and callback help"
             />
           </div>
 

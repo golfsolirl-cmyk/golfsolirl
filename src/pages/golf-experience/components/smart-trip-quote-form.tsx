@@ -11,6 +11,8 @@ import {
 } from '../../../components/enquiry-spam-guard-fields'
 import { DismissCloseButton } from '../../../components/ui/dismiss-close-button'
 import { useEscapeDismiss } from '../../../hooks/use-escape-dismiss'
+import { usePersistedDismiss } from '../../../hooks/use-persisted-dismiss'
+import { DISMISS_STORAGE_KEYS } from '../../../lib/persisted-dismiss'
 import { RECAPTCHA_ACTIONS } from '../../../lib/enquiry-spam-guard'
 import {
   ENQUIRY_STRUCTURED_FIELD_KEYS,
@@ -96,6 +98,32 @@ export function SmartTripQuoteForm({
     onDismiss?.()
   }, [onDismiss])
   useEscapeDismiss(handleDismiss, Boolean(onDismiss))
+
+  const formRootRef = useRef<HTMLDivElement>(null)
+  const [formInView, setFormInView] = useState(false)
+  const stickyDismissKey = `${DISMISS_STORAGE_KEYS.stickyTripQuoteBar}:${formId}`
+  const {
+    dismissed: stickyDismissed,
+    dismiss: dismissStickyBar,
+    ready: stickyReady
+  } = usePersistedDismiss(stickyDismissKey, 'session')
+  useEscapeDismiss(dismissStickyBar, stickyReady && !stickyDismissed && formInView && !onDismiss)
+
+  useEffect(() => {
+    const el = formRootRef.current
+    if (!el || typeof IntersectionObserver === 'undefined') return
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        setFormInView(Boolean(entry?.isIntersecting))
+      },
+      // Any overlap with the form counts — never keep the bar over Bundles / other sections.
+      { root: null, threshold: 0, rootMargin: '0px' }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
+  const showStickyMobileSubmit = stickyReady && !stickyDismissed && formInView
 
   const [services, setServices] = useState<TripServiceSelection>(initialServices)
   const [tier, setTier] = useState<BundleTierId>(
@@ -357,6 +385,7 @@ export function SmartTripQuoteForm({
 
   return (
     <div
+      ref={formRootRef}
       id={formId}
       className="relative w-full max-w-full overflow-x-hidden rounded-[1.75rem] border border-gs-dark/10 bg-white p-4 shadow-[0_24px_60px_rgba(6,59,42,0.12)] sm:p-6"
     >
@@ -662,24 +691,56 @@ export function SmartTripQuoteForm({
               </div>
             ) : null}
 
-            <div className="hidden sm:block">
-              <GeButton type="submit" variant="gs-green" size="lg" className="w-full min-h-[52px]" disabled={status === 'submitting'}>
-                {status === 'submitting' ? 'Sending…' : preset?.intent === 'callback' ? 'Request callback' : 'Send quote request'}
-              </GeButton>
-            </div>
-            {/* Sticky mobile submit — always reachable without hunting for the button */}
-            <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:hidden">
-              <div className="pointer-events-auto mx-auto max-w-[640px] space-y-2 rounded-2xl border border-gs-dark/10 bg-white/95 p-2 shadow-[0_-8px_30px_rgba(6,59,42,0.18)] backdrop-blur">
-                {errorMessage ? (
-                  <p className="px-2 pt-1 text-center font-ge text-xs font-semibold leading-snug text-red-700" role="status">
-                    {errorMessage}
-                  </p>
-                ) : null}
-                <GeButton type="submit" variant="gs-green" size="lg" className="w-full min-h-[52px]" disabled={status === 'submitting'}>
-                  {status === 'submitting' ? 'Sending…' : preset?.intent === 'callback' ? 'Request callback' : 'Send quote request'}
-                </GeButton>
-              </div>
-            </div>
+            {/* Inline submit on all viewports — mobile no longer relies on a page-wide fixed bar. */}
+            <GeButton type="submit" variant="gs-green" size="lg" className="w-full min-h-[52px]" disabled={status === 'submitting'}>
+              {status === 'submitting' ? 'Sending…' : preset?.intent === 'callback' ? 'Request callback' : 'Send quote request'}
+            </GeButton>
+            {/*
+              Sticky mobile submit: only while THIS form intersects the viewport, with a solid
+              opaque shell and a 44px X so it never bleeds over Bundles / other sections.
+            */}
+            {showStickyMobileSubmit ? (
+              <>
+                {/* Keep the inline submit scrollable above the fixed bar on small screens. */}
+                <div className="h-[5.75rem] sm:hidden" aria-hidden="true" />
+                <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[45] p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:hidden">
+                  {/*
+                    Use hex white — `.ge-page .bg-white` is remapped to rgba(255,255,255,0.96)
+                    which caused page text to bleed through the sticky shell.
+                  */}
+                  <div className="pointer-events-auto relative mx-auto max-w-[640px] space-y-2 rounded-2xl border border-gs-dark/15 bg-[#ffffff] p-2 pr-14 shadow-[0_-8px_30px_rgba(6,59,42,0.18)] [background-color:#ffffff!important]">
+                    <div className="absolute right-1.5 top-1.5 z-10">
+                      <DismissCloseButton
+                        aria-label="Dismiss send quote bar"
+                        onClick={dismissStickyBar}
+                        tone="light"
+                      />
+                    </div>
+                    {errorMessage ? (
+                      <p
+                        className="rounded-lg bg-red-50 px-2 py-1.5 text-center font-ge text-xs font-semibold leading-snug text-red-800"
+                        role="status"
+                      >
+                        {errorMessage}
+                      </p>
+                    ) : null}
+                    <GeButton
+                      type="submit"
+                      variant="gs-green"
+                      size="lg"
+                      className="w-full min-h-[52px] bg-gs-green text-white"
+                      disabled={status === 'submitting'}
+                    >
+                      {status === 'submitting'
+                        ? 'Sending…'
+                        : preset?.intent === 'callback'
+                          ? 'Request callback'
+                          : 'Send quote request'}
+                    </GeButton>
+                  </div>
+                </div>
+              </>
+            ) : null}
           </form>
         </>
       )}
