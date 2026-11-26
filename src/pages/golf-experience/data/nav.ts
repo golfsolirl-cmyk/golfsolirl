@@ -33,7 +33,9 @@ export const footerColumns = [
       { label: 'FAQ', href: '/faq' },
       { label: 'Testimonials', href: '/testimonials' },
       { label: 'Leave us a review', href: '/leave-a-review' },
-      { label: 'Golf map', href: '/golf-map' }
+      { label: 'Golf map', href: '/golf-map' },
+      { label: 'Client sign-in', href: '/dashboard/login' },
+      { label: 'Admin sign-in', href: '/admin/login' }
     ]
   },
   {

@@ -12,7 +12,6 @@ import { TermsEmailRequest } from './sections/terms-email-request'
 import { TermsSolicitorNotice } from './sections/terms-solicitor-notice'
 import { getGeContentPage } from './data/content-pages'
 import { formatContentPageRouteLabel, getContentPageFormConfig } from './content-page-context'
-import { WhatsappFab } from './components/whatsapp-fab'
 import { GeSection } from './components/ge-section'
 import {
   GOLF_COURSES_MAP_SECTION_ID,
@@ -322,8 +321,6 @@ export function GeContentPage() {
       </main>
 
       <GeFooter />
-
-      <WhatsappFab />
     </div>
   )
 }

@@ -8,7 +8,6 @@ import { GePaymentsIreland } from './golf-experience/sections/payments-ireland'
 import { GeFinalCta } from './golf-experience/sections/final-cta'
 import { PremiumPageHero } from '../components/home/premium-page-hero'
 import { heroImageSetFromRegistry, NAMED_HERO_IMAGE_SETS } from '../lib/page-hero-images'
-import { WhatsappFab } from './golf-experience/components/whatsapp-fab'
 import { GeTransfersInsuranceBanner } from './golf-experience/components/ge-transfers-insurance-banner'
 import { GeSection } from './golf-experience/components/ge-section'
 import { contactInfo } from './golf-experience/data/copy'
@@ -395,7 +394,6 @@ export function ContinueTripPage() {
           <GeFinalCta />
         </main>
         <GeFooter />
-        <WhatsappFab />
       </div>
     )
   }
@@ -738,7 +736,6 @@ export function ContinueTripPage() {
 
       <GeFooter />
 
-      <WhatsappFab />
     </div>
   )
 }

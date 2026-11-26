@@ -4,7 +4,6 @@ import { GeNavbar, type GeNavbarPortalSlot } from '../pages/golf-experience/sect
 import { GeHero } from '../pages/golf-experience/sections/hero'
 import { GeFooter } from '../pages/golf-experience/sections/ge-footer'
 import { GeBrandLockup } from '../pages/golf-experience/components/brand-lockup'
-import { WhatsappFab } from '../pages/golf-experience/components/whatsapp-fab'
 import { useAuth } from '../providers/auth-provider'
 
 export type DashboardVariant = 'client' | 'admin' | 'driver'
@@ -90,7 +89,6 @@ export function DashboardLayout({ title, subtitle, kicker, variant, titleAdornme
       </main>
 
       <GeFooter />
-      <WhatsappFab />
     </div>
   )
 }

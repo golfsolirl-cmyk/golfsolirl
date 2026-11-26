@@ -12,8 +12,6 @@ import { BundleDurationTable } from './components/bundle-duration-table'
 import { GeButton } from './components/ge-button'
 import { GeFooter } from './sections/ge-footer'
 import { GeNavbar } from './sections/ge-navbar'
-import { WhatsappFab } from './components/whatsapp-fab'
-
 export function BundlesPage() {
   usePageMeta({
     title: 'Our Golf Holiday Bundles | GolfSol Ireland',
@@ -89,7 +87,6 @@ export function BundlesPage() {
         </div>
       </main>
       <GeFooter />
-      <WhatsappFab />
     </div>
   )
 }

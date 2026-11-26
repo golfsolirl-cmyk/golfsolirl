@@ -15,7 +15,6 @@ import { usePageMeta } from '../lib/use-page-meta'
 import { TripServiceBookingCta } from '../components/trip-service-booking-cta'
 import { GeButton } from './golf-experience/components/ge-button'
 import { GeSection } from './golf-experience/components/ge-section'
-import { WhatsappFab } from './golf-experience/components/whatsapp-fab'
 import { WhatsAppBookingHelp } from '../components/whatsapp/WhatsAppBookingHelp'
 import { GeFooter } from './golf-experience/sections/ge-footer'
 import { GeNavbar } from './golf-experience/sections/ge-navbar'
@@ -1230,7 +1229,6 @@ function CustomerPackagePage() {
       </main>
 
       <GeFooter />
-      <WhatsappFab />
     </div>
   )
 }

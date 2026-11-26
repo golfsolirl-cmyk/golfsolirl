@@ -302,6 +302,10 @@ const AuthProviderShell = lazy(() =>
     : import('./providers/auth-provider-deferred').then((m) => ({ default: m.AuthProvider }))
 )
 
+const WhatsappFab = lazy(() =>
+  import('./pages/golf-experience/components/whatsapp-fab').then((m) => ({ default: m.WhatsappFab }))
+)
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <AppErrorBoundary>
     <Suspense fallback={null}>
@@ -309,6 +313,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <MotionRoot>
           <ActivePage />
           <CookieConsent />
+          {/* One site-wide compact dismissible WhatsApp FAB (+353) — not the old full-width box. */}
+          <Suspense fallback={null}>
+            <WhatsappFab />
+          </Suspense>
         </MotionRoot>
       </AuthProviderShell>
     </Suspense>

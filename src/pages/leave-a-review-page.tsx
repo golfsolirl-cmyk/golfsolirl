@@ -3,7 +3,6 @@ import { GeFooter } from './golf-experience/sections/ge-footer'
 import { GeNavbar } from './golf-experience/sections/ge-navbar'
 import { SITE_REVIEW_URL } from '../data/site-review'
 import { usePageMeta } from '../lib/use-page-meta'
-import { WhatsappFab } from './golf-experience/components/whatsapp-fab'
 
 /**
  * Simple “Leave us a review” landing. When TripAdvisor (or another review URL)
@@ -59,7 +58,6 @@ export function LeaveAReviewPage() {
         ) : null}
       </main>
       <GeFooter />
-      <WhatsappFab />
     </div>
   )
 }

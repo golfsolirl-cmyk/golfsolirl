@@ -3,7 +3,6 @@ import { GeNavbar } from './sections/ge-navbar'
 import { TransportEnquireBlock } from './sections/transport-enquire-block'
 import { TransportFleet } from './sections/transport-fleet'
 import { TransportHero } from './sections/transport-hero'
-import { WhatsappFab } from './components/whatsapp-fab'
 import { usePageMeta } from '../../lib/use-page-meta'
 
 /**
@@ -37,7 +36,6 @@ export function TransportServicePage() {
       </main>
 
       <GeFooter />
-      <WhatsappFab />
     </div>
   )
 }
