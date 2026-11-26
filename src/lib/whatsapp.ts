@@ -111,7 +111,13 @@ export function resolveWhatsAppPanel(path: string, enquiryType?: string): 'conta
   const normalised = path.replace(/\/+$/, '') || '/'
   if (normalised === '/contact' || normalised === '/contact/golf-holiday-enquiry-form') return 'contact'
   if (enquiryType === 'booking') return 'booking'
-  if (normalised === '/packages' || normalised === '/package' || normalised === '/services/transport') return 'booking'
+  if (
+    normalised === '/bundles' ||
+    normalised === '/packages' ||
+    normalised === '/package' ||
+    normalised === '/services/transport'
+  )
+    return 'booking'
   return null
 }
 

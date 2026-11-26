@@ -5,16 +5,14 @@ import { GeHomeWhatWeDo } from './sections/home-what-we-do'
 import { WhatsappFab } from './components/whatsapp-fab'
 
 /**
- * Lean homepage fold — one purpose per band, one primary path to quote/bundles.
- * Heavy repeats (design-your-package steps, dual course+hotel galleries, extras,
- * facts, about, floating concierge panel) were cut after client feedback that
- * the site felt too busy.
+ * Homepage fold — bundles first (centrepiece), thin services strip, then enquiry.
+ * Competing package calculators and dense galleries stay off the home path.
  */
 export default function HomeBelowTheFold() {
   return (
     <>
-      <GeHomeWhatWeDo />
       <GeHomeBundlesTeaser />
+      <GeHomeWhatWeDo />
       <GeHomeEnquiry />
       <GeFooter />
       <WhatsappFab />

@@ -356,7 +356,7 @@ export const footerGroups: readonly FooterLinkGroup[] = [
     links: [
       { label: 'Golf holidays', href: '/golf-holidays' },
       { label: 'Costa del Sol', href: '/golf-holidays/costa-del-sol' },
-      { label: 'Golf packages', href: '/golf-packages' },
+      { label: 'Golf holiday bundles', href: '/bundles' },
       { label: 'Featured courses', href: '/featured-courses' }
     ]
   },
@@ -364,7 +364,7 @@ export const footerGroups: readonly FooterLinkGroup[] = [
     title: 'Plan your trip',
     links: [
       { label: 'From Ireland', href: '/golf-holidays-spain-from-ireland' },
-      { label: 'Society packages', href: '/golf-packages/golf-society-packages' },
+      { label: 'Golf holiday bundles', href: '/bundles' },
       { label: 'Course shortlist', href: '/course-shortlist' },
       { label: 'Hotel matching', href: '/hotel-matching' }
     ]

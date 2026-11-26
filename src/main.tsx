@@ -5,6 +5,7 @@ import { pathnameNeedsImmediateSupabaseHydration } from './lib/auth-bootstrap-pa
 import { CookieConsent } from './components/cookie-consent'
 import { MotionRoot } from './providers/motion-root'
 import { isGeContentPagePath } from './pages/golf-experience/data/ge-content-page-paths'
+import { bundleRedirectForPath } from './lib/bundle-route-redirects'
 /** Homepage only is eager — keeps LCP path short; other marketing pages load as route chunks. */
 import { GolfExperienceHome } from './pages/golf-experience/golf-experience-home'
 import './index.css'
@@ -32,8 +33,8 @@ const LeaveAReviewPage = lazy(() =>
 const GeContentPage = lazy(() =>
   import('./pages/golf-experience/content-page').then((m) => ({ default: m.GeContentPage }))
 )
-const CustomerPackagePage = lazy(() =>
-  import('./pages/customer-packages').then((m) => ({ default: m.CustomerPackagePage }))
+const RedirectToBundlesPage = lazy(() =>
+  import('./pages/redirect-to-bundles-page').then((m) => ({ default: m.RedirectToBundlesPage }))
 )
 const ContinueTripPage = lazy(() =>
   import('./pages/continue-trip-page').then((m) => ({ default: m.ContinueTripPage }))
@@ -151,6 +152,10 @@ function resolvePage(): PageComponent {
     return BundlesPage
   }
 
+  if (bundleRedirectForPath(normalizedPath)) {
+    return RedirectToBundlesPage
+  }
+
   if (normalizedPath === '/leave-a-review') {
     return LeaveAReviewPage
   }
@@ -226,10 +231,6 @@ function resolvePage(): PageComponent {
 
   if (normalizedPath === '/documents/terms' || normalizedPath === '/documents/welcome') {
     return ClientDocumentPage
-  }
-
-  if (normalizedPath === '/packages' || normalizedPath === '/package') {
-    return CustomerPackagePage
   }
 
   if (normalizedPath === '/packages-admin' || normalizedPath === '/package-admin') {

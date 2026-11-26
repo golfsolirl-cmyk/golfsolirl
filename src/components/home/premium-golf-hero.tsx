@@ -44,10 +44,10 @@ export function PremiumGolfHero({ className }: PremiumGolfHeroProps) {
           GolfSol Ireland
         </p>
         <h1 className="mt-3 max-w-2xl font-ge text-[2.15rem] font-extrabold leading-[1.05] tracking-[-0.02em] !text-white [text-shadow:0_2px_18px_rgba(0,0,0,0.45)] sm:text-[3rem]">
-          Costa del Sol golf holidays, simply planned.
+          Our golf holiday bundles
         </h1>
         <p className="mt-4 max-w-xl font-ge text-[1.05rem] leading-7 !text-white/92 [text-shadow:0_1px_12px_rgba(0,0,0,0.4)]">
-          Bundles for 3, 5 or 7 nights — transfers, hotels and tee times from one Irish desk.
+          Short breaks, most popular weeks, and full golf weeks — with Value, Classic and Premium hotels.
         </p>
         <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
           <a

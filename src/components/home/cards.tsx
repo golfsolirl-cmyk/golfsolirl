@@ -147,7 +147,7 @@ export function PackageCard({ name, description, price, duration, highlight, inc
                 ? 'bg-white text-forest-900 hover:bg-brand-300 hover:text-forest-950'
                 : 'bg-forest-900 text-white hover:bg-brand-500'
             )}
-            href="/packages"
+            href="/bundles"
           >
             <span>Tailor this trip</span>
             <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
@@ -198,7 +198,7 @@ export function CourseCard({ name, location, distance, badge, description, rate,
         </div>
         <div className="flex items-center justify-between border-t border-forest-100 pt-4">
           <p className="text-base font-semibold text-forest-900">{rate}</p>
-          <a className="text-base font-semibold text-forest-900 transition-colors hover:text-brand-600" href="/packages">
+          <a className="text-base font-semibold text-forest-900 transition-colors hover:text-brand-600" href="/bundles">
             Request details
           </a>
         </div>
@@ -257,7 +257,7 @@ export function HotelCard({ name, tier, area, image, description, perks, price }
         </div>
         <div className="flex items-center justify-between border-t border-forest-100 pt-4">
           <p className="text-base font-semibold text-forest-900">{price}</p>
-          <a className="text-base font-semibold text-forest-900 transition-colors hover:text-brand-600" href={`/packages?stay=${tier}`}>
+          <a className="text-base font-semibold text-forest-900 transition-colors hover:text-brand-600" href="/bundles">
             Match with package
           </a>
         </div>

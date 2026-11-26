@@ -78,7 +78,46 @@
     }
   ],
   "redirects": [
-    { "source": "/package", "destination": "/packages", "permanent": true },
+    { "source": "/package", "destination": "/bundles", "permanent": true },
+    { "source": "/packages", "destination": "/bundles", "permanent": true },
+    { "source": "/golf-packages", "destination": "/bundles", "permanent": true },
+    {
+      "source": "/golf-packages/3-night-golf-breaks",
+      "destination": "/bundles#3-night",
+      "permanent": true
+    },
+    {
+      "source": "/golf-packages/4-night-golf-breaks",
+      "destination": "/bundles#3-night",
+      "permanent": true
+    },
+    {
+      "source": "/golf-packages/5-night-golf-holidays",
+      "destination": "/bundles#5-night",
+      "permanent": true
+    },
+    {
+      "source": "/golf-packages/7-night-golf-holidays",
+      "destination": "/bundles#7-night",
+      "permanent": true
+    },
+    {
+      "source": "/golf-packages/golf-society-packages",
+      "destination": "/bundles",
+      "permanent": true
+    },
+    {
+      "source": "/golf-packages/group-golf-holidays",
+      "destination": "/bundles",
+      "permanent": true
+    },
+    {
+      "source": "/golf-packages/bespoke-golf-packages",
+      "destination": "/contact",
+      "permanent": true
+    },
+    { "source": "/incentive-packages", "destination": "/bundles", "permanent": true },
+    { "source": "/accommodation-tiers", "destination": "/bundles", "permanent": true },
     { "source": "/golf-sol", "destination": "/", "permanent": true },
     { "source": "/transport", "destination": "/services/transport", "permanent": true },
     { "source": "/airport-transfers", "destination": "/transfers/malaga-airport-golf-transfers", "permanent": true },
