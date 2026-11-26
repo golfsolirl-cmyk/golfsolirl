@@ -7,6 +7,7 @@ import {
 } from '../../lib/whatsapp'
 import { DISMISS_STORAGE_KEYS } from '../../lib/persisted-dismiss'
 import { usePersistedDismiss } from '../../hooks/use-persisted-dismiss'
+import { useEscapeDismiss } from '../../hooks/use-escape-dismiss'
 import { DismissCloseButton } from '../ui/dismiss-close-button'
 import { WhatsAppIcon } from './WhatsAppIcon'
 import { RequestCallbackCard } from './RequestCallbackCard'
@@ -39,6 +40,8 @@ export function WhatsAppBanner({
     (typeof window !== 'undefined'
       ? window.location.pathname.replace(/\/+$/, '') || '/'
       : '/')
+
+  useEscapeDismiss(dismiss, ready && !dismissed)
 
   if (!ready || dismissed) return null
 

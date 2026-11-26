@@ -86,7 +86,7 @@
   </url>
   <url>
     <loc>https://www.golfsolirl.com/faq</loc>
-    <lastmod>2026-10-26</lastmod>
+    <lastmod>2026-11-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -565,6 +565,36 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://www.golfsolirl.com/golf-packages/3-night-golf-breaks</loc>
+    <lastmod>2026-11-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-packages/5-night-golf-holidays</loc>
+    <lastmod>2026-11-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-packages/7-night-golf-holidays</loc>
+    <lastmod>2026-11-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-packages/golf-society-packages</loc>
+    <lastmod>2026-11-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/golf-packages/group-golf-holidays</loc>
+    <lastmod>2026-11-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
     <loc>https://www.golfsolirl.com/group-preferences</loc>
     <lastmod>2026-10-26</lastmod>
     <changefreq>monthly</changefreq>
@@ -584,7 +614,7 @@
   </url>
   <url>
     <loc>https://www.golfsolirl.com/guides/costa-del-sol-golf-faq</loc>
-    <lastmod>2026-10-26</lastmod>
+    <lastmod>2026-11-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -669,6 +699,12 @@
   <url>
     <loc>https://www.golfsolirl.com/promo-maps</loc>
     <lastmod>2026-10-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/services/society-group-trips</loc>
+    <lastmod>2026-11-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

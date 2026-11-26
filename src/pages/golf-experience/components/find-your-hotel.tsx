@@ -2,6 +2,7 @@ import { useMemo, useState, type MouseEvent } from 'react'
 import { Check, Plus } from 'lucide-react'
 import { DismissCloseButton } from '../../../components/ui/dismiss-close-button'
 import { usePersistedDismiss } from '../../../hooks/use-persisted-dismiss'
+import { useEscapeDismiss } from '../../../hooks/use-escape-dismiss'
 import { DISMISS_STORAGE_KEYS } from '../../../lib/persisted-dismiss'
 import { buildTripQuoteHref } from '../../../lib/trip-quote-services'
 import { coursesSpain, type GeCourse } from '../data/courses'
@@ -72,6 +73,7 @@ export function FindYourHotel() {
     DISMISS_STORAGE_KEYS.stickyHotelQuoteBar,
     'session'
   )
+  useEscapeDismiss(dismissSticky, stickyReady && !stickyDismissed)
   const [area, setArea] = useState<(typeof AREA_FILTERS)[number]['id']>('all')
   const [level, setLevel] = useState<(typeof LEVEL_FILTERS)[number]['id']>('all')
   const [nearCourse, setNearCourse] = useState('')

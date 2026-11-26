@@ -189,8 +189,9 @@ export function GeContentPage() {
   }
 
   const isNewsletter = page.enquiryType === 'newsletter'
-  /** Keep the first section only — cut the long repeated story grid. */
-  const leadSections = page.sections.slice(0, 1)
+  /** FAQ pages: show every Q&A section (titles ending in ?). Others: first section only. */
+  const faqSections = page.sections.filter((section) => section.title.trim().endsWith('?'))
+  const leadSections = faqSections.length >= 2 ? faqSections : page.sections.slice(0, 1)
   const isTermsPage = path.includes('terms')
   const isPrivacyPage = path.includes('privacy')
   const isContactPage = path === '/contact' || path.startsWith('/contact/')

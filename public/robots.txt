@@ -1,5 +1,13 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /portal
+Disallow: /portal/
+Disallow: /brand
+Disallow: /brand/
+Disallow: /pay
+Disallow: /pay/
 Disallow: /dashboard
 Disallow: /dashboard/
 Disallow: /driver

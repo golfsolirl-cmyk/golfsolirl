@@ -1,3 +1,5 @@
+import { golfBreaksByAreaFooterLinks } from '../../../lib/seo/area-footer-links'
+
 export interface GeNavLink {
   readonly label: string
   readonly href: string
@@ -28,9 +30,17 @@ export const footerColumns = [
     ]
   },
   {
+    title: 'Golf breaks by area',
+    links: [
+      ...golfBreaksByAreaFooterLinks(),
+      { label: 'With airport transfers', href: '/golf-holidays/with-airport-transfers' }
+    ]
+  },
+  {
     title: 'Help',
     links: [
       { label: 'FAQ', href: '/faq' },
+      { label: 'Costa del Sol FAQ', href: '/guides/costa-del-sol-golf-faq' },
       { label: 'Testimonials', href: '/testimonials' },
       { label: 'Leave us a review', href: '/leave-a-review' },
       { label: 'Golf map', href: '/golf-map' },

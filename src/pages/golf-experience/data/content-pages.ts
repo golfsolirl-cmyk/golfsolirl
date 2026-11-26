@@ -566,16 +566,35 @@ const faqPage: GeContentPageData = {
   highlights: trustHighlights,
   sections: [
     {
-      title: 'Common planning questions',
+      title: 'How do deposits and balances work?',
       body:
-        'Most organisers ask about deposits, cancellation windows, tee-time certainty, and group-size pricing. We explain these upfront.',
+        'Unless your written proposal says otherwise, expect a deposit to hold supplier space and a balance before travel. We confirm milestones in writing so the group knows what is locked.',
       bullets: ['Simple payment milestones', 'What is confirmed and when', 'How changes are handled']
     },
     {
-      title: 'Need a direct answer?',
+      title: 'When are tee times and hotels confirmed?',
       body:
-        'If your question is specific to your dates or group, send it through and we will answer directly.',
-      bullets: ['Fast response from Ireland', 'No chatbot runaround', 'Clear next step with each reply']
+        'We hold preferred options while suppliers confirm. Nothing is final until you have written confirmation and the required payment steps are complete.'
+    },
+    {
+      title: 'Do you arrange Málaga Airport golf transfers?',
+      body:
+        'Yes — private, golf-bag-friendly transfers from AGP to your hotel or resort base. See /transfers/malaga-airport-golf-transfers for the full transfer story.'
+    },
+    {
+      title: 'How many nights should our group stay?',
+      body:
+        '3 nights suits short breaks; 5–7 nights suits most societies. Compare /golf-packages/3-night-golf-breaks, /golf-packages/5-night-golf-holidays, and /golf-packages/7-night-golf-holidays.'
+    },
+    {
+      title: 'Need a direct answer for your dates?',
+      body:
+        'If your question is specific to your dates or group, send it through and we will answer directly from Ireland.',
+      bullets: [
+        'Fast response from Ireland',
+        'Costa del Sol FAQ — /guides/costa-del-sol-golf-faq',
+        'Get a quote — /quote'
+      ]
     }
   ],
   formTitle: 'Ask your question',

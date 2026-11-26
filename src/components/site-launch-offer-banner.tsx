@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { DISMISS_STORAGE_KEYS } from '../lib/persisted-dismiss'
 import { usePersistedDismiss } from '../hooks/use-persisted-dismiss'
+import { useEscapeDismiss } from '../hooks/use-escape-dismiss'
 import { DismissCloseButton } from './ui/dismiss-close-button'
 
 type PublicOffer = {
@@ -29,6 +30,8 @@ export function SiteLaunchOfferBanner() {
       cancelled = true
     }
   }, [])
+
+  useEscapeDismiss(dismiss, ready && !dismissed && Boolean(offer))
 
   if (!ready || dismissed || !offer) return null
 
