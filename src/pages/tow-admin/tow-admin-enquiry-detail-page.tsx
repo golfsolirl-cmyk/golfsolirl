@@ -464,6 +464,15 @@ export function TowAdminEnquiryDetailPage() {
             </a>
           ) : null}
 
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm leading-relaxed text-slate-600">
+            <p className="font-ge font-extrabold text-gs-dark">GDPR / data requests</p>
+            <p className="mt-1">
+              For access or erasure requests emailed to info@golfsolirl.com: use Export CSV on the enquiries list for
+              a copy of this row’s fields, delete this enquiry here, and also remove any linked portal login / packages
+              from Admin → Clients if the person asks for full erasure. Respond within 1 month.
+            </p>
+          </div>
+
           <button
             type="button"
             disabled={busy}

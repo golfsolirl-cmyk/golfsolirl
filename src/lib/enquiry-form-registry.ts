@@ -58,6 +58,8 @@ export const ENQUIRY_STRUCTURED_FIELD_KEYS = {
   termsAccepted: '_termsAccepted',
   /** ISO timestamp when terms were accepted at submit. */
   termsAcceptedAt: '_termsAcceptedAt',
+  /** ISO timestamp when the client submitted after seeing the form privacy notice. */
+  gdprNoticeAcknowledgedAt: '_gdprNoticeAcknowledgedAt',
   /** Primary CTA: `transfer` | `golf` | `accommodation`. */
   servicePrimary: '_servicePrimary',
   /** JSON `{ transfer, golf, accommodation }` booleans. */

@@ -3,18 +3,42 @@ export const CONSENT_STORAGE_KEY = 'gsol-cookie-consent'
 export const CONSENT_COOKIE_NAME = 'gsol_consent'
 /** Ask again after six months. */
 export const CONSENT_MAX_AGE_SECONDS = 60 * 60 * 24 * 180
-/** Bump this when optional cookies are actually added, so old choices are asked again. */
-export const CONSENT_VERSION = 1
+/**
+ * Bump when optional cookie categories change or the consent UX is revised,
+ * so previous choices are asked again under Irish DPC / ePrivacy rules.
+ */
+export const CONSENT_VERSION = 2
 
 export const OPEN_COOKIE_SETTINGS_EVENT = 'gsol:open-cookie-settings'
 
-export type CookieConsentChoice = {
+export const PRIVACY_POLICY_PATH = '/privacy-policy'
+export const COOKIE_POLICY_PATH = '/cookie-policy'
+
+/**
+ * Categories this site can record. Analytics and marketing stay off until
+ * optional scripts are actually introduced and gated behind this record.
+ */
+export type CookieConsentPreferences = {
   readonly necessary: true
-  readonly analytics: false
-  readonly marketing: false
+  readonly analytics: boolean
+  readonly marketing: boolean
+}
+
+export type CookieConsentChoice = CookieConsentPreferences & {
   readonly version: number
   readonly decidedAt: string
-  readonly choice: 'accept' | 'reject' | 'save'
+  readonly choice: 'accept' | 'reject' | 'custom'
+}
+
+/** True when optional tracking scripts may load (none exist on the site today). */
+export function hasOptionalConsent(record: CookieConsentChoice | null): {
+  analytics: boolean
+  marketing: boolean
+} {
+  if (!record || record.version !== CONSENT_VERSION) {
+    return { analytics: false, marketing: false }
+  }
+  return { analytics: record.analytics === true, marketing: record.marketing === true }
 }
 
 export function openCookieSettings(): void {
@@ -27,10 +51,10 @@ function isChoice(value: unknown): value is CookieConsentChoice {
   const record = value as Partial<CookieConsentChoice>
   return (
     record.necessary === true &&
-    record.analytics === false &&
-    record.marketing === false &&
+    typeof record.analytics === 'boolean' &&
+    typeof record.marketing === 'boolean' &&
     record.version === CONSENT_VERSION &&
-    (record.choice === 'accept' || record.choice === 'reject' || record.choice === 'save') &&
+    (record.choice === 'accept' || record.choice === 'reject' || record.choice === 'custom') &&
     typeof record.decidedAt === 'string'
   )
 }
@@ -66,6 +90,12 @@ export function readCookieConsent(): CookieConsentChoice | null {
 }
 
 export function writeCookieConsent(choice: CookieConsentChoice['choice']): CookieConsentChoice {
+  /**
+   * Optional categories are not used on the live site yet. Accept / reject /
+   * custom all keep analytics and marketing off so nothing non-essential loads.
+   * When optional tools are added, gate them on `hasOptionalConsent` and allow
+   * true values only after an explicit opt-in (never pre-ticked).
+   */
   const record: CookieConsentChoice = {
     necessary: true,
     analytics: false,
@@ -83,4 +113,16 @@ export function writeCookieConsent(choice: CookieConsentChoice['choice']): Cooki
   const secure = window.location.protocol === 'https:' ? '; Secure' : ''
   document.cookie = `${CONSENT_COOKIE_NAME}=${encodeURIComponent(serialised)}; Max-Age=${CONSENT_MAX_AGE_SECONDS}; Path=/; SameSite=Lax${secure}`
   return record
+}
+
+/** Clear consent so the banner returns immediately (withdrawal). */
+export function clearCookieConsent(): void {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.removeItem(CONSENT_STORAGE_KEY)
+  } catch {
+    /* private mode */
+  }
+  const secure = window.location.protocol === 'https:' ? '; Secure' : ''
+  document.cookie = `${CONSENT_COOKIE_NAME}=; Max-Age=0; Path=/; SameSite=Lax${secure}`
 }
