@@ -138,6 +138,41 @@ const getAdmin = (env) => {
 
 const normalizeEmail = (raw) => (typeof raw === 'string' ? raw.trim().toLowerCase() : '')
 
+/**
+ * Escape Postgres / PostgREST ILIKE wildcards so the pattern is an exact match.
+ * `_` is one character, `%` and `*` are any run. A booking reference of `%%%%%%`
+ * or an email of `mary_smith@…` must not match a different row.
+ *
+ * @param {string} value
+ */
+export const escapeIlikeLiteral = (value) =>
+  String(value ?? '')
+    .replace(/\\/g, '\\\\')
+    .replace(/%/g, '\\%')
+    .replace(/_/g, '\\_')
+    .replace(/\*/g, '\\*')
+
+/** GSI- / GSOL- / GSQ- style refs. Percent, underscore, and star are never valid. */
+export const PORTAL_REFERENCE_RE = /^(?=.*[A-Z0-9])[A-Z0-9-]{6,64}$/
+
+/**
+ * Equality first, then escaped ILIKE for mixed-case rows.
+ * @param {import('@supabase/supabase-js').SupabaseClient} admin
+ * @param {string} email
+ * @param {string} columns
+ */
+const selectProfileByExactEmail = async (admin, email, columns) => {
+  const em = normalizeEmail(email)
+  if (!em || !em.includes('@')) {
+    return { data: null, error: null }
+  }
+  const exact = await admin.from('profiles').select(columns).eq('email', em).maybeSingle()
+  if (exact.error || exact.data) {
+    return exact
+  }
+  return admin.from('profiles').select(columns).ilike('email', escapeIlikeLiteral(em)).maybeSingle()
+}
+
 /** @param {Record<string, string | undefined>} env @param {boolean} [clear] */
 export const portalSetCookieHeader = (env = process.env, clear = false, value) => {
   const secure =
@@ -199,11 +234,11 @@ const resolveProfile = async (admin, input) => {
   }
 
   if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    const { data, error } = await admin
-      .from('profiles')
-      .select('id, email, full_name, portal_token, portal_token_issued_at, portal_revoked_at, portal_auth, created_at')
-      .ilike('email', email)
-      .maybeSingle()
+    const { data, error } = await selectProfileByExactEmail(
+      admin,
+      email,
+      'id, email, full_name, portal_token, portal_token_issued_at, portal_revoked_at, portal_auth, created_at'
+    )
     if (error) {
       throwStatus(error.message, 500)
     }
@@ -460,11 +495,7 @@ export const ensureAuthProfileForEmail = async (admin, email, fullName = '', pre
     throwStatus('Valid email is required.', 400)
   }
 
-  const { data: existing, error: exErr } = await admin
-    .from('profiles')
-    .select(PROFILE_PORTAL_COLS)
-    .ilike('email', em)
-    .maybeSingle()
+  const { data: existing, error: exErr } = await selectProfileByExactEmail(admin, em, PROFILE_PORTAL_COLS)
   if (exErr) {
     throwStatus(exErr.message, 500)
   }
@@ -492,11 +523,7 @@ export const ensureAuthProfileForEmail = async (admin, email, fullName = '', pre
         .eq('id', created.user.id)
     }
 
-    const { data: again, error: againErr } = await admin
-      .from('profiles')
-      .select(PROFILE_PORTAL_COLS)
-      .ilike('email', em)
-      .maybeSingle()
+    const { data: again, error: againErr } = await selectProfileByExactEmail(admin, em, PROFILE_PORTAL_COLS)
     if (againErr) {
       throwStatus(againErr.message, 500)
     }
@@ -611,18 +638,33 @@ const buildPortalSessionRedirect = async (admin, email, nextPath, env) => {
  * @param {string} email
  * @param {string} reference
  */
-const findProfileByEmailAndReference = async (admin, email, reference) => {
+export const findProfileByEmailAndReference = async (admin, email, reference) => {
   const em = normalizeEmail(email)
   const ref = normalizePortalReference(reference)
-  if (!em || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em) || ref.length < 6) {
+  if (!em || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em) || !PORTAL_REFERENCE_RE.test(ref)) {
     return null
+  }
+  const emailPattern = escapeIlikeLiteral(em)
+  const refPattern = escapeIlikeLiteral(ref)
+
+  const byAcctExact = await admin
+    .from('profiles')
+    .select(PROFILE_PORTAL_COLS)
+    .eq('email', em)
+    .eq('account_reference_id', ref)
+    .maybeSingle()
+  if (byAcctExact.error) {
+    throwStatus(byAcctExact.error.message, 500)
+  }
+  if (byAcctExact.data?.id) {
+    return byAcctExact.data
   }
 
   const { data: byAcct, error: aErr } = await admin
     .from('profiles')
     .select(PROFILE_PORTAL_COLS)
-    .ilike('email', em)
-    .ilike('account_reference_id', ref)
+    .ilike('email', emailPattern)
+    .ilike('account_reference_id', refPattern)
     .maybeSingle()
   if (aErr) {
     throwStatus(aErr.message, 500)
@@ -631,16 +673,32 @@ const findProfileByEmailAndReference = async (admin, email, reference) => {
     return byAcct
   }
 
-  const { data: enq, error: eErr } = await admin
+  const enqExact = await admin
     .from('enquiries')
     .select('reference_id, email, full_name, form_payload')
-    .ilike('email', em)
-    .ilike('reference_id', ref)
+    .eq('email', em)
+    .eq('reference_id', ref)
     .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle()
-  if (eErr) {
-    throwStatus(eErr.message, 500)
+  if (enqExact.error) {
+    throwStatus(enqExact.error.message, 500)
+  }
+
+  let enq = enqExact.data
+  if (!enq?.reference_id) {
+    const { data: enqLike, error: eErr } = await admin
+      .from('enquiries')
+      .select('reference_id, email, full_name, form_payload')
+      .ilike('email', emailPattern)
+      .ilike('reference_id', refPattern)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    if (eErr) {
+      throwStatus(eErr.message, 500)
+    }
+    enq = enqLike
   }
   if (enq?.reference_id) {
     const name =
@@ -650,14 +708,28 @@ const findProfileByEmailAndReference = async (admin, email, reference) => {
     return ensureAuthProfileForEmail(admin, em, name, normalizePortalReference(enq.reference_id))
   }
 
-  const { data: anchor, error: anErr } = await admin
+  const anchorExact = await admin
     .from('email_account_anchors')
     .select('email, account_reference_id')
     .eq('email', em)
-    .ilike('account_reference_id', ref)
+    .eq('account_reference_id', ref)
     .maybeSingle()
-  if (anErr) {
-    throwStatus(anErr.message, 500)
+  if (anchorExact.error) {
+    throwStatus(anchorExact.error.message, 500)
+  }
+
+  let anchor = anchorExact.data
+  if (!anchor?.account_reference_id) {
+    const { data: anchorLike, error: anErr } = await admin
+      .from('email_account_anchors')
+      .select('email, account_reference_id')
+      .eq('email', em)
+      .ilike('account_reference_id', refPattern)
+      .maybeSingle()
+    if (anErr) {
+      throwStatus(anErr.message, 500)
+    }
+    anchor = anchorLike
   }
   if (anchor?.account_reference_id) {
     return ensureAuthProfileForEmail(admin, em, '', normalizePortalReference(anchor.account_reference_id))
