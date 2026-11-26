@@ -1,4 +1,3 @@
-import { Flag } from 'lucide-react'
 import { useEffect, useId, useRef, useState } from 'react'
 import { m, useReducedMotion } from 'framer-motion'
 import { BrandLogoPicture } from './brand-logo-picture'
@@ -142,46 +141,37 @@ export function CookieConsent() {
       ) : (
         <div
           aria-labelledby={titleId}
-          className="pointer-events-auto mx-auto max-w-[560px] rounded-[1.4rem] border border-[#d4a843]/50 bg-[#fffdf8] p-4 text-[#062016] shadow-[0_22px_60px_rgba(6,32,22,0.2)] sm:p-5"
+          className="pointer-events-auto mx-auto flex max-w-[560px] flex-col gap-3 rounded-2xl border border-[#d4a843]/50 bg-[#fffdf8] p-3 text-[#062016] shadow-[0_12px_28px_rgba(6,32,22,0.18)] sm:flex-row sm:items-center sm:gap-4 sm:p-4"
           role="dialog"
         >
-          <div className="flex items-start gap-3">
-            <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#0b3123] text-[#d4a843]" aria-hidden="true">
-              <Flag className="h-5 w-5" />
-            </span>
-            <div>
-              <p className="font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.16em] text-[#8a6a22]">GolfSol Ireland</p>
-              <h2 className="mt-1 font-ge text-lg font-bold leading-snug sm:text-xl" id={titleId}>
-                A little housekeeping before you tee off! <span aria-hidden="true">⛳</span>
-              </h2>
-            </div>
+          <div className="min-w-0 flex-1">
+            <h2 className="font-ge text-sm font-bold leading-snug sm:text-base" id={titleId}>
+              Essential cookies only
+            </h2>
+            <p className="mt-1 text-xs leading-relaxed text-[#24362e] sm:text-sm">
+              We keep the site working. No analytics or ads.{' '}
+              <a className="font-semibold underline decoration-[#d4a843] underline-offset-2" href="/cookie-policy">
+                Cookie policy
+              </a>
+            </p>
           </div>
-          <p className="mt-3 text-sm leading-relaxed text-[#24362e] sm:text-[0.95rem]">
-            We use essential cookies to keep the website working. We do not use optional analytics or advertising cookies. You are in control of this choice.
-          </p>
-          <div className="mt-4 grid gap-2 sm:grid-cols-3">
-            <button className={`${buttonClass} bg-[#d4a843] text-[#062016] hover:bg-[#e2bc62]`} onClick={() => choose('accept')} type="button">
-              Accept All
-            </button>
+          <div className="flex shrink-0 gap-2">
             <button
-              className={`${buttonClass} border-2 border-[#0b3123] bg-white text-[#0b3123] hover:bg-[#f4f7f5]`}
-              onClick={() => choose('reject')}
+              className="inline-flex min-h-10 flex-1 items-center justify-center rounded-full bg-[#d4a843] px-4 font-ge text-[0.78rem] font-extrabold uppercase tracking-[0.1em] text-[#062016] hover:bg-[#e2bc62] sm:flex-none"
+              onClick={() => choose('accept')}
               type="button"
             >
-              Reject Optional
+              Got it
             </button>
             <button
-              className={`${buttonClass} border-2 border-[#0b3123]/20 bg-white text-[#0b3123] hover:border-[#d4a843]`}
+              className="inline-flex min-h-10 items-center justify-center rounded-full border border-[#0b3123]/25 px-3 font-ge text-[0.72rem] font-bold uppercase tracking-[0.08em] text-[#0b3123] hover:bg-white"
               onClick={() => setPanelOpen(true)}
               type="button"
             >
-              Customise
+              Details
             </button>
           </div>
-          <a className="mt-3 inline-block font-ge text-sm font-semibold text-[#0b3123] underline decoration-[#d4a843] underline-offset-4" href="/cookie-policy">
-          Cookie policy
-        </a>
-      </div>
+        </div>
       )}
     </m.div>
   )

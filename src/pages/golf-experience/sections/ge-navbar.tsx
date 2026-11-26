@@ -38,28 +38,24 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
 
   useEffect(() => {
     const isMobile = () => window.matchMedia('(max-width: 1023px)').matches
-    // Mobile starts compact so the crest row never traps half the viewport.
-    if (isMobile()) setRibbonHidden(true)
+    // Mobile: keep ribbon permanently collapsed — crest + menu only.
+    if (isMobile()) {
+      setRibbonHidden(true)
+    }
 
     let hideTimer = 0
     const onScroll = () => {
       window.clearTimeout(hideTimer)
-      const y = window.scrollY
-      if (!isMobile()) {
-        if (y < 12) {
-          setRibbonHidden(false)
-          return
-        }
-        hideTimer = window.setTimeout(() => setRibbonHidden(y > 12), 120)
+      if (isMobile()) {
+        setRibbonHidden(true)
         return
       }
-      // Mobile: keep ribbon collapsed while scrolling; only reopen near the very top
-      // and only when the menu is closed.
-      if (y < 4 && !isMenuOpen) {
-        hideTimer = window.setTimeout(() => setRibbonHidden(false), 180)
-      } else {
-        setRibbonHidden(true)
+      const y = window.scrollY
+      if (y < 12) {
+        setRibbonHidden(false)
+        return
       }
+      hideTimer = window.setTimeout(() => setRibbonHidden(y > 12), 120)
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
@@ -69,7 +65,7 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
     }
-  }, [isMenuOpen])
+  }, [])
 
   useEffect(() => {
     if (!isMenuOpen) return

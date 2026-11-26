@@ -317,7 +317,7 @@ export function LoginPage() {
           headlinePrimary="Sign"
           headlineAccent="in."
           lead="Magic link · Secure · No password"
-          body="Connect Supabase to enable secure magic-link sign-in."
+          body="Connect Supabase to enable email sign-in codes for the trip desk."
         />
         <main className="relative z-[1] mx-auto w-full max-w-2xl flex-1 px-5 pb-20 pt-12 sm:px-8 md:pb-28">
           <PremiumCard tone="light">

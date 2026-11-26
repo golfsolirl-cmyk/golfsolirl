@@ -77,8 +77,10 @@ export function FloatingWhatsApp() {
         const headerBottom = document.querySelector('header')?.getBoundingClientRect().bottom ?? 0
         const buttonBlock = 56
         const maxBottom = Math.max(12, Math.floor(window.innerHeight - Math.max(0, headerBottom) - buttonBlock - 8))
-        const nextHidden = (mobile && fieldIsFocused()) || (mobile && cookieBannerOpen())
-        const nextBottom = Math.min(maxBottom, Math.max(12, obstacleLift()))
+        // Keep the compact FAB visible even when the cookie bar is open — only hide for focused fields.
+        const nextHidden = mobile && fieldIsFocused()
+        const cookieLift = mobile && cookieBannerOpen() ? 72 : 0
+        const nextBottom = Math.min(maxBottom, Math.max(12, obstacleLift() + cookieLift))
         setHidden((current) => (current === nextHidden ? current : nextHidden))
         setBottom((current) => (current === nextBottom ? current : nextBottom))
         setReady(true)
