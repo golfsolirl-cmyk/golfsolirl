@@ -476,7 +476,20 @@ export const handleTowAdmin = async (env = process.env, meta = {}) => {
       profileId,
       createdBy: user?.id || null,
       paidVia: blank(body.paidVia) || 'monzo',
-      invoiceMode: blank(body.invoiceMode) || 'full'
+      invoiceMode: blank(body.invoiceMode) || blank(body.paymentRequestMode) || 'full',
+      paymentRequestMode: blank(body.paymentRequestMode) || blank(body.invoiceMode) || 'full',
+      depositEur:
+        typeof body.depositEur === 'number'
+          ? body.depositEur
+          : typeof body.depositEur === 'string'
+            ? Number(String(body.depositEur).replace(',', '.'))
+            : undefined,
+      amountReceivedEur:
+        typeof body.amountReceivedEur === 'number'
+          ? body.amountReceivedEur
+          : typeof body.amountReceivedEur === 'string'
+            ? Number(String(body.amountReceivedEur).replace(',', '.'))
+            : undefined
     })
     return result
   }

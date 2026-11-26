@@ -2,12 +2,24 @@ import { useEffect, useMemo, useState } from 'react'
 import { GeFooter } from './golf-experience/sections/ge-footer'
 import { GeNavbar } from './golf-experience/sections/ge-navbar'
 
+type PaymentRequestInfo = {
+  mode?: 'deposit_20' | 'full'
+  headline?: string
+  leadExtra?: string
+  rows?: [string, string][]
+  amountNowLabel?: string
+  amountNowEur?: number
+  tripTotalEur?: number
+  remainingAfterNowEur?: number
+}
+
 type PayPayload = {
   ok?: boolean
   reference?: string
   title?: string
   amountLabel?: string
   status?: string
+  paymentRequest?: PaymentRequestInfo | null
   monzo?: {
     accountName: string
     bankName: string
@@ -18,6 +30,7 @@ type PayPayload = {
   } | null
   secondary?: { revolutUrl?: string | null; bankNote?: string | null }
   stripeCheckoutUrl?: string | null
+  contact?: { email?: string; irishPhone?: string; spanishPhone?: string }
   message?: string
 }
 
@@ -96,6 +109,9 @@ export function PayPage() {
   }
 
   const m = data?.monzo
+  const pr = data?.paymentRequest
+  const isDeposit = pr?.mode === 'deposit_20'
+  const amountNow = pr?.amountNowLabel || data?.amountLabel
 
   return (
     <div className="ge-page flex min-h-screen flex-col bg-[#F4F7F5] text-gs-dark">
@@ -116,8 +132,24 @@ export function PayPage() {
           <div className="mt-6 space-y-4">
             <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
               <p className="text-sm text-slate-500">{data.title}</p>
-              <p className="mt-1 font-ge text-3xl font-extrabold">{data.amountLabel}</p>
-              <p className="mt-2 font-mono text-sm text-slate-600">Ref {data.reference}</p>
+              {pr?.headline ? (
+                <p className="mt-2 font-ge text-sm font-extrabold uppercase tracking-[0.12em] text-gs-green">
+                  {pr.headline}
+                </p>
+              ) : null}
+              <p className="mt-1 font-ge text-3xl font-extrabold">{amountNow}</p>
+              {pr?.leadExtra ? <p className="mt-2 text-sm leading-relaxed text-slate-600">{pr.leadExtra}</p> : null}
+              {pr?.rows && pr.rows.length > 0 ? (
+                <dl className="mt-4 space-y-1.5 border-t border-slate-100 pt-3 text-sm">
+                  {pr.rows.map(([label, value]) => (
+                    <div className="flex items-baseline justify-between gap-3" key={`${label}-${value}`}>
+                      <dt className="text-slate-500">{label}</dt>
+                      <dd className="font-semibold text-gs-dark">{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : isDeposit ? null : null}
+              <p className="mt-3 font-mono text-sm text-slate-600">Ref {data.reference}</p>
               <p className="mt-1 text-sm capitalize text-slate-500">{(data.status || '').replace(/_/g, ' ')}</p>
             </div>
 
@@ -196,6 +228,17 @@ export function PayPage() {
               </button>
             </div>
             {flash ? <p className="text-sm text-emerald-800">{flash}</p> : null}
+
+            <div className="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm text-slate-600">
+              <p className="font-ge text-xs font-extrabold uppercase tracking-[0.12em] text-slate-500">Golf Sol Ireland</p>
+              <p className="mt-2">
+                {data.contact?.email || 'info@golfsolirl.com'}
+                <br />
+                IE {data.contact?.irishPhone || '+353 86 851 5000'}
+                <br />
+                ES {data.contact?.spanishPhone || '+34 641 81 53 66'}
+              </p>
+            </div>
           </div>
         ) : null}
       </main>
