@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ClipboardList, Mail, MessageSquare, Wallet } from 'lucide-react'
+import { ClipboardList, Mail, MessageSquare, PlaneLanding, Wallet } from 'lucide-react'
 import { EnquiryTripStageStrip } from './enquiry-trip-stage-strip'
 import { AdminEnquiryTripBuilder } from './admin-enquiry-trip-builder'
 import { LuxuryButton } from './ui/button'
@@ -14,6 +14,8 @@ import type { PortalInterestTicketMessageRow } from '../lib/portal-interest-tick
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { adminMailRequest } from '../lib/admin-mail-api'
 import { AdminEnquiryBankPaymentPanel } from './admin-enquiry-bank-payment-panel'
+import { AdminEnquiryTransferUpsellModal } from './admin-enquiry-transfer-upsell-modal'
+import { ENQUIRY_STRUCTURED_FIELD_KEYS } from '../lib/enquiry-form-registry'
 
 export type AdminEnquiryCardRow = {
   id: string
@@ -168,6 +170,8 @@ type AdminEnquiryCardQueueProps = {
   readonly onCreateDocument?: (row: AdminEnquiryCardRow) => void
   readonly onCreateQuotation?: (row: AdminEnquiryCardRow) => void
   readonly onEmailCustomer?: (row: AdminEnquiryCardRow) => void
+  readonly onEnquiryPatch?: (enquiryId: string, patch: Partial<AdminEnquiryCardRow>) => void
+  readonly onEnquiryPaymentUpdated?: () => void
 }
 
 type ContactChannel = 'email' | 'form' | 'portal'
@@ -201,6 +205,19 @@ const formatWhen = (iso: string) => {
 const formatEur = (n: number) =>
   new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' }).format(n)
 
+const readTransferUpsellSentAt = (row: AdminEnquiryCardRow): string | null => {
+  const raw = row.form_payload
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+    return null
+  }
+  const fields = (raw as { fields?: Record<string, unknown> }).fields
+  if (!fields || typeof fields !== 'object') {
+    return null
+  }
+  const v = fields[ENQUIRY_STRUCTURED_FIELD_KEYS.transferUpsellEmailSentAt]
+  return typeof v === 'string' && v.trim() ? v.trim() : null
+}
+
 export function AdminEnquiryCardQueue({
   rows,
   accessToken,
@@ -210,7 +227,9 @@ export function AdminEnquiryCardQueue({
   removingId,
   onCreateDocument,
   onCreateQuotation,
-  onEmailCustomer
+  onEmailCustomer,
+  onEnquiryPatch,
+  onEnquiryPaymentUpdated
 }: AdminEnquiryCardQueueProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [priceById, setPriceById] = useState<Record<string, string>>({})
@@ -224,6 +243,7 @@ export function AdminEnquiryCardQueue({
   const [contactsLoadingId, setContactsLoadingId] = useState<string | null>(null)
   const [transfersByRef, setTransfersByRef] = useState<Record<string, TransferSnap>>({})
   const [invoicesByEnquiry, setInvoicesByEnquiry] = useState<Record<string, InvoiceSnap>>({})
+  const [transferUpsellRow, setTransferUpsellRow] = useState<AdminEnquiryCardRow | null>(null)
 
   const refs = useMemo(() => rows.map((r) => r.reference_id).filter(Boolean), [rows])
   const enquiryIds = useMemo(() => rows.map((r) => r.id), [rows])
@@ -544,6 +564,14 @@ export function AdminEnquiryCardQueue({
                     </LuxuryButton>
                   ) : null}
                   <LuxuryButton
+                    className="!px-4 !py-2 !text-xs"
+                    onClick={() => setTransferUpsellRow(row)}
+                    type="button"
+                    variant="outlineOnLight"
+                  >
+                    Email client about airport & hotel transfers
+                  </LuxuryButton>
+                  <LuxuryButton
                     className="!border-red-300 !px-4 !py-2 !text-xs !text-red-800 hover:!bg-red-50"
                     disabled={removingId === row.id}
                     onClick={() => onRemove(row)}
@@ -718,7 +746,42 @@ export function AdminEnquiryCardQueue({
                   row={row}
                 />
 
-                <AdminEnquiryBankPaymentPanel accessToken={accessToken} row={row} />
+                <AdminEnquiryBankPaymentPanel
+                  accessToken={accessToken}
+                  onUpdated={onEnquiryPaymentUpdated}
+                  row={row}
+                />
+
+                <section className="rounded-[1.5rem] border border-fairway-200/80 bg-fairway-50/40 px-4 py-5 sm:px-5">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="flex items-start gap-3">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-forest-900 text-white">
+                        <PlaneLanding aria-hidden className="h-5 w-5" />
+                      </span>
+                      <div>
+                        <h4 className="font-display text-lg font-semibold text-forest-950">Airport & hotel transfers upsell</h4>
+                        <p className="mt-1 max-w-xl text-sm text-forest-700">
+                          Send branded copy inviting the guest to add Málaga airport and hotel transfers to their trip.
+                        </p>
+                        {readTransferUpsellSentAt(row) ? (
+                          <p className="mt-2 text-xs font-semibold text-emerald-900">
+                            Upsell email sent {formatWhen(readTransferUpsellSentAt(row)!)}
+                          </p>
+                        ) : (
+                          <p className="mt-2 text-xs text-forest-600">No transfer upsell email logged yet.</p>
+                        )}
+                      </div>
+                    </div>
+                    <LuxuryButton
+                      className="!px-4 !py-2.5 !text-xs"
+                      onClick={() => setTransferUpsellRow(row)}
+                      type="button"
+                      variant="outline"
+                    >
+                      Email client about airport & hotel transfers
+                    </LuxuryButton>
+                  </div>
+                </section>
 
                 <section className="rounded-[1.5rem] border border-forest-100 bg-white px-4 py-5 sm:px-5">
                   <h4 className="font-display text-lg font-semibold text-forest-950">How they got in touch</h4>
@@ -844,6 +907,26 @@ export function AdminEnquiryCardQueue({
           </article>
         )
       })}
+      <AdminEnquiryTransferUpsellModal
+        accessToken={accessToken}
+        onClose={() => setTransferUpsellRow(null)}
+        onSent={(sentAt) => {
+          if (!transferUpsellRow) {
+            return
+          }
+          const prevPayload = transferUpsellRow.form_payload
+          const prev =
+            prevPayload && typeof prevPayload === 'object' && !Array.isArray(prevPayload)
+              ? (prevPayload as { form?: string; fields?: Record<string, string> })
+              : { form: 'website', fields: {} }
+          const fields = { ...(prev.fields ?? {}), [ENQUIRY_STRUCTURED_FIELD_KEYS.transferUpsellEmailSentAt]: sentAt }
+          onEnquiryPatch?.(transferUpsellRow.id, { form_payload: { form: prev.form ?? 'website', fields } })
+          setTransferUpsellRow((current) =>
+            current ? { ...current, form_payload: { form: prev.form ?? 'website', fields } } : current
+          )
+        }}
+        row={transferUpsellRow}
+      />
     </div>
   )
 }

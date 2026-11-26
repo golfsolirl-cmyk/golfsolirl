@@ -100,6 +100,10 @@ afterTry(
   "const { handleEnquiryPaymentAdmin } = await import('../server/enquiry-payment-service.mjs')"
 )
 afterTry(
+  "server.middlewares.use('/api/enquiry-transfer-upsell-email'",
+  "const { handleEnquiryTransferUpsellEmail } = await import('../server/enquiry-transfer-upsell-email.mjs')"
+)
+afterTry(
   "server.middlewares.use('/api/package-build-admin-publish'",
   "const { handlePackageBuildAdminPublish } = await import('../server/package-build-admin-publish-service.mjs')"
 )

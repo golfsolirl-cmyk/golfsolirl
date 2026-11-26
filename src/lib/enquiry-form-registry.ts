@@ -69,7 +69,9 @@ export const ENQUIRY_STRUCTURED_FIELD_KEYS = {
   bundleRounds: '_bundleRounds',
   bundleTier: '_bundleTier',
   /** `yes` when client asked to add airport & hotel transfers. */
-  addTransfers: '_addTransfers'
+  addTransfers: '_addTransfers',
+  /** ISO timestamp when admin sent the transfer upsell email. */
+  transferUpsellEmailSentAt: '_transferUpsellEmailSentAt'
 } as const
 
 /** Stored in `fields` / structured payload for select `tripArrivalMode`. */

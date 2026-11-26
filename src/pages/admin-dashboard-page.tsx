@@ -920,6 +920,10 @@ export function AdminDashboardPage() {
     [enquiries, filterEnquiriesByQuery]
   )
 
+  const patchEnquiryRow = useCallback((enquiryId: string, patch: Partial<EnquiryRow>) => {
+    setEnquiries((prev) => prev.map((e) => (e.id === enquiryId ? { ...e, ...patch } : e)))
+  }, [])
+
   const markEnquiryViewed = useCallback(async (row: EnquiryRow) => {
     if (isEnquiryAdminViewed(row)) {
       return
@@ -4564,6 +4568,7 @@ export function AdminDashboardPage() {
                 onCreateDocument={openClientDocumentFromEnquiry}
                 onCreateQuotation={openQuotationFromEnquiry}
                 onEmailCustomer={openMailFromEnquiry}
+                onEnquiryPatch={patchEnquiryRow}
                 onOpen={(row) => {
                   setSelectedEnquiryDetailRef(row.reference_id)
                   void markEnquiryViewed(row)
@@ -4591,6 +4596,7 @@ export function AdminDashboardPage() {
                   onCreateDocument={openClientDocumentFromEnquiry}
                   onCreateQuotation={openQuotationFromEnquiry}
                   onEmailCustomer={openMailFromEnquiry}
+                  onEnquiryPatch={patchEnquiryRow}
                   onOpen={(row) => {
                     setSelectedEnquiryDetailRef(row.reference_id)
                     void markEnquiryViewed(row)

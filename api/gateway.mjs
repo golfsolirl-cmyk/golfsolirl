@@ -50,6 +50,7 @@ import {
 import { handleEnquiryAdminMessage, handleEnquiryAdminQuote } from '../server/enquiry-admin-quote-service.mjs'
 import { handleSitePaymentSettings } from '../server/site-payment-settings-service.mjs'
 import { handleEnquiryPaymentAdmin } from '../server/enquiry-payment-service.mjs'
+import { handleEnquiryTransferUpsellEmail } from '../server/enquiry-transfer-upsell-email.mjs'
 import { handleAdminSendDocument } from '../server/admin-send-document-service.mjs'
 import { handleClientEnquiryDocument } from '../server/client-enquiry-document-service.mjs'
 import {
@@ -580,6 +581,29 @@ export default async function handler(req, res) {
         const cookieHeader = typeof req.headers?.cookie === 'string' ? req.headers.cookie : ''
         const result = await handleEnquiryPaymentAdmin(payload, process.env, { authHeader, cookieHeader })
         jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'enquiry-transfer-upsell-email': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const cookieHeader = typeof req.headers?.cookie === 'string' ? req.headers.cookie : ''
+        try {
+          const result = await handleEnquiryTransferUpsellEmail(payload, process.env, { authHeader, cookieHeader })
+          jsonEnd(res, 200, result)
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Request failed.'
+          const statusCode =
+            error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+              ? error.statusCode
+              : 500
+          jsonEnd(res, statusCode, { message })
+        }
         return
       }
 
