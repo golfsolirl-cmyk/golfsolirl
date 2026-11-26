@@ -59,7 +59,7 @@ export function WhatsAppBookingHelp({
               id={headingId}
               className="mt-3 text-balance font-ge text-[1.85rem] font-extrabold leading-[1.08] tracking-[-0.02em] text-white sm:text-[2.25rem]"
             >
-              WhatsApp us · {WHATSAPP_DISPLAY}
+              WhatsApp us
             </h2>
             <p className="mt-4 max-w-2xl font-ge text-base leading-7 text-white sm:text-[1.0625rem] sm:leading-8">
               Not sure which golf package suits your group? Send us a WhatsApp message and we&apos;ll help you find the right option.
@@ -76,8 +76,9 @@ export function WhatsAppBookingHelp({
               }}
               className="max-w-[22rem]"
             />
-            <p className="gsol-wa-gold mt-2 text-center font-ge text-base leading-7">
-              Tap the crest. WhatsApp us on {WHATSAPP_DISPLAY}.
+            <p className="gsol-wa-gold mt-2 text-center font-ge text-base leading-7">Tap the crest to WhatsApp us.</p>
+            <p className="mt-1 whitespace-nowrap text-center font-ge text-sm font-semibold text-white/90">
+              {WHATSAPP_DISPLAY}
             </p>
           </div>
         </div>

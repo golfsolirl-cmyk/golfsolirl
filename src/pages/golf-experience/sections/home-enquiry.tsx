@@ -1,9 +1,10 @@
 import { m, type Variants } from 'framer-motion'
-import { CheckCircle2, MessageCircle, Sparkles } from 'lucide-react'
+import { CheckCircle2, Sparkles } from 'lucide-react'
+import { IrelandPaymentsTrust } from '../../../components/ireland-payments-trust'
+import { WhatsAppPill } from '../../../components/whatsapp/WhatsAppPill'
 import { GeDualPhoneEnquiryCallRow } from '../components/ge-dual-phone-contact'
 import { GeQuickEnquiryForm } from '../components/ge-quick-enquiry-form'
 import { GeSection } from '../components/ge-section'
-import { createWhatsAppLink, WHATSAPP_CTA_WITH_NUMBER } from '../../../lib/whatsapp'
 import { leanEnquiryFormConfig } from '../data/lean-enquiry-fields'
 
 const fadeUp = {
@@ -34,14 +35,11 @@ const homeQuoteFormConfig = leanEnquiryFormConfig({
 
 const reassuranceLines = [
   'Tee times, transfers and routing handled by one Irish team',
-  'Irish & Spanish phone lines · WhatsApp us on +353 86 600 6202',
+  'Irish & Spanish phone lines — WhatsApp for quick questions',
   'Quote inside 24 hours · No booking fee, no obligation'
 ] as const
 
 export function GeHomeEnquiry() {
-  const whatsappHref = createWhatsAppLink(
-    'Hi GolfSol Ireland — I would like help planning a Costa del Sol golf trip.'
-  )
 
   return (
     <GeSection
@@ -104,15 +102,13 @@ export function GeHomeEnquiry() {
 
           <m.div variants={heroItemVariants} className="mt-7 flex flex-col gap-3">
             <GeDualPhoneEnquiryCallRow />
-            <a
-              href={whatsappHref}
-              target="_blank"
-              rel="noreferrer"
-              className="group inline-flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-xl border-2 border-[#25D366]/70 bg-white px-5 font-ge text-[1rem] font-bold tracking-normal text-[#0f7a3a] shadow-[0_0_18px_rgba(37,211,102,0.18)] transition-all hover:bg-[#25D366] hover:text-white hover:shadow-[0_0_28px_rgba(37,211,102,0.3)] sm:text-[1rem]"
-            >
-              <MessageCircle className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" aria-hidden />
-              {WHATSAPP_CTA_WITH_NUMBER}
-            </a>
+            <WhatsAppPill
+              context={{ sourcePage: '/', componentVariant: 'contact', enquiryType: 'quote' }}
+              fullWidth
+              message="Hi GolfSol Ireland — I would like help planning a Costa del Sol golf trip."
+              tone="light"
+            />
+            <IrelandPaymentsTrust tone="muted" />
           </m.div>
 
           <m.div variants={heroItemVariants} className="relative mt-9">

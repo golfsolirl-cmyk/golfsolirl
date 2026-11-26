@@ -4,6 +4,7 @@ import { FooterCompanyContact } from './footer-company-contact'
 import { FooterBrandLogoPicture } from './brand-logo-picture'
 import { BrandPlaneToFairwayTagline } from './brand-plane-to-fairway-tagline'
 import { GsolGoldCornerAccents } from './gsol-gold-corner-accents'
+import { IrelandPaymentsTrust } from './ireland-payments-trust'
 import { AmbientGolfBall } from './ui/ambient-golf-ball'
 import { footerGroups, footerSocialLinks } from '../data/site-content'
 import { GOLFSOL_BRAND_LOGO_FOOTER_SIZES, GOLFSOL_BRAND_LOGO_INTRINSIC } from '../lib/brand-logo-assets'
@@ -94,6 +95,7 @@ export function SiteFooter({ footerRef, intro, copyrightNote }: SiteFooterProps)
 
       <div className="relative z-[1] mx-auto mt-8 flex max-w-7xl flex-col gap-3 border-t border-white/10 pt-5 text-[1.02rem] text-white/80 md:flex-row md:items-center md:justify-between">
         <p>Copyright {new Date().getFullYear()} Golf Sol Ireland. All rights reserved.</p>
+        <IrelandPaymentsTrust tone="dark" />
         <p>{copyrightNote}</p>
       </div>
     </footer>

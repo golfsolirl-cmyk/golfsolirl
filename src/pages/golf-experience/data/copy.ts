@@ -188,7 +188,7 @@ export const factsCopy = {
     }
   ],
   ctaLabel: 'GET A QUOTE',
-  ctaSecondaryLabel: 'WhatsApp us · +353 86 600 6202',
+  ctaSecondaryLabel: 'WhatsApp us',
   ctaWhatsappHref:
     'https://wa.me/353866006202?text=Hi%20Golf%20Sol%20Ireland%20%E2%80%94%20can%20you%20design%20our%20Costa%20del%20Sol%20trip%3F',
   ctaAside: 'Málaga → Sotogrande · One crew · 24/7 on-trip care'

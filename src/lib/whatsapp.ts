@@ -14,8 +14,11 @@ export const WHATSAPP_DISPLAY_00353 = '00353 86 600 6202'
 export const WHATSAPP_HREF = `https://wa.me/${WHATSAPP_NUMBER}`
 /** Compact public CTA label — sentence case, no all-caps, no “(Irish number)”. */
 export const WHATSAPP_CTA_LABEL = 'WhatsApp us'
-/** Compact CTA with number for buttons / FAB / enquire strips. */
-export const WHATSAPP_CTA_WITH_NUMBER = `${WHATSAPP_CTA_LABEL} · ${WHATSAPP_DISPLAY}`
+/**
+ * @deprecated Prefer `WhatsAppPill` (icon + label). Kept for rare plain-text fallbacks.
+ * Do not use the middle-dot “label · number” pattern in UI.
+ */
+export const WHATSAPP_CTA_WITH_NUMBER = WHATSAPP_CTA_LABEL
 
 export const WHATSAPP_EVENT = 'whatsapp_contact_click'
 

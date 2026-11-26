@@ -5,11 +5,11 @@ import { cx } from '../../lib/utils'
 import {
   createWhatsAppLink,
   trackWhatsAppClick,
-  WHATSAPP_CTA_WITH_NUMBER,
   WHATSAPP_DISPLAY,
   WHATSAPP_MESSAGES
 } from '../../lib/whatsapp'
 import { WhatsAppIcon } from './WhatsAppIcon'
+import { WhatsAppPill } from './WhatsAppPill'
 
 const MESSAGE = WHATSAPP_MESSAGES.booking_help
 const DISMISS_KEY = 'gsol-whatsapp-fab-dismissed'
@@ -154,21 +154,21 @@ export function FloatingWhatsApp() {
           <p className="pr-5 font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.12em] text-[#f4dfa6]">
             Prefer a call?
           </p>
-          <a
-            href={createWhatsAppLink(MESSAGE)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-1 block font-ge text-sm font-bold leading-snug text-white underline-offset-2 hover:underline"
-            onClick={() =>
-              trackWhatsAppClick({
+          <div className="mt-2">
+            <WhatsAppPill
+              context={{
                 sourcePage: currentPath(),
                 componentVariant: 'floating',
                 enquiryType: 'booking_help'
-              })
-            }
-          >
-            {WHATSAPP_CTA_WITH_NUMBER}
-          </a>
+              }}
+              fullWidth
+              message={MESSAGE}
+              tone="green"
+            />
+          </div>
+          <p className="mt-2 whitespace-nowrap font-ge text-[0.72rem] font-semibold text-white/80">
+            {WHATSAPP_DISPLAY}
+          </p>
           <button
             type="button"
             className="mt-2 font-ge text-[0.65rem] font-semibold uppercase tracking-[0.1em] text-white/70 hover:text-white"

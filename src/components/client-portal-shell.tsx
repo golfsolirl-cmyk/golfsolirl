@@ -2,6 +2,7 @@ import { Menu } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { ClientSidebar, CLIENT_SIDEBAR_ITEMS, type ClientPortalSectionId } from './client-sidebar'
+import { IrelandPaymentsTrust } from './ireland-payments-trust'
 import { PortalBottomNav } from './portal-bottom-nav'
 import { CLIENT_MOBILE_TAB_ITEMS } from '../lib/portal-mobile-nav'
 import { cx } from '../lib/utils'
@@ -78,6 +79,9 @@ export function ClientPortalShell({
         </div>
 
         <div className="min-w-0">{children}</div>
+        <div className="mt-8 border-t border-forest-100 px-1 pt-4 lg:px-0">
+          <IrelandPaymentsTrust tone="muted" />
+        </div>
       </div>
 
       <PortalBottomNav

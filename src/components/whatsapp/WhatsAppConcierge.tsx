@@ -54,8 +54,9 @@ export function WhatsAppConcierge({ variant = 'home', sourcePage = '/', classNam
               Not Tech Savvy?
             </h2>
             <p className="gsol-wa-gold mt-4 max-w-xl font-ge text-[1.15rem] font-semibold leading-snug sm:text-[1.28rem]">
-              WhatsApp us · {WHATSAPP_DISPLAY}.
+              WhatsApp us
             </p>
+            <p className="mt-1 whitespace-nowrap font-ge text-sm font-semibold text-white/85">{WHATSAPP_DISPLAY}</p>
             <p className="mt-4 max-w-xl font-ge text-base leading-7 text-white sm:text-[1.0625rem] sm:leading-8">
               {isContact
                 ? "We're happy to answer your questions. No account and no form required."
@@ -96,21 +97,18 @@ export function WhatsAppConcierge({ variant = 'home', sourcePage = '/', classNam
             )}
 
             <div className="mt-7">
-              <WhatsAppButton
-                message={message}
-                context={context}
-                className="sm:min-w-[18rem]"
-              >
-                {`WhatsApp us · ${WHATSAPP_DISPLAY}`}
+              <WhatsAppButton message={message} context={context} className="sm:min-w-[18rem]">
+                WhatsApp us
               </WhatsAppButton>
-              <p className="mt-3 font-ge text-base leading-7 text-white">
+              <p className="mt-3 whitespace-nowrap font-ge text-sm font-semibold text-white/90">{WHATSAPP_DISPLAY}</p>
+              <p className="mt-2 font-ge text-base leading-7 text-white">
                 {isContact
-                  ? `WhatsApp us on ${WHATSAPP_DISPLAY}. A person in Ireland will reply.`
+                  ? 'A person in Ireland will reply.'
                   : 'No complicated forms. No hassle. Just a friendly chat.'}
               </p>
               {isContact ? null : (
                 <p className="gsol-wa-gold mt-1 font-ge text-base leading-7">
-                  Irish-owned. You are messaging a real GolfSol Ireland teammate on {WHATSAPP_DISPLAY}.
+                  Irish-owned. You are messaging a real GolfSol Ireland teammate.
                 </p>
               )}
             </div>

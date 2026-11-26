@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react'
 import { BrandLogoPicture } from './brand-logo-picture'
+import { IrelandPaymentsTrust } from './ireland-payments-trust'
+import { WhatsAppPill } from './whatsapp/WhatsAppPill'
 import { GOLFSOL_BRAND_LOGO_INTRINSIC } from '../lib/brand-logo-assets'
-import { createWhatsAppLink, WHATSAPP_CTA_WITH_NUMBER } from '../lib/whatsapp'
 
 type MinimalLoginShellProps = {
   readonly title: string
@@ -21,8 +22,6 @@ export function MinimalLoginShell({
   children,
   whatsappMessage = 'Hi Golf Sol Ireland — I need help signing in to my portal.'
 }: MinimalLoginShellProps) {
-  const whatsappHref = createWhatsAppLink(whatsappMessage)
-
   return (
     <div className="flex min-h-[100dvh] flex-col bg-[#f4f7f5] px-4 py-10 sm:px-6 sm:py-14">
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
@@ -39,17 +38,16 @@ export function MinimalLoginShell({
           <h1 className="mt-6 font-display text-2xl font-extrabold tracking-tight text-forest-950">{title}</h1>
           {helper ? <p className="mt-2 font-ge text-base leading-7 text-forest-700">{helper}</p> : null}
           <div className="mt-6">{children}</div>
-          <p className="mt-6 text-center font-ge text-sm text-forest-600">
-            Need help?{' '}
-            <a
-              className="font-semibold text-forest-900 underline underline-offset-2 hover:text-gs-green"
-              href={whatsappHref}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              {WHATSAPP_CTA_WITH_NUMBER}
-            </a>
-          </p>
+          <div className="mt-6 flex flex-col items-center gap-3">
+            <p className="font-ge text-sm text-forest-600">Need help?</p>
+            <WhatsAppPill
+              context={{ sourcePage: '/login', componentVariant: 'contact', enquiryType: 'general' }}
+              fullWidth
+              message={whatsappMessage}
+              tone="light"
+            />
+            <IrelandPaymentsTrust tone="muted" />
+          </div>
         </div>
       </main>
     </div>

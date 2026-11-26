@@ -7,6 +7,8 @@ import { GeButton } from '../components/ge-button'
 import { GeDualPhoneFooterLines } from '../components/ge-dual-phone-contact'
 import { aboutFooterCopy, contactInfo } from '../data/copy'
 import { GsolGoldCornerAccents } from '../../../components/gsol-gold-corner-accents'
+import { IrelandPaymentsTrust } from '../../../components/ireland-payments-trust'
+import { WhatsAppPill } from '../../../components/whatsapp/WhatsAppPill'
 import { openCookieSettings } from '../../../lib/cookie-consent'
 import { footerColumns } from '../data/nav'
 
@@ -104,6 +106,14 @@ export function GeFooter() {
                   {contactInfo.email}
                 </a>
               </li>
+              <li>
+                <WhatsAppPill
+                  context={{ sourcePage: '/footer', componentVariant: 'contact', enquiryType: 'contact' }}
+                  message="Hi GolfSol Ireland — I have a quick trip question."
+                  showNumber
+                  tone="forest"
+                />
+              </li>
             </ul>
             <p className="mt-6 font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-emerald-200 drop-shadow-sm sm:text-[0.82rem]">
               Follow Social
@@ -156,10 +166,11 @@ export function GeFooter() {
       </div>
 
       <div className="relative z-[1] border-t border-white/10 bg-black/30">
-        <div className="mx-auto flex max-w-[1180px] flex-col items-center gap-4 px-5 py-5 text-center sm:flex-row sm:flex-wrap sm:justify-between sm:text-left">
+        <div className="mx-auto flex max-w-[1180px] flex-col items-center gap-3 px-5 py-5 text-center sm:flex-row sm:flex-wrap sm:justify-between sm:text-left">
           <p className="font-ge text-[0.98rem] leading-6 text-white sm:text-[0.88rem]">
             Copyright © {new Date().getFullYear()} – GolfSol Ireland – All Rights Reserved
           </p>
+          <IrelandPaymentsTrust tone="dark" />
           <p className="font-ge text-[0.95rem] font-semibold uppercase tracking-[0.12em] text-[#fbe8b5] drop-shadow-[0_0_12px_rgba(217,190,122,0.25)] sm:text-[0.86rem]">
             Irish-owned · Costa del Sol golf specialists
           </p>
