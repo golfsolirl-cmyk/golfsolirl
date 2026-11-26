@@ -3,10 +3,12 @@ import {
   EnquirySpamGuardFields,
   useEnquirySpamGuardState
 } from '../enquiry-spam-guard-fields'
+import { GeFormPrivacyNotice } from '../ge-form-privacy-notice'
 import { RECAPTCHA_ACTIONS } from '../../lib/enquiry-spam-guard'
 import { ENQUIRY_STRUCTURED_FIELD_KEYS, WEBSITE_ENQUIRY_FORM } from '../../lib/enquiry-form-registry'
 import { postWebsiteEnquiry } from '../../lib/post-enquiry-client'
 import { validateMobilePhoneInput } from '../../lib/phone-mobile'
+import { gdprNoticeAcknowledgementFields } from '../../lib/terms-acceptance'
 import { Phone } from 'lucide-react'
 
 const inputClass =
@@ -79,7 +81,8 @@ export function RequestCallbackCard({ sourcePage }: RequestCallbackCardProps) {
           Topic: 'Callback request',
           'Best time': bestTime,
           ...(note.trim() ? { Note: note.trim() } : {}),
-          [ENQUIRY_STRUCTURED_FIELD_KEYS.sourcePage]: path
+          [ENQUIRY_STRUCTURED_FIELD_KEYS.sourcePage]: path,
+          ...gdprNoticeAcknowledgementFields()
         }
       }
     })
@@ -196,6 +199,10 @@ export function RequestCallbackCard({ sourcePage }: RequestCallbackCardProps) {
             />
           </label>
           <EnquirySpamGuardFields {...spamFieldsProps} />
+          <GeFormPrivacyNotice
+            tone="dark"
+            purpose="We use your number to call you back about your trip. We do not sell your data or send spam."
+          />
           {message && status === 'error' ? (
             <p className="rounded-lg bg-rose-500/20 px-3 py-2 font-ge text-sm text-rose-100">{message}</p>
           ) : null}

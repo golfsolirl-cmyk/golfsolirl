@@ -1,5 +1,7 @@
 import { FormEvent, useState } from 'react'
+import { GeFormPrivacyNotice } from './ge-form-privacy-notice'
 import { GeButton } from '../pages/golf-experience/components/ge-button'
+import { PRIVACY_POLICY_PATH } from '../lib/cookie-consent'
 
 const labelClass =
   'mb-1.5 block font-ge text-[0.88rem] font-bold uppercase tracking-[0.14em] text-ge-gray500 sm:text-[0.92rem]'
@@ -118,8 +120,20 @@ export function NewsletterSubscribeForm({
               onChange={(event) => setConsent(event.target.checked)}
               required
             />
-            <span>Email me occasional Costa del Sol golf updates. I can unsubscribe any time.</span>
+            <span>
+              Email me occasional Costa del Sol golf updates. I can unsubscribe any time. See our{' '}
+              <a
+                className="font-semibold text-gs-green underline underline-offset-2 hover:text-brand-800"
+                href={PRIVACY_POLICY_PATH}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                privacy policy
+              </a>
+              .
+            </span>
           </label>
+          <GeFormPrivacyNotice purpose="We use your email only for this optional newsletter. It is never bundled with a quote request." />
           {status === 'error' && message ? (
             <p className="font-ge text-[1rem] leading-7 text-red-800" role="alert">
               {message}

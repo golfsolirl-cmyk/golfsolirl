@@ -19,6 +19,7 @@ import { GOLF_COURSES_MAP_SECTION_ID } from './components/ge-courses-map-visibil
 import { GeGolfMapSimple } from './components/ge-golf-map-simple'
 import { WhatsAppBanner } from '../../components/whatsapp/WhatsAppBanner'
 import { GSOL_BUSINESS } from '../../lib/business-details'
+import { openCookieSettings } from '../../lib/cookie-consent'
 
 function CompanyIdentityBlock() {
   return (
@@ -90,13 +91,29 @@ function breadcrumbItemsForPath(path: string, title: string) {
 }
 
 function ContentBullet({ bullet }: { readonly bullet: string }) {
-  const match = bullet.match(/^(.*?)\s+[—–-]\s+(\/[\w\-./]+)\s*$/)
-  if (match) {
+  const internal = bullet.match(/^(.*?)\s+[—–-]\s+(\/[\w\-./]+)\s*$/)
+  if (internal) {
     return (
       <li className="flex items-start gap-2.5 font-ge text-base text-gs-dark">
         <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-brand-700" aria-hidden />
-        <a className="underline decoration-brand-500/40 underline-offset-2 hover:text-gs-green" href={match[2]}>
-          {match[1]}
+        <a className="underline decoration-brand-500/40 underline-offset-2 hover:text-gs-green" href={internal[2]}>
+          {internal[1]}
+        </a>
+      </li>
+    )
+  }
+  const external = bullet.match(/^(.*?)\s+[—–-]\s+(https?:\/\/\S+)\s*$/)
+  if (external) {
+    return (
+      <li className="flex items-start gap-2.5 font-ge text-base text-gs-dark">
+        <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-brand-700" aria-hidden />
+        <a
+          className="underline decoration-brand-500/40 underline-offset-2 hover:text-gs-green"
+          href={external[2]}
+          rel="noreferrer"
+          target="_blank"
+        >
+          {external[1]}
         </a>
       </li>
     )
@@ -189,13 +206,23 @@ export function GeContentPage() {
   }
 
   const isNewsletter = page.enquiryType === 'newsletter'
-  /** FAQ pages: show every Q&A section (titles ending in ?). Others: first section only. */
-  const faqSections = page.sections.filter((section) => section.title.trim().endsWith('?'))
-  const leadSections = faqSections.length >= 2 ? faqSections : page.sections.slice(0, 1)
   const isTermsPage = path.includes('terms')
   const isPrivacyPage = path.includes('privacy')
+  const isCookiePage = path.includes('cookie')
+  const isLegalLongform = isTermsPage || isPrivacyPage || isCookiePage || page.enquiryType === 'legal'
+  /**
+   * FAQ pages: show every Q&A section (titles ending in ?).
+   * Legal / policy pages: show every authored section (GDPR requires the full notice).
+   * Other content pages: first section only (lean marketing layout).
+   */
+  const faqSections = page.sections.filter((section) => section.title.trim().endsWith('?'))
+  const leadSections = isLegalLongform
+    ? page.sections
+    : faqSections.length >= 2
+      ? faqSections
+      : page.sections.slice(0, 1)
   const isContactPage = path === '/contact' || path.startsWith('/contact/')
-  const showCompanyIdentity = isTermsPage || isPrivacyPage || isContactPage
+  const showCompanyIdentity = isTermsPage || isPrivacyPage || isCookiePage || isContactPage
   const isAccommodationHub = path === '/accommodation' || path.startsWith('/accommodation/')
   const isGolfCoursesHub = path === '/golf-courses' || path.startsWith('/golf-courses/')
   const isChooserHub = isAccommodationHub || isGolfCoursesHub
@@ -210,7 +237,7 @@ export function GeContentPage() {
   const heroConfig = buildContentPageHeroConfig(path, page, formTarget)
   const routeLabel = formatContentPageRouteLabel(path)
   const leadBody =
-    leadSections[0]?.body && leadSections[0].body.length > 420
+    !isLegalLongform && leadSections[0]?.body && leadSections[0].body.length > 420
       ? `${leadSections[0].body.slice(0, 417).trim()}…`
       : leadSections[0]?.body
 
@@ -274,7 +301,26 @@ export function GeContentPage() {
           <>
             {leadSections.length > 0 ? (
               <GeSection background="white" innerClassName="py-12 sm:py-14">
-                <div className="mx-auto max-w-[760px] space-y-6 px-5 sm:px-8">
+                <div className="mx-auto max-w-[760px] space-y-8 px-5 sm:px-8">
+                  {page.lastUpdated ? (
+                    <p className="font-ge text-sm font-semibold uppercase tracking-[0.12em] text-ge-gray500">
+                      Last updated: {page.lastUpdated}
+                    </p>
+                  ) : null}
+                  {isCookiePage ? (
+                    <div className="rounded-2xl border border-gs-dark/10 bg-ge-gray50 px-4 py-4 sm:px-5">
+                      <p className="font-ge text-base leading-7 text-ge-gray600">
+                        Change or withdraw your cookie choice at any time.
+                      </p>
+                      <button
+                        className="mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-gs-green px-5 font-ge text-sm font-bold uppercase tracking-[0.1em] text-white hover:bg-brand-800"
+                        onClick={openCookieSettings}
+                        type="button"
+                      >
+                        Open cookie settings
+                      </button>
+                    </div>
+                  ) : null}
                   {leadSections.map((section) => (
                     <article key={section.title}>
                       <h2 className="font-ge text-[1.45rem] font-extrabold leading-tight text-gs-dark sm:text-[1.7rem]">
@@ -285,7 +331,7 @@ export function GeContentPage() {
                       </p>
                       {section.bullets ? (
                         <ul className="mt-4 space-y-2.5">
-                          {section.bullets.slice(0, 4).map((bullet) => (
+                          {(isLegalLongform ? section.bullets : section.bullets.slice(0, 4)).map((bullet) => (
                             <ContentBullet key={bullet} bullet={bullet} />
                           ))}
                         </ul>

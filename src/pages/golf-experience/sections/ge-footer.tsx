@@ -69,7 +69,7 @@ export function GeFooter() {
                 {column.links.map((link) => (
                   <li key={`${column.title}-${link.label}`} className="flex items-start gap-2">
                     <ChevronRight className="mt-1 h-3.5 w-3.5 shrink-0 text-gs-electric" aria-hidden="true" />
-                    {link.label === 'Cookie Policy' ? (
+                    {link.label === 'Cookie Settings' ? (
                       <button
                         className="text-left font-ge text-[1.05rem] leading-7 text-white transition-colors hover:text-[#fbe8b5] sm:text-[0.98rem]"
                         onClick={openCookieSettings}

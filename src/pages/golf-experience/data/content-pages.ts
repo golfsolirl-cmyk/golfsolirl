@@ -25,6 +25,8 @@ export interface GeContentPageData {
   readonly formLead: string
   readonly interestPreset: string
   readonly enquiryType?: 'booking' | 'legal' | 'newsletter' | 'testimonial' | 'support'
+  /** Shown on legal pages (privacy / cookies / terms). */
+  readonly lastUpdated?: string
 }
 
 const trustHighlights = [
@@ -172,6 +174,7 @@ const termsPage: GeContentPageData = {
   heroImage: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
   heroAlt: 'GolfSol Ireland private transfers on the Costa del Sol — terms and conditions.',
   highlights: trustHighlights,
+  lastUpdated: 'November 2026',
   sections: [
     {
       title: 'Booking, deposit and balance',
@@ -240,44 +243,123 @@ const termsPage: GeContentPageData = {
 }
 
 const privacyPage: GeContentPageData = {
-  metaTitle: 'Privacy Policy | GolfSol Ireland',
+  metaTitle: 'Privacy Policy | Golf Sol Ireland',
   eyebrow: 'Legal',
-  title: 'Privacy policy summary in plain language',
+  title: 'Privacy policy',
   subtitle:
-    'We use your enquiry details to plan and communicate about your trip. We keep this practical, transparent, and respectful.',
+    'How Golf Sol Ireland collects, uses, and protects your personal data under the EU GDPR and Irish Data Protection Act 2018.',
   heroImage: '/images/about-golfsol-hero.webp',
   heroAlt: 'Secure and trusted handling of customer enquiry information.',
   highlights: trustHighlights,
+  lastUpdated: 'November 2026',
   sections: [
+    {
+      title: 'Who we are (data controller)',
+      body: `${GSOL_BUSINESS.legalName} is the data controller for personal data processed through ${GSOL_BUSINESS.websiteDisplay}. We are registered in Ireland (Co. ${GSOL_BUSINESS.companyRegistrationNumber}). Registered office: ${GSOL_BUSINESS.addressOneLine}.`,
+      bullets: [
+        `Email (privacy & DSARs): ${GSOL_BUSINESS.email}`,
+        `Ireland ${GSOL_BUSINESS.irishPhoneDisplay} · Spain ${GSOL_BUSINESS.spanishPhoneDisplay}`,
+        `WhatsApp (messages only): ${GSOL_BUSINESS.whatsappDisplay}`,
+        GSOL_BUSINESS.registeredInLabel
+      ]
+    },
     {
       title: 'What we collect',
       body:
-        'Typically your contact details and trip preferences submitted through enquiry forms. This helps us return relevant options.',
-      bullets: ['Name, email, and phone contact', 'Trip dates and preferences', 'Communication history for support continuity']
+        'We collect personal data you give us when you request a quote, leave a callback request, subscribe to updates, create a trip-desk (portal) account, pay a deposit or balance, or contact us by email, phone, or WhatsApp.',
+      bullets: [
+        'Identity & contact: name, email, phone / WhatsApp number (we treat the mobile number as the unique customer key after normalisation)',
+        'Trip details: dates, group size, golf courses, hotels / accommodation, transfers, package preferences, and free-text notes',
+        'Portal account data: login email, profile, enquiry reference, interest tickets (transfers, golf, accommodation), and messages with our desk',
+        'Payment records: amounts, invoices / proposals, and bank-transfer references (for example Monzo IBAN details we share for payment). We do not store full card numbers on this website',
+        'Technical: IP address and security signals via Google reCAPTCHA v3 on public forms; essential cookie / browser storage for consent and login sessions; server logs from our hosting provider'
+      ]
     },
     {
-      title: 'How we use it',
+      title: 'Why we use your data (purposes & lawful bases)',
       body:
-        'We use submitted information to respond, prepare quotes, and manage booking communication when requested.',
-      bullets: ['No unrelated spam campaigns', 'Data used for travel planning context', 'Ask us if you want details updated or removed']
+        'Under GDPR Article 6 we rely on the following lawful bases. We do not sell your personal data.',
+      bullets: [
+        'Art. 6(1)(b) contract / pre-contractual steps — respond to enquiries and quotes, arrange golf, hotels, and transfers, operate your trip desk, and deliver the booking you requested',
+        'Art. 6(1)(f) legitimate interests — run and secure the website, prevent spam and fraud (including reCAPTCHA), improve service quality, and keep basic records of past trips for continuity — balanced against your rights',
+        'Art. 6(1)(a) consent — optional newsletter / marketing emails (unticked checkbox; withdraw any time) and any future optional analytics or marketing cookies (none are used today)',
+        'Art. 6(1)(c) legal obligation — tax, accounting, and company-law record keeping where Irish or EU law requires it'
+      ]
     },
     {
-      title: 'How long we keep enquiry details',
-      body: 'We keep what you send for as long as we need it to answer you and to run the trip you asked about. Ask us if you want it updated or deleted.'
+      title: 'Who we share data with (processors & recipients)',
+      body:
+        'We use carefully chosen service providers and trip partners. They may only process your data on our instructions or as needed to deliver the service you asked for.',
+      bullets: [
+        'Hosting & delivery: Vercel (website hosting)',
+        'Database, authentication & storage: Supabase (EU-region configuration where available)',
+        'Transactional & newsletter email: our email provider (Resend) and our business mailbox for replies',
+        'Spam protection: Google reCAPTCHA v3 on public enquiry forms',
+        'Payments: bank transfer details (e.g. Monzo) shown for settlement; card processors only if / when a checkout is used for your booking',
+        'Trip suppliers in Spain / Portugal (and elsewhere as needed): golf courses, hotels / resorts, and transfer partners — only the details needed to confirm tee times, rooms, and transport',
+        'Professional advisers (accountant, solicitor) where required for the business'
+      ]
     },
     {
-      title: 'Cookies',
-      body: 'Essential cookies remember your cookie choice, and a sign-in session only after you log in. We do not use analytics or advertising cookies. The cookie policy has the full list.',
+      title: 'International transfers',
+      body:
+        'Some processors (for example US-based cloud or security providers) may process data outside the EEA. Where that happens we rely on appropriate safeguards such as the European Commission’s Standard Contractual Clauses (SCCs) and / or the EU–US Data Privacy Framework for certified organisations, plus the provider’s own GDPR commitments.'
+    },
+    {
+      title: 'How long we keep your data',
+      body:
+        'We keep personal data only as long as needed for the purpose it was collected, including legal retention.',
+      bullets: [
+        'Open enquiries & active trips: while we are quoting, booking, or delivering your trip, plus a short follow-up period',
+        'Completed bookings & invoices: typically up to 7 years for Irish tax / accounting obligations',
+        'Newsletter subscribers: until you unsubscribe or ask us to delete the address',
+        'Cookie consent record: up to 6 months (then we ask again)',
+        'Portal login sessions: until you sign out or the session expires',
+        'Ask us any time if you want a shorter retention where the law allows'
+      ]
+    },
+    {
+      title: 'Cookies and similar technologies',
+      body:
+        'We use essential cookies and browser storage only (consent choice and login sessions). We do not load Google Analytics, Google Ads, Meta Pixel, or similar marketing / analytics cookies. See the cookie policy for the full table and to change your choice.',
       bullets: ['Cookie policy — /cookie-policy']
     },
     {
-      title: 'Data controller',
-      body: `${GSOL_BUSINESS.brandName} (${GSOL_BUSINESS.registeredInLabel}), ${GSOL_BUSINESS.addressOneLine}. Contact: Ireland ${GSOL_BUSINESS.irishPhoneDisplay} · Spain ${GSOL_BUSINESS.spanishPhoneDisplay} · ${GSOL_BUSINESS.email} · ${GSOL_BUSINESS.websiteDisplay}.`,
+      title: 'Your rights under the GDPR',
+      body:
+        'You can exercise your rights free of charge by emailing us. We will respond within one month (GDPR Article 12), or tell you if we need more time for a complex request.',
       bullets: [
-        `Registered office: ${GSOL_BUSINESS.addressOneLine}`,
-        GSOL_BUSINESS.email,
-        GSOL_BUSINESS.registeredInLabel
+        'Access — a copy of the personal data we hold about you',
+        'Rectification — correct inaccurate or incomplete data',
+        'Erasure — ask us to delete data where the law allows (“right to be forgotten”)',
+        'Restriction — limit how we use your data in certain cases',
+        'Portability — receive data you provided in a structured, commonly used format where applicable',
+        'Objection — object to processing based on legitimate interests',
+        'Withdraw consent — for marketing emails or optional cookies, at any time, without affecting prior lawful processing'
       ]
+    },
+    {
+      title: 'How to make a data request (DSAR)',
+      body: `Email ${GSOL_BUSINESS.email} with “Data request” in the subject and enough detail for us to find your records (name, email, phone, and approximate enquiry dates help). We may need to verify your identity. Our admin tools can export or delete individual enquiry records and portal accounts when we process a valid request.`
+    },
+    {
+      title: 'Complaints — Irish Data Protection Commission (DPC)',
+      body:
+        'If you are unhappy with how we handle your data, you have the right to lodge a complaint with the Irish supervisory authority.',
+      bullets: [
+        'Data Protection Commission — https://www.dataprotection.ie',
+        '21 Fitzwilliam Square South, Dublin 2, D02 RD28, Ireland'
+      ]
+    },
+    {
+      title: 'Children',
+      body:
+        'Our services are aimed at adults arranging golf travel. We do not knowingly collect personal data from children under 16 for marketing. If you believe a child has provided data, contact us and we will delete it where appropriate.'
+    },
+    {
+      title: 'Changes to this policy',
+      body:
+        'We may update this privacy policy when our services or legal requirements change. The “Last updated” date at the top of this page shows the latest revision. Material changes will be reflected on this page.'
     }
   ],
   formTitle: 'Ask a privacy question',
@@ -287,39 +369,62 @@ const privacyPage: GeContentPageData = {
 }
 
 const cookiePolicyPage: GeContentPageData = {
-  metaTitle: 'Cookie Policy | GolfSol Ireland',
+  metaTitle: 'Cookie Policy | Golf Sol Ireland',
   eyebrow: 'Legal',
-  title: 'How we use cookies',
+  title: 'Cookie policy',
   subtitle:
-    'GolfSol Ireland uses an essential cookie to remember your choice. We do not use analytics or advertising cookies on this site.',
+    'What cookies and browser storage Golf Sol Ireland uses, why, and how to change your choice under Irish ePrivacy / DPC guidance.',
   heroImage: '/images/about-golfsol-hero.webp',
-  heroAlt: 'GolfSol Ireland crest, used on the cookie policy page.',
+  heroAlt: 'Golf Sol Ireland crest, used on the cookie policy page.',
   highlights: trustHighlights,
+  lastUpdated: 'November 2026',
   sections: [
     {
       title: 'What this page covers',
-      body: 'This is a plain-English list of the cookies and browser storage the public site uses today. It is not a formal legal opinion. If we add a new tool, this page will be updated before that tool is switched on.'
+      body:
+        'This is a plain-English list of the cookies and browser storage the public site uses today. If we add a new optional tool, we will update this page and ask for consent before it is switched on.'
     },
     {
-      title: 'Strictly necessary',
-      body: 'A first-party cookie named gsol_consent stores your cookie choice for six months. The same choice is kept in this browser under the name gsol-cookie-consent, so the banner does not ask on every page. If you sign in to the trip desk or the admin desk, the sign-in session is stored in this browser so you stay logged in. That session is not used for advertising.'
+      title: 'How we ask for consent',
+      body:
+        'On your first visit we show a cookie banner with equally prominent Accept All and Reject All buttons, plus Manage preferences. Closing the banner is treated as Reject All (essential cookies only). Your choice is stored for six months. Use Cookie settings in the footer any time to open the preferences panel again.'
+    },
+    {
+      title: 'Cookie and storage table',
+      body:
+        'Name · Category · Provider · Purpose · Duration — listed below as bullets for clarity on mobile.',
+      bullets: [
+        'gsol_consent — Strictly necessary — Golf Sol Ireland (first-party) — Stores your cookie choice (version, timestamp, preferences) — 6 months',
+        'gsol-cookie-consent (localStorage) — Strictly necessary — Golf Sol Ireland — Same consent record so the banner does not nag every page — 6 months (cleared with browser data)',
+        'Supabase auth session (localStorage) — Strictly necessary — Supabase / Golf Sol Ireland — Keeps you signed in to the trip desk or admin desk after login — Until sign-out or session expiry'
+      ]
+    },
+    {
+      title: 'Related technologies (not advertising cookies)',
+      body:
+        'These are not marketing or analytics cookies, but they involve third parties when you use certain features.',
+      bullets: [
+        'Google reCAPTCHA v3 — loaded on public enquiry / callback forms to reduce spam (security / legitimate interests). Google may set its own cookies when the widget runs',
+        'Bunny Fonts — we load fonts from fonts.bunny.net for site typography (no advertising profile)',
+        'OpenStreetMap / Carto map tiles — loaded only on pages that show a map (e.g. golf map / transfer maps); the tile provider may see your IP for that request',
+        'WhatsApp / social links — outbound links only; we do not embed Meta or other advertising pixels'
+      ]
     },
     {
       title: 'What we do not use',
-      body: 'This site does not load Google Analytics, Google Tag Manager, Google Ads, or a Meta pixel. There is no advertising cookie and no analytics cookie to accept. Accept all and reject optional currently record the same thing: essential cookies only.'
+      body:
+        'This site does not load Google Analytics, Google Tag Manager, Google Ads, Meta Pixel, Vercel Analytics, Speed Insights, or PostHog. There is currently no analytics or marketing cookie category to turn on. Accept All and Reject All therefore both leave optional categories off.'
     },
     {
-      title: 'How to change your choice',
-      body: 'Use Cookie settings in the footer on any page. We ask again after six months, or sooner if the cookies on the site change. You can also clear cookies in your browser, which removes the saved choice.',
+      title: 'How to change or withdraw consent',
+      body:
+        'Open Cookie settings from the footer (or the button on this page). We ask again after six months, or sooner if we change optional cookies. Clearing site cookies / storage in your browser also brings the banner back.',
       bullets: ['Privacy policy — /privacy-policy']
     },
     {
-      title: 'How do I change my mind?',
-      body: 'Open Cookie settings in the footer and save again. Clearing the site cookies in your browser also brings the banner back on your next visit.'
-    },
-    {
       title: 'Do you use Google Analytics?',
-      body: 'No. Not on this website, and not through Tag Manager, Google Ads, or a Meta pixel. If that changes, the banner will ask before any optional cookie is set.'
+      body:
+        'No. Not on this website, and not through Tag Manager, Google Ads, or a Meta pixel. If that changes, the banner will ask with equal Accept All / Reject All choices and unticked preference toggles before any optional cookie is set.'
     }
   ],
   formTitle: 'Ask about this policy',

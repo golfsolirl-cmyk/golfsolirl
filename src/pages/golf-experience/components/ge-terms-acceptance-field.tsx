@@ -1,4 +1,5 @@
-import { TERMS_AND_CONDITIONS_PATH } from '../../../lib/terms-acceptance'
+import { GeFormPrivacyNotice } from '../../../components/ge-form-privacy-notice'
+import { PRIVACY_POLICY_PATH, TERMS_AND_CONDITIONS_PATH } from '../../../lib/terms-acceptance'
 import { cx } from '../../../lib/utils'
 
 type GeTermsAcceptanceFieldProps = {
@@ -19,44 +20,58 @@ export function GeTermsAcceptanceField({
   const isDark = tone === 'dark'
 
   return (
-    <label
-      htmlFor={id}
-      className={cx(
-        'flex cursor-pointer items-start gap-3 rounded-xl border px-3.5 py-3 font-ge text-[0.98rem] leading-relaxed sm:text-[1rem]',
-        isDark
-          ? 'border-forest-800 bg-forest-950 text-white'
-          : 'border-ge-gray200 bg-ge-gray50 text-gs-dark',
-        className
-      )}
-    >
-      <input
-        id={id}
-        type="checkbox"
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-        required
+    <div className={cx('space-y-2.5', className)}>
+      <label
+        htmlFor={id}
         className={cx(
-          'mt-0.5 h-4 w-4 shrink-0 rounded border focus:ring-2',
+          'flex cursor-pointer items-start gap-3 rounded-xl border px-3.5 py-3 font-ge text-[0.98rem] leading-relaxed sm:text-[1rem]',
           isDark
-            ? 'border-white/40 bg-forest-950 text-brand-600 focus:ring-brand-500/40'
-            : 'border-ge-gray300 text-gs-green focus:ring-gs-green/25'
+            ? 'border-forest-800 bg-forest-950 text-white'
+            : 'border-ge-gray200 bg-ge-gray50 text-gs-dark'
         )}
-      />
-      <span>
-        I agree to the{' '}
-        <a
-          href={TERMS_AND_CONDITIONS_PATH}
-          target="_blank"
-          rel="noopener noreferrer"
+      >
+        <input
+          id={id}
+          type="checkbox"
+          checked={checked}
+          onChange={(e) => onChange(e.target.checked)}
+          required
           className={cx(
-            'font-bold underline underline-offset-2',
-            isDark ? 'text-[#f4dfa6] hover:text-white' : 'text-gs-green hover:text-brand-800'
+            'mt-0.5 h-4 w-4 shrink-0 rounded border focus:ring-2',
+            isDark
+              ? 'border-white/40 bg-forest-950 text-brand-600 focus:ring-brand-500/40'
+              : 'border-ge-gray300 text-gs-green focus:ring-gs-green/25'
           )}
-        >
-          terms and conditions
-        </a>{' '}
-        for Golf Sol Ireland bookings.
-      </span>
-    </label>
+        />
+        <span>
+          I agree to the{' '}
+          <a
+            href={TERMS_AND_CONDITIONS_PATH}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cx(
+              'font-bold underline underline-offset-2',
+              isDark ? 'text-[#f4dfa6] hover:text-white' : 'text-gs-green hover:text-brand-800'
+            )}
+          >
+            terms and conditions
+          </a>{' '}
+          for Golf Sol Ireland bookings. I have read the{' '}
+          <a
+            href={PRIVACY_POLICY_PATH}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cx(
+              'font-bold underline underline-offset-2',
+              isDark ? 'text-[#f4dfa6] hover:text-white' : 'text-gs-green hover:text-brand-800'
+            )}
+          >
+            privacy policy
+          </a>
+          .
+        </span>
+      </label>
+      <GeFormPrivacyNotice tone={tone} />
+    </div>
   )
 }
