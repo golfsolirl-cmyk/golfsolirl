@@ -31,7 +31,7 @@ interface GeQuickEnquiryFormProps {
 }
 
 const labelClass =
-  'mb-1.5 block font-ge text-[0.82rem] font-bold uppercase tracking-[0.12em] text-ge-gray500'
+  'mb-1.5 block font-ge text-[0.82rem] font-bold uppercase tracking-[0.12em] text-forest-800'
 const inputClass =
   'min-h-[52px] h-13 w-full rounded-xl border border-ge-gray200 bg-white px-4 font-ge text-[1.06rem] text-gs-dark outline-none transition-shadow placeholder:text-ge-gray300 focus:border-gs-green focus:ring-2 focus:ring-gs-green/25'
 

@@ -347,17 +347,19 @@ export function getContentPageFormConfig(path: string, page: GeContentPageData):
     case 'about':
     case 'support':
       return leanEnquiryFormConfig({
-        badge: 'Get in touch',
-        submitLabel: 'Send message',
-        successTitle: 'Message received',
+        badge: path.includes('contact') || isBundlePath ? 'Get a quote' : 'Get in touch',
+        submitLabel: 'Send enquiry',
+        successTitle: 'Enquiry received',
         successBody: 'Thanks — we will come back with a clear next step.',
-        includeBundle: isBundlePath,
-        notesPlaceholder: 'How can we help?'
+        includeBundle: true,
+        notesPlaceholder: path.includes('contact')
+          ? 'Anything else — courses, hotel style, flights…'
+          : 'How can we help?'
       })
     case 'booking':
     default:
       return leanEnquiryFormConfig({
-        badge: isBundlePath || path === '/contact' || path.includes('enquiry') ? 'Get a quote' : 'Trip quote',
+        badge: isBundlePath || path.includes('contact') || path.includes('enquiry') ? 'Get a quote' : 'Trip quote',
         submitLabel: 'Send enquiry',
         successTitle: 'Enquiry received',
         successBody: 'Thanks — we will reply from Ireland with the next clear step for your trip.',

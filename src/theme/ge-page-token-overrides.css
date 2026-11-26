@@ -51,9 +51,11 @@
   --tw-text-opacity: 1;
 }
 
-.ge-page footer.bg-gs-dark {
-  background: var(--bg-footer) !important;
-  color: var(--footer-text);
+.ge-page footer.bg-gs-dark,
+.ge-page footer.bg-forest-950 {
+  background-color: #04140c !important;
+  background-image: linear-gradient(180deg, #062016 0%, #04140c 100%) !important;
+  color: #ffffff !important;
 }
 
 .ge-page footer.bg-gs-dark .text-brand-700,
@@ -545,10 +547,12 @@
 
 /* —— Footer — make every line readable on the deep forest base —— */
 .ge-page footer:is(.bg-gs-dark, .bg-forest-950),
-.ge-page footer:is(.bg-gs-dark, .bg-forest-950) p,
-.ge-page footer:is(.bg-gs-dark, .bg-forest-950) li,
-.ge-page footer:is(.bg-gs-dark, .bg-forest-950) a {
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) :is(p, li, a, span, button, h1, h2, h3, h4, strong, small) {
   color: #ffffff !important;
+}
+
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) :is(.text-emerald-200, .text-emerald-100, [class*='text-emerald'], .text-silver-200, .text-gs-electric) {
+  color: #fbe8b5 !important;
 }
 
 .ge-page footer:is(.bg-gs-dark, .bg-forest-950) a:hover {

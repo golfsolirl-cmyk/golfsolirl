@@ -116,7 +116,7 @@ export function GeFooter() {
                   href={href}
                   rel="noreferrer"
                   target="_blank"
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-brand-700/45 bg-gs-dark/50 text-silver-200 shadow-[0_0_0_1px_rgba(19, 96, 71,0.2)] ring-1 ring-brand-700/35 transition-all hover:-translate-y-0.5 hover:border-brand-700 hover:bg-forest-900 hover:text-white hover:shadow-[0_0_0_1px_rgba(217,190,122,0.35)] hover:ring-brand-700/55"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/40 bg-white/10 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.12)] transition-all hover:-translate-y-0.5 hover:border-[#fbe8b5]/70 hover:bg-white/15 hover:text-[#fbe8b5]"
                 >
                   <Icon className="h-4 w-4" />
                 </a>
