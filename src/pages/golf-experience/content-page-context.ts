@@ -1,7 +1,8 @@
 import { SEO_LANDING_PAGE_PATHS } from '../../data/seo-landing-page-paths'
+import { WHATSAPP_NUMBER } from '../../lib/whatsapp'
 import { contactInfo } from './data/copy'
 import type { GeContentPageData } from './data/content-pages'
-import { golferGroupSizeSelectOptions, passengerCountSelectOptions } from './data/form-people-options'
+import { leanEnquiryFormConfig } from './data/lean-enquiry-fields'
 
 const SEO_LANDING_PATH_SET = new Set<string>(SEO_LANDING_PAGE_PATHS)
 
@@ -68,8 +69,6 @@ type ContentPageKind =
   | 'about'
   | 'news'
   | 'support'
-
-const WHATSAPP_NUMBER = contactInfo.phoneTel.replace(/[^0-9]/g, '')
 
 function toTitleCase(segment: string) {
   return segment
@@ -241,249 +240,50 @@ export function getContentStorySectionMedia(
 
 export function getContentPageFormConfig(path: string, page: GeContentPageData): ContentFormConfig {
   const kind = inferPageKind(path, page)
+  const isBundlePath = path === '/bundles' || path.includes('golf-holiday') || path.includes('golf-packages')
 
   switch (kind) {
     case 'twilight':
-      return {
-        badge: 'Twilight brief',
-        submitLabel: 'Get twilight options',
-        successTitle: 'Twilight brief received',
-        successBody: 'We will come back with twilight-friendly slots, realistic sunset timing, and backup options for your dates.',
-        fields: [
-          {
-            id: 'tripArrivalMode',
-            label: 'Trip timing',
-            type: 'select',
-            required: true,
-            options: [
-              { label: 'I have travel dates (arrival and departure)', value: 'planned' },
-              { label: 'Already at Málaga (AGP) — need transfers now', value: 'already_at_agp' }
-            ]
-          },
-          { id: 'travelDateFrom', label: 'Travel start date', type: 'date', required: false },
-          { id: 'travelDateTo', label: 'Travel end date', type: 'date', required: false },
-          {
-            id: 'groupSize',
-            label: 'Group size',
-            type: 'select',
-            required: true,
-            options: golferGroupSizeSelectOptions
-          },
-          {
-            id: 'golfCourses',
-            label: 'Courses or area (optional)',
-            type: 'textarea',
-            placeholder: 'e.g. Mijas, Marbella, open to suggestions — say if you want mostly twilight or a mix with morning rounds.',
-            rows: 4
-          },
-          {
-            id: 'preferredArea',
-            label: 'Preferred area',
-            type: 'select',
-            options: [
-              { label: 'Sotogrande', value: 'Sotogrande' },
-              { label: 'Marbella Golf Valley', value: 'Marbella Golf Valley' },
-              { label: 'Mijas / Fuengirola', value: 'Mijas / Fuengirola' },
-              { label: 'Vélez-Málaga', value: 'Vélez-Málaga' },
-              { label: 'Need advice', value: 'Need advice' }
-            ]
-          },
-          {
-            id: 'handicapMix',
-            label: 'Handicap mix',
-            type: 'select',
-            options: [
-              { label: 'Mostly single-digit to 15', value: 'Mostly single-digit to 15' },
-              { label: 'Mixed 10 to 24', value: 'Mixed 10 to 24' },
-              { label: 'Casual social golfers', value: 'Casual social golfers' },
-              { label: 'Need help choosing challenge level', value: 'Need help choosing challenge level' }
-            ]
-          },
-          {
-            id: 'notes',
-            label: 'Twilight / evening preferences',
-            type: 'textarea',
-            placeholder: 'Earliest you can tee, buggy needs, dinner plans after golf, or must-avoid courses.',
-            rows: 5
-          }
-        ]
-      }
+      return leanEnquiryFormConfig({
+        badge: 'Twilight quote',
+        submitLabel: 'Send enquiry',
+        successTitle: 'Enquiry received',
+        successBody: 'We will come back with twilight-friendly options for your dates.',
+        notesPlaceholder: 'Twilight preferences, courses, or anything already booked…'
+      })
     case 'courses':
-      return {
-        badge: 'Course brief',
-        submitLabel: 'Get course advice',
-        successTitle: 'Course brief received',
-        successBody: 'We will come back with a smarter shortlist for your group and dates.',
-        fields: [
-          {
-            id: 'tripArrivalMode',
-            label: 'Trip timing',
-            type: 'select',
-            required: true,
-            options: [
-              { label: 'I have travel dates (arrival and departure)', value: 'planned' },
-              { label: 'Already at Málaga (AGP) — need transfers now', value: 'already_at_agp' }
-            ]
-          },
-          { id: 'travelDateFrom', label: 'Travel start date', type: 'date', required: false },
-          { id: 'travelDateTo', label: 'Travel end date', type: 'date', required: false },
-          {
-            id: 'groupSize',
-            label: 'Group size',
-            type: 'select',
-            required: true,
-            options: golferGroupSizeSelectOptions
-          },
-          {
-            id: 'golfCourses',
-            label: 'Choose your golf course(s)',
-            type: 'textarea',
-            required: true,
-            placeholder: 'Name the courses you want to play, or say you are open to suggestions and we will shortlist for you.',
-            rows: 4
-          },
-          {
-            id: 'preferredArea',
-            label: 'Preferred area',
-            type: 'select',
-            options: [
-              { label: 'Sotogrande', value: 'Sotogrande' },
-              { label: 'Marbella Golf Valley', value: 'Marbella Golf Valley' },
-              { label: 'Mijas / Fuengirola', value: 'Mijas / Fuengirola' },
-              { label: 'Vélez-Málaga', value: 'Vélez-Málaga' },
-              { label: 'Need advice', value: 'Need advice' }
-            ]
-          },
-          {
-            id: 'handicapMix',
-            label: 'Handicap mix',
-            type: 'select',
-            options: [
-              { label: 'Mostly single-digit to 15', value: 'Mostly single-digit to 15' },
-              { label: 'Mixed 10 to 24', value: 'Mixed 10 to 24' },
-              { label: 'Casual social golfers', value: 'Casual social golfers' },
-              { label: 'Need help choosing challenge level', value: 'Need help choosing challenge level' }
-            ]
-          },
-          {
-            id: 'notes',
-            label: 'Round brief',
-            type: 'textarea',
-            placeholder: 'Tell us your location on the coast, pace preferences, or must-play courses.',
-            rows: 5
-          }
-        ]
-      }
+      return leanEnquiryFormConfig({
+        badge: 'Course quote',
+        submitLabel: 'Send enquiry',
+        successTitle: 'Enquiry received',
+        successBody: 'We will come back with a shortlist that fits your group and dates.',
+        notesPlaceholder: 'Courses you want, area, or open to suggestions…'
+      })
     case 'accommodation':
-      return {
-        badge: 'Stay brief',
-        submitLabel: 'Get hotel options',
-        successTitle: 'Stay brief received',
-        successBody: 'We will return accommodation options that fit the trip and the group.',
-        fields: [
-          {
-            id: 'tripArrivalMode',
-            label: 'Trip timing',
-            type: 'select',
-            required: true,
-            options: [
-              { label: 'I have travel dates (arrival and departure)', value: 'planned' },
-              { label: 'Already at Málaga (AGP) — need transfers now', value: 'already_at_agp' }
-            ]
-          },
-          { id: 'travelDateFrom', label: 'Travel start date', type: 'date', required: false },
-          { id: 'travelDateTo', label: 'Travel end date', type: 'date', required: false },
-          {
-            id: 'groupSize',
-            label: 'Group size',
-            type: 'select',
-            required: true,
-            options: golferGroupSizeSelectOptions
-          },
-          {
-            id: 'preferredBase',
-            label: 'Preferred location',
-            type: 'select',
-            options: [
-              { label: 'Fuengirola', value: 'Fuengirola' },
-              { label: 'Torremolinos', value: 'Torremolinos' },
-              { label: 'Marbella', value: 'Marbella' },
-              { label: 'Vélez-Málaga', value: 'Vélez-Málaga' },
-              { label: 'Need advice', value: 'Need advice' }
-            ]
-          },
-          {
-            id: 'stayLevel',
-            label: 'Stay level',
-            type: 'select',
-            options: [
-              { label: '3-star value', value: '3-star value' },
-              { label: '4-star comfort', value: '4-star comfort' },
-              { label: '5-star premium', value: '5-star premium' },
-              { label: 'Open to options', value: 'Open to options' }
-            ]
-          },
-          {
-            id: 'notes',
-            label: 'Stay details',
-            type: 'textarea',
-            placeholder: 'Tell us if nightlife, quiet rooms, twin rooms, or location matters most.',
-            rows: 5
-          }
-        ]
-      }
+      return leanEnquiryFormConfig({
+        badge: 'Stay quote',
+        submitLabel: 'Send enquiry',
+        successTitle: 'Enquiry received',
+        successBody: 'We will return stay options that fit the trip and the group.',
+        notesPlaceholder: 'Hotel style, base area, twin rooms, or anything already booked…'
+      })
     case 'transport':
-      return {
-        badge: 'Transfer brief',
-        submitLabel: 'Get transfer plan',
-        successTitle: 'Transfer brief received',
+      return leanEnquiryFormConfig({
+        badge: 'Transfer quote',
+        submitLabel: 'Send enquiry',
+        successTitle: 'Enquiry received',
         successBody: 'We will come back with a practical route and vehicle plan.',
-        fields: [
-          {
-            id: 'tripArrivalMode',
-            label: 'Trip timing',
-            type: 'select',
-            required: true,
-            options: [
-              { label: 'I have travel dates (arrival and departure)', value: 'planned' },
-              { label: 'Already at Málaga (AGP) — need transfers now', value: 'already_at_agp' }
-            ]
-          },
-          { id: 'travelDateFrom', label: 'Travel start date', type: 'date', required: false },
-          { id: 'travelDateTo', label: 'Travel end date', type: 'date', required: false },
-          {
-            id: 'passengerCount',
-            label: 'Passenger count',
-            type: 'select',
-            required: true,
-            options: passengerCountSelectOptions
-          },
-          { id: 'routeBrief', label: 'Route or location', placeholder: 'e.g. Málaga Airport to Fuengirola', required: true },
-          {
-            id: 'bags',
-            label: 'Golf bags and luggage',
-            type: 'select',
-            options: [
-              { label: 'Everyone has golf bags', value: 'Everyone has golf bags' },
-              { label: 'Some golfers, some non-golfers', value: 'Some golfers, some non-golfers' },
-              { label: 'Mostly hand luggage only', value: 'Mostly hand luggage only' }
-            ]
-          },
-          {
-            id: 'notes',
-            label: 'Transfer details',
-            type: 'textarea',
-            placeholder: 'Tell us airport, stops, tee times, or anything that affects routing.',
-            rows: 5
-          }
-        ]
-      }
+        includeBundle: false,
+        peopleMode: 'passengers',
+        notesPlaceholder: 'Pickup → drop-off, flight time, golf bags, stops…',
+        notesRequired: true
+      })
     case 'legal':
       return {
         badge: 'Legal question',
         submitLabel: 'Send question',
         successTitle: 'Question received',
-        successBody: 'We will clarify the policy point directly and in plain language.',
+        successBody: 'We will clarify the policy point in plain language.',
         fields: [
           {
             id: 'topic',
@@ -499,168 +299,72 @@ export function getContentPageFormConfig(path: string, page: GeContentPageData):
           },
           {
             id: 'notes',
-            label: 'Question details',
+            label: 'Message',
             type: 'textarea',
-            placeholder: 'Tell us what you need clarified and we will reply directly.',
+            placeholder: 'What do you need clarified?',
             required: true,
-            rows: 5
+            rows: 4
           }
         ]
       }
     case 'newsletter':
     case 'news':
       return {
-        badge: 'Update request',
+        badge: 'Updates',
         submitLabel: 'Request updates',
-        successTitle: 'Update request received',
-        successBody: 'We will tailor the right Golf Sol Ireland updates for you.',
+        successTitle: 'Request received',
+        successBody: 'We will send the right Golf Sol Ireland updates for you.',
         fields: [
           {
-            id: 'updateType',
-            label: 'What do you want updates on?',
-            type: 'select',
-            required: true,
-            options: [
-              { label: 'Course updates', value: 'Course updates' },
-              { label: 'Planning tips', value: 'Planning tips' },
-              { label: 'Hotel and transfer updates', value: 'Hotel and transfer updates' },
-              { label: 'All relevant updates', value: 'All relevant updates' }
-            ]
-          },
-          { id: 'travelMonth', label: 'Planned travel month (optional)', placeholder: 'e.g. October 2026' },
-          {
             id: 'notes',
-            label: 'Anything specific you want?',
+            label: 'Message',
             type: 'textarea',
-            placeholder: 'Tell us what kind of updates would actually help you.',
-            rows: 5
+            placeholder: 'What updates would help — courses, hotels, transfers?',
+            rows: 4
           }
         ]
       }
     case 'testimonial':
       return {
         badge: 'Trip feedback',
-        submitLabel: 'Submit my review',
+        submitLabel: 'Submit review',
         submissionKind: 'testimonial',
         successTitle: 'Thank you — review received',
         successBody:
-          'We will read your story shortly. Once approved, it appears on our homepage for other Irish golfers planning their Costa del Sol trip.',
+          'We will read your story shortly. Once approved, it can appear on our homepage.',
         fields: [
-          {
-            id: 'tripType',
-            label: 'Trip type',
-            type: 'select',
-            required: true,
-            options: [
-              { label: 'Golf group', value: 'Golf group' },
-              { label: 'Society trip', value: 'Society trip' },
-              { label: 'Family trip', value: 'Family trip' },
-              { label: 'Corporate trip', value: 'Corporate trip' }
-            ]
-          },
-          { id: 'travelMonth', label: 'Travel month (optional)', placeholder: 'e.g. March 2026' },
           {
             id: 'notes',
             label: 'Your review',
             type: 'textarea',
-            placeholder:
-              'What stood out on your trip? Tee times, hotel, transfers, Irish support — write it like a Tripadvisor review other golfers would trust.',
+            placeholder: 'What stood out — tee times, hotel, transfers, Irish support?',
             required: true,
-            rows: 6
+            rows: 5
           }
         ]
       }
     case 'about':
     case 'support':
-      return {
-        badge: 'Quick question',
-        submitLabel: 'Send request',
-        successTitle: 'Request received',
-        successBody: 'Thanks — we will come back with a sensible next step shortly.',
-        fields: [
-          {
-            id: 'questionType',
-            label: 'Question category',
-            type: 'select',
-            required: true,
-            options: [
-              { label: 'General question', value: 'General question' },
-              { label: 'Planning support', value: 'Planning support' },
-              { label: 'Payments and process', value: 'Payments and process' },
-              { label: 'Need a callback', value: 'Need a callback' }
-            ]
-          },
-          {
-            id: 'tripArrivalMode',
-            label: 'Trip timing (optional)',
-            type: 'select',
-            required: false,
-            options: [
-              { label: '—', value: '' },
-              { label: 'I have travel dates', value: 'planned' },
-              { label: 'Already at Málaga (AGP)', value: 'already_at_agp' }
-            ]
-          },
-          { id: 'travelDateFrom', label: 'Travel start date (optional)', type: 'date', required: false },
-          { id: 'travelDateTo', label: 'Travel end date (optional)', type: 'date', required: false },
-          {
-            id: 'notes',
-            label: 'Question details',
-            type: 'textarea',
-            placeholder: 'Tell us what you need and we will point you in the right direction.',
-            rows: 5
-          }
-        ]
-      }
+      return leanEnquiryFormConfig({
+        badge: path.includes('contact') || isBundlePath ? 'Get a quote' : 'Get in touch',
+        submitLabel: 'Send enquiry',
+        successTitle: 'Enquiry received',
+        successBody: 'Thanks — we will come back with a clear next step.',
+        includeBundle: true,
+        notesPlaceholder: path.includes('contact')
+          ? 'Anything else — courses, hotel style, flights…'
+          : 'How can we help?'
+      })
     case 'booking':
     default:
-      return {
-        badge: 'Trip brief',
-        submitLabel: 'Start my quote',
-        successTitle: 'Trip brief received',
-        successBody: 'We will come back with a clear next step for your group.',
-        fields: [
-          {
-            id: 'tripArrivalMode',
-            label: 'Trip timing',
-            type: 'select',
-            required: true,
-            options: [
-              { label: 'I have travel dates (arrival and departure)', value: 'planned' },
-              { label: 'Already at Málaga (AGP) — need transfers now', value: 'already_at_agp' }
-            ]
-          },
-          { id: 'travelDateFrom', label: 'Travel start date', type: 'date', required: false },
-          { id: 'travelDateTo', label: 'Travel end date', type: 'date', required: false },
-          {
-            id: 'groupSize',
-            label: 'Group size',
-            type: 'select',
-            required: true,
-            options: golferGroupSizeSelectOptions
-          },
-          {
-            id: 'basePreference',
-            label: 'Preferred location',
-            type: 'select',
-            options: [
-              { label: 'Fuengirola', value: 'Fuengirola' },
-              { label: 'Torremolinos', value: 'Torremolinos' },
-              { label: 'Marbella', value: 'Marbella' },
-              { label: 'Vélez-Málaga', value: 'Vélez-Málaga' },
-              { label: 'Sotogrande', value: 'Sotogrande' },
-              { label: 'Need advice', value: 'Need advice' }
-            ]
-          },
-          {
-            id: 'notes',
-            label: 'Trip brief',
-            type: 'textarea',
-            placeholder: 'Tell us what kind of week, budget band, or golf rhythm you have in mind.',
-            rows: 5
-          }
-        ]
-      }
+      return leanEnquiryFormConfig({
+        badge: isBundlePath || path.includes('contact') || path.includes('enquiry') ? 'Get a quote' : 'Trip quote',
+        submitLabel: 'Send enquiry',
+        successTitle: 'Enquiry received',
+        successBody: 'Thanks — we will reply from Ireland with the next clear step for your trip.',
+        includeBundle: true,
+        notesPlaceholder: 'Anything else — courses, hotel style, flights…'
+      })
   }
 }
 

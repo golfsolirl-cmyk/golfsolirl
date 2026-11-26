@@ -1,11 +1,11 @@
 import { m, type Variants } from 'framer-motion'
-import { CheckCircle2, MessageCircle, Sparkles } from 'lucide-react'
+import { CheckCircle2, Sparkles } from 'lucide-react'
+import { IrelandPaymentsTrust } from '../../../components/ireland-payments-trust'
+import { WhatsAppPill } from '../../../components/whatsapp/WhatsAppPill'
+import { WEBSITE_ENQUIRY_FORM } from '../../../lib/enquiry-form-registry'
 import { GeDualPhoneEnquiryCallRow } from '../components/ge-dual-phone-contact'
-import { GeQuickEnquiryForm } from '../components/ge-quick-enquiry-form'
+import { SmartTripQuoteForm } from '../components/smart-trip-quote-form'
 import { GeSection } from '../components/ge-section'
-import { contactInfo } from '../data/copy'
-import type { ContentFormConfig } from '../content-page-context'
-import { golferGroupSizeSelectOptions } from '../data/form-people-options'
 
 const fadeUp = {
   initial: { opacity: 0, y: 18 },
@@ -24,75 +24,13 @@ const heroItemVariants: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.46, ease: 'easeOut' } }
 }
 
-const homeQuoteFormConfig = {
-  badge: 'Start your quote',
-  submitLabel: 'Send my trip brief',
-  successTitle: 'Trip brief received',
-  successBody: 'Thanks. We will reply from Ireland with the clearest next step for your Costa del Sol golf trip.',
-  fields: [
-    {
-      id: 'tripArrivalMode',
-      label: 'Trip timing',
-      type: 'select',
-      required: true,
-      options: [
-        { label: 'I have travel dates (arrival and departure)', value: 'planned' },
-        { label: 'Already at Málaga (AGP) — need transfers now', value: 'already_at_agp' }
-      ]
-    },
-    { id: 'travelDateFrom', label: 'Travel start date', type: 'date', required: false },
-    { id: 'travelDateTo', label: 'Travel end date', type: 'date', required: false },
-    {
-      id: 'groupSize',
-      label: 'Group size',
-      type: 'select',
-      required: true,
-      options: golferGroupSizeSelectOptions
-    },
-    {
-      id: 'tripType',
-      label: 'What do you need?',
-      type: 'select',
-      required: true,
-      options: [
-        { label: 'Full trip: golf, transfers and planning', value: 'Full trip: golf, transfers and planning' },
-        { label: 'Airport transfers only', value: 'Airport transfers only' },
-        { label: 'Golf and tee times', value: 'Golf and tee times' }
-      ]
-    },
-    {
-      id: 'preferredBase',
-      label: 'Preferred location',
-      type: 'select',
-      options: [
-        { label: 'Fuengirola', value: 'Fuengirola' },
-        { label: 'Torremolinos', value: 'Torremolinos' },
-        { label: 'Marbella', value: 'Marbella' },
-        { label: 'Vélez-Málaga', value: 'Vélez-Málaga' },
-        { label: 'Sotogrande', value: 'Sotogrande' },
-        { label: 'Need advice', value: 'Need advice' }
-      ]
-    },
-    {
-      id: 'notes',
-      label: 'Trip brief',
-      type: 'textarea',
-      placeholder: 'Tell us number of rounds, must-play courses, airport transfer needs, budget band, or anything already booked.',
-      rows: 5
-    }
-  ]
-} as const satisfies ContentFormConfig
-
 const reassuranceLines = [
   'Tee times, transfers and routing handled by one Irish team',
-  'Irish & Spanish phone lines — WhatsApp on the Irish number',
+  'Irish & Spanish phone lines — WhatsApp for quick questions',
   'Quote inside 24 hours · No booking fee, no obligation'
 ] as const
 
 export function GeHomeEnquiry() {
-  const whatsappHref = `https://wa.me/${contactInfo.phoneTel.replace('+', '')}?text=${encodeURIComponent(
-    'Hi GolfSol Ireland — I would like help planning a Costa del Sol golf trip.'
-  )}`
 
   return (
     <GeSection
@@ -143,27 +81,25 @@ export function GeHomeEnquiry() {
             variants={heroItemVariants}
             className="mt-5 max-w-2xl font-ge text-[0.9rem] font-semibold uppercase tracking-[0.18em] text-gs-green sm:text-[0.98rem]"
           >
-            Dates · Group size · What&apos;s already booked
+            Transfers · Hotels · Golf — pick what you need
           </m.p>
 
           <m.p
             variants={heroItemVariants}
             className="mt-4 max-w-2xl font-ge text-[1.06rem] leading-[1.7] text-gs-dark/85 sm:text-[1.12rem] sm:leading-8"
           >
-            A short brief is all we need. Your enquiry goes straight to the GolfSol crew on the Costa del Sol — back to you with prices, options and a clean breakdown, usually inside 24 hours.
+            Choose your services, add the details that matter, and we reply from Ireland with clear options — usually inside 24 hours.
           </m.p>
 
           <m.div variants={heroItemVariants} className="mt-7 flex flex-col gap-3">
             <GeDualPhoneEnquiryCallRow />
-            <a
-              href={whatsappHref}
-              target="_blank"
-              rel="noreferrer"
-              className="group inline-flex min-h-[52px] w-full items-center justify-center gap-2.5 rounded-xl border-2 border-[#25D366]/70 bg-white px-5 font-ge text-[1rem] font-bold uppercase tracking-[0.11em] text-[#0f7a3a] shadow-[0_0_18px_rgba(37,211,102,0.18)] transition-all hover:bg-[#25D366] hover:text-white hover:shadow-[0_0_28px_rgba(37,211,102,0.3)] sm:text-[1rem]"
-            >
-              <MessageCircle className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" aria-hidden />
-              WhatsApp us (Irish number)
-            </a>
+            <WhatsAppPill
+              context={{ sourcePage: '/', componentVariant: 'contact', enquiryType: 'quote' }}
+              fullWidth
+              message="Hi GolfSol Ireland — I would like help planning a Costa del Sol golf trip."
+              tone="light"
+            />
+            <IrelandPaymentsTrust tone="muted" />
           </m.div>
 
           <m.div variants={heroItemVariants} className="relative mt-9">
@@ -193,12 +129,14 @@ export function GeHomeEnquiry() {
             className="pointer-events-none absolute -inset-2 rounded-[2.15rem] bg-gradient-to-br from-brand-700/10 via-transparent to-[#d9be7a]/10"
           />
           <div className="relative">
-            <GeQuickEnquiryForm
-              title="Start your Costa del Sol quote"
-              lead="A short brief is enough. We will fill in the details with you."
-              interestPreset="HOMEPAGE — Costa del Sol golf trip quote"
-              routeLabel="Homepage"
-              formConfig={homeQuoteFormConfig}
+            <SmartTripQuoteForm
+              formId="home-enquire-form"
+              lead="What do you need? Only those fields appear next."
+              preset={{
+                pageLabel: '/',
+                formKey: WEBSITE_ENQUIRY_FORM.contentQuickEnquiry
+              }}
+              title="Get your Costa del Sol quote"
             />
           </div>
         </m.div>

@@ -1,5 +1,4 @@
 import type { SVGProps } from 'react'
-import { CustomerTripReel } from '../../../components/customer-trip-reel'
 import { ChevronRight, Mail } from 'lucide-react'
 import { FooterBrandLogoPicture } from '../../../components/brand-logo-picture'
 import { BrandPlaneToFairwayTagline } from '../../../components/brand-plane-to-fairway-tagline'
@@ -8,6 +7,8 @@ import { GeButton } from '../components/ge-button'
 import { GeDualPhoneFooterLines } from '../components/ge-dual-phone-contact'
 import { aboutFooterCopy, contactInfo } from '../data/copy'
 import { GsolGoldCornerAccents } from '../../../components/gsol-gold-corner-accents'
+import { IrelandPaymentsTrust } from '../../../components/ireland-payments-trust'
+import { WhatsAppPill } from '../../../components/whatsapp/WhatsAppPill'
 import { openCookieSettings } from '../../../lib/cookie-consent'
 import { footerColumns } from '../data/nav'
 
@@ -55,38 +56,20 @@ const socials = [
 export function GeFooter() {
   return (
     <>
-    <CustomerTripReel placement="band" />
     <footer className="relative overflow-hidden bg-gs-dark text-white">
       <GsolGoldCornerAccents preset="footer" />
       <div className="relative z-[1] mx-auto max-w-[1180px] px-5 py-14">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           {footerColumns.map((column) => (
             <div key={column.title}>
-              {column.title === 'Docs' ? (
-                <div className="mb-3 flex items-center gap-3">
-                  <FooterBrandLogoPicture
-                    alt=""
-                    width={GOLFSOL_BRAND_LOGO_INTRINSIC.width}
-                    height={GOLFSOL_BRAND_LOGO_INTRINSIC.height}
-                    sizes="72px"
-                    loading="lazy"
-                    decoding="async"
-                    className="h-12 w-12 shrink-0 object-contain drop-shadow-[0_6px_16px_rgba(0,0,0,0.4)] sm:h-14 sm:w-14"
-                  />
-                  <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-emerald-200 drop-shadow-sm sm:text-[0.82rem]">
-                    {column.title}
-                  </p>
-                </div>
-              ) : (
-                <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-emerald-200 drop-shadow-sm sm:text-[0.82rem]">
-                  {column.title}
-                </p>
-              )}
+              <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-emerald-200 drop-shadow-sm sm:text-[0.82rem]">
+                {column.title}
+              </p>
               <ul className="mt-4 space-y-2.5">
                 {column.links.map((link) => (
                   <li key={`${column.title}-${link.label}`} className="flex items-start gap-2">
                     <ChevronRight className="mt-1 h-3.5 w-3.5 shrink-0 text-gs-electric" aria-hidden="true" />
-                    {link.href === '/cookie-policy#settings' ? (
+                    {link.label === 'Cookie Policy' ? (
                       <button
                         className="text-left font-ge text-[1.05rem] leading-7 text-white transition-colors hover:text-[#fbe8b5] sm:text-[0.98rem]"
                         onClick={openCookieSettings}
@@ -123,6 +106,14 @@ export function GeFooter() {
                   {contactInfo.email}
                 </a>
               </li>
+              <li>
+                <WhatsAppPill
+                  context={{ sourcePage: '/footer', componentVariant: 'contact', enquiryType: 'contact' }}
+                  message="Hi GolfSol Ireland — I have a quick trip question."
+                  showNumber
+                  tone="forest"
+                />
+              </li>
             </ul>
             <p className="mt-6 font-ge text-[0.9rem] font-bold uppercase tracking-[0.16em] text-emerald-200 drop-shadow-sm sm:text-[0.82rem]">
               Follow Social
@@ -135,7 +126,7 @@ export function GeFooter() {
                   href={href}
                   rel="noreferrer"
                   target="_blank"
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-brand-700/45 bg-gs-dark/50 text-silver-200 shadow-[0_0_0_1px_rgba(19, 96, 71,0.2)] ring-1 ring-brand-700/35 transition-all hover:-translate-y-0.5 hover:border-brand-700 hover:bg-forest-900 hover:text-white hover:shadow-[0_0_0_1px_rgba(217,190,122,0.35)] hover:ring-brand-700/55"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/40 bg-white/10 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.12)] transition-all hover:-translate-y-0.5 hover:border-[#fbe8b5]/70 hover:bg-white/15 hover:text-[#fbe8b5]"
                 >
                   <Icon className="h-4 w-4" />
                 </a>
@@ -163,11 +154,11 @@ export function GeFooter() {
               Stay in touch
             </p>
             <div className="flex flex-wrap gap-3">
-              <GeButton href="/newsletter" variant="outline-white" size="sm">
-                Join our newsletter
+              <GeButton href="/leave-a-review" variant="outline-white" size="sm">
+                Leave us a review
               </GeButton>
-              <GeButton href="/testimonials" variant="outline-white" size="sm">
-                Give a Testimonial
+              <GeButton href="/contact" variant="outline-white" size="sm">
+                Get a quote
               </GeButton>
             </div>
           </div>
@@ -175,10 +166,11 @@ export function GeFooter() {
       </div>
 
       <div className="relative z-[1] border-t border-white/10 bg-black/30">
-        <div className="mx-auto flex max-w-[1180px] flex-col items-center gap-4 px-5 py-5 text-center sm:flex-row sm:flex-wrap sm:justify-between sm:text-left">
+        <div className="mx-auto flex max-w-[1180px] flex-col items-center gap-3 px-5 py-5 text-center sm:flex-row sm:flex-wrap sm:justify-between sm:text-left">
           <p className="font-ge text-[0.98rem] leading-6 text-white sm:text-[0.88rem]">
             Copyright © {new Date().getFullYear()} – GolfSol Ireland – All Rights Reserved
           </p>
+          <IrelandPaymentsTrust tone="dark" />
           <p className="font-ge text-[0.95rem] font-semibold uppercase tracking-[0.12em] text-[#fbe8b5] drop-shadow-[0_0_12px_rgba(217,190,122,0.25)] sm:text-[0.86rem]">
             Irish-owned · Costa del Sol golf specialists
           </p>

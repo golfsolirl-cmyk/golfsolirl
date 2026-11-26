@@ -20,8 +20,9 @@
         var path = location.pathname.replace(/\/+$/, '') || '/'
         if (path !== '/') return
         ;[
-          ['/images/hero-airport-mobile.webp', '(max-width: 767px)'],
-          ['/images/hero-airport-desktop.webp', '(min-width: 768px)']
+          ['/images/816cf7dc-e8c0-46fe-bce3-6d0c1f7005b2-mobile.webp', '(max-width: 639px)'],
+          ['/images/816cf7dc-e8c0-46fe-bce3-6d0c1f7005b2-tablet.webp', '(min-width: 640px) and (max-width: 1023px)'],
+          ['/images/816cf7dc-e8c0-46fe-bce3-6d0c1f7005b2-desktop.webp', '(min-width: 1024px)']
         ].forEach(function (pair) {
           var link = document.createElement('link')
           link.rel = 'preload'

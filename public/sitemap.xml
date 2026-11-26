@@ -19,12 +19,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.golfsolirl.com/accommodation-tiers</loc>
-    <lastmod>2026-10-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://www.golfsolirl.com/accommodation/fuengirola-hotels</loc>
     <lastmod>2026-10-26</lastmod>
     <changefreq>monthly</changefreq>
@@ -51,6 +45,12 @@
   <url>
     <loc>https://www.golfsolirl.com/booking-follow-up</loc>
     <lastmod>2026-10-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.golfsolirl.com/bundles</loc>
+    <lastmod>2026-11-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -260,7 +260,7 @@
   </url>
   <url>
     <loc>https://www.golfsolirl.com/golf-holidays</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-11-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.95</priority>
   </url>
@@ -320,7 +320,7 @@
   </url>
   <url>
     <loc>https://www.golfsolirl.com/golf-holidays-spain-from-ireland</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-11-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -464,7 +464,7 @@
   </url>
   <url>
     <loc>https://www.golfsolirl.com/golf-holidays/good-value</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-11-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -565,54 +565,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.golfsolirl.com/golf-packages</loc>
-    <lastmod>2026-10-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.golfsolirl.com/golf-packages/3-night-golf-breaks</loc>
-    <lastmod>2026-10-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://www.golfsolirl.com/golf-packages/4-night-golf-breaks</loc>
-    <lastmod>2026-10-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://www.golfsolirl.com/golf-packages/5-night-golf-holidays</loc>
-    <lastmod>2026-10-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://www.golfsolirl.com/golf-packages/7-night-golf-holidays</loc>
-    <lastmod>2026-10-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://www.golfsolirl.com/golf-packages/bespoke-golf-packages</loc>
-    <lastmod>2026-10-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://www.golfsolirl.com/golf-packages/golf-society-packages</loc>
-    <lastmod>2026-10-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://www.golfsolirl.com/golf-packages/group-golf-holidays</loc>
-    <lastmod>2026-10-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
     <loc>https://www.golfsolirl.com/group-preferences</loc>
     <lastmod>2026-10-26</lastmod>
     <changefreq>monthly</changefreq>
@@ -620,13 +572,13 @@
   </url>
   <url>
     <loc>https://www.golfsolirl.com/guides/best-golf-courses-costa-del-sol</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-11-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.golfsolirl.com/guides/best-time-golf-costa-del-sol</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-11-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -679,14 +631,14 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.golfsolirl.com/incentive-packages</loc>
+    <loc>https://www.golfsolirl.com/irish-group-planning</loc>
     <lastmod>2026-10-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.golfsolirl.com/irish-group-planning</loc>
-    <lastmod>2026-10-26</lastmod>
+    <loc>https://www.golfsolirl.com/leave-a-review</loc>
+    <lastmod>2026-11-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -709,14 +661,8 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.golfsolirl.com/packages</loc>
-    <lastmod>2026-10-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
     <loc>https://www.golfsolirl.com/privacy-policy</loc>
-    <lastmod>2026-10-28</lastmod>
+    <lastmod>2026-11-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

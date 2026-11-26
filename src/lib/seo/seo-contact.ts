@@ -12,7 +12,7 @@ export const SEO_CONTACT = {
   irishPhoneTel: '+353874464766',
   spanishPhoneDisplay: '+34 641 81 53 66',
   spanishPhoneTel: '+34641815366',
-  whatsappHref: 'https://wa.me/353874464766',
+  whatsappHref: 'https://wa.me/353866006202',
   address: {
     streetAddress: '6 Richmond Road',
     addressLocality: 'Drumcondra',

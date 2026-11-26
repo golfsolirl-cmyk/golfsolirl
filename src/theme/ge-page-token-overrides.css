@@ -51,9 +51,11 @@
   --tw-text-opacity: 1;
 }
 
-.ge-page footer.bg-gs-dark {
-  background: var(--bg-footer) !important;
-  color: var(--footer-text);
+.ge-page footer.bg-gs-dark,
+.ge-page footer.bg-forest-950 {
+  background-color: #04140c !important;
+  background-image: linear-gradient(180deg, #062016 0%, #04140c 100%) !important;
+  color: #ffffff !important;
 }
 
 .ge-page footer.bg-gs-dark .text-brand-700,
@@ -172,15 +174,7 @@
 .ge-page .text-fairway-600,
 .ge-page .text-forest-700,
 .ge-page .text-brand-700,
-.ge-page .text-brand-800 {
-  color: var(--brand-700) !important;
-}
-
-.ge-page .text-brand-700,
-.ge-page .text-brand-400,
-.ge-page .text-brand-500,
-.ge-page .text-brand-400,
-.ge-page .text-brand-500,
+.ge-page .text-brand-800,
 .ge-page .text-brand-400,
 .ge-page .text-brand-500 {
   color: var(--brand-700) !important;
@@ -191,6 +185,52 @@
 .ge-page h3,
 .ge-page h4 {
   color: var(--heading-color);
+}
+
+/*
+ * Dark surfaces (higher specificity + later): force light type for WCAG AA.
+ * Carve out white/cream cards nested inside dark shells.
+ */
+.ge-page .ge-on-dark,
+.ge-page .bg-gs-dark,
+.ge-page .bg-forest-950,
+.ge-page .bg-forest-900,
+.ge-page .airport-poster-hero {
+  color: #f7f3ea;
+}
+
+.ge-page :is(.ge-on-dark, .bg-gs-dark, .bg-forest-950, .bg-forest-900, .airport-poster-hero)
+  :is(
+    .text-gs-dark,
+    .text-forest-900,
+    .text-forest-800,
+    .text-forest-700,
+    .text-ge-ink,
+    .text-ge-gray500,
+    .text-ge-gray600,
+    .text-gs-green,
+    .text-gs-primary,
+    .text-fairway-600,
+    .text-brand-800,
+    .text-brand-700,
+    .text-brand-500,
+    .text-brand-400
+  ):not(
+    .bg-white :is(.text-gs-dark, .text-forest-900, .text-forest-800, .text-forest-700, .text-ge-ink, .text-ge-gray500, .text-ge-gray600, .text-gs-green, .text-gs-primary, .text-fairway-600, .text-brand-800, .text-brand-700, .text-brand-500, .text-brand-400),
+    [class*='bg-white'] :is(.text-gs-dark, .text-forest-900, .text-forest-800, .text-forest-700, .text-ge-ink, .text-ge-gray500, .text-ge-gray600, .text-gs-green, .text-gs-primary, .text-fairway-600, .text-brand-800, .text-brand-700, .text-brand-500, .text-brand-400),
+    [class*='bg-offwhite'] :is(.text-gs-dark, .text-forest-900, .text-forest-800, .text-forest-700, .text-ge-ink, .text-ge-gray500, .text-ge-gray600, .text-gs-green, .text-gs-primary, .text-fairway-600, .text-brand-800, .text-brand-700, .text-brand-500, .text-brand-400),
+    [class*='bg-chrome'] :is(.text-gs-dark, .text-forest-900, .text-forest-800, .text-forest-700, .text-ge-ink, .text-ge-gray500, .text-ge-gray600, .text-gs-green, .text-gs-primary, .text-fairway-600, .text-brand-800, .text-brand-700, .text-brand-500, .text-brand-400)
+  ) {
+  color: #f7f3ea !important;
+}
+
+.ge-page :is(.ge-on-dark, .bg-gs-dark, .bg-forest-950, .bg-forest-900, .airport-poster-hero)
+  :is(h1, h2, h3, h4):not(
+    .bg-white :is(h1, h2, h3, h4),
+    [class*='bg-white'] :is(h1, h2, h3, h4),
+    [class*='bg-offwhite'] :is(h1, h2, h3, h4)
+  ) {
+  color: #f7f3ea !important;
 }
 
 #business-cards-pdf-export-root h1,
@@ -438,8 +478,9 @@
 }
 
 /* —— Auto on-dark typography inside forest/charcoal surfaces (marketing pages).
-   Beats `.ge-page h1..h4` / `.ge-page p` dark defaults when authors omit `.ge-on-dark`.
-   Light nested cards (bg-white, chrome) keep forest text. —— */
+   Force light type first. Do NOT carve out via page-level `.bg-offwhite` ancestors —
+   that previously blanked hero copy on every marketing page shell.
+   Nested light cards restore forest type in the follow-up rule below. —— */
 .ge-page :is(
     .bg-gs-dark,
     .bg-forest-900,
@@ -465,27 +506,75 @@
     [class*='linear-gradient(180deg,#0f3d24']
   )
   :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small, strong):not(
-    .bg-white :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
-    .bg-white\/88 :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
-    .bg-white\/90 :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
-    .bg-white\/92 :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
-    .bg-white\/95 :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
-    [class*='bg-white'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
-    [class*='bg-offwhite'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
-    [class*='bg-gs-bg'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
-    [class*='bg-chrome'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
-    [class*='bg-cream'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
-    [class*='bg-\\[\\#f'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
-    [class*='bg-\\[\\#e'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
-    /* Light gradient shells — never force white body type on cream/white fades */
-    [class*='from-white'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
-    [class*='via-white'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
-    [class*='to-white'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
-    [class*='from-offwhite'] :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, label, span, small),
     .bg-clip-text,
     [style*='clip-text']
   ) {
   color: #ffffff !important;
+}
+
+/* Nested light cards inside dark shells keep readable forest type. */
+.ge-page :is(
+    .bg-gs-dark,
+    .bg-forest-900,
+    .bg-forest-950,
+    .bg-brand-900,
+    .bg-brand-950,
+    .ge-on-dark,
+    [class*='from-forest-9'],
+    [class*='from-brand-8'],
+    [class*='from-brand-9'],
+    [class*='from-gs-green']
+  )
+  :is(
+    .bg-white,
+    .bg-white\/88,
+    .bg-white\/90,
+    .bg-white\/92,
+    .bg-white\/95,
+    [class*='bg-white'],
+    [class*='bg-offwhite'],
+    [class*='bg-gs-bg'],
+    [class*='bg-chrome'],
+    [class*='bg-cream'],
+    [class*='from-white'],
+    [class*='via-white'],
+    [class*='to-white'],
+    [class*='from-offwhite']
+  )
+  :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--heading-color) !important;
+}
+
+.ge-page :is(
+    .bg-gs-dark,
+    .bg-forest-900,
+    .bg-forest-950,
+    .bg-brand-900,
+    .bg-brand-950,
+    .ge-on-dark,
+    [class*='from-forest-9'],
+    [class*='from-brand-8'],
+    [class*='from-brand-9'],
+    [class*='from-gs-green']
+  )
+  :is(
+    .bg-white,
+    .bg-white\/88,
+    .bg-white\/90,
+    .bg-white\/92,
+    .bg-white\/95,
+    [class*='bg-white'],
+    [class*='bg-offwhite'],
+    [class*='bg-gs-bg'],
+    [class*='bg-chrome'],
+    [class*='bg-cream'],
+    [class*='from-white'],
+    [class*='via-white'],
+    [class*='to-white'],
+    [class*='from-offwhite']
+  )
+  :is(p, li, dt, dd, label, span, small, strong) {
+  color: var(--text-secondary) !important;
 }
 
 .ge-page :is(.bg-gs-dark, .bg-forest-900, .bg-forest-950, .bg-brand-900, .bg-brand-950, .ge-on-dark)
@@ -506,36 +595,41 @@
 }
 
 /* —— Footer — make every line readable on the deep forest base —— */
-.ge-page footer.bg-gs-dark,
-.ge-page footer.bg-gs-dark p,
-.ge-page footer.bg-gs-dark li,
-.ge-page footer.bg-gs-dark a {
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950),
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) :is(p, li, a, span, button, h1, h2, h3, h4, strong, small) {
   color: #ffffff !important;
 }
 
-.ge-page footer.bg-gs-dark a:hover {
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) :is(.text-emerald-200, .text-emerald-100, [class*='text-emerald'], .text-silver-200, .text-gs-electric) {
   color: #fbe8b5 !important;
 }
 
-.ge-page footer.bg-gs-dark p[class*='text-white\\/'],
-.ge-page footer.bg-gs-dark p[class*='text-white/'] {
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) a:hover {
+  color: #fbe8b5 !important;
+}
+
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) p[class*='text-white\\/'],
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) p[class*='text-white/'] {
   color: rgba(255, 255, 255, 0.94) !important;
 }
 
-/* Footer column titles + small "Stay in touch" / Follow Social kickers in bright gold-cream */
-.ge-page footer.bg-gs-dark .text-brand-700,
-.ge-page footer.bg-gs-dark [class*='text-brand-700'] {
+/* Footer column titles + small kickers in bright gold-cream */
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) .text-brand-700,
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) [class*='text-brand-700'],
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) .text-brand-400,
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) .text-silver-200 {
   color: #fbe8b5 !important;
-  text-shadow: 0 0 18px rgba(217, 190, 122, 0.25);
 }
 
-/* Bottom legal strip — was washed out at /60 /70 /78 — push to readable white */
-.ge-page footer.bg-gs-dark .text-white\/60,
-.ge-page footer.bg-gs-dark .text-white\/70,
-.ge-page footer.bg-gs-dark .text-white\/78,
-.ge-page footer.bg-gs-dark .text-white\/80,
-.ge-page footer.bg-gs-dark .text-white\/90,
-.ge-page footer.bg-gs-dark .text-white\/95 {
+/* Bottom legal strip — push washed /60–/80 to readable white */
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) .text-white\/60,
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) .text-white\/70,
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) .text-white\/72,
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) .text-white\/76,
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) .text-white\/78,
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) .text-white\/80,
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) .text-white\/90,
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) .text-white\/95 {
   color: rgba(255, 255, 255, 0.94) !important;
 }
 
@@ -940,6 +1034,27 @@
   :is(button.gsol-cta-secondary:hover, a.gsol-cta-secondary:hover, button.gsol-cta-outline-on-light:hover, a.gsol-cta-outline-on-light:hover) {
   color: var(--brand-900) !important;
   background: var(--btn-secondary-hover) !important;
+}
+
+/* —— Lean homepage hero — always light type on the photo (WCAG AA). —— */
+.ge-page .premium-golf-hero.ge-on-dark .premium-golf-hero-kicker {
+  color: #f4dfa6 !important;
+  -webkit-text-fill-color: #f4dfa6 !important;
+}
+
+.ge-page .premium-golf-hero.ge-on-dark .premium-golf-hero-title,
+.ge-page .premium-golf-hero.ge-on-dark .premium-golf-hero-lead,
+.ge-page .premium-golf-hero.ge-on-dark .premium-golf-hero-outline-cta {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.ge-page .premium-golf-hero.ge-on-dark .premium-golf-hero-lead {
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.55) !important;
+}
+
+.ge-page .premium-golf-hero.ge-on-dark .premium-golf-hero-outline-cta {
+  border-color: #ffffff !important;
 }
 
 /* —— Homepage premium hero — trust badges must stay visible (forest on white). —— */

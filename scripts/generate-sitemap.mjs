@@ -18,19 +18,31 @@ const siteBase = (process.env.SITE_URL || 'https://www.golfsolirl.com').replace(
 
 const staticPaths = [
   '/',
+  '/bundles',
   '/services/transport',
-  '/packages',
   '/about',
   '/contact',
   '/golf-courses',
   '/accommodation',
   '/faq',
-  '/booking'
+  '/booking',
+  '/leave-a-review'
 ]
 
 /** Secondary aliases — keep out of sitemap; vercel redirects to canonical. */
 const excludeFromSitemap = new Set([
   '/package',
+  '/packages',
+  '/golf-packages',
+  '/golf-packages/3-night-golf-breaks',
+  '/golf-packages/4-night-golf-breaks',
+  '/golf-packages/5-night-golf-holidays',
+  '/golf-packages/7-night-golf-holidays',
+  '/golf-packages/golf-society-packages',
+  '/golf-packages/group-golf-holidays',
+  '/golf-packages/bespoke-golf-packages',
+  '/incentive-packages',
+  '/accommodation-tiers',
   '/transport',
   '/terms-conditions',
   '/links-and-information/dress-code-for-golf-in-spain',

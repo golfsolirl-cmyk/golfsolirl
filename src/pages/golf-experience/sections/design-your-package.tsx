@@ -134,7 +134,7 @@ export function GeDesignYourPackage() {
           />
           <m.ol
             ref={stepsRef}
-            className="grid list-none gap-6 p-0 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5"
+            className="gsol-fly-scope grid list-none gap-6 p-0 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5"
           >
             {steps.map((step, index) => (
               <m.li
@@ -144,7 +144,9 @@ export function GeDesignYourPackage() {
                 animate={stepsRevealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
                 transition={{ ...revealTransition, delay: index * 0.06 }}
               >
-                <article className="relative flex flex-1 flex-col overflow-hidden rounded-[1.75rem] border border-white/80 bg-white text-gs-dark shadow-[0_20px_50px_rgba(6,32,22,0.12)] ring-1 ring-chrome-300/80 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_28px_64px_rgba(6,32,22,0.18)]">
+                <article
+                  className={`gsol-fly ${index % 2 === 0 ? 'gsol-fly-from-left' : 'gsol-fly-from-right'} relative flex flex-1 flex-col overflow-hidden rounded-[1.75rem] border border-white/80 bg-white text-gs-dark shadow-[0_20px_50px_rgba(6,32,22,0.12)] ring-1 ring-chrome-300/80 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_28px_64px_rgba(6,32,22,0.18)]`}
+                >
                   <div className="relative aspect-[16/10] overflow-hidden">
                     <img
                       src={step.image}
@@ -152,7 +154,7 @@ export function GeDesignYourPackage() {
                       loading={index < 2 ? 'eager' : 'lazy'}
                       decoding="async"
                       fetchPriority={index === 0 ? 'high' : undefined}
-                      className="h-full w-full object-cover transition-transform duration-[1100ms] ease-out group-hover:scale-[1.06]"
+                      className="gsol-media-zoom h-full w-full object-cover"
                     />
                     <div
                       aria-hidden="true"

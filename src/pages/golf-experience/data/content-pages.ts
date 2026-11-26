@@ -130,30 +130,22 @@ const convertedFooterArticlePages: Record<string, GeContentPageData> = Object.fr
 ) as Record<string, GeContentPageData>
 
 const contactPage: GeContentPageData = {
-  metaTitle: 'Contact | GolfSol Ireland',
-  eyebrow: 'Contact',
-  title: 'Get your golf holiday quote quickly',
-  subtitle:
-    'Tell us the basics and we come back with clear options. No pressure, no long forms, no wasted time.',
-  heroImage: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f.webp',
-  heroAlt: 'GolfSol Ireland transport fleet and premium Costa del Sol travel service.',
+  metaTitle: 'Get a Quote | GolfSol Ireland',
+  eyebrow: 'GolfSol Ireland',
+  title: 'Get a quote',
+  subtitle: 'Dates, golfers, and a phone number — we reply from Ireland with clear options.',
+  heroImage: '/images/quote-hero-costa-golf-golden-hour.webp',
+  heroAlt: 'Calm Costa del Sol golf fairway at golden hour — open sky for a quiet quote request.',
   highlights: trustHighlights,
   sections: [
     {
       title: 'What to send us',
-      body:
-        'Your dates, group size, and any must-play courses or hotel preferences are enough to start. We refine from there.',
+      body: 'Your dates and group size are enough to start. We refine hotels, courses and transfers from there.',
       bullets: ['Quick first response', 'Clear choices to compare', 'Practical next actions']
-    },
-    {
-      title: 'How we support you',
-      body:
-        'From first quote to final transfer timing, we keep one joined-up plan and one team accountable.',
-      bullets: ['Irish-owned communication', 'Costa del Sol specialists only', 'Built for groups and societies']
     }
   ],
   formTitle: 'Start your quote request',
-  formLead: 'Use this short form and we will come back with clear, actionable options.',
+  formLead: 'Short form — we come back with clear, actionable options.',
   interestPreset: 'General quote request',
   enquiryType: 'booking'
 }
@@ -475,27 +467,13 @@ const transportOverviewPage: GeContentPageData = {
 
 const coursesPage: GeContentPageData = {
   metaTitle: 'Costa del Sol Golf Courses | GolfSol Ireland',
-  eyebrow: 'Golf Courses',
-  title: 'Costa del Sol course options, narrowed to what matters',
-  subtitle:
-    'No endless scrolling. We help you choose courses that match your group, base, and trip rhythm so every round has purpose.',
-  heroImage: '/images/about-golfsol-hero.webp',
+  eyebrow: 'GolfSol Ireland',
+  title: 'Find your course',
+  subtitle: 'Filter by area and level, add courses to your trip, then build a clear quote.',
+  heroImage: '/images/ge-premium-golf-fairway-coastal.webp',
   heroAlt: 'Wide Costa del Sol golf course with mountain and sea backdrop.',
   highlights: trustHighlights,
-  sections: [
-    {
-      title: 'Shortlists, not overload',
-      body:
-        'We filter by travel times, challenge level, and group preferences to keep your list focused and easy to decide.',
-      bullets: ['Championship picks with realistic routing', 'Balanced challenge across the week', 'Clear alternatives if tee sheets move']
-    },
-    {
-      title: 'Local clarity',
-      body:
-        'Our recommendations come from practical Costa del Sol experience, not generic destination copy.',
-      bullets: ['Marbella to Sotogrande coverage', 'Quick notes on pace and atmosphere', 'Straightforward pricing context']
-    }
-  ],
+  sections: [],
   formTitle: 'Get a course shortlist',
   formLead: 'Share your dates, group size, and the course(s) you want — or ask us to shortlist — and we will reply with clear options.',
   interestPreset: 'Costa del Sol courses',
@@ -503,28 +481,14 @@ const coursesPage: GeContentPageData = {
 }
 
 const accommodationPage: GeContentPageData = {
-  metaTitle: 'Accommodation | GolfSol Ireland',
-  eyebrow: 'Accommodation',
-  title: 'Costa del Sol accommodation matched to your golf trip',
-  subtitle:
-    'We help you choose the right base fast, with clear trade-offs between location, budget, and group style.',
-  heroImage: '/images/transport-moment-resort.webp',
+  metaTitle: 'Hotels | GolfSol Ireland',
+  eyebrow: 'GolfSol Ireland',
+  title: 'Find your hotel',
+  subtitle: 'Area, level, and nearby courses — then build a clear quote from Ireland.',
+  heroImage: '/images/ge-premium-resort-hotel-hero.webp',
   heroAlt: 'Costa del Sol hotel and resort accommodation for golfers.',
   highlights: trustHighlights,
-  sections: [
-    {
-      title: 'Stay options that fit your group',
-      body:
-        'From practical 3-star to premium 5-star, we match your accommodation tier to your priorities and your golf schedule.',
-      bullets: ['Room mix support for groups', 'Location context in plain language', 'Direct links to golf-day routing']
-    },
-    {
-      title: 'No confusing choices',
-      body:
-        'Instead of endless listings, you get focused options with clear reasons each one works.',
-      bullets: ['Short, actionable hotel lists', 'Budget-aware recommendations', 'Smooth handover to booking']
-    }
-  ],
+  sections: [],
   formTitle: 'Get matched hotel options',
   formLead: 'Share your dates and group size and we will return clean accommodation choices.',
   interestPreset: 'Accommodation matching',

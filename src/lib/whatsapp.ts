@@ -6,7 +6,19 @@
 
 /** Irish mobile 086 600 6202. wa.me needs the country code and no leading zero. */
 export const WHATSAPP_NUMBER = '353866006202'
-export const WHATSAPP_DISPLAY = '086 600 6202'
+/** International display — client asked for 00353 / +353 prefix on the concierge line. */
+export const WHATSAPP_DISPLAY = '+353 86 600 6202'
+/** Alternate Irish trunk display (00353…). */
+export const WHATSAPP_DISPLAY_00353 = '00353 86 600 6202'
+/** Base wa.me link (no prefilled message). */
+export const WHATSAPP_HREF = `https://wa.me/${WHATSAPP_NUMBER}`
+/** Compact public CTA label — sentence case, no all-caps, no “(Irish number)”. */
+export const WHATSAPP_CTA_LABEL = 'WhatsApp us'
+/**
+ * @deprecated Prefer `WhatsAppPill` (icon + label). Kept for rare plain-text fallbacks.
+ * Do not use the middle-dot “label · number” pattern in UI.
+ */
+export const WHATSAPP_CTA_WITH_NUMBER = WHATSAPP_CTA_LABEL
 
 export const WHATSAPP_EVENT = 'whatsapp_contact_click'
 
@@ -108,7 +120,13 @@ export function resolveWhatsAppPanel(path: string, enquiryType?: string): 'conta
   const normalised = path.replace(/\/+$/, '') || '/'
   if (normalised === '/contact' || normalised === '/contact/golf-holiday-enquiry-form') return 'contact'
   if (enquiryType === 'booking') return 'booking'
-  if (normalised === '/packages' || normalised === '/package' || normalised === '/services/transport') return 'booking'
+  if (
+    normalised === '/bundles' ||
+    normalised === '/packages' ||
+    normalised === '/package' ||
+    normalised === '/services/transport'
+  )
+    return 'booking'
   return null
 }
 

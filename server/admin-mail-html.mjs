@@ -1,7 +1,7 @@
 /**
  * Branded HTML for admin compose / Resend — reuses the existing Golf Sol transactional shell.
  */
-import { ctaGreen, emailFonts, escapeHtml, gs } from './branded-email-shell.mjs'
+import { emailFonts, escapeHtml, gs } from './branded-email-shell.mjs'
 import { buildGsolTransactionalEmail, finalizeGsolEmailHtml } from './email-layout.mjs'
 import { applyMailTemplateVars } from '../shared/admin-mail-templates.mjs'
 
@@ -127,6 +127,7 @@ const safeHttpUrl = (raw) => {
  *   ctaUrl?: string
  *   customerName?: string
  *   vars?: Record<string, string>
+ *   payment?: object | null
  * }} input
  */
 export const buildAdminBrandedMailHtml = (input) => {
@@ -138,29 +139,23 @@ export const buildAdminBrandedMailHtml = (input) => {
   const ctaLabel = applyMailTemplateVars(input.ctaLabel || '', vars)
   const ctaUrl = safeHttpUrl(applyMailTemplateVars(input.ctaUrl || '', vars))
   const customerName = applyMailTemplateVars(input.customerName || vars.customerName || '', vars)
-
-  const ctaHtml =
-    ctaLabel && ctaUrl
-      ? `<p style="margin:28px 0 12px 0;text-align:center;">
-           <a class="cta-button" href="${escapeHtml(ctaUrl)}" style="${ctaGreen}" target="_blank" rel="noopener">${escapeHtml(ctaLabel)}</a>
-         </p>`
-      : ''
+  const payment = input.payment && typeof input.payment === 'object' ? input.payment : null
 
   const bodyHtml = `
     ${paragraphsToHtml(introduction, 'intro')}
     ${paragraphsToHtml(body, 'body')}
-    ${ctaHtml}
     ${paragraphsToHtml(closing, 'closing')}
   `
 
   const raw = buildGsolTransactionalEmail({
     documentTitle: heading || 'Golf Sol Ireland',
     preheader: (introduction || body).replace(/\s+/g, ' ').slice(0, 110),
-    heroKicker: 'Golf Sol Ireland',
-    heroTitle: escapeHtml(heading || 'Golf Sol Ireland'),
-    heroLead: customerName ? escapeHtml(`For ${customerName}`) : '',
-    heroMetaHtml: '',
-    bodyHtml
+    kicker: 'Golf Sol Ireland',
+    title: heading || 'Golf Sol Ireland',
+    lead: customerName ? `For ${customerName}` : '',
+    bodyHtml,
+    payment,
+    cta: ctaLabel && ctaUrl ? { href: ctaUrl, label: ctaLabel } : null
   })
   return finalizeGsolEmailHtml(raw)
 }

@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import type { DivIcon, Map as LeafletMap, Marker } from 'leaflet'
 import L from 'leaflet'
 import { COURSES, NEARBY_HOTELS, type CourseHotelPickerValue, type NearbyHotel } from '../data/coastal-golf-data'
+import { attachLeafletScrollGuard, type LeafletScrollGuardHandle } from '../lib/leaflet-scroll-guard'
 import { cx } from '../lib/utils'
+import { MapTapToActivate } from './map-tap-to-activate'
 import 'leaflet/dist/leaflet.css'
 
 const STAR_OPTIONS = [3, 4, 5] as const
@@ -26,8 +28,10 @@ export function CourseHotelMapPicker({ onSelectionChange, initialCourseId, initi
   const mapInstanceRef = useRef<LeafletMap | null>(null)
   const courseMarkersRef = useRef<Record<string, Marker>>({})
   const hotelMarkersRef = useRef<Marker[]>([])
+  const scrollGuardRef = useRef<LeafletScrollGuardHandle | null>(null)
 
   const [mapReady, setMapReady] = useState(false)
+  const [mapInteractive, setMapInteractive] = useState(false)
   const [selectedCourse, setSelectedCourse] = useState<string | null>(initialCourseId ?? null)
   const [selectedHotel, setSelectedHotel] = useState<NearbyHotel | null>(initialHotel ?? null)
   const [activeStars, setActiveStars] = useState<Set<number>>(() => new Set([3, 4, 5]))
@@ -67,7 +71,10 @@ export function CourseHotelMapPicker({ onSelectionChange, initialCourseId, initi
       center: [36.44, -4.98],
       zoom: 10,
       scrollWheelZoom: false,
-      zoomControl: true
+      zoomControl: true,
+      dragging: false,
+      touchZoom: false,
+      doubleClickZoom: false
     })
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -76,6 +83,7 @@ export function CourseHotelMapPicker({ onSelectionChange, initialCourseId, initi
     }).addTo(map)
 
     mapInstanceRef.current = map
+    scrollGuardRef.current = attachLeafletScrollGuard(map, mapRef.current)
 
     COURSES.forEach((course) => {
       const marker = L.marker([course.lat, course.lng], {
@@ -106,10 +114,13 @@ export function CourseHotelMapPicker({ onSelectionChange, initialCourseId, initi
 
     return () => {
       window.clearTimeout(t)
+      scrollGuardRef.current?.destroy()
+      scrollGuardRef.current = null
       map.remove()
       mapInstanceRef.current = null
       courseMarkersRef.current = {}
       setMapReady(false)
+      setMapInteractive(false)
     }
   }, [])
 
@@ -211,12 +222,22 @@ export function CourseHotelMapPicker({ onSelectionChange, initialCourseId, initi
 
   return (
     <div className="w-full">
-      <div
-        ref={mapRef}
+      <MapTapToActivate
         className="z-0 h-[400px] w-full overflow-hidden rounded-[0.625rem] border border-forest-200 bg-offwhite"
-        role="application"
-        aria-label="Map of Costa del Sol golf courses. Click a pin to select a course."
-      />
+        active={mapInteractive}
+        label="Tap to use the map"
+        onActivate={() => {
+          setMapInteractive(true)
+          scrollGuardRef.current?.activate()
+        }}
+      >
+        <div
+          ref={mapRef}
+          className="h-full w-full"
+          role="application"
+          aria-label="Map of Costa del Sol golf courses. Click a pin to select a course."
+        />
+      </MapTapToActivate>
 
       <div className="mt-2 flex flex-wrap gap-3 text-xs text-forest-600">
         <span className="inline-flex items-center gap-1.5">

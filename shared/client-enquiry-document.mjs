@@ -21,7 +21,10 @@ export const CLIENT_DOCUMENT_COMPANY = {
   logoFilename: 'newbf9f08a4-8fac-496b-8181-6f6b680d19c3.png'
 }
 
-/** Euro bank transfer customers use to pay Golf Sol Ireland. */
+/**
+ * Legacy hardcoded Monzo details — kept for PDF/DOCX detection of older documents that embed these strings.
+ * Customer-facing UI must load `site_payment_settings` instead (never fall back here for display).
+ */
 export const CLIENT_BANK_PAYMENT = {
   accountName: 'Gregory Mc Donald',
   bankName: 'Monzo Bank',

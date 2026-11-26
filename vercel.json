@@ -78,7 +78,46 @@
     }
   ],
   "redirects": [
-    { "source": "/package", "destination": "/packages", "permanent": true },
+    { "source": "/package", "destination": "/bundles", "permanent": true },
+    { "source": "/packages", "destination": "/bundles", "permanent": true },
+    { "source": "/golf-packages", "destination": "/bundles", "permanent": true },
+    {
+      "source": "/golf-packages/3-night-golf-breaks",
+      "destination": "/bundles#3-night",
+      "permanent": true
+    },
+    {
+      "source": "/golf-packages/4-night-golf-breaks",
+      "destination": "/bundles#3-night",
+      "permanent": true
+    },
+    {
+      "source": "/golf-packages/5-night-golf-holidays",
+      "destination": "/bundles#5-night",
+      "permanent": true
+    },
+    {
+      "source": "/golf-packages/7-night-golf-holidays",
+      "destination": "/bundles#7-night",
+      "permanent": true
+    },
+    {
+      "source": "/golf-packages/golf-society-packages",
+      "destination": "/bundles",
+      "permanent": true
+    },
+    {
+      "source": "/golf-packages/group-golf-holidays",
+      "destination": "/bundles",
+      "permanent": true
+    },
+    {
+      "source": "/golf-packages/bespoke-golf-packages",
+      "destination": "/contact",
+      "permanent": true
+    },
+    { "source": "/incentive-packages", "destination": "/bundles", "permanent": true },
+    { "source": "/accommodation-tiers", "destination": "/bundles", "permanent": true },
     { "source": "/golf-sol", "destination": "/", "permanent": true },
     { "source": "/transport", "destination": "/services/transport", "permanent": true },
     { "source": "/airport-transfers", "destination": "/transfers/malaga-airport-golf-transfers", "permanent": true },
@@ -142,6 +181,10 @@
     { "source": "/api/transfer-rebook", "destination": "/api/gateway?r=transfer-rebook" },
     { "source": "/api/transfer-balance-reminder-sweep", "destination": "/api/gateway?r=transfer-balance-reminder-sweep" },
     { "source": "/api/transfer-payment-admin", "destination": "/api/gateway?r=transfer-payment-admin" },
+    { "source": "/api/site-payment-settings", "destination": "/api/gateway?r=site-payment-settings" },
+    { "source": "/api/brand-kit", "destination": "/api/gateway?r=brand-kit" },
+    { "source": "/api/enquiry-payment-admin", "destination": "/api/gateway?r=enquiry-payment-admin" },
+    { "source": "/api/enquiry-transfer-upsell-email", "destination": "/api/gateway?r=enquiry-transfer-upsell-email" },
     { "source": "/api/admin-revenue-stats", "destination": "/api/gateway?r=admin-revenue-stats" },
     { "source": "/api/package-build-admin-publish", "destination": "/api/gateway?r=package-build-admin-publish" },
     { "source": "/api/transfer-refund", "destination": "/api/gateway?r=transfer-refund" },
@@ -163,6 +206,14 @@
     { "source": "/api/admin-mail", "destination": "/api/gateway?r=admin-mail" },
     { "source": "/api/desk-customers", "destination": "/api/gateway?r=desk-customers" },
     { "source": "/api/desk-quote-decision", "destination": "/api/gateway?r=desk-quote-decision" },
+    { "source": "/api/admin-login", "destination": "/api/gateway?r=admin-login" },
+    { "source": "/api/admin-logout", "destination": "/api/gateway?r=admin-logout" },
+    { "source": "/api/admin-session-check", "destination": "/api/gateway?r=admin-session-check" },
+    { "source": "/api/portal-login", "destination": "/api/gateway?r=portal-login" },
+    { "source": "/api/portal-token-open", "destination": "/api/gateway?r=portal-token-open" },
+    { "source": "/api/portal-otp-send", "destination": "/api/gateway?r=portal-otp-send" },
+    { "source": "/api/portal-otp-verify", "destination": "/api/gateway?r=portal-otp-verify" },
+    { "source": "/api/portal-otp-logout", "destination": "/api/gateway?r=portal-otp-logout" },
     { "source": "/api/gmail-oauth-callback", "destination": "/api/gateway?r=gmail-oauth-callback" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]

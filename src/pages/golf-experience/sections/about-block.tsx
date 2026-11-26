@@ -70,7 +70,7 @@ export function GeAboutBlock() {
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-brand-700/[0.14] blur-[90px]"
-      />
+      />
 
       <div className="grid gap-12 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)] lg:items-center lg:gap-14">
         {/* —— Left: photo plate with solid brand logo card (no glass) —— */}
@@ -79,7 +79,7 @@ export function GeAboutBlock() {
             aria-hidden="true"
             className="pointer-events-none absolute -inset-3 rounded-[2.15rem] bg-gradient-to-br from-brand-800/22 via-transparent to-gs-green/18 opacity-70 sm:-inset-4"
           />
-          <div className="relative overflow-hidden rounded-[2rem] border border-gs-green/15 bg-gs-dark shadow-[0_28px_70px_rgba(6,59,42,0.25)] ring-1 ring-white/12">
+          <div className="gsol-fly-scope gsol-fly gsol-fly-from-right relative overflow-hidden rounded-[2rem] border border-gs-green/15 bg-gs-dark shadow-[0_28px_70px_rgba(6,59,42,0.25)] ring-1 ring-white/12">
             <div className="relative isolate aspect-[4/5] min-h-[460px] w-full sm:aspect-[5/6] sm:min-h-[520px] lg:aspect-[4/5] lg:min-h-[560px]">
               <img
                 src={aboutCopy.image}

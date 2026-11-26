@@ -1,18 +1,25 @@
 import { createClient } from '@supabase/supabase-js'
 import { requireAdminFromBearer } from './auth-verify-admin.mjs'
-import { handleSendClientPortalEmail } from './client-portal-email-service.mjs'
+import { Resend } from 'resend'
+import {
+  buildLeanTransactionalEmailHtml,
+  finalizeGsolEmailHtml
+} from './email-layout.mjs'
+import { loadSitePaymentForEmail, paymentBlockFromSettings } from './load-site-payment-for-email.mjs'
+import { resolveResendToAddress, resendSandboxRecipientHint } from './resend-delivery-email.mjs'
 import { buildWebsiteQuotePdfBytes } from './website-quote-pdf.mjs'
+import { getGsolSiteUrl } from './site-url.mjs'
 
 const fmtEur = (n) =>
-  new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(
-    Number(n) || 0
-  )
+  new Intl.NumberFormat('en-IE', {
+    style: 'currency',
+    currency: 'EUR',
+    maximumFractionDigits: 0,
+    minimumFractionDigits: 0
+  }).format(Number(n) || 0)
 
 /**
- * Admin saves a website-form quote → email client branded message + PDF attachment (reuses portal email pipeline).
- * @param {unknown} body
- * @param {NodeJS.ProcessEnv} env
- * @param {{ authHeader?: string }} meta
+ * Admin saves a website-form quote → lean branded email + PDF + Monzo block.
  */
 export const handleSendWebsiteQuoteEmail = async (body, env = process.env, meta = {}) => {
   const auth = await requireAdminFromBearer(meta.authHeader, env)
@@ -24,8 +31,15 @@ export const handleSendWebsiteQuoteEmail = async (body, env = process.env, meta 
 
   const supabaseUrl = env.SUPABASE_URL?.trim()
   const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY?.trim()
+  const resendKey = env.RESEND_API_KEY?.trim()
+  const fromEmail = env.RESEND_FROM_EMAIL?.trim()
   if (!supabaseUrl || !serviceKey) {
     const err = new Error('Supabase is not configured on the server.')
+    err.statusCode = 500
+    throw err
+  }
+  if (!resendKey || !fromEmail) {
+    const err = new Error('Resend is not configured.')
     err.statusCode = 500
     throw err
   }
@@ -79,6 +93,7 @@ export const handleSendWebsiteQuoteEmail = async (body, env = process.env, meta 
   }
 
   const clientEmail = clientProfile.email.trim().toLowerCase()
+  const first = String(clientProfile.full_name || 'there').trim().split(/\s+/)[0] || 'there'
   const ref =
     typeof cfg.enquiryReferenceId === 'string' && cfg.enquiryReferenceId.trim()
       ? cfg.enquiryReferenceId.trim()
@@ -94,26 +109,53 @@ export const handleSendWebsiteQuoteEmail = async (body, env = process.env, meta 
   })
 
   const filename = `golf-sol-quote-${ref.replace(/[^\w.-]+/g, '-')}.pdf`
-  const contentBase64 = Buffer.from(pdfBytes).toString('base64')
+  const bank = await loadSitePaymentForEmail(env)
+  const payment = paymentBlockFromSettings(bank, {
+    paymentReference: ref,
+    amountDueEur: Number.isFinite(dep) && dep > 0 ? dep : Number.isFinite(gross) ? gross : null
+  })
+  const site = getGsolSiteUrl().replace(/\/+$/, '')
 
   const subject = `Your Golf Sol Ireland quote — ${ref}`
-
-  const message = [
-    `Your trip is quoted under reference ${ref}.`,
-    '',
-    `Total (including Irish VAT): ${fmtEur(gross)}. Deposit due: ${fmtEur(dep)}. Remaining balance: ${fmtEur(bal)}.`,
-    '',
-    'A PDF quote is attached to this email. You can also open your client dashboard for the full interactive view and another PDF download if you need it.'
-  ].join('\n')
-
-  return handleSendClientPortalEmail(
-    {
-      clientEmail,
-      subject,
-      message,
-      attachments: [{ filename, contentBase64, contentType: 'application/pdf' }]
-    },
-    env,
-    meta
+  const html = finalizeGsolEmailHtml(
+    buildLeanTransactionalEmailHtml({
+      documentTitle: subject,
+      preheader: `Your quote ${ref} · ${fmtEur(gross)} total.`,
+      kicker: `Quote · ${ref}`,
+      title: `Your quote is ready, ${first}.`,
+      lead: 'A PDF is attached. Pay the deposit by bank transfer using the reference below, or open your trip desk.',
+      rows: [
+        ['Total (incl. Irish VAT)', fmtEur(gross)],
+        ['Deposit due', fmtEur(dep)],
+        ['Balance', fmtEur(bal)],
+        ['Reference', ref]
+      ],
+      payment,
+      cta: { href: `${site}/dashboard`, label: 'Open your trip desk' }
+    })
   )
+
+  const to = resolveResendToAddress(clientEmail, env)
+  const resend = new Resend(resendKey)
+  const { error: sendErr } = await resend.emails.send({
+    from: fromEmail,
+    to: [to],
+    subject,
+    html,
+    attachments: [
+      {
+        filename,
+        content: Buffer.from(pdfBytes).toString('base64'),
+        contentType: 'application/pdf'
+      }
+    ]
+  })
+  if (sendErr) {
+    const hint = resendSandboxRecipientHint(fromEmail, to)
+    const err = new Error(sendErr.message + (hint ? ` ${hint}` : ''))
+    err.statusCode = 502
+    throw err
+  }
+
+  return { ok: true, to, subject, reference: ref }
 }

@@ -22,6 +22,7 @@ import {
   sendGmailThreadedReply
 } from './gmail-api-service.mjs'
 import { buildAdminBrandedMailHtml, brandedMailPlainText } from './admin-mail-html.mjs'
+import { loadSitePaymentForEmail, paymentBlockFromSettings } from './load-site-payment-for-email.mjs'
 import { buildClientEnquiryDocumentPdf } from './client-enquiry-document-pdf.mjs'
 import { buildAdminMailQuotationPdf } from './admin-mail-quotation-pdf.mjs'
 import { assignBrandedMailPortal, brandedMailPortalCopy } from './branded-mail-portal-assign.mjs'
@@ -373,9 +374,21 @@ const handleGmailAttachment = async (user, body, env) => {
   }
 }
 
+const paymentBlockForMailTemplate = async (templateId, vars, env) => {
+  if (String(templateId || '') !== 'payment_request') return null
+  const bank = await loadSitePaymentForEmail(env)
+  const amountRaw = String(vars?.deposit || vars?.price || '').replace(/[^\d.,]/g, '').replace(',', '.')
+  const amountDueEur = Number(amountRaw)
+  return paymentBlockFromSettings(bank, {
+    paymentReference: String(vars?.reference || '').trim() || null,
+    amountDueEur: Number.isFinite(amountDueEur) && amountDueEur > 0 ? amountDueEur : null
+  })
+}
+
 const handlePreview = async (user, body, env) => {
   const db = getAdminDb(env)
-  const { merged, vars } = await composeContent(db, body)
+  const { merged, vars, templateId } = await composeContent(db, body)
+  const payment = await paymentBlockForMailTemplate(templateId, vars, env)
   const html = buildAdminBrandedMailHtml({
     heading: merged.heading,
     introduction: merged.introduction,
@@ -384,7 +397,8 @@ const handlePreview = async (user, body, env) => {
     ctaLabel: merged.ctaLabel,
     ctaUrl: merged.ctaUrl,
     customerName: vars.customerName,
-    vars
+    vars,
+    payment
   })
   const subject = applyMailTemplateVars(typeof body?.subject === 'string' && body.subject.trim() ? body.subject : merged.subject, vars)
   return {
@@ -509,6 +523,7 @@ const handleSendBranded = async (user, body, env) => {
   const { merged, assignment } = await applyPortalToMerged(db, env, user, body, composed.merged, composed.templateId, subject)
   const vars = composed.vars
   const templateId = composed.templateId
+  const payment = await paymentBlockForMailTemplate(templateId, vars, env)
   const html = buildAdminBrandedMailHtml({
     heading: merged.heading,
     introduction: merged.introduction,
@@ -517,7 +532,8 @@ const handleSendBranded = async (user, body, env) => {
     ctaLabel: merged.ctaLabel,
     ctaUrl: merged.ctaUrl,
     customerName: vars.customerName,
-    vars
+    vars,
+    payment
   })
   const text = brandedMailPlainText({ ...merged, vars })
   const from = fromAddress(env)
@@ -627,6 +643,7 @@ const handleGmailReply = async (user, body, env) => {
   const assignment = portalReady.assignment
   const vars = composed.vars
   const templateId = composed.templateId
+  const payment = useBranded ? await paymentBlockForMailTemplate(templateId, vars, env) : null
   const html = useBranded
     ? buildAdminBrandedMailHtml({
         heading: merged.heading,
@@ -636,7 +653,8 @@ const handleGmailReply = async (user, body, env) => {
         ctaLabel: merged.ctaLabel,
         ctaUrl: merged.ctaUrl,
         customerName: vars.customerName,
-        vars
+        vars,
+        payment
       })
     : `<div>${String(body?.body || '')
         .split('\n')

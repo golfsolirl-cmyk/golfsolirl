@@ -35,6 +35,11 @@ export interface ClientEnquiryRowLite {
   /** Present when selected from enquiries table — used for dashboard greeting before profile name sync */
   readonly email?: string | null
   readonly full_name?: string | null
+  readonly amount_due_eur?: number | null
+  readonly deposit_eur?: number | null
+  readonly amount_received_eur?: number | null
+  readonly payment_reference?: string | null
+  readonly payment_status?: string | null
 }
 
 export interface ClientPackageBuildLite {

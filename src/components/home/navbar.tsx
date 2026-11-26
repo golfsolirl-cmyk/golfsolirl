@@ -20,12 +20,12 @@ export function Navbar({ links, primaryCta }: NavbarProps) {
   const showAuthNav = integrationRegistry.supabase.enabled
   const normalizedPath = window.location.pathname === '/' ? '/' : window.location.pathname.replace(/\/+$/, '')
   const isHome = normalizedPath === '/'
-  const isPublicPackagePage = normalizedPath === '/packages' || normalizedPath === '/package'
+  const isBundlesPage = normalizedPath === '/bundles'
   const isAdminPackagePage = normalizedPath === '/packages-admin' || normalizedPath === '/package-admin'
-  const isPackagesRoute = isPublicPackagePage || isAdminPackagePage
+  const isPackagesRoute = isBundlesPage || isAdminPackagePage
   const homeHref = isPackagesRoute ? '/' : isHome ? '#home' : '/'
   const navHrefForLink = (link: string) => (isHome ? `#${link.toLowerCase()}` : `/#${link.toLowerCase()}`)
-  const primaryHref = isPackagesRoute ? '#plan-trip' : '/packages'
+  const primaryHref = isPackagesRoute ? '/contact' : '/bundles'
 
   useEffect(() => {
     const handleScroll = () => {

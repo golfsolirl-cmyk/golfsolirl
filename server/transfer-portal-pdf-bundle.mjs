@@ -23,6 +23,7 @@ import {
   loadUnifiedPdfFonts
 } from './gsol-unified-pdf-template.mjs'
 import { buildGsolMasterDocumentPdf } from './gsol-master-document-pdf.mjs'
+import { loadSitePaymentForEmail } from './load-site-payment-for-email.mjs'
 
 const W = UNIFIED_PDF_LAYOUT.pageWidth
 const H = UNIFIED_PDF_LAYOUT.pageHeight
@@ -102,6 +103,7 @@ const drawFooterLine = (page, shell, text, pageInfo = null) => {
 export const createTransferFormSubmissionPdf = async (ctx) => {
   const doc = await PDFDocument.create()
   const shell = await loadPdfShell(doc)
+  const bank = await loadSitePaymentForEmail(process.env)
   const b = ctx.booking
   const rows = []
 
@@ -154,11 +156,17 @@ export const createTransferFormSubmissionPdf = async (ctx) => {
     y = drawUnifiedKeyValueTable(page, y, shell, [row])
   }
 
-  ;({ page, y } = appendUnifiedHowToPay(page, y, shell, () => {
-    page = doc.addPage([W, H])
-    y = drawHeaderBand(page, shell, 'How to pay')
-    return { page, y }
-  }))
+  ;({ page, y } = appendUnifiedHowToPay(
+    page,
+    y,
+    shell,
+    () => {
+      page = doc.addPage([W, H])
+      y = drawHeaderBand(page, shell, 'How to pay')
+      return { page, y }
+    },
+    bank
+  ))
 
   drawFooterLine(
     page,
@@ -177,6 +185,7 @@ export const createTransferVatQuotePdf = async (ctx) => {
   if (!Number.isFinite(gross) || gross <= 0) {
     throw new Error('Missing admin price for VAT PDF')
   }
+  const bank = await loadSitePaymentForEmail(process.env)
   const treatment = String(ctx.booking.admin_price_vat_treatment ?? 'tourism').toLowerCase() === 'services' ? 'services' : 'tourism'
   const { net, vat } = vatFromGross(gross, treatment)
   const pay = String(ctx.booking.payment_status ?? 'unpaid').toLowerCase()
@@ -323,11 +332,17 @@ export const createTransferVatQuotePdf = async (ctx) => {
     y -= payBoxH + 8
   }
 
-  ;({ page, y } = appendUnifiedHowToPay(page, y, shell, () => {
-    page = doc.addPage([W, H])
-    y = drawHeaderBand(page, shell, 'How to pay')
-    return { page, y }
-  }))
+  ;({ page, y } = appendUnifiedHowToPay(
+    page,
+    y,
+    shell,
+    () => {
+      page = doc.addPage([W, H])
+      y = drawHeaderBand(page, shell, 'How to pay')
+      return { page, y }
+    },
+    bank
+  ))
 
   drawFooterLine(page, shell, 'Golf Sol Ireland · VAT-transparent quote for this transfer. After payment, download your paid invoice PDF from the same dashboard.')
 
@@ -414,6 +429,7 @@ const TERMS_SUMMARY_PARAS = [
 export const createTermsSummaryPdf = async () => {
   const doc = await PDFDocument.create()
   const shell = await loadPdfShell(doc)
+  const bank = await loadSitePaymentForEmail(process.env)
   const font = shell.font
   const t = pdfEmailTheme
   let page = doc.addPage([W, H])
@@ -434,11 +450,17 @@ export const createTermsSummaryPdf = async () => {
     }
     y -= 8
   }
-  ;({ page, y } = appendUnifiedHowToPay(page, y, shell, () => {
-    page = doc.addPage([W, H])
-    y = drawHeaderBand(page, shell, 'How to pay')
-    return { page, y }
-  }))
+  ;({ page, y } = appendUnifiedHowToPay(
+    page,
+    y,
+    shell,
+    () => {
+      page = doc.addPage([W, H])
+      y = drawHeaderBand(page, shell, 'How to pay')
+      return { page, y }
+    },
+    bank
+  ))
   drawFooterLine(page, shell, `Golf Sol Ireland · Full terms: ${getGsolSiteUrl()}/documents/terms`)
   return doc.save()
 }

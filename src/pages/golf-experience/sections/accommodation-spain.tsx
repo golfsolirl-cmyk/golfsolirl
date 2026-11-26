@@ -75,7 +75,7 @@ export function GeAccommodationSpain() {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.15 }}
-        className="mt-14 grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        className="gsol-fly-scope mt-14 grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
       >
         {hotelsSpain.map((hotel) => (
           <m.div key={hotel.name} variants={cardItem} className="h-full">

@@ -1,6 +1,7 @@
 import { ExternalLink, MapPin, Phone } from 'lucide-react'
-import { FaWhatsapp } from 'react-icons/fa6'
 import { companyContact } from '../data/site-content'
+import { IrelandPaymentsTrust } from './ireland-payments-trust'
+import { WhatsAppPill } from './whatsapp/WhatsAppPill'
 
 const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(companyContact.mapsQuery)}`
 
@@ -63,18 +64,15 @@ export function FooterCompanyContact() {
                   {companyContact.spanishPhoneDisplay}
                 </a>
                 <p className="text-base leading-7 text-white/80">
-                  Irish mobile — same number on WhatsApp for quick trip questions. Spanish line is voice only.
+                  Quick trip questions on WhatsApp. Spanish line is voice only.
                 </p>
-                <a
-                  aria-label={`Message Golf Sol Ireland on WhatsApp at ${companyContact.phoneDisplay}`}
-                  className="group inline-flex min-h-11 items-center gap-2.5 rounded-full border border-white/25 bg-forest-900 px-5 py-3 text-base font-semibold text-white transition-all hover:border-white/40 hover:bg-forest-900 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-forest-950"
-                  href={companyContact.whatsappHref}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  <FaWhatsapp className="h-5 w-5 text-white transition-transform group-hover:scale-110" aria-hidden="true" />
-                  Chat on WhatsApp
-                </a>
+                <WhatsAppPill
+                  context={{ sourcePage: '/footer', componentVariant: 'contact', enquiryType: 'contact' }}
+                  message="Hi GolfSol Ireland — I have a quick trip question."
+                  showNumber
+                  tone="forest"
+                />
+                <IrelandPaymentsTrust className="pt-1" tone="dark" />
               </div>
             </div>
           </div>

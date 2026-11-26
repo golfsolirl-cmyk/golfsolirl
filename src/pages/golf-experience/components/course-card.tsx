@@ -34,16 +34,16 @@ function CourseAreaChip({ area }: { readonly area: string }) {
 export function GeCourseCard({ course }: CourseCardProps) {
   return (
     <m.article
-      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-ge-gray100 bg-white shadow-[0_6px_20px_rgba(6,59,42,0.08)] transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_22px_50px_rgba(6,59,42,0.18)]"
+      className="gsol-fly group relative flex h-full flex-col overflow-hidden rounded-2xl border border-ge-gray100 bg-white shadow-[0_6px_20px_rgba(6,59,42,0.08)] transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_22px_50px_rgba(6,59,42,0.18)]"
       {...fadeUp}
     >
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
           src={course.image}
           alt={course.name}
-          loading="lazy"
+          loading="eager"
           decoding="async"
-          className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-110"
+          className="gsol-media-zoom h-full w-full object-cover"
         />
         <div
           aria-hidden="true"

@@ -133,7 +133,7 @@ export function TransportRouteStory() {
 
       {/* —— Step cards — gold-rim forest cards on the dark base —— */}
       <m.div
-        className="relative mt-16 grid gap-7 md:grid-cols-3"
+        className="gsol-fly-scope relative mt-16 grid gap-7 md:grid-cols-3"
         variants={cardStagger}
         initial="hidden"
         whileInView="visible"
@@ -143,7 +143,7 @@ export function TransportRouteStory() {
           <m.article
             key={step.badge}
             variants={cardItem}
-            className="group relative flex flex-col overflow-hidden rounded-[1.6rem] border border-[#f4dfa6]/45 bg-[linear-gradient(135deg,#0d3a2a_0%,#0a2d20_50%,#08231a_100%)] shadow-[0_24px_60px_rgba(0,0,0,0.5),0_0_30px_rgba(217,190,122,0.12)] ring-1 ring-white/10 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.6),0_0_36px_rgba(217,190,122,0.22)]"
+            className={`gsol-fly ${i % 2 === 0 ? 'gsol-fly-from-left' : 'gsol-fly-from-right'} group relative flex flex-col overflow-hidden rounded-[1.6rem] border border-[#f4dfa6]/45 bg-[linear-gradient(135deg,#0d3a2a_0%,#0a2d20_50%,#08231a_100%)] shadow-[0_24px_60px_rgba(0,0,0,0.5),0_0_30px_rgba(217,190,122,0.12)] ring-1 ring-white/10 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(0,0,0,0.6),0_0_36px_rgba(217,190,122,0.22)]`}
           >
             <div className="relative aspect-[4/5] overflow-hidden">
               <img
@@ -153,7 +153,7 @@ export function TransportRouteStory() {
                 decoding="async"
                 width={1200}
                 height={1500}
-                className="h-full w-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.06]"
+                className="gsol-media-zoom h-full w-full object-cover"
               />
               {/* Photo scrim — bottom-heavy so the badge reads cleanly */}
               <div

@@ -4,10 +4,9 @@
  */
 
 export const transportHeroCopy = {
-  eyebrow: 'Málaga AGP · Costa del Sol · Door-to-door',
-  title: 'Concierge transfers, built for Irish golfers.',
-  subtitle:
-    'Cars and vans that fit the bags, drivers that know the courses, and one Irish team holding it all together — from the moment your flight lands until the last drive home.',
+  eyebrow: 'GolfSol Ireland',
+  title: 'Transfers from Málaga Airport',
+  subtitle: 'Golf-bag-friendly private cars from AGP to your hotel and course — organised from Ireland.',
   primaryCta: 'Get a transfer quote',
   secondaryCta: 'Talk to us'
 } as const

@@ -331,7 +331,7 @@ export function BusinessCardsLuxuryShowcase() {
         </div>
         <p className="mt-8 font-bc-body text-sm text-[#081A12]/60">
           Static SVG templates:{' '}
-          <a className="text-[#0F3D2E] underline" href="/business-cards/premium/gold-curves.svg">
+          <a className="text-[#0F3D2E] underline" href="/business-cards/tommy-luxury/gold-curves.svg">
             decorative assets
           </a>{' '}
           in <code className="text-xs">public/business-cards/</code>

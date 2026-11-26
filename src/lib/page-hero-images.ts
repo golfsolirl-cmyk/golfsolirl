@@ -172,5 +172,11 @@ export const NAMED_HERO_IMAGE_SETS = {
     tablet: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f-tablet.webp',
     mobile: '/images/fpf-cover-ba19c50a-8f84-4a1c-89ce-60aa6278573f-mobile.webp',
     alt: 'Golf Sol Ireland executive fleet on the Costa del Sol.'
+  },
+  quoteCostaGolf: {
+    desktop: '/images/quote-hero-costa-golf-golden-hour.webp',
+    tablet: '/images/quote-hero-costa-golf-golden-hour.webp',
+    mobile: '/images/quote-hero-costa-golf-golden-hour-mobile.webp',
+    alt: 'Calm Costa del Sol golf fairway at golden hour — open sky for a quiet quote request.'
   }
 } as const satisfies Record<string, HeroImageSet>

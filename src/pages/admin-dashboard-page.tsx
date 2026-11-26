@@ -5,8 +5,11 @@ import { PortalInterestCategoryGlyph } from '../components/portal-interest-categ
 import { FocusTrapDialog } from '../components/focus-trap-dialog'
 import { AdminOperationsHubHero } from '../components/admin-operations-hub-hero'
 import { BankTransferPayCard } from '../components/bank-transfer-pay-card'
+import { AdminMonzoSettingsPanel } from '../components/admin-monzo-settings-panel'
+import { AdminAwaitingBankPaymentsPanel } from '../components/admin-awaiting-bank-payments-panel'
 import { AdminPaidTripsRevenuePanel, type PaidClientPriceDraft } from '../components/admin-paid-trips-revenue-panel'
 import { AdminOperatorCodePanel } from '../components/admin-operator-code-panel'
+import { AdminBundlePricesPanel } from '../components/admin-bundle-prices-panel'
 import { AdminPortalShell, AdminPortalSection, type AdminPortalSectionId } from '../components/admin-portal-shell'
 import { AdminOperationsSectionShell } from '../components/admin-operations-section-shell'
 import {
@@ -110,6 +113,13 @@ interface EnquiryRow {
   client_portal_account_ref?: string | null
   /** When an admin opened submission detail (shared across admins). */
   admin_viewed_at?: string | null
+  amount_due_eur?: number | null
+  deposit_eur?: number | null
+  amount_received_eur?: number | null
+  payment_reference?: string | null
+  payment_status?: string | null
+  payment_notes?: string | null
+  last_payment_at?: string | null
 }
 
 type AdminInterestTicketRow = PortalInterestTicketRow & {
@@ -540,7 +550,9 @@ export function AdminDashboardPage() {
   const [portalProposalsEnabled, setPortalProposalsEnabled] = useState(false)
   const [portalPdfLibraryEnabled, setPortalPdfLibraryEnabled] = useState(false)
   const [portalClubConciergeEnabled, setPortalClubConciergeEnabled] = useState(false)
-  const [portalSettingsBusy, setPortalSettingsBusy] = useState<'idle' | 'load' | 'save'>('idle')
+  const [portalSettingsBusy, setPortalSettingsBusy] = useState<
+    'idle' | 'load' | 'save' | 'revoke' | 'regen' | 'regen-ref'
+  >('idle')
   const [portalSettingsMessage, setPortalSettingsMessage] = useState<string | null>(null)
   const [manualPortalCreateName, setManualPortalCreateName] = useState('')
   const [manualPortalCreateEmail, setManualPortalCreateEmail] = useState('')
@@ -585,6 +597,10 @@ export function AdminDashboardPage() {
   const [enquiryDeletingAll, setEnquiryDeletingAll] = useState(false)
   const [enquiryDeleteMessage, setEnquiryDeleteMessage] = useState<string | null>(null)
   const [enquirySearchQuery, setEnquirySearchQuery] = useState('')
+  const [enquiryPaymentFilter, setEnquiryPaymentFilter] = useState<'all' | 'awaiting_payment'>('all')
+  const [enquiryServiceFilter, setEnquiryServiceFilter] = useState<
+    'all' | 'transfers' | 'accommodation' | 'golf_courses'
+  >('all')
   const [selectedEnquiryDetailRef, setSelectedEnquiryDetailRef] = useState<string | null>(null)
   const [accountLookupSeedFromTable, setAccountLookupSeedFromTable] = useState<AdminAccountLookupSeed | null>(null)
   const [portalInvoiceAmountInput, setPortalInvoiceAmountInput] = useState('')
@@ -693,24 +709,50 @@ export function AdminDashboardPage() {
   const [websiteQuoteBusy, setWebsiteQuoteBusy] = useState(false)
   const [websiteQuoteMessage, setWebsiteQuoteMessage] = useState<string | null>(null)
 
+  const [adminCookieSession, setAdminCookieSession] = useState(false)
+
   useEffect(() => {
     if (isLoading) {
       return
     }
 
     if (!session?.user) {
-      window.location.replace('/dashboard/login')
-      return
+      let cancelled = false
+      void (async () => {
+        try {
+          const res = await fetch('/api/admin-session-check', { credentials: 'include' })
+          const data = (await res.json().catch(() => ({}))) as { ok?: boolean }
+          if (!cancelled && data.ok) {
+            setAdminCookieSession(true)
+            return
+          }
+        } catch {
+          /* offline */
+        }
+        if (!cancelled) {
+          window.location.replace('/admin/login')
+        }
+      })()
+      return () => {
+        cancelled = true
+      }
     }
 
     /** Only redirect once profile row is known; `null` means fetch failed / no row — do not send real admins to the client dashboard during a race or RLS glitch. */
     if (
+      session?.user &&
       profile !== null &&
       (profile.role !== 'admin' || !isAllowedAdminLoginEmail(profile.email ?? session.user.email ?? ''))
     ) {
       window.location.replace('/dashboard')
     }
   }, [isLoading, session?.user?.id, profile])
+
+  useEffect(() => {
+    if (adminCookieSession && !session?.user) {
+      setListLoading(false)
+    }
+  }, [adminCookieSession, session?.user])
 
   useEffect(() => {
     if (
@@ -857,19 +899,72 @@ export function AdminDashboardPage() {
     }
   }, [session?.user?.id, profile?.id, profile?.role])
 
+  const patchEnquiryRow = useCallback((enquiryId: string, patch: Partial<EnquiryRow>) => {
+    setEnquiries((prev) => prev.map((e) => (e.id === enquiryId ? { ...e, ...patch } : e)))
+  }, [])
+
   const filterEnquiriesByQuery = useCallback(
     (list: EnquiryRow[]) => {
+      let out = list
+      if (enquiryPaymentFilter === 'awaiting_payment') {
+        out = out.filter((row) => (row.payment_status ?? 'awaiting_payment') === 'awaiting_payment')
+      }
+      if (enquiryServiceFilter !== 'all') {
+        out = out.filter((row) => {
+          const raw = (row as EnquiryRow & { requested_services?: unknown }).requested_services
+          const svc =
+            raw && typeof raw === 'object' && !Array.isArray(raw)
+              ? (raw as Record<string, unknown>)
+              : null
+          if (svc && svc[enquiryServiceFilter] === true) return true
+          const fields =
+            row.form_payload && typeof row.form_payload === 'object' && !Array.isArray(row.form_payload)
+              ? (row.form_payload as { fields?: Record<string, string> }).fields
+              : undefined
+          if (!fields) return false
+          try {
+            const stages = fields._serviceStages ? JSON.parse(fields._serviceStages) : null
+            if (stages && stages[enquiryServiceFilter] === true) return true
+            if (enquiryServiceFilter === 'transfers' && String(fields._addTransfers || '').toLowerCase() === 'yes') {
+              return true
+            }
+          } catch {
+            /* ignore */
+          }
+          return false
+        })
+      }
       const q = enquirySearchQuery.trim().toLowerCase()
       if (!q) {
-        return list
+        return out
       }
-      return list.filter((row) => {
+      return out.filter((row) => {
         const hay =
           `${row.reference_id} ${row.full_name} ${row.email} ${row.interest ?? ''} ${row.phone_whatsapp ?? ''} ${row.client_portal_account_ref ?? ''}`.toLowerCase()
         return hay.includes(q)
       })
     },
-    [enquirySearchQuery]
+    [enquiryPaymentFilter, enquiryServiceFilter, enquirySearchQuery]
+  )
+
+  const refreshEnquiryPaymentFields = useCallback(
+    async (enquiryId: string) => {
+      const supabase = getSupabaseBrowserClient()
+      if (!supabase) {
+        return
+      }
+      const { data, error } = await supabase
+        .from('enquiries')
+        .select(
+          'amount_due_eur, deposit_eur, amount_received_eur, payment_reference, payment_status, payment_notes, last_payment_at'
+        )
+        .eq('id', enquiryId)
+        .maybeSingle()
+      if (!error && data) {
+        patchEnquiryRow(enquiryId, data)
+      }
+    },
+    [patchEnquiryRow]
   )
 
   const unviewedEnquiries = useMemo(
@@ -2198,6 +2293,60 @@ export function AdminDashboardPage() {
     setPortalSettingsMessage('Saved. The client will see changes after their next page load (or sign-in).')
   }
 
+  const handlePortalAccessAction = async (action: 'revoke_portal_access' | 'regenerate_portal_access', regenerateReference = false) => {
+    setPortalSettingsMessage(null)
+    if (!session?.access_token) {
+      setPortalSettingsMessage('Sign in again as admin.')
+      return
+    }
+    const email = portalClientEmail.trim().toLowerCase()
+    if (!email.includes('@')) {
+      setPortalSettingsMessage('Load a client email first.')
+      return
+    }
+
+    setPortalSettingsBusy(action === 'revoke_portal_access' ? 'revoke' : regenerateReference ? 'regen-ref' : 'regen')
+    try {
+      const res = await fetch('/api/admin-portal-client', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          action,
+          email,
+          ...(action === 'regenerate_portal_access' ? { regenerateReference } : {})
+        })
+      })
+      const data = (await res.json().catch(() => ({}))) as {
+        message?: string
+        privateUrl?: string
+        accountReferenceId?: string | null
+      }
+      if (!res.ok) {
+        throw new Error(data.message || 'Request failed.')
+      }
+      if (action === 'revoke_portal_access') {
+        setPortalSettingsMessage('Private link revoked. Client cannot open it until you regenerate.')
+      } else {
+        if (typeof data.accountReferenceId === 'string' && data.accountReferenceId.trim()) {
+          setPortalAccountRef(data.accountReferenceId.trim())
+        }
+        const link = typeof data.privateUrl === 'string' ? data.privateUrl : ''
+        setPortalSettingsMessage(
+          regenerateReference
+            ? `New reference ${data.accountReferenceId ?? ''} and private link ready.${link ? ` ${link}` : ''}`
+            : `New private link ready.${link ? ` ${link}` : ''}`
+        )
+      }
+    } catch (err) {
+      setPortalSettingsMessage(err instanceof Error ? err.message : 'Request failed.')
+    } finally {
+      setPortalSettingsBusy('idle')
+    }
+  }
+
   const handleCreateManualPortalClient = async () => {
     setManualPortalCreateMessage(null)
     if (!session?.access_token) {
@@ -2622,7 +2771,7 @@ export function AdminDashboardPage() {
       setPortalLinkCopyMessage(
         portal === 'admin'
           ? `Copied admin sign-in link for ${ref}. Paste into email to golfsolirl@gmail.com (or any admin inbox).`
-          : `Copied client sign-in link for ${ref}. Paste into your resend email — it opens /dashboard/login with a signed context.`
+          : `Copied client sign-in link for ${ref}. Paste into your resend email — it opens /portal with a signed context.`
       )
     } catch (e) {
       setPortalLinkCopyMessage(e instanceof Error ? e.message : 'Copy failed.')
@@ -3834,11 +3983,11 @@ export function AdminDashboardPage() {
     </div>
   )
 
-  if (isLoading || !session) {
+  if (isLoading || (!session && !adminCookieSession)) {
     return <DashboardLoadingShell label="Loading admin dashboard…" />
   }
 
-  if (!profile) {
+  if (!adminCookieSession && !profile) {
     return (
       <DashboardLayout
         kicker="Operations"
@@ -3860,7 +4009,11 @@ export function AdminDashboardPage() {
     )
   }
 
-  if (profile.role !== 'admin' || !isAllowedAdminLoginEmail(profile.email ?? session?.user?.email ?? '')) {
+  if (
+    !adminCookieSession &&
+    profile &&
+    (profile.role !== 'admin' || !isAllowedAdminLoginEmail(profile.email ?? session?.user?.email ?? ''))
+  ) {
     return <DashboardLoadingShell label="Opening your client dashboard…" />
   }
 
@@ -3871,6 +4024,13 @@ export function AdminDashboardPage() {
       title={adminHeroTitle}
       variant="admin"
     >
+      {adminCookieSession && !session?.access_token ? (
+        <div className="mb-6 rounded-2xl border border-gs-gold/45 bg-[#fff9e8] px-4 py-3 text-sm text-forest-900">
+          Signed in with operator password. Desk tools that call the API use this secure cookie — if something asks you
+          to sign in again, open <a className="font-semibold underline" href="/dashboard/admin/login">legacy admin sign-in</a>{' '}
+          for a Supabase session.
+        </div>
+      ) : null}
       {loadError ? (
         <div className="mb-8 rounded-3xl border border-red-200/80 bg-red-50/90 px-6 py-4 text-sm text-red-800 shadow-soft">
           {loadError}
@@ -3912,6 +4072,14 @@ export function AdminDashboardPage() {
           kicker="Pay & replies"
           title="Messages, payments, and a price"
         >
+          <AdminAwaitingBankPaymentsPanel
+            accessToken={session?.access_token ?? null}
+            onOpenReference={(ref) => {
+              setSelectedEnquiryDetailRef(ref)
+              setAccountLookupSeedFromTable({ ref, key: Date.now() })
+              setActiveAdminSection('forms')
+            }}
+          />
           <div className="relative scroll-mt-28 rounded-[2rem] border border-forest-100 bg-white p-5 shadow-soft sm:p-7" id="admin-hub-tickets">
             <div className="mb-5 max-w-2xl">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-700">1 · Reply</p>
@@ -4316,8 +4484,22 @@ export function AdminDashboardPage() {
               Open this when a guest wants to pay by bank transfer, or when you need the code for the admin login page.
             </p>
             <div className="mt-5 space-y-5">
+              <AdminMonzoSettingsPanel accessToken={session?.access_token ?? null} />
               <BankTransferPayCard audience="admin" />
               <AdminOperatorCodePanel accessToken={session?.access_token ?? null} />
+              <AdminBundlePricesPanel />
+              <div className="rounded-2xl border border-forest-100 bg-forest-50/60 px-4 py-4">
+                <p className="font-display text-lg font-semibold text-forest-950">Brand Kit</p>
+                <p className="mt-1 text-sm leading-relaxed text-forest-600">
+                  Logos, favicons, heroes, and a private share link for partners.
+                </p>
+                <a
+                  href="/admin/brand"
+                  className="mt-3 inline-flex min-h-10 items-center rounded-full bg-forest-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-forest-900"
+                >
+                  Open Brand Kit
+                </a>
+              </div>
             </div>
           </details>
         </AdminOperationsSectionShell>
@@ -4390,6 +4572,51 @@ export function AdminDashboardPage() {
                       type="search"
                       value={enquirySearchQuery}
                     />
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button
+                        className={
+                          enquiryPaymentFilter === 'all'
+                            ? 'rounded-full bg-forest-900 px-3 py-1.5 text-xs font-semibold text-white'
+                            : 'rounded-full border border-forest-200 bg-white px-3 py-1.5 text-xs font-semibold text-forest-900 hover:bg-cream'
+                        }
+                        onClick={() => setEnquiryPaymentFilter('all')}
+                        type="button"
+                      >
+                        All enquiries
+                      </button>
+                      <button
+                        className={
+                          enquiryPaymentFilter === 'awaiting_payment'
+                            ? 'rounded-full bg-amber-100 px-3 py-1.5 text-xs font-semibold text-amber-950 ring-1 ring-amber-300'
+                            : 'rounded-full border border-forest-200 bg-white px-3 py-1.5 text-xs font-semibold text-forest-900 hover:bg-cream'
+                        }
+                        onClick={() => setEnquiryPaymentFilter('awaiting_payment')}
+                        type="button"
+                      >
+                        Awaiting bank transfer
+                      </button>
+                      {(
+                        [
+                          ['all', 'Any service'],
+                          ['transfers', 'Transfers'],
+                          ['accommodation', 'Hotels'],
+                          ['golf_courses', 'Golf']
+                        ] as const
+                      ).map(([id, label]) => (
+                        <button
+                          key={id}
+                          className={
+                            enquiryServiceFilter === id
+                              ? 'rounded-full bg-fairway-700 px-3 py-1.5 text-xs font-semibold text-white'
+                              : 'rounded-full border border-forest-200 bg-white px-3 py-1.5 text-xs font-semibold text-forest-900 hover:bg-cream'
+                          }
+                          onClick={() => setEnquiryServiceFilter(id)}
+                          type="button"
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                   <details className="text-sm">
                     <summary className="cursor-pointer text-xs font-semibold text-ge-gray500 hover:text-forest-800">
@@ -4451,6 +4678,8 @@ export function AdminDashboardPage() {
                 onCreateDocument={openClientDocumentFromEnquiry}
                 onCreateQuotation={openQuotationFromEnquiry}
                 onEmailCustomer={openMailFromEnquiry}
+                onEnquiryPatch={patchEnquiryRow}
+                onEnquiryPaymentUpdated={(id) => void refreshEnquiryPaymentFields(id)}
                 onOpen={(row) => {
                   setSelectedEnquiryDetailRef(row.reference_id)
                   void markEnquiryViewed(row)
@@ -4478,6 +4707,8 @@ export function AdminDashboardPage() {
                   onCreateDocument={openClientDocumentFromEnquiry}
                   onCreateQuotation={openQuotationFromEnquiry}
                   onEmailCustomer={openMailFromEnquiry}
+                  onEnquiryPatch={patchEnquiryRow}
+                  onEnquiryPaymentUpdated={(id) => void refreshEnquiryPaymentFields(id)}
                   onOpen={(row) => {
                     setSelectedEnquiryDetailRef(row.reference_id)
                     void markEnquiryViewed(row)
@@ -7048,6 +7279,43 @@ export function AdminDashboardPage() {
                   {portalSettingsBusy === 'save' ? 'Saving…' : 'Save settings'}
                 </button>
               </div>
+
+              <div className="mt-6 rounded-2xl border border-forest-100 bg-offwhite/80 p-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-700">
+                  Private link &amp; reference
+                </p>
+                <p className="mt-1 text-sm text-forest-600">
+                  Clients open <span className="font-mono text-forest-900">/portal</span> with email + reference, or their
+                  private link. Revoke or mint a fresh link here.
+                </p>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <button
+                    className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-rose-200 bg-white px-5 py-2.5 text-sm font-semibold text-rose-900 transition-colors hover:border-rose-400 disabled:opacity-60"
+                    disabled={portalSettingsBusy !== 'idle'}
+                    onClick={() => void handlePortalAccessAction('revoke_portal_access')}
+                    type="button"
+                  >
+                    {portalSettingsBusy === 'revoke' ? 'Revoking…' : 'Revoke private link'}
+                  </button>
+                  <button
+                    className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-forest-200 bg-white px-5 py-2.5 text-sm font-semibold text-forest-900 transition-colors hover:border-fairway-400 disabled:opacity-60"
+                    disabled={portalSettingsBusy !== 'idle'}
+                    onClick={() => void handlePortalAccessAction('regenerate_portal_access', false)}
+                    type="button"
+                  >
+                    {portalSettingsBusy === 'regen' ? 'Regenerating…' : 'Regenerate private link'}
+                  </button>
+                  <button
+                    className="inline-flex min-h-11 items-center justify-center rounded-full border-2 border-forest-200 bg-white px-5 py-2.5 text-sm font-semibold text-forest-900 transition-colors hover:border-fairway-400 disabled:opacity-60"
+                    disabled={portalSettingsBusy !== 'idle'}
+                    onClick={() => void handlePortalAccessAction('regenerate_portal_access', true)}
+                    type="button"
+                  >
+                    {portalSettingsBusy === 'regen-ref' ? 'Updating…' : 'New link + new reference'}
+                  </button>
+                </div>
+              </div>
+
               {portalSettingsMessage ? (
                 <p className="mt-3 text-sm font-medium text-forest-800" role="status">
                   {portalSettingsMessage}

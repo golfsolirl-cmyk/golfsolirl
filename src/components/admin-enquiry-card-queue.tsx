@@ -13,6 +13,8 @@ import {
 import type { PortalInterestTicketMessageRow } from '../lib/portal-interest-tickets'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { adminMailRequest } from '../lib/admin-mail-api'
+import { AdminEnquiryBankPaymentPanel } from './admin-enquiry-bank-payment-panel'
+import { AdminEnquiryServiceOffers } from './admin-enquiry-service-offers'
 
 export type AdminEnquiryCardRow = {
   id: string
@@ -26,6 +28,15 @@ export type AdminEnquiryCardRow = {
   form_payload?: unknown
   client_portal_account_ref?: string | null
   admin_viewed_at?: string | null
+  amount_due_eur?: number | null
+  deposit_eur?: number | null
+  amount_received_eur?: number | null
+  payment_reference?: string | null
+  payment_status?: string | null
+  payment_notes?: string | null
+  last_payment_at?: string | null
+  requested_services?: unknown
+  service_offer_log?: unknown
 }
 
 type FormAnswerRow = {
@@ -160,6 +171,8 @@ type AdminEnquiryCardQueueProps = {
   readonly onCreateDocument?: (row: AdminEnquiryCardRow) => void
   readonly onCreateQuotation?: (row: AdminEnquiryCardRow) => void
   readonly onEmailCustomer?: (row: AdminEnquiryCardRow) => void
+  readonly onEnquiryPatch?: (enquiryId: string, patch: Partial<AdminEnquiryCardRow>) => void
+  readonly onEnquiryPaymentUpdated?: (enquiryId: string) => void
 }
 
 type ContactChannel = 'email' | 'form' | 'portal'
@@ -193,6 +206,7 @@ const formatWhen = (iso: string) => {
 const formatEur = (n: number) =>
   new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' }).format(n)
 
+
 export function AdminEnquiryCardQueue({
   rows,
   accessToken,
@@ -202,7 +216,9 @@ export function AdminEnquiryCardQueue({
   removingId,
   onCreateDocument,
   onCreateQuotation,
-  onEmailCustomer
+  onEmailCustomer,
+  onEnquiryPatch,
+  onEnquiryPaymentUpdated
 }: AdminEnquiryCardQueueProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [priceById, setPriceById] = useState<Record<string, string>>({})
@@ -707,6 +723,18 @@ export function AdminEnquiryCardQueue({
                   accessToken={accessToken}
                   onNote={(message) => setNoteById((prev) => ({ ...prev, [row.id]: message }))}
                   priceEurInput={priceById[row.id] ?? ''}
+                  row={row}
+                />
+
+                <AdminEnquiryBankPaymentPanel
+                  accessToken={accessToken}
+                  onUpdated={onEnquiryPaymentUpdated}
+                  row={row}
+                />
+
+                <AdminEnquiryServiceOffers
+                  accessToken={accessToken}
+                  onServicesUpdated={(next) => onEnquiryPatch?.(row.id, { requested_services: next })}
                   row={row}
                 />
 

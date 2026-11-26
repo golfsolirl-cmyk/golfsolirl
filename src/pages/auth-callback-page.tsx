@@ -66,7 +66,7 @@ export function AuthCallbackPage() {
     const supabase = getSupabaseBrowserClient()
 
     if (!supabase) {
-      window.location.replace('/dashboard/login?error=config')
+      window.location.replace('/portal?error=config')
       return
     }
 
@@ -78,7 +78,7 @@ export function AuthCallbackPage() {
 
     if (oauthError) {
       const hint = oauthDescription ? `&hint=${encodeURIComponent(oauthDescription)}` : ''
-      window.location.replace(`/dashboard/login?error=auth${hint}`)
+      window.location.replace(`/portal?error=auth${hint}`)
       return
     }
 
@@ -176,7 +176,7 @@ export function AuthCallbackPage() {
         return
       }
 
-      replaceIfActive('/dashboard/login?error=no_session')
+      replaceIfActive('/portal?error=no_session')
     }
 
     void finish()

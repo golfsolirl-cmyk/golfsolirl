@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, ty
 import { FocusTrapDialog } from '../components/focus-trap-dialog'
 import { ClientPortalIdentityHero, type ClientPortalTransferHeroRow } from '../components/client-portal-identity-hero'
 import { LockedContactValue } from '../components/locked-contact-value'
-import { BankTransferPayCard } from '../components/bank-transfer-pay-card'
+import { BankTransferPayCard, type BankTransferPayEnquiryHint } from '../components/bank-transfer-pay-card'
 import { ClientPortalPaymentsDue } from '../components/client-portal-payments-due'
 import { ClientTransferPassPanel } from '../components/client-transfer-pass-panel'
 import { PortalPerksPanel } from '../components/portal-perks-panel'
@@ -294,7 +294,9 @@ export function ClientDashboardPage() {
       supabase.from('client_document_access').select('document_kind').eq('owner_id', session.user.id),
       supabase
         .from('enquiries')
-        .select('id, reference_id, created_at, form_payload, email, full_name')
+        .select(
+          'id, reference_id, created_at, form_payload, email, full_name, amount_due_eur, deposit_eur, amount_received_eur, payment_reference, payment_status'
+        )
         .order('created_at', { ascending: false })
         .limit(80),
       supabase
@@ -677,7 +679,7 @@ export function ClientDashboardPage() {
       if (b?.data?.session?.user) {
         return
       }
-      window.location.replace('/dashboard/login')
+      window.location.replace('/portal')
     }
     void verify()
     return () => {
@@ -1055,6 +1057,26 @@ export function ClientDashboardPage() {
       (enquiryRowForSignedInEmail?.reference_id?.trim() ?? ''),
     [profile?.account_reference_id, enquiryRowForSignedInEmail]
   )
+
+  const bankTransferEnquiryHint = useMemo((): BankTransferPayEnquiryHint | null => {
+    const row = enquiryRowForSignedInEmail ?? enquiries[0] ?? null
+    if (!row) {
+      return null
+    }
+    const amountDue = row.amount_due_eur != null ? Number(row.amount_due_eur) : null
+    const received = row.amount_received_eur != null ? Number(row.amount_received_eur) : 0
+    const reference = (row.payment_reference?.trim() || row.reference_id?.trim()) ?? null
+    if (!reference && (amountDue == null || amountDue <= 0)) {
+      return null
+    }
+    const outstanding =
+      amountDue != null && amountDue > 0 ? Math.max(0, Math.round((amountDue - received) * 100) / 100) : null
+    return {
+      paymentReference: reference,
+      amountDueEur: amountDue,
+      outstandingEur: outstanding
+    }
+  }, [enquiryRowForSignedInEmail, enquiries])
 
   useEffect(() => {
     if (!interestThreadTicketId || !session?.user) {
@@ -2068,7 +2090,7 @@ export function ClientDashboardPage() {
 
         <ClientPortalSection activeSection={activeClientSection} section="payments">
           <div className="space-y-10">
-            <BankTransferPayCard audience="client" />
+            <BankTransferPayCard audience="client" enquiryHint={bankTransferEnquiryHint} />
             <ClientPortalPaymentsDue
               accessToken={session?.access_token ?? null}
               historyAnchorId="client-all-payments"

@@ -92,6 +92,18 @@ afterTry(
   "const { handleTransferPaymentAdmin } = await import('../server/transfer-payment-service.mjs')"
 )
 afterTry(
+  "server.middlewares.use('/api/site-payment-settings'",
+  "const { handleSitePaymentSettings } = await import('../server/site-payment-settings-service.mjs')"
+)
+afterTry(
+  "server.middlewares.use('/api/enquiry-payment-admin'",
+  "const { handleEnquiryPaymentAdmin } = await import('../server/enquiry-payment-service.mjs')"
+)
+afterTry(
+  "server.middlewares.use('/api/enquiry-transfer-upsell-email'",
+  "const { handleEnquiryTransferUpsellEmail } = await import('../server/enquiry-transfer-upsell-email.mjs')"
+)
+afterTry(
   "server.middlewares.use('/api/package-build-admin-publish'",
   "const { handlePackageBuildAdminPublish } = await import('../server/package-build-admin-publish-service.mjs')"
 )

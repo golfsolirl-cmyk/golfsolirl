@@ -22,14 +22,19 @@ import { getSupabaseBrowserClient } from '../../../lib/supabase-client'
 import { ENQUIRY_CONFLICT_EXISTING_PHONE, postWebsiteEnquiry } from '../../../lib/post-enquiry-client'
 import { validateMobilePhoneInput } from '../../../lib/phone-mobile'
 import { TERMS_ACCEPTANCE_ERROR, termsAcceptanceFormFields } from '../../../lib/terms-acceptance'
+import {
+  EnquirySpamGuardFields,
+  useEnquirySpamGuardState
+} from '../../../components/enquiry-spam-guard-fields'
+import { RECAPTCHA_ACTIONS } from '../../../lib/enquiry-spam-guard'
 import { GeTermsAcceptanceField } from './ge-terms-acceptance-field'
 import { MAX_ENQUIRY_PEOPLE } from '../data/form-people-options'
 
 const labelClass =
-  'mb-1 block font-ge text-sm font-bold uppercase tracking-[0.18em] text-ge-gray500 sm:text-[0.85rem]'
+  'mb-1.5 block font-ge text-[0.82rem] font-bold uppercase tracking-[0.12em] text-forest-800'
 
 const inputClass =
-  'h-11 w-full rounded-lg border border-ge-gray200 bg-white px-3 font-ge text-base text-gs-dark shadow-sm outline-none transition-shadow placeholder:text-ge-gray300 focus:border-gs-green focus:ring-2 focus:ring-gs-green/25'
+  'min-h-[52px] w-full rounded-xl border border-ge-gray200 bg-white px-4 font-ge text-[1.06rem] text-gs-dark shadow-sm outline-none transition-shadow placeholder:text-ge-gray300 focus:border-gs-green focus:ring-2 focus:ring-gs-green/25'
 
 function buildMailtoFallback(body: Record<string, string>) {
   const lines = Object.entries(body).map(([k, v]) => `${k}: ${v}`)
@@ -62,6 +67,9 @@ export function TransportHeroEnquiryForm() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [errorCode, setErrorCode] = useState<string | null>(null)
   const [termsAccepted, setTermsAccepted] = useState(false)
+  const { spamGuard, fieldsProps: spamFieldsProps } = useEnquirySpamGuardState(
+    RECAPTCHA_ACTIONS.transportEnquiry
+  )
   const confirmationRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -346,6 +354,7 @@ export function TransportHeroEnquiryForm() {
         phoneWhatsApp: phone,
         interest,
         bestTimeToCall,
+        spamGuard: await spamGuard(),
         formPayload: {
           form: WEBSITE_ENQUIRY_FORM.transportServicePage,
           fields: { ...formFields, ...termsAcceptanceFormFields() }
@@ -382,14 +391,12 @@ export function TransportHeroEnquiryForm() {
       : collectionTime.trim()
   })
 
-  const showTravelDateFields = tripArrivalMode === TRIP_ARRIVAL_MODE.planned && !asap
-  const showAgpTodayOnly = tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp && !asap
   const todayIsoForPicker = getLocalDateIso()
   const plannedStartMin = travelStartMinIso()
   const plannedEndMin = travelEndMinIso(travelDateFrom)
   const transportWatchDates = [
-    ...(showTravelDateFields ? [travelDateFrom, travelDateTo] : []),
-    ...(showAgpTodayOnly ? [todayIsoForPicker] : []),
+    ...(tripArrivalMode === TRIP_ARRIVAL_MODE.planned && !asap ? [travelDateFrom, travelDateTo] : []),
+    ...(tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp && !asap ? [todayIsoForPicker] : []),
     ...(!asap && !hideCollectionByAdmin && collectionTime.trim().length >= 10 ? [collectionTime.trim().slice(0, 10)] : [])
   ]
   const collectionDayMinMax =
@@ -433,230 +440,202 @@ export function TransportHeroEnquiryForm() {
         ) : (
           <>
             <BookedDatesAvailabilityNotice bookedDays={bookedDays} className="px-5 pt-5 sm:px-6 sm:pt-6" watchDates={transportWatchDates} />
-            <form onSubmit={handleSubmit} className="space-y-4 px-5 pb-6 pt-2 sm:px-6 sm:pb-7 sm:pt-3" noValidate>
+            <form onSubmit={handleSubmit} className="flex max-w-xl flex-col gap-4 px-5 pb-6 pt-2 sm:px-6 sm:pb-7 sm:pt-3" noValidate>
             <header className="border-b border-ge-gray100 pb-4">
-              <p className="font-ge text-sm font-bold uppercase tracking-[0.18em] text-brand-700 sm:text-[0.85rem]">
+              <p className="font-ge text-[0.85rem] font-bold uppercase tracking-[0.14em] text-brand-700">
                 {transportEnquiryFormCopy.sheetEyebrow}
               </p>
-              <h2 className="mt-3 font-ge text-[1.85rem] font-extrabold leading-tight tracking-[0.02em] text-gs-green sm:text-[2.2rem]">
+              <h2 className="mt-2.5 font-ge text-[1.7rem] font-extrabold leading-tight tracking-[0.02em] text-gs-green sm:text-[1.9rem]">
                 {transportEnquiryFormCopy.title}
               </h2>
-              <p className="mt-3 font-ge text-base leading-7 text-ge-gray500 sm:text-[1rem]">{transportEnquiryFormCopy.subtitle}</p>
+              <p className="mt-2 font-ge text-[1.02rem] leading-7 text-ge-gray500">
+                Name, contact, dates, passengers, and route — that is enough.
+              </p>
             </header>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-x-3 md:gap-y-4">
-              <label className="block min-w-0 md:col-span-1">
-                <span className={labelClass}>{transportEnquiryFormCopy.nameLabel}</span>
-                <input
-                  name="fullName"
-                  autoComplete="name"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className={inputClass}
-                  placeholder="Your name"
-                  required
-                />
-              </label>
+            <label className="block min-w-0">
+              <span className={labelClass}>Name</span>
+              <input
+                name="fullName"
+                autoComplete="name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                className={inputClass}
+                placeholder="Your name"
+                required
+              />
+            </label>
 
-              <label className="block min-w-0 md:col-span-1">
-                <span className={labelClass}>{transportEnquiryFormCopy.emailLabel}</span>
-                <input
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={inputClass}
-                  placeholder="you@example.com"
-                  required
-                />
-              </label>
+            <label className="block min-w-0">
+              <span className={labelClass}>Email</span>
+              <input
+                name="email"
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={inputClass}
+                placeholder="you@example.com"
+                required
+              />
+            </label>
 
-              <label className="block min-w-0 md:col-span-2">
-                <span className={labelClass}>{transportEnquiryFormCopy.phoneLabel}</span>
-                <input
-                  name="phone"
-                  type="tel"
-                  autoComplete="tel"
-                  inputMode="tel"
-                  value={phoneWhatsApp}
-                  onChange={(e) => setPhoneWhatsApp(e.target.value)}
-                  className={inputClass}
-                  placeholder={contactInfo.phoneFieldPlaceholder}
-                  required
-                />
-              </label>
+            <label className="block min-w-0">
+              <span className={labelClass}>Phone</span>
+              <input
+                name="phone"
+                type="tel"
+                autoComplete="tel"
+                inputMode="tel"
+                value={phoneWhatsApp}
+                onChange={(e) => setPhoneWhatsApp(e.target.value)}
+                className={inputClass}
+                placeholder={contactInfo.phoneFieldPlaceholder}
+                required
+              />
+            </label>
 
-              <label className="block min-w-0 md:col-span-2">
-                <span className={labelClass}>{transportEnquiryFormCopy.passengersLabel}</span>
-                <select
-                  name="passengers"
-                  value={passengers}
-                  onChange={(e) => setPassengers(Number(e.target.value))}
-                  className={inputClass}
-                >
-                  {Array.from({ length: MAX_ENQUIRY_PEOPLE }, (_, i) => i + 1).map((n) => (
-                    <option key={n} value={n}>
-                      {n} {n === 1 ? 'person' : 'people'}
-                    </option>
-                  ))}
-                </select>
-              </label>
+            <label className="block min-w-0">
+              <span className={labelClass}>Passengers</span>
+              <select
+                name="passengers"
+                value={passengers}
+                onChange={(e) => setPassengers(Number(e.target.value))}
+                className={inputClass}
+              >
+                {Array.from({ length: MAX_ENQUIRY_PEOPLE }, (_, i) => i + 1).map((n) => (
+                  <option key={n} value={n}>
+                    {n} {n === 1 ? 'person' : 'people'}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-              <label className="block min-w-0 md:col-span-2">
-                <span className={labelClass}>Trip timing</span>
-                <select
-                  name="tripArrivalMode"
-                  value={tripArrivalMode}
-                  onChange={(e) => {
-                    const next =
-                      e.target.value === TRIP_ARRIVAL_MODE.alreadyAtAgp
-                        ? TRIP_ARRIVAL_MODE.alreadyAtAgp
-                        : TRIP_ARRIVAL_MODE.planned
-                    setTripArrivalMode(next)
-                    if (next === TRIP_ARRIVAL_MODE.alreadyAtAgp) {
-                      setAsap(false)
-                      const t = getLocalDateIso()
-                      setTravelDateFrom(t)
-                      setTravelDateTo(t)
-                      if (!hideCollectionByAdmin) {
-                        setCollectionTime((prev) => {
-                          const p = prev.trim()
-                          return p.length >= 16 && p.slice(0, 10) === t ? prev : `${t}T12:00`
-                        })
-                      }
-                    }
-                  }}
-                  className={inputClass}
-                >
-                  <option value={TRIP_ARRIVAL_MODE.planned}>I have travel dates (arrival and departure)</option>
-                  <option value={TRIP_ARRIVAL_MODE.alreadyAtAgp}>Already at Málaga (AGP) — need transfers now</option>
-                </select>
-              </label>
+            <label className="block min-w-0">
+              <span className={labelClass}>Start date</span>
+              <input
+                name="travelDateFrom"
+                type="date"
+                value={travelDateFrom}
+                min={plannedStartMin}
+                onChange={(e) => {
+                  setTripArrivalMode(TRIP_ARRIVAL_MODE.planned)
+                  setAsap(false)
+                  setTravelDateFrom(e.target.value)
+                }}
+                className={inputClass}
+              />
+            </label>
+            <label className="block min-w-0">
+              <span className={labelClass}>End date</span>
+              <input
+                name="travelDateTo"
+                type="date"
+                value={travelDateTo}
+                min={plannedEndMin}
+                onChange={(e) => {
+                  setTripArrivalMode(TRIP_ARRIVAL_MODE.planned)
+                  setAsap(false)
+                  setTravelDateTo(e.target.value)
+                }}
+                className={inputClass}
+              />
+            </label>
 
-              {showAgpTodayOnly ? (
-                <label className="block min-w-0 md:col-span-2">
-                  <span className={labelClass}>Today&apos;s date (same-day pickup only)</span>
-                  <input
-                    name="agpServiceDay"
-                    type="date"
-                    readOnly
-                    value={travelDateFrom === todayIsoForPicker ? travelDateFrom : todayIsoForPicker}
-                    min={todayIsoForPicker}
-                    max={todayIsoForPicker}
-                    className={`${inputClass} cursor-not-allowed bg-ge-gray50 text-ge-gray600`}
-                  />
-                  <span className="mt-1 block font-ge text-sm leading-snug text-ge-gray400 sm:text-[0.95rem]">
-                    You can only request collection for today. Choose your pickup time below (or first available driver).
-                  </span>
-                </label>
-              ) : null}
-
-              {showTravelDateFields ? (
-                <>
-                  <label className="block min-w-0 md:col-span-1">
-                    <span className={labelClass}>Travel start date</span>
-                    <input
-                      name="travelDateFrom"
-                      type="date"
-                      value={travelDateFrom}
-                      min={plannedStartMin}
-                      onChange={(e) => setTravelDateFrom(e.target.value)}
-                      className={inputClass}
-                    />
-                  </label>
-                  <label className="block min-w-0 md:col-span-1">
-                    <span className={labelClass}>Travel end date</span>
-                    <input
-                      name="travelDateTo"
-                      type="date"
-                      value={travelDateTo}
-                      min={plannedEndMin}
-                      onChange={(e) => setTravelDateTo(e.target.value)}
-                      className={inputClass}
-                    />
-                  </label>
-                </>
-              ) : null}
-
-              <div className="block min-w-0 md:col-span-2">
-                <TransferCollectionPointField
-                  flightNumber={inboundFlightNumber}
-                  hint={transportEnquiryFormCopy.collectionHint}
-                  inputClassName={inputClass}
-                  inputId="transport-collection-point"
-                  label={transportEnquiryFormCopy.collectionLabel}
-                  labelClassName={labelClass}
-                  onChangeValue={setCollectionPoint}
-                  onFlightNumberChange={setInboundFlightNumber}
-                  placeholder="Hotel, golf course, or Málaga Airport (AGP)"
-                  value={collectionPoint}
-                />
-              </div>
-
-              <label className="block min-w-0 md:col-span-2">
-                <span className={labelClass}>{transportEnquiryFormCopy.destinationLabel}</span>
-                <TransferPlaceTypeahead
-                  inputClassName={inputClass}
-                  inputId="transport-destination"
-                  onChangeValue={setDestination}
-                  placeholder="Hotel, golf course, or resort"
-                  value={destination}
-                />
-                <span className="mt-1 block font-ge text-sm leading-snug text-ge-gray400 sm:text-[0.95rem]">
-                  {transportEnquiryFormCopy.destinationHint}
-                </span>
-              </label>
-
-              {hideCollectionByAdmin ? (
-                <div className="md:col-span-2 rounded-lg border border-ge-gray200 bg-ge-gray50 px-3 py-2.5 font-ge text-base leading-snug text-ge-gray600 sm:text-[0.95rem]">
-                  Pickup date and time are confirmed directly with you for this period — add anything urgent in the collection
-                  point notes if needed.
-                </div>
-              ) : (
-                <fieldset className="min-w-0 space-y-2 border-0 p-0 md:col-span-2">
-                  <legend className={`${labelClass} w-full`}>{transportEnquiryFormCopy.timeLabel}</legend>
-                  <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-ge-gray200 bg-ge-gray50 px-3 py-2.5">
-                    <input
-                      type="checkbox"
-                      checked={asap}
-                      onChange={(e) => {
-                        const on = e.target.checked
-                        setAsap(on)
-                        if (on) {
-                          setCollectionTime('')
-                          setTravelDateFrom('')
-                          setTravelDateTo('')
-                        }
-                      }}
-                      className="mt-1 h-4 w-4 shrink-0 rounded border-ge-gray300 text-gs-green focus:ring-gs-green"
-                    />
-                    <span>
-                      <span className="block font-ge text-base font-semibold text-gs-dark">{transportEnquiryFormCopy.asapLabel}</span>
-                      <span className="mt-0.5 block font-ge text-base leading-snug text-ge-gray500 sm:text-[0.95rem]">
-                        {transportEnquiryFormCopy.asapHint}
-                      </span>
-                    </span>
-                  </label>
-                  <input
-                    type="datetime-local"
-                    name="collectionTime"
-                    value={collectionTime}
-                    onChange={(e) => setCollectionTime(e.target.value)}
-                    disabled={asap}
-                    min={collectionDayMinMax?.min}
-                    max={collectionDayMinMax?.max}
-                    className={`${inputClass} disabled:cursor-not-allowed disabled:bg-ge-gray100 disabled:text-ge-gray400`}
-                  />
-                  {collectionDayMinMax && !asap && tripArrivalMode === TRIP_ARRIVAL_MODE.planned ? (
-                    <p className="font-ge text-sm text-ge-gray500">Use the same day as travel start ({travelDateFrom.trim()}).</p>
-                  ) : null}
-                  {collectionDayMinMax && !asap && tripArrivalMode === TRIP_ARRIVAL_MODE.alreadyAtAgp ? (
-                    <p className="font-ge text-sm text-ge-gray500">Pickup must be today ({todayIsoForPicker}).</p>
-                  ) : null}
-                </fieldset>
-              )}
+            <div className="block min-w-0">
+              <TransferCollectionPointField
+                flightNumber={inboundFlightNumber}
+                hint=""
+                inputClassName={inputClass}
+                inputId="transport-collection-point"
+                label="Pickup"
+                labelClassName={labelClass}
+                onChangeValue={setCollectionPoint}
+                onFlightNumberChange={setInboundFlightNumber}
+                placeholder="Hotel, golf course, or Málaga Airport"
+                value={collectionPoint}
+              />
             </div>
+
+            <label className="block min-w-0">
+              <span className={labelClass}>Drop-off</span>
+              <TransferPlaceTypeahead
+                inputClassName={inputClass}
+                inputId="transport-destination"
+                onChangeValue={setDestination}
+                placeholder="Hotel, golf course, or resort"
+                value={destination}
+              />
+            </label>
+
+            <details className="rounded-xl border border-ge-gray200 bg-ge-gray50/60 px-3.5 py-2.5">
+              <summary className="cursor-pointer list-none font-ge text-[0.9rem] font-semibold text-ge-gray600 marker:content-none [&::-webkit-details-marker]:hidden">
+                Optional: pickup time / already at airport
+              </summary>
+              <div className="mt-3 flex flex-col gap-3">
+                <label className="block min-w-0">
+                  <span className={labelClass}>Timing</span>
+                  <select
+                    name="tripArrivalMode"
+                    value={tripArrivalMode}
+                    onChange={(e) => {
+                      const next =
+                        e.target.value === TRIP_ARRIVAL_MODE.alreadyAtAgp
+                          ? TRIP_ARRIVAL_MODE.alreadyAtAgp
+                          : TRIP_ARRIVAL_MODE.planned
+                      setTripArrivalMode(next)
+                      if (next === TRIP_ARRIVAL_MODE.alreadyAtAgp) {
+                        setAsap(false)
+                        const t = getLocalDateIso()
+                        setTravelDateFrom(t)
+                        setTravelDateTo(t)
+                      }
+                    }}
+                    className={inputClass}
+                  >
+                    <option value={TRIP_ARRIVAL_MODE.planned}>I have travel dates</option>
+                    <option value={TRIP_ARRIVAL_MODE.alreadyAtAgp}>Already at Málaga (AGP)</option>
+                  </select>
+                </label>
+                {hideCollectionByAdmin ? (
+                  <p className="font-ge text-[0.95rem] leading-snug text-ge-gray600">
+                    Pickup time is confirmed with you for this period.
+                  </p>
+                ) : (
+                  <>
+                    <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-ge-gray200 bg-white px-3 py-3">
+                      <input
+                        type="checkbox"
+                        checked={asap}
+                        onChange={(e) => {
+                          const on = e.target.checked
+                          setAsap(on)
+                          if (on) {
+                            setCollectionTime('')
+                            setTravelDateFrom('')
+                            setTravelDateTo('')
+                          }
+                        }}
+                        className="mt-1 h-5 w-5 shrink-0 rounded border-ge-gray300 text-gs-green focus:ring-gs-green"
+                      />
+                      <span className="font-ge text-[1.02rem] font-semibold text-gs-dark">
+                        {transportEnquiryFormCopy.asapLabel}
+                      </span>
+                    </label>
+                    <input
+                      type="datetime-local"
+                      name="collectionTime"
+                      value={collectionTime}
+                      onChange={(e) => setCollectionTime(e.target.value)}
+                      disabled={asap}
+                      min={collectionDayMinMax?.min}
+                      max={collectionDayMinMax?.max}
+                      className={`${inputClass} disabled:cursor-not-allowed disabled:bg-ge-gray100 disabled:text-ge-gray400`}
+                    />
+                  </>
+                )}
+              </div>
+            </details>
 
             {status === 'error' && errorMessage ? (
               <div
@@ -671,7 +650,7 @@ export function TransportHeroEnquiryForm() {
                 </p>
                 {errorCode === ENQUIRY_CONFLICT_EXISTING_PHONE ? (
                   <p className="mt-2 text-sm font-semibold text-gs-green">
-                    <a className="underline underline-offset-2" href="/dashboard/login">
+                    <a className="underline underline-offset-2" href="/portal">
                       Sign in to your trip desk
                     </a>
                   </p>
@@ -679,6 +658,7 @@ export function TransportHeroEnquiryForm() {
               </div>
             ) : null}
 
+            <EnquirySpamGuardFields {...spamFieldsProps} />
             <GeTermsAcceptanceField
               checked={termsAccepted}
               onChange={setTermsAccepted}

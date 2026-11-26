@@ -26,6 +26,9 @@ import {
 } from './server/transfer-booking-no-driver-service.mjs'
 import { handleTransferRebook } from './server/transfer-unpaid-cancel-service.mjs'
 import { handleTransferBalanceReminderSweep, handleTransferPaymentAdmin } from './server/transfer-payment-service.mjs'
+import { handleSitePaymentSettings } from './server/site-payment-settings-service.mjs'
+import { handleEnquiryPaymentAdmin } from './server/enquiry-payment-service.mjs'
+import { handleEnquiryTransferUpsellEmail } from './server/enquiry-transfer-upsell-email.mjs'
 import { handleAdminRevenueStats } from './server/admin-revenue-stats-service.mjs'
 import { handlePackageBuildAdminPublish } from './server/package-build-admin-publish-service.mjs'
 import { handleTransferRefund } from './server/transfer-refund-service.mjs'
@@ -806,6 +809,109 @@ const devEnquiryApiPlugin = (serverEnv: Record<string, string>) => ({
             ? error.statusCode
             : 500
 
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/site-payment-settings', async (request, response) => {
+      const authHeader = typeof request.headers.authorization === 'string' ? request.headers.authorization : ''
+      const cookieHeader = typeof request.headers.cookie === 'string' ? request.headers.cookie : ''
+      try {
+        if (request.method === 'GET') {
+          const result = await handleSitePaymentSettings(
+            { ...process.env, ...serverEnv },
+            { method: 'GET', authHeader, cookieHeader }
+          )
+          response.statusCode = 200
+          response.setHeader('Content-Type', 'application/json')
+          response.end(JSON.stringify(result))
+          return
+        }
+        if (request.method !== 'POST') {
+          response.statusCode = 405
+          response.setHeader('Content-Type', 'application/json')
+          response.end(JSON.stringify({ message: 'Method not allowed' }))
+          return
+        }
+        const rawBody = await readRequestBody(request)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const result = await handleSitePaymentSettings(
+          { ...process.env, ...serverEnv },
+          { method: 'POST', authHeader, cookieHeader, body: payload }
+        )
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Request failed.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/enquiry-payment-admin', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+      try {
+        const rawBody = await readRequestBody(request)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const authHeader = typeof request.headers.authorization === 'string' ? request.headers.authorization : ''
+        const cookieHeader = typeof request.headers.cookie === 'string' ? request.headers.cookie : ''
+        const result = await handleEnquiryPaymentAdmin(payload, { ...process.env, ...serverEnv }, {
+          authHeader,
+          cookieHeader
+        })
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Request failed.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
+        response.statusCode = statusCode
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message }))
+      }
+    })
+
+    server.middlewares.use('/api/enquiry-transfer-upsell-email', async (request, response) => {
+      if (request.method !== 'POST') {
+        response.statusCode = 405
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify({ message: 'Method not allowed' }))
+        return
+      }
+      try {
+        const rawBody = await readRequestBody(request)
+        const payload = rawBody ? JSON.parse(rawBody) : {}
+        const authHeader = typeof request.headers.authorization === 'string' ? request.headers.authorization : ''
+        const cookieHeader = typeof request.headers.cookie === 'string' ? request.headers.cookie : ''
+        const result = await handleEnquiryTransferUpsellEmail(payload, { ...process.env, ...serverEnv }, {
+          authHeader,
+          cookieHeader
+        })
+        response.statusCode = 200
+        response.setHeader('Content-Type', 'application/json')
+        response.end(JSON.stringify(result))
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Request failed.'
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+            ? error.statusCode
+            : 500
         response.statusCode = statusCode
         response.setHeader('Content-Type', 'application/json')
         response.end(JSON.stringify({ message }))

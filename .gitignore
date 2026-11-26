@@ -21,3 +21,4 @@ public.zip
 
 # Windows accidental redirect artifact
 /nul
+test-results/

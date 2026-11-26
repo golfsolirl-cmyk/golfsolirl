@@ -1,4 +1,5 @@
 import { m, useReducedMotion } from 'framer-motion'
+import { X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { cx } from '../../lib/utils'
 import {
@@ -8,8 +9,10 @@ import {
   WHATSAPP_MESSAGES
 } from '../../lib/whatsapp'
 import { WhatsAppIcon } from './WhatsAppIcon'
+import { WhatsAppPill } from './WhatsAppPill'
 
 const MESSAGE = WHATSAPP_MESSAGES.booking_help
+const DISMISS_KEY = 'gsol-whatsapp-fab-dismissed'
 
 function currentPath() {
   if (typeof window === 'undefined') return '/'
@@ -26,7 +29,7 @@ function cookieBannerOpen() {
 
 /** Raise the button above a short bottom bar. Never use this to jump over a full-height banner. */
 function obstacleLift() {
-  const zoneLeft = window.innerWidth - 300
+  const zoneLeft = window.innerWidth - 120
   let lift = 0
   const nodes = document.querySelectorAll<HTMLElement>('.portal-bottom-nav')
   nodes.forEach((node) => {
@@ -46,11 +49,25 @@ function fieldIsFocused() {
   return active.matches('input, textarea, select, [contenteditable="true"]')
 }
 
+function readDismissed() {
+  try {
+    return window.localStorage.getItem(DISMISS_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
 export function FloatingWhatsApp() {
   const reduceMotion = useReducedMotion()
-  const [bottom, setBottom] = useState(20)
+  const [bottom, setBottom] = useState(16)
   const [hidden, setHidden] = useState(false)
+  const [dismissed, setDismissed] = useState(false)
   const [ready, setReady] = useState(false)
+  const [expanded, setExpanded] = useState(false)
+
+  useEffect(() => {
+    setDismissed(readDismissed())
+  }, [])
 
   useEffect(() => {
     let frame = 0
@@ -59,10 +76,12 @@ export function FloatingWhatsApp() {
       frame = requestAnimationFrame(() => {
         const mobile = window.innerWidth < 768
         const headerBottom = document.querySelector('header')?.getBoundingClientRect().bottom ?? 0
-        const buttonBlock = mobile ? 88 : 72
-        const maxBottom = Math.max(16, Math.floor(window.innerHeight - Math.max(0, headerBottom) - buttonBlock - 8))
-        const nextHidden = (mobile && fieldIsFocused()) || (mobile && cookieBannerOpen())
-        const nextBottom = Math.min(maxBottom, Math.max(16, obstacleLift()))
+        const buttonBlock = 56
+        const maxBottom = Math.max(12, Math.floor(window.innerHeight - Math.max(0, headerBottom) - buttonBlock - 8))
+        // Keep the compact FAB visible even when the cookie bar is open — only hide for focused fields.
+        const nextHidden = mobile && fieldIsFocused()
+        const cookieLift = mobile && cookieBannerOpen() ? 72 : 0
+        const nextBottom = Math.min(maxBottom, Math.max(12, obstacleLift() + cookieLift))
         setHidden((current) => (current === nextHidden ? current : nextHidden))
         setBottom((current) => (current === nextBottom ? current : nextBottom))
         setReady(true)
@@ -98,42 +117,112 @@ export function FloatingWhatsApp() {
     }
   }, [])
 
+  if (dismissed) return null
+
+  const dismiss = () => {
+    try {
+      window.localStorage.setItem(DISMISS_KEY, '1')
+    } catch {
+      /* ignore quota / private mode */
+    }
+    setDismissed(true)
+  }
+
   return (
-    <m.a
-      href={createWhatsAppLink(MESSAGE)}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-hidden={hidden || undefined}
-      tabIndex={hidden ? -1 : undefined}
-      aria-label={`Not tech savvy? WhatsApp GolfSol Ireland on ${WHATSAPP_DISPLAY}`}
-      data-whatsapp-fab="true"
-      onClick={() =>
-        trackWhatsAppClick({
-          sourcePage: currentPath(),
-          componentVariant: 'floating',
-          enquiryType: 'booking_help'
-        })
-      }
+    <div
+      data-floating-whatsapp
       style={{ bottom: `max(${bottom}px, env(safe-area-inset-bottom))` }}
       className={cx(
-        'group fixed right-3 z-[30] inline-flex min-h-14 max-w-[min(16rem,calc(100vw-1.5rem))] items-center gap-2.5 rounded-[1.8rem_1.15rem_1.7rem_1.05rem] border border-[#d9be7a] bg-[#062016] py-2 pl-2.5 pr-4 text-white shadow-[0_12px_30px_rgba(6,32,22,0.28)]',
-        'hover:bg-[#0b3d2e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f4dfa6] focus-visible:ring-offset-2 focus-visible:ring-offset-white',
-        'md:z-[54]',
-        hidden && 'pointer-events-none invisible'
+        'fixed right-3 z-[30] flex flex-col items-end gap-2 print:hidden md:z-[54]',
+        (hidden || !ready) && 'pointer-events-none invisible'
       )}
-      initial={reduceMotion ? false : { opacity: 0, y: 12 }}
-      animate={{ opacity: ready || reduceMotion ? 1 : 0, y: 0 }}
-      transition={{ duration: reduceMotion ? 0 : 0.35, ease: 'easeOut' }}
     >
-      <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#25D366] text-[#062016]">
-        <WhatsAppIcon className="h-6 w-6" />
-      </span>
-      <span className="min-w-0 text-left">
-        <span className="block font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.14em] text-[#f4dfa6]">
-          Not tech savvy?
-        </span>
-        <span className="block font-ge text-base font-bold leading-tight text-white">{WHATSAPP_DISPLAY}</span>
-      </span>
-    </m.a>
+      {expanded ? (
+        <m.div
+          initial={reduceMotion ? false : { opacity: 0, y: 8, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: reduceMotion ? 0 : 0.2 }}
+          className="relative max-w-[min(15rem,calc(100vw-1.5rem))] rounded-2xl border border-[#d9be7a]/80 bg-[#062016] p-3 text-white shadow-[0_10px_24px_rgba(6,32,22,0.28)]"
+        >
+          <button
+            type="button"
+            aria-label="Close WhatsApp help"
+            onClick={dismiss}
+            className="absolute -right-1.5 -top-1.5 inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-[#0b3d2e] text-white hover:bg-[#12523d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f4dfa6]"
+          >
+            <X className="h-3.5 w-3.5" aria-hidden />
+          </button>
+          <p className="pr-5 font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.12em] text-[#f4dfa6]">
+            Prefer a call?
+          </p>
+          <div className="mt-2">
+            <WhatsAppPill
+              context={{
+                sourcePage: currentPath(),
+                componentVariant: 'floating',
+                enquiryType: 'booking_help'
+              }}
+              fullWidth
+              message={MESSAGE}
+              tone="green"
+            />
+          </div>
+          <p className="mt-2 whitespace-nowrap font-ge text-[0.72rem] font-semibold text-white/80">
+            {WHATSAPP_DISPLAY}
+          </p>
+          <button
+            type="button"
+            className="mt-2 font-ge text-[0.65rem] font-semibold uppercase tracking-[0.1em] text-white/70 hover:text-white"
+            onClick={() => setExpanded(false)}
+          >
+            Minimise
+          </button>
+        </m.div>
+      ) : null}
+
+      <div className="relative">
+        <m.a
+          href={createWhatsAppLink(MESSAGE)}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`WhatsApp GolfSol Ireland on ${WHATSAPP_DISPLAY}`}
+          data-whatsapp-fab="true"
+          onClick={() =>
+            trackWhatsAppClick({
+              sourcePage: currentPath(),
+              componentVariant: 'floating',
+              enquiryType: 'booking_help'
+            })
+          }
+          className={cx(
+            'inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/30 bg-[#25D366] text-[#062016] shadow-[0_8px_20px_rgba(6,32,22,0.28)]',
+            'hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f4dfa6] focus-visible:ring-offset-2 focus-visible:ring-offset-white'
+          )}
+          initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: reduceMotion ? 0 : 0.3, ease: 'easeOut' }}
+        >
+          <WhatsAppIcon className="h-6 w-6" />
+        </m.a>
+        <button
+          type="button"
+          aria-label="Dismiss WhatsApp button"
+          onClick={dismiss}
+          className="absolute -left-1.5 -top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full border border-forest-800/20 bg-white text-forest-900 shadow-sm hover:bg-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-700"
+        >
+          <X className="h-3 w-3" aria-hidden />
+        </button>
+        {!expanded ? (
+          <button
+            type="button"
+            aria-label="Show WhatsApp number"
+            onClick={() => setExpanded(true)}
+            className="sr-only"
+          >
+            Show number
+          </button>
+        ) : null}
+      </div>
+    </div>
   )
 }

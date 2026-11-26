@@ -1,6 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
 import { requireAdminFromBearer } from './auth-verify-admin.mjs'
-import { buildTransferBalanceReminderEmail, buildTransferPaymentRequestEmail } from './branded-transfer-payment-email.mjs'
+import {
+  bookingPaymentReference,
+  buildTransferBalanceReminderEmail,
+  buildTransferPaymentRequestEmail
+} from './branded-transfer-payment-email.mjs'
+import { loadSitePaymentForEmail, paymentBlockFromSettings } from './load-site-payment-for-email.mjs'
 import { publishTransferAdminPricePortalPdfs } from './transfer-portal-publish-admin-price-pdfs.mjs'
 import { balanceDueReminderIso } from './transfer-payment-amounts.mjs'
 import {
@@ -53,7 +58,11 @@ export const processDueBalanceReminders = async (admin, env = process.env) => {
     const id = booking.id
     try {
       const pct = Number(booking.deposit_percent) || 20
-      const content = buildTransferBalanceReminderEmail(booking, pct)
+      const bank = await loadSitePaymentForEmail(env)
+      const payment = paymentBlockFromSettings(bank, {
+        paymentReference: bookingPaymentReference(booking)
+      })
+      const content = buildTransferBalanceReminderEmail(booking, pct, payment)
       await sendResendHtml(admin, booking, content, env)
       const sentNow = new Date().toISOString()
       const { data: locked, error: uErr } = await admin
@@ -216,7 +225,13 @@ export const handleTransferPaymentAdmin = async (body, env = process.env, meta =
     if (!row) {
       throwStatus('Booking not found.', 404)
     }
-    const content = buildTransferPaymentRequestEmail(row)
+    const bank = await loadSitePaymentForEmail(env)
+    const built = buildTransferPaymentRequestEmail(row, null)
+    const payment = paymentBlockFromSettings(bank, {
+      paymentReference: built.paymentReference,
+      amountDueEur: built.dueNowEur
+    })
+    const content = buildTransferPaymentRequestEmail(row, payment)
     await sendResendHtml(admin, row, content, env)
     const to = await resolveClientEmail(admin, row)
     await admin.from('transfer_booking_events').insert({

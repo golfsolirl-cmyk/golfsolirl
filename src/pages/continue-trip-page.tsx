@@ -8,7 +8,6 @@ import { GePaymentsIreland } from './golf-experience/sections/payments-ireland'
 import { GeFinalCta } from './golf-experience/sections/final-cta'
 import { PremiumPageHero } from '../components/home/premium-page-hero'
 import { heroImageSetFromRegistry, NAMED_HERO_IMAGE_SETS } from '../lib/page-hero-images'
-import { WhatsappFab } from './golf-experience/components/whatsapp-fab'
 import { GeTransfersInsuranceBanner } from './golf-experience/components/ge-transfers-insurance-banner'
 import { GeSection } from './golf-experience/components/ge-section'
 import { contactInfo } from './golf-experience/data/copy'
@@ -188,7 +187,7 @@ export function ContinueTripPage() {
     }
   }, [submitStatus])
 
-  const whatsappHref = `https://wa.me/${contactInfo.phoneTel.replace('+', '')}?text=${encodeURIComponent(
+  const whatsappHref = `https://wa.me/353866006202?text=${encodeURIComponent(
     'Hi GolfSol Ireland — I have started my trip brief and would like to WhatsApp my enquiry.'
   )}`
 
@@ -395,7 +394,6 @@ export function ContinueTripPage() {
           <GeFinalCta />
         </main>
         <GeFooter />
-        <WhatsappFab />
       </div>
     )
   }
@@ -695,7 +693,7 @@ export function ContinueTripPage() {
                         <p>{submitError}</p>
                         {submitErrorCode === ENQUIRY_CONFLICT_EXISTING_PHONE ? (
                           <p className="mt-2 font-semibold text-gs-green">
-                            <a className="underline underline-offset-2" href="/dashboard/login">
+                            <a className="underline underline-offset-2" href="/portal">
                               Sign in to your trip desk
                             </a>
                           </p>
@@ -738,7 +736,6 @@ export function ContinueTripPage() {
 
       <GeFooter />
 
-      <WhatsappFab />
     </div>
   )
 }

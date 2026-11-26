@@ -19,7 +19,11 @@ import { ENQUIRY_CONFLICT_EXISTING_PHONE, postWebsiteEnquiry } from '../../../li
 import { postWebsiteTestimonial } from '../../../lib/post-website-testimonial'
 import { TERMS_ACCEPTANCE_ERROR, termsAcceptanceFormFields } from '../../../lib/terms-acceptance'
 import { validateMobilePhoneInput } from '../../../lib/phone-mobile'
-import { EnquiryContactVerifyFields } from '../../../components/enquiry-contact-verify-fields'
+import {
+  EnquirySpamGuardFields,
+  useEnquirySpamGuardState
+} from '../../../components/enquiry-spam-guard-fields'
+import { RECAPTCHA_ACTIONS } from '../../../lib/enquiry-spam-guard'
 import { GeTermsAcceptanceField } from './ge-terms-acceptance-field'
 
 interface GeQuickEnquiryFormProps {
@@ -31,9 +35,9 @@ interface GeQuickEnquiryFormProps {
 }
 
 const labelClass =
-  'mb-1.5 block font-ge text-[0.88rem] font-bold uppercase tracking-[0.14em] text-ge-gray500 sm:text-[0.92rem]'
+  'mb-1.5 block font-ge text-[0.82rem] font-bold uppercase tracking-[0.12em] text-forest-800'
 const inputClass =
-  'h-12 w-full rounded-xl border border-ge-gray200 bg-white px-3.5 font-ge text-[1.02rem] text-gs-dark outline-none transition-shadow placeholder:text-ge-gray300 focus:border-gs-green focus:ring-2 focus:ring-gs-green/25 sm:text-[1.04rem]'
+  'min-h-[52px] h-13 w-full rounded-xl border border-ge-gray200 bg-white px-4 font-ge text-[1.06rem] text-gs-dark outline-none transition-shadow placeholder:text-ge-gray300 focus:border-gs-green focus:ring-2 focus:ring-gs-green/25'
 
 function createInitialFieldValues(fields: readonly ContentFormField[]) {
   return fields.reduce<Record<string, string>>((accumulator, field) => {
@@ -66,7 +70,10 @@ export function GeQuickEnquiryForm({
   const [bookedDays, setBookedDays] = useState<Set<string>>(() => new Set())
   const [testimonialRating, setTestimonialRating] = useState(5)
   const [termsAccepted, setTermsAccepted] = useState(false)
-  const [contactVerifyToken, setContactVerifyToken] = useState<string | null>(null)
+  const [addTransfers, setAddTransfers] = useState(false)
+  const { spamGuard, fieldsProps: spamFieldsProps } = useEnquirySpamGuardState(
+    RECAPTCHA_ACTIONS.contentEnquiry
+  )
   const confirmationRef = useRef<HTMLDivElement>(null)
   const isTestimonialForm = formConfig.submissionKind === 'testimonial'
 
@@ -89,7 +96,7 @@ export function GeQuickEnquiryForm({
     setErrorMessage(null)
     setErrorCode(null)
     setTermsAccepted(false)
-    setContactVerifyToken(null)
+        setAddTransfers(false)
   }, [initialFieldValues])
 
   useEffect(() => {
@@ -321,6 +328,10 @@ export function GeQuickEnquiryForm({
           formFields[field.label] = value
         }
       }
+      if (!isTestimonialForm) {
+        formFields['Add airport & hotel transfers'] = addTransfers ? 'Yes' : 'No'
+        formFields[ENQUIRY_STRUCTURED_FIELD_KEYS.addTransfers] = addTransfers ? 'yes' : 'no'
+      }
 
       const tripTypeVal = fieldValues.tripType?.trim() ?? ''
       if (tripTypeVal.includes('Airport transfers only')) {
@@ -352,7 +363,7 @@ export function GeQuickEnquiryForm({
         phoneWhatsApp: phone,
         interest: interestLines.join('\n'),
         bestTimeToCall: 'Any time',
-        ...(contactVerifyToken ? { contactVerifyToken } : {}),
+        spamGuard: await spamGuard(),
         formPayload: {
           form: WEBSITE_ENQUIRY_FORM.contentQuickEnquiry,
           fields: { ...formFields, ...termsAcceptanceFormFields() }
@@ -373,7 +384,7 @@ export function GeQuickEnquiryForm({
       setPhoneWhatsApp('')
       setFieldValues(initialFieldValues)
       setTermsAccepted(false)
-      setContactVerifyToken(null)
+            setAddTransfers(false)
     } catch (error) {
       setStatus('error')
       setErrorCode(null)
@@ -393,25 +404,20 @@ export function GeQuickEnquiryForm({
       id="ge-enquiry-form"
       className="rounded-[1.75rem] border border-gs-dark/10 bg-white p-5 shadow-[0_24px_60px_rgba(6,59,42,0.12)] sm:p-6"
     >
-      <p className="font-ge text-[0.9rem] font-bold uppercase tracking-[0.14em] text-brand-700 sm:text-[0.95rem]">
+      <p className="font-ge text-[0.85rem] font-bold uppercase tracking-[0.14em] text-brand-700">
         {formConfig.badge}
       </p>
-      <h2 className="mt-3 font-ge text-[1.95rem] font-extrabold leading-tight tracking-[-0.01em] text-gs-green sm:text-[2.1rem]">
+      <h2 className="mt-2.5 font-ge text-[1.7rem] font-extrabold leading-tight tracking-[-0.01em] text-gs-green sm:text-[1.9rem]">
         {title}
       </h2>
-      <p className="mt-3 font-ge text-[1.06rem] leading-8 text-ge-gray500 sm:text-[1.1rem]">{lead}</p>
-      <p className="mt-3 text-[1rem] font-medium leading-7 text-gs-dark/72 sm:text-[1.02rem]">
-        {isTestimonialForm
-          ? 'Write it like a Tripadvisor review — we approve it before it appears on our homepage.'
-          : 'We reply from Ireland by email, phone, or WhatsApp with a clear next step.'}
-      </p>
+      <p className="mt-2 font-ge text-[1.02rem] leading-7 text-ge-gray500">{lead}</p>
 
       {status === 'success' ? (
         <div ref={confirmationRef} className="mt-6 rounded-xl border border-gs-green/30 bg-gs-green/5 px-4 py-4">
-          <p className="font-ge text-[0.92rem] font-bold uppercase tracking-[0.12em] text-gs-green sm:text-[0.96rem]">
+          <p className="font-ge text-[0.92rem] font-bold uppercase tracking-[0.12em] text-gs-green">
             {formConfig.successTitle}
           </p>
-          <p className="mt-2 font-ge text-[1.04rem] leading-8 text-gs-dark sm:text-[1.08rem]">
+          <p className="mt-2 font-ge text-[1.04rem] leading-7 text-gs-dark">
             {formConfig.successBody}
           </p>
           {isTestimonialForm ? (
@@ -428,12 +434,12 @@ export function GeQuickEnquiryForm({
         <>
           <BookedDatesAvailabilityNotice
             bookedDays={bookedDays}
-            className="mt-6"
+            className="mt-5"
             watchDates={[fieldValues.travelDateFrom, fieldValues.travelDateTo]}
           />
-          <form className="mt-4 space-y-4" onSubmit={handleSubmit} noValidate>
+          <form className="mt-4 flex max-w-xl flex-col gap-4" onSubmit={handleSubmit} noValidate>
           <label className="block">
-            <span className={labelClass}>Full name</span>
+            <span className={labelClass}>Name</span>
             <input
               className={inputClass}
               value={fullName}
@@ -448,51 +454,26 @@ export function GeQuickEnquiryForm({
             <input
               className={inputClass}
               value={email}
-              onChange={(e) => {
-                setEmail(e.target.value)
-                setContactVerifyToken(null)
-              }}
+              onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
               type="email"
               required
               placeholder="you@example.com"
             />
-            {!isTestimonialForm ? (
-              <span className="mt-1.5 block font-ge text-xs leading-relaxed text-ge-gray500">
-                Your 6-digit confirmation code is sent to this email address, not by text message.
-              </span>
-            ) : null}
           </label>
           <label className="block">
-            <span className={labelClass}>Mobile (WhatsApp)</span>
+            <span className={labelClass}>Phone</span>
             <input
               className={inputClass}
               value={phoneWhatsApp}
-              onChange={(e) => {
-                setPhoneWhatsApp(e.target.value)
-                setContactVerifyToken(null)
-              }}
+              onChange={(e) => setPhoneWhatsApp(e.target.value)}
               autoComplete="tel"
               type="tel"
               required
               placeholder={contactInfo.phoneFieldPlaceholder}
             />
-            <span className="mt-1.5 block font-ge text-xs text-ge-gray500">
-              Ireland, UK, or Spain mobile only (e.g. 087… / 07… / +34 6…).
-            </span>
           </label>
-
-          {!isTestimonialForm ? (
-            <EnquiryContactVerifyFields
-              contactVerifyToken={contactVerifyToken}
-              email={email}
-              labelClassName={labelClass}
-              inputClassName={inputClass}
-              onTokenCleared={() => setContactVerifyToken(null)}
-              onVerified={(token) => setContactVerifyToken(token)}
-              phoneWhatsApp={phoneWhatsApp}
-            />
-          ) : null}
+          {!isTestimonialForm ? <EnquirySpamGuardFields {...spamFieldsProps} /> : null}
 
           {isTestimonialForm ? (
             <div className="block">
@@ -565,11 +546,12 @@ export function GeQuickEnquiryForm({
                 <label key={field.id} className="block">
                   <span className={labelClass}>{field.label}</span>
                   <textarea
-                    className="w-full rounded-xl border border-ge-gray200 bg-white px-3.5 py-3 font-ge text-[1.02rem] leading-8 text-gs-dark outline-none transition-shadow placeholder:text-ge-gray300 focus:border-gs-green focus:ring-2 focus:ring-gs-green/25 sm:text-[1.04rem]"
+                    className="min-h-[120px] w-full rounded-xl border border-ge-gray200 bg-white px-4 py-3.5 font-ge text-[1.06rem] leading-7 text-gs-dark outline-none transition-shadow placeholder:text-ge-gray300 focus:border-gs-green focus:ring-2 focus:ring-gs-green/25"
                     value={value}
                     onChange={(e) => handleFieldChange(field.id, e.target.value)}
                     placeholder={getFieldPlaceholder(field)}
-                    rows={field.rows ?? 5}
+                    rows={field.rows ?? 4}
+                    required={field.required}
                   />
                 </label>
               )
@@ -616,13 +598,32 @@ export function GeQuickEnquiryForm({
               <p>{errorMessage}</p>
               {errorCode === ENQUIRY_CONFLICT_EXISTING_PHONE ? (
                 <p className="mt-3 text-[0.98rem] font-semibold text-gs-green">
-                  <a className="underline decoration-gs-green/50 underline-offset-2" href="/dashboard/login">
+                  <a className="underline decoration-gs-green/50 underline-offset-2" href="/portal">
                     Sign in to your trip desk
                   </a>{' '}
                   (same email you used before) — or contact us if you need help.
                 </p>
               ) : null}
             </div>
+          ) : null}
+
+          {!isTestimonialForm ? (
+            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-chrome-200 bg-cream/50 px-4 py-3">
+              <input
+                type="checkbox"
+                className="mt-1 h-5 w-5 rounded border-chrome-300 text-gs-green focus:ring-gs-green/30"
+                checked={addTransfers}
+                onChange={(e) => setAddTransfers(e.target.checked)}
+              />
+              <span>
+                <span className="block font-ge text-[0.95rem] font-bold text-gs-dark">
+                  Add airport & hotel transfers
+                </span>
+                <span className="mt-0.5 block font-ge text-sm text-ge-gray600">
+                  Optional — Málaga Airport and hotel runs with your quote.
+                </span>
+              </span>
+            </label>
           ) : null}
 
           {!isTestimonialForm ? (

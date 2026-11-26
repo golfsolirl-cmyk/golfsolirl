@@ -48,6 +48,10 @@ import {
   handleEnquiryContactVerifySend
 } from '../server/enquiry-contact-verify-service.mjs'
 import { handleEnquiryAdminMessage, handleEnquiryAdminQuote } from '../server/enquiry-admin-quote-service.mjs'
+import { handleSitePaymentSettings } from '../server/site-payment-settings-service.mjs'
+import { handleBrandKit } from '../server/brand-kit-service.mjs'
+import { handleEnquiryPaymentAdmin } from '../server/enquiry-payment-service.mjs'
+import { handleEnquiryTransferUpsellEmail } from '../server/enquiry-transfer-upsell-email.mjs'
 import { handleAdminSendDocument } from '../server/admin-send-document-service.mjs'
 import { handleClientEnquiryDocument } from '../server/client-enquiry-document-service.mjs'
 import {
@@ -58,6 +62,19 @@ import {
 import { handleAdminMail, handleGmailOauthCallback } from '../server/admin-mail-service.mjs'
 import { handleDeskCustomers, handleDeskQuoteDecision } from '../server/desk-quote-service.mjs'
 import { readIncomingMessageBodyUtf8, readIncomingMessageBodyBuffer } from '../server/vercel-read-body.mjs'
+import {
+  handleAdminLogin,
+  handleAdminLogout,
+  handleAdminSessionCheck
+} from '../server/admin-session.mjs'
+import {
+  handlePortalLogin,
+  handlePortalOtpLogout,
+  handlePortalOtpSend,
+  handlePortalOtpVerify,
+  handlePortalTokenOpen
+} from '../server/portal-otp-auth.mjs'
+import { bindRequestCookieHeader, clearRequestCookieHeader } from '../server/auth-request-context.mjs'
 
 const readStreamBody = (req) =>
   new Promise((resolve, reject) => {
@@ -86,10 +103,17 @@ const applyApiSecurityHeaders = (res) => {
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
 }
 
-const jsonEnd = (res, statusCode, payload) => {
+const jsonEnd = (res, statusCode, payload, setCookie) => {
   applyApiSecurityHeaders(res)
   res.statusCode = statusCode
   res.setHeader('Content-Type', 'application/json')
+  if (setCookie) {
+    if (Array.isArray(setCookie)) {
+      res.setHeader('Set-Cookie', setCookie)
+    } else {
+      res.setHeader('Set-Cookie', setCookie)
+    }
+  }
   res.end(JSON.stringify(payload))
 }
 
@@ -111,8 +135,10 @@ const resolveRouteKey = (req) => {
 
 export default async function handler(req, res) {
   const route = resolveRouteKey(req)
+  bindRequestCookieHeader(req)
 
   if (!route) {
+    clearRequestCookieHeader()
     jsonEnd(res, 404, { message: 'Not found.' })
     return
   }
@@ -517,6 +543,115 @@ export default async function handler(req, res) {
         return
       }
 
+      case 'brand-kit': {
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const cookieHeader = typeof req.headers?.cookie === 'string' ? req.headers.cookie : ''
+        const urlObj = new URL(req.url || '/', 'http://localhost')
+        const tokenFromQuery = urlObj.searchParams.get('token') || ''
+        if (req.method === 'GET') {
+          try {
+            const result = await handleBrandKit(process.env, {
+              method: 'GET',
+              authHeader,
+              cookieHeader,
+              token: tokenFromQuery
+            })
+            jsonEnd(res, 200, result)
+          } catch (e) {
+            const statusCode = e && typeof e === 'object' && 'statusCode' in e ? Number(e.statusCode) || 400 : 400
+            const message = e instanceof Error ? e.message : 'Bad request'
+            jsonEnd(res, statusCode, { message })
+          }
+          return
+        }
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        try {
+          const raw = await readIncomingMessageBodyUtf8(req)
+          const payload = raw ? JSON.parse(raw) : {}
+          const result = await handleBrandKit(process.env, {
+            method: 'POST',
+            authHeader,
+            cookieHeader,
+            body: payload,
+            token: tokenFromQuery
+          })
+          jsonEnd(res, 200, result)
+        } catch (e) {
+          const statusCode = e && typeof e === 'object' && 'statusCode' in e ? Number(e.statusCode) || 400 : 400
+          const message = e instanceof Error ? e.message : 'Bad request'
+          jsonEnd(res, statusCode, { message })
+        }
+        return
+      }
+
+      case 'site-payment-settings': {
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const cookieHeader = typeof req.headers?.cookie === 'string' ? req.headers.cookie : ''
+        if (req.method === 'GET') {
+          const result = await handleSitePaymentSettings(process.env, {
+            method: 'GET',
+            authHeader,
+            cookieHeader
+          })
+          jsonEnd(res, 200, result)
+          return
+        }
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const result = await handleSitePaymentSettings(process.env, {
+          method: 'POST',
+          authHeader,
+          cookieHeader,
+          body: payload
+        })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'enquiry-payment-admin': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const cookieHeader = typeof req.headers?.cookie === 'string' ? req.headers.cookie : ''
+        const result = await handleEnquiryPaymentAdmin(payload, process.env, { authHeader, cookieHeader })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'enquiry-transfer-upsell-email': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const authHeader = typeof req.headers?.authorization === 'string' ? req.headers.authorization : ''
+        const cookieHeader = typeof req.headers?.cookie === 'string' ? req.headers.cookie : ''
+        try {
+          const result = await handleEnquiryTransferUpsellEmail(payload, process.env, { authHeader, cookieHeader })
+          jsonEnd(res, 200, result)
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Request failed.'
+          const statusCode =
+            error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number'
+              ? error.statusCode
+              : 500
+          jsonEnd(res, statusCode, { message })
+        }
+        return
+      }
+
       case 'admin-revenue-stats': {
         if (req.method !== 'POST') {
           jsonEnd(res, 405, { message: 'Method not allowed' })
@@ -872,6 +1007,98 @@ export default async function handler(req, res) {
         return
       }
 
+      case 'admin-login': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const result = await handleAdminLogin(payload, process.env, { clientIp: getClientIp(req) })
+        jsonEnd(res, 200, { ok: result.ok }, result.setCookie)
+        return
+      }
+
+      case 'admin-logout': {
+        if (req.method !== 'POST' && req.method !== 'GET') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const result = handleAdminLogout(process.env)
+        jsonEnd(res, 200, result, result.setCookie)
+        return
+      }
+
+      case 'admin-session-check': {
+        if (req.method !== 'GET' && req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const result = handleAdminSessionCheck(process.env, { cookieHeader: req.headers?.cookie })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'portal-login': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const result = await handlePortalLogin(payload, process.env, { clientIp: getClientIp(req) })
+        const { setCookie, ...rest } = result
+        jsonEnd(res, 200, rest, setCookie)
+        return
+      }
+
+      case 'portal-token-open': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const result = await handlePortalTokenOpen(payload, process.env, { clientIp: getClientIp(req) })
+        const { setCookie, ...rest } = result
+        jsonEnd(res, 200, rest, setCookie)
+        return
+      }
+
+      case 'portal-otp-send': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const result = await handlePortalOtpSend(payload, process.env, { clientIp: getClientIp(req) })
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'portal-otp-verify': {
+        if (req.method !== 'POST') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const raw = await readIncomingMessageBodyUtf8(req)
+        const payload = raw ? JSON.parse(raw) : {}
+        const result = await handlePortalOtpVerify(payload, process.env)
+        jsonEnd(res, 200, { ok: result.ok, profileId: result.profileId }, result.setCookie)
+        return
+      }
+
+      case 'portal-otp-logout': {
+        if (req.method !== 'POST' && req.method !== 'GET') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        const result = handlePortalOtpLogout(process.env)
+        jsonEnd(res, 200, result, result.setCookie)
+        return
+      }
+
       default:
         jsonEnd(res, 404, { message: 'Unknown API route.' })
         return
@@ -885,5 +1112,7 @@ export default async function handler(req, res) {
     const code =
       error && typeof error === 'object' && 'code' in error && typeof error.code === 'string' ? error.code : undefined
     jsonEnd(res, statusCode, code ? { message, code } : { message })
+  } finally {
+    clearRequestCookieHeader()
   }
 }

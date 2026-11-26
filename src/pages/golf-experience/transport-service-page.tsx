@@ -1,32 +1,30 @@
-import { GeFinalCta } from './sections/final-cta'
+import { ShieldCheck, PlaneLanding, Briefcase } from 'lucide-react'
+import { LeanPublicHero } from '../../components/home/premium-golf-hero'
+import { NAMED_HERO_IMAGE_SETS } from '../../lib/page-hero-images'
+import { WEBSITE_ENQUIRY_FORM } from '../../lib/enquiry-form-registry'
+import { usePageMeta } from '../../lib/use-page-meta'
+import { SmartTripQuoteForm } from './components/smart-trip-quote-form'
 import { GeFooter } from './sections/ge-footer'
 import { GeNavbar } from './sections/ge-navbar'
-import { GePaymentsIreland } from './sections/payments-ireland'
-import { TransportEnquireBlock } from './sections/transport-enquire-block'
-import { TransportFleet } from './sections/transport-fleet'
-import { TransportHero } from './sections/transport-hero'
-import { TransportPromise } from './sections/transport-promise'
-import { TransportRouteStory } from './sections/transport-route-story'
-import { GeTransfersInsuranceBanner } from './components/ge-transfers-insurance-banner'
-import { TripServiceBookingCta } from '../../components/trip-service-booking-cta'
-import { WhatsappFab } from './components/whatsapp-fab'
-import { WhatsAppBookingHelp } from '../../components/whatsapp/WhatsAppBookingHelp'
-import { usePageMeta } from '../../lib/use-page-meta'
+import { transportHeroCopy } from './data/transport-service'
+
+const POINTS = [
+  { icon: ShieldCheck, label: 'Fully insured' },
+  { icon: PlaneLanding, label: 'Meet & greet' },
+  { icon: Briefcase, label: 'Golf bags welcome' }
+] as const
 
 /**
- * Dedicated Transport service page — same shell as {@link GolfExperienceHome}
- * (navbar, payments trust band, footer, WhatsApp FAB) with a brand-new
- * editorial body: cinematic hero → promise → journey → fleet → enquiry →
- * final CTA.
+ * Lean transfers page — homepage-style hero, three points, shared trip-builder form.
  */
 export function TransportServicePage() {
   usePageMeta({
     title: 'Málaga Airport Golf Transfers | GolfSol Ireland',
     description:
-      'Golf-bag-friendly private transfers from Málaga Airport to Costa del Sol hotels for Irish golf groups. Meet-and-greet and group transport.',
+      'Golf-bag-friendly private transfers from Málaga Airport to Costa del Sol hotels for Irish golf groups.',
     canonicalPath: '/services/transport',
-    ogImage: '/images/hero-costa-del-sol-transfer-banner.webp',
-    ogImageAlt: 'Málaga Airport golf transfers for Irish golf groups on the Costa del Sol.'
+    ogImage: NAMED_HERO_IMAGE_SETS.transportCoastal.desktop,
+    ogImageAlt: NAMED_HERO_IMAGE_SETS.transportCoastal.alt
   })
 
   return (
@@ -40,36 +38,46 @@ export function TransportServicePage() {
       <GeNavbar />
 
       <main id="main">
-        <TransportHero />
-        <TransportPromise />
-        <GePaymentsIreland />
-        <div className="bg-white px-5 py-6 sm:px-8 sm:py-7">
-          <div className="mx-auto max-w-[1180px]">
-            <GeTransfersInsuranceBanner variant="inline" />
-          </div>
-        </div>
-        <TransportRouteStory />
-        <TransportFleet />
-        <div className="bg-cream px-3 py-6 sm:px-8 sm:py-10">
-          <div className="mx-auto max-w-[1180px]">
-            <TripServiceBookingCta
-              pageLabel="Transport"
-              sectionLead="Book Málaga airport transfers for your group — optionally add golf rounds or accommodation in the same request."
-            />
-          </div>
-        </div>
-        <div className="bg-[#faf8f4] px-5 pb-2 pt-12 sm:px-8 sm:pt-16">
-          <div className="mx-auto max-w-[1180px]">
-            <WhatsAppBookingHelp sourcePage="/services/transport" packageName="Málaga airport golf transfers" />
-          </div>
-        </div>
-        <TransportEnquireBlock />
-        <GeFinalCta />
+        <LeanPublicHero
+          ariaLabel={transportHeroCopy.title}
+          images={NAMED_HERO_IMAGE_SETS.transportCoastal}
+          imageObjectPosition="center 55%"
+          kicker="GolfSol Ireland"
+          lead={transportHeroCopy.subtitle}
+          primaryCta={{ label: 'Request a transfer', href: '#transport-enquire' }}
+          secondaryCta={{ label: 'Get a quote', href: '/quote' }}
+          title={transportHeroCopy.title}
+        />
+
+        <section className="border-b border-chrome-100 bg-cream/80 px-5 py-8 sm:px-8">
+          <ul className="mx-auto flex max-w-[720px] flex-col gap-3 sm:flex-row sm:justify-between sm:gap-4">
+            {POINTS.map(({ icon: Icon, label }) => (
+              <li key={label} className="flex items-center gap-2.5 font-ge text-[0.95rem] font-bold text-gs-dark">
+                <Icon className="h-5 w-5 shrink-0 text-gs-green" aria-hidden />
+                {label}
+              </li>
+            ))}
+          </ul>
+          <p className="mx-auto mt-5 max-w-[720px] font-ge text-sm leading-6 text-ge-gray600">
+            Private AGP → hotel or course · sized for your group and bags · clear quote from Ireland.
+          </p>
+        </section>
+
+        <section id="transport-enquire" className="mx-auto max-w-[640px] scroll-mt-28 px-5 py-14 sm:px-8 sm:py-16">
+          <SmartTripQuoteForm
+            formId="transport-enquire-form"
+            lead="Transfers is selected — add hotels or golf if you need them too."
+            preset={{
+              services: { transfers: true, accommodation: false, golf_courses: false },
+              pageLabel: '/services/transport',
+              formKey: WEBSITE_ENQUIRY_FORM.malagaAirportTransfer
+            }}
+            title="Transfers from Málaga Airport"
+          />
+        </section>
       </main>
 
       <GeFooter />
-
-      <WhatsappFab />
     </div>
   )
 }

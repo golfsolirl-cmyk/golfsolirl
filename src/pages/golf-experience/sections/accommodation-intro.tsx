@@ -142,7 +142,7 @@ export function GeAccommodationIntro() {
             </ul>
           </div>
 
-          <div className="relative min-h-[15rem] sm:min-h-[18rem] lg:min-h-full">
+          <div className="gsol-fly-scope gsol-fly gsol-fly-from-right relative min-h-[15rem] overflow-hidden sm:min-h-[18rem] lg:min-h-full">
             <img
               src={accommodationIntroCopy.heroImage}
               alt={accommodationIntroCopy.heroImageAlt}

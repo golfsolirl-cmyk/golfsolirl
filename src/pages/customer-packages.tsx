@@ -15,7 +15,6 @@ import { usePageMeta } from '../lib/use-page-meta'
 import { TripServiceBookingCta } from '../components/trip-service-booking-cta'
 import { GeButton } from './golf-experience/components/ge-button'
 import { GeSection } from './golf-experience/components/ge-section'
-import { WhatsappFab } from './golf-experience/components/whatsapp-fab'
 import { WhatsAppBookingHelp } from '../components/whatsapp/WhatsAppBookingHelp'
 import { GeFooter } from './golf-experience/sections/ge-footer'
 import { GeNavbar } from './golf-experience/sections/ge-navbar'
@@ -293,7 +292,7 @@ function CustomerPackagePage() {
     const returnParams = new URLSearchParams(window.location.search)
     returnParams.set('save', '1')
     const returnPath = `${window.location.pathname}?${returnParams.toString()}`
-    return `/dashboard/login?next=${encodeURIComponent(returnPath)}`
+    return `/portal?next=${encodeURIComponent(returnPath)}`
   }, [])
 
   const pendingAutoSave = useMemo(() => new URLSearchParams(window.location.search).get('save') === '1', [])
@@ -1208,7 +1207,7 @@ function CustomerPackagePage() {
                         <p>{enquiryError}</p>
                         {enquiryErrorCode === ENQUIRY_CONFLICT_EXISTING_PHONE ? (
                           <p className="mt-2 font-semibold text-gs-green">
-                            <a className="underline underline-offset-2" href="/dashboard/login">
+                            <a className="underline underline-offset-2" href="/portal">
                               Sign in to your trip desk
                             </a>
                           </p>
@@ -1230,7 +1229,6 @@ function CustomerPackagePage() {
       </main>
 
       <GeFooter />
-      <WhatsappFab />
     </div>
   )
 }

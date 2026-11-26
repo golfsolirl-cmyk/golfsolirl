@@ -1,15 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import { AnimatePresence,  m  } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import { ChevronDown, Menu, X } from 'lucide-react'
 import { prefetchRouteChunk } from '../../../lib/prefetch-route-chunk'
 import { cx } from '../../../lib/utils'
-import { BrandPlaneToFairwayTagline } from '../../../components/brand-plane-to-fairway-tagline'
 import { GeBrandLockup } from '../components/brand-lockup'
 import { GeButton } from '../components/ge-button'
 import { primaryNav, type GeNavLink } from '../data/nav'
 import { GeDualPhoneNavMobileButtons } from '../components/ge-dual-phone-contact'
 import { GeMobileGlintIconButton } from '../components/ge-mobile-glint-icon'
-import { GeTopBar } from './top-bar'
 import { HeaderSignInButtons } from '../../../components/header-sign-in-buttons'
 
 /** Logged-in client/admin area: extra nav actions alongside primary marketing links. */
@@ -21,38 +19,39 @@ export interface GeNavbarPortalSlot {
 }
 
 interface GeNavbarProps {
-  /** Render mode: 'auto' = sticky-white always (current). The legacy overlay
-   *  was retired so the navbar's crest sits flush above the brand-composed
-   *  hero image's gold ribbon and reads as one unified piece. */
+  /** Render mode: sticky cream bar only (no slide-down ribbon). */
   readonly mode?: 'auto'
-  /** Dashboard / driver portal: append account actions; keep primary site nav + Get Quote. */
+  /** Dashboard / driver portal: append account actions; keep primary site nav. */
   readonly portalSlot?: GeNavbarPortalSlot
 }
 
+/**
+ * Single slim header: phone · crest · menu (mobile) / nav + Get a quote (desktop).
+ * Client/Admin and Get a quote live in the hamburger on mobile; no slide-down panel.
+ */
 export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {}) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null)
-  const [ribbonHidden, setRibbonHidden] = useState(false)
   const [menuMaxPx, setMenuMaxPx] = useState<number | null>(null)
   const chromeRef = useRef<HTMLDivElement>(null)
+  const headerRef = useRef<HTMLElement>(null)
 
+  /** Keep hero / page offsets locked to the real sticky header height. */
   useEffect(() => {
-    let hideTimer = 0
-    const onScroll = () => {
-      window.clearTimeout(hideTimer)
-      if (window.scrollY < 16) {
-        setRibbonHidden(false)
-        return
-      }
-      hideTimer = window.setTimeout(() => {
-        setRibbonHidden(window.scrollY > 16)
-      }, 320)
+    const header = headerRef.current
+    if (!header) return
+    const publish = () => {
+      const h = Math.ceil(header.getBoundingClientRect().height)
+      if (h < 48) return
+      document.documentElement.style.setProperty('--ge-fixed-header-h', `${h}px`)
     }
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
+    publish()
+    const ro = new ResizeObserver(publish)
+    ro.observe(header)
+    window.addEventListener('resize', publish, { passive: true })
     return () => {
-      window.clearTimeout(hideTimer)
-      window.removeEventListener('scroll', onScroll)
+      ro.disconnect()
+      window.removeEventListener('resize', publish)
     }
   }, [])
 
@@ -82,74 +81,54 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
     }
   }, [isMenuOpen])
 
-  // Always render the solid white sticky bar. The hero image is now its own
-  // self-contained brand creative below the navbar.
-  const isOverlay = false
-  const ribbonCollapsed = ribbonHidden || isMenuOpen
   const linkColor = 'text-gs-dark hover:text-gs-primary'
 
   return (
     <header
-      className={cx(
-        'fixed inset-x-0 top-0 z-40 overflow-visible transition-all duration-300',
-        isOverlay
-          ? 'bg-transparent'
-          : 'bg-cream shadow-[0_2px_12px_rgba(8,46,35,0.08)]'
-      )}
+      ref={headerRef}
+      className="fixed inset-x-0 top-0 z-40 overflow-visible bg-cream shadow-[0_2px_12px_rgba(8,46,35,0.08)] transition-all duration-300"
     >
-      {isOverlay ? <GeTopBar /> : null}
       <div ref={chromeRef}>
-      <div
-        className={cx(
-          // Mobile (< lg): 3-column grid — phone | crest | menu share one vertical
-          //   alignment axis (no absolute centering drift vs the scaled crest).
-          // Desktop (lg+): flex row, brand left, nav right.
-          'relative mx-auto w-full max-w-[1340px] overflow-visible px-3 transition-all duration-300 sm:px-5',
-          'max-lg:grid max-lg:grid-cols-[auto_minmax(0,1fr)_auto] max-lg:items-center max-lg:gap-x-2 max-lg:gap-y-0',
-          'lg:flex lg:items-center lg:justify-between lg:gap-4',
-          isOverlay ? 'py-4' : 'py-1.5 max-lg:py-2 lg:py-1'
-        )}
-      >
-        <div className="flex shrink-0 items-center justify-self-start lg:hidden">
-          <GeDualPhoneNavMobileButtons
-            glint
-            lines="irish"
-            borderClass="border-ge-gray200 text-gs-green"
-            hoverClass="hover:border-brand-700/70 hover:text-brand-700 hover:shadow-[0_0_0_1px_rgba(19, 96, 71,0.2)]"
-          />
-        </div>
-
-        <a
-          href="/#top"
-          aria-label="GolfSol Ireland home"
-          className="mx-auto flex min-w-0 max-w-full shrink-0 justify-self-center overflow-visible transition-transform duration-300 max-lg:px-1 lg:mx-0 lg:justify-self-auto lg:self-end"
+        <div
+          className={cx(
+            'relative mx-auto w-full max-w-[1340px] overflow-visible px-3 py-1.5 transition-all duration-300 sm:px-5 max-lg:py-2 lg:py-1',
+            'max-lg:grid max-lg:grid-cols-[auto_minmax(0,1fr)_auto] max-lg:items-center max-lg:gap-x-2 max-lg:gap-y-0',
+            'lg:flex lg:items-center lg:justify-between lg:gap-4'
+          )}
         >
-          <GeBrandLockup tone={isOverlay ? 'on-dark' : 'on-light'} mode={isOverlay ? 'overlay' : 'sticky'} />
-        </a>
+          <div className="flex shrink-0 items-center justify-self-start lg:hidden">
+            <GeDualPhoneNavMobileButtons
+              glint
+              lines="irish"
+              borderClass="border-ge-gray200 text-gs-green"
+              hoverClass="hover:border-brand-700/70 hover:text-brand-700 hover:shadow-[0_0_0_1px_rgba(19, 96, 71,0.2)]"
+            />
+          </div>
 
-        <div className="flex shrink-0 items-center justify-self-end gap-2 lg:flex lg:flex-1 lg:items-center lg:justify-end lg:gap-4">
-          <nav
-            aria-label="Primary navigation"
-            className="hidden items-center gap-x-4 xl:gap-x-5 lg:flex"
+          <a
+            href="/#top"
+            aria-label="GolfSol Ireland home"
+            className="mx-auto flex min-w-0 max-w-full shrink-0 justify-self-center overflow-visible transition-transform duration-300 max-lg:px-1 lg:mx-0 lg:justify-self-auto lg:self-end"
           >
-            {primaryNav.map((link) => (
-              <DesktopNavItem key={link.label} link={link} colorClass={linkColor} />
-            ))}
-            {portalSlot ? <PortalNavActions portalSlot={portalSlot} layout="desktop" /> : null}
-          </nav>
+            <GeBrandLockup tone="on-light" mode="sticky" />
+          </a>
 
-          {isOverlay ? (
-            <button
-              type="button"
-              aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-              aria-expanded={isMenuOpen}
-              aria-controls="ge-mobile-menu"
-              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-white/60 text-white transition-colors hover:border-white hover:bg-forest-900 lg:hidden"
-              onClick={() => setIsMenuOpen((value) => !value)}
-            >
-              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
-          ) : (
+          <div className="flex shrink-0 items-center justify-self-end gap-2 lg:flex lg:flex-1 lg:items-center lg:justify-end lg:gap-4">
+            <nav aria-label="Primary navigation" className="hidden items-center gap-x-4 xl:gap-x-5 lg:flex">
+              {primaryNav.map((link) => (
+                <DesktopNavItem key={link.label} link={link} colorClass={linkColor} />
+              ))}
+              {portalSlot ? <PortalNavActions portalSlot={portalSlot} layout="desktop" /> : null}
+              {!portalSlot ? (
+                <a
+                  href="/contact"
+                  className="header-quote-btn inline-flex min-h-9 items-center justify-center rounded-full bg-[#d4a843] px-4 py-2 font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.12em] text-[#062016] shadow-[0_6px_16px_rgba(8,46,35,0.16)]"
+                >
+                  Get a quote
+                </a>
+              ) : null}
+            </nav>
+
             <GeMobileGlintIconButton
               aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={isMenuOpen}
@@ -163,42 +142,8 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
                 <Menu className="h-[1.35rem] w-[1.35rem] stroke-[2] sm:h-6 sm:w-6" aria-hidden="true" />
               )}
             </GeMobileGlintIconButton>
-          )}
-        </div>
-      </div>
-
-      {/* Brand ribbon fades away after a short scroll so the crest row stays. */}
-      <div
-        className={cx(
-          'grid motion-safe:transition-[grid-template-rows,opacity] motion-safe:duration-500 motion-safe:ease-out',
-          ribbonCollapsed ? 'pointer-events-none grid-rows-[0fr] opacity-0' : 'grid-rows-[1fr] opacity-100'
-        )}
-        inert={ribbonCollapsed ? true : undefined}
-        aria-hidden={ribbonCollapsed}
-      >
-        <div className="overflow-hidden">
-          <div
-            className={cx(
-              'border-t',
-              isOverlay
-                ? 'border-white/10 bg-forest-950/40'
-                : 'border-brand-700/12 bg-gradient-to-r from-cream via-white to-cream'
-            )}
-          >
-            <div className="mx-auto flex w-full max-w-[1340px] justify-center px-2.5 py-1 sm:px-5 sm:py-1.5 lg:py-1.5">
-              <BrandPlaneToFairwayTagline tone={isOverlay ? 'dark' : 'light'} layout="ribbon" className="max-w-full" />
-            </div>
-            {!portalSlot ? (
-              <div className="mx-auto flex w-full max-w-[1340px] flex-wrap items-center justify-center gap-2 px-3 pb-2.5">
-                <HeaderSignInButtons />
-                <a href="/contact" className="header-quote-btn inline-flex min-h-10 items-center justify-center rounded-full bg-[#d4a843] px-4 py-2 font-ge text-[0.72rem] font-extrabold uppercase tracking-[0.12em] text-[#062016] shadow-[0_6px_16px_rgba(8,46,35,0.16)]">
-                  Get Quote
-                </a>
-              </div>
-            ) : null}
           </div>
         </div>
-      </div>
       </div>
 
       <AnimatePresence>
@@ -284,9 +229,16 @@ export function GeNavbar({ mode: _mode = 'auto', portalSlot }: GeNavbarProps = {
                 </div>
               ) : null}
               {!portalSlot ? (
-                <div className="mt-4">
-                  <GeButton href="/contact" size="md" variant="gs-green" className="w-full" onClick={() => setIsMenuOpen(false)}>
-                    Get a Quote
+                <div className="mt-4 space-y-3 border-t border-ge-gray100 pt-4">
+                  <HeaderSignInButtons layout="menu" onNavigate={() => setIsMenuOpen(false)} />
+                  <GeButton
+                    href="/contact"
+                    size="md"
+                    variant="gs-green"
+                    className="w-full"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Get a quote
                   </GeButton>
                 </div>
               ) : null}
@@ -306,20 +258,12 @@ function PortalNavActions({
   readonly layout: 'desktop' | 'mobile'
 }) {
   const { variant, showAdminDashboardLink, onSignOut } = portalSlot
-  const wrap =
-    layout === 'desktop'
-      ? 'flex flex-wrap items-center gap-2 xl:gap-3'
-      : 'flex flex-col gap-2'
+  const wrap = layout === 'desktop' ? 'flex flex-wrap items-center gap-2 xl:gap-3' : 'flex flex-col gap-2'
 
   const btnSm =
     layout === 'desktop'
       ? 'ge-portal-dash-btn !min-h-0 !border-2 !border-gs-green/35 !bg-gs-green/8 !px-4 !py-2 !text-[0.68rem] !normal-case !tracking-[0.06em] !text-black hover:!bg-gs-green/14'
       : 'ge-portal-dash-btn !min-h-0 !w-full !justify-center !border-2 !border-gs-green/35 !bg-gs-green/8 !py-2.5 !text-[0.78rem] !normal-case !tracking-[0.06em] !text-black hover:!bg-gs-green/14'
-
-  const btnOutline =
-    layout === 'desktop'
-      ? '!min-h-0 !px-4 !py-2 !text-[0.68rem] !normal-case !tracking-[0.06em]'
-      : '!min-h-0 !w-full !justify-center !py-2.5 !text-[0.78rem] !normal-case !tracking-[0.06em]'
 
   const btnGold =
     layout === 'desktop'

@@ -46,8 +46,11 @@
     /** Header navbar — locked (unchanged). */
     --header-bg: #f7f4ec;
 
-    /** Fixed header (nav row + tagline ribbon) — hero spacers match this exactly. */
-    --ge-fixed-header-h: 340px;
+    /**
+     * Fixed slim header height (cream nav + crest). Kept in sync at runtime by
+     * GeNavbar; these defaults clear the crest on phones until JS measures.
+     */
+    --ge-fixed-header-h: 9.5rem;
 
     /* ========= TEXT ========= */
     --text-primary: #08120d;
@@ -142,25 +145,13 @@
 
   @media (min-width: 640px) {
     :root {
-      --ge-fixed-header-h: 300px;
-    }
-  }
-
-  @media (min-width: 768px) {
-    :root {
-      --ge-fixed-header-h: 280px;
+      --ge-fixed-header-h: 9.75rem;
     }
   }
 
   @media (min-width: 1024px) {
     :root {
-      --ge-fixed-header-h: 280px;
-    }
-  }
-
-  @media (min-width: 1280px) {
-    :root {
-      --ge-fixed-header-h: 276px;
+      --ge-fixed-header-h: 9.5rem;
     }
   }
 
@@ -489,6 +480,47 @@
     border-color: var(--input-border);
   }
 
+  /*
+   * Native date/time controls break on iOS/Android when line-height + fixed height
+   * clip the shadow-DOM picker affordance. Keep them tappable and above overlays.
+   */
+  .ge-page input[type='date'],
+  .ge-page input[type='time'],
+  .ge-page input[type='datetime-local'],
+  input[type='date'],
+  input[type='time'],
+  input[type='datetime-local'] {
+    /* Do not set appearance:none — that disables the native picker on iOS/Android. */
+    line-height: normal;
+    min-height: 52px;
+    position: relative;
+    z-index: 1;
+    touch-action: manipulation;
+    color-scheme: light;
+  }
+
+  input[type='date']::-webkit-calendar-picker-indicator,
+  input[type='time']::-webkit-calendar-picker-indicator,
+  input[type='datetime-local']::-webkit-calendar-picker-indicator {
+    opacity: 1;
+    display: block;
+    width: 1.35rem;
+    height: 1.35rem;
+    cursor: pointer;
+    margin-left: 0.25rem;
+  }
+
+  [data-time-of-day-field] {
+    position: relative;
+    z-index: 2;
+  }
+
+  [data-time-of-day-field] select {
+    touch-action: manipulation;
+    position: relative;
+    z-index: 2;
+  }
+
   .ge-page input:focus,
   .ge-page textarea:focus,
   .ge-page select:focus {
@@ -570,15 +602,38 @@
   html,
   body {
     background: #ffffff !important;
+    color: #16231d !important;
   }
 
-  .pdf-screen-only {
+  /* Hide chrome: nav, WhatsApp FAB, heroes, sticky bars */
+  .no-print,
+  .pdf-screen-only,
+  .print\:hidden,
+  header,
+  nav,
+  aside,
+  .ge-navbar,
+  [data-floating-whatsapp],
+  [data-whatsapp-fab],
+  .lean-public-hero,
+  [data-lean-public-hero],
+  .premium-page-hero,
+  .sticky,
+  .fixed {
     display: none !important;
   }
 
   .pdf-page-shell {
     padding: 0 !important;
     background: #ffffff !important;
+  }
+
+  .client-document-a4,
+  .print-document,
+  article.print-sheet {
+    box-shadow: none !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
   #proposal-pdf-export-root [data-proposal-dark-panel] :is(h1, h2, h3, h4, p, li, span, strong) {
@@ -848,6 +903,123 @@
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/*
+ * Public scroll-enter / fly-in — progressive enhancement only.
+ * Default: fully visible (no JS / reduced-motion).
+ * html.gsol-motion-ready + prefers-reduced-motion: no-preference → animate once into view.
+ * Mobile image fly: ~56px from L/R edge, scale 0.96 + fade, ~620ms ease-out (no bounce/spin).
+ */
+.gsol-reveal,
+.gsol-fly {
+  /* Visible by default — never hide content if JS fails. */
+  opacity: 1;
+  transform: none;
+}
+
+/* Clip horizontal fly travel without page-level overflow-x scrollbars / layout shift. */
+.gsol-fly-scope {
+  overflow-x: clip;
+}
+
+@supports not (overflow: clip) {
+  .gsol-fly-scope {
+    overflow-x: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html.gsol-motion-ready .gsol-reveal:not(.gsol-reveal--in) {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+
+  html.gsol-motion-ready .gsol-reveal {
+    transition:
+      opacity 0.5s ease-out,
+      transform 0.5s ease-out;
+    will-change: opacity, transform;
+  }
+
+  html.gsol-motion-ready .gsol-reveal.gsol-reveal--in {
+    opacity: 1;
+    transform: none;
+    will-change: auto;
+  }
+
+  /* Mobile-first fly — noticeable edge travel; pure horizontal (no bounce/spin). */
+  html.gsol-motion-ready .gsol-fly:not(.gsol-reveal--in) {
+    opacity: 0;
+    transform: translate3d(var(--gsol-fly-x, 56px), 0, 0) scale(0.96);
+  }
+
+  html.gsol-motion-ready .gsol-fly {
+    --gsol-fly-ms: 0.62s;
+    transition:
+      opacity var(--gsol-fly-ms) ease-out,
+      transform var(--gsol-fly-ms) ease-out;
+    will-change: opacity, transform;
+  }
+
+  html.gsol-motion-ready .gsol-fly.gsol-reveal--in {
+    opacity: 1;
+    transform: none;
+    will-change: auto;
+  }
+
+  /* Photo zoom lives on the media, not the flying card — no transition conflict. */
+  .gsol-media-zoom {
+    transition: transform 1.15s ease-out;
+  }
+
+  .group:hover .gsol-media-zoom {
+    transform: scale(1.08);
+  }
+
+  .gsol-fly-from-left {
+    --gsol-fly-x: -56px;
+  }
+
+  .gsol-fly-from-right {
+    --gsol-fly-x: 56px;
+  }
+
+  /* Alternate direction inside a card/list scope when no explicit side is set. */
+  .gsol-fly-scope > *:nth-child(odd) .gsol-fly:not(.gsol-fly-from-left):not(.gsol-fly-from-right),
+  .gsol-fly-scope > *:nth-child(odd).gsol-fly:not(.gsol-fly-from-left):not(.gsol-fly-from-right) {
+    --gsol-fly-x: -56px;
+  }
+
+  .gsol-fly-scope > *:nth-child(even) .gsol-fly:not(.gsol-fly-from-left):not(.gsol-fly-from-right),
+  .gsol-fly-scope > *:nth-child(even).gsol-fly:not(.gsol-fly-from-left):not(.gsol-fly-from-right) {
+    --gsol-fly-x: 56px;
+  }
+
+  /* Slightly shorter on larger screens — still within 500–650ms. */
+  @media (min-width: 768px) {
+    html.gsol-motion-ready .gsol-fly {
+      --gsol-fly-ms: 0.54s;
+    }
+
+    .gsol-fly-from-left {
+      --gsol-fly-x: -48px;
+    }
+
+    .gsol-fly-from-right {
+      --gsol-fly-x: 48px;
+    }
+
+    .gsol-fly-scope > *:nth-child(odd) .gsol-fly:not(.gsol-fly-from-left):not(.gsol-fly-from-right),
+    .gsol-fly-scope > *:nth-child(odd).gsol-fly:not(.gsol-fly-from-left):not(.gsol-fly-from-right) {
+      --gsol-fly-x: -48px;
+    }
+
+    .gsol-fly-scope > *:nth-child(even) .gsol-fly:not(.gsol-fly-from-left):not(.gsol-fly-from-right),
+    .gsol-fly-scope > *:nth-child(even).gsol-fly:not(.gsol-fly-from-left):not(.gsol-fly-from-right) {
+      --gsol-fly-x: 48px;
+    }
   }
 }
 

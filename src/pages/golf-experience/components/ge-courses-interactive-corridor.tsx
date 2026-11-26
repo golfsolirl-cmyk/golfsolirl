@@ -23,6 +23,8 @@ import { BookedDatesAvailabilityNotice } from '../../../components/booked-dates-
 import { GeButton } from './ge-button'
 import { GeTermsAcceptanceField } from './ge-terms-acceptance-field'
 import { cx } from '../../../lib/utils'
+import { MapTapToActivate } from '../../../components/map-tap-to-activate'
+import { attachLeafletScrollGuard, type LeafletScrollGuardHandle } from '../../../lib/leaflet-scroll-guard'
 import { GOLF_COURSES_MAP_SECTION_ID } from './ge-courses-map-visibility'
 
 export { GOLF_COURSES_MAP_SECTION_ID, shouldShowInteractiveCourseMap } from './ge-courses-map-visibility'
@@ -105,6 +107,8 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
   const mapRef = useRef<HTMLDivElement | null>(null)
   const mapInstanceRef = useRef<LeafletMap | null>(null)
   const markersRef = useRef<Record<string, Marker>>({})
+  const scrollGuardRef = useRef<LeafletScrollGuardHandle | null>(null)
+  const [mapInteractive, setMapInteractive] = useState(false)
 
   const visibleCourses = useMemo(() => visibleCoursesForPath(path), [path])
   const [mapReady, setMapReady] = useState(false)
@@ -195,7 +199,10 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
       center: [36.44, -4.98],
       zoom: 10,
       scrollWheelZoom: false,
-      zoomControl: true
+      zoomControl: true,
+      dragging: false,
+      touchZoom: false,
+      doubleClickZoom: false
     })
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -204,6 +211,7 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
     }).addTo(map)
 
     mapInstanceRef.current = map
+    scrollGuardRef.current = attachLeafletScrollGuard(map, mapRef.current)
 
     const t = window.setTimeout(() => {
       map.invalidateSize()
@@ -212,10 +220,13 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
 
     return () => {
       window.clearTimeout(t)
+      scrollGuardRef.current?.destroy()
+      scrollGuardRef.current = null
       map.remove()
       mapInstanceRef.current = null
       markersRef.current = {}
       setMapReady(false)
+      setMapInteractive(false)
     }
   }, [])
 
@@ -480,12 +491,20 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
         </div>
 
         <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(260px,320px)] lg:items-stretch">
-          <div className="relative isolate min-h-[min(72vh,520px)] overflow-hidden rounded-[1.85rem] border-2 border-chrome-200/90 bg-white shadow-[0_24px_70px_rgba(115,132,33,0.15)] ring-1 ring-gs-green/10">
+          <MapTapToActivate
+            className="relative isolate min-h-[min(52vh,420px)] overflow-hidden rounded-[1.85rem] border-2 border-chrome-200/90 bg-white shadow-[0_24px_70px_rgba(115,132,33,0.15)] ring-1 ring-gs-green/10 sm:min-h-[min(72vh,520px)]"
+            active={mapInteractive}
+            label="Tap to use the map"
+            onActivate={() => {
+              setMapInteractive(true)
+              scrollGuardRef.current?.activate()
+            }}
+          >
             <div
               aria-hidden
               className="pointer-events-none absolute inset-0 z-[5] rounded-[inherit] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.65),inset_0_-20px_50px_rgba(255,214,140,0.12)]"
             />
-            <div ref={mapRef} className="relative z-[1] h-full min-h-[min(72vh,520px)] w-full bg-[#eef6f1]" role="application" aria-label="Interactive map of Costa del Sol golf courses" />
+            <div ref={mapRef} className="relative z-[1] h-full min-h-[min(52vh,420px)] w-full bg-[#eef6f1] sm:min-h-[min(72vh,520px)]" role="application" aria-label="Interactive map of Costa del Sol golf courses" />
             <div className="pointer-events-none absolute bottom-4 left-4 z-[30] flex max-w-[min(100%,260px)] flex-col gap-1.5 rounded-xl border-2 border-chrome-200/90 bg-[#fffdf8] px-3 py-2.5 text-[0.7rem] font-medium text-gs-dark shadow-md sm:text-[0.72rem]">
               <span className="font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.14em] text-gs-green">Legend</span>
               <span className="flex items-center gap-2 text-ge-gray600">
@@ -497,9 +516,11 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
               <span className="flex items-center gap-2 text-ge-gray600">
                 <span className="h-2.5 w-2.5 rounded-full bg-gradient-to-br from-brand-950 to-brand-700" aria-hidden /> Luxury
               </span>
-              <span className="mt-1 border-t border-chrome-100 pt-1.5 text-[0.65rem] text-ge-gray500">Two-finger pan · + / − to zoom</span>
+              <span className="mt-1 border-t border-chrome-100 pt-1.5 text-[0.65rem] text-ge-gray500">
+                {mapInteractive ? 'Two-finger pan · + / − to zoom' : 'Page scroll stays free until you tap'}
+              </span>
             </div>
-          </div>
+          </MapTapToActivate>
 
           <aside className="flex max-h-[min(72vh,520px)] flex-col rounded-[1.5rem] border border-chrome-200/70 bg-white p-4 shadow-[0_16px_40px_rgba(115,132,33,0.1)] sm:p-5">
             <p className="font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.2em] text-gs-green">Course roster</p>
@@ -705,7 +726,7 @@ export function GeCoursesInteractiveCorridor({ path, routeLabel }: GeCoursesInte
                       <p>{errorMessage}</p>
                       {errorCode === ENQUIRY_CONFLICT_EXISTING_PHONE ? (
                         <p className="mt-2 font-semibold text-gs-green">
-                          <a className="underline underline-offset-2" href="/dashboard/login">
+                          <a className="underline underline-offset-2" href="/portal">
                             Sign in to your trip desk
                           </a>
                         </p>
