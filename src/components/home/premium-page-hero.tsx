@@ -272,6 +272,9 @@ export function PremiumPageHero({
           alt={images.alt}
           decoding="async"
           fetchPriority="high"
+          height={1600}
+          loading="eager"
+          width={900}
           className={cx('absolute inset-0 h-full w-full object-cover', !reduceMotion && 'gsol-hero-drift')}
           style={{ objectPosition: mobileImageObjectPosition }}
         />
