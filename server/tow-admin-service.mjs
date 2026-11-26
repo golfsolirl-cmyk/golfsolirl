@@ -65,7 +65,7 @@ const mapEnquiry = (row) => {
     blank(fields.message) ||
     blank(fp.interest) ||
     ''
-  const formKey = blank(fp.form) || blank(row.source) || 'enquiry'
+  const formKey = blank(fp.form) || blank(fp.source) || 'enquiry'
   const formType = resolveEnquiryFormType({
     formType: row.form_type,
     formTypeLabel: row.form_type_label,
@@ -73,7 +73,7 @@ const mapEnquiry = (row) => {
     formKey,
     formPayload: fp,
     interest,
-    source: row.source
+    source: blank(fp.source) || null
   })
   const amount =
     typeof row.amount_due_eur === 'number'

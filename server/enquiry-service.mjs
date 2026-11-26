@@ -854,7 +854,10 @@ const recordEnquiryToSupabase = async (enquiry, enquiryId, env) => {
     const formTypeResolved = resolveEnquiryFormType({
       formPayload: mergedFormPayload,
       interest: enquiry.interest,
-      source: enquiry.source || null,
+      source:
+        (mergedFormPayload && typeof mergedFormPayload === 'object' && !Array.isArray(mergedFormPayload)
+          ? mergedFormPayload.source
+          : null) || null,
       formType: enquiry.isCallback ? 'callback' : null,
       formTypeLabel: enquiry.isCallback ? 'Callback' : null
     })

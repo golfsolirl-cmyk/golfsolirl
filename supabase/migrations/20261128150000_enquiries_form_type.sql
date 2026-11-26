@@ -49,7 +49,7 @@ from (
     coalesce(
       nullif(
         case
-          when coalesce(form_payload->>'form', source, '') = 'course_map' then 'golf_map'
+          when coalesce(form_payload->>'form', form_payload->>'source', '') = 'course_map' then 'golf_map'
           when coalesce(form_payload->>'form', '') = 'bundle_quote' then 'package_bundle'
           when coalesce(form_payload->>'form', '') in ('package_builder', 'continue_trip') then 'trip_builder'
           when coalesce(form_payload->>'form', '') in (
@@ -65,7 +65,7 @@ from (
             then 'seo_landing'
           when coalesce(form_payload->>'form', '') in ('content_quick_enquiry', 'website_form', 'quote')
             then 'quote'
-          when coalesce(form_payload->>'form', source, '') <> '' then 'quote'
+          when coalesce(form_payload->>'form', form_payload->>'source', '') <> '' then 'quote'
           else 'unknown'
         end,
         ''
@@ -73,7 +73,7 @@ from (
       'unknown'
     ) as resolved_type,
     case
-      when coalesce(form_payload->>'form', source, '') = 'course_map' then
+      when coalesce(form_payload->>'form', form_payload->>'source', '') = 'course_map' then
         'Golf map course'
       when coalesce(form_payload->>'form', '') = 'bundle_quote' then
         coalesce(
@@ -99,7 +99,7 @@ from (
           )
       when coalesce(form_payload->>'form', '') in ('content_quick_enquiry', 'website_form', 'quote', 'trip_service_cta')
         then 'Quote request'
-      when coalesce(form_payload->>'form', source, '') <> '' then 'Quote request'
+      when coalesce(form_payload->>'form', form_payload->>'source', '') <> '' then 'Quote request'
       else 'Unknown'
     end as resolved_label,
     coalesce(
