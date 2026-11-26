@@ -332,6 +332,18 @@ export function SmartTripQuoteForm({
         </div>
       ) : null}
 
+      {!bundle && coursesSeed.length > 0 ? (
+        <div className="mt-5 rounded-2xl border border-gs-green/25 bg-gs-green/5 px-4 py-3.5">
+          <p className="font-ge text-[0.68rem] font-extrabold uppercase tracking-[0.14em] text-gs-green">
+            Course from the map
+          </p>
+          <p className="mt-1 font-ge text-[1.05rem] font-extrabold text-gs-dark">{coursesSeed.join(', ')}</p>
+          <p className="mt-0.5 font-ge text-sm text-ge-gray600">
+            Golf is selected. Add transfers and accommodation below — hotel level, dates, group size and arrival time.
+          </p>
+        </div>
+      ) : null}
+
       {status === 'success' ? (
         <div ref={confirmationRef} className="mt-6 rounded-xl border border-gs-green/30 bg-gs-green/5 px-4 py-4">
           <p className="font-ge text-[0.92rem] font-bold uppercase tracking-[0.12em] text-gs-green">Request received</p>

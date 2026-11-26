@@ -20,6 +20,7 @@ import {
   shouldShowInteractiveCourseMap
 } from './components/ge-courses-map-visibility'
 import { GeCoursesInteractiveCorridor } from './components/ge-courses-interactive-corridor'
+import { GeGolfMapSimple } from './components/ge-golf-map-simple'
 
 function normalisePath() {
   const path = window.location.pathname.replace(/\/+$/, '')
@@ -199,7 +200,9 @@ export function GeContentPage() {
           title={page.title}
         />
 
-        {showCourseCorridorMap ? (
+        {path === '/golf-map' ? (
+          <GeGolfMapSimple />
+        ) : showCourseCorridorMap ? (
           <GeCoursesInteractiveCorridor path={path} routeLabel={routeLabel} />
         ) : null}
 

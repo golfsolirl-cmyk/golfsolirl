@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { PremiumGolfHero } from '../../components/home/premium-golf-hero'
 import { HomeCreativeCanvas } from '../../components/ui/HomeCreativeCanvas'
+import { SiteLaunchOfferBanner } from '../../components/site-launch-offer-banner'
 import { GeNavbar } from './sections/ge-navbar'
 import { HOMEPAGE_CREATIVE_CANVAS_ENABLED } from '../../lib/homepage-luxury-background'
 import { prefetchLikelyMarketingRoutes } from '../../lib/prefetch-route-chunk'
@@ -63,6 +64,7 @@ export function GolfExperienceHome() {
       >
         Skip to content
       </a>
+      <SiteLaunchOfferBanner />
       <GeNavbar />
 
       <main id="main">

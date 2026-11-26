@@ -52,9 +52,19 @@ export function QuotePage() {
         <section className="mx-auto max-w-[640px] px-5 py-14 sm:px-8 sm:py-16">
           <SmartTripQuoteForm
             formId="quote-form"
-            lead="Choose what you need. We only show the fields for those services."
+            lead={
+              preset.courses?.length
+                ? `${preset.courses.join(', ')} is ready below. Add airport transfers, hotel level, nights, rounds, dates, group size and arrival time — then send.`
+                : 'Choose what you need. We only show the fields for those services.'
+            }
             preset={preset}
-            title={bundle ? bundle.packageName : 'Build your quote'}
+            title={
+              bundle
+                ? bundle.packageName
+                : preset.courses?.length === 1
+                  ? `Plan a trip · ${preset.courses[0]}`
+                  : 'Build your quote'
+            }
           />
         </section>
       </main>

@@ -730,8 +730,8 @@ const coreGeContentPages: Record<string, GeContentPageData> = {
     ...coursesPage,
     metaTitle: 'Costa del Sol Golf Map | GolfSol Ireland',
     eyebrow: 'Planning',
-    title: 'Costa del Sol golf map guidance without the noise',
-    subtitle: 'Understand practical clusters, driving windows, and route logic before you commit.',
+    title: 'Costa del Sol golf map',
+    subtitle: 'Browse courses as a simple list or map — tap one to plan transfers, hotel and tee times.',
     interestPreset: 'Costa del Sol golf map'
   },
   '/iagto': {

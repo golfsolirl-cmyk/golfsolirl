@@ -22,6 +22,7 @@ export {
   lean,
   leanAnswerTableHtml,
   leanEmailButtonHtml,
+  leanFont,
   leanMonzoPaymentBlockHtml
 } from './lean-email-shell.mjs'
 

@@ -108,6 +108,31 @@ const AdminBrandKitPage = lazy(() =>
 const PublicBrandKitPage = lazy(() =>
   import('./pages/public-brand-kit-page').then((m) => ({ default: m.PublicBrandKitPage }))
 )
+const TowAdminEnquiriesPage = lazy(() =>
+  import('./pages/tow-admin/tow-admin-enquiries-page').then((m) => ({ default: m.TowAdminEnquiriesPage }))
+)
+const TowAdminEnquiryDetailPage = lazy(() =>
+  import('./pages/tow-admin/tow-admin-enquiry-detail-page').then((m) => ({
+    default: m.TowAdminEnquiryDetailPage
+  }))
+)
+const TowAdminCustomersPage = lazy(() =>
+  import('./pages/tow-admin/tow-admin-customers-page').then((m) => ({ default: m.TowAdminCustomersPage }))
+)
+const TowAdminCustomerDetailPage = lazy(() =>
+  import('./pages/tow-admin/tow-admin-customer-detail-page').then((m) => ({
+    default: m.TowAdminCustomerDetailPage
+  }))
+)
+const TowAdminSignaturePage = lazy(() =>
+  import('./pages/tow-admin/tow-admin-signature-page').then((m) => ({ default: m.TowAdminSignaturePage }))
+)
+const TowAdminOfferPage = lazy(() =>
+  import('./pages/tow-admin/tow-admin-offer-page').then((m) => ({ default: m.TowAdminOfferPage }))
+)
+const TowAdminEmailsPage = lazy(() =>
+  import('./pages/tow-admin/tow-admin-emails-page').then((m) => ({ default: m.TowAdminEmailsPage }))
+)
 
 type PageComponent = ComponentType | LazyExoticComponent<ComponentType>
 
@@ -186,6 +211,34 @@ function resolvePage(): PageComponent {
 
   if (normalizedPath === '/admin/login') {
     return AdminPasswordLoginPage
+  }
+
+  if (normalizedPath === '/admin' || normalizedPath === '/admin/enquiries') {
+    return TowAdminEnquiriesPage
+  }
+
+  if (normalizedPath.startsWith('/admin/enquiries/')) {
+    return TowAdminEnquiryDetailPage
+  }
+
+  if (normalizedPath === '/admin/customers') {
+    return TowAdminCustomersPage
+  }
+
+  if (normalizedPath.startsWith('/admin/customers/')) {
+    return TowAdminCustomerDetailPage
+  }
+
+  if (normalizedPath === '/admin/signature') {
+    return TowAdminSignaturePage
+  }
+
+  if (normalizedPath === '/admin/offer') {
+    return TowAdminOfferPage
+  }
+
+  if (normalizedPath === '/admin/emails') {
+    return TowAdminEmailsPage
   }
 
   if (normalizedPath === '/admin/brand') {
@@ -321,7 +374,13 @@ const isMinimalAuthPath = (path: string) => {
   if (path === '/portal' || path === '/admin/login' || path === '/logged-out' || path === '/login') {
     return true
   }
-  if (path === '/admin/brand' || path === '/brand' || path.startsWith('/brand/')) {
+  if (
+    path === '/admin/brand' ||
+    path === '/brand' ||
+    path.startsWith('/brand/') ||
+    path === '/admin' ||
+    path.startsWith('/admin/')
+  ) {
     return true
   }
   if (path.startsWith('/portal/')) {
