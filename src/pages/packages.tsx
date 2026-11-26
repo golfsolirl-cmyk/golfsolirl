@@ -436,7 +436,7 @@ function PackageAdminPage() {
                     </div>
 
                     <div className="mt-auto pt-6">
-                      <LuxuryButton className="w-full justify-center" href="#enquire">
+                      <LuxuryButton className="w-full justify-center" href="/quote">
                         Enquire on this format
                       </LuxuryButton>
                     </div>

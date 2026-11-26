@@ -3,6 +3,12 @@ import { randomUUID } from 'node:crypto'
 import { requireAdminFromBearer } from './auth-verify-admin.mjs'
 import { sendTripStepUpdateEmail } from './trip-step-update-email.mjs'
 import { getGsolSiteUrl } from './site-url.mjs'
+import {
+  downloadTowDocumentPdf,
+  resendTowDocument,
+  sendTowDocument
+} from './tow-document-send.mjs'
+import { resolveEnquiryFormType } from '../shared/enquiry-form-type.mjs'
 
 const throwStatus = (message, statusCode = 400) => {
   const e = new Error(message)
@@ -60,6 +66,15 @@ const mapEnquiry = (row) => {
     blank(fp.interest) ||
     ''
   const formKey = blank(fp.form) || blank(row.source) || 'enquiry'
+  const formType = resolveEnquiryFormType({
+    formType: row.form_type,
+    formTypeLabel: row.form_type_label,
+    formSourcePage: row.form_source_page,
+    formKey,
+    formPayload: fp,
+    interest,
+    source: row.source
+  })
   const amount =
     typeof row.amount_due_eur === 'number'
       ? row.amount_due_eur
@@ -83,6 +98,11 @@ const mapEnquiry = (row) => {
     interest: interest.slice(0, 280),
     message: interest,
     formKey,
+    formType: formType.id,
+    formTypeLabel: formType.label,
+    formTypeShort: formType.shortLabel,
+    formSourcePage: formType.sourcePage || '',
+    formTypeBadgeClass: formType.badgeClass,
     requestedServices: row.requested_services || null,
     adminStatus: row.admin_status || 'new',
     adminPrivateNotes: row.admin_private_notes || '',
@@ -176,7 +196,7 @@ export const handleTowAdmin = async (env = process.env, meta = {}) => {
     const { data, error } = await admin
       .from('enquiries')
       .select(
-        'id, created_at, email, phone, phone_e164, form_payload, source, admin_status, admin_private_notes, payment_status, payment_reference, amount_due_eur, amount_total_eur, paid_via, payment_customer_reported_at, last_payment_at, requested_services'
+        'id, created_at, email, phone, phone_e164, form_payload, source, form_type, form_type_label, form_source_page, admin_status, admin_private_notes, payment_status, payment_reference, amount_due_eur, amount_total_eur, paid_via, payment_customer_reported_at, last_payment_at, requested_services, reference_id, full_name, interest, trip_tracker, email_trip_on_step_change, trip_step_email_log'
       )
       .order('created_at', { ascending: false })
       .limit(500)
@@ -227,11 +247,13 @@ export const handleTowAdmin = async (env = process.env, meta = {}) => {
     if (body.paymentUi === 'paid_in_full' || body.paymentStatus === 'paid_in_full') {
       patch.payment_status = 'paid_in_full'
       patch.last_payment_at = new Date().toISOString()
+      patch.payment_customer_reported_at = null
     }
     if (body.paymentUi === 'deposit_received') patch.payment_status = 'deposit_received'
     if (body.paymentUi === 'refunded') patch.payment_status = 'refunded'
 
     let stepEmailResult = null
+    let receiptResult = null
     if (body.tripStep && typeof body.tripStep === 'object') {
       const stepId = blank(body.tripStep.id)
       const status = blank(body.tripStep.status)
@@ -284,13 +306,61 @@ export const handleTowAdmin = async (env = process.env, meta = {}) => {
       }
     }
 
-    if (Object.keys(patch).length === 0) throwStatus('Nothing to update.')
-    const { data, error } = await admin.from('enquiries').update(patch).eq('id', id).select('*').maybeSingle()
-    if (error) throwStatus(error.message, 500)
+    if (Object.keys(patch).length === 0 && !body.emailReceipt) throwStatus('Nothing to update.')
+    let data = existing
+    if (Object.keys(patch).length > 0) {
+      const updated = await admin.from('enquiries').update(patch).eq('id', id).select('*').maybeSingle()
+      if (updated.error) throwStatus(updated.error.message, 500)
+      data = updated.data
+    }
+
+    // One-click receipt when marking Paid with emailReceipt
+    if (
+      body.emailReceipt === true &&
+      (body.paymentUi === 'paid_in_full' || body.paymentStatus === 'paid_in_full')
+    ) {
+      const mapped = mapEnquiry(data)
+      if (mapped.email) {
+        const { data: prof } = await admin
+          .from('profiles')
+          .select('id')
+          .or(`linked_enquiry_id.eq.${id},email.eq.${mapped.email}`)
+          .limit(1)
+          .maybeSingle()
+        const profileId = prof?.id || null
+        try {
+          receiptResult = await sendTowDocument(admin, env, {
+            kind: 'receipt',
+            email: mapped.email,
+            name: mapped.name,
+            phone: mapped.phone,
+            title: 'Payment receipt',
+            summary: `Payment received for enquiry ${mapped.reference || id.slice(0, 8)}.`,
+            amountEur:
+              typeof body.amountDueEur === 'number'
+                ? body.amountDueEur
+                : typeof mapped.amountDue === 'number'
+                  ? mapped.amountDue
+                  : 0,
+            enquiryId: id,
+            profileId,
+            createdBy: null,
+            paidVia: blank(body.paidVia) || blank(data.paid_via) || 'monzo'
+          })
+        } catch (err) {
+          receiptResult = {
+            ok: false,
+            message: err instanceof Error ? err.message : 'Receipt email failed'
+          }
+        }
+      }
+    }
+
     return {
       ok: true,
       enquiry: mapEnquiry(data),
-      stepEmail: stepEmailResult
+      stepEmail: stepEmailResult,
+      receipt: receiptResult
     }
   }
 
@@ -310,17 +380,147 @@ export const handleTowAdmin = async (env = process.env, meta = {}) => {
       .limit(2000)
     if (error) throwStatus(error.message, 500)
     const rows = (data || []).map(mapEnquiry)
-    const header = ['Reference', 'Received', 'Name', 'Email', 'Phone', 'Type', 'Interest', 'Payment', 'Amount', 'Status']
+    const header = [
+      'Reference',
+      'Received',
+      'Name',
+      'Email',
+      'Phone',
+      'Form type',
+      'Form type id',
+      'Form key',
+      'Source page',
+      'Interest',
+      'Payment',
+      'Amount',
+      'Status'
+    ]
     const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`
     const lines = [
       header.join(','),
       ...rows.map((r) =>
-        [r.reference, r.createdAt, r.name, r.email, r.phone, r.formKey, r.interest, r.paymentUi, r.amountDue ?? '', r.adminStatus]
+        [
+          r.reference,
+          r.createdAt,
+          r.name,
+          r.email,
+          r.phone,
+          r.formTypeLabel,
+          r.formType,
+          r.formKey,
+          r.formSourcePage,
+          r.interest,
+          r.paymentUi,
+          r.amountDue ?? '',
+          r.adminStatus
+        ]
           .map(esc)
           .join(',')
       )
     ]
     return { ok: true, csv: lines.join('\n'), filename: `golfsol-enquiries-${new Date().toISOString().slice(0, 10)}.csv` }
+  }
+
+  if (action === 'send_document') {
+    const user = await requireAdmin(meta, env)
+    const kind = blank(body.kind)
+    if (!['quote', 'invoice', 'receipt'].includes(kind)) throwStatus('kind must be quote, invoice, or receipt.')
+    const enquiryId = blank(body.enquiryId) || null
+    const customerId = blank(body.customerId) || null
+    let email = blank(body.email).toLowerCase()
+    let name = blank(body.name)
+    let phone = blank(body.phone)
+    let profileId = customerId || null
+    let amountEur = typeof body.amountEur === 'number' ? body.amountEur : Number(body.amountEur)
+
+    if (enquiryId) {
+      const { data: enq, error } = await admin.from('enquiries').select('*').eq('id', enquiryId).maybeSingle()
+      if (error) throwStatus(error.message, 500)
+      if (!enq) throwStatus('Enquiry not found.', 404)
+      const mapped = mapEnquiry(enq)
+      email = email || mapped.email
+      name = name || mapped.name
+      phone = phone || mapped.phone
+      if (!Number.isFinite(amountEur) || amountEur <= 0) amountEur = mapped.amountDue || 0
+      if (!profileId) {
+        const { data: prof } = await admin
+          .from('profiles')
+          .select('id')
+          .or(`linked_enquiry_id.eq.${enquiryId},email.eq.${email}`)
+          .limit(1)
+          .maybeSingle()
+        profileId = prof?.id || null
+      }
+    } else if (customerId) {
+      const { data: cust, error } = await admin.from('profiles').select('*').eq('id', customerId).maybeSingle()
+      if (error) throwStatus(error.message, 500)
+      if (!cust) throwStatus('Customer not found.', 404)
+      email = email || blank(cust.email)
+      name = name || blank(cust.full_name)
+      phone = phone || blank(cust.phone_e164)
+      profileId = cust.id
+    }
+
+    const result = await sendTowDocument(admin, env, {
+      kind,
+      email,
+      name,
+      phone,
+      title: blank(body.title) || undefined,
+      summary: blank(body.summary) || blank(body.description) || undefined,
+      amountEur: Number.isFinite(amountEur) ? amountEur : 0,
+      lines: Array.isArray(body.lines) ? body.lines : undefined,
+      validUntil: blank(body.validUntil) || undefined,
+      dueDate: blank(body.dueDate) || undefined,
+      enquiryId,
+      profileId,
+      createdBy: user?.id || null,
+      paidVia: blank(body.paidVia) || 'monzo',
+      invoiceMode: blank(body.invoiceMode) || 'full'
+    })
+    return result
+  }
+
+  if (action === 'resend_document') {
+    const result = await resendTowDocument(admin, env, {
+      deskQuoteId: blank(body.deskQuoteId) || blank(body.id),
+      profileId: blank(body.customerId) || null
+    })
+    return result
+  }
+
+  if (action === 'download_document') {
+    return downloadTowDocumentPdf(admin, blank(body.deskQuoteId) || blank(body.id))
+  }
+
+  if (action === 'list_documents') {
+    const email = blank(body.email).toLowerCase()
+    const enquiryId = blank(body.enquiryId)
+    const profileId = blank(body.customerId)
+    let q = admin.from('desk_quotes').select('*').order('created_at', { ascending: false }).limit(100)
+    if (enquiryId) q = q.eq('enquiry_id', enquiryId)
+    else if (profileId) q = q.eq('profile_id', profileId)
+    else if (email) q = q.ilike('customer_email', email)
+    else throwStatus('enquiryId, customerId, or email required.')
+    const { data, error } = await q
+    if (error) throwStatus(error.message, 500)
+    const origin = getGsolSiteUrl().replace(/\/+$/, '')
+    return {
+      ok: true,
+      documents: (data || []).map((row) => ({
+        id: row.id,
+        kind: row.document_kind || row.kind,
+        reference: row.reference_code,
+        title: row.title,
+        amountCents: row.amount_cents,
+        status: row.status,
+        createdAt: row.created_at,
+        dueDate: row.due_date,
+        validUntil: row.valid_until,
+        payUrl: `${origin}/pay/${row.decision_token}`,
+        customerReportedAt: row.customer_reported_paid_at || null
+      }))
+    }
   }
 
   if (action === 'customers_list') {

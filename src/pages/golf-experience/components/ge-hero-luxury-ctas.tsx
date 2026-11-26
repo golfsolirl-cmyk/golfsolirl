@@ -109,7 +109,7 @@ export function GeHeroLuxuryCtas({ pageContext = 'default' }: { readonly pageCon
           >
           {/* Primary — metallic gold, van mark, shimmer */}
           <m.a
-            href="/contact"
+            href="/quote"
             className={cx(
               'ge-luxury-cta-primary group relative flex min-h-[88px] w-full flex-1 items-center overflow-hidden rounded-[28px] sm:min-h-[110px] sm:max-w-xl sm:flex-initial sm:min-w-[min(100%,420px)] lg:min-w-[460px]',
               'shadow-[0_12px_40px_rgba(0,0,0,0.45),0_0_0_1px_rgba(255,255,255,0.06)_inset]',

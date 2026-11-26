@@ -24,7 +24,7 @@ export const footerColumns = [
       { label: 'Hotels', href: '/accommodation' },
       { label: 'Golf courses', href: '/golf-courses' },
       { label: 'Málaga airport transfers', href: '/services/transport' },
-      { label: 'Get a quote', href: '/contact' }
+      { label: 'Get a quote', href: '/quote' }
     ]
   },
   {

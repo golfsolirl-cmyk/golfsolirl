@@ -99,11 +99,16 @@ export type TripQuotePreset = {
   readonly hotels?: readonly string[]
   readonly hotel?: string | null
   readonly pageLabel?: string
+  /** Pathname for form_type / _sourcePage */
+  readonly sourcePage?: string
   /** Form registry key for form_payload.form */
   readonly formKey?: string
+  /** e.g. callback | quote | booking */
+  readonly intent?: string | null
+  readonly area?: string | null
 }
 
-/** Build URL query for /quote from chooser selections. */
+/** Build URL query for /quote from chooser selections / CTAs. */
 export function buildTripQuoteHref(preset: {
   readonly courses?: readonly string[]
   readonly hotels?: readonly string[]
@@ -114,11 +119,23 @@ export function buildTripQuoteHref(preset: {
   readonly bundle?: string | null
   readonly tier?: string | null
   readonly from?: string
+  readonly page?: string
+  readonly nights?: number | null
+  readonly rounds?: number | null
+  readonly area?: string | null
+  readonly intent?: string | null
+  readonly bundleName?: string | null
 }): string {
   const params = new URLSearchParams()
   if (preset.from) params.set('from', preset.from)
+  if (preset.page) params.set('page', preset.page)
   if (preset.bundle) params.set('bundle', preset.bundle)
+  if (preset.bundleName) params.set('bundleName', preset.bundleName)
   if (preset.tier) params.set('tier', preset.tier)
+  if (preset.nights != null && Number.isFinite(preset.nights)) params.set('nights', String(preset.nights))
+  if (preset.rounds != null && Number.isFinite(preset.rounds)) params.set('rounds', String(preset.rounds))
+  if (preset.area) params.set('area', preset.area)
+  if (preset.intent) params.set('intent', preset.intent)
   if (preset.courses?.length) params.set('courses', preset.courses.join('|'))
   if (preset.hotel) params.set('hotel', preset.hotel)
   if (preset.hotels?.length) params.set('hotels', preset.hotels.join('|'))
@@ -127,12 +144,14 @@ export function buildTripQuoteHref(preset: {
   if (preset.golf) params.set('svc_golf', '1')
   // Legacy chooser flag
   if (preset.transfers) params.set('transfers', '1')
-  return `/quote?${params.toString()}`
+  const qs = params.toString()
+  return qs ? `/quote?${qs}` : '/quote'
 }
 
 export function readTripQuotePresetFromSearch(search: string): TripQuotePreset {
   const params = new URLSearchParams(search.startsWith('?') ? search.slice(1) : search)
   const from = params.get('from')?.trim() || ''
+  const page = params.get('page')?.trim() || ''
   const courses = (params.get('courses') || '')
     .split('|')
     .map((s) => s.trim())
@@ -142,6 +161,10 @@ export function readTripQuotePresetFromSearch(search: string): TripQuotePreset {
     .map((s) => s.trim())
     .filter(Boolean)
   const hotel = params.get('hotel')?.trim() || null
+  const nightsRaw = params.get('nights')
+  const roundsRaw = params.get('rounds')
+  const nights = nightsRaw && Number.isFinite(Number(nightsRaw)) ? Number(nightsRaw) : null
+  const rounds = roundsRaw && Number.isFinite(Number(roundsRaw)) ? Number(roundsRaw) : null
   const hasSvcParam =
     params.has('svc_transfers') ||
     params.has('svc_accommodation') ||
@@ -172,13 +195,21 @@ export function readTripQuotePresetFromSearch(search: string): TripQuotePreset {
     }
   }
 
+  const sourcePage = page || (from && from.startsWith('/') ? from : from ? `/${from}` : '/quote')
+
   return {
     services,
     bundleSlug: params.get('bundle'),
+    bundleName: params.get('bundleName'),
+    nights,
+    rounds,
     tier: params.get('tier'),
     courses,
     hotels,
     hotel,
-    pageLabel: from ? `/${from}` : '/quote'
+    pageLabel: sourcePage,
+    sourcePage,
+    intent: params.get('intent'),
+    area: params.get('area')
   }
 }

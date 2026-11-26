@@ -4,9 +4,11 @@ import { TripTrackerPanel } from '../../components/tow-admin/trip-tracker-panel'
 import { ensureAdminSession, towAdmin } from '../../lib/tow-admin-api'
 import {
   ENQUIRY_ADMIN_STATUSES,
+  FORM_TYPE_BADGE_CLASS,
   PAID_VIA_OPTIONS,
   formatEuro,
   formatIrishDateTime,
+  formTypeLabel,
   type TripStepStatus
 } from '../../lib/tow-admin-constants'
 
@@ -20,6 +22,9 @@ type Enquiry = {
   interest: string
   message: string
   formKey: string
+  formType?: string
+  formTypeLabel?: string
+  formSourcePage?: string
   adminStatus: string
   adminPrivateNotes: string
   paymentUi: string
@@ -136,16 +141,56 @@ export function TowAdminEnquiryDetailPage() {
     setBusy(true)
     setMsg(null)
     try {
-      await towAdmin('enquiries_patch', {
+      const res = await towAdmin<{ receipt?: { ok?: boolean; message?: string } }>('enquiries_patch', {
         id,
         paymentUi: paySeg,
         paidVia: paySeg === 'paid_in_full' ? paidVia : undefined,
-        amountDueEur: amount ? Number(amount) : undefined
+        amountDueEur: amount ? Number(amount) : undefined,
+        emailReceipt: emailReceipt && paySeg === 'paid_in_full'
       })
-      setMsg(emailReceipt && paySeg === 'paid_in_full' ? 'Marked paid (receipt email uses existing payment flows when wired).' : 'Payment updated.')
+      if (emailReceipt && paySeg === 'paid_in_full') {
+        setMsg(res.receipt?.message || (res.receipt?.ok === false ? 'Marked paid; receipt email failed.' : 'Marked paid and receipt emailed.'))
+      } else {
+        setMsg('Payment updated.')
+      }
       await load()
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Save failed')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const sendDoc = async (kind: 'quote' | 'invoice' | 'receipt') => {
+    if (!enq?.email) {
+      setError('Enquiry needs an email to send documents.')
+      return
+    }
+    setBusy(true)
+    setMsg(null)
+    setError(null)
+    try {
+      const due = new Date()
+      due.setDate(due.getDate() + 14)
+      const valid = due.toISOString().slice(0, 10)
+      const res = await towAdmin<{ message?: string; payUrl?: string; reference?: string }>('send_document', {
+        kind,
+        enquiryId: id,
+        email: enq.email,
+        name: enq.name,
+        phone: enq.phone,
+        amountEur: amount ? Number(amount) : enq.amountDue || 0,
+        title: kind === 'quote' ? 'Trip quote' : kind === 'invoice' ? 'Trip invoice' : 'Payment receipt',
+        summary: enq.interest || '',
+        validUntil: kind === 'quote' ? valid : undefined,
+        dueDate: kind === 'invoice' ? valid : undefined,
+        paidVia,
+        invoiceMode: 'full'
+      })
+      setMsg(res.message || `${kind} sent.`)
+      await load()
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Send failed')
     } finally {
       setBusy(false)
     }
@@ -195,7 +240,17 @@ export function TowAdminEnquiryDetailPage() {
     ['Received', `${formatIrishDateTime(enq.createdAt)} (Irish time)`],
     ['Amount due', <span key="a" className="font-bold">{formatEuro(enq.amountDue)}</span>],
     ['Payment', enq.paymentUi.replace(/_/g, ' ')],
-    ['Type', enq.formKey],
+    [
+      'Form type',
+      <span
+        key="ft"
+        className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${FORM_TYPE_BADGE_CLASS[enq.formType || ''] || FORM_TYPE_BADGE_CLASS.unknown}`}
+      >
+        {formTypeLabel(enq.formType, enq.formTypeLabel)}
+        {enq.formSourcePage ? ` · ${enq.formSourcePage}` : ''}
+      </span>
+    ],
+    ['Form key', enq.formKey],
     ['Name', enq.name],
     [
       'Email',
@@ -228,7 +283,14 @@ export function TowAdminEnquiryDetailPage() {
         ← All enquiries
       </a>
       <h1 className="mt-2 font-ge text-3xl font-extrabold text-gs-dark">{enq.name}</h1>
-      <p className="text-slate-500">{enq.formKey}</p>
+      <p className="mt-1 flex flex-wrap items-center gap-2 text-slate-500">
+        <span
+          className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${FORM_TYPE_BADGE_CLASS[enq.formType || ''] || FORM_TYPE_BADGE_CLASS.unknown}`}
+        >
+          {formTypeLabel(enq.formType, enq.formTypeLabel)}
+        </span>
+        <span>{enq.formKey}</span>
+      </p>
       {error ? <p className="mt-3 text-sm text-rose-700">{error}</p> : null}
       {msg ? <p className="mt-3 text-sm text-emerald-700">{msg}</p> : null}
 
@@ -286,19 +348,30 @@ export function TowAdminEnquiryDetailPage() {
           </a>
 
           <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
-            <p className="font-ge font-extrabold text-gs-dark">Quote / offer</p>
-            <p className="mt-1 text-sm text-slate-500">One-click offer emails for transfers, accommodation, golf.</p>
+            <p className="font-ge font-extrabold text-gs-dark">Send documents</p>
+            <p className="mt-1 text-sm text-slate-500">
+              Quote, invoice (Monzo pay page), or receipt — PDF + Golf Sol email. Logged on the customer record.
+            </p>
             <div className="mt-3 flex flex-col gap-2">
-              {(['transfers', 'accommodation', 'golf_courses'] as const).map((svc) => (
-                <a
-                  key={svc}
-                  href={`/dashboard/admin`}
-                  className="rounded-lg border border-slate-300 px-3 py-2 text-center text-sm font-semibold hover:bg-slate-50"
+              {(
+                [
+                  ['quote', 'Create & send QUOTE'],
+                  ['invoice', 'Create & send INVOICE'],
+                  ['receipt', 'Send RECEIPT']
+                ] as const
+              ).map(([kind, label]) => (
+                <button
+                  key={kind}
+                  type="button"
+                  disabled={busy || !enq.email}
+                  onClick={() => void sendDoc(kind)}
+                  className="rounded-lg border border-slate-300 px-3 py-2.5 text-center text-sm font-semibold hover:bg-slate-50 disabled:opacity-50"
                 >
-                  Offer: {svc.replace('_', ' ')} (opens desk tools)
-                </a>
+                  {label}
+                </button>
               ))}
             </div>
+            {!enq.email ? <p className="mt-2 text-xs text-rose-600">Needs an email on the enquiry.</p> : null}
           </div>
 
           <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">

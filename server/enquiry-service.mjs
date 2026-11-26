@@ -10,6 +10,10 @@ import { emailFonts, gs, emailAmbientGradientFillStyle } from './branded-email-s
 import { buildGsolTransactionalEmail, finalizeGsolEmailHtml, getGsolSiteUrl } from './email-layout.mjs'
 import { buildBrandedEnquiryEmailHtml } from './branded-enquiry-email.mjs'
 import { loadSitePaymentForEmail, paymentBlockFromSettings } from './load-site-payment-for-email.mjs'
+import {
+  enquiryFormTypeSubjectTag,
+  resolveEnquiryFormType
+} from '../shared/enquiry-form-type.mjs'
 import { runPostEnquiryPortalInviteJob } from './post-enquiry-portal-invite.mjs'
 import { insertTransferBookingFromWebsiteEnquiry } from './insert-transfer-booking-from-enquiry.mjs'
 import { assertEnquiryDriverDatesNotBlocked } from './enquiry-booked-dates.mjs'
@@ -231,20 +235,31 @@ const sanitizeFormPayload = (raw) => {
 
 export const validateEnquiryPayload = (payload) => {
   const fullName = typeof payload?.fullName === 'string' ? payload.fullName.trim() : ''
-  const email = typeof payload?.email === 'string' ? payload.email.trim().toLowerCase() : ''
+  const emailRaw = typeof payload?.email === 'string' ? payload.email.trim().toLowerCase() : ''
   const interest = typeof payload?.interest === 'string' ? payload.interest.trim() : ''
   const phoneWhatsApp = typeof payload?.phoneWhatsApp === 'string' ? payload.phoneWhatsApp.trim() : ''
   const bestTimeToCall = typeof payload?.bestTimeToCall === 'string' ? payload.bestTimeToCall.trim() : ''
+  const formPayload = sanitizeFormPayload(payload?.formPayload)
+  const isCallback = formPayload?.form === 'callback_request'
 
-  if (!fullName || !email || !interest || !phoneWhatsApp || !bestTimeToCall) {
+  if (isCallback) {
+    if (!fullName || !phoneWhatsApp || !bestTimeToCall) {
+      const error = new Error('Name, phone number, and best time to call are required.')
+      error.statusCode = 400
+      throw error
+    }
+    if (emailRaw && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailRaw)) {
+      const error = new Error('Please enter a valid email address, or leave it blank.')
+      error.statusCode = 400
+      throw error
+    }
+  } else if (!fullName || !emailRaw || !interest || !phoneWhatsApp || !bestTimeToCall) {
     const error = new Error(
       'Full name, email address, trip interest, phone / WhatsApp, and best time to call are required.'
     )
     error.statusCode = 400
     throw error
-  }
-
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailRaw)) {
     const error = new Error('Please enter a valid email address.')
     error.statusCode = 400
     throw error
@@ -257,16 +272,17 @@ export const validateEnquiryPayload = (payload) => {
     throw error
   }
 
-  const formPayload = sanitizeFormPayload(payload?.formPayload)
   const requestedServices = sanitizeRequestedServices(payload?.requestedServices)
+  const email = emailRaw || (isCallback ? '' : emailRaw)
 
   return {
     fullName,
     email,
-    interest,
+    interest: interest || (isCallback ? 'Callback request' : interest),
     phoneWhatsApp,
     bestTimeToCall,
     phoneE164: phoneCheck.phoneE164,
+    isCallback: Boolean(isCallback),
     ...(formPayload ? { formPayload } : {}),
     ...(requestedServices ? { requestedServices } : {})
   }
@@ -311,6 +327,10 @@ const resolveRequestedServices = (enquiry, formPayload) => {
 const TERMS_ACCEPTED_FIELD = '_termsAccepted'
 
 const assertWebsiteEnquiryTermsAccepted = (enquiry) => {
+  // Compact callback card: name + phone + best time only — no terms checkbox.
+  if (enquiry.isCallback || enquiry.formPayload?.form === 'callback_request') {
+    return
+  }
   const accepted = enquiry.formPayload?.fields?.[TERMS_ACCEPTED_FIELD]
   if (accepted === 'yes') {
     return
@@ -831,13 +851,23 @@ const recordEnquiryToSupabase = async (enquiry, enquiryId, env) => {
       }
     }
     const phoneE164 = computePhoneUniquenessKey(enquiry.phoneWhatsApp)
+    const formTypeResolved = resolveEnquiryFormType({
+      formPayload: mergedFormPayload,
+      interest: enquiry.interest,
+      source: enquiry.source || null,
+      formType: enquiry.isCallback ? 'callback' : null,
+      formTypeLabel: enquiry.isCallback ? 'Callback' : null
+    })
     const row = {
       reference_id: enquiryId,
-      email: enquiry.email,
+      email: enquiry.email || '',
       full_name: enquiry.fullName,
       interest: enquiry.interest,
       phone_whatsapp: enquiry.phoneWhatsApp,
       best_time_to_call: enquiry.bestTimeToCall,
+      form_type: enquiry.isCallback ? 'callback' : formTypeResolved.id,
+      form_type_label: enquiry.isCallback ? 'Callback' : formTypeResolved.label,
+      ...(formTypeResolved.sourcePage ? { form_source_page: formTypeResolved.sourcePage } : {}),
       ...(phoneE164 ? { phone_e164: phoneE164 } : {})
     }
     if (anchorRef) {
@@ -878,6 +908,23 @@ const recordEnquiryToSupabase = async (enquiry, enquiryId, env) => {
       error = retry.error
       if (!retry.error) {
         console.warn('[enquiry-service] enquiries row saved without form_payload; add column (see supabase migrations).')
+      }
+    }
+
+    if (
+      error &&
+      (String(error.message).toLowerCase().includes('form_type') ||
+        String(error.message).toLowerCase().includes('form_source_page'))
+    ) {
+      delete row.form_type
+      delete row.form_type_label
+      delete row.form_source_page
+      const retryType = await sb.from('enquiries').insert(row)
+      error = retryType.error
+      if (!retryType.error) {
+        console.warn(
+          '[enquiry-service] enquiries row saved without form_type; apply migration 20261128150000_enquiries_form_type.sql.'
+        )
       }
     }
 
@@ -1075,7 +1122,7 @@ export const handleEnquirySubmission = async (payload, env = process.env, runtim
 
       let portalPrivateUrl = ''
       try {
-        if (sbUrl && sbKey) {
+        if (sbUrl && sbKey && enquiry.email && !enquiry.isCallback) {
           const { createClient } = await import('@supabase/supabase-js')
           const { ensurePortalAccessForEmail } = await import('./portal-otp-auth.mjs')
           const sb = createClient(sbUrl, sbKey, {
@@ -1105,29 +1152,70 @@ export const handleEnquirySubmission = async (payload, env = process.env, runtim
         amountDueEur: null
       })
 
-      const [customerResult, ownerResult] = await Promise.all([
-        resend.emails.send({
-          from: fromEmail,
-          to: [customerTo],
-          subject: `Your Golf Sol Ireland enquiry confirmation (${enquiryId})`,
-          html: buildCustomerHtml({
-            ...enquiry,
-            enquiryId,
-            enquiryDate,
-            portalPrivateUrl,
-            payment
-          }),
-          attachments: enquiryPdfAttachments
-        }),
-        resend.emails.send({
-          from: fromEmail,
-          to: [ownerTo],
-          replyTo: enquiry.email,
-          subject: `New Golf Sol Ireland enquiry ${enquiryId} from ${enquiry.fullName}`,
-          html: buildOwnerHtml({ ...enquiry, enquiryId, enquiryDate }),
-          attachments: enquiryPdfAttachments
-        })
-      ])
+      const formTypeResolved = resolveEnquiryFormType({
+        formPayload: enquiry.formPayload,
+        interest: enquiry.interest,
+        formType: enquiry.isCallback ? 'callback' : null,
+        formTypeLabel: enquiry.isCallback ? 'Callback' : null
+      })
+      const typeTag = enquiryFormTypeSubjectTag(formTypeResolved)
+      const ownerSubject = enquiry.isCallback
+        ? `${typeTag} New callback from ${enquiry.fullName} (${enquiryId})`
+        : `${typeTag} New enquiry from ${enquiry.fullName} (${enquiryId})`
+
+      const ownerSend = resend.emails.send({
+        from: fromEmail,
+        to: [ownerTo],
+        ...(enquiry.email ? { replyTo: enquiry.email } : {}),
+        subject: ownerSubject,
+        html: buildOwnerHtml({ ...enquiry, enquiryId, enquiryDate }),
+        attachments: enquiry.isCallback ? undefined : enquiryPdfAttachments
+      })
+
+      let customerSend = Promise.resolve({ error: null })
+      if (enquiry.email) {
+        if (enquiry.isCallback) {
+          const { buildLeanTransactionalEmailHtml } = await import('./email-layout.mjs')
+          const first = enquiry.fullName.split(/\s+/)[0] || 'there'
+          const html = finalizeGsolEmailHtml(
+            buildLeanTransactionalEmailHtml({
+              documentTitle: 'Callback request received',
+              preheader: `We’ll ring you (${enquiry.bestTimeToCall}). Ref ${enquiryId}.`,
+              kicker: `Callback · ${enquiryId}`,
+              title: `Thanks ${first} — we’ll call you`,
+              lead: `We’ve got your number. Our Irish team will ring you ${enquiry.bestTimeToCall.toLowerCase()} to sort your Costa del Sol trip. No forms needed.`,
+              rows: [
+                ['Reference', enquiryId],
+                ['Phone', enquiry.phoneWhatsApp],
+                ['Best time', enquiry.bestTimeToCall]
+              ],
+              footerHtml: `Callback confirmation · ${enquiryId}.`
+            })
+          )
+          customerSend = resend.emails.send({
+            from: fromEmail,
+            to: [customerTo],
+            subject: `Golf Sol Ireland — we’ll call you (${enquiryId})`,
+            html
+          })
+        } else {
+          customerSend = resend.emails.send({
+            from: fromEmail,
+            to: [customerTo],
+            subject: `Your Golf Sol Ireland enquiry confirmation (${enquiryId})`,
+            html: buildCustomerHtml({
+              ...enquiry,
+              enquiryId,
+              enquiryDate,
+              portalPrivateUrl,
+              payment
+            }),
+            attachments: enquiryPdfAttachments
+          })
+        }
+      }
+
+      const [customerResult, ownerResult] = await Promise.all([customerSend, ownerSend])
 
       const sendError = customerResult.error ?? ownerResult.error
       if (sendError) {
@@ -1136,9 +1224,13 @@ export const handleEnquirySubmission = async (payload, env = process.env, runtim
         return
       }
 
-      await insertWebsiteFormPackageBuildIfProfileExists(enquiry, enquiryId, env)
-      await insertTransferBookingFromWebsiteEnquiry(enquiry, enquiryId, env)
-      await runPostEnquiryPortalInviteJob({ enquiry, enquiryId, enquiryDate, env })
+      if (!enquiry.isCallback) {
+        await insertWebsiteFormPackageBuildIfProfileExists(enquiry, enquiryId, env)
+        await insertTransferBookingFromWebsiteEnquiry(enquiry, enquiryId, env)
+        if (enquiry.email) {
+          await runPostEnquiryPortalInviteJob({ enquiry, enquiryId, enquiryDate, env })
+        }
+      }
     } catch (err) {
       console.error('[enquiry-service] background enquiry delivery failed:', err)
     }
@@ -1153,7 +1245,11 @@ export const handleEnquirySubmission = async (payload, env = process.env, runtim
   return {
     success: true,
     referenceId: enquiryId,
-    message: 'Your enquiry has been sent. We will email your confirmation and PDFs shortly.'
+    message: enquiry.isCallback
+      ? enquiry.email
+        ? 'Thanks — we’ll call you. A short confirmation is on its way by email.'
+        : 'Thanks — we’ll call you on the number you left.'
+      : 'Your enquiry has been sent. We will email your confirmation and PDFs shortly.'
   }
 }
 

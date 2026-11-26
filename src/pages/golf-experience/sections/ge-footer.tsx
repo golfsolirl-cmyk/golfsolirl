@@ -157,7 +157,7 @@ export function GeFooter() {
               <GeButton href="/leave-a-review" variant="outline-white" size="sm">
                 Leave us a review
               </GeButton>
-              <GeButton href="/contact" variant="outline-white" size="sm">
+              <GeButton href="/quote" variant="outline-white" size="sm">
                 Get a quote
               </GeButton>
             </div>

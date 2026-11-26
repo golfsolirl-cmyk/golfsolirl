@@ -248,7 +248,7 @@ export function GeFacts() {
             variants={ctaItem}
             className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4"
           >
-            <GeButton href="/contact" variant="gs-green" size="lg" className="w-full sm:w-auto">
+            <GeButton href="/quote" variant="gs-green" size="lg" className="w-full sm:w-auto">
               {factsCopy.ctaLabel}
               <ArrowRight className="ml-1 h-4 w-4" aria-hidden />
             </GeButton>

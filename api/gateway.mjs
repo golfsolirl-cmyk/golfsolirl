@@ -62,6 +62,7 @@ import {
 } from '../server/client-enquiry-document-email.mjs'
 import { handleAdminMail, handleGmailOauthCallback } from '../server/admin-mail-service.mjs'
 import { handleDeskCustomers, handleDeskQuoteDecision } from '../server/desk-quote-service.mjs'
+import { handleMonzoPay } from '../server/monzo-pay-service.mjs'
 import { readIncomingMessageBodyUtf8, readIncomingMessageBodyBuffer } from '../server/vercel-read-body.mjs'
 import {
   handleAdminLogin,
@@ -1033,6 +1034,27 @@ export default async function handler(req, res) {
         const raw = await readIncomingMessageBodyUtf8(req)
         const payload = raw ? JSON.parse(raw) : {}
         const result = await handleDeskQuoteDecision(payload, process.env)
+        jsonEnd(res, 200, result)
+        return
+      }
+
+      case 'monzo-pay': {
+        if (req.method !== 'POST' && req.method !== 'GET') {
+          jsonEnd(res, 405, { message: 'Method not allowed' })
+          return
+        }
+        let payload = {}
+        if (req.method === 'POST') {
+          const raw = await readIncomingMessageBodyUtf8(req)
+          payload = raw ? JSON.parse(raw) : {}
+        }
+        const urlObj = new URL(req.url || '/', 'http://localhost')
+        const query = Object.fromEntries(urlObj.searchParams.entries())
+        const result = await handleMonzoPay(process.env, {
+          method: req.method,
+          body: payload,
+          query
+        })
         jsonEnd(res, 200, result)
         return
       }

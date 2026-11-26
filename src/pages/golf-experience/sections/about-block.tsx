@@ -230,7 +230,7 @@ export function GeAboutBlock() {
                 overflow the card. The chrome rule + aligned column give the
                 section a deliberate, magazine-style sign-off. */}
             <div className="mt-10 flex flex-col items-start gap-5 border-t border-gs-green/15 pt-8">
-              <GeButton href="/contact" variant="gs-green" size="lg" className="w-full sm:w-auto">
+              <GeButton href="/quote" variant="gs-green" size="lg" className="w-full sm:w-auto">
                 {aboutCopy.cta}
                 <ArrowRight className="ml-1 h-4 w-4" aria-hidden />
               </GeButton>

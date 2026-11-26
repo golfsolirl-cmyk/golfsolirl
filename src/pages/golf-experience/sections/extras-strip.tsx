@@ -224,7 +224,7 @@ export function GeExtrasStrip() {
           {extrasCopy.closerBody}
         </p>
         <div className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center sm:justify-center sm:gap-4">
-          <GeButton href="/contact" variant="gs-green" size="md" className="w-full sm:w-auto">
+          <GeButton href="/quote" variant="gs-green" size="md" className="w-full sm:w-auto">
             {extrasCopy.primaryCta}
             <ArrowRight className="ml-1 h-4 w-4" aria-hidden />
           </GeButton>

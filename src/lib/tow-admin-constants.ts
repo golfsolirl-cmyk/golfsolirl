@@ -71,6 +71,31 @@ export const PAY_BADGE_CLASS: Record<string, string> = {
   none: 'bg-slate-100 text-slate-500'
 }
 
+/** Canonical enquiry form types (must match shared/enquiry-form-type.mjs). */
+export const ENQUIRY_FORM_TYPES = [
+  { id: 'quote', label: 'Quote request', shortLabel: 'Quote', badgeClass: 'bg-emerald-100 text-emerald-900' },
+  { id: 'booking', label: 'Booking', shortLabel: 'Booking', badgeClass: 'bg-sky-100 text-sky-900' },
+  { id: 'trip_builder', label: 'Trip builder', shortLabel: 'Trip builder', badgeClass: 'bg-violet-100 text-violet-900' },
+  { id: 'package_bundle', label: 'Package / bundle', shortLabel: 'Package', badgeClass: 'bg-amber-100 text-amber-950' },
+  { id: 'golf_map', label: 'Golf map course', shortLabel: 'Golf map', badgeClass: 'bg-lime-100 text-lime-900' },
+  { id: 'contact', label: 'Contact', shortLabel: 'Contact', badgeClass: 'bg-slate-200 text-slate-800' },
+  { id: 'callback', label: 'Callback', shortLabel: 'Callback', badgeClass: 'bg-orange-100 text-orange-950' },
+  { id: 'seo_landing', label: 'SEO landing page', shortLabel: 'SEO', badgeClass: 'bg-indigo-100 text-indigo-900' },
+  { id: 'unknown', label: 'Unknown', shortLabel: 'Unknown', badgeClass: 'bg-slate-100 text-slate-500' }
+] as const
+
+export type EnquiryFormTypeId = (typeof ENQUIRY_FORM_TYPES)[number]['id']
+
+export const FORM_TYPE_BADGE_CLASS: Record<string, string> = Object.fromEntries(
+  ENQUIRY_FORM_TYPES.map((t) => [t.id, t.badgeClass])
+)
+
+export function formTypeLabel(id: string | null | undefined, fallbackLabel?: string | null): string {
+  if (fallbackLabel?.trim()) return fallbackLabel.trim()
+  const found = ENQUIRY_FORM_TYPES.find((t) => t.id === id)
+  return found?.label || 'Unknown'
+}
+
 export function formatIrishDateTime(iso: string | null | undefined): string {
   if (!iso) return '—'
   try {

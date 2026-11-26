@@ -4,11 +4,14 @@ import { TowAdminShell } from '../../components/tow-admin/tow-admin-bar'
 import { ensureAdminSession, towAdmin } from '../../lib/tow-admin-api'
 import {
   ENQUIRY_ADMIN_STATUSES,
+  ENQUIRY_FORM_TYPES,
   ENQUIRY_PAYMENT_UI,
+  FORM_TYPE_BADGE_CLASS,
   PAY_BADGE_CLASS,
   STATUS_BADGE_CLASS,
   formatEuro,
-  formatIrishDateTime
+  formatIrishDateTime,
+  formTypeLabel
 } from '../../lib/tow-admin-constants'
 
 type EnquiryRow = {
@@ -20,6 +23,9 @@ type EnquiryRow = {
   phone: string
   interest: string
   formKey: string
+  formType?: string
+  formTypeLabel?: string
+  formSourcePage?: string
   adminStatus: string
   paymentUi: string
   amountDue: number | null
@@ -85,7 +91,7 @@ export function TowAdminEnquiriesPage() {
         if (status === 'all' && r.adminStatus === 'spam') return false
         if (status !== 'all' && r.adminStatus !== status) return false
       }
-      if (kind !== 'all' && r.formKey !== kind) return false
+      if (kind !== 'all' && (r.formType || r.formKey) !== kind) return false
       if (pay !== 'all') {
         if (pay === 'none') {
           if (r.paymentUi !== 'none' && r.amountDue != null) return false
@@ -105,7 +111,10 @@ export function TowAdminEnquiriesPage() {
   const awaitingDue = awaiting.reduce((t, r) => t + (r.amountDue || 0), 0)
   const paidCount = rows.filter((r) => r.paymentUi === 'paid_in_full').length
   const newCount = rows.filter((r) => r.adminStatus === 'new').length
-  const formKeys = useMemo(() => [...new Set(rows.map((r) => r.formKey).filter(Boolean))], [rows])
+  const formTypeIds = useMemo(() => {
+    const present = new Set(rows.map((r) => r.formType || 'unknown'))
+    return ENQUIRY_FORM_TYPES.filter((t) => present.has(t.id) || t.id === 'unknown')
+  }, [rows])
 
   const patchPay = async (id: string, paymentUi: string) => {
     setBusy(id)
@@ -203,14 +212,25 @@ export function TowAdminEnquiriesPage() {
               </option>
             ))}
           </select>
-          <select value={kind} onChange={(e) => setKind(e.target.value)} aria-label="Filter by type" className="rounded-xl border border-slate-300 px-3 py-2.5">
-            <option value="all">All types</option>
-            {formKeys.map((k) => (
-              <option key={k} value={k}>
-                {k}
-              </option>
+          <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter by form type">
+            <button
+              type="button"
+              onClick={() => setKind('all')}
+              className={`rounded-full px-3 py-1.5 text-xs font-bold ${kind === 'all' ? 'bg-gs-dark text-white' : 'bg-slate-100 text-slate-600'}`}
+            >
+              All types
+            </button>
+            {formTypeIds.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setKind(t.id)}
+                className={`rounded-full px-3 py-1.5 text-xs font-bold ${kind === t.id ? 'ring-2 ring-gs-dark ' : ''}${t.badgeClass}`}
+              >
+                {t.shortLabel}
+              </button>
             ))}
-          </select>
+          </div>
           <select value={pay} onChange={(e) => setPay(e.target.value)} aria-label="Filter by payment" className="rounded-xl border border-slate-300 px-3 py-2.5">
             <option value="all">Any payment</option>
             {ENQUIRY_PAYMENT_UI.map((s) => (
@@ -263,7 +283,14 @@ export function TowAdminEnquiriesPage() {
                       ) : null}
                       {r.phone ? <p className="text-slate-500">{r.phone}</p> : null}
                     </td>
-                    <td className="p-3">{r.formKey}</td>
+                    <td className="p-3">
+                      <span
+                        className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${FORM_TYPE_BADGE_CLASS[r.formType || ''] || FORM_TYPE_BADGE_CLASS.unknown}`}
+                        title={r.formSourcePage || r.formKey}
+                      >
+                        {formTypeLabel(r.formType, r.formTypeLabel)}
+                      </span>
+                    </td>
                     <td className="max-w-[16rem] p-3 text-slate-600">
                       <p className="line-clamp-2">{r.interest || '—'}</p>
                     </td>
