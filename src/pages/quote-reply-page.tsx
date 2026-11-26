@@ -57,7 +57,10 @@ export function QuoteReplyPage() {
   return (
     <div className="ge-page flex min-h-screen flex-col bg-[#F4F7F5] text-forest-950">
       <GeNavbar />
-      <main className="mx-auto flex w-full max-w-xl flex-1 flex-col justify-center px-5 py-16" id="main">
+      <main
+        className="ge-pad-under-fixed-header mx-auto flex w-full max-w-xl flex-1 flex-col justify-center px-5 pb-16"
+        id="main"
+      >
         <section className="rounded-[2rem] border border-forest-100 bg-white p-7 shadow-soft sm:p-10">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-700">Golf Sol Ireland</p>
           <h1 className="mt-2 font-display text-3xl font-semibold text-forest-950">{heading}</h1>

@@ -87,12 +87,15 @@ export function QuotePage() {
   return (
     <div className="ge-page min-h-screen overflow-x-hidden bg-[#F4F7F5]">
       <GeNavbar />
-      <main id="main" className="mx-auto w-full max-w-[640px] px-4 pb-28 pt-[calc(4.5rem+env(safe-area-inset-top))] sm:px-6 sm:pt-24">
+      <main
+        id="main"
+        className="ge-pad-under-fixed-header mx-auto w-full max-w-[640px] px-4 pb-16 sm:px-6 sm:pb-20"
+      >
         <header className="mb-5 sm:mb-6">
           <p className="font-ge text-[0.75rem] font-extrabold uppercase tracking-[0.14em] text-brand-700">
             GolfSol Ireland
           </p>
-          <h1 className="mt-1 font-ge text-[1.65rem] font-extrabold leading-tight text-gs-dark sm:text-3xl">
+          <h1 className="mt-1 font-ge text-[1.65rem] font-extrabold leading-[1.15] text-gs-dark sm:text-3xl">
             {heading}
           </h1>
           <p className="mt-2 max-w-prose font-ge text-[0.98rem] leading-snug text-forest-800 sm:text-base">

@@ -191,7 +191,7 @@ export function BusinessCardsShowcase() {
           className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#04140c]/92 via-[#062016]/78 to-[#04140c]"
         />
 
-        <div className="relative z-10 mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-24">
+        <div className="ge-pad-under-fixed-header relative z-10 mx-auto max-w-6xl px-5 pb-16 sm:px-8 sm:pb-24">
           <p className="bc-gold font-ge text-[0.7rem] font-extrabold uppercase tracking-[0.32em]">
             Golf Sol Ireland · Print suite
           </p>

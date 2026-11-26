@@ -3,9 +3,7 @@ export const DISMISS_STORAGE_KEYS = {
   whatsappBanner: 'gsol-dismiss-whatsapp-banner-v1',
   siteLaunchOffer: 'gsol-dismiss-site-launch-offer-v1',
   stickyCourseQuoteBar: 'gsol-dismiss-sticky-course-quote-v1',
-  stickyHotelQuoteBar: 'gsol-dismiss-sticky-hotel-quote-v1',
-  /** Mobile sticky submit on SmartTripQuoteForm — session so it can return next visit. */
-  stickyTripQuoteBar: 'gsol-dismiss-sticky-trip-quote-v1'
+  stickyHotelQuoteBar: 'gsol-dismiss-sticky-hotel-quote-v1'
 } as const
 
 export type DismissStorageKind = 'local' | 'session'
