@@ -1,11 +1,13 @@
 import { Resend } from 'resend'
 import { resolveResendToAddress, resendSandboxRecipientHint } from './resend-delivery-email.mjs'
 import {
+  bookingPaymentReference,
   buildPortalInvoicePaidThankYouEmail,
   buildTransferBalancePayNowEmail,
   buildTransferDepositThankYouEmail,
   buildTransferFullPaymentThankYouEmail
 } from './branded-transfer-payment-email.mjs'
+import { loadSitePaymentForEmail, paymentBlockFromSettings } from './load-site-payment-for-email.mjs'
 import { loadPaymentTripRows, publishTransferPortalPaymentReceipt } from './transfer-portal-publish-payment-pdf.mjs'
 import {
   balanceAmountEur,
@@ -254,11 +256,21 @@ export const sendTransferPaymentCustomerEmails = async (admin, bookingId, opts, 
       return { ok: sent.length > 0, sent, errors, partial: true }
     }
 
-    const balanceEmail = buildTransferBalancePayNowEmail(booking, pct, {
-      depositPaidEur: amounts.depositPaidEur ?? amounts.amountPaidEur,
-      grossEur: amounts.grossEur,
-      balanceEur: amounts.balanceEur
+    const bank = await loadSitePaymentForEmail(env)
+    const payment = paymentBlockFromSettings(bank, {
+      paymentReference: bookingPaymentReference(booking),
+      amountDueEur: amounts.balanceEur
     })
+    const balanceEmail = buildTransferBalancePayNowEmail(
+      booking,
+      pct,
+      {
+        depositPaidEur: amounts.depositPaidEur ?? amounts.amountPaidEur,
+        grossEur: amounts.grossEur,
+        balanceEur: amounts.balanceEur
+      },
+      payment
+    )
     const r2 = await sendBookingEmailHtml(admin, booking, balanceEmail, env)
     if (r2.ok) {
       sent.push('balance_pay_now')

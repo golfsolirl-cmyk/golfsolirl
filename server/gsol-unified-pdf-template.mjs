@@ -9,7 +9,6 @@ import { sanitizeStandardFontText } from '../shared/pdf-winansi-sanitize.mjs'
 import { brandedPdfAssetPaths, pdfEmailTheme } from './pdf-email-brand.mjs'
 import {
   CLIENT_BANK_HOW_TO_PAY_INTRO,
-  CLIENT_BANK_PAYMENT,
   CLIENT_DOCUMENT_COMPANY
 } from '../shared/client-enquiry-document.mjs'
 
@@ -371,30 +370,53 @@ export const estimateUnifiedBulletCardHeight = (ctx, section, contentW) => {
   return pad + titleLines.length * titleLH + 14 + bodyLines.length * bodyLH + 14 + bulletsH + pad + 20
 }
 
-export const UNIFIED_HOW_TO_PAY_ROWS = [
-  { label: 'Account name', value: CLIENT_BANK_PAYMENT.accountName },
-  { label: 'Bank', value: CLIENT_BANK_PAYMENT.bankName },
-  { label: 'IBAN', value: CLIENT_BANK_PAYMENT.ibanDisplay },
-  { label: 'BIC', value: CLIENT_BANK_PAYMENT.bic }
-]
+/**
+ * Bank rows for How to pay — never invent details; pass site_payment_settings (or null).
+ * @param {{ accountName?: string, bankName?: string, iban?: string, ibanDisplay?: string, bic?: string } | null | undefined} bank
+ */
+export const howToPayRowsFromBank = (bank) => {
+  const accountName = String(bank?.accountName ?? '').trim()
+  const iban = String(bank?.iban ?? '').replace(/\s+/g, '').toUpperCase()
+  if (!accountName || !iban) return null
+  const ibanDisplay = String(bank?.ibanDisplay ?? '').trim() || iban
+  const bankName = String(bank?.bankName ?? '').trim() || 'Monzo Bank'
+  const bic = String(bank?.bic ?? '').trim()
+  const rows = [
+    { label: 'Account name', value: accountName },
+    { label: 'Bank', value: bankName },
+    { label: 'IBAN', value: ibanDisplay }
+  ]
+  if (bic) rows.push({ label: 'BIC', value: bic })
+  return rows
+}
 
-export const estimateUnifiedHowToPayHeight = (ctx) => {
+/** @deprecated Prefer howToPayRowsFromBank(site settings). Kept as empty fallback. */
+export const UNIFIED_HOW_TO_PAY_ROWS = []
+
+export const estimateUnifiedHowToPayHeight = (ctx, bankDetails) => {
+  const bank = bankDetails || ctx?.bankDetails || null
+  const rows = howToPayRowsFromBank(bank)
   const introLines = wrapPlainLinesWithFont(ctx.font, CLIENT_BANK_HOW_TO_PAY_INTRO, 12, UNIFIED_PDF_LAYOUT.pageWidth - UNIFIED_PDF_LAYOUT.margin * 2)
   const introH = introLines.length * 17 + 10
-  return 28 + introH + estimateUnifiedKeyValueTableHeight(ctx, UNIFIED_HOW_TO_PAY_ROWS) + 8
+  const tableH = rows ? estimateUnifiedKeyValueTableHeight(ctx, rows) : 0
+  return 28 + introH + tableH + 8
 }
 
 /**
  * Draw the standing "How to pay" bank block. Opens a continuation page when the block would hit the footer.
+ * Bank details must come from site_payment_settings (5th arg or ctx.bankDetails) — never hardcoded.
  * @param {import('pdf-lib').PDFPage} page
  * @param {number} y
  * @param {object} ctx
  * @param {() => { page: import('pdf-lib').PDFPage, y: number }} openContinuedPage
+ * @param {{ accountName?: string, bankName?: string, iban?: string, ibanDisplay?: string, bic?: string } | null} [bankDetails]
  */
-export const appendUnifiedHowToPay = (page, y, ctx, openContinuedPage) => {
+export const appendUnifiedHowToPay = (page, y, ctx, openContinuedPage, bankDetails) => {
   let currentPage = page
   let currentY = y
-  const needed = estimateUnifiedHowToPayHeight(ctx)
+  const bank = bankDetails || ctx?.bankDetails || null
+  const rows = howToPayRowsFromBank(bank)
+  const needed = estimateUnifiedHowToPayHeight(ctx, bank)
   if (currentY - needed < unifiedPdfMinBodyY()) {
     const next = openContinuedPage()
     currentPage = next.page
@@ -408,7 +430,9 @@ export const appendUnifiedHowToPay = (page, y, ctx, openContinuedPage) => {
     color: t.ink
   })
   currentY -= 4
-  currentY = drawUnifiedKeyValueTable(currentPage, currentY, ctx, UNIFIED_HOW_TO_PAY_ROWS)
+  if (rows?.length) {
+    currentY = drawUnifiedKeyValueTable(currentPage, currentY, ctx, rows)
+  }
   return { page: currentPage, y: currentY }
 }
 

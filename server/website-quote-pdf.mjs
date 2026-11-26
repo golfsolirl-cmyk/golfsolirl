@@ -12,6 +12,7 @@ import {
   loadUnifiedPdfFonts,
   unifiedPdfMinBodyY
 } from './gsol-unified-pdf-template.mjs'
+import { loadSitePaymentForEmail } from './load-site-payment-for-email.mjs'
 
 const fmtEur = (n) => {
   const num = new Intl.NumberFormat('en-IE', {
@@ -209,7 +210,8 @@ export const buildWebsiteQuotePdfBytes = async (row) => {
   y -= 10
   draw('Subject to availability and written confirmation from Golf Sol Ireland.', { size: 9.5, color: pdfEmailTheme.muted })
 
-  ;({ page, y } = appendUnifiedHowToPay(page, y, ctx, openContinuationPage))
+  const bank = await loadSitePaymentForEmail(process.env)
+  ;({ page, y } = appendUnifiedHowToPay(page, y, ctx, openContinuationPage, bank))
 
   pages.forEach((pdfPage, index) => {
     drawUnifiedDocumentFooter(pdfPage, 52, ctx, [], { current: index + 1, total: pages.length })
