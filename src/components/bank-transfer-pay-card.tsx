@@ -1,19 +1,68 @@
-import { useState } from 'react'
-import { CLIENT_BANK_HOW_TO_PAY_INTRO, CLIENT_BANK_PAYMENT } from '../lib/client-enquiry-document'
+import { useEffect, useState } from 'react'
+import { CLIENT_BANK_HOW_TO_PAY_INTRO } from '../lib/client-enquiry-document'
+import { fetchSitePaymentSettings, type SiteBankPaymentSettings } from '../lib/site-payment-settings'
+import { useAuth } from '../providers/auth-provider'
 
-const DETAILS = [
-  { label: 'Account name', value: CLIENT_BANK_PAYMENT.accountName, copy: CLIENT_BANK_PAYMENT.accountName },
-  { label: 'Bank', value: CLIENT_BANK_PAYMENT.bankName, copy: CLIENT_BANK_PAYMENT.bankName },
-  { label: 'IBAN', value: CLIENT_BANK_PAYMENT.ibanDisplay, copy: CLIENT_BANK_PAYMENT.iban },
-  { label: 'BIC', value: CLIENT_BANK_PAYMENT.bic, copy: CLIENT_BANK_PAYMENT.bic }
-] as const
+export type BankTransferPayEnquiryHint = {
+  readonly paymentReference?: string | null
+  readonly amountDueEur?: number | null
+  readonly outstandingEur?: number | null
+}
 
 type BankTransferPayCardProps = {
   readonly audience: 'client' | 'admin'
+  readonly enquiryHint?: BankTransferPayEnquiryHint | null
+  /** Admin desk can pass loaded settings to avoid duplicate fetch. */
+  readonly settingsOverride?: SiteBankPaymentSettings | null
 }
 
-export function BankTransferPayCard({ audience }: BankTransferPayCardProps) {
+export function BankTransferPayCard({ audience, enquiryHint, settingsOverride }: BankTransferPayCardProps) {
+  const { session } = useAuth()
+  const [settings, setSettings] = useState<SiteBankPaymentSettings | null>(settingsOverride ?? null)
+  const [loaded, setLoaded] = useState(Boolean(settingsOverride))
   const [copied, setCopied] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (settingsOverride !== undefined) {
+      setSettings(settingsOverride)
+      setLoaded(true)
+      return
+    }
+    let cancelled = false
+    void (async () => {
+      const token = session?.access_token ?? null
+      const next = await fetchSitePaymentSettings(token)
+      if (!cancelled) {
+        setSettings(next)
+        setLoaded(true)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [session?.access_token, settingsOverride])
+
+  if (!loaded) {
+    return null
+  }
+
+  if (!settings?.iban?.trim() || !settings.accountName?.trim()) {
+    return null
+  }
+
+  const details = [
+    { label: 'Account name', value: settings.accountName, copy: settings.accountName },
+    { label: 'Bank', value: settings.bankName, copy: settings.bankName },
+    { label: 'IBAN', value: settings.ibanDisplay || settings.iban, copy: settings.iban },
+    { label: 'BIC', value: settings.bic, copy: settings.bic }
+  ] as const
+
+  const reference = enquiryHint?.paymentReference?.trim() || null
+  const amountDue = enquiryHint?.amountDueEur
+  const outstanding = enquiryHint?.outstandingEur
+
+  const formatEur = (n: number) =>
+    new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' }).format(n)
 
   const copyValue = async (key: string, value: string) => {
     try {
@@ -39,8 +88,43 @@ export function BankTransferPayCard({ audience }: BankTransferPayCardProps) {
           ? 'Give guests these details when they want to pay by transfer. Ask them to use the invoice, quote, or booking reference.'
           : CLIENT_BANK_HOW_TO_PAY_INTRO}
       </p>
+      {reference || (typeof amountDue === 'number' && amountDue > 0) ? (
+        <dl className="mt-4 grid gap-3 rounded-2xl bg-white/10 px-4 py-4 ring-1 ring-white/10 sm:grid-cols-2">
+          {reference ? (
+            <div>
+              <dt className="font-ge text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#f3e6c4]">
+                Payment reference
+              </dt>
+              <dd className="mt-1 flex items-start justify-between gap-3">
+                <span className="font-mono text-base font-semibold text-white">{reference}</span>
+                <button
+                  className="shrink-0 rounded-full border border-[#f3e6c4]/50 px-3 py-1 font-ge text-[11px] font-bold uppercase tracking-[0.12em] text-[#f3e6c4] hover:bg-white/10"
+                  onClick={() => void copyValue('Payment reference', reference)}
+                  type="button"
+                >
+                  {copied === 'Payment reference' ? 'Copied' : 'Copy'}
+                </button>
+              </dd>
+            </div>
+          ) : null}
+          {typeof amountDue === 'number' && amountDue > 0 ? (
+            <div>
+              <dt className="font-ge text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#f3e6c4]">Amount due</dt>
+              <dd className="mt-1 font-ge text-base font-semibold text-white">{formatEur(amountDue)}</dd>
+            </div>
+          ) : null}
+          {typeof outstanding === 'number' && outstanding > 0.009 ? (
+            <div className="sm:col-span-2">
+              <dt className="font-ge text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#f3e6c4]">
+                Outstanding balance
+              </dt>
+              <dd className="mt-1 font-ge text-base font-semibold text-[#f3e6c4]">{formatEur(outstanding)}</dd>
+            </div>
+          ) : null}
+        </dl>
+      ) : null}
       <dl className="mt-5 grid gap-3 sm:grid-cols-2">
-        {DETAILS.map((row) => (
+        {details.map((row) => (
           <div className="rounded-2xl bg-white/10 px-4 py-3 ring-1 ring-white/10" key={row.label}>
             <dt className="font-ge text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#f3e6c4]">{row.label}</dt>
             <dd className="mt-1 flex items-start justify-between gap-3">

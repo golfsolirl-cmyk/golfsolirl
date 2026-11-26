@@ -12,7 +12,8 @@ import {
   parseAnyPackageBuildRowConfig,
   type WebsiteFormPackageConfig
 } from '../lib/package-build'
-import { CLIENT_BANK_HOW_TO_PAY_INTRO, CLIENT_BANK_PAYMENT } from '../lib/client-enquiry-document'
+import { CLIENT_BANK_HOW_TO_PAY_INTRO } from '../lib/client-enquiry-document'
+import { fetchSitePaymentSettings, type SiteBankPaymentSettings } from '../lib/site-payment-settings'
 import { COURSES } from '../data/coastal-golf-data'
 import { useAuth } from '../providers/auth-provider'
 
@@ -30,7 +31,25 @@ export function ClientQuotePreviewPage() {
   const [cfg, setCfg] = useState<WebsiteFormPackageConfig | null>(null)
   const [buildLabel, setBuildLabel] = useState<string | null>(null)
   const [pdfBusy, setPdfBusy] = useState(false)
+  const [bankSettings, setBankSettings] = useState<SiteBankPaymentSettings | null>(null)
   const printRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!session?.access_token) {
+      setBankSettings(null)
+      return
+    }
+    let cancelled = false
+    void (async () => {
+      const settings = await fetchSitePaymentSettings(session.access_token)
+      if (!cancelled) {
+        setBankSettings(settings)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [session?.access_token])
 
   const buildId = useMemo(() => {
     const path = window.location.pathname.replace(/\/+$/, '')
@@ -319,28 +338,30 @@ export function ClientQuotePreviewPage() {
               Quote saved {new Date(q.savedAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}. Subject to
               availability and final confirmation from Golf Sol Ireland.
             </p>
-            <div className="mt-6 rounded-2xl bg-[#063b2a] px-5 py-5 text-white sm:px-6">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f3e6c4]">How to pay</p>
-              <p className="mt-2 text-sm leading-relaxed text-[#f7f3ea] sm:text-base">{CLIENT_BANK_HOW_TO_PAY_INTRO}</p>
-              <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2 sm:text-base">
-                <div>
-                  <dt className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#f3e6c4]">Account name</dt>
-                  <dd className="mt-1 font-semibold">{CLIENT_BANK_PAYMENT.accountName}</dd>
-                </div>
-                <div>
-                  <dt className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#f3e6c4]">Bank</dt>
-                  <dd className="mt-1 font-semibold">{CLIENT_BANK_PAYMENT.bankName}</dd>
-                </div>
-                <div>
-                  <dt className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#f3e6c4]">IBAN</dt>
-                  <dd className="mt-1 font-semibold tracking-wide">{CLIENT_BANK_PAYMENT.ibanDisplay}</dd>
-                </div>
-                <div>
-                  <dt className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#f3e6c4]">BIC</dt>
-                  <dd className="mt-1 font-semibold">{CLIENT_BANK_PAYMENT.bic}</dd>
-                </div>
-              </dl>
-            </div>
+            {bankSettings ? (
+              <div className="mt-6 rounded-2xl bg-[#063b2a] px-5 py-5 text-white sm:px-6">
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f3e6c4]">How to pay</p>
+                <p className="mt-2 text-sm leading-relaxed text-[#f7f3ea] sm:text-base">{CLIENT_BANK_HOW_TO_PAY_INTRO}</p>
+                <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2 sm:text-base">
+                  <div>
+                    <dt className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#f3e6c4]">Account name</dt>
+                    <dd className="mt-1 font-semibold">{bankSettings.accountName}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#f3e6c4]">Bank</dt>
+                    <dd className="mt-1 font-semibold">{bankSettings.bankName}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#f3e6c4]">IBAN</dt>
+                    <dd className="mt-1 font-semibold tracking-wide">{bankSettings.ibanDisplay || bankSettings.iban}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#f3e6c4]">BIC</dt>
+                    <dd className="mt-1 font-semibold">{bankSettings.bic}</dd>
+                  </div>
+                </dl>
+              </div>
+            ) : null}
             <p className="mt-5 text-center text-xs font-bold uppercase tracking-[0.14em] text-forest-600 sm:text-sm">
               golfsolirl.com · +353 87 446 4766 · +34 641 81 53 66
             </p>

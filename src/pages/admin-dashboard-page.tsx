@@ -5,6 +5,8 @@ import { PortalInterestCategoryGlyph } from '../components/portal-interest-categ
 import { FocusTrapDialog } from '../components/focus-trap-dialog'
 import { AdminOperationsHubHero } from '../components/admin-operations-hub-hero'
 import { BankTransferPayCard } from '../components/bank-transfer-pay-card'
+import { AdminMonzoSettingsPanel } from '../components/admin-monzo-settings-panel'
+import { AdminAwaitingBankPaymentsPanel } from '../components/admin-awaiting-bank-payments-panel'
 import { AdminPaidTripsRevenuePanel, type PaidClientPriceDraft } from '../components/admin-paid-trips-revenue-panel'
 import { AdminOperatorCodePanel } from '../components/admin-operator-code-panel'
 import { AdminBundlePricesPanel } from '../components/admin-bundle-prices-panel'
@@ -111,6 +113,13 @@ interface EnquiryRow {
   client_portal_account_ref?: string | null
   /** When an admin opened submission detail (shared across admins). */
   admin_viewed_at?: string | null
+  amount_due_eur?: number | null
+  deposit_eur?: number | null
+  amount_received_eur?: number | null
+  payment_reference?: string | null
+  payment_status?: string | null
+  payment_notes?: string | null
+  last_payment_at?: string | null
 }
 
 type AdminInterestTicketRow = PortalInterestTicketRow & {
@@ -4006,6 +4015,14 @@ export function AdminDashboardPage() {
           kicker="Pay & replies"
           title="Messages, payments, and a price"
         >
+          <AdminAwaitingBankPaymentsPanel
+            accessToken={session?.access_token ?? null}
+            onOpenReference={(ref) => {
+              setSelectedEnquiryDetailRef(ref)
+              setAccountLookupSeedFromTable({ ref, key: Date.now() })
+              setActiveAdminSection('forms')
+            }}
+          />
           <div className="relative scroll-mt-28 rounded-[2rem] border border-forest-100 bg-white p-5 shadow-soft sm:p-7" id="admin-hub-tickets">
             <div className="mb-5 max-w-2xl">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-700">1 · Reply</p>
@@ -4410,6 +4427,7 @@ export function AdminDashboardPage() {
               Open this when a guest wants to pay by bank transfer, or when you need the code for the admin login page.
             </p>
             <div className="mt-5 space-y-5">
+              <AdminMonzoSettingsPanel accessToken={session?.access_token ?? null} />
               <BankTransferPayCard audience="admin" />
               <AdminOperatorCodePanel accessToken={session?.access_token ?? null} />
               <AdminBundlePricesPanel />

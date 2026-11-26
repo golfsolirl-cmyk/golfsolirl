@@ -13,6 +13,7 @@ import {
 import type { PortalInterestTicketMessageRow } from '../lib/portal-interest-tickets'
 import { getSupabaseBrowserClient } from '../lib/supabase-client'
 import { adminMailRequest } from '../lib/admin-mail-api'
+import { AdminEnquiryBankPaymentPanel } from './admin-enquiry-bank-payment-panel'
 
 export type AdminEnquiryCardRow = {
   id: string
@@ -26,6 +27,13 @@ export type AdminEnquiryCardRow = {
   form_payload?: unknown
   client_portal_account_ref?: string | null
   admin_viewed_at?: string | null
+  amount_due_eur?: number | null
+  deposit_eur?: number | null
+  amount_received_eur?: number | null
+  payment_reference?: string | null
+  payment_status?: string | null
+  payment_notes?: string | null
+  last_payment_at?: string | null
 }
 
 type FormAnswerRow = {
@@ -709,6 +717,8 @@ export function AdminEnquiryCardQueue({
                   priceEurInput={priceById[row.id] ?? ''}
                   row={row}
                 />
+
+                <AdminEnquiryBankPaymentPanel accessToken={accessToken} row={row} />
 
                 <section className="rounded-[1.5rem] border border-forest-100 bg-white px-4 py-5 sm:px-5">
                   <h4 className="font-display text-lg font-semibold text-forest-950">How they got in touch</h4>
