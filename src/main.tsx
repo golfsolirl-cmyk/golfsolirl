@@ -6,8 +6,23 @@ import { CookieConsent } from './components/cookie-consent'
 import { MotionRoot } from './providers/motion-root'
 import { isGeContentPagePath } from './pages/golf-experience/data/ge-content-page-paths'
 import { bundleRedirectForPath } from './lib/bundle-route-redirects'
-/** Homepage only is eager — keeps LCP path short; other marketing pages load as route chunks. */
+import { AuthProvider as AuthProviderDeferred } from './providers/auth-provider-deferred'
+import { AuthProvider as AuthProviderSync } from './providers/auth-provider-sync'
+import { FloatingWhatsApp as WhatsappFab } from './components/whatsapp/FloatingWhatsApp'
+
+/** Main public surfaces are eager — no Suspense spinners / blank folds on first paint. */
 import { GolfExperienceHome } from './pages/golf-experience/golf-experience-home'
+import { TransportServicePage } from './pages/golf-experience/transport-service-page'
+import { BundlesPage } from './pages/golf-experience/bundles-page'
+import { GeContentPage } from './pages/golf-experience/content-page'
+import { RedirectToBundlesPage } from './pages/redirect-to-bundles-page'
+import { LoginPage } from './pages/login-page'
+import { AdminPasswordLoginPage } from './pages/admin-password-login-page'
+import { PortalTokenLoginPage } from './pages/portal-token-login-page'
+import { PortalLoginPage } from './pages/portal-login-page'
+import { LoggedOutPage } from './pages/logged-out-page'
+import { NotFoundPage } from './pages/not-found-page'
+
 import './index.css'
 import './theme/ge-page-token-overrides.css'
 import './theme/site-readable-typography.css'
@@ -21,20 +36,9 @@ if (typeof window !== 'undefined') {
   }
 }
 
-const TransportServicePage = lazy(() =>
-  import('./pages/golf-experience/transport-service-page').then((m) => ({ default: m.TransportServicePage }))
-)
-const BundlesPage = lazy(() =>
-  import('./pages/golf-experience/bundles-page').then((m) => ({ default: m.BundlesPage }))
-)
+/** Heavier / admin / rare routes stay code-split. */
 const LeaveAReviewPage = lazy(() =>
   import('./pages/leave-a-review-page').then((m) => ({ default: m.LeaveAReviewPage }))
-)
-const GeContentPage = lazy(() =>
-  import('./pages/golf-experience/content-page').then((m) => ({ default: m.GeContentPage }))
-)
-const RedirectToBundlesPage = lazy(() =>
-  import('./pages/redirect-to-bundles-page').then((m) => ({ default: m.RedirectToBundlesPage }))
 )
 const ContinueTripPage = lazy(() =>
   import('./pages/continue-trip-page').then((m) => ({ default: m.ContinueTripPage }))
@@ -43,17 +47,6 @@ const EmailTemplatePreviewPage = lazy(() =>
   import('./pages/email-template-preview').then((m) => ({ default: m.EmailTemplatePreviewPage }))
 )
 const LogoPreviewPage = lazy(() => import('./pages/logo-preview').then((m) => ({ default: m.LogoPreviewPage })))
-const LoginPage = lazy(() => import('./pages/login-page').then((m) => ({ default: m.LoginPage })))
-const AdminPasswordLoginPage = lazy(() =>
-  import('./pages/admin-password-login-page').then((m) => ({ default: m.AdminPasswordLoginPage }))
-)
-const PortalTokenLoginPage = lazy(() =>
-  import('./pages/portal-token-login-page').then((m) => ({ default: m.PortalTokenLoginPage }))
-)
-const PortalLoginPage = lazy(() =>
-  import('./pages/portal-login-page').then((m) => ({ default: m.PortalLoginPage }))
-)
-const LoggedOutPage = lazy(() => import('./pages/logged-out-page').then((m) => ({ default: m.LoggedOutPage })))
 const AuthCallbackPage = lazy(() =>
   import('./pages/auth-callback-page').then((m) => ({ default: m.AuthCallbackPage }))
 )
@@ -99,7 +92,7 @@ const CinematicHomePage = lazy(() =>
 )
 const GolfExperienceHomeTest = lazy(() =>
   import('./pages/golf-experience/golf-experience-home-test').then((m) => ({
-    default: m.GolfExperienceHomeTest,
+    default: m.GolfExperienceHomeTest
   }))
 )
 const BrandIdentityMockupPage = lazy(() =>
@@ -108,8 +101,6 @@ const BrandIdentityMockupPage = lazy(() =>
 const BrandLogosPage = lazy(() =>
   import('./pages/brand-logos-page').then((m) => ({ default: m.BrandLogosPage }))
 )
-
-const NotFoundPage = lazy(() => import('./pages/not-found-page').then((m) => ({ default: m.NotFoundPage })))
 
 type PageComponent = ComponentType | LazyExoticComponent<ComponentType>
 
@@ -131,7 +122,6 @@ function syncSiteReadableClass(path: string) {
   const locked = SITE_READABLE_OFF_PATHS.has(path)
   document.body.classList.toggle('site-readable', !locked)
   document.body.classList.toggle('site-readable-off', locked)
-  /* legacy class — keep in sync for any remaining references */
   document.body.classList.toggle('readable-type-page', !locked)
 }
 
@@ -303,15 +293,9 @@ const normalizedBootstrapPath =
     ? '/'
     : window.location.pathname.replace(/\/+$/, '')
 
-const AuthProviderShell = lazy(() =>
-  pathnameNeedsImmediateSupabaseHydration(normalizedBootstrapPath)
-    ? import('./providers/auth-provider-sync').then((m) => ({ default: m.AuthProvider }))
-    : import('./providers/auth-provider-deferred').then((m) => ({ default: m.AuthProvider }))
-)
-
-const WhatsappFab = lazy(() =>
-  import('./pages/golf-experience/components/whatsapp-fab').then((m) => ({ default: m.WhatsappFab }))
-)
+const AuthProviderShell = pathnameNeedsImmediateSupabaseHydration(normalizedBootstrapPath)
+  ? AuthProviderSync
+  : AuthProviderDeferred
 
 /** Login / auth surfaces stay a single centred card — no floating marketing chrome. */
 const isMinimalAuthPath = (path: string) => {
@@ -334,21 +318,19 @@ const isMinimalAuthPath = (path: string) => {
 
 const showSiteWhatsappFab = !isMinimalAuthPath(normalizedBootstrapPath)
 
+const Page = ActivePage as ComponentType
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <AppErrorBoundary>
-    <Suspense fallback={null}>
-      <AuthProviderShell>
-        <MotionRoot>
-          <ActivePage />
-          <CookieConsent />
-          {/* One site-wide compact dismissible WhatsApp FAB (+353) — not the old full-width box. */}
-          {showSiteWhatsappFab ? (
-            <Suspense fallback={null}>
-              <WhatsappFab />
-            </Suspense>
-          ) : null}
-        </MotionRoot>
-      </AuthProviderShell>
-    </Suspense>
+    <AuthProviderShell>
+      <MotionRoot>
+        {/* Suspense only matters for remaining lazy admin/rare routes; eager public pages resolve immediately. */}
+        <Suspense fallback={<div className="min-h-[40vh] w-full bg-offwhite" aria-hidden />}>
+          <Page />
+        </Suspense>
+        <CookieConsent />
+        {showSiteWhatsappFab ? <WhatsappFab /> : null}
+      </MotionRoot>
+    </AuthProviderShell>
   </AppErrorBoundary>
 )

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { PremiumGolfHero } from '../../components/home/premium-golf-hero'
 import { HomeCreativeCanvas } from '../../components/ui/HomeCreativeCanvas'
 import { GeNavbar } from './sections/ge-navbar'
@@ -12,8 +12,7 @@ import {
   buildWebSiteSchema
 } from '../../lib/seo/organization-schema'
 import { absoluteOgImageUrl, DEFAULT_OG_IMAGE_PATH } from '../../lib/site-seo'
-
-const HomeBelowTheFold = lazy(() => import('./home-below-the-fold'))
+import HomeBelowTheFold from './home-below-the-fold'
 
 export function GolfExperienceHome() {
   usePageMeta({
@@ -68,16 +67,7 @@ export function GolfExperienceHome() {
 
       <main id="main">
         <PremiumGolfHero />
-        <Suspense
-          fallback={
-            <div
-              className="min-h-[40vh] w-full bg-gradient-to-b from-cream to-offwhite/80"
-              aria-hidden="true"
-            />
-          }
-        >
-          <HomeBelowTheFold />
-        </Suspense>
+        <HomeBelowTheFold />
       </main>
     </div>
   )
