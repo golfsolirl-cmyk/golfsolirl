@@ -40,6 +40,18 @@ const fmtEur = (cents) =>
     maximumFractionDigits: 2
   }).format((Number(cents) || 0) / 100)
 
+/**
+ * “I’ve paid” records the tap. It must not wipe a payment the desk already confirmed.
+ * @param {unknown} currentStatus
+ */
+export const paymentStatusAfterCustomerReported = (currentStatus) => {
+  const status = typeof currentStatus === 'string' ? currentStatus.trim() : ''
+  if (status === 'paid_in_full' || status === 'deposit_received' || status === 'refunded') {
+    return status
+  }
+  return 'awaiting_payment'
+}
+
 const tokenOk = (token) => /^[a-f0-9]{32,64}$/i.test(String(token || '').trim())
 
 const loadRow = async (db, token) => {
@@ -208,13 +220,20 @@ export const handleMonzoPay = async (env = process.env, meta = {}) => {
       .eq('id', row.id)
 
     if (row.enquiry_id) {
-      await db
+      const { data: enq, error: enqErr } = await db
+        .from('enquiries')
+        .select('payment_status')
+        .eq('id', row.enquiry_id)
+        .maybeSingle()
+      if (enqErr) throwStatus(enqErr.message, 500)
+      const { error: enqUpdErr } = await db
         .from('enquiries')
         .update({
           payment_customer_reported_at: now,
-          payment_status: 'awaiting_payment'
+          payment_status: paymentStatusAfterCustomerReported(enq?.payment_status)
         })
         .eq('id', row.enquiry_id)
+      if (enqUpdErr) throwStatus(enqUpdErr.message, 500)
     }
 
     if (row.profile_id) {
