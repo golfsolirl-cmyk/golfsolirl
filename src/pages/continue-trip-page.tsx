@@ -2,15 +2,12 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { ArrowLeft, CheckCircle2, Send } from 'lucide-react'
 import { GOLF_SOL_TRIP_FLIGHT_PREFILL_KEY } from './golf-experience/components/already-booked-flight-panel'
 import { BookedDatesAvailabilityNotice } from '../components/booked-dates-availability-notice'
+import { LeanPublicHero } from '../components/home/premium-golf-hero'
+import { WhatsAppBanner } from '../components/whatsapp/WhatsAppBanner'
 import { GeFooter } from './golf-experience/sections/ge-footer'
 import { GeNavbar } from './golf-experience/sections/ge-navbar'
-import { GePaymentsIreland } from './golf-experience/sections/payments-ireland'
-import { GeFinalCta } from './golf-experience/sections/final-cta'
-import { PremiumPageHero } from '../components/home/premium-page-hero'
-import { heroImageSetFromRegistry, NAMED_HERO_IMAGE_SETS } from '../lib/page-hero-images'
-import { GeTransfersInsuranceBanner } from './golf-experience/components/ge-transfers-insurance-banner'
+import { NAMED_HERO_IMAGE_SETS } from '../lib/page-hero-images'
 import { GeSection } from './golf-experience/components/ge-section'
-import { contactInfo } from './golf-experience/data/copy'
 import { golferGroupSizeSelectOptions } from './golf-experience/data/form-people-options'
 import { assertDatesNotBooked, loadBookedServiceDayIsoSet } from '../lib/booked-service-days'
 import { getLocalDateIso } from '../lib/local-date-iso'
@@ -187,10 +184,6 @@ export function ContinueTripPage() {
     }
   }, [submitStatus])
 
-  const whatsappHref = `https://wa.me/353866006202?text=${encodeURIComponent(
-    'Hi GolfSol Ireland — I have started my trip brief and would like to WhatsApp my enquiry.'
-  )}`
-
   const continueAgpToday = getLocalDateIso()
   const continuePlannedStartMin = tripArrivalMode === TRIP_ARRIVAL_MODE.planned ? travelStartMinIso() : undefined
   const continuePlannedEndMin = tripArrivalMode === TRIP_ARRIVAL_MODE.planned ? travelEndMinIso(travelDateFrom) : undefined
@@ -365,19 +358,14 @@ export function ContinueTripPage() {
         </a>
         <GeNavbar />
         <main id="main">
-          <PremiumPageHero
-            srTitle="Continue your trip"
-            images={heroImageSetFromRegistry('continueTrip')}
+          <LeanPublicHero
+            ariaLabel="Continue your trip"
+            images={NAMED_HERO_IMAGE_SETS.transportCoastal}
             kicker="Trip planner"
-            titleLine1="No flight details found yet"
-            lead="Start from the homepage — use the Hotel already booked card under Design Your Costa del Sol Golf Trip, then submit the quick form."
-            primaryCta={{ label: 'Back to homepage', href: '/', variant: 'gs-gold' }}
-            trustBadges={[
-              { icon: CheckCircle2, label: 'Save your flight or arrival time first' },
-              { icon: CheckCircle2, label: 'We pre-fill the next step for you' },
-              { icon: CheckCircle2, label: 'Irish team replies fast' }
-            ]}
-            trustSectionTitle="How to continue"
+            lead="Start from the homepage — use the Hotel already booked card, then submit the quick form."
+            primaryCta={{ label: 'Back to homepage', href: '/' }}
+            secondaryCta={{ label: 'Get a quote', href: '/quote' }}
+            title="No flight details found yet"
           />
           <GeSection id="continue-help" background="white" innerClassName="py-14 sm:py-16">
             <div className="mx-auto max-w-lg px-5 text-center sm:px-8">
@@ -390,9 +378,8 @@ export function ContinueTripPage() {
               </a>
             </div>
           </GeSection>
-          <GePaymentsIreland />
-          <GeFinalCta />
         </main>
+        <WhatsAppBanner sourcePage="/continue-trip" />
         <GeFooter />
       </div>
     )
@@ -409,29 +396,15 @@ export function ContinueTripPage() {
       <GeNavbar />
 
       <main id="main">
-        <PremiumPageHero
-          srTitle="Finish your trip brief"
+        <LeanPublicHero
+          ariaLabel="Finish your trip brief"
           images={NAMED_HERO_IMAGE_SETS.transportCoastal}
           kicker="Step 2 of 2"
-          titleLine1="Finish your trip brief"
-          lead="We have your arrival snapshot. Add the pieces below — including whether you want prime morning tee times, twilight rounds, or a mix — and a planner will reply with Costa del Sol course options, transfers and extras matched to your hotel."
-          primaryCta={{ label: 'WhatsApp us', href: whatsappHref, variant: 'gs-gold' }}
-          secondaryCta={{ label: 'Jump to the form', href: '#continue-trip-form', variant: 'outline-gs-green' }}
-          trustBadges={[
-            { icon: CheckCircle2, label: 'Arrival details carried forward' },
-            { icon: CheckCircle2, label: 'One Irish coordinator end-to-end' },
-            { icon: CheckCircle2, label: 'Clear next steps in plain English' }
-          ]}
-          trustSectionTitle="What happens next"
-          formScrollTarget="#continue-trip-form"
-          formScrollLabel="Complete your trip brief"
+          lead="We have your arrival snapshot. Add rounds, hotel status and tee-time preference — a planner will reply with clear Costa del Sol options."
+          primaryCta={{ label: 'Complete your brief', href: '#continue-trip-form' }}
+          secondaryCta={{ label: 'Get a quote', href: '/quote' }}
+          title="Finish your trip brief"
         />
-
-        <div className="bg-white px-5 py-6 sm:px-8 sm:py-7">
-          <div className="mx-auto max-w-[1180px]">
-            <GeTransfersInsuranceBanner variant="inline" />
-          </div>
-        </div>
 
         <GeSection background="white" innerClassName="py-14 sm:py-16">
           <div className="mx-auto max-w-2xl px-5 sm:px-8">
@@ -729,11 +702,9 @@ export function ContinueTripPage() {
           </div>
         </GeSection>
 
-        <GePaymentsIreland />
-
-        <GeFinalCta />
       </main>
 
+      <WhatsAppBanner sourcePage="/continue-trip" />
       <GeFooter />
 
     </div>

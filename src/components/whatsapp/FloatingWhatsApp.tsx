@@ -146,11 +146,11 @@ export function FloatingWhatsApp() {
         >
           <button
             type="button"
-            aria-label="Close WhatsApp help"
+            aria-label="Close"
             onClick={dismiss}
-            className="absolute -right-1.5 -top-1.5 inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-[#0b3d2e] text-white hover:bg-[#12523d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f4dfa6]"
+            className="absolute -right-1 -top-1 inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-white/20 bg-[#0b3d2e] text-white hover:bg-[#12523d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f4dfa6]"
           >
-            <X className="h-3.5 w-3.5" aria-hidden />
+            <X className="h-5 w-5" aria-hidden />
           </button>
           <p className="pr-5 font-ge text-[0.65rem] font-extrabold uppercase tracking-[0.12em] text-[#f4dfa6]">
             Prefer a call?
@@ -206,11 +206,11 @@ export function FloatingWhatsApp() {
         </m.a>
         <button
           type="button"
-          aria-label="Dismiss WhatsApp button"
+          aria-label="Close"
           onClick={dismiss}
-          className="absolute -left-1.5 -top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full border border-forest-800/20 bg-white text-forest-900 shadow-sm hover:bg-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-700"
+          className="absolute -left-2 -top-2 inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-forest-800/20 bg-white text-forest-900 shadow-sm hover:bg-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-700"
         >
-          <X className="h-3 w-3" aria-hidden />
+          <X className="h-5 w-5" aria-hidden />
         </button>
         {!expanded ? (
           <button

@@ -6,6 +6,7 @@ import { readTripQuotePresetFromSearch } from '../../lib/trip-quote-services'
 import { WEBSITE_ENQUIRY_FORM } from '../../lib/enquiry-form-registry'
 import { usePageMeta } from '../../lib/use-page-meta'
 import { SmartTripQuoteForm } from './components/smart-trip-quote-form'
+import { WhatsAppBanner } from '../../components/whatsapp/WhatsAppBanner'
 import { GeFooter } from './sections/ge-footer'
 import { GeNavbar } from './sections/ge-navbar'
 
@@ -68,6 +69,7 @@ export function QuotePage() {
           />
         </section>
       </main>
+      <WhatsAppBanner sourcePage="/quote" />
       <GeFooter />
     </div>
   )

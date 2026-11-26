@@ -12,6 +12,7 @@ import { NAMED_HERO_IMAGE_SETS } from '../../lib/page-hero-images'
 import { usePageMeta } from '../../lib/use-page-meta'
 import { BundleDurationTable } from './components/bundle-duration-table'
 import { GeButton } from './components/ge-button'
+import { WhatsAppBanner } from '../../components/whatsapp/WhatsAppBanner'
 import { GeFooter } from './sections/ge-footer'
 import { GeNavbar } from './sections/ge-navbar'
 
@@ -89,6 +90,7 @@ export function BundlesPage() {
           </div>
         </div>
       </main>
+      <WhatsAppBanner sourcePage="/bundles" />
       <GeFooter />
     </div>
   )

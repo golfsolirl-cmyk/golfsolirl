@@ -1,4 +1,7 @@
 import { useEffect, useState } from 'react'
+import { DISMISS_STORAGE_KEYS } from '../lib/persisted-dismiss'
+import { usePersistedDismiss } from '../hooks/use-persisted-dismiss'
+import { DismissCloseButton } from './ui/dismiss-close-button'
 
 type PublicOffer = {
   headline: string
@@ -6,9 +9,10 @@ type PublicOffer = {
   deadlineAt: string | null
 }
 
-/** Slim public banner when /admin/offer is enabled. */
+/** Slim public banner when /admin/offer is enabled — dismissible, persists in localStorage. */
 export function SiteLaunchOfferBanner() {
   const [offer, setOffer] = useState<PublicOffer | null>(null)
+  const { dismissed, dismiss, ready } = usePersistedDismiss(DISMISS_STORAGE_KEYS.siteLaunchOffer, 'local')
 
   useEffect(() => {
     let cancelled = false
@@ -26,7 +30,7 @@ export function SiteLaunchOfferBanner() {
     }
   }, [])
 
-  if (!offer) return null
+  if (!ready || dismissed || !offer) return null
 
   const deadline =
     offer.deadlineAt != null
@@ -42,19 +46,22 @@ export function SiteLaunchOfferBanner() {
   return (
     <div className="bg-gs-dark text-white">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-2.5 sm:px-6">
-        <p className="font-ge text-sm font-semibold">
+        <p className="min-w-0 flex-1 font-ge text-sm font-semibold">
           {offer.headline}
           <span className="ml-2 font-normal text-emerald-200">
             {offer.placesLeft} left
             {deadline ? ` · until ${deadline}` : ''}
           </span>
         </p>
-        <a
-          href="/quote"
-          className="rounded-lg bg-white px-3 py-1.5 font-ge text-xs font-bold uppercase tracking-wider text-gs-dark"
-        >
-          Get a quote
-        </a>
+        <div className="flex shrink-0 items-center gap-2">
+          <a
+            href="/quote"
+            className="rounded-lg bg-white px-3 py-1.5 font-ge text-xs font-bold uppercase tracking-wider text-gs-dark"
+          >
+            Get a quote
+          </a>
+          <DismissCloseButton onClick={dismiss} tone="dark" />
+        </div>
       </div>
     </div>
   )

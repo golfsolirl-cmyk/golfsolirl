@@ -15,12 +15,9 @@ import { formatContentPageRouteLabel, getContentPageFormConfig } from './content
 import { GeSection } from './components/ge-section'
 import { FindYourCourse } from './components/find-your-course'
 import { FindYourHotel } from './components/find-your-hotel'
-import {
-  GOLF_COURSES_MAP_SECTION_ID,
-  shouldShowInteractiveCourseMap
-} from './components/ge-courses-map-visibility'
-import { GeCoursesInteractiveCorridor } from './components/ge-courses-interactive-corridor'
+import { GOLF_COURSES_MAP_SECTION_ID } from './components/ge-courses-map-visibility'
 import { GeGolfMapSimple } from './components/ge-golf-map-simple'
+import { WhatsAppBanner } from '../../components/whatsapp/WhatsAppBanner'
 
 function normalisePath() {
   const path = window.location.pathname.replace(/\/+$/, '')
@@ -152,17 +149,21 @@ export function GeContentPage() {
   const isTermsPage = path.includes('terms')
   const isAccommodationHub = path === '/accommodation' || path.startsWith('/accommodation/')
   const isGolfCoursesHub = path === '/golf-courses' || path.startsWith('/golf-courses/')
-  const isChooserHub = isAccommodationHub || path === '/golf-courses'
-  const showCourseCorridorMap = shouldShowInteractiveCourseMap(path)
-  const formTarget = showCourseCorridorMap
+  const isChooserHub = isAccommodationHub || isGolfCoursesHub
+  const isGolfMap = path === '/golf-map'
+  const formTarget = isGolfMap
     ? `#${GOLF_COURSES_MAP_SECTION_ID}`
     : isAccommodationHub
       ? '#hotel-list'
-      : path === '/golf-courses'
+      : isGolfCoursesHub
         ? '#course-list'
         : '#ge-content-enquire'
   const heroConfig = buildContentPageHeroConfig(path, page, formTarget)
   const routeLabel = formatContentPageRouteLabel(path)
+  const leadBody =
+    leadSections[0]?.body && leadSections[0].body.length > 420
+      ? `${leadSections[0].body.slice(0, 417).trim()}…`
+      : leadSections[0]?.body
 
   return (
     <div className="ge-page min-h-screen overflow-x-hidden bg-white">
@@ -178,12 +179,12 @@ export function GeContentPage() {
         <LeanPublicHero
           ariaLabel={page.title}
           images={heroConfig.images}
-          kicker={heroConfig.kicker || 'GolfSol Ireland'}
+          kicker={heroConfig.kicker || page.eyebrow || 'GolfSol Ireland'}
           lead={page.subtitle}
           primaryCta={{
             label: isAccommodationHub
               ? 'Find hotels'
-              : isGolfCoursesHub || showCourseCorridorMap
+              : isGolfCoursesHub || isGolfMap
                 ? 'Find golf courses'
                 : isNewsletter
                   ? 'Subscribe'
@@ -191,24 +192,19 @@ export function GeContentPage() {
             href: formTarget
           }}
           secondaryCta={
-            isChooserHub
-              ? { label: 'Build my quote', href: '/quote' }
-              : showCourseCorridorMap
-                ? { label: 'Get a quote', href: '/quote' }
-                : { label: 'View bundles', href: '/bundles' }
+            isChooserHub || isGolfMap
+              ? { label: 'Get a quote', href: '/quote' }
+              : { label: 'View bundles', href: '/bundles' }
           }
           title={page.title}
         />
 
-        {path === '/golf-map' ? (
-          <GeGolfMapSimple />
-        ) : showCourseCorridorMap ? (
-          <GeCoursesInteractiveCorridor path={path} routeLabel={routeLabel} />
-        ) : null}
+        {isGolfMap ? <GeGolfMapSimple /> : null}
 
         {path === '/accommodation' || path.startsWith('/accommodation/') ? <FindYourHotel /> : null}
 
-        {path === '/golf-courses' ? <FindYourCourse /> : null}
+        {/* Course hubs + corridor pages: lean list chooser (no busy dual map UI). */}
+        {path === '/golf-courses' || path.startsWith('/golf-courses/') ? <FindYourCourse /> : null}
 
         {isNewsletter && formConfig ? (
           <GeContentEnquireBlock
@@ -235,7 +231,9 @@ export function GeContentPage() {
                       <h2 className="font-ge text-[1.45rem] font-extrabold leading-tight text-gs-dark sm:text-[1.7rem]">
                         {section.title}
                       </h2>
-                      <p className="mt-3 font-ge text-base leading-7 text-ge-gray600">{section.body}</p>
+                      <p className="mt-3 font-ge text-base leading-7 text-ge-gray600">
+                        {section === leadSections[0] && leadBody ? leadBody : section.body}
+                      </p>
                       {section.bullets ? (
                         <ul className="mt-4 space-y-2.5">
                           {section.bullets.slice(0, 4).map((bullet) => (
@@ -278,6 +276,7 @@ export function GeContentPage() {
         )}
       </main>
 
+      <WhatsAppBanner sourcePage={path} />
       <GeFooter />
     </div>
   )

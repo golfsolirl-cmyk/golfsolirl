@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, m } from 'framer-motion'
-import { List, Map as MapIcon, MapPin, X } from 'lucide-react'
+import { List, Map as MapIcon, MapPin } from 'lucide-react'
+import { DismissCloseButton } from '../../../components/ui/dismiss-close-button'
 import L from 'leaflet'
 import type { DivIcon, Map as LeafletMap, Marker } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -93,6 +94,15 @@ export function GeGolfMapSimple() {
   const selectCourse = useCallback((id: string | null) => {
     setSelectedId(id)
   }, [])
+
+  useEffect(() => {
+    if (!selectedId) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') selectCourse(null)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [selectedId, selectCourse])
 
   // Init map once
   useEffect(() => {
@@ -371,14 +381,7 @@ export function GeGolfMapSimple() {
                     {hotelMatch ? ' · hotel & transfer friendly' : null}
                   </p>
                 </div>
-                <button
-                  type="button"
-                  aria-label="Close"
-                  onClick={() => selectCourse(null)}
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-100 text-gs-dark"
-                >
-                  <X className="h-5 w-5" />
-                </button>
+                <DismissCloseButton onClick={() => selectCourse(null)} tone="light" />
               </div>
               <p className="text-sm text-slate-600">{shortLine(selected)}</p>
               <p className="mt-3 rounded-xl bg-emerald-50 px-3 py-2.5 text-sm font-medium text-emerald-900 ring-1 ring-emerald-100">

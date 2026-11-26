@@ -8,7 +8,6 @@ import { isGeContentPagePath } from './pages/golf-experience/data/ge-content-pag
 import { bundleRedirectForPath } from './lib/bundle-route-redirects'
 import { AuthProvider as AuthProviderDeferred } from './providers/auth-provider-deferred'
 import { AuthProvider as AuthProviderSync } from './providers/auth-provider-sync'
-import { FloatingWhatsApp as WhatsappFab } from './components/whatsapp/FloatingWhatsApp'
 
 /** Main public surfaces are eager — no Suspense spinners / blank folds on first paint. */
 import { GolfExperienceHome } from './pages/golf-experience/golf-experience-home'
@@ -369,36 +368,6 @@ const AuthProviderShell = pathnameNeedsImmediateSupabaseHydration(normalizedBoot
   ? AuthProviderSync
   : AuthProviderDeferred
 
-/** Login / auth surfaces stay a single centred card — no floating marketing chrome. */
-const isMinimalAuthPath = (path: string) => {
-  if (path === '/portal' || path === '/admin/login' || path === '/logged-out' || path === '/login') {
-    return true
-  }
-  if (
-    path === '/admin/brand' ||
-    path === '/brand' ||
-    path.startsWith('/brand/') ||
-    path === '/admin' ||
-    path.startsWith('/admin/')
-  ) {
-    return true
-  }
-  if (path.startsWith('/portal/')) {
-    return true
-  }
-  if (
-    path === '/dashboard/login' ||
-    path === '/dashboard/admin/login' ||
-    path === '/driver/login' ||
-    path === '/auth/callback'
-  ) {
-    return true
-  }
-  return false
-}
-
-const showSiteWhatsappFab = !isMinimalAuthPath(normalizedBootstrapPath)
-
 const Page = ActivePage as ComponentType
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -410,7 +379,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Page />
         </Suspense>
         <CookieConsent />
-        {showSiteWhatsappFab ? <WhatsappFab /> : null}
       </MotionRoot>
     </AuthProviderShell>
   </AppErrorBoundary>
