@@ -51,7 +51,8 @@ export function buildBrandedEnquiryEmailHtml(payload, variant = 'customer') {
       lead: 'A guest submitted a trip brief on golfsolirl.com. Reply to continue the conversation.',
       rows,
       bodyHtml: leanEmailButtonHtml({ href: mailto, label: `Reply to ${first}` }),
-      footerHtml: `Admin alert · ref ${escapeHtml(enquiryId)}. All payments handled in Ireland.`
+      footerHtml: `Admin alert · ref ${escapeHtml(enquiryId)}. All payments handled in Ireland.`,
+      includePastCustomersGallery: false
     })
     return finalizeGsolEmailHtml(html)
   }

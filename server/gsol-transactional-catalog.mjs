@@ -16,6 +16,7 @@ import {
 import { gsolEmailBrand } from './email-constants.mjs'
 import { buildBrandedEnquiryEmailHtml } from './branded-enquiry-email.mjs'
 import { buildBrandedPostEnquiryPortalInviteHtml } from './branded-post-enquiry-portal-invite-email.mjs'
+import { pastCustomersGalleryPlainText } from './email-past-customers-gallery.mjs'
 import { TRIP_TRACKER_STEPS } from '../shared/trip-tracker-steps.mjs'
 
 const site = () => getGsolSiteUrl().replace(/\/+$/, '')
@@ -132,6 +133,9 @@ export function buildGsolCatalogEmail(id, overrides = {}) {
           `Account: ${pay.accountName}`,
           `IBAN: ${pay.ibanDisplay}`,
           pay.bic ? `BIC: ${pay.bic}` : '',
+          '',
+          pastCustomersGalleryPlainText(),
+          '',
           `All payments handled in Ireland.`,
           `WhatsApp ${waDisplay()} · ${email()}`
         ]

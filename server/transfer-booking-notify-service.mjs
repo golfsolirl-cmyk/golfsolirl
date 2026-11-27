@@ -247,7 +247,8 @@ export const handleTransferBookingNotify = async (env, meta = {}) => {
         heroTitle: 'Transfer job — dispatch',
         heroLead: `Pickup: ${esc(booking.pickup_label)} → ${esc(booking.dropoff_label)} · ${guestDriver} · ${whenDriver}.`,
         heroMetaHtml: '',
-        bodyHtml: `<p style="margin:0 0 10px 0;font-family:${emailFonts.sans};font-size:14px;line-height:1.7;color:${gs.text};"><strong>Guest contact:</strong> ${guestDriver}</p><p style="margin:0 0 10px 0;font-family:${emailFonts.sans};font-size:14px;line-height:1.7;color:${gs.text};"><strong>Pickup:</strong> ${esc(booking.pickup_label)}${flightLine}<br /><strong>Drop-off:</strong> ${esc(booking.dropoff_label)}<br /><strong>When:</strong> ${whenDriver}</p>${viaDriver ? `<p style="margin:0 0 10px 0;font-family:${emailFonts.sans};font-size:14px;line-height:1.7;color:${gs.text};"><strong>Via:</strong> ${viaDriver}</p>` : ''}<p style="margin:0;font-family:${emailFonts.sans};font-size:14px;line-height:1.7;color:${gs.text};">Client email: <strong>${esc(clientTo)}</strong></p>`
+        bodyHtml: `<p style="margin:0 0 10px 0;font-family:${emailFonts.sans};font-size:14px;line-height:1.7;color:${gs.text};"><strong>Guest contact:</strong> ${guestDriver}</p><p style="margin:0 0 10px 0;font-family:${emailFonts.sans};font-size:14px;line-height:1.7;color:${gs.text};"><strong>Pickup:</strong> ${esc(booking.pickup_label)}${flightLine}<br /><strong>Drop-off:</strong> ${esc(booking.dropoff_label)}<br /><strong>When:</strong> ${whenDriver}</p>${viaDriver ? `<p style="margin:0 0 10px 0;font-family:${emailFonts.sans};font-size:14px;line-height:1.7;color:${gs.text};"><strong>Via:</strong> ${viaDriver}</p>` : ''}<p style="margin:0;font-family:${emailFonts.sans};font-size:14px;line-height:1.7;color:${gs.text};">Client email: <strong>${esc(clientTo)}</strong></p>`,
+        includePastCustomersGallery: false
       })
       await resend.emails.send({
         from,
