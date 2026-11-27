@@ -46,6 +46,9 @@ function getFooterArticleHighlights(content: FooterArticleContent) {
 }
 
 function getFooterArticleHeroImage(path: string) {
+  if (path === '/airport-transfers') {
+    return '/images/transfers/malaga-airport-golf-transfers.webp'
+  }
   if (path.includes('airport') || path.includes('transfer') || path.includes('routing')) {
     return '/images/transport-hero-coastal-drive.webp'
   }
@@ -69,6 +72,9 @@ function getFooterArticleHeroImage(path: string) {
 }
 
 function getFooterArticleHeroAlt(path: string, content: FooterArticleContent) {
+  if (path === '/airport-transfers') {
+    return 'Málaga Airport golf transfers with Meet & Greet by Irish Drivers and golf-bag-friendly vans.'
+  }
   if (path.includes('airport') || path.includes('transfer') || path.includes('routing')) {
     return 'Golf Sol Ireland transport planning and Costa del Sol route support.'
   }

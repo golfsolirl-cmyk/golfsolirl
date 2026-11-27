@@ -6,7 +6,9 @@ import { absoluteOgImageUrl } from '../../lib/site-seo'
 import { GeFooter } from './sections/ge-footer'
 import { GeNavbar } from './sections/ge-navbar'
 import { GeContentEnquireBlock } from './sections/ge-content-enquire-block'
-import { LeanPublicHero } from '../../components/home/premium-golf-hero'
+import { IrishDriversTrustPill, LeanPublicHero } from '../../components/home/premium-golf-hero'
+import { MeetAndGreetIrishDrivers } from '../../components/meet-and-greet-irish-drivers'
+import { TransferFleetPhotoStrip } from '../../components/transfer-fleet-photo-strip'
 import { buildContentPageHeroConfig } from '../../lib/content-page-hero-config'
 import { TermsEmailRequest } from './sections/terms-email-request'
 import { TermsSolicitorNotice } from './sections/terms-solicitor-notice'
@@ -227,6 +229,7 @@ export function GeContentPage() {
   const isGolfCoursesHub = path === '/golf-courses' || path.startsWith('/golf-courses/')
   const isChooserHub = isAccommodationHub || isGolfCoursesHub
   const isGolfMap = path === '/golf-map'
+  const isAirportTransfersPage = path === '/airport-transfers'
   const formTarget = isGolfMap
     ? `#${GOLF_COURSES_MAP_SECTION_ID}`
     : isAccommodationHub
@@ -262,18 +265,34 @@ export function GeContentPage() {
               ? 'Find hotels'
               : isGolfCoursesHub || isGolfMap
                 ? 'Find golf courses'
-                : isNewsletter
-                  ? 'Subscribe'
-                  : 'Get a quote',
-            href: formTarget
+                : isAirportTransfersPage
+                  ? 'Request a transfer'
+                  : isNewsletter
+                    ? 'Subscribe'
+                    : 'Get a quote',
+            href: isAirportTransfersPage ? '#ge-content-enquire' : formTarget
           }}
           secondaryCta={
             isChooserHub || isGolfMap
               ? { label: 'Get a quote', href: '/quote' }
-              : { label: 'View bundles', href: '/bundles' }
+              : isAirportTransfersPage
+                ? { label: 'Get a quote', href: '/quote' }
+                : { label: 'View bundles', href: '/bundles' }
           }
           title={page.title}
+          trustPill={isAirportTransfersPage ? <IrishDriversTrustPill href="#meet-and-greet" /> : undefined}
         />
+
+        {isAirportTransfersPage ? (
+          <>
+            <MeetAndGreetIrishDrivers
+              variant="page"
+              ctaHref="#ge-content-enquire"
+              ctaLabel="Request a transfer"
+            />
+            <TransferFleetPhotoStrip />
+          </>
+        ) : null}
 
         {isGolfMap ? <GeGolfMapSimple /> : null}
 
