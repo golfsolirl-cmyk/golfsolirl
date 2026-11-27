@@ -156,6 +156,85 @@ export const paymentRequestSummaryLabel = (resolved) => {
  * @param {ReturnType<typeof resolvePaymentRequestAmounts> | ReturnType<typeof buildPaymentRequestMeta>} resolved
  * @param {{ amountCentsFallback?: number }} [opts]
  */
+/**
+ * Card checkout for a 20% deposit invoice must not settle the trip.
+ * Full invoices, and a deposit-mode charge that actually covers the trip total,
+ * keep the historical paid-in-full settlement. Missing meta stays full settlement
+ * so older invoices are unchanged.
+ *
+ * @param {{ mode?: string, tripTotalEur?: number } | null | undefined} meta
+ * @param {number | null | undefined} amountEur
+ */
+export const portalInvoiceSettlesTripInFull = (meta, amountEur) => {
+  if (!meta || meta.mode !== 'deposit_20') return true
+  const total = Number(meta.tripTotalEur)
+  const paid = Number(amountEur)
+  if (!Number.isFinite(total) || total <= 0) return true
+  if (!Number.isFinite(paid) || paid <= 0) return true
+  return paid + 0.009 >= total
+}
+
+/**
+ * Fields written onto transfer_bookings when a portal invoice is paid.
+ * Deposit requests keep the trip price and do not clear the balance chase.
+ * @param {{
+ *   settlesFull: boolean
+ *   amountEur?: number | null
+ *   adminPriceEur?: number | null
+ *   tripTotalEur?: number | null
+ * }} input
+ */
+export const buildPortalInvoiceTransferPatch = (input) => {
+  const settlesFull = input.settlesFull !== false
+  const amountEur = input.amountEur
+  const adminPriceEur = Number(input.adminPriceEur)
+  const tripTotalEur = Number(input.tripTotalEur)
+  /** @type {Record<string, unknown>} */
+  const patch = {
+    payment_status: settlesFull ? 'paid' : 'deposit',
+    payment_source: 'stripe',
+    balance_remind_sent_at: null
+  }
+  if (settlesFull) patch.balance_remind_at = null
+
+  const recorded =
+    amountEur != null && amountEur > 0 ? amountEur : Number.isFinite(adminPriceEur) && adminPriceEur > 0 ? adminPriceEur : null
+  if (recorded != null) patch.amount_received_eur = recorded
+
+  if (
+    !settlesFull &&
+    Number.isFinite(tripTotalEur) &&
+    tripTotalEur > 0 &&
+    (!Number.isFinite(adminPriceEur) || adminPriceEur <= 0)
+  ) {
+    patch.admin_price_eur = tripTotalEur
+  } else if (settlesFull && amountEur != null && amountEur > 0 && (!Number.isFinite(adminPriceEur) || adminPriceEur <= 0)) {
+    patch.admin_price_eur = amountEur
+  }
+  return patch
+}
+
+/**
+ * Price and status for a transfer row created from a paid portal invoice.
+ * @param {{ settlesFull?: boolean, amountEur?: number | null, tripTotalEur?: number | null }} input
+ */
+export const newTransferPriceAndStatus = (input) => {
+  const settlesFull = input.settlesFull !== false
+  const amountEur = input.amountEur
+  const tripTotal = Number(input.tripTotalEur)
+  const priceEur =
+    !settlesFull && Number.isFinite(tripTotal) && tripTotal > 0
+      ? tripTotal
+      : amountEur != null && amountEur > 0
+        ? amountEur
+        : null
+  return {
+    admin_price_eur: priceEur,
+    payment_status: settlesFull ? 'paid' : 'deposit',
+    amount_received_eur: amountEur != null && amountEur > 0 ? amountEur : null
+  }
+}
+
 export const paymentRequestCustomerCopy = (resolved, opts = {}) => {
   const amountNow =
     resolved.amountNowEur > 0
