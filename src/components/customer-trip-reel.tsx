@@ -1,76 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useReducedMotion } from 'framer-motion'
+import { CUSTOMER_TRIP_PHOTOS, type CustomerTripPhoto } from '../data/customer-trip-photos'
 import { cx } from '../lib/utils'
 
-type TripPhoto = {
-  readonly src: string
-  readonly caption: string
-  readonly alt: string
-}
-
-const PHOTOS: readonly TripPhoto[] = [
-  {
-    src: '/images/customer-trips/bags-at-the-kerb.jpg',
-    caption: 'Bags at the kerb',
-    alt: 'Three golfers with travel bags beside the Golf Sol van on a Costa del Sol street.'
-  },
-  {
-    src: '/images/customer-trips/sol-don-pablo.jpg',
-    caption: 'Sol Don Pablo',
-    alt: 'Golfers with their bags outside the Sol Don Pablo hotel entrance.'
-  },
-  {
-    src: '/images/customer-trips/la-reserva-group.jpg',
-    caption: 'La Reserva Club',
-    alt: 'An Irish golf group beside the white van at La Reserva Club.'
-  },
-  {
-    src: '/images/customer-trips/van-to-buggy.jpg',
-    caption: 'Van to buggy',
-    alt: 'Golf bags moving from the van onto a buggy at the clubhouse.'
-  },
-  {
-    src: '/images/customer-trips/van-doors-open.jpg',
-    caption: 'Doors open',
-    alt: 'The white group van with the doors open at La Reserva Club.'
-  },
-  {
-    src: '/images/customer-trips/van-at-la-reserva.jpg',
-    caption: 'The group van',
-    alt: 'Front of the white Golf Sol van parked at La Reserva Club.'
-  },
-  {
-    src: '/images/customer-trips/sunset-bag-drop.jpg',
-    caption: 'Last light drop-off',
-    alt: 'Golfers unloading bags from the van beside a clubhouse at sunset.'
-  },
-  {
-    src: '/images/customer-trips/evening-range.jpg',
-    caption: 'Evening range',
-    alt: 'A Costa del Sol driving range in the evening, with the course beyond.'
-  },
-  {
-    src: '/images/customer-trips/la-reserva-gates.jpg',
-    caption: 'Through the gates',
-    alt: 'The entrance gates and sign at La Reserva Club.'
-  },
-  {
-    src: '/images/customer-trips/sotogrande.jpg',
-    caption: 'Sotogrande',
-    alt: 'The white Sotogrande hotel entrance under a clear blue sky.'
-  },
-  {
-    src: '/images/customer-trips/hotel-terrace.jpg',
-    caption: 'The stay',
-    alt: 'A sunny hotel terrace with planting and a small fountain.'
-  },
-  {
-    src: '/images/customer-trips/resort-gardens.jpg',
-    caption: 'Resort gardens',
-    alt: 'A long reflecting pool through resort gardens on the Costa del Sol.'
-  }
-]
-
+const PHOTOS = CUSTOMER_TRIP_PHOTOS
 const ROW_A = PHOTOS.filter((_, index) => index % 2 === 0)
 const ROW_B = PHOTOS.filter((_, index) => index % 2 === 1)
 
@@ -87,7 +20,7 @@ function hideBandByPath(): boolean {
   )
 }
 
-function PhotoCard({ photo, compact }: { readonly photo: TripPhoto; readonly compact: boolean }) {
+function PhotoCard({ photo, compact }: { readonly photo: CustomerTripPhoto; readonly compact: boolean }) {
   return (
     <figure
       className={cx(
@@ -109,7 +42,7 @@ function FilmRow({
   compact,
   paused
 }: {
-  readonly photos: readonly TripPhoto[]
+  readonly photos: readonly CustomerTripPhoto[]
   readonly reverse?: boolean
   readonly compact: boolean
   readonly paused: boolean
@@ -129,7 +62,7 @@ function FilmRow({
   )
 }
 
-/** Moving film of recent Golf Sol trips. `feature` sits under the homepage hero. `band` sits above the public footer. */
+/** Moving film of recent Golf Sol trips. `band` sits above the public footer on non-home pages. */
 export function CustomerTripReel({ placement = 'feature' }: { readonly placement?: 'feature' | 'band' }) {
   const reduceMotion = Boolean(useReducedMotion())
   const [paused, setPaused] = useState(false)
