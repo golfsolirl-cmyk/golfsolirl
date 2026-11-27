@@ -1,10 +1,44 @@
-import { depositAmountEur, normalizedDepositPercent } from './transfer-payment-amounts.mjs'
+import { depositAmountEur, normalizedDepositPercent, balanceDueReminderIso } from './transfer-payment-amounts.mjs'
 import { notifyClientPortalTransferPayment } from './portal-transfer-payment-notify.mjs'
 import { publishTransferPortalPaymentReceipt } from './transfer-portal-publish-payment-pdf.mjs'
+import {
+  buildPortalInvoiceTransferPatch,
+  newTransferPriceAndStatus,
+  portalInvoiceSettlesTripInFull,
+  readPaymentRequestMeta
+} from '../shared/payment-request-mode.mjs'
 
 /**
- * When a portal invoice is paid, activate the client trip pass by marking the linked
- * `transfer_bookings` row paid (or creating one from the enquiry when missing).
+ * Desk quotes store the 20% vs full request on trip_details. A missing column
+ * or an older invoice with no meta must not block settlement.
+ * @param {import('@supabase/supabase-js').SupabaseClient} supabase
+ * @param {string} invoiceId
+ */
+const loadDeskPaymentRequest = async (supabase, invoiceId) => {
+  try {
+    const { data, error } = await supabase
+      .from('desk_quotes')
+      .select('trip_details')
+      .eq('portal_invoice_id', invoiceId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    if (error) {
+      if (/portal_invoice_id|trip_details|schema cache|does not exist/i.test(error.message || '')) return null
+      console.error('[portal-invoice-transfer-sync] payment request lookup', error.message)
+      return null
+    }
+    return readPaymentRequestMeta(data?.trip_details)
+  } catch (e) {
+    console.error('[portal-invoice-transfer-sync] payment request lookup', e)
+    return null
+  }
+}
+
+/**
+ * When a portal invoice is paid, sync the linked transfer.
+ * A full invoice marks the trip paid. A 20% deposit invoice records a deposit
+ * and leaves the balance due — it does not issue a paid-in-full trip pass.
  *
  * @param {import('@supabase/supabase-js').SupabaseClient} supabase service role
  * @param {string} invoiceId
@@ -55,11 +89,17 @@ export const syncTransferBookingFromPaidPortalInvoice = async (supabase, invoice
         ? Math.round(Number(invoice.amount_cents)) / 100
         : null
 
+  const paymentMeta = await loadDeskPaymentRequest(supabase, invoice.id)
+  const settlesFull = portalInvoiceSettlesTripInFull(paymentMeta, amountEur)
+
   let booking = await findTransferBookingForInvoice(supabase, { ref, profileId, enquiryId: invoice.enquiry_id })
   let created = false
 
   if (!booking?.id) {
-    const createdRow = await createTransferBookingFromPaidInvoice(supabase, invoice, amountEur)
+    const createdRow = await createTransferBookingFromPaidInvoice(supabase, invoice, amountEur, {
+      settlesFull,
+      tripTotalEur: paymentMeta?.tripTotalEur ?? null
+    })
     if (!createdRow?.id) {
       return { synced: false, reason: 'no_transfer_booking' }
     }
@@ -73,27 +113,19 @@ export const syncTransferBookingFromPaidPortalInvoice = async (supabase, invoice
   }
 
   const now = new Date().toISOString()
-  const recordedEur =
-    amountEur != null && amountEur > 0
-      ? amountEur
-      : Number(booking.admin_price_eur) > 0
-        ? Number(booking.admin_price_eur)
-        : null
   const patch = {
-    payment_status: 'paid',
-    payment_source: 'stripe',
-    balance_remind_at: null,
-    balance_remind_sent_at: null,
+    ...buildPortalInvoiceTransferPatch({
+      settlesFull,
+      amountEur,
+      adminPriceEur: booking.admin_price_eur,
+      tripTotalEur: paymentMeta?.tripTotalEur ?? null
+    }),
     updated_at: now,
     stripe_payment_intent_id: paymentIntent,
     stripe_checkout_session_id: sessionId
   }
-  if (recordedEur != null) {
-    patch.amount_received_eur = recordedEur
-  }
-
-  if (amountEur != null && amountEur > 0 && (!Number(booking.admin_price_eur) || Number(booking.admin_price_eur) <= 0)) {
-    patch.admin_price_eur = amountEur
+  if (!settlesFull) {
+    patch.balance_remind_at = balanceDueReminderIso(booking.scheduled_at)
   }
 
   let bookingId = booking.id
@@ -142,7 +174,8 @@ export const syncTransferBookingFromPaidPortalInvoice = async (supabase, invoice
     meta: {
       portal_invoice_id: invoice.id,
       enquiry_reference_id: ref || null,
-      created_booking: created
+      created_booking: created,
+      settlement: settlesFull ? 'paid' : 'deposit'
     }
   })
   if (evErr) {
@@ -159,7 +192,7 @@ export const syncTransferBookingFromPaidPortalInvoice = async (supabase, invoice
           : 0
     if (receiptAmount > 0) {
       const r = await publishTransferPortalPaymentReceipt(supabase, bookingId, {
-        receiptKind: 'paid_in_full',
+        receiptKind: settlesFull ? 'paid_in_full' : 'deposit',
         amountEur: receiptAmount,
         stripeSessionId: sessionId,
         stripePaymentIntentId: paymentIntent
@@ -235,8 +268,14 @@ const findTransferBookingForInvoice = async (supabase, { ref, profileId, enquiry
  * @param {import('@supabase/supabase-js').SupabaseClient} supabase
  * @param {Record<string, unknown>} invoice
  * @param {number | null} amountEur
+ * @param {{ settlesFull?: boolean, tripTotalEur?: number | null }} [settlement]
  */
-const createTransferBookingFromPaidInvoice = async (supabase, invoice, amountEur) => {
+const createTransferBookingFromPaidInvoice = async (supabase, invoice, amountEur, settlement = {}) => {
+  const priced = newTransferPriceAndStatus({
+    settlesFull: settlement.settlesFull,
+    amountEur,
+    tripTotalEur: settlement.tripTotalEur
+  })
   const profileId = typeof invoice.profile_id === 'string' ? invoice.profile_id.trim() : ''
   if (!profileId) {
     return null
@@ -273,10 +312,10 @@ const createTransferBookingFromPaidInvoice = async (supabase, invoice, amountEur
     status: 'pending',
     booking_source: 'portal_invoice',
     enquiry_reference_id: ref || null,
-    admin_price_eur: amountEur != null && amountEur > 0 ? amountEur : null,
-    payment_status: 'paid',
+    admin_price_eur: priced.admin_price_eur,
+    payment_status: priced.payment_status,
     payment_source: 'stripe',
-    amount_received_eur: amountEur != null && amountEur > 0 ? amountEur : null,
+    amount_received_eur: priced.amount_received_eur,
     deposit_percent: 20,
     stripe_payment_intent_id:
       typeof invoice.stripe_payment_intent_id === 'string' ? invoice.stripe_payment_intent_id : null,
