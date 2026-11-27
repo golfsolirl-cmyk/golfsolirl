@@ -84,16 +84,20 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
     ]
   },
   '/airport-transfers': {
-    metaTitle: 'Airport transfers | Golf Sol Ireland',
-    kicker: 'Explore — Malaga and beyond',
-    heroTitle: 'Airport transfers that start the trip calmly',
+    metaTitle: 'Airport transfers · Meet & Greet by Irish Drivers | Golf Sol Ireland',
+    kicker: 'Meet & Greet by Irish Drivers',
+    heroTitle: 'Meet & Greet by Irish Drivers at Málaga Arrivals',
     heroBody:
-      'Malaga is the usual front door, but not every group lands there. We plan meet-and-greet flow, vehicle size for bags and people, and realistic timing so nobody is sprinting from the belt to the minibus.',
+      'Friendly Irish drivers waiting in the hall — golf-bag-friendly 8-seater vans and minibuses to your hotel and course, with realistic timing so nobody is sprinting from the belt to the kerb.',
     sections: [
       {
         title: 'Right vehicle, right door',
-        body: 'Golf bags change the maths fast. We specify vehicles that fit clubs without Tetris stress, and we align pickup zones with how each terminal actually works — especially in peak season.',
-        bullets: ['Named driver contact where available', 'Child seats and accessibility requests flagged early', 'Flight delay buffer built into quotes']
+        body: 'Golf bags change the maths fast. We specify 8-seater vans and minibuses that fit clubs without Tetris stress, and we align pickup zones with how each terminal actually works — especially in peak season.',
+        bullets: [
+          'Personal meet & greet by Irish drivers at Arrivals',
+          'Named driver contact where available',
+          'Flight delay buffer built into quotes'
+        ]
       },
       {
         title: 'Beyond the airport run',
@@ -102,7 +106,7 @@ export const footerArticlePages: Record<string, FooterArticleContent> = {
       }
     ],
     asideQuote: {
-      text: 'The holiday starts when the airport stress ends.',
+      text: 'The holiday starts when an Irish driver meets you at Arrivals.',
       attribution: 'Transfer planning'
     }
   },

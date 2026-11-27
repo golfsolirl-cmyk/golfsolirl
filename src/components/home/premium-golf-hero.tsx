@@ -1,5 +1,7 @@
+import type { ReactNode } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { IrelandPaymentsTrust } from '../ireland-payments-trust'
+import { IrishFlagEmblem } from '../irish-flag-emblem'
 import { NAMED_HERO_IMAGE_SETS, type HeroImageSet } from '../../lib/page-hero-images'
 import { cx } from '../../lib/utils'
 
@@ -26,6 +28,11 @@ export type LeanPublicHeroProps = {
   readonly className?: string
   /** Object-position for the hero photo (e.g. "center 40%"). */
   readonly imageObjectPosition?: string
+  /**
+   * Compact trust pill under the kicker (e.g. Meet & Greet by Irish Drivers).
+   * Keep short — wraps on narrow screens; never clips the sticky header.
+   */
+  readonly trustPill?: ReactNode
 }
 
 /**
@@ -43,7 +50,8 @@ export function LeanPublicHero({
   secondaryCta,
   showTrust = true,
   className,
-  imageObjectPosition = 'center'
+  imageObjectPosition = 'center',
+  trustPill
 }: LeanPublicHeroProps) {
   return (
     <section
@@ -87,6 +95,7 @@ export function LeanPublicHero({
         >
           {kicker}
         </p>
+        {trustPill ? <div className="mt-3 max-w-full">{trustPill}</div> : null}
         <h1 className="premium-golf-hero-title mt-3 max-w-2xl font-ge text-[2.05rem] font-extrabold leading-[1.05] tracking-[-0.02em] text-white [text-shadow:0_2px_18px_rgba(0,0,0,0.55)] sm:text-[3rem]">
           {title}
         </h1>
@@ -123,6 +132,19 @@ type PremiumGolfHeroProps = {
   readonly className?: string
 }
 
+/** Compact Irish-drivers trust pill for marketing heroes. */
+export function IrishDriversTrustPill({ href = '#meet-and-greet' }: { readonly href?: string }) {
+  return (
+    <a
+      href={href}
+      className="premium-golf-hero-trust-pill inline-flex max-w-full items-center gap-2 rounded-full border border-[#d4a843]/65 bg-[#062016]/75 px-3 py-2 font-ge text-[0.62rem] font-extrabold uppercase leading-snug tracking-[0.08em] text-[#f4dfa6] shadow-[0_8px_20px_rgba(0,0,0,0.28)] backdrop-blur-sm [overflow-wrap:anywhere] sm:text-[0.7rem] sm:tracking-[0.12em]"
+    >
+      <IrishFlagEmblem size="sm" title="Irish drivers" />
+      <span className="text-balance">Meet &amp; Greet by Irish Drivers</span>
+    </a>
+  )
+}
+
 /** Homepage default — same lean composition clients liked. */
 export function PremiumGolfHero({ className }: PremiumGolfHeroProps) {
   return (
@@ -135,6 +157,7 @@ export function PremiumGolfHero({ className }: PremiumGolfHeroProps) {
       primaryCta={{ label: 'View bundles', href: '/bundles' }}
       secondaryCta={{ label: 'Get a quote', href: '/quote' }}
       title="Our golf holiday bundles"
+      trustPill={<IrishDriversTrustPill href="#meet-and-greet" />}
     />
   )
 }

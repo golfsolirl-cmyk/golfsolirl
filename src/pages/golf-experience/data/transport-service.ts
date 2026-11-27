@@ -5,8 +5,9 @@
 
 export const transportHeroCopy = {
   eyebrow: 'GolfSol Ireland',
-  title: 'Transfers from Málaga Airport',
-  subtitle: 'Golf-bag-friendly private cars from AGP to your hotel and course — organised from Ireland.',
+  title: 'Meet & Greet by Irish Drivers',
+  subtitle:
+    'Friendly Irish drivers waiting at Málaga Arrivals — golf-bag-friendly private vans from AGP to your hotel and course.',
   primaryCta: 'Get a transfer quote',
   secondaryCta: 'Talk to us'
 } as const
