@@ -6,6 +6,7 @@
 import { getGsolSiteUrl } from './site-url.mjs'
 import { gsolCompanyLegal, gsolEmailBrand } from './email-constants.mjs'
 import { GOLFSOL_BRAND_LOGO_HOSTED } from './brand-logo-assets.mjs'
+import { buildPastCustomersGalleryHtml } from './email-past-customers-gallery.mjs'
 
 export const gs = {
   bg: '#F4F7F5',
@@ -88,6 +89,8 @@ export const emailResponsiveCss = `
         .email-trust-body p { font-size: 17px !important; line-height: 1.72 !important; }
         .cta-button { display: block !important; width: 100% !important; box-sizing: border-box !important; text-align: center !important; padding: 18px 22px !important; min-height: 54px !important; line-height: 1.45 !important; font-size: 16px !important; }
         .mobile-pad a { word-break: break-word !important; overflow-wrap: break-word !important; }
+        .pcg-cell { display: block !important; width: 100% !important; max-width: 100% !important; padding: 6px 0 !important; }
+        .pcg-cell img { height: 180px !important; }
       }`
 
 export const phoneIrelandHref = `tel:${gsolEmailBrand.phoneTel}`
@@ -622,6 +625,21 @@ export const buildBrandedTransactionalEmailHtml = ({
 ${buildBrandedPreheaderThroughHeaderRow(preview)}
 ${heroSection}
 ${buildBrandedMarketingTailHtml()}
+              <tr>
+                <td style="padding:40px 0 0 0;">
+                  ${buildPastCustomersGalleryHtml({
+                    fontFamily: emailFonts.sans,
+                    forest: gs.dark,
+                    forestDeep: '#0A2E23',
+                    cream: gs.cream,
+                    gold: gs.gold,
+                    muted: gs.muted,
+                    ink: gs.text,
+                    border: gs.cardBorder,
+                    card: gs.card
+                  })}
+                </td>
+              </tr>
 ${buildBrandedFooterHtml({ footerDisclaimerHtml })}
             </table>
                 </td>

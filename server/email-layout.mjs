@@ -98,6 +98,7 @@ export const adaptTransactionalEmailHtmlForBrowserPreview = (html, requestOrigin
  *   cta?: { href: string, label: string } | null
  *   payment?: object | null
  *   footerHtml?: string
+ *   includePastCustomersGallery?: boolean
  * }} opts
  */
 export const buildGsolTransactionalEmail = (opts = {}) => {
@@ -121,6 +122,7 @@ export const buildGsolTransactionalEmail = (opts = {}) => {
     rows: opts.rows,
     cta: opts.cta,
     payment: opts.payment,
-    footerHtml: opts.footerHtml
+    footerHtml: opts.footerHtml,
+    includePastCustomersGallery: opts.includePastCustomersGallery
   })
 }

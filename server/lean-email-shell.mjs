@@ -1,12 +1,14 @@
 /**
  * Clean single-column transactional email shell (TOW Layout style, Golf Sol branding).
- * Logo → thin accent bar → short heading → optional answer table → one CTA → Monzo block → small footer.
- * No heavy heroes, marketing banners, or long paragraphs.
+ * Logo → thin accent bar → short heading → optional answer table → one CTA → Monzo block
+ * → Past Customers Gallery (customer emails) → small footer.
+ * No heavy heroes or long marketing banners.
  */
 import { gsolEmailBrand } from './email-constants.mjs'
 import { getGsolSiteUrl } from './site-url.mjs'
 import { GOLFSOL_BRAND_LOGO_HOSTED } from './brand-logo-assets.mjs'
 import { formatIbanGroupsOf4 } from '../shared/format-iban.mjs'
+import { buildPastCustomersGalleryHtml } from './email-past-customers-gallery.mjs'
 
 export const lean = {
   forest: '#063B2A',
@@ -34,7 +36,7 @@ export const escapeHtml = (value) =>
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
 
-const headCss = `@media only screen and (max-width:620px){.email-outer{padding:16px 8px !important}.email-pad{padding-left:24px !important;padding-right:24px !important}.email-h1{font-size:24px !important;line-height:32px !important}}`
+const headCss = `@media only screen and (max-width:620px){.email-outer{padding:16px 8px !important}.email-pad{padding-left:24px !important;padding-right:24px !important}.email-h1{font-size:24px !important;line-height:32px !important}.pcg-cell{display:block !important;width:100% !important;max-width:100% !important;padding:6px 0 !important}.pcg-cell img{height:180px !important}}`
 
 /**
  * Bulletproof CTA button.
@@ -155,6 +157,7 @@ export const leanMonzoPaymentBlockHtml = (opts = {}) => {
  *   cta?: { href: string, label: string } | null
  *   payment?: Parameters<typeof leanMonzoPaymentBlockHtml>[0] | null
  *   footerHtml?: string
+ *   includePastCustomersGallery?: boolean
  * }} opts
  */
 export const buildLeanTransactionalEmailHtml = (opts) => {
@@ -170,6 +173,20 @@ export const buildLeanTransactionalEmailHtml = (opts) => {
   const paymentHtml = opts.payment ? leanMonzoPaymentBlockHtml(opts.payment) : ''
   const ctaHtml = opts.cta?.href
     ? leanEmailButtonHtml({ href: opts.cta.href, label: opts.cta.label || 'Open your trip desk' })
+    : ''
+  const showPastCustomersGallery = opts.includePastCustomersGallery !== false
+  const pastCustomersHtml = showPastCustomersGallery
+    ? buildPastCustomersGalleryHtml({
+        fontFamily: leanFont,
+        forest: lean.forest,
+        forestDeep: '#0A2E23',
+        cream: '#F5F0E6',
+        gold: lean.gold,
+        muted: lean.muted,
+        ink: lean.ink,
+        border: lean.border,
+        card: lean.card
+      })
     : ''
   const footer =
     opts.footerHtml?.trim() ||
@@ -231,6 +248,11 @@ export const buildLeanTransactionalEmailHtml = (opts) => {
             ctaHtml
               ? `<tr><td class="email-pad" style="padding:24px 32px 28px;">${ctaHtml}</td></tr>`
               : `<tr><td style="padding:12px 0 0;">&nbsp;</td></tr>`
+          }
+          ${
+            pastCustomersHtml
+              ? `<tr><td class="email-pad" style="padding:8px 32px 24px;background:${lean.card};">${pastCustomersHtml}</td></tr>`
+              : ''
           }
           <tr>
             <td class="email-pad" style="background:${lean.foot};padding:20px 32px;font-size:14px;line-height:22px;color:${lean.muted};font-family:${leanFont};">

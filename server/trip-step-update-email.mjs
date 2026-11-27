@@ -9,6 +9,7 @@ import {
   leanAnswerTableHtml,
   leanEmailButtonHtml
 } from './email-layout.mjs'
+import { pastCustomersGalleryPlainText } from './email-past-customers-gallery.mjs'
 import { resolveResendToAddress } from './resend-delivery-email.mjs'
 import { TRIP_TRACKER_STEPS } from '../shared/trip-tracker-steps.mjs'
 
@@ -68,6 +69,8 @@ export function buildTripStepUpdateEmail(input) {
     ...rows.map(([k, v]) => `${k}: ${v}`),
     '',
     `Open your trip desk: ${portal}`,
+    '',
+    pastCustomersGalleryPlainText(),
     '',
     'Talk soon,',
     'Golf Sol Ireland',

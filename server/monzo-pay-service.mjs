@@ -111,7 +111,8 @@ const buildAdminPayNotice = ({ event, row, amountLabel, adminUrl }) => {
       lead: c.line,
       rows,
       cta: { href: adminUrl, label: 'Open in admin' },
-      footerHtml: `Pay page activity · ref ${escapeHtml(row.reference_code)}.`
+      footerHtml: `Pay page activity · ref ${escapeHtml(row.reference_code)}.`,
+      includePastCustomersGallery: false
     })
   )
   return { subject: `Golf Sol — ${c.pill} (${row.reference_code})`, html }
