@@ -656,6 +656,18 @@
   color: rgba(255, 255, 255, 0.94) !important;
 }
 
+/* Tripadvisor footer badge — beat nested `[class*='bg-white']` dark-type rule (WCAG AA). */
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) a.gsol-tripadvisor-badge,
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) a.gsol-tripadvisor-badge .gsol-tripadvisor-badge-kicker {
+  color: #f7f3ea !important;
+}
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) a.gsol-tripadvisor-badge .gsol-tripadvisor-badge-label {
+  color: #34e0a1 !important;
+}
+.ge-page footer:is(.bg-gs-dark, .bg-forest-950) a.gsol-tripadvisor-badge:hover .gsol-tripadvisor-badge-kicker {
+  color: #ffffff !important;
+}
+
 /* —— Business cards (`/business-cards`) — beat `.ge-page h*` / `p` dark defaults on forest shell —— */
 .ge-page #business-cards-main.ge-on-dark > :not(#bc-specs) h1,
 .ge-page #business-cards-main.ge-on-dark > :not(#bc-specs) h2,
