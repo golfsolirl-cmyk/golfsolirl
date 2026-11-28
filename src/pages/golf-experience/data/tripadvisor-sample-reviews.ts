@@ -1,13 +1,15 @@
-/** Placeholder copy until a live Tripadvisor feed is wired in — Irish golfer voice, Costa del Sol focus. */
+import { TRIPADVISOR_DEFAULT_LISTING_URL } from '../../../lib/tripadvisor'
+
+/** Sample review cards for layout — not a live Tripadvisor feed (no invented ratings). */
 export const tripadvisorReviewsSectionCopy = {
   eyebrow: 'Traveller proof',
   title: 'Reviews from the road',
   lead:
-    'Sample quotes in the style of Tripadvisor traveller reviews — same energy as the feedback we hear from Irish groups on the Sol. Live Tripadvisor sync is coming next.',
-  disclaimer: 'Sample reviews shown for layout — not pulled from Tripadvisor yet.',
-  ctaLabel: 'Read more on Tripadvisor',
-  ctaHref: 'https://www.tripadvisor.com',
-  ctaNote: 'Opens Tripadvisor — add your listing URL when ready.'
+    'Sample quotes in the style of Tripadvisor traveller reviews — same energy as the feedback we hear from Irish groups on the Sol.',
+  disclaimer: 'Sample reviews shown for layout — not pulled from Tripadvisor.',
+  ctaLabel: 'Find us on Tripadvisor',
+  ctaHref: TRIPADVISOR_DEFAULT_LISTING_URL,
+  ctaNote: 'Opens our live Tripadvisor listing.'
 } as const
 
 export interface TripadvisorSampleReview {

@@ -8,6 +8,7 @@ import { GeDualPhoneFooterLines } from '../components/ge-dual-phone-contact'
 import { aboutFooterCopy, contactInfo } from '../data/copy'
 import { GsolGoldCornerAccents } from '../../../components/gsol-gold-corner-accents'
 import { IrelandPaymentsTrust } from '../../../components/ireland-payments-trust'
+import { TripadvisorFindUsBadge } from '../../../components/tripadvisor-badge'
 import { WhatsAppPill } from '../../../components/whatsapp/WhatsAppPill'
 import { openCookieSettings } from '../../../lib/cookie-consent'
 import { footerColumns } from '../data/nav'
@@ -162,6 +163,7 @@ export function GeFooter() {
             <p className="font-ge text-[0.95rem] font-extrabold uppercase tracking-[0.18em] text-[#fbe8b5] drop-shadow-[0_0_14px_rgba(217,190,122,0.3)] sm:text-[0.86rem]">
               Stay in touch
             </p>
+            <TripadvisorFindUsBadge tone="dark" />
             <div className="flex flex-wrap gap-3">
               <GeButton href="/leave-a-review" variant="outline-white" size="sm">
                 Leave us a review

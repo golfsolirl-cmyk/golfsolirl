@@ -1,13 +1,19 @@
 import { SEO_CONTACT } from './seo-contact'
 import { SITE_ORIGIN } from '../site-seo'
 import { gsolPostalAddressJsonLd } from '../business-details'
+import { getTripadvisorSameAsUrl } from '../tripadvisor'
 
 /** Verified sameAs only — generic facebook.com homepage is excluded. */
-const SAME_AS: readonly string[] = [
-  SEO_CONTACT.whatsappHref,
-  'https://www.instagram.com/golfsolireland/',
-  'https://www.linkedin.com/in/gregory-mcdonald-44a537415/'
-]
+function buildSameAs(): string[] {
+  const sameAs = [
+    SEO_CONTACT.whatsappHref,
+    'https://www.instagram.com/golfsolireland/',
+    'https://www.linkedin.com/in/gregory-mcdonald-44a537415/'
+  ]
+  const tripadvisor = getTripadvisorSameAsUrl()
+  if (tripadvisor) sameAs.push(tripadvisor)
+  return sameAs
+}
 
 function companyIdentifier(): Record<string, unknown> {
   return {
@@ -54,7 +60,7 @@ export function buildOrganizationSchema(origin: string = SITE_ORIGIN): Record<st
         availableLanguage: ['English', 'Spanish']
       }
     ],
-    sameAs: [...SAME_AS]
+    sameAs: buildSameAs()
   }
 }
 

@@ -9,6 +9,7 @@ import { getGsolSiteUrl } from './site-url.mjs'
 import { GOLFSOL_BRAND_LOGO_HOSTED } from './brand-logo-assets.mjs'
 import { formatIbanGroupsOf4 } from '../shared/format-iban.mjs'
 import { buildPastCustomersGalleryHtml } from './email-past-customers-gallery.mjs'
+import { buildTripadvisorAnnouncementHtml } from './email-tripadvisor-announcement.mjs'
 
 export const lean = {
   forest: '#063B2A',
@@ -174,12 +175,25 @@ export const buildLeanTransactionalEmailHtml = (opts) => {
   const ctaHtml = opts.cta?.href
     ? leanEmailButtonHtml({ href: opts.cta.href, label: opts.cta.label || 'Open your trip desk' })
     : ''
-  const showPastCustomersGallery = opts.includePastCustomersGallery !== false
-  const pastCustomersHtml = showPastCustomersGallery
+  // Customer-facing only — admin/ops pass includePastCustomersGallery: false.
+  const showCustomerExtras = opts.includePastCustomersGallery !== false
+  const pastCustomersHtml = showCustomerExtras
     ? buildPastCustomersGalleryHtml({
         fontFamily: leanFont,
         forest: lean.forest,
         forestDeep: '#0A2E23',
+        cream: '#F5F0E6',
+        gold: lean.gold,
+        muted: lean.muted,
+        ink: lean.ink,
+        border: lean.border,
+        card: lean.card
+      })
+    : ''
+  const tripadvisorHtml = showCustomerExtras
+    ? buildTripadvisorAnnouncementHtml({
+        fontFamily: leanFont,
+        forest: lean.forest,
         cream: '#F5F0E6',
         gold: lean.gold,
         muted: lean.muted,
@@ -251,7 +265,12 @@ export const buildLeanTransactionalEmailHtml = (opts) => {
           }
           ${
             pastCustomersHtml
-              ? `<tr><td class="email-pad" style="padding:8px 32px 24px;background:${lean.card};">${pastCustomersHtml}</td></tr>`
+              ? `<tr><td class="email-pad" style="padding:8px 32px 12px;background:${lean.card};">${pastCustomersHtml}</td></tr>`
+              : ''
+          }
+          ${
+            tripadvisorHtml
+              ? `<tr><td class="email-pad" style="padding:8px 32px 24px;background:${lean.card};">${tripadvisorHtml}</td></tr>`
               : ''
           }
           <tr>

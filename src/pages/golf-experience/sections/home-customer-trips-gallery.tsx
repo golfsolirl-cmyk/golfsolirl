@@ -2,6 +2,7 @@ import { useEffect, useId, useState } from 'react'
 import { AnimatePresence, m, useReducedMotion } from 'framer-motion'
 import { ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { FocusTrapDialog } from '../../../components/focus-trap-dialog'
+import { TripadvisorNowLiveCard } from '../../../components/home/tripadvisor-now-live-card'
 import {
   CUSTOMER_TRIP_FEATURED_INDEX,
   CUSTOMER_TRIP_PHOTOS,
@@ -298,6 +299,8 @@ export function GeHomeCustomerTripsGallery() {
             ))}
           </m.div>
         )}
+
+        <TripadvisorNowLiveCard />
       </div>
 
       <TripLightbox

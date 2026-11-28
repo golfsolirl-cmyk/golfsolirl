@@ -3,6 +3,7 @@
  * `public/images/customer-trips/` (captions/alt match `src/data/customer-trip-photos.ts`).
  */
 import { getGsolSiteUrl } from './site-url.mjs'
+import { tripadvisorAnnouncementPlainText } from './email-tripadvisor-announcement.mjs'
 
 /** Keep in sync with `CUSTOMER_TRIP_PHOTOS` in `src/data/customer-trip-photos.ts`. */
 export const EMAIL_PAST_CUSTOMER_PHOTOS = Object.freeze([
@@ -54,7 +55,9 @@ export const pastCustomersGalleryPlainText = () => {
     'Past customers on tour',
     'Real Golf Sol Ireland groups on the Costa del Sol:',
     ...lines,
-    `See more trip photos: ${galleryHref()}`
+    `See more trip photos: ${galleryHref()}`,
+    '',
+    tripadvisorAnnouncementPlainText()
   ].join('\n')
 }
 
@@ -138,3 +141,6 @@ export const buildPastCustomersGalleryHtml = (theme = {}) => {
   </tr>
 </table>`
 }
+
+// Tripadvisor announcement HTML lives in email-tripadvisor-announcement.mjs
+// (rendered by lean / branded shells next to this gallery).

@@ -35,6 +35,6 @@ export const SEO_CONTACT = {
  */
 export const SEO_CONTACT_TODO = [
   'Confirm preferred canonical host: https://www.golfsolirl.com vs https://golfsolirl.com',
-  'Supply verified social profile URLs for Organization sameAs (Facebook, TripAdvisor)',
+  'Supply verified Facebook business page URL for Organization sameAs (Tripadvisor listing is live)',
   'Confirm whether Spanish WhatsApp should ever use the Spanish voice line (currently Irish WhatsApp only: +353 86 600 6202)'
 ] as const
