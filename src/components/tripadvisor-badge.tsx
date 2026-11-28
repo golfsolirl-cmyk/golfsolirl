@@ -36,6 +36,9 @@ type TripadvisorFindUsBadgeProps = {
 
 /**
  * Subtle “Find us on Tripadvisor” badge — static link only (no third-party widgets).
+ *
+ * Dark tone must not use Tailwind `bg-white/*` classes: `.ge-page` token overrides
+ * treat `[class*='bg-white']` as a nested light card and force span text to dark grey.
  */
 export function TripadvisorFindUsBadge({ className = '', tone = 'dark' }: TripadvisorFindUsBadgeProps) {
   const href = getTripadvisorListingHref()
@@ -48,27 +51,28 @@ export function TripadvisorFindUsBadge({ className = '', tone = 'dark' }: Tripad
       rel="noopener noreferrer"
       aria-label="Find us on Tripadvisor"
       className={[
-        'group inline-flex items-center gap-2.5 rounded-full border px-3.5 py-2 transition-colors',
+        'gsol-tripadvisor-badge group inline-flex items-center gap-2.5 rounded-full border px-3.5 py-2 transition-colors',
         isDark
-          ? 'border-white/25 bg-white/10 text-white hover:border-[#34E0A1]/70 hover:bg-white/15'
+          ? 'border-white/25 bg-[rgba(255,255,255,0.1)] text-[#f7f3ea] hover:border-[#34E0A1]/70 hover:bg-[rgba(255,255,255,0.16)]'
           : 'border-forest-200 bg-white text-forest-950 hover:border-[#34E0A1] hover:bg-[#f4fdf9]',
         className
       ].join(' ')}
+      data-tone={tone}
     >
       <TripadvisorOwlMark className="h-7 w-7 shrink-0" />
       <span className="flex flex-col items-start leading-tight">
         <span
           className={[
-            'font-ge text-[0.65rem] font-bold uppercase tracking-[0.14em]',
-            isDark ? 'text-white/70' : 'text-forest-600'
+            'gsol-tripadvisor-badge-kicker font-ge text-[0.65rem] font-bold uppercase tracking-[0.14em]',
+            isDark ? 'text-[#f7f3ea]/85' : 'text-forest-600'
           ].join(' ')}
         >
           Find us on
         </span>
         <span
           className={[
-            'font-ge text-[0.92rem] font-extrabold tracking-tight',
-            isDark ? 'text-white group-hover:text-[#34E0A1]' : 'text-[#000a12]'
+            'gsol-tripadvisor-badge-label font-ge text-[0.92rem] font-extrabold tracking-tight',
+            isDark ? 'text-[#34E0A1]' : 'text-[#000a12]'
           ].join(' ')}
         >
           Tripadvisor
