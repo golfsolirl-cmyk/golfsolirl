@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Check, Copy, Link2, RefreshCw, ShieldOff } from 'lucide-react'
+import { AdminTripadvisorUrlPanel } from '../components/admin-tripadvisor-url-panel'
 import { BrandKitGallery } from '../components/brand-kit-gallery'
 import { TowAdminShell } from '../components/tow-admin/tow-admin-bar'
 import { BRAND_ASSET_PACK_ZIP } from '../lib/brand-logo-kit'
@@ -136,7 +137,11 @@ export function AdminBrandKitPage() {
         / story files below.
       </p>
 
-      <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <div className="mt-8">
+        <AdminTripadvisorUrlPanel />
+      </div>
+
+      <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
         <h2 className="font-ge text-[1.05rem] font-extrabold text-gs-dark">Shareable link</h2>
         <p className="mt-1 font-ge text-sm text-slate-600">
           Partners open the same kit without admin access. Regenerate or turn off anytime.

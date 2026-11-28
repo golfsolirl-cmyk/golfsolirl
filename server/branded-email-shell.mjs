@@ -7,6 +7,7 @@ import { getGsolSiteUrl } from './site-url.mjs'
 import { gsolCompanyLegal, gsolEmailBrand } from './email-constants.mjs'
 import { GOLFSOL_BRAND_LOGO_HOSTED } from './brand-logo-assets.mjs'
 import { buildPastCustomersGalleryHtml } from './email-past-customers-gallery.mjs'
+import { buildTripadvisorAnnouncementHtml } from './email-tripadvisor-announcement.mjs'
 
 export const gs = {
   bg: '#F4F7F5',
@@ -631,6 +632,20 @@ ${buildBrandedMarketingTailHtml()}
                     fontFamily: emailFonts.sans,
                     forest: gs.dark,
                     forestDeep: '#0A2E23',
+                    cream: gs.cream,
+                    gold: gs.gold,
+                    muted: gs.muted,
+                    ink: gs.text,
+                    border: gs.cardBorder,
+                    card: gs.card
+                  })}
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:20px 0 0 0;">
+                  ${buildTripadvisorAnnouncementHtml({
+                    fontFamily: emailFonts.sans,
+                    forest: gs.dark,
                     cream: gs.cream,
                     gold: gs.gold,
                     muted: gs.muted,

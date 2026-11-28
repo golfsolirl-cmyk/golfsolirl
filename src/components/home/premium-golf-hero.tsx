@@ -13,6 +13,8 @@ export const PREMIUM_HERO_ALT = NAMED_HERO_IMAGE_SETS.homepageFleet.alt
 export type LeanPublicHeroCta = {
   readonly label: string
   readonly href: string
+  /** Open in a new tab (e.g. Tripadvisor). */
+  readonly external?: boolean
 }
 
 export type LeanPublicHeroProps = {
@@ -108,6 +110,9 @@ export function LeanPublicHero({
         <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
           <a
             href={primaryCta.href}
+            {...(primaryCta.external
+              ? { target: '_blank', rel: 'noopener noreferrer' }
+              : {})}
             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#d4a843] px-6 font-ge text-[0.78rem] font-extrabold uppercase tracking-[0.12em] text-[#062016] shadow-[0_10px_24px_rgba(0,0,0,0.25)]"
           >
             {primaryCta.label}
@@ -116,6 +121,9 @@ export function LeanPublicHero({
           {secondaryCta ? (
             <a
               href={secondaryCta.href}
+              {...(secondaryCta.external
+                ? { target: '_blank', rel: 'noopener noreferrer' }
+                : {})}
               className="premium-golf-hero-outline-cta inline-flex min-h-12 items-center justify-center rounded-full border-2 border-white bg-white/15 px-6 font-ge text-[0.78rem] font-extrabold uppercase tracking-[0.12em] text-white shadow-[0_6px_18px_rgba(0,0,0,0.28)] backdrop-blur-sm"
             >
               {secondaryCta.label}

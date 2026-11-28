@@ -20,7 +20,7 @@ Source of truth: `shared/business-details.mjs` (typed re-export `src/lib/busines
 
 - [ ] Preferred canonical host in Google Search Console: `https://www.golfsolirl.com` vs `https://golfsolirl.com`
 - [ ] Facebook business page URL (footer currently points at generic facebook.com)
-- [ ] TripAdvisor business profile URL (homepage CTA currently points at tripadvisor.com root)
+- [x] Tripadvisor business profile URL (live listing; default in `shared/tripadvisor-url.mjs`)
 - [ ] Whether Spanish WhatsApp should ever use `+34 641 81 53 66` (currently Irish WhatsApp only)
 - [ ] Individual course facts (holes, par, designer, year) before indexing dedicated `/golf-courses/[slug]` pages
 - [ ] Dedicated destination photography filenames (use existing fairway/transfer assets until true location photos exist)
